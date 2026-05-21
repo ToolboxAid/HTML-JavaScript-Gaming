@@ -1,21 +1,24 @@
 import InputMap from "/src/engine/input/InputMap.js";
 
 const DEFAULT_ACTIONS = Object.freeze([
-  { id: "moveUp", label: "Move Up" },
+  { id: "cancel", label: "Cancel" },
+  { id: "confirm", label: "Confirm" },
+  { id: "fire", label: "Fire" },
+  { id: "interact", label: "Interact" },
+  { id: "jump", label: "Jump" },
+  { id: "menu", label: "Menu" },
   { id: "moveDown", label: "Move Down" },
   { id: "moveLeft", label: "Move Left" },
   { id: "moveRight", label: "Move Right" },
-  { id: "confirm", label: "Confirm" },
-  { id: "cancel", label: "Cancel" },
+  { id: "moveUp", label: "Move Up" },
+  { id: "pause", label: "Pause" },
   { id: "primaryAction", label: "Primary Action" },
-  { id: "secondaryAction", label: "Secondary Action" },
-  { id: "menu", label: "Menu" },
-  { id: "interact", label: "Interact" },
-  { id: "jump", label: "Jump" },
-  { id: "fire", label: "Fire" },
-  { id: "thrust", label: "Thrust" },
   { id: "rotateLeft", label: "Rotate Left" },
-  { id: "rotateRight", label: "Rotate Right" }
+  { id: "rotateRight", label: "Rotate Right" },
+  { id: "secondaryAction", label: "Secondary Action" },
+  { id: "select", label: "Select" },
+  { id: "start", label: "Start" },
+  { id: "thrust", label: "Thrust" }
 ]);
 
 export class InputMappingState {
@@ -28,11 +31,11 @@ export class InputMappingState {
   }
 
   reset() {
-    this.actionEntries = this.defaultActions.map((action) => ({
+    this.actionEntries = sortActions(this.defaultActions.map((action) => ({
       id: action.id,
       label: action.label,
       inputs: []
-    }));
+    })));
     this.selectedActionId = this.actionEntries[0]?.id ?? "";
     this.syncInputMap();
   }
@@ -70,6 +73,7 @@ export class InputMappingState {
       return { ok: false, message: `${actionLabel} already exists and is now selected.` };
     }
     this.actionEntries.push({ id: actionId, label: actionLabel, inputs: [] });
+    this.actionEntries = sortActions(this.actionEntries);
     this.selectedActionId = actionId;
     this.syncInputMap();
     return { ok: true, message: `Added action ${actionLabel}.` };
@@ -147,4 +151,8 @@ function normalizeActionId(label) {
     .trim()
     .replace(/[^a-zA-Z0-9]+(.)/g, (_, character) => character.toUpperCase())
     .replace(/^[A-Z]/, (character) => character.toLowerCase());
+}
+
+function sortActions(actions) {
+  return [...actions].sort((left, right) => left.label.localeCompare(right.label, undefined, { sensitivity: "base" }));
 }

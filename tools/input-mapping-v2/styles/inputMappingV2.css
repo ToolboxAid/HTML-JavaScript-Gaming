@@ -1,13 +1,62 @@
+.input-mapping-v2.tool-starter.app-shell {
+  width: 100%;
+  max-width: none;
+  grid-template-columns: 340px minmax(0, 1fr) 360px;
+  margin-inline: 0;
+}
+
 .input-mapping-v2__button-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
+.input-mapping-v2 #captureInputContent .input-mapping-v2__button-row {
+  grid-template-columns: repeat(2, 150px);
+}
+
+.input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
+.input-mapping-v2 #inputMappingV2CaptureMouseButton,
+.input-mapping-v2 #inputMappingV2CaptureGamepadButton {
+  width: 150px;
+}
+
+.input-mapping-v2 .tool-starter__panel--center,
+.input-mapping-v2 .tool-starter__panel--right {
+  overflow: hidden;
+}
+
+.input-mapping-v2 .tool-starter__panel--right > .tool-starter__accordion.is-open {
+  flex: 1 1 0;
+}
+
+.input-mapping-v2 #mappingPanelContent {
+  overflow: hidden;
+}
+
 .input-mapping-v2__mapping-list,
 .input-mapping-v2__source-list {
   display: grid;
   gap: 10px;
+}
+
+.input-mapping-v2__mapping-list {
+  grid-template-columns: repeat(auto-fill, 175px);
+  grid-auto-rows: 175px;
+  align-content: start;
+  align-items: stretch;
+  justify-content: start;
+  justify-items: stretch;
+  overflow-y: auto;
+  place-items: unset;
+  text-align: left;
+}
+
+.input-mapping-v2__mapping-list > p {
+  margin: auto;
+  align-self: center;
+  justify-self: center;
+  text-align: center;
 }
 
 .input-mapping-v2__mapping-card,
@@ -20,9 +69,17 @@
   padding: 10px;
 }
 
+.input-mapping-v2__mapping-card {
+  width: 175px;
+  height: 175px;
+  align-content: start;
+  overflow: auto;
+}
+
 .input-mapping-v2__mapping-card h2 {
   margin: 0;
   font-size: 1rem;
+  overflow-wrap: anywhere;
 }
 
 .input-mapping-v2__token-list {

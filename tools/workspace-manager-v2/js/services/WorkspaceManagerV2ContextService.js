@@ -20,6 +20,7 @@ const TEMPORARY_UAT_MANIFEST_PATH = "/tests/fixtures/workspace-v2/uat.manifest.j
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
   [COLLISION_INSPECTOR_V2_TOOL_KEY]: "tools/schemas/tools/collision-inspector-v2.schema.json",
+  [INPUT_MAPPING_V2_TOOL_KEY]: "tools/schemas/tools/input-mapping-v2.schema.json",
   [OBJECT_VECTOR_STUDIO_V2_TOOL_KEY]: "tools/schemas/tools/object-vector-studio-v2.schema.json",
   [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json",
   [TEXT2SPEECH_V2_TOOL_KEY]: "tools/schemas/tools/text2speech-V2.schema.json"
@@ -1803,6 +1804,12 @@ export class WorkspaceManagerV2ContextService {
         }
         if (toolId === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY && Array.isArray(payload?.objects)) {
           return `${toolId} objects=${payload.objects.length}`;
+        }
+        if (toolId === INPUT_MAPPING_V2_TOOL_KEY && Array.isArray(payload?.actions)) {
+          const inputCount = payload.actions.reduce((count, action) => (
+            count + (Array.isArray(action?.inputs) ? action.inputs.length : 0)
+          ), 0);
+          return `${toolId} actions=${payload.actions.length} inputs=${inputCount}`;
         }
         if (toolId === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(payload)) {
           return `${toolId} queue=${payload.length}`;

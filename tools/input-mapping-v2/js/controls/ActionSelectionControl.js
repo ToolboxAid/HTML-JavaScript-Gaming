@@ -33,6 +33,6 @@ export class ActionSelectionControl {
       option.selected = action.id === selectedActionId;
       return option;
     }));
-    this.actionHint.textContent = `${actions.length} actions available. Pause is not part of the default action set.`;
+    this.actionHint.textContent = `${actions.length} actions available. Actions are sorted alphabetically.`;
   }
 }

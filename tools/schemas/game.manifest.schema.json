@@ -95,6 +95,9 @@
         "palette-manager-v2": {
           "$ref": "tools/palette-manager-v2.schema.json"
         },
+        "input-mapping-v2": {
+          "$ref": "tools/input-mapping-v2.schema.json"
+        },
         "object-vector-studio-v2": {
           "$ref": "#/$defs/objectVectorStudioV2Payload"
         },

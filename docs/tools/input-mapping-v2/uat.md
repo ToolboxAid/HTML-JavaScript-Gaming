@@ -18,7 +18,8 @@
 ## Default Actions
 
 - Confirm the default actions include movement, confirm/cancel, fire, thrust, and rotation actions.
-- Confirm `Pause` is not present in the default action dropdown.
+- Confirm `Pause`, `Select`, and `Start` are present in the default action dropdown.
+- Confirm default actions are sorted alphabetically.
 
 ## Gamepad Capture
 

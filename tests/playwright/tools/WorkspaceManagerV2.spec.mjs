@@ -1391,6 +1391,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
   });
 
   test("launches Input Mapping V2 and captures keyboard mappings", async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 900 });
     const server = await openInputMappingV2(page);
     const pageErrors = [];
 
@@ -1404,17 +1405,45 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".tools-platform-frame__title[data-tool-id='input-mapping-v2']")).toHaveText("Input Mapping V2");
       await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
       await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
+      const fullscreenLayout = await page.locator(".input-mapping-v2.tool-starter.app-shell").evaluate((shell) => {
+        const left = shell.querySelector(".tool-starter__panel--left").getBoundingClientRect();
+        const center = shell.querySelector(".tool-starter__panel--center").getBoundingClientRect();
+        const right = shell.querySelector(".tool-starter__panel--right").getBoundingClientRect();
+        const shellBox = shell.getBoundingClientRect();
+        const rightAccordionHeights = Array.from(shell.querySelectorAll(".tool-starter__panel--right > .tool-starter__accordion"))
+          .map((accordion) => Math.round(accordion.getBoundingClientRect().height));
+        return {
+          centerWidth: Math.round(center.width),
+          leftX: Math.round(left.x),
+          rightGap: Math.round(window.innerWidth - right.right),
+          rightAccordionHeights,
+          shellWidth: Math.round(shellBox.width)
+        };
+      });
+      expect(fullscreenLayout.shellWidth).toBeGreaterThan(1800);
+      expect(fullscreenLayout.leftX).toBeLessThan(40);
+      expect(fullscreenLayout.rightGap).toBeLessThan(40);
+      expect(fullscreenLayout.centerWidth).toBeGreaterThan(1000);
+      expect(Math.max(...fullscreenLayout.rightAccordionHeights) - Math.min(...fullscreenLayout.rightAccordionHeights)).toBeLessThanOrEqual(3);
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + KeyboardState");
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + MouseState");
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + GamepadState + GamepadInputAdapter");
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("GamepadInputAdapter");
       const actionOptions = await page.locator("#inputMappingV2ActionSelect option").allTextContents();
-      expect(actionOptions).toEqual(expect.arrayContaining(["Move Left", "Confirm", "Cancel", "Fire", "Thrust", "Rotate Left", "Rotate Right"]));
-      expect(actionOptions).not.toContain("Pause");
+      expect(actionOptions).toEqual([...actionOptions].sort((left, right) => left.localeCompare(right)));
+      expect(actionOptions).toEqual(expect.arrayContaining(["Move Left", "Confirm", "Cancel", "Fire", "Thrust", "Rotate Left", "Rotate Right", "Pause", "Select", "Start"]));
+      await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
+      await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
+      expect(await page.locator("#previewOutput").evaluate((node) => getComputedStyle(node).overflowY)).toBe("auto");
+      expect(Math.round((await page.locator("#inputMappingV2CaptureKeyboardButton").boundingBox()).width)).toBe(150);
       await page.locator("#inputMappingV2ActionSelect").selectOption("moveLeft");
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
       await page.keyboard.press("KeyA");
+      await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(1);
+      const mappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
+      expect(Math.round(mappingTileBox.width)).toBe(175);
+      expect(Math.round(mappingTileBox.height)).toBe(175);
       await expect(page.locator("#previewOutput")).toContainText("Move Left");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyA");
       await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
@@ -1422,8 +1451,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" }).click();
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" })).toHaveCount(0);
       await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
+      const actionValues = await page.locator("#inputMappingV2ActionSelect option").evaluateAll((options) => options.map((option) => option.value));
+      for (const actionValue of actionValues.slice(0, 16)) {
+        await page.locator("#inputMappingV2ActionSelect").selectOption(actionValue);
+        await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+        await page.keyboard.press("KeyA");
+      }
+      const mappingListScroll = await page.locator("#previewOutput").evaluate((node) => ({
+        clientHeight: node.clientHeight,
+        overflowY: getComputedStyle(node).overflowY,
+        scrollHeight: node.scrollHeight
+      }));
+      expect(mappingListScroll.overflowY).toBe("auto");
+      expect(mappingListScroll.scrollHeight).toBeGreaterThan(mappingListScroll.clientHeight);
       await page.locator("#inputMappingV2CaptureGamepadButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Gamepad capture unavailable:/);
+      const asteroidsManifestInputMapping = await page.evaluate(async () => {
+        const response = await fetch("/games/Asteroids/game.manifest.json");
+        const manifest = await response.json();
+        return manifest.tools?.["input-mapping-v2"];
+      });
+      expect(asteroidsManifestInputMapping).toMatchObject({
+        $schema: "tools/schemas/tools/input-mapping-v2.schema.json",
+        engineInputModel: "src/engine/input/InputMap",
+        toolId: "input-mapping-v2",
+        version: 1
+      });
+      expect(asteroidsManifestInputMapping.actions.map((action) => action.label)).toEqual(actionOptions);
       await page.evaluate(() => {
         Object.defineProperty(navigator, "clipboard", {
           configurable: true,
@@ -10509,9 +10563,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(selectedGameHydration.schemaByTool["input-mapping-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "input-mapping-v2",
-        schemaRole: "workspace-launch-context"
+        schemaRole: "workspace-tool-payload",
+        schemaRef: "tools/schemas/tools/input-mapping-v2.schema.json"
       });
-      expect(selectedGameHydration.schemaByTool["input-mapping-v2"].schemaRef).toBeUndefined();
       expect(selectedGameHydration.schemaByTool["preview-generator-v2"].schemaRef).toBeUndefined();
       expect(selectedGameHydration.workspaceByTool["asset-manager-v2"]).toMatchObject({
         source: "workspace-manager-v2",
@@ -10533,6 +10587,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(selectedGameHydration.toolSessions["asset-manager-v2"].state).toBeUndefined();
       expect(JSON.stringify(selectedGameHydration.toolSessions)).not.toMatch(/getDirectoryHandle|createWritable|FileSystemDirectoryHandle/);
       expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(15);
+      expect(selectedGameHydration.dataByTool["input-mapping-v2"]).toMatchObject({
+        engineInputModel: "src/engine/input/InputMap",
+        toolId: "input-mapping-v2",
+        version: 1
+      });
+      expect(selectedGameHydration.dataByTool["input-mapping-v2"].actions.map((action) => action.label)).toEqual([
+        "Cancel",
+        "Confirm",
+        "Fire",
+        "Interact",
+        "Jump",
+        "Menu",
+        "Move Down",
+        "Move Left",
+        "Move Right",
+        "Move Up",
+        "Pause",
+        "Primary Action",
+        "Rotate Left",
+        "Rotate Right",
+        "Secondary Action",
+        "Select",
+        "Start",
+        "Thrust"
+      ]);
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
         "object.asteroids.bullet",
         "object.asteroids.ship",
@@ -10907,18 +10986,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
       expect(storedContext.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
       const schemaValidation = await page.evaluate(async () => {
-        const [paletteSchema, assetSchema, objectVectorSchema] = await Promise.all([
+        const [paletteSchema, assetSchema, inputMappingSchema, objectVectorSchema] = await Promise.all([
           fetch("/tools/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
           fetch("/tools/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/tools/schemas/tools/input-mapping-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
           fetch("/tools/schemas/tools/object-vector-studio-v2.schema.json", { cache: "no-store" }).then((response) => response.json())
         ]);
         const url = new URL(window.location.href);
         const manifest = JSON.parse(sessionStorage.getItem(url.searchParams.get("hostContextId")));
         const allowedManifestKeys = new Set(["schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "screen", "repoRoot", "repoPath", "tools"]);
         const requiredManifestKeys = ["schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"];
-        const allowedToolKeys = new Set(["palette-manager-v2", "asset-manager-v2", "object-vector-studio-v2", "collision-inspector-v2", "text2speech-V2"]);
+        const allowedToolKeys = new Set(["palette-manager-v2", "asset-manager-v2", "input-mapping-v2", "object-vector-studio-v2", "collision-inspector-v2", "text2speech-V2"]);
         const palettePayload = manifest.tools["palette-manager-v2"];
         const assetPayload = manifest.tools["asset-manager-v2"];
+        const inputMappingPayload = manifest.tools["input-mapping-v2"];
         const objectVectorPayload = manifest.tools["object-vector-studio-v2"];
         const extraKeys = (value, schema) => Object.keys(value).filter((key) => !Object.hasOwn(schema.properties || {}, key));
         const missingKeys = (value, schema) => (schema.required || []).filter((key) => !Object.hasOwn(value, key));
@@ -10931,6 +11012,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           assetExtraKeys: extraKeys(assetPayload, assetSchema),
           assetMissingKeys: missingKeys(assetPayload, assetSchema),
+          inputMappingActionLabels: inputMappingPayload.actions.map((action) => action.label),
+          inputMappingExtraKeys: extraKeys(inputMappingPayload, inputMappingSchema),
+          inputMappingMissingKeys: missingKeys(inputMappingPayload, inputMappingSchema),
           manifestExtraKeys: Object.keys(manifest).filter((key) => !allowedManifestKeys.has(key)),
           manifestMissingKeys: requiredManifestKeys.filter((key) => !Object.hasOwn(manifest, key)),
           objectVectorObjectTags: objectVectorPayload.objects.flatMap((object) => object.tags || []),
@@ -10950,6 +11034,28 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(schemaValidation).toMatchObject({
         assetExtraKeys: [],
         assetMissingKeys: [],
+          inputMappingActionLabels: [
+            "Cancel",
+            "Confirm",
+            "Fire",
+            "Interact",
+            "Jump",
+            "Menu",
+            "Move Down",
+            "Move Left",
+            "Move Right",
+            "Move Up",
+            "Pause",
+            "Primary Action",
+            "Rotate Left",
+            "Rotate Right",
+            "Secondary Action",
+            "Select",
+            "Start",
+            "Thrust"
+          ],
+          inputMappingExtraKeys: [],
+          inputMappingMissingKeys: [],
           manifestExtraKeys: [],
           manifestMissingKeys: [],
           objectVectorExtraKeys: [],
@@ -10971,7 +11077,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(schemaValidation.objectVectorPalette).toBeUndefined();
       expect(schemaValidation.objectVectorObjectTags).not.toContain("asteroids");
-      expect(schemaValidation.toolKeys).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2"]));
+      expect(schemaValidation.toolKeys).toEqual(expect.arrayContaining(["asset-manager-v2", "input-mapping-v2", "object-vector-studio-v2", "palette-manager-v2"]));
       expect(schemaValidation.toolKeys).not.toContain("vector-map-editor");
       if (schemaValidation.textToSpeechPayload !== undefined) {
         expect(schemaValidation.textToSpeechPayload).toEqual(expect.any(Array));
@@ -11415,7 +11521,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#saveWorkspaceButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.text2speech-V2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved Text to Speech V2 payload count: 0\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 4 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=10; text2speech-V2 queue=0\)\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 5 \(asset-manager-v2 assets=15; input-mapping-v2 actions=18 inputs=0; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=10; text2speech-V2 queue=0\)\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       const savedState = await page.evaluate((hostContextId) => {
         const writes = JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]");
@@ -11927,7 +12033,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved path: games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved file size: \d+ bytes\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:3 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11\)|4 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11; text2speech-V2 queue=(?:0|1)\))\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:4 \(asset-manager-v2 assets=15; input-mapping-v2 actions=18 inputs=0; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11\)|5 \(asset-manager-v2 assets=15; input-mapping-v2 actions=18 inputs=0; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11; text2speech-V2 queue=(?:0|1)\))\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 toolState context workspace-manager-v2-Asteroids\./);

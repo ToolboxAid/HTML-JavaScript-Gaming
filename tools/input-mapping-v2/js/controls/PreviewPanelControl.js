@@ -9,11 +9,12 @@ export class PreviewPanelControl {
   }
 
   render(actions) {
-    if (!actions.some((action) => action.inputs.length > 0)) {
+    const mappedActions = actions.filter((action) => action.inputs.length > 0);
+    if (!mappedActions.length) {
       this.output.replaceChildren(this.createEmptyState());
       return;
     }
-    this.output.replaceChildren(...actions.map((action) => this.createActionCard(action)));
+    this.output.replaceChildren(...mappedActions.map((action) => this.createActionCard(action)));
   }
 
   createActionCard(action) {
@@ -25,14 +26,7 @@ export class PreviewPanelControl {
 
     const tokens = document.createElement("div");
     tokens.className = "input-mapping-v2__token-list";
-    if (!action.inputs.length) {
-      const empty = document.createElement("span");
-      empty.className = "input-mapping-v2__empty-token";
-      empty.textContent = "Unmapped";
-      tokens.append(empty);
-    } else {
-      tokens.append(...action.inputs.map((input) => this.createInputToken(action.id, input)));
-    }
+    tokens.append(...action.inputs.map((input) => this.createInputToken(action.id, input)));
 
     card.append(title, tokens);
     return card;
