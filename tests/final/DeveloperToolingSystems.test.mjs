@@ -5,14 +5,12 @@ David Quesenberry
 DeveloperToolingSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import {
-  AssetBrowser,
-  DeveloperConsole,
-  LiveTuningService,
-  PropertyEditor,
-  RuntimeInspector,
-  SceneGraphViewer,
-} from '../../tools/shared/tooling/index.js';
+import AssetBrowser from '../../tools/shared/tooling/AssetBrowser.js';
+import DeveloperConsole from '../../tools/shared/tooling/DeveloperConsole.js';
+import LiveTuningService from '../../tools/shared/tooling/LiveTuningService.js';
+import PropertyEditor from '../../tools/shared/tooling/PropertyEditor.js';
+import RuntimeInspector from '../../tools/shared/tooling/RuntimeInspector.js';
+import SceneGraphViewer from '../../tools/shared/tooling/SceneGraphViewer.js';
 
 export async function run() {
   const consoleTool = new DeveloperConsole();
