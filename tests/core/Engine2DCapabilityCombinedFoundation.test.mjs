@@ -5,7 +5,7 @@ David Quesenberry
 Engine2DCapabilityCombinedFoundation.test.mjs
 */
 import assert from 'node:assert/strict';
-import { Engine } from '../../src/engine/core/index.js';
+import Engine from '../../src/engine/core/Engine.js';
 import Scene from '../../src/engine/scene/Scene.js';
 import Camera2D from '../../src/engine/camera/Camera2D.js';
 import { followCameraTarget, worldRectToScreen } from '../../src/engine/camera/CameraSystem.js';

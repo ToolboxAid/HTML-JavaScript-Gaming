@@ -5,7 +5,14 @@ David Quesenberry
 EngineCoreBoundaryBaseline.test.mjs
 */
 import assert from 'node:assert/strict';
-import * as core from '../../src/engine/core/index.js';
+import Engine from '../../src/engine/core/Engine.js';
+import FrameClock from '../../src/engine/core/FrameClock.js';
+import FixedTicker from '../../src/engine/core/FixedTicker.js';
+import RuntimeMetrics from '../../src/engine/core/RuntimeMetrics.js';
+import EventBus from '../../src/engine/events/EventBus.js';
+import Camera2D from '../../src/engine/camera/Camera2D.js';
+import Camera3D from '../../src/engine/camera/Camera3D.js';
+import { followCameraTarget, worldRectToScreen } from '../../src/engine/camera/CameraSystem.js';
 import Scene from '../../src/engine/scene/Scene.js';
 import SceneManager from '../../src/engine/scene/SceneManager.js';
 import CanvasRenderer from '../../src/engine/rendering/CanvasRenderer.js';
@@ -23,24 +30,24 @@ import { stepWorldPhysics3D } from '../../src/engine/systems/PhysicsSystem.js';
 
 export function run() {
   // Core boot/timing boundaries.
-  assert.equal(typeof core.Engine, 'function');
-  assert.equal(typeof core.FrameClock, 'function');
-  assert.equal(typeof core.FixedTicker, 'function');
-  assert.equal(typeof core.RuntimeMetrics, 'function');
+  assert.equal(typeof Engine, 'function');
+  assert.equal(typeof FrameClock, 'function');
+  assert.equal(typeof FixedTicker, 'function');
+  assert.equal(typeof RuntimeMetrics, 'function');
 
   // Scene/render/input/physics/audio/systems public homes.
-  assert.equal(typeof scene.Scene, 'function');
-  assert.equal(typeof scene.SceneManager, 'function');
-  assert.equal(typeof rendering.CanvasRenderer, 'function');
-  assert.equal(typeof rendering.renderByLayers, 'function');
+  assert.equal(typeof Scene, 'function');
+  assert.equal(typeof SceneManager, 'function');
+  assert.equal(typeof CanvasRenderer, 'function');
+  assert.equal(typeof renderByLayers, 'function');
   assert.equal(typeof InputService, 'function');
   assert.equal(typeof ActionInputService, 'function');
-  assert.equal(typeof physics.stepArcadeBody, 'function');
-  assert.equal(typeof physics.applyDrag, 'function');
-  assert.equal(typeof physics.integrateVelocity3D, 'function');
-  assert.equal(typeof physics.isAabbColliding3D, 'function');
-  assert.equal(typeof physics.resolveAabbCollision3D, 'function');
-  assert.equal(typeof physics.stepSceneBodies3D, 'function');
+  assert.equal(typeof stepArcadeBody, 'function');
+  assert.equal(typeof applyDrag, 'function');
+  assert.equal(typeof integrateVelocity3D, 'function');
+  assert.equal(typeof isAabbColliding3D, 'function');
+  assert.equal(typeof resolveAabbCollision3D, 'function');
+  assert.equal(typeof stepSceneBodies3D, 'function');
   assert.equal(typeof AudioService, 'function');
   assert.equal(typeof moveEntities, 'function');
   assert.equal(typeof moveEntities3D, 'function');
@@ -48,18 +55,18 @@ export function run() {
   assert.equal(typeof stepWorldPhysics3D, 'function');
 
   // Combined service cluster contracts: timing/frame, event routing, camera.
-  const frameClock = new core.FrameClock({ now: () => 100, maxDeltaMs: 100 });
+  const frameClock = new FrameClock({ now: () => 100, maxDeltaMs: 100 });
   frameClock.reset(100);
   const tick = frameClock.tick(116);
   assert.equal(tick.deltaMs, 16);
 
-  const ticker = new core.FixedTicker({ stepMs: 10, maxCatchUpSteps: 5 });
+  const ticker = new FixedTicker({ stepMs: 10, maxCatchUpSteps: 5 });
   const steps = [];
   const tickerResult = ticker.advance(25, (stepSeconds) => steps.push(stepSeconds));
   assert.equal(tickerResult.steps, 2);
   assert.deepEqual(steps, [0.01, 0.01]);
 
-  const bus = new core.EventBus();
+  const bus = new EventBus();
   let eventSeen = 0;
   bus.on('engine.core.boundary', () => {
     eventSeen += 1;
@@ -67,7 +74,7 @@ export function run() {
   assert.equal(bus.emit('engine.core.boundary', { ok: true }), 1);
   assert.equal(eventSeen, 1);
 
-  const camera = new core.Camera2D({
+  const camera = new Camera2D({
     x: 0,
     y: 0,
     viewportWidth: 100,
@@ -76,14 +83,14 @@ export function run() {
     worldHeight: 300,
   });
   const target = { x: 80, y: 50, width: 20, height: 20 };
-  core.followCameraTarget(camera, target, true);
-  const rect = core.worldRectToScreen(camera, { x: 100, y: 100, width: 10, height: 10 });
+  followCameraTarget(camera, target, true);
+  const rect = worldRectToScreen(camera, { x: 100, y: 100, width: 10, height: 10 });
   assert.equal(typeof rect.x, 'number');
   assert.equal(typeof rect.y, 'number');
   assert.equal(rect.width, 10);
   assert.equal(rect.height, 10);
 
-  const camera3D = new core.Camera3D({
+  const camera3D = new Camera3D({
     position: { x: 1, y: 2, z: 3 },
     rotation: { x: 0.1, y: 0.2, z: 0.3 },
   });
@@ -117,11 +124,11 @@ export function run() {
     depth: 2,
   };
 
-  physics.integrateVelocity3D(movingBody, 0.5);
+  integrateVelocity3D(movingBody, 0.5);
   assert.equal(movingBody.x, 3);
-  assert.equal(physics.isAabbColliding3D(movingBody, wallBody), true);
+  assert.equal(isAabbColliding3D(movingBody, wallBody), true);
 
-  const resolveResult = physics.resolveAabbCollision3D(movingBody, wallBody);
+  const resolveResult = resolveAabbCollision3D(movingBody, wallBody);
   assert.equal(resolveResult.collided, true);
   assert.equal(resolveResult.axis, 'x');
   assert.equal(movingBody.x, 2);
@@ -143,7 +150,7 @@ export function run() {
     ],
     staticColliders3D: [],
   };
-  const stepSummary = physics.stepSceneBodies3D(scene3D, 0.5);
+  const stepSummary = stepSceneBodies3D(scene3D, 0.5);
   assert.equal(stepSummary.movedBodies, 1);
   assert.equal(stepSummary.resolvedCollisions, 0);
   assert.equal(scene3D.bodies3D[0].x, 1);
@@ -152,7 +159,7 @@ export function run() {
   const before3D = world3D.getComponent(movingEntity, 'transform3D');
   assert.equal(before3D.x, 0);
   assert.equal(before3D.z, 8);
-  const physics3DSummary = systems.stepWorldPhysics3D(world3D, 1);
+  const physics3DSummary = stepWorldPhysics3D(world3D, 1);
   const after3D = world3D.getComponent(movingEntity, 'transform3D');
   const velocity3D = world3D.getComponent(movingEntity, 'velocity3D');
   assert.equal(physics3DSummary.movedEntities, 1);
