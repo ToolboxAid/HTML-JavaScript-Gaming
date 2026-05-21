@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { compressJson, decompressJson } from '../../src/engine/persistence/index.js';
 import { ReplaySystem } from '../../src/engine/replay/index.js';
 import { AchievementSystem } from '../../src/engine/world/index.js';
-import { LocalizationService } from '../../src/engine/localization/index.js';
+import LocalizationService from '../../src/engine/localization/LocalizationService.js';
 
 export function run() {
   const compressed = compressJson({ hp: 3, coins: 12 });

@@ -12,7 +12,7 @@ import { createWorkspaceSystemController } from "./projectSystem.js";
 import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.js";
 import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } from "./uiSafeUtils.js";
 import { escapeHtml } from "../../src/shared/string/strings.js";
-import { Logger } from "../../src/engine/logging/index.js";
+import Logger from "../../src/engine/logging/Logger.js";
 import {
   LocalStorageService,
   SessionStorageService

@@ -13,7 +13,7 @@ import {
   ReleaseValidationChecklist,
   SettingsSystem,
 } from '../../src/engine/release/index.js';
-import { Logger } from '../../src/engine/logging/index.js';
+import Logger from '../../src/engine/logging/Logger.js';
 import { StorageService } from '../../src/engine/persistence/index.js';
 
 class MemoryStorage {

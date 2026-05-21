@@ -8,7 +8,8 @@ import { Scene } from '/src/engine/scene/index.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { DisposableStore, ObjectPool } from '/src/engine/memory/index.js';
+import DisposableStore from '/src/engine/memory/DisposableStore.js';
+import ObjectPool from '/src/engine/memory/ObjectPool.js';
 
 const theme = new Theme(ThemeTokens);
 

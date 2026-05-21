@@ -10,7 +10,7 @@ import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { isColliding } from '/src/engine/collision/aabb.js';
-import { LevelLoader } from '/src/engine/level/index.js';
+import LevelLoader from '/src/engine/level/LevelLoader.js';
 import { levelData } from './levelData.js';
 
 const theme = new Theme(ThemeTokens);

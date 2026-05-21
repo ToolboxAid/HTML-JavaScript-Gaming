@@ -19,7 +19,7 @@ import {
   createRuntimeMonitoringHooks
 } from '../runtime/index.js';
 import { AudioService } from '../audio/index.js';
-import { Logger } from '../logging/index.js';
+import Logger from '../logging/Logger.js';
 import { SettingsSystem } from '../release/index.js';
 
 export default class Engine {

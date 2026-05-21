@@ -13,7 +13,8 @@ import { Tilemap, renderTilemap } from '../../src/engine/tilemap/index.js';
 import { isColliding } from '../../src/engine/collision/aabb.js';
 import { runHybridCollision } from '../../src/engine/collision/hybrid.js';
 import { moveRectWithTilemapCollision } from '../../src/engine/systems/index.js';
-import { GameModeState, runIfGameplayMode } from '../../src/engine/game/index.js';
+import GameModeState from '../../src/engine/game/GameModeState.js';
+import { runIfGameplayMode } from '../../src/engine/game/gameplayHooks.js';
 
 function createCanvasHarness() {
   const calls = [];

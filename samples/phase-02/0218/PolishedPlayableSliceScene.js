@@ -10,7 +10,7 @@ import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { renderByLayers, renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
-import { GameModeState } from '/src/engine/game/index.js';
+import GameModeState from '/src/engine/game/GameModeState.js';
 import { resolveInteraction } from '/src/engine/interaction/index.js';
 import { updatePatrolEntity, isWithinDetectionRange } from '/src/engine/ai/index.js';
 import { spawnProjectile, updateProjectiles } from '/src/engine/systems/index.js';

@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 AIStateController.js
 */
-import { StateMachine } from '../state/index.js';
+import StateMachine from '../state/StateMachine.js';
 
 export default class AIStateController {
   constructor({ initial = 'idle', states = {} } = {}) {

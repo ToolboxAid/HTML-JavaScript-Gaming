@@ -6,12 +6,13 @@ PlatformUxSystems.test.mjs
 */
 import assert from 'node:assert/strict';
 import { AudioService, MidiPlayer, FrequencyPlayer, Synthesizer, MediaTrackService, PlaylistManager } from '../../src/engine/audio/index.js';
-import { ParticleSystem } from '../../src/engine/fx/index.js';
+import ParticleSystem from '../../src/engine/fx/ParticleSystem.js';
 import { UIFramework } from '../../src/engine/ui/index.js';
 import InputContextService from '../../src/engine/input/InputContextService.js';
 import { SceneTransitionController } from '../../src/engine/scene/index.js';
 import { SaveSlotManager, StorageService, CookieStorageService } from '../../src/engine/persistence/index.js';
-import { Logger, ErrorBoundary } from '../../src/engine/logging/index.js';
+import Logger from '../../src/engine/logging/Logger.js';
+import ErrorBoundary from '../../src/engine/logging/ErrorBoundary.js';
 
 class MemoryStorage {
   constructor() {

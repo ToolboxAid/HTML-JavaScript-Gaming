@@ -8,7 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { ParticleSystem } from '/src/engine/fx/index.js';
+import ParticleSystem from '/src/engine/fx/ParticleSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

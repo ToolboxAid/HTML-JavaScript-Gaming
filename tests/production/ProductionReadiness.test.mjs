@@ -9,7 +9,7 @@ import ActionInputMap from '../../src/engine/input/ActionInputMap.js';
 import ActionInputService from '../../src/engine/input/ActionInputService.js';
 import ResolutionScaler from '../../src/engine/rendering/ResolutionScaler.js';
 import AssetOptimizer from '../../src/engine/assets/AssetOptimizer.js';
-import { ObjectPool } from '../../src/engine/memory/index.js';
+import ObjectPool from '../../src/engine/memory/ObjectPool.js';
 
 export async function run() {
   const map = new ActionInputMap({ jump: ['Space'] });
