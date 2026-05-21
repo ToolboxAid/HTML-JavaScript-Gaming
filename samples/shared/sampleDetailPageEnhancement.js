@@ -1,4 +1,4 @@
-import { isFiniteNumber } from './numberUtils.js';
+import { isFiniteNumber } from '../../src/shared/number/numbers.js';
 import { getToolRegistry } from '/tools/toolRegistry.js';
 
 const METADATA_URL = '/samples/metadata/samples.index.metadata.json';

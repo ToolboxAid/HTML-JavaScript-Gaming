@@ -6,7 +6,7 @@ NetworkSampleCScene.js
 */
 import Scene from '/src/engine/scene/Scene.js';
 import FakeDivergenceTraceNetworkModel from "./FakeDivergenceTraceNetworkModel.js";
-import { asPositiveNumber, isFiniteNumber } from "../../../shared/numberUtils.js";
+import { asPositiveNumber, isFiniteNumber } from "/src/shared/number/numbers.js";
 
 const VIEW_WIDTH = 960;
 const VIEW_HEIGHT = 720;

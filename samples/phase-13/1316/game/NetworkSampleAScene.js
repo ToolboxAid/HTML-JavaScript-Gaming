@@ -7,7 +7,7 @@ NetworkSampleAScene.js
 import Scene from '/src/engine/scene/Scene.js';
 import FakeLoopbackNetworkModel from "./FakeLoopbackNetworkModel.js";
 import { clamp } from "/src/shared/math/scalars.js";
-import { asPositiveNumber } from "../../../shared/numberUtils.js";
+import { asPositiveNumber } from "/src/shared/number/numbers.js";
 
 const VIEW_WIDTH = 960;
 const VIEW_HEIGHT = 720;

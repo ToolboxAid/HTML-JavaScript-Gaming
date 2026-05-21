@@ -8,8 +8,12 @@ import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
-import { isFiniteNumber } from '../../shared/numberUtils.js';
-import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '/samples/shared/worldSystems.js';
+import { isFiniteNumber } from '/src/shared/number/numbers.js';
+import { SpawnSystem } from '/samples/shared/worldSystems/SpawnSystem.js';
+import { LifecycleSystem } from '/samples/shared/worldSystems/LifecycleSystem.js';
+import { WorldStateSystem } from '/samples/shared/worldSystems/WorldStateSystem.js';
+import { EventsSystem } from '/samples/shared/worldSystems/EventsSystem.js';
+import { distanceSq } from '/samples/shared/worldSystems/distanceSq.js';
 
 const theme = new Theme(ThemeTokens);
 const ASTEROID_MIN_SPEED = 20;

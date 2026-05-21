@@ -12,7 +12,7 @@ import Camera2D from '/src/engine/camera/Camera2D.js';
 import { worldRectToScreen } from '/src/engine/camera/CameraSystem.js';
 import Tilemap from '/src/engine/tilemap/Tilemap.js';
 import { resolveRectVsTilemap } from '/src/engine/tilemap/TilemapCollision.js';
-import { isFiniteNumber } from '../../shared/numberUtils.js';
+import { isFiniteNumber } from '/src/shared/number/numbers.js';
 
 const theme = new Theme(ThemeTokens);
 const TILEMAP_PRESET_PATH = './sample.1208.tile-map-editor.json';

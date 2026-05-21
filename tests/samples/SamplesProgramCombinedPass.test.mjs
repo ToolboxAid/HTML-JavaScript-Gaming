@@ -16,7 +16,8 @@ const METADATA_ROOT = path.join(SAMPLES_ROOT, "metadata");
 const VALIDATION_ARTIFACTS_ROOT = path.join(REPO_ROOT, "tests", "validation");
 
 function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const text = fs.readFileSync(filePath, "utf8");
+  return JSON.parse(text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text);
 }
 
 function getExpectedPhases() {
@@ -62,16 +63,11 @@ function assertPhaseGrouping() {
 function assertSamplesSharedBoundary() {
   const canonicalSharedFiles = [
     "README.md",
-    "debugConfigUtils.js",
     "lateSampleBootstrap.js",
-    "networkDebugUtils.js",
-    "numberUtils.js",
     "platformerHelpers.js",
     "sampleBaseLayout.css",
     "sampleDetailPageEnhancement.js",
-    "snapshotCloneUtils.js",
     "worldGameStateSystem.js",
-    "worldSystems.js",
   ];
 
   for (const fileName of canonicalSharedFiles) {
@@ -82,13 +78,9 @@ function assertSamplesSharedBoundary() {
   const compatibilityShimsDir = path.join(SAMPLES_ROOT, "_shared");
   if (fs.existsSync(compatibilityShimsDir)) {
     const compatibilityShims = [
-      "debugConfigUtils.js",
       "lateSampleBootstrap.js",
-      "networkDebugUtils.js",
-      "numberUtils.js",
       "platformerHelpers.js",
       "sampleDetailPageEnhancement.js",
-      "snapshotCloneUtils.js",
     ];
     for (const fileName of compatibilityShims) {
       const shimPath = path.join(compatibilityShimsDir, fileName);

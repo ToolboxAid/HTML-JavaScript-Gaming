@@ -9,7 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import FakeLoopbackNetworkModel from "../game/FakeLoopbackNetworkModel.js";
-import { asPositiveInteger } from "../../../shared/numberUtils.js";
+import { asPositiveInteger } from "../../../../src/shared/number/numbers.js";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 4310;

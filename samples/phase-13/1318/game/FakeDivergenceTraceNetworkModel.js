@@ -6,7 +6,7 @@ FakeDivergenceTraceNetworkModel.js
 */
 import ReconciliationLayerAdapter from "./ReconciliationLayerAdapter.js";
 import { clamp } from "/src/shared/math/scalars.js";
-import { asPositiveNumber, isFiniteNumber } from "../../../shared/numberUtils.js";
+import { asPositiveNumber, isFiniteNumber } from "/src/shared/number/numbers.js";
 
 const MAX_TRACE_EVENTS = 160;
 const MAX_TIMELINE_EVENTS = 80;

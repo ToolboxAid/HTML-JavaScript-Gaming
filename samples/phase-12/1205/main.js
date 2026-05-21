@@ -8,7 +8,7 @@ import Engine from '/src/engine/core/Engine.js';
 import InputService from '/src/engine/input/InputService.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { resolveDebugConfig } from '../../shared/debugConfigUtils.js';
+import { resolveDebugConfig } from '/src/shared/debug/config.js';
 import { createSampleGameDevConsoleIntegration } from '../../../tools/dev/devConsoleIntegration.js';
 import MultiSystemDemoScene from './MultiSystemDemoScene.js';
 
@@ -49,4 +49,3 @@ engine.start();
 // Keep explicit palette JSON discoverable by audit tooling.
 const SAMPLE_1205_PALETTE_PATH = './sample.1205.palette.json';
 void SAMPLE_1205_PALETTE_PATH;
-

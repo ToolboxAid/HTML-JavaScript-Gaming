@@ -8,7 +8,7 @@ import Engine from "/src/engine/core/Engine.js";
 import InputService from "/src/engine/input/InputService.js";
 import { Theme } from "/src/engine/theme/Theme.js";
 import { ThemeTokens } from "/src/engine/theme/ThemeTokens.js";
-import { resolveDebugConfig } from "../../shared/debugConfigUtils.js";
+import { resolveDebugConfig } from "/src/shared/debug/config.js";
 import { createSampleGameDevConsoleIntegration } from "../../../tools/dev/devConsoleIntegration.js";
 import { createNetworkSampleCDebugPlugin } from "./debug/networkSampleCDebug.js";
 import NetworkSampleCScene from "./game/NetworkSampleCScene.js";

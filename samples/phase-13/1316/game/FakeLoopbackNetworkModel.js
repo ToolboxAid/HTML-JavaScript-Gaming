@@ -6,7 +6,7 @@ FakeLoopbackNetworkModel.js
 */
 
 import { clamp } from "../../../../src/shared/math/scalars.js";
-import { asPositiveNumber } from '../../../shared/numberUtils.js';
+import { asPositiveNumber } from '/src/shared/number/numbers.js';
 import { createLatencyModel } from "../../_shared/latencyModel.js";
 
 const MAX_TRACE_EVENTS = 80;
