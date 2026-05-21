@@ -11,6 +11,7 @@ export class EngineInputSourceService {
       getGamepads: () => this.readNavigatorGamepads()
     });
     this.gamepadAdapter = new GamepadInputAdapter({ input: this.inputService });
+    this.lastGamepadReadError = "";
   }
 
   attach() {
@@ -18,8 +19,8 @@ export class EngineInputSourceService {
   }
 
   sources() {
-    const gamepads = this.inputService.getGamepads();
-    const gamepadCount = gamepads.length;
+    const status = this.refreshGamepadState();
+    const gamepadCount = status.connectedCount;
     return [
       {
         name: "Keyboard",
@@ -33,12 +34,12 @@ export class EngineInputSourceService {
       },
       {
         name: "Gamepad Buttons",
-        detail: `${gamepadCount} connected gamepad${gamepadCount === 1 ? "" : "s"} detected for button capture.`,
+        detail: status.warning || `${gamepadCount} connected gamepad${gamepadCount === 1 ? "" : "s"} detected for button capture${status.connectedLabels ? `: ${status.connectedLabels}` : "."}`,
         engine: "InputService + GamepadState + GamepadInputAdapter"
       },
       {
         name: "Gamepad Axes",
-        detail: "Analog axes are reported when a connected gamepad axis crosses the capture threshold.",
+        detail: status.warning || "Analog axes are reported when a connected gamepad axis crosses the capture threshold.",
         engine: "GamepadInputAdapter"
       }
     ];
@@ -67,15 +68,21 @@ export class EngineInputSourceService {
     if (typeof this.window.navigator?.getGamepads !== "function") {
       return {
         ok: false,
-        message: "Gamepad capture unavailable: browser Gamepad API is not available in this context."
+        message: "Gamepad capture unavailable: browser Gamepad API is not available in this context. Use a focused browser tab that supports navigator.getGamepads."
       };
     }
-    this.inputService.update();
+    const status = this.refreshGamepadState();
+    if (status.warning) {
+      return {
+        ok: false,
+        message: status.warning
+      };
+    }
     const connectedIndices = this.gamepadAdapter.listConnectedIndices();
     if (!connectedIndices.length) {
       return {
         ok: false,
-        message: "Gamepad capture unavailable: connect a gamepad, press a button or move an axis, then capture again."
+        message: "Gamepad capture unavailable: no connected gamepad is visible. Click inside this page, press any gamepad button to wake or authorize the controller, check browser focus or permission prompts, then try again."
       };
     }
     for (const padIndex of connectedIndices) {
@@ -85,7 +92,7 @@ export class EngineInputSourceService {
         return {
           ok: true,
           input: {
-            source: "gamepad-button",
+            source: "gamepad",
             binding: `Pad${padIndex}:Button${buttonIndex}`,
             label: `Gamepad ${padIndex} Button ${buttonIndex}`,
             engine: "GamepadInputAdapter"
@@ -98,7 +105,7 @@ export class EngineInputSourceService {
         return {
           ok: true,
           input: {
-            source: "gamepad-axis",
+            source: "gamepad",
             binding: `Pad${padIndex}:Axis${axisIndex}${direction}`,
             label: `Gamepad ${padIndex} Axis ${axisIndex} ${direction}`,
             engine: "GamepadInputAdapter"
@@ -108,14 +115,46 @@ export class EngineInputSourceService {
     }
     return {
       ok: false,
-      message: "Gamepad capture unavailable: no pressed button or moved axis was visible from the Gamepad API."
+      message: "Gamepad capture unavailable: a connected gamepad was detected, but no live button or axis value was active. Hold a button or move a stick while pressing Capture Gamepad."
+    };
+  }
+
+  refreshGamepadState() {
+    this.inputService.update();
+    return this.gamepadStatus();
+  }
+
+  gamepadStatus() {
+    const gamepads = this.inputService.getGamepads();
+    const connectedLabels = gamepads
+      .map((gamepad) => `Gamepad ${gamepad.index}${gamepad.id ? ` ${gamepad.id}` : ""}`.trim())
+      .join(", ");
+    if (this.lastGamepadReadError) {
+      return {
+        connectedCount: 0,
+        connectedLabels: "",
+        message: "Gamepad API access blocked.",
+        warning: `Gamepad capture unavailable: browser focus, permission, or Gamepad API timing blocked live gamepad access (${this.lastGamepadReadError}). Click inside this page, press a gamepad button, allow browser permission if prompted, then try again.`
+      };
+    }
+    return {
+      connectedCount: gamepads.length,
+      connectedLabels,
+      message: `${gamepads.length} connected gamepad${gamepads.length === 1 ? "" : "s"} detected${connectedLabels ? `: ${connectedLabels}` : "."}`,
+      warning: ""
     };
   }
 
   readNavigatorGamepads() {
+    this.lastGamepadReadError = "";
     if (typeof this.window.navigator?.getGamepads !== "function") {
       return [];
     }
-    return Array.from(this.window.navigator.getGamepads() || []);
+    try {
+      return Array.from(this.window.navigator.getGamepads() || []);
+    } catch (error) {
+      this.lastGamepadReadError = error?.message || "unknown Gamepad API error";
+      return [];
+    }
   }
 }

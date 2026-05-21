@@ -1,34 +1,62 @@
 export class PreviewPanelControl {
   constructor(output) {
     this.output = output;
+    this.onChangeTileAction = () => {};
     this.onDeleteBinding = () => {};
   }
 
-  mount({ onDeleteBinding }) {
+  mount({ onChangeTileAction, onDeleteBinding }) {
+    this.onChangeTileAction = onChangeTileAction;
     this.onDeleteBinding = onDeleteBinding;
   }
 
   render(actions) {
-    const mappedActions = actions.filter((action) => action.inputs.length > 0);
-    if (!mappedActions.length) {
+    const visibleActions = actions.filter((action) => action.tileVisible || action.inputs.length > 0);
+    if (!visibleActions.length) {
       this.output.replaceChildren(this.createEmptyState());
       return;
     }
-    this.output.replaceChildren(...mappedActions.map((action) => this.createActionCard(action)));
+    this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action, actions)));
   }
 
-  createActionCard(action) {
+  createActionCard(action, actions) {
     const card = document.createElement("article");
     card.className = "input-mapping-v2__mapping-card";
 
-    const title = document.createElement("h2");
-    title.textContent = action.label;
+    const actionField = document.createElement("label");
+    actionField.className = "input-mapping-v2__tile-action-field";
+
+    const actionLabel = document.createElement("span");
+    actionLabel.textContent = "Captured Mappings Action";
+
+    const actionSelect = document.createElement("select");
+    actionSelect.className = "input-mapping-v2__tile-action-select";
+    actionSelect.dataset.inputMappingTileActionId = action.id;
+    actionSelect.append(...actions.map((entry) => {
+      const option = document.createElement("option");
+      option.value = entry.id;
+      option.textContent = entry.label;
+      option.selected = entry.id === action.id;
+      return option;
+    }));
+    actionSelect.addEventListener("change", () => {
+      this.onChangeTileAction({ actionId: action.id, nextActionId: actionSelect.value });
+    });
+
+    actionField.append(actionLabel, actionSelect);
 
     const tokens = document.createElement("div");
     tokens.className = "input-mapping-v2__token-list";
-    tokens.append(...action.inputs.map((input) => this.createInputToken(action.id, input)));
+    if (!action.inputs.length) {
+      const empty = document.createElement("span");
+      empty.className = "input-mapping-v2__empty-token";
+      empty.textContent = "No inputs captured.";
+      tokens.append(empty);
+    } else {
+      tokens.append(...action.inputs.map((input) => this.createInputToken(action.id, input)));
+    }
 
-    card.append(title, tokens);
+    card.append(actionField, tokens);
     return card;
   }
 

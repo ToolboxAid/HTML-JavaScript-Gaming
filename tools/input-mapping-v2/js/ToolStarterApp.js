@@ -26,6 +26,7 @@ export class ToolStarterApp {
     this.statusLog = statusLog;
     this.window = windowRef;
     this.captureMode = "";
+    this.handleGamepadConnectionChange = this.handleGamepadConnectionChange.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
   }
@@ -55,10 +56,13 @@ export class ToolStarterApp {
       onCaptureMouse: () => this.startMouseCapture()
     });
     this.engineInputSources.attach();
+    this.window.addEventListener("gamepadconnected", this.handleGamepadConnectionChange);
+    this.window.addEventListener("gamepaddisconnected", this.handleGamepadConnectionChange);
     this.window.addEventListener("keydown", this.handleKeyDown, true);
     this.window.addEventListener("mousedown", this.handleMouseDown, true);
     this.statusLog.mount();
     this.preview.mount({
+      onChangeTileAction: ({ actionId, nextActionId }) => this.changeTileAction(actionId, nextActionId),
       onDeleteBinding: ({ actionId, binding }) => this.deleteBinding(actionId, binding)
     });
     this.refreshActions();
@@ -73,6 +77,12 @@ export class ToolStarterApp {
 
   addAction(label) {
     const result = this.state.addAction(label);
+    this.statusLog[result.ok ? "ok" : "warn"](result.message);
+    this.refreshActions();
+  }
+
+  changeTileAction(actionId, nextActionId) {
+    const result = this.state.changeTileAction(actionId, nextActionId);
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
     this.refreshActions();
   }
@@ -131,6 +141,16 @@ export class ToolStarterApp {
       return;
     }
     this.addCapturedInput(result.input);
+  }
+
+  handleGamepadConnectionChange() {
+    const status = this.engineInputSources.refreshGamepadState();
+    if (status.warning) {
+      this.statusLog.warn(status.warning);
+    } else {
+      this.statusLog.ok(status.message);
+    }
+    this.refreshActions();
   }
 
   addCapturedInput(input) {

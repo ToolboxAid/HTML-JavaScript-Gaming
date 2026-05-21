@@ -12,13 +12,13 @@
 }
 
 .input-mapping-v2 #captureInputContent .input-mapping-v2__button-row {
-  grid-template-columns: repeat(2, 150px);
+  grid-template-columns: 1fr;
 }
 
 .input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
 .input-mapping-v2 #inputMappingV2CaptureMouseButton,
 .input-mapping-v2 #inputMappingV2CaptureGamepadButton {
-  width: 150px;
+  width: 100%;
 }
 
 .input-mapping-v2 .tool-starter__panel--center,
@@ -76,10 +76,17 @@
   overflow: auto;
 }
 
-.input-mapping-v2__mapping-card h2 {
-  margin: 0;
-  font-size: 1rem;
-  overflow-wrap: anywhere;
+.input-mapping-v2__tile-action-field {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.input-mapping-v2__tile-action-select {
+  width: 100%;
+  min-width: 0;
 }
 
 .input-mapping-v2__token-list {

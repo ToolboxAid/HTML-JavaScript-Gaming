@@ -34,7 +34,8 @@ export class InputMappingState {
     this.actionEntries = sortActions(this.defaultActions.map((action) => ({
       id: action.id,
       label: action.label,
-      inputs: []
+      inputs: [],
+      tileVisible: false
     })));
     this.selectedActionId = this.actionEntries[0]?.id ?? "";
     this.syncInputMap();
@@ -44,7 +45,8 @@ export class InputMappingState {
     return this.actionEntries.map((action) => ({
       id: action.id,
       label: action.label,
-      inputs: action.inputs.map((input) => ({ ...input }))
+      inputs: action.inputs.map((input) => ({ ...input })),
+      tileVisible: action.tileVisible === true
     }));
   }
 
@@ -64,19 +66,57 @@ export class InputMappingState {
 
   addAction(label) {
     const actionLabel = String(label || "").trim();
-    const actionId = normalizeActionId(actionLabel);
-    if (!actionId) {
-      return { ok: false, message: "Enter an action name before adding it." };
+    if (!actionLabel) {
+      return this.addTileForSelectedAction();
     }
+    const actionId = normalizeActionId(actionLabel);
     if (this.actionEntries.some((action) => action.id === actionId)) {
       this.selectedActionId = actionId;
-      return { ok: false, message: `${actionLabel} already exists and is now selected.` };
+      return this.addTileForSelectedAction();
     }
-    this.actionEntries.push({ id: actionId, label: actionLabel, inputs: [] });
+    this.actionEntries.push({ id: actionId, label: actionLabel, inputs: [], tileVisible: true });
     this.actionEntries = sortActions(this.actionEntries);
     this.selectedActionId = actionId;
     this.syncInputMap();
-    return { ok: true, message: `Added action ${actionLabel}.` };
+    return { ok: true, message: `Added empty mapping tile for ${actionLabel}.` };
+  }
+
+  addTileForSelectedAction() {
+    const action = this.selectedAction();
+    if (!action) {
+      return { ok: false, message: "Select an action before adding a mapping tile." };
+    }
+    action.tileVisible = true;
+    this.syncInputMap();
+    return { ok: true, message: `Added empty mapping tile for ${action.label}.` };
+  }
+
+  changeTileAction(actionId, nextActionId) {
+    const action = this.actionEntries.find((candidate) => candidate.id === actionId);
+    const nextAction = this.actionEntries.find((candidate) => candidate.id === nextActionId);
+    if (!action || !nextAction) {
+      return { ok: false, message: "Captured mapping tile action could not be changed because an action is missing." };
+    }
+    if (action.id === nextAction.id) {
+      this.selectedActionId = nextAction.id;
+      nextAction.tileVisible = true;
+      return { ok: true, message: `Captured mapping tile remains assigned to ${nextAction.label}.` };
+    }
+    const movedCount = action.inputs.length;
+    action.inputs.forEach((input) => {
+      if (!nextAction.inputs.some((candidate) => candidate.binding === input.binding)) {
+        nextAction.inputs.push({ ...input });
+      }
+    });
+    action.inputs = [];
+    action.tileVisible = false;
+    nextAction.tileVisible = true;
+    this.selectedActionId = nextAction.id;
+    this.syncInputMap();
+    return {
+      ok: true,
+      message: `Captured mapping tile changed from ${action.label} to ${nextAction.label}${movedCount ? ` with ${movedCount} input${movedCount === 1 ? "" : "s"}` : ""}.`
+    };
   }
 
   addBindingToSelectedAction(input) {
@@ -88,6 +128,7 @@ export class InputMappingState {
       return { ok: false, message: `${input.label} is already mapped to ${action.label}.` };
     }
     action.inputs.push({ ...input });
+    action.tileVisible = true;
     this.syncInputMap();
     return { ok: true, message: `${input.label} mapped to ${action.label}.` };
   }

@@ -1435,8 +1435,35 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
       expect(await page.locator("#previewOutput").evaluate((node) => getComputedStyle(node).overflowY)).toBe("auto");
-      expect(Math.round((await page.locator("#inputMappingV2CaptureKeyboardButton").boundingBox()).width)).toBe(150);
+      const captureButtonLayout = await page.locator("#captureInputContent").evaluate((content) => {
+        const buttons = [
+          content.querySelector("#inputMappingV2CaptureKeyboardButton"),
+          content.querySelector("#inputMappingV2CaptureMouseButton"),
+          content.querySelector("#inputMappingV2CaptureGamepadButton")
+        ];
+        return buttons.map((button) => {
+          const box = button.getBoundingClientRect();
+          return {
+            left: Math.round(box.left),
+            top: Math.round(box.top),
+            width: Math.round(box.width)
+          };
+        });
+      });
+      expect(captureButtonLayout.every((entry) => entry.width > 250)).toBe(true);
+      expect(new Set(captureButtonLayout.map((entry) => entry.left)).size).toBe(1);
+      expect(captureButtonLayout[1].top).toBeGreaterThan(captureButtonLayout[0].top);
+      expect(captureButtonLayout[2].top).toBeGreaterThan(captureButtonLayout[1].top);
       await page.locator("#inputMappingV2ActionSelect").selectOption("moveLeft");
+      await page.locator("#inputMappingV2AddActionButton").click();
+      await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(1);
+      await expect(page.locator(".input-mapping-v2__empty-token", { hasText: "No inputs captured." })).toHaveCount(1);
+      const emptyMappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
+      expect(Math.round(emptyMappingTileBox.width)).toBe(175);
+      expect(Math.round(emptyMappingTileBox.height)).toBe(175);
+      await page.locator(".input-mapping-v2__tile-action-select").first().selectOption("fire");
+      await expect(page.locator(".input-mapping-v2__tile-action-select").first()).toHaveValue("fire");
+      await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("fire");
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
       await page.keyboard.press("KeyA");
@@ -1444,18 +1471,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const mappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
       expect(Math.round(mappingTileBox.width)).toBe(175);
       expect(Math.round(mappingTileBox.height)).toBe(175);
-      await expect(page.locator("#previewOutput")).toContainText("Move Left");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyA");
-      await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
+      await expect(page.locator("#inspectorOutput")).toContainText('"action": "fire"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
       await page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" }).click();
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" })).toHaveCount(0);
-      await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
+      await expect(page.locator(".input-mapping-v2__empty-token", { hasText: "No inputs captured." })).toHaveCount(1);
       const actionValues = await page.locator("#inputMappingV2ActionSelect option").evaluateAll((options) => options.map((option) => option.value));
       for (const actionValue of actionValues.slice(0, 16)) {
         await page.locator("#inputMappingV2ActionSelect").selectOption(actionValue);
-        await page.locator("#inputMappingV2CaptureKeyboardButton").click();
-        await page.keyboard.press("KeyA");
+        await page.locator("#inputMappingV2AddActionButton").click();
       }
       const mappingListScroll = await page.locator("#previewOutput").evaluate((node) => ({
         clientHeight: node.clientHeight,
@@ -1466,6 +1491,28 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(mappingListScroll.scrollHeight).toBeGreaterThan(mappingListScroll.clientHeight);
       await page.locator("#inputMappingV2CaptureGamepadButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Gamepad capture unavailable:/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Click inside this page|browser focus|permission|Gamepad API timing|Hold a button/);
+      await page.evaluate(() => {
+        Object.defineProperty(navigator, "getGamepads", {
+          configurable: true,
+          value: () => [{
+            axes: [0, 0, 0, 0],
+            buttons: [{ pressed: true }, { pressed: false }],
+            connected: true,
+            id: "Mock Flight Stick",
+            index: 0,
+            mapping: "standard",
+            timestamp: 42
+          }]
+        });
+        window.dispatchEvent(new Event("gamepadconnected"));
+      });
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("1 connected gamepad");
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("Mock Flight Stick");
+      await page.locator("#inputMappingV2ActionSelect").selectOption("start");
+      await page.locator("#inputMappingV2CaptureGamepadButton").click();
+      await expect(page.locator("#previewOutput")).toContainText("Gamepad 0 Button 0");
+      await expect(page.locator("#inspectorOutput")).toContainText('"source": "gamepad"');
       const asteroidsManifestInputMapping = await page.evaluate(async () => {
         const response = await fetch("/games/Asteroids/game.manifest.json");
         const manifest = await response.json();
