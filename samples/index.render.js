@@ -58,7 +58,7 @@ function buildWorkspaceManagerSampleLaunchHref(sample) {
     return "";
   }
   const params = new URLSearchParams({
-    tool: "vector-map-editor",
+    tool: "world-vector-studio-v2",
     sampleId,
     sampleTitle: normalize(sample?.title) || "",
     samplePresetPath: presetPath

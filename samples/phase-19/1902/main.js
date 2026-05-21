@@ -9,7 +9,7 @@ const WORKSPACE_PATH = "/tools/Workspace%20Manager/index.html";
 
 function buildWorkspaceHref() {
   const params = new URLSearchParams({
-    tool: "vector-map-editor",
+    tool: "world-vector-studio-v2",
     sampleId: "1902",
     sampleTitle: "Workspace All Tools Integration",
     samplePresetPath: "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"

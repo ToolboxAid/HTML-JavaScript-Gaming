@@ -48,8 +48,8 @@ const TOOL_REGISTRY_BY_ID = new Map([
   ["sprite-editor", { displayName: "Sprite Editor", entryPoint: "Sprite Editor/index.html" }],
   ["tile-map-editor", { displayName: "Tilemap Studio", entryPoint: "Tilemap Studio/index.html" }],
   ["parallax-editor", { displayName: "Parallax Scene Studio", entryPoint: "Parallax Scene Studio/index.html" }],
-  ["vector-map-editor", { displayName: "Vector Map Editor", entryPoint: "Vector Map Editor/index.html" }],
-  ["svg-asset-studio", { displayName: "SVG Asset Studio", entryPoint: "SVG Asset Studio/index.html" }]
+  ["world-vector-studio-v2", { displayName: "World Vector Studio V2", entryPoint: "world-vector-studio-v2/index.html" }],
+  ["object-vector-studio-v2", { displayName: "Object Vector Studio V2", entryPoint: "object-vector-studio-v2/index.html" }]
 ]);
 
 function inferToolIdFromDocument(rawDocument) {
@@ -84,7 +84,7 @@ function inferToolIdFromDocument(rawDocument) {
     && Number.isFinite(Number(rawDocument.width))
     && Number.isFinite(Number(rawDocument.height))
   ) {
-    return "vector-map-editor";
+    return "world-vector-studio-v2";
   }
   return "";
 }

@@ -2222,17 +2222,17 @@
       "id": "1212",
       "phase": "12",
       "title": "Vector Map Overworld Route Preset",
-      "description": "Launches Vector Map Editor with the migrated Overworld Route preset.",
+      "description": "Launches World Vector Studio V2 with the migrated Overworld Route preset.",
       "href": "./phase-12/1212/index.html",
       "tags": ["vector", "map", "preset", "editor", "route", "tool"],
-      "engineClassesUsed": ["tools/vector-map-editor"],
-      "classValues": ["tools/vector-map-editor"],
-      "toolHints": ["vector-map-editor"],
+      "engineClassesUsed": ["tools/world-vector-studio-v2"],
+      "classValues": ["tools/world-vector-studio-v2"],
+      "toolHints": ["world-vector-studio-v2"],
       "thumbnail": "/samples/phase-12/1212/assets/images/preview.svg",
       "preview": "/samples/phase-12/1212/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "vector-map-editor",
+          "toolId": "world-vector-studio-v2",
           "presetPath": "/samples/phase-12/1212/sample-1212-vector-map-editor.json"
         }
       ]
@@ -2241,17 +2241,17 @@
       "id": "1213",
       "phase": "12",
       "title": "Vector Map Dungeon Layout Preset",
-      "description": "Launches Vector Map Editor with the migrated Dungeon Layout preset.",
+      "description": "Launches World Vector Studio V2 with the migrated Dungeon Layout preset.",
       "href": "./phase-12/1213/index.html",
       "tags": ["vector", "map", "preset", "editor", "dungeon", "tool"],
-      "engineClassesUsed": ["tools/vector-map-editor"],
-      "classValues": ["tools/vector-map-editor"],
-      "toolHints": ["vector-map-editor"],
+      "engineClassesUsed": ["tools/world-vector-studio-v2"],
+      "classValues": ["tools/world-vector-studio-v2"],
+      "toolHints": ["world-vector-studio-v2"],
       "thumbnail": "/samples/phase-12/1213/assets/images/preview.svg",
       "preview": "/samples/phase-12/1213/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "vector-map-editor",
+          "toolId": "world-vector-studio-v2",
           "presetPath": "/samples/phase-12/1213/sample-1213-vector-map-editor.json"
         }
       ]
@@ -2260,17 +2260,17 @@
       "id": "1214",
       "phase": "12",
       "title": "Vector Map Arena Zone Preset",
-      "description": "Launches Vector Map Editor with the migrated Arena Zone preset.",
+      "description": "Launches World Vector Studio V2 with the migrated Arena Zone preset.",
       "href": "./phase-12/1214/index.html",
       "tags": ["vector", "map", "preset", "editor", "arena", "tool"],
-      "engineClassesUsed": ["tools/vector-map-editor"],
-      "classValues": ["tools/vector-map-editor"],
-      "toolHints": ["vector-map-editor"],
+      "engineClassesUsed": ["tools/world-vector-studio-v2"],
+      "classValues": ["tools/world-vector-studio-v2"],
+      "toolHints": ["world-vector-studio-v2"],
       "thumbnail": "/samples/phase-12/1214/assets/images/preview.svg",
       "preview": "/samples/phase-12/1214/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "vector-map-editor",
+          "toolId": "world-vector-studio-v2",
           "presetPath": "/samples/phase-12/1214/sample-1214-vector-map-editor.json"
         }
       ]
@@ -2279,17 +2279,17 @@
       "id": "1215",
       "phase": "12",
       "title": "Vector Asset Sky Gradient Preset",
-      "description": "Launches SVG Asset Studio with the migrated Sky Gradient Scene preset.",
+      "description": "Launches Object Vector Studio V2 with the migrated Sky Gradient Scene preset.",
       "href": "./phase-12/1215/index.html",
       "tags": ["vector", "asset", "preset", "editor", "sky", "tool"],
-      "engineClassesUsed": ["tools/svg-asset-studio"],
-      "classValues": ["tools/svg-asset-studio"],
-      "toolHints": ["svg-asset-studio"],
+      "engineClassesUsed": ["tools/object-vector-studio-v2"],
+      "classValues": ["tools/object-vector-studio-v2"],
+      "toolHints": ["object-vector-studio-v2"],
       "thumbnail": "/samples/phase-12/1215/assets/images/preview.svg",
       "preview": "/samples/phase-12/1215/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "svg-asset-studio",
+          "toolId": "object-vector-studio-v2",
           "presetPath": "/samples/phase-12/1215/sample-1215-svg-asset-studio.json"
         }
       ]
@@ -2298,17 +2298,17 @@
       "id": "1216",
       "phase": "12",
       "title": "Vector Asset Mountain Range Preset",
-      "description": "Launches SVG Asset Studio with the migrated Mountain Range Scene preset.",
+      "description": "Launches Object Vector Studio V2 with the migrated Mountain Range Scene preset.",
       "href": "./phase-12/1216/index.html",
       "tags": ["vector", "asset", "preset", "editor", "mountain", "tool"],
-      "engineClassesUsed": ["tools/svg-asset-studio"],
-      "classValues": ["tools/svg-asset-studio"],
-      "toolHints": ["svg-asset-studio"],
+      "engineClassesUsed": ["tools/object-vector-studio-v2"],
+      "classValues": ["tools/object-vector-studio-v2"],
+      "toolHints": ["object-vector-studio-v2"],
       "thumbnail": "/samples/phase-12/1216/assets/images/preview.svg",
       "preview": "/samples/phase-12/1216/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "svg-asset-studio",
+          "toolId": "object-vector-studio-v2",
           "presetPath": "/samples/phase-12/1216/sample-1216-svg-asset-studio.json"
         }
       ]
@@ -2317,17 +2317,17 @@
       "id": "1217",
       "phase": "12",
       "title": "Vector Asset Mario Backdrop Preset",
-      "description": "Launches SVG Asset Studio with the migrated Mario Style Learning Backdrop preset.",
+      "description": "Launches Object Vector Studio V2 with the migrated Mario Style Learning Backdrop preset.",
       "href": "./phase-12/1217/index.html",
       "tags": ["vector", "asset", "preset", "editor", "mario", "tool"],
-      "engineClassesUsed": ["tools/svg-asset-studio"],
-      "classValues": ["tools/svg-asset-studio"],
-      "toolHints": ["svg-asset-studio"],
+      "engineClassesUsed": ["tools/object-vector-studio-v2"],
+      "classValues": ["tools/object-vector-studio-v2"],
+      "toolHints": ["object-vector-studio-v2"],
       "thumbnail": "/samples/phase-12/1217/assets/images/preview.svg",
       "preview": "/samples/phase-12/1217/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "svg-asset-studio",
+          "toolId": "object-vector-studio-v2",
           "presetPath": "/samples/phase-12/1217/sample-1217-svg-asset-studio.json"
         }
       ]

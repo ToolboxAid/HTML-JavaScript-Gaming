@@ -62,7 +62,7 @@ export function normalizeSvgToVectorAsset(options = {}) {
     path,
     type: "vector",
     paletteId: sanitizeVectorText(options.paletteId),
-    sourceTool: sanitizeVectorText(options.sourceTool) || "svg-asset-studio",
+    sourceTool: sanitizeVectorText(options.sourceTool) || "object-vector-studio-v2",
     source: {
       kind: "svg",
       path

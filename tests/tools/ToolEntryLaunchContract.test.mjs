@@ -7,8 +7,6 @@ import {
 
 const FIRST_CLASS_TOOL_INDEXES = Object.freeze([
   { toolId: "sprite-editor", indexPath: "../../tools/Sprite Editor/index.html" },
-  { toolId: "vector-map-editor", indexPath: "../../tools/Vector Map Editor/index.html" },
-  { toolId: "svg-asset-studio", indexPath: "../../tools/SVG Asset Studio/index.html" },
   { toolId: "tile-map-editor", indexPath: "../../tools/Tilemap Studio/index.html" },
   { toolId: "parallax-editor", indexPath: "../../tools/Parallax Scene Studio/index.html" },
   { toolId: "palette-manager-v2", indexPath: "../../tools/palette-manager-v2/index.html" },

@@ -31,14 +31,13 @@ This contract is enforced by:
   - `project`
   - `project.assetRefs`
 
-### Vector Map Editor
-- contractId: `tool-state.vector-map-editor/1`
-- normalized as tool-local object state.
+### World Vector Studio V2
+- contractId: `tool-state.world-vector-studio-v2/1`
+- normalized as tool-local world layout state.
 
-### SVG Asset Studio
-- contractId: `tool-state.svg-asset-studio/1`
-- normalized field:
-  - `selectedPaletteId` (string id normalization when present)
+### Object Vector Studio V2
+- contractId: `tool-state.object-vector-studio-v2/1`
+- normalized as tool-local vector asset state.
 
 ### Asset Browser
 - contractId: `tool-state.asset-browser/1`

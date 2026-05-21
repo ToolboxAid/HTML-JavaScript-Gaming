@@ -46,33 +46,6 @@ function buildUnavailableAdapter(toolId) {
   };
 }
 
-function createVectorMapAdapter() {
-  const api = readToolApi("vector-map-editor", "vectorMapEditorApp");
-  if (!api || typeof api.createHistorySnapshot !== "function" || typeof api.applyHistorySnapshot !== "function") {
-    return buildUnavailableAdapter("vector-map-editor");
-  }
-
-  return {
-    toolId: "vector-map-editor",
-    ready: true,
-    getProjectName() {
-      return safeString(api.documentModel?.getData?.().name, "Untitled Vector Map");
-    },
-    captureState() {
-      return {
-        snapshot: cloneValue(api.createHistorySnapshot()),
-        capturedAt: new Date().toISOString()
-      };
-    },
-    applyState(state) {
-      if (!state?.snapshot) {
-        return false;
-      }
-      return api.applyHistorySnapshot(cloneValue(state.snapshot)) === true;
-    }
-  };
-}
-
 function createTilemapAdapter() {
   const api = readToolApi("tile-map-editor", "tileMapStudioApp");
   if (!api || !api.documentModel) {
@@ -173,27 +146,6 @@ function createSpriteAdapter() {
   };
 }
 
-function createVectorAssetAdapter() {
-  const api = readToolApi("svg-asset-studio", "svgAssetStudioApp");
-  if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
-    return buildUnavailableAdapter("svg-asset-studio");
-  }
-
-  return {
-    toolId: "svg-asset-studio",
-    ready: true,
-    getProjectName() {
-      return safeString(api.getProjectName?.(), "Untitled Vector Asset");
-    },
-    captureState() {
-      return cloneValue(api.captureProjectState());
-    },
-    applyState(state) {
-      return api.applyProjectState(cloneValue(state)) === true;
-    }
-  };
-}
-
 function createPaletteManagerAdapter() {
   return buildUnavailableAdapter("palette-manager-v2");
 }
@@ -221,10 +173,6 @@ function createAssetPipelineAdapter() {
 
 export function getProjectAdapter(toolId) {
   switch (toolId) {
-    case "vector-map-editor":
-      return createVectorMapAdapter();
-    case "svg-asset-studio":
-      return createVectorAssetAdapter();
     case "tile-map-editor":
       return createTilemapAdapter();
     case "parallax-editor":

@@ -32,7 +32,7 @@ export async function run() {
         assetId: "vector.ship",
         runtimePath: "games/asteroids/assets/vectors/vector-ship.json",
         toolDataPath: "games/asteroids/assets/vectors/data/vector-ship-tool.json",
-        sourceToolId: "svg-asset-studio"
+        sourceToolId: "object-vector-studio-v2"
       },
       {
         domain: "sprites",

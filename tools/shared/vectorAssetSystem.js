@@ -131,7 +131,7 @@ export async function buildVectorAssetSystem(options = {}) {
 
   const reports = [
     createReport("info", "VECTOR_ASSET_SYSTEM_READY", "Vector assets integrate with validation, packaging, and runtime without engine core API changes."),
-    createReport("info", "VECTOR_AUTHORING_BRIDGE", "SVG Asset Studio uses the SVG-focused tool flow as the authoring bridge for normalized vector output.")
+    createReport("info", "VECTOR_AUTHORING_BRIDGE", "Object Vector Studio V2 is the active vector asset authoring bridge for normalized vector output.")
   ];
 
   return {

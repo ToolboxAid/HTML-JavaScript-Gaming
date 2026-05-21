@@ -14,6 +14,7 @@ const COLLISION_INSPECTOR_V2_TOOL_KEY = "collision-inspector-v2";
 const OBJECT_VECTOR_STUDIO_V2_TOOL_KEY = "object-vector-studio-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
+const WORLD_VECTOR_STUDIO_V2_TOOL_KEY = "world-vector-studio-v2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/tests/fixtures/workspace-v2/uat.manifest.json";
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
@@ -53,7 +54,8 @@ const WORKSPACE_CONTEXT_ALLOWED_TOOL_IDS = Object.freeze(new Set(Object.keys(TOO
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
   "storage-inspector-v2",
-  TEXT2SPEECH_V2_TOOL_KEY
+  TEXT2SPEECH_V2_TOOL_KEY,
+  WORLD_VECTOR_STUDIO_V2_TOOL_KEY
 ]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
@@ -83,6 +85,13 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     id: OBJECT_VECTOR_STUDIO_V2_TOOL_KEY,
     name: "Object Vector Studio V2",
     path: "../object-vector-studio-v2/index.html"
+  }),
+  Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Editors",
+    id: WORLD_VECTOR_STUDIO_V2_TOOL_KEY,
+    name: "World Vector Studio V2",
+    path: "../world-vector-studio-v2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),

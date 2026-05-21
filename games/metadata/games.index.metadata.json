@@ -279,7 +279,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["parallax-editor", "tile-map-editor", "svg-asset-studio"]
+      "toolsUsed": ["parallax-editor", "tile-map-editor", "object-vector-studio-v2"]
     },
     {
       "id": "DonkeyKong",
@@ -399,7 +399,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["world-vector-studio-v2", "svg-asset-studio", "tile-map-editor"]
+      "toolsUsed": ["world-vector-studio-v2", "object-vector-studio-v2", "tile-map-editor"]
     },
     {
       "id": "TicTacToe",

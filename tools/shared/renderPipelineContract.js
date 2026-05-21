@@ -57,7 +57,7 @@ export const TOOL_ENGINE_MAPPINGS = Object.freeze({
     allowedLayerKinds: Object.freeze(["sprite", "guide", "overlay"]),
     engineTargets: Object.freeze(["engine/animation", "engine/rendering", "engine/entity"]) 
   }),
-  "svg-asset-studio": Object.freeze({
+  "object-vector-studio-v2": Object.freeze({
     allowedLayerKinds: Object.freeze(["vector", "guide", "overlay"]),
     engineTargets: Object.freeze(["engine/rendering"]) 
   }),

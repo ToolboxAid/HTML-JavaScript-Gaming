@@ -145,7 +145,7 @@
         "palettePath": "samples/phase-14/1414/sample.1414.palette.json"
       }
     ],
-    "svg-asset-studio": [
+    "object-vector-studio-v2": [
       {
         "sampleId": "0901",
         "phase": "phase-09",
@@ -242,7 +242,7 @@
         "palettePath": "samples/phase-12/1209/sample.1209.palette.json"
       }
     ],
-    "vector-map-editor": [
+    "world-vector-studio-v2": [
       {
         "sampleId": "0901",
         "phase": "phase-09",

@@ -68,7 +68,7 @@ function createBaseWorkspaceShellState(locationLike = null) {
   };
 }
 
-function applySvgAssetStudioContract(state) {
+function applyObjectVectorStudioContract(state) {
   const nextState = { ...state, errors: [...state.errors] };
   nextState.contractType = "vectorAssetDocument";
 
@@ -77,7 +77,7 @@ function applySvgAssetStudioContract(state) {
     : null;
   if (!vectorAssetDocument) {
     nextState.assetLabel = "";
-    nextState.statusLabel = "SVG vector asset payload missing: payloadJson.vectorAssetDocument is required";
+    nextState.statusLabel = "Vector asset payload missing: payloadJson.vectorAssetDocument is required";
     nextState.errors.push("vectorAssetDocument missing");
     return nextState;
   }
@@ -86,7 +86,7 @@ function applySvgAssetStudioContract(state) {
   nextState.loaded = Boolean(svgText);
   if (!nextState.loaded) {
     nextState.assetLabel = "";
-    nextState.statusLabel = "SVG vector asset payload not loaded: vectorAssetDocument.svgText is required";
+    nextState.statusLabel = "Vector asset payload not loaded: vectorAssetDocument.svgText is required";
     nextState.errors.push("vectorAssetDocument.svgText missing");
     return nextState;
   }
@@ -116,10 +116,10 @@ export function readWorkspaceShellStateFromLocation(locationLike = null) {
     console.log("[WORKSPACE_SHELL_STATE]", stateWithPalette);
     return stateWithPalette;
   }
-  if (baseState.toolId === "svg-asset-studio") {
-    const svgState = applySvgAssetStudioContract(baseState);
-    console.log("[WORKSPACE_SHELL_STATE]", svgState);
-    return svgState;
+  if (baseState.toolId === "object-vector-studio-v2") {
+    const vectorState = applyObjectVectorStudioContract(baseState);
+    console.log("[WORKSPACE_SHELL_STATE]", vectorState);
+    return vectorState;
   }
 
   const stateWithPalette = applyPaletteContract(baseState);
@@ -135,7 +135,7 @@ function appendTextElement(parent, tagName, className, text) {
   return element;
 }
 
-function renderHostedSvgAssetBadge(state, headerHost) {
+function renderHostedVectorAssetBadge(state, headerHost) {
   const frame = document.createElement("section");
   frame.className = "tools-platform-frame";
   frame.setAttribute("data-workspace-shell", "hosted");
@@ -150,7 +150,7 @@ function renderHostedSvgAssetBadge(state, headerHost) {
 
   const copy = document.createElement("div");
   copy.className = "tools-platform-frame__summary-copy";
-  appendTextElement(copy, "h1", "tools-platform-frame__title tools-platform-frame__title--single-line", "SVG Asset Studio");
+  appendTextElement(copy, "h1", "tools-platform-frame__title tools-platform-frame__title--single-line", "Object Vector Studio V2");
   appendTextElement(copy, "p", "tools-platform-frame__description tools-platform-frame__description--single-line", state.statusLabel);
 
   const badges = document.createElement("div");
@@ -179,7 +179,7 @@ function renderWorkspaceShellStatus(state, statusHost) {
 
 function publishWorkspaceShellState(state) {
   if (!state.hosted || typeof window === "undefined" || window.parent === window) {
-    console.log("[SVG_POSTMESSAGE_SEND]", {
+    console.log("[VECTOR_ASSET_POSTMESSAGE_SEND]", {
       skipped: true,
       hosted: state.hosted,
       hasWindow: typeof window !== "undefined",
@@ -189,7 +189,7 @@ function publishWorkspaceShellState(state) {
     });
     return;
   }
-  console.log("[SVG_POSTMESSAGE_SEND]", {
+  console.log("[VECTOR_ASSET_POSTMESSAGE_SEND]", {
     skipped: false,
     type: "tools:workspace-shell-state",
     toolId: state.toolId,
@@ -215,12 +215,12 @@ export function renderWorkspaceShellFromLocation(locationLike = null, documentLi
   documentLike.body?.classList?.add("tools-platform-surface", "tools-platform-workspace-context");
 
   if (summaryElement instanceof HTMLElement) {
-    summaryElement.textContent = state.loaded ? `SVG Asset Studio - ${state.assetLabel}` : "SVG Asset Studio";
+    summaryElement.textContent = state.loaded ? `Object Vector Studio V2 - ${state.assetLabel}` : "Object Vector Studio V2";
     summaryElement.setAttribute("data-workspace-shell-summary", "1");
   }
 
-  if (headerHost instanceof HTMLElement && state.toolId === "svg-asset-studio") {
-    renderHostedSvgAssetBadge(state, headerHost);
+  if (headerHost instanceof HTMLElement && state.toolId === "object-vector-studio-v2") {
+    renderHostedVectorAssetBadge(state, headerHost);
   }
   if (statusHost instanceof HTMLElement) {
     renderWorkspaceShellStatus(state, statusHost);

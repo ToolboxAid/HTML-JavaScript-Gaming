@@ -7,8 +7,6 @@ const REPO_ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const ACTIVE_TOOL_FOLDERS = Object.freeze([
   "Tilemap Studio",
   "Parallax Scene Studio",
-  "Vector Map Editor",
-  "SVG Asset Studio",
   "Sprite Editor",
   "State Inspector",
   "Replay Visualizer",
@@ -85,14 +83,11 @@ export async function run() {
 
   const tilemapMain = readFileSync(path.join(toolsRoot, "Tilemap Studio", "main.js"), "utf8");
   const parallaxMain = readFileSync(path.join(toolsRoot, "Parallax Scene Studio", "main.js"), "utf8");
-  const vectorAssetMain = readFileSync(path.join(toolsRoot, "SVG Asset Studio", "main.js"), "utf8");
   const sharedHelper = readFileSync(path.join(toolsRoot, "shared", "toolSampleCatalog.js"), "utf8");
 
   assert.match(tilemapMain, /from "\.\.\/shared\/toolSampleCatalog\.js"/);
   assert.match(parallaxMain, /from "\.\.\/shared\/toolSampleCatalog\.js"/);
-  assert.match(vectorAssetMain, /from "\.\.\/shared\/toolSampleCatalog\.js"/);
   assert.doesNotMatch(tilemapMain, /function normalizeSamplePath\(/);
   assert.doesNotMatch(parallaxMain, /function normalizeSamplePath\(/);
-  assert.doesNotMatch(vectorAssetMain, /function normalizeSamplePath\(/);
   assert.match(sharedHelper, /export function normalizeToolSamplePath\(/);
 }

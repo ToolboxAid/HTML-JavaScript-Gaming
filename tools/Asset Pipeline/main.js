@@ -282,7 +282,7 @@ function appendDomainRecordsFromToolIntegration(domainInputs, manifest) {
   spriteIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.sprites, assetId, "sprite-editor"));
   tilemapIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.tilemaps, assetId, "tile-map-editor"));
   parallaxSourceIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.parallax, assetId, "parallax-editor"));
-  vectorIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.vectors, assetId, "svg-asset-studio"));
+  vectorIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.vectors, assetId, "object-vector-studio-v2"));
 }
 
 function normalizeCatalogPath(pathValue) {
@@ -355,7 +355,7 @@ function inferSourceToolIdForDomain(domain) {
     return "parallax-editor";
   }
   if (domain === ASSET_PIPELINE_DOMAINS.vectors) {
-    return "svg-asset-studio";
+    return "object-vector-studio-v2";
   }
   return "";
 }

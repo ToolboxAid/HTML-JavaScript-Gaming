@@ -32,7 +32,7 @@ export async function run() {
         { assetId: "parallax.background", sourceToolId: "parallax-editor" }
       ],
       vectors: [
-        { assetId: "vector.ship", sourceToolId: "svg-asset-studio" }
+        { assetId: "vector.ship", sourceToolId: "object-vector-studio-v2" }
       ]
     }
   });

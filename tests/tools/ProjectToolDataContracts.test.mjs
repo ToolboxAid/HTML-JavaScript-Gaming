@@ -38,7 +38,7 @@ export async function run() {
   const integration = buildProjectToolIntegration({
     "tile-map-editor": validTileState,
     "sprite-editor": { project: {} },
-    "svg-asset-studio": { selectedPaletteId: "palette.shared" }
+    "object-vector-studio-v2": { objects: [] }
   });
 
   assert.equal(integration.contractSummary.schema, TOOL_DATA_CONTRACT_SCHEMA);
@@ -51,9 +51,9 @@ export async function run() {
     integration.tools["sprite-editor"].contractIssues.includes("project.assetRefs block is required."),
     true
   );
-  assert.equal(integration.tools["svg-asset-studio"].contractStatus, "valid");
+  assert.equal(integration.tools["object-vector-studio-v2"].contractStatus, "valid");
   assert.deepEqual(integration.assetReferences.tilemapIds, ["tilemap.alpha"]);
   assert.deepEqual(integration.assetReferences.tilesetIds, ["tileset.alpha"]);
   assert.deepEqual(integration.assetReferences.parallaxSourceIds, ["parallax.alpha"]);
-  assert.deepEqual(integration.assetReferences.paletteIds, ["palette.shared"]);
+  assert.deepEqual(integration.assetReferences.paletteIds, []);
 }

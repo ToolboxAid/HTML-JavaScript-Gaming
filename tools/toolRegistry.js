@@ -2,42 +2,15 @@
 
 export const TOOL_REGISTRY = Object.freeze([
   {
-    id: "vector-map-editor",
-    name: "Vector Map Editor",
-    displayName: "Vector Map Editor",
-    shortDescription: "Deprecated: use World Vector Studio V2 for terrain, world geometry, layered scenes, and environment layout.",
-    shortLabel: "Map",
-    path: "Vector Map Editor",
-    folderName: "Vector Map Editor",
-    entryPoint: "Vector Map Editor/index.html",
-    description: "Deprecated: use World Vector Studio V2 for terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures.",
-    showcaseTag: "Geometry",
-    showcaseStatus: "Deprecated",
-    active: true,
-    legacy: true,
-    order: 1,
-    sampleEntryPoints: [
-      {
-        label: "How To Use",
-        path: "Vector Map Editor/how_to_use.html"
-      },
-      {
-        label: "Sample 1208 - Tool Formatted Tiles Parallax",
-        path: "../samples/phase-12/1208/index.html"
-      }
-    ],
-    visibleInToolsList: true
-  },
-  {
     id: "world-vector-studio-v2",
     name: "World Vector Studio V2",
     displayName: "World Vector Studio V2",
-    shortDescription: "Terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures.",
+    shortDescription: "Place assets, maps, layers, parallax, and scene/world layout.",
     shortLabel: "World",
     path: "world-vector-studio-v2",
     folderName: "world-vector-studio-v2",
     entryPoint: "world-vector-studio-v2/index.html",
-    description: "Terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures.",
+    description: "Place assets, maps, layers, parallax, and scene/world layout for terrain, environments, camera/spawn zones, and world composition.",
     showcaseTag: "World Vectors",
     showcaseStatus: "Template Copied",
     active: true,
@@ -55,12 +28,12 @@ export const TOOL_REGISTRY = Object.freeze([
     id: "object-vector-studio-v2",
     name: "Object Vector Studio V2",
     displayName: "Object Vector Studio V2",
-    shortDescription: "Ships, enemies, pickups, actors, and reusable gameplay entities.",
+    shortDescription: "Build vector assets for ships, enemies, pickups, actors, UI elements, and reusable game objects.",
     shortLabel: "Object",
     path: "object-vector-studio-v2",
     folderName: "object-vector-studio-v2",
     entryPoint: "object-vector-studio-v2/index.html",
-    description: "Ships, enemies, pickups, actors, and reusable gameplay entities.",
+    description: "Build vector assets for ships, enemies, pickups, actors, UI elements, and reusable game objects.",
     showcaseTag: "Object Vectors",
     showcaseStatus: "Template Copied",
     active: true,
@@ -70,33 +43,6 @@ export const TOOL_REGISTRY = Object.freeze([
       {
         label: "README",
         path: "object-vector-studio-v2/README.md"
-      }
-    ],
-    visibleInToolsList: true
-  },
-  {
-    id: "svg-asset-studio",
-    name: "SVG Asset Studio",
-    displayName: "SVG Asset Studio",
-    shortDescription: "Create and edit reusable vector (SVG) assets. Build shapes, icons, and asset components.",
-    shortLabel: "Asset",
-    path: "SVG Asset Studio",
-    folderName: "SVG Asset Studio",
-    entryPoint: "SVG Asset Studio/index.html",
-    description: "Create and edit reusable vector (SVG) assets. Build shapes, icons, and asset components.",
-    showcaseTag: "Vector Assets",
-    showcaseStatus: "SVG Contract Ready",
-    active: true,
-    legacy: false,
-    order: 2,
-    sampleEntryPoints: [
-      {
-        label: "Sample Manifest",
-        path: "SVG Asset Studio/samples/sample-manifest.json"
-      },
-      {
-        label: "Sample 1208 - Tool Formatted Tiles Parallax",
-        path: "../samples/phase-12/1208/index.html"
       }
     ],
     visibleInToolsList: true

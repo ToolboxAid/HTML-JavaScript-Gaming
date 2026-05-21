@@ -5,7 +5,7 @@
   "name": "Starter Project Template",
   "createdAt": "2026-04-05T00:00:00.000Z",
   "updatedAt": "2026-04-05T00:00:00.000Z",
-  "activeToolId": "vector-map-editor",
+  "activeToolId": "world-vector-studio-v2",
   "dirty": false,
   "sharedReferences": {
     "asset": {
@@ -13,7 +13,7 @@
       "type": "vector",
       "displayName": "Template Player Vector",
       "sourcePath": "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
-      "sourceToolId": "svg-asset-studio",
+      "sourceToolId": "object-vector-studio-v2",
       "updatedAt": "2026-04-05T00:00:00.000Z",
       "metadata": {
         "validationRole": "vector"
@@ -38,7 +38,7 @@
         "type": "vector",
         "displayName": "Template Player Vector",
         "sourcePath": "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
-        "sourceToolId": "svg-asset-studio"
+        "sourceToolId": "object-vector-studio-v2"
       },
       {
         "id": "tilemap.template.arena",
@@ -73,7 +73,7 @@
     ]
   },
   "tools": {
-    "vector-map-editor": {
+    "world-vector-studio-v2": {
       "snapshot": {
         "documentData": {
           "schema": "toolbox.vector-map/1",
@@ -93,7 +93,7 @@
       },
       "linkedAssetIds": ["vector.template.player", "tilemap.template.arena", "parallax.template.backdrop", "sprite.asteroids-demo"]
     },
-    "svg-asset-studio": {
+    "object-vector-studio-v2": {
       "documentName": "starter-backdrop",
       "svgText": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1600\" height=\"900\" viewBox=\"0 0 1600 900\" data-editor-palette-id=\"vector-native-primary\" data-editor-paint=\"#6FD3FF\" data-editor-stroke=\"#E8F0FF\" data-editor-stroke-width=\"2\"><rect id=\"starter-bg\" x=\"0\" y=\"0\" width=\"1600\" height=\"900\" fill=\"#05070D\" stroke=\"#05070D\"/><circle id=\"starter-orbit\" cx=\"800\" cy=\"450\" r=\"180\" fill=\"none\" stroke=\"#6FD3FF\" stroke-width=\"4\"/><polygon id=\"starter-ship\" points=\"800,320 860,520 800,470 740,520\" fill=\"#E8F0FF\" stroke=\"#6FD3FF\" stroke-width=\"3\"/></svg>",
       "canvasWidth": 1600,
@@ -385,7 +385,7 @@
     }
   },
   "workspace": {
-    "lastOpenTool": "vector-map-editor",
+    "lastOpenTool": "world-vector-studio-v2",
     "notes": "Single starter template proving shared asset and palette references across the active first-class tools without adding gameplay or samples to tools/index.html."
   },
   "migration": {

@@ -121,7 +121,7 @@ export async function run() {
 
   const parallaxDoc = createAssetDocument("parallax-editor", "parallax.scene", createLayer("parallax", "layer.parallax", 5, ""));
   const tilemapDoc = createAssetDocument("tile-map-editor", "tilemap.scene", createLayer("tilemap", "layer.tilemap", 0, ""));
-  const vectorDoc = createAssetDocument("svg-asset-studio", "vector.scene", createLayer("vector", "layer.vector", 0, ""));
+  const vectorDoc = createAssetDocument("object-vector-studio-v2", "vector.scene", createLayer("vector", "layer.vector", 0, ""));
 
   const compositionDoc = {
     documentType: COMPOSITION_DOCUMENT_TYPE,

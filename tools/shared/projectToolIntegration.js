@@ -9,8 +9,8 @@ const TOOL_DATA_CONTRACT_IDS = Object.freeze({
   "tile-map-editor": "tool-state.tile-map-editor/1",
   "parallax-editor": "tool-state.parallax-editor/1",
   "sprite-editor": "tool-state.sprite-editor/1",
-  "vector-map-editor": "tool-state.vector-map-editor/1",
-  "svg-asset-studio": "tool-state.svg-asset-studio/1"
+  "world-vector-studio-v2": "tool-state.world-vector-studio-v2/1",
+  "object-vector-studio-v2": "tool-state.object-vector-studio-v2/1"
 });
 
 function normalizeId(value) {
@@ -195,14 +195,6 @@ export function normalizeToolStateForProjectManifest(toolId, rawState) {
     return nextState;
   }
 
-  if (safeToolId === "svg-asset-studio") {
-    const nextState = cloneValue(state);
-    if (Object.prototype.hasOwnProperty.call(nextState, "selectedPaletteId")) {
-      nextState.selectedPaletteId = normalizeId(nextState.selectedPaletteId);
-    }
-    return nextState;
-  }
-
   return cloneValue(state);
 }
 
@@ -287,11 +279,6 @@ export function extractToolAssetReferences(toolId, rawState) {
     addAssetRef(refs, "tilesetIds", assetRefs.tilesetId);
     addAssetRef(refs, "tilemapIds", assetRefs.tilemapId);
     addAssetRefList(refs, "parallaxSourceIds", assetRefs.parallaxSourceIds);
-    return refs;
-  }
-
-  if (safeToolId === "svg-asset-studio") {
-    addAssetRef(refs, "paletteIds", state?.selectedPaletteId);
     return refs;
   }
 

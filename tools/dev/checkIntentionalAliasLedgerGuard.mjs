@@ -9,8 +9,7 @@ const ignoredDirNames = new Set(["node_modules", ".git", "tmp", "results", "gene
 const ignoredPathFragments = [
   "docs/dev/reports/",
   "docs/archive/",
-  "tests/results/",
-  "tools/Vector Map Editor/"
+  "tests/results/"
 ];
 
 function toPosix(value) {

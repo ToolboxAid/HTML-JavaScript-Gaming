@@ -59,24 +59,6 @@ export async function run() {
     /right-sidebar tools-platform-resize-panel/
   ]);
 
-  assertIncludesAll("tools/SVG Asset Studio/index.html", [
-    /tools-platform-control-cluster--primary/,
-    /tools-platform-control-cluster--workflow/,
-    /tools-platform-control-cluster--preview/,
-    /workspace tools-platform-layout-grid/,
-    /left-sidebar tools-platform-resize-panel/,
-    /right-sidebar tools-platform-resize-panel/
-  ]);
-
-  assertIncludesAll("tools/Vector Map Editor/index.html", [
-    /tools-platform-control-cluster--primary/,
-    /tools-platform-control-cluster--workflow/,
-    /tools-platform-control-cluster--preview/,
-    /sidebar tools-platform-resize-panel/,
-    /rightbar tools-platform-resize-panel/,
-    /dock hidden tools-platform-dock-panel/
-  ]);
-
   assertIncludesAll("tools/Tool Host/index.html", [
     /meta tools-platform-control-row/,
     /tools-platform-dock-panel/

@@ -6,8 +6,8 @@ Define the shared asset and shared palette handoff contract for first-class tool
 This contract keeps tools on shared references by default instead of creating hidden tool-private copies of assets or palettes.
 
 ## In-Scope Tools
-- `Vector Map Editor`
-- `SVG Asset Studio`
+- `World Vector Studio V2`
+- `Object Vector Studio V2`
 - `Tilemap Studio`
 - `Parallax Scene Studio`
 - `Sprite Editor`
@@ -64,7 +64,7 @@ Normalized shape:
   "metadata": {
     "category": "Vector Assets"
   },
-  "sourceToolId": "vector-map-editor",
+  "sourceToolId": "object-vector-studio-v2",
   "selectedAt": "2026-04-05T00:00:00.000Z"
 }
 ```

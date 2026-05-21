@@ -71,9 +71,8 @@ export async function run() {
   assert.match(schemaServiceText, /root\.vectorMaps is deprecated legacy vector-map data/);
   assert.match(schemaServiceText, /objects\[\]\.tags and root\.objects\[\]\.shapes only/);
 
-  const vectorMapEditor = getToolById("vector-map-editor");
-  assert.equal(vectorMapEditor.legacy, true, "Vector Map Editor must be marked legacy in the active registry.");
-  assert.match(vectorMapEditor.shortDescription, /^Deprecated:/);
+  assert.equal(getToolById("vector-map-editor"), null, "Deprecated Vector Map Editor must be removed from the active registry.");
+  assert.ok(getToolById("world-vector-studio-v2"), "World Vector Studio V2 must replace Vector Map Editor in the active registry.");
 
   const objectVectorPayload = asteroidsObjectVectorPayload();
   assert.deepEqual(Object.keys(objectVectorPayload).sort(), ["name", "objects", "toolId", "version"]);

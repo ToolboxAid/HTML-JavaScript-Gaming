@@ -64,6 +64,9 @@ export class ToolTilesControl {
     if (tool.id === "object-vector-studio-v2") {
       return `${objectVectorCount} object vector assets`;
     }
+    if (tool.id === "world-vector-studio-v2") {
+      return "Assets, maps, layers, parallax, and scene/world layout";
+    }
     if (tool.id === "collision-inspector-v2") {
       return `${objectVectorCount} inspectable objects`;
     }

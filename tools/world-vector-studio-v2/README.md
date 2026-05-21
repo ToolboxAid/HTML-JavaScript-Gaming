@@ -1,6 +1,6 @@
 # World Vector Studio V2
 
-World Vector Studio V2 is the vector authoring surface for terrain, maps, tile/world geometry, layered scenes, parallax, environment composition, collision/world regions, level layout, spawn placement, and camera zones.
+World Vector Studio V2 is the vector authoring surface for placing assets, maps, layers, parallax, and scene/world layout across terrain, tile/world geometry, environment composition, collision/world regions, level layout, spawn placement, and camera zones.
 
 Tagline: "Build the place."
 
@@ -29,8 +29,8 @@ Object Vector Studio V2 asset references are read-only inside World Vector Studi
 
 ## Migration Direction
 
-- Vector Map Editor remains deprecated compatibility during the transition.
-- SVG Asset Studio functionality moves toward Object Vector Studio V2, not World Vector Studio V2.
+- World Vector Studio V2 replaces Vector Map Editor for current map, layer, parallax, and world layout work.
+- Object Vector Studio V2 replaces SVG Asset Studio for current vector asset authoring.
 
 ## Examples
 

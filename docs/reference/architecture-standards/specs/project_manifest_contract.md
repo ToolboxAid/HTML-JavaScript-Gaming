@@ -17,15 +17,15 @@
   "name": "Untitled Project",
   "createdAt": "2026-04-05T12:00:00.000Z",
   "updatedAt": "2026-04-05T12:00:00.000Z",
-  "activeToolId": "vector-map-editor",
+  "activeToolId": "world-vector-studio-v2",
   "dirty": false,
   "sharedReferences": {
     "asset": null,
     "palette": null
   },
   "tools": {
-    "vector-map-editor": {},
-    "svg-asset-studio": {},
+    "world-vector-studio-v2": {},
+    "object-vector-studio-v2": {},
     "tile-map-editor": {},
     "parallax-editor": {},
     "sprite-editor": {},
@@ -33,7 +33,7 @@
     "palette-browser": {}
   },
   "workspace": {
-    "lastOpenTool": "vector-map-editor",
+    "lastOpenTool": "world-vector-studio-v2",
     "notes": ""
   },
   "migration": {
@@ -73,8 +73,8 @@
 - Migration metadata must record source version and applied migration labels
 
 ## Active tool coverage
-- Vector Map Editor
-- SVG Asset Studio
+- World Vector Studio V2
+- Object Vector Studio V2
 - Tilemap Studio
 - Parallax Scene Studio
 - Sprite Editor
