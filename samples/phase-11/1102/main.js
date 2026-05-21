@@ -7,7 +7,7 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { AccessibilityOptions } from '/src/engine/release/index.js';
+import AccessibilityOptions from '/src/engine/release/AccessibilityOptions.js';
 import AccessibilityOptionsScene from './AccessibilityOptionsScene.js';
 
 const theme = new Theme(ThemeTokens);

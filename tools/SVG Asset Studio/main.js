@@ -4,7 +4,7 @@ David Quesenberry
 03/30/2026
 main.js
 */
-import { downloadTextFile, readFileText } from "../../src/engine/persistence/index.js";
+import { downloadTextFile, readFileText } from '../../src/engine/persistence/FilePersistenceService.js';
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import {
   getToolLoadQuerySnapshot,

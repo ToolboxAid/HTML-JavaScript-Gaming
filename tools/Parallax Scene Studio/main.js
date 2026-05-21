@@ -15,7 +15,7 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../shared/projectAssetRegistry.js";
-import { downloadTextFile, readFileText } from "../../src/engine/persistence/index.js";
+import { downloadTextFile, readFileText } from '../../src/engine/persistence/FilePersistenceService.js';
 import { registerAssetPipelineCandidate } from "../shared/assetPipelineFoundation.js";
 import {
   getBlockingAssetValidationMessage,

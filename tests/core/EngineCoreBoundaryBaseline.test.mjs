@@ -11,7 +11,7 @@ import * as rendering from '../../src/engine/rendering/index.js';
 import InputService from '../../src/engine/input/InputService.js';
 import ActionInputService from '../../src/engine/input/ActionInputService.js';
 import * as physics from '../../src/engine/physics/index.js';
-import * as audio from '../../src/engine/audio/index.js';
+import AudioService from '../../src/engine/audio/AudioService.js';
 import * as systems from '../../src/engine/systems/index.js';
 
 export function run() {
@@ -34,7 +34,7 @@ export function run() {
   assert.equal(typeof physics.isAabbColliding3D, 'function');
   assert.equal(typeof physics.resolveAabbCollision3D, 'function');
   assert.equal(typeof physics.stepSceneBodies3D, 'function');
-  assert.equal(typeof audio.AudioService, 'function');
+  assert.equal(typeof AudioService, 'function');
   assert.equal(typeof systems.moveEntities, 'function');
   assert.equal(typeof systems.moveEntities3D, 'function');
   assert.equal(typeof systems.stepArcadeBody, 'function');

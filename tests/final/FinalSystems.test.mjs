@@ -5,8 +5,8 @@ David Quesenberry
 FinalSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import { compressJson, decompressJson } from '../../src/engine/persistence/index.js';
-import { ReplaySystem } from '../../src/engine/replay/index.js';
+import { compressJson, decompressJson } from '../../src/engine/persistence/CompressionService.js';
+import ReplaySystem from '../../src/engine/replay/ReplaySystem.js';
 import { AchievementSystem } from '../../src/engine/world/index.js';
 import LocalizationService from '../../src/engine/localization/LocalizationService.js';
 

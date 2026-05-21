@@ -1,8 +1,6 @@
 import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
-import {
-  LocalStorageService,
-  SessionStorageService
-} from "../../src/engine/persistence/index.js";
+import LocalStorageService from '../../src/engine/persistence/LocalStorageService.js';
+import SessionStorageService from '../../src/engine/persistence/SessionStorageService.js';
 import {
   createStateInspectorSnapshot,
   safeParseJson,

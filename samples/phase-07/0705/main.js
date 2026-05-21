@@ -7,7 +7,10 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { AssetLoaderSystem, AssetOptimizer, AssetRegistry, ImageAssetLoader } from '/src/engine/assets/index.js';
+import AssetLoaderSystem from '/src/engine/assets/AssetLoaderSystem.js';
+import AssetOptimizer from '/src/engine/assets/AssetOptimizer.js';
+import AssetRegistry from '/src/engine/assets/AssetRegistry.js';
+import ImageAssetLoader from '/src/engine/assets/ImageAssetLoader.js';
 import AssetOptimizationScene from './AssetOptimizationScene.js';
 
 const theme = new Theme(ThemeTokens);

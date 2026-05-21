@@ -11,10 +11,7 @@ import {
   transformObjectVectorShapePoint,
   ObjectVectorRuntimeAssetService
 } from "../../../src/engine/rendering/index.js";
-import {
-  downloadTextFile,
-  readFileText
-} from "../../../src/engine/persistence/index.js";
+import { downloadTextFile, readFileText } from '../../../src/engine/persistence/FilePersistenceService.js';
 import { isPlainObject } from "../../../src/shared/object/objects.js";
 
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";

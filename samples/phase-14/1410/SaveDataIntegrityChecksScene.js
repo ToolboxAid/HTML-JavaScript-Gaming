@@ -1,5 +1,5 @@
 import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
-import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import { DataIntegrityService } from '/src/engine/security/index.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import DataIntegrityService from '/src/engine/security/DataIntegrityService.js';
 const theme = new Theme(ThemeTokens);
 export default class SaveDataIntegrityChecksScene extends Scene {
   constructor() { super(); this.integrity = new DataIntegrityService(); this.record = null; this.result = null; this.status = 'Seal a save record, then verify a tampered version.'; }

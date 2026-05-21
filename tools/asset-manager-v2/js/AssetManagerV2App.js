@@ -1,8 +1,5 @@
 import { deepClone } from '../../../src/shared/json/clone.js';
-import {
-  downloadTextFile,
-  readFileText
-} from "../../../src/engine/persistence/index.js";
+import { downloadTextFile, readFileText } from '../../../src/engine/persistence/FilePersistenceService.js';
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
 const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.";
 

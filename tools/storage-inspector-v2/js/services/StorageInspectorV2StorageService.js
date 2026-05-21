@@ -1,8 +1,6 @@
-import {
-  CookieStorageService,
-  LocalStorageService,
-  SessionStorageService,
-} from "/src/engine/persistence/index.js";
+import CookieStorageService from '/src/engine/persistence/CookieStorageService.js';
+import LocalStorageService from '/src/engine/persistence/LocalStorageService.js';
+import SessionStorageService from '/src/engine/persistence/SessionStorageService.js';
 
 function parseValue(rawValue) {
   if (rawValue == null || rawValue === "") {

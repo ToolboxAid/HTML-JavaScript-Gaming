@@ -4,7 +4,7 @@ David Quesenberry
 03/26/2026
 VectorMapRuntimeExporter.js
 */
-import { downloadTextFile } from "../../../src/engine/persistence/index.js";
+import { downloadTextFile } from '../../../src/engine/persistence/FilePersistenceService.js';
 
 export class VectorMapRuntimeExporter {
   build(documentModel) {

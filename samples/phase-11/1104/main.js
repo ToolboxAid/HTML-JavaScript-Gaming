@@ -7,7 +7,8 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { DeploymentProfiles, DistributionPackager } from '/src/engine/release/index.js';
+import DeploymentProfiles from '/src/engine/release/DeploymentProfiles.js';
+import DistributionPackager from '/src/engine/release/DistributionPackager.js';
 import DistributionPackagingScene from './DistributionPackagingScene.js';
 
 const theme = new Theme(ThemeTokens);

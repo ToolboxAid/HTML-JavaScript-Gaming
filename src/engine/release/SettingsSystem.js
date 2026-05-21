@@ -7,7 +7,7 @@ SettingsSystem.js
 
 import { deepClone } from '../../shared/json/clone.js';
 import ConfigStore from '../config/ConfigStore.js';
-import { StorageService } from '../persistence/index.js';
+import StorageService from '../persistence/StorageService.js';
 
 function mergeSettings(base, incoming) {
   const output = Array.isArray(base) ? [...base] : { ...base };

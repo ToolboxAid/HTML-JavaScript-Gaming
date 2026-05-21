@@ -5,7 +5,7 @@ David Quesenberry
 ReplayTimeline.test.mjs
 */
 import assert from 'node:assert/strict';
-import { ReplayTimeline } from '../../src/engine/replay/index.js';
+import { ReplayTimeline } from '../../src/engine/replay/ReplayTimeline.js';
 
 export function run() {
   const timeline = new ReplayTimeline({ maxFrames: 3 });

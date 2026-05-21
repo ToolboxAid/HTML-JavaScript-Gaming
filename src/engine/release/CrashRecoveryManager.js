@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 CrashRecoveryManager.js
 */
-import { StorageService } from '../persistence/index.js';
+import StorageService from '../persistence/StorageService.js';
 
 export default class CrashRecoveryManager {
   constructor({

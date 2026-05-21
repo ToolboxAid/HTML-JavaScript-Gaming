@@ -1,6 +1,6 @@
 import { isPlainObject } from '../../../../src/shared/object/objects.js';
 import { deepClone } from '../../../../src/shared/json/clone.js';
-import { readFileHandleText, writeFileHandleText } from '../../../../src/engine/persistence/index.js';
+import { readFileHandleText, writeFileHandleText } from '../../../../src/engine/persistence/FilePersistenceService.js';
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_CONTEXT_SCHEMA = "html-js-gaming.project";

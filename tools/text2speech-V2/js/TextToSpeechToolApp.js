@@ -1,9 +1,6 @@
 import { isPlainObject } from '../../../src/shared/object/objects.js';
 import { deepClone } from '../../../src/shared/json/clone.js';
-import {
-  downloadTextFile,
-  readFileText
-} from "../../../src/engine/persistence/index.js";
+import { downloadTextFile, readFileText } from '../../../src/engine/persistence/FilePersistenceService.js';
 import {
   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,

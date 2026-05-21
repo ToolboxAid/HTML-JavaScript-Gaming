@@ -16,7 +16,7 @@ import {
   PROJECT_FORMAT,
   TOOL_IDS
 } from "./constants.js";
-import { downloadBlobFile, readFileText } from "../../../src/engine/persistence/index.js";
+import { downloadBlobFile, readFileText } from '../../../src/engine/persistence/FilePersistenceService.js';
 import { colorToPickerValue, dedupeColors, isTransparent, normalizeColor, rgbaToHex } from "./colorUtils.js";
 import {
   cloneFrame,

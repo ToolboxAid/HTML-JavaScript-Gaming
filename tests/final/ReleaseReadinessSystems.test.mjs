@@ -5,16 +5,14 @@ David Quesenberry
 ReleaseReadinessSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import {
-  AccessibilityOptions,
-  CrashRecoveryManager,
-  DeploymentProfiles,
-  DistributionPackager,
-  ReleaseValidationChecklist,
-  SettingsSystem,
-} from '../../src/engine/release/index.js';
+import AccessibilityOptions from '../../src/engine/release/AccessibilityOptions.js';
+import CrashRecoveryManager from '../../src/engine/release/CrashRecoveryManager.js';
+import DeploymentProfiles from '../../src/engine/release/DeploymentProfiles.js';
+import DistributionPackager from '../../src/engine/release/DistributionPackager.js';
+import ReleaseValidationChecklist from '../../src/engine/release/ReleaseValidationChecklist.js';
+import SettingsSystem from '../../src/engine/release/SettingsSystem.js';
 import Logger from '../../src/engine/logging/Logger.js';
-import { StorageService } from '../../src/engine/persistence/index.js';
+import StorageService from '../../src/engine/persistence/StorageService.js';
 
 class MemoryStorage {
   constructor() {

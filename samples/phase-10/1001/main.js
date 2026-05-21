@@ -8,7 +8,7 @@ import Engine from '/src/engine/core/Engine.js';
 import MP3PlayerScene from './MP3PlayerScene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { MediaTrackService } from '/src/engine/audio/index.js';
+import MediaTrackService from '/src/engine/audio/MediaTrackService.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

@@ -9,7 +9,7 @@ import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { StorageService } from '/src/engine/persistence/index.js';
+import StorageService from '/src/engine/persistence/StorageService.js';
 
 const theme = new Theme(ThemeTokens);
 const STORAGE_KEY = 'engine-v2-Sample 0205-state';

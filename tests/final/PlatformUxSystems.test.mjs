@@ -5,12 +5,19 @@ David Quesenberry
 PlatformUxSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import { AudioService, MidiPlayer, FrequencyPlayer, Synthesizer, MediaTrackService, PlaylistManager } from '../../src/engine/audio/index.js';
+import AudioService from '../../src/engine/audio/AudioService.js';
+import MidiPlayer from '../../src/engine/audio/MidiPlayer.js';
+import FrequencyPlayer from '../../src/engine/audio/FrequencyPlayer.js';
+import Synthesizer from '../../src/engine/audio/Synthesizer.js';
+import MediaTrackService from '../../src/engine/audio/MediaTrackService.js';
+import PlaylistManager from '../../src/engine/audio/PlaylistManager.js';
 import ParticleSystem from '../../src/engine/fx/ParticleSystem.js';
-import { UIFramework } from '../../src/engine/ui/index.js';
+import UIFramework from '../../src/engine/ui/UIFramework.js';
 import InputContextService from '../../src/engine/input/InputContextService.js';
 import { SceneTransitionController } from '../../src/engine/scene/index.js';
-import { SaveSlotManager, StorageService, CookieStorageService } from '../../src/engine/persistence/index.js';
+import SaveSlotManager from '../../src/engine/persistence/SaveSlotManager.js';
+import StorageService from '../../src/engine/persistence/StorageService.js';
+import CookieStorageService from '../../src/engine/persistence/CookieStorageService.js';
 import Logger from '../../src/engine/logging/Logger.js';
 import ErrorBoundary from '../../src/engine/logging/ErrorBoundary.js';
 

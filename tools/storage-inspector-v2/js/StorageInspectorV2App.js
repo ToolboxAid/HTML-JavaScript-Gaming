@@ -1,4 +1,4 @@
-import { SessionStorageService } from "/src/engine/persistence/index.js";
+import SessionStorageService from '/src/engine/persistence/SessionStorageService.js';
 
 const WORKSPACE_RETURN_HISTORY_CONTEXT_KEY = "workspace-manager-v2-return-history-context-id";
 

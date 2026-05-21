@@ -9,7 +9,8 @@ import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
-import { SpriteAtlas, ImageAssetLoader } from '/src/engine/assets/index.js';
+import SpriteAtlas from '/src/engine/assets/SpriteAtlas.js';
+import ImageAssetLoader from '/src/engine/assets/ImageAssetLoader.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);

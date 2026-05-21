@@ -1,5 +1,5 @@
 import { runAssetPipelineTooling } from "../shared/pipeline/assetPipelineTooling.js";
-import { readFileText } from "../../src/engine/persistence/index.js";
+import { readFileText } from '../../src/engine/persistence/FilePersistenceService.js';
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import {

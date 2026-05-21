@@ -8,7 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame } from '/src/engine/debug/index.js';
-import { UIFramework } from '/src/engine/ui/index.js';
+import UIFramework from '/src/engine/ui/UIFramework.js';
 
 const theme = new Theme(ThemeTokens);
 

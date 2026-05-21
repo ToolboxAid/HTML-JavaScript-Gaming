@@ -8,7 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { SaveSlotManager } from '/src/engine/persistence/index.js';
+import SaveSlotManager from '/src/engine/persistence/SaveSlotManager.js';
 
 const theme = new Theme(ThemeTokens);
 

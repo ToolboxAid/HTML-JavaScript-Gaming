@@ -1,7 +1,4 @@
-import {
-  downloadTextFile,
-  readFileText
-} from "../../../src/engine/persistence/index.js";
+import { downloadTextFile, readFileText } from '../../../src/engine/persistence/FilePersistenceService.js';
 
 export class PaletteImportExportControl {
   constructor({ refs, app }) {

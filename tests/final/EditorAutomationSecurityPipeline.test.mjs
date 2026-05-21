@@ -13,7 +13,10 @@ import AutomatedTestRunner from '../../src/engine/automation/AutomatedTestRunner
 import RegressionPlaybackHarness from '../../src/engine/automation/RegressionPlaybackHarness.js';
 import BenchmarkRunner from '../../src/engine/automation/BenchmarkRunner.js';
 import CIValidationFlow from '../../src/engine/automation/CIValidationFlow.js';
-import { PacketValidator, DataIntegrityService, PermissionGate, SessionTrustValidator } from '../../src/engine/security/index.js';
+import PacketValidator from '../../src/engine/security/PacketValidator.js';
+import DataIntegrityService from '../../src/engine/security/DataIntegrityService.js';
+import PermissionGate from '../../src/engine/security/PermissionGate.js';
+import SessionTrustValidator from '../../src/engine/security/SessionTrustValidator.js';
 import AssetImportPipeline from '../../tools/shared/pipeline/AssetImportPipeline.js';
 import TexturePreprocessPipeline from '../../tools/shared/pipeline/TexturePreprocessPipeline.js';
 import AudioPreprocessPipeline from '../../tools/shared/pipeline/AudioPreprocessPipeline.js';

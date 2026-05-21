@@ -1,4 +1,4 @@
-import { LocalStorageService } from "../../src/engine/persistence/index.js";
+import LocalStorageService from '../../src/engine/persistence/LocalStorageService.js';
 import { sanitizeText } from "../../src/shared/string/strings.js";
 import { getToolById } from "../toolRegistry.js";
 

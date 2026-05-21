@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 VectorMapSerializer.js
 */
-import { downloadTextFile, readFileText } from "../../../src/engine/persistence/index.js";
+import { downloadTextFile, readFileText } from '../../../src/engine/persistence/FilePersistenceService.js';
 import { addToolModeMetadata } from "../../shared/documentModeGuards.js";
 
 export class VectorMapSerializer {

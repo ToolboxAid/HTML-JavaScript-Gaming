@@ -1,5 +1,6 @@
 import { asPositiveInteger } from "../../shared/number/numbers.js";
-import { readFileText, SessionStorageService } from "../../engine/persistence/index.js";
+import { readFileText } from '../../engine/persistence/FilePersistenceService.js';
+import SessionStorageService from '../../engine/persistence/SessionStorageService.js';
 import { isRecord } from "../../shared/object/objects.js";
 
 export { isRecord };

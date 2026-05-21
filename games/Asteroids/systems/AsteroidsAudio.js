@@ -4,7 +4,9 @@ David Quesenberry
 03/22/2026
 AsteroidsAudio.js
 */
-import { GaplessLoopPlayer, HtmlAudioMediaBackend, MediaTrackService } from '/src/engine/audio/index.js';
+import GaplessLoopPlayer from '/src/engine/audio/GaplessLoopPlayer.js';
+import HtmlAudioMediaBackend from '/src/engine/audio/HtmlAudioMediaBackend.js';
+import MediaTrackService from '/src/engine/audio/MediaTrackService.js';
 import { resolveWorkspaceGameAssetPath } from '../../shared/workspaceGameAssetCatalog.js';
 
 const ASTEROIDS_GAME_ID = "Asteroids";

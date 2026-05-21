@@ -9,7 +9,7 @@ import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/index.js';
+import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/WorldSerializer.js';
 
 const theme = new Theme(ThemeTokens);
 

@@ -1,4 +1,4 @@
-import { LocalStorageService } from '../../engine/persistence/index.js';
+import LocalStorageService from '../../engine/persistence/LocalStorageService.js';
 import { safeTrim, toLowerSafe } from '../string/strings.js';
 const BUILD_DEBUG_MODE = 'prod';
 const BUILD_DEBUG_ENABLED = false;

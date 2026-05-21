@@ -11,9 +11,9 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import Camera2D from '/src/engine/camera/Camera2D.js';
 import { followCameraTarget, worldRectToScreen } from '/src/engine/camera/CameraSystem.js';
 import { Tilemap, renderTilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
-import { SpriteAtlas } from '/src/engine/assets/index.js';
+import SpriteAtlas from '/src/engine/assets/SpriteAtlas.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
-import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/index.js';
+import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/WorldSerializer.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
