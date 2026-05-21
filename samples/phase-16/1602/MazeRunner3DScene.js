@@ -5,7 +5,8 @@ David Quesenberry
 MazeRunner3DScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { isAabbColliding3D } from '/src/engine/physics/index.js';

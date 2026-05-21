@@ -6,7 +6,7 @@
 */
 import assert from 'node:assert/strict';
 import Engine from '../../src/engine/core/Engine.js';
-import { Camera2D } from '../../src/engine/camera/index.js';
+import Camera2D from '../../src/engine/camera/Camera2D.js';
 import { stepSceneBodies3D } from '../../src/engine/physics/index.js';
 
 function createCanvas() {

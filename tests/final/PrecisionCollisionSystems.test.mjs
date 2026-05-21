@@ -6,17 +6,10 @@ PrecisionCollisionSystems.test.mjs
 */
 import assert from 'node:assert/strict';
 import { transformPoints } from '../../src/engine/rendering/VectorDrawing.js';
-import {
-  arePolygonsColliding,
-  isPointInPolygon,
-  createRasterMask,
-  areMasksColliding,
-  evaluateObjectVectorCollisionPair,
-  getObjectVectorCollisionOutlinePoints,
-  runHybridCollision,
-  getPolygonBounds,
-  transformCollisionPoints,
-} from '../../src/engine/collision/index.js';
+import { arePolygonsColliding, isPointInPolygon, getPolygonBounds } from '../../src/engine/collision/polygon.js';
+import { createRasterMask, areMasksColliding } from '../../src/engine/collision/raster.js';
+import { evaluateObjectVectorCollisionPair, getObjectVectorCollisionOutlinePoints, transformCollisionPoints } from '../../src/engine/collision/objectVector.js';
+import { runHybridCollision } from '../../src/engine/collision/hybrid.js';
 
 export function run() {
   const transformed = transformPoints(

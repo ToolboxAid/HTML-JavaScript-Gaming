@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import Engine from '../../src/engine/core/Engine.js';
 import SceneTransition from '../../src/engine/scene/SceneTransition.js';
 import TransitionScene from '../../src/engine/scene/TransitionScene.js';
-import { Camera3D } from '../../src/engine/camera/index.js';
+import Camera3D from '../../src/engine/camera/Camera3D.js';
 
 function createCanvas() {
   const canvas = {

@@ -6,7 +6,8 @@ main.js
 */
 import Engine from '/src/engine/core/Engine.js';
 import SynthesizerScene from './SynthesizerScene.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

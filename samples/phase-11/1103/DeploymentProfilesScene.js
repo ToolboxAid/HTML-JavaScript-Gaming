@@ -6,7 +6,8 @@ DeploymentProfilesScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 
 const theme = new Theme(ThemeTokens);
 

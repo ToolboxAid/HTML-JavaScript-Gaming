@@ -5,7 +5,7 @@ David Quesenberry
 Ship.js
 */
 import { wrap } from '/src/shared/math/scalars.js';
-import { transformCollisionPoints } from '/src/engine/collision/index.js';
+import { transformCollisionPoints } from '/src/engine/collision/objectVector.js';
 import { normalizePoints } from '/src/shared/math/geometry.js';
 
 export default class Ship {

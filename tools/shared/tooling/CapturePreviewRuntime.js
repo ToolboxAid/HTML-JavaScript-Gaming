@@ -5,8 +5,9 @@ David Quesenberry
 CapturePreviewRuntime.js
 */
 import Engine from '../../../src/engine/core/Engine.js';
-import { InputService } from '../../../src/engine/input/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import InputService from '../../../src/engine/input/InputService.js';
+import { Theme } from '../../../src/engine/theme/Theme.js';
+import { ThemeTokens } from '../../../src/engine/theme/ThemeTokens.js';
 
 export async function bootCapturePreview({
   canvas,

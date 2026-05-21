@@ -20,7 +20,7 @@ import {
   AttractModeController,
   DEFAULT_ATTRACT_CONFIG,
 } from '../../src/engine/scene/index.js';
-import { isColliding } from '../../src/engine/collision/index.js';
+import { isColliding } from '../../src/engine/collision/aabb.js';
 import { applyDrag, stepArcadeBody, integrateVelocity2D } from '../../src/engine/physics/index.js';
 
 assert.equal(typeof CanvasRenderer, 'function');

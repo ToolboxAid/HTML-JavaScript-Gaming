@@ -4,7 +4,8 @@ David Quesenberry
 03/22/2026
 TimelineCutsceneEditorScene.js
 */
-import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import TimelineEditor from '/tools/shared/editor/TimelineEditor.js';
+import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import TimelineEditor from '/tools/shared/editor/TimelineEditor.js';
 const theme = new Theme(ThemeTokens);
 export default class TimelineCutsceneEditorScene extends Scene {
   constructor() { super(); this.timeline = new TimelineEditor(); this.status = 'Add and reposition cutscene clips.'; }

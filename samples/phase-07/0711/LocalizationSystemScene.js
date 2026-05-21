@@ -5,7 +5,8 @@ David Quesenberry
 LocalizationSystemScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { LocalizationService } from '/src/engine/localization/index.js';
 

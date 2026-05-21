@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 GravityInputController.js
 */
-import { GamepadInputAdapter } from '../../../../src/engine/input/index.js';
+import GamepadInputAdapter from '../../../../src/engine/input/GamepadInputAdapter.js';
 import { clamp } from '../../../../src/shared/math/scalars.js';
 
 export default class GravityInputController {

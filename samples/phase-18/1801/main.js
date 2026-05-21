@@ -5,8 +5,9 @@ David Quesenberry
 main.js
 */
 import Engine from '/src/engine/core/Engine.js';
-import { InputService } from '/src/engine/input/index.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import InputService from '/src/engine/input/InputService.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import createPhase18IntegrationFlow from '/samples/phase-18/shared/integration/createPhase18IntegrationFlow.js';
 import Phase18FoundationScene from './Phase18FoundationScene.js';
 

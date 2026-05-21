@@ -4,7 +4,8 @@ David Quesenberry
 03/22/2026
 index.js
 */
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
 const canvas = document.createElement('canvas');

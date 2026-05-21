@@ -1,4 +1,5 @@
-import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import ContentMigrationSystem from '/tools/shared/pipeline/ContentMigrationSystem.js';
+import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import ContentMigrationSystem from '/tools/shared/pipeline/ContentMigrationSystem.js';
 const theme = new Theme(ThemeTokens);
 export default class ContentVersioningMigrationScene extends Scene {
   constructor() { super(); this.system = new ContentMigrationSystem(); this.system.register(1, (content) => ({ ...content, version: 2, layers: ['base'] })); this.content = null; this.status = 'Migrate older content forward.'; }

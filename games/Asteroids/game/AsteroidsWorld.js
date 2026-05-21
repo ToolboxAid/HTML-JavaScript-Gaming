@@ -8,7 +8,7 @@ import Asteroid from '../entities/Asteroid.js';
 import Bullet from '../entities/Bullet.js';
 import Ship from '../entities/Ship.js';
 import Ufo from '../entities/Ufo.js';
-import { arePolygonsColliding } from '/src/engine/collision/index.js';
+import { arePolygonsColliding } from '/src/engine/collision/polygon.js';
 import { distance, randomRange } from '/src/shared/math/scalars.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '/src/shared/math/numberNormalization.js';
 import {

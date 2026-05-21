@@ -5,10 +5,12 @@ David Quesenberry
 CameraSystemScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { Camera2D, followCameraTarget, worldRectToScreen } from '/src/engine/camera/index.js';
+import Camera2D from '/src/engine/camera/Camera2D.js';
+import { followCameraTarget, worldRectToScreen } from '/src/engine/camera/CameraSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

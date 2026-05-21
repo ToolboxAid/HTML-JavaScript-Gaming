@@ -6,7 +6,8 @@ main.js
 */
 import Engine from '/src/engine/core/Engine.js';
 import AudioPlaylistTrackManagementScene from './AudioPlaylistTrackManagementScene.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { MediaTrackService, PlaylistManager } from '/src/engine/audio/index.js';
 
 const theme = new Theme(ThemeTokens);

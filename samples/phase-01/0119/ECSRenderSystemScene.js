@@ -5,7 +5,8 @@ David Quesenberry
 ECSRenderSystemScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { World } from '/src/engine/ecs/index.js';
 import { drawSceneFrame } from '/src/engine/debug/index.js';
 import { renderRectEntities } from '/src/engine/systems/index.js';

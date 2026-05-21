@@ -1,4 +1,4 @@
-import { getObjectVectorCollisionOutlinePoints } from '/src/engine/collision/index.js';
+import { getObjectVectorCollisionOutlinePoints } from '/src/engine/collision/objectVector.js';
 import { isRecord } from '/src/shared/object/objects.js';
 import { deepClone } from '/src/shared/json/clone.js';
 

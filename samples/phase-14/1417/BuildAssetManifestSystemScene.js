@@ -1,4 +1,5 @@
-import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import BuildAssetManifestSystem from '/tools/shared/pipeline/BuildAssetManifestSystem.js';
+import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import BuildAssetManifestSystem from '/tools/shared/pipeline/BuildAssetManifestSystem.js';
 const theme = new Theme(ThemeTokens);
 export default class BuildAssetManifestSystemScene extends Scene {
   constructor() { super(); this.system = new BuildAssetManifestSystem(); this.manifest = null; this.validation = null; this.status = 'Build a manifest for a sample asset set.'; }

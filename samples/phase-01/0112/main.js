@@ -5,9 +5,10 @@ David Quesenberry
 main.js
 */
 import Engine from '/src/engine/core/Engine.js';
-import { InputService } from '/src/engine/input/index.js';
+import InputService from '/src/engine/input/InputService.js';
 import AxisSeparatedCollisionScene from './AxisSeparatedCollisionScene.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

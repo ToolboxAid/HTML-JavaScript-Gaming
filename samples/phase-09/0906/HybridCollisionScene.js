@@ -5,14 +5,12 @@ David Quesenberry
 HybridCollisionScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { transformPoints, drawVectorShape } from '/src/engine/rendering/index.js';
-import {
-  createRasterMask,
-  runHybridCollision,
-  getCollisionBoundsFromPolygon,
-} from '/src/engine/collision/index.js';
+import { createRasterMask } from '/src/engine/collision/raster.js';
+import { runHybridCollision, getCollisionBoundsFromPolygon } from '/src/engine/collision/hybrid.js';
 
 const theme = new Theme(ThemeTokens);
 const ship = [{ x: 0, y: -18 }, { x: 18, y: 18 }, { x: -18, y: 18 }];

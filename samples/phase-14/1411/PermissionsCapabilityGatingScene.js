@@ -1,4 +1,5 @@
-import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { PermissionGate } from '/src/engine/security/index.js';
+import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import { PermissionGate } from '/src/engine/security/index.js';
 const theme = new Theme(ThemeTokens);
 export default class PermissionsCapabilityGatingScene extends Scene {
   constructor() { super(); this.gate = new PermissionGate({ admin: ['edit', 'publish'], guest: ['view'] }); this.role = 'guest'; this.status = 'Switch role to compare allowed capabilities.'; }

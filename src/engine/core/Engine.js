@@ -9,7 +9,7 @@ import RuntimeMetrics from './RuntimeMetrics.js';
 import FrameClock from './FrameClock.js';
 import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
-import { Camera3D } from '../camera/index.js';
+import Camera3D from '../camera/Camera3D.js';
 import {
   backgroundColor,
   backgroundImage,

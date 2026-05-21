@@ -5,10 +5,11 @@ David Quesenberry
 PolygonCollisionScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
-import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Theme } from '/src/engine/theme/Theme.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { transformPoints, drawVectorShape } from '/src/engine/rendering/index.js';
-import { arePolygonsColliding } from '/src/engine/collision/index.js';
+import { arePolygonsColliding } from '/src/engine/collision/polygon.js';
 
 const theme = new Theme(ThemeTokens);
 const triangle = [{ x: 0, y: -26 }, { x: 24, y: 20 }, { x: -24, y: 20 }];
