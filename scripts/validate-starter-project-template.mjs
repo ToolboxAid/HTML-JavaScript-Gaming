@@ -62,21 +62,20 @@ async function main() {
   notes.push("shared vector/tilemap/parallax/sprite/palette references resolve on disk");
 
   const requiredTools = [
-    "vector-map-editor",
-    "svg-asset-studio",
+    "world-vector-studio-v2",
+    "object-vector-studio-v2",
     "tile-map-editor",
     "parallax-editor",
     "sprite-editor",
-    "asset-browser",
     "palette-browser"
   ];
   for (const toolId of requiredTools) {
     assert(manifest.tools && typeof manifest.tools[toolId] === "object", `Missing starter tool payload for ${toolId}.`, issues);
   }
-  notes.push("starter project includes payloads for all active first-class tools");
+  notes.push("starter project includes payloads for the current starter tool set");
 
-  assert(Boolean(manifest.tools?.["vector-map-editor"]?.snapshot?.documentData), "Vector Map Editor payload is missing snapshot.documentData.", issues);
-  assert(typeof manifest.tools?.["svg-asset-studio"]?.svgText === "string", "SVG Asset Studio payload is missing svgText.", issues);
+  assert(Boolean(manifest.tools?.["world-vector-studio-v2"]?.snapshot?.documentData), "World Vector Studio V2 payload is missing snapshot.documentData.", issues);
+  assert(typeof manifest.tools?.["object-vector-studio-v2"]?.svgText === "string", "Object Vector Studio V2 payload is missing svgText.", issues);
   assert(Boolean(manifest.tools?.["tile-map-editor"]?.documentModel?.assetRefs?.tilemapId), "Tilemap Studio payload is missing tilemap asset reference.", issues);
   assert(Array.isArray(manifest.tools?.["parallax-editor"]?.documentModel?.assetRefs?.parallaxSourceIds), "Parallax Scene Studio payload is missing parallax source ids.", issues);
   assert(Boolean(manifest.tools?.["sprite-editor"]?.project?.assetRefs?.spriteId), "Sprite Editor payload is missing sprite asset reference.", issues);

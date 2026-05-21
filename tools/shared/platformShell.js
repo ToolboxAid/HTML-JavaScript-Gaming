@@ -917,7 +917,7 @@ function readManifestAssetEntries(manifestPayload) {
   const source = manifestPayload && typeof manifestPayload === "object" && !Array.isArray(manifestPayload)
     ? manifestPayload
     : {};
-  const workspace = source.workspace && typeof source.workspace === "object" && !Array.isArray(source.workspace)
+  const workspaceBlock = source.workspace && typeof source.workspace === "object" && !Array.isArray(source.workspace)
     ? source.workspace
     : {};
   const tools = source.tools && typeof source.tools === "object" && !Array.isArray(source.tools)
@@ -930,7 +930,7 @@ function readManifestAssetEntries(manifestPayload) {
     ? assetManager.assets
     : {};
   const gameFolder = normalizeTextValue(source.game?.folder);
-  const assetsPath = normalizeAssetsPath(workspace.assetsPath || source.assetsPath || (gameFolder ? `games/${gameFolder}/assets` : ""));
+  const assetsPath = normalizeAssetsPath(workspaceBlock.assetsPath || source.assetsPath || (gameFolder ? `games/${gameFolder}/assets` : ""));
   return Object.entries(entries)
     .map(([assetId, rawEntry]) => {
       const safeAssetId = normalizeTextValue(assetId);

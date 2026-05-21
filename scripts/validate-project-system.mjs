@@ -8,13 +8,26 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
 const REQUIRED_ACTIVE_TOOL_NAMES = [
-  "Vector Map Editor",
-  "SVG Asset Studio",
+  "World Vector Studio V2",
+  "Object Vector Studio V2",
   "Tilemap Studio",
   "Parallax Scene Studio",
   "Sprite Editor",
-  "Asset Browser / Import Hub",
-  "Palette Manager V2"
+  "Asset Manager V2",
+  "Workspace Manager V2",
+  "Palette Manager V2",
+  "Preview Generator V2",
+  "Text to Speech V2",
+  "Collision Inspector V2",
+  "Storage Inspector V2",
+  "State Inspector",
+  "Replay Visualizer",
+  "Performance Profiler",
+  "Physics Sandbox",
+  "Asset Pipeline",
+  "3D JSON Payload",
+  "3D Asset Viewer",
+  "3D Camera Path Editor"
 ];
 
 const REQUIRED_SHARED_FILES = [
@@ -44,14 +57,6 @@ const TOOL_BOOTSTRAP_CHECKS = [
   {
     file: "tools/Sprite Editor/main.js",
     pattern: "window.spriteEditorApp ="
-  },
-  {
-    file: "tools/SVG Asset Studio/main.js",
-    pattern: "window.svgAssetStudioApp ="
-  },
-  {
-    file: "tools/Asset Browser/main.js",
-    pattern: "window.assetBrowserApp ="
   },
   {
     file: "tools/palette-manager-v2/main.js",

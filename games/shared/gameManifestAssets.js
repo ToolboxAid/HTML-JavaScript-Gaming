@@ -188,10 +188,10 @@ function normalizeManifestPayload(payload) {
   const source = toObject(payload);
   const schema = typeof source.schema === "string" ? source.schema.trim() : "";
   const version = Number(source.version);
-  const workspace = toObject(source.workspace || {});
-  const tools = toObject(source.tools || workspace.tools);
+  const workspaceBlock = toObject(source.workspace || {});
+  const tools = toObject(source.tools || workspaceBlock.tools);
   const gameFolder = typeof source.game?.folder === "string" ? source.game.folder.trim() : "";
-  const assetsPath = normalizeAssetsPath(workspace.assetsPath || source.assetsPath || (gameFolder ? `games/${gameFolder}/assets` : ""));
+  const assetsPath = normalizeAssetsPath(workspaceBlock.assetsPath || source.assetsPath || (gameFolder ? `games/${gameFolder}/assets` : ""));
   const assetManagerEntries = normalizeManifestAssetEntries(
     tools?.["asset-manager-v2"]?.assets,
     assetsPath

@@ -39,9 +39,9 @@ function assertToolSampleControlsRemoved() {
   assert.equal(parallaxHtml.includes('id="loadSampleButton"'), false, "Parallax Scene Studio sample load button should be removed.");
 }
 
-function assertDeprecatedVectorToolsRemoved() {
-  assert.equal(fs.existsSync(path.join(REPO_ROOT, "tools", "Vector Map Editor")), false, "Deprecated Vector Map Editor folder must be removed.");
-  assert.equal(fs.existsSync(path.join(REPO_ROOT, "tools", "SVG Asset Studio")), false, "Deprecated SVG Asset Studio folder must be removed.");
+function assertCurrentVectorToolFoldersExist() {
+  assert.equal(fs.existsSync(path.join(REPO_ROOT, "tools", "world-vector-studio-v2")), true, "World Vector Studio V2 folder must exist.");
+  assert.equal(fs.existsSync(path.join(REPO_ROOT, "tools", "object-vector-studio-v2")), true, "Object Vector Studio V2 folder must exist.");
 }
 
 function listToolIndexFiles(rootPath) {
@@ -134,7 +134,7 @@ function assertMigratedSamplesIndexedAndLaunchable() {
 
 export function run() {
   assertMigratedSamplesIndexedAndLaunchable();
-  assertDeprecatedVectorToolsRemoved();
+  assertCurrentVectorToolFoldersExist();
   assertToolSampleControlsRemoved();
   assertNoSampleDropdownSelectInToolIndexes();
   assertExplicitPresetInputSupportRetained();

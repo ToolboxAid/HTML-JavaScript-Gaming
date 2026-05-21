@@ -160,23 +160,23 @@ function readWorkspacePreviewGeneratorWorkspace(manifest) {
   if (!isPlainObject(result.value.workspace)) {
     return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace must contain a JSON object.` };
   }
-  const workspace = result.value.workspace;
-  if (workspace.source !== "workspace-manager-v2") {
+  const workspaceContext = result.value.workspace;
+  if (workspaceContext.source !== "workspace-manager-v2") {
     return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace.source must be workspace-manager-v2.` };
   }
-  if (workspace.toolId !== PREVIEW_GENERATOR_V2_TOOL_KEY) {
+  if (workspaceContext.toolId !== PREVIEW_GENERATOR_V2_TOOL_KEY) {
     return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace.toolId must be ${PREVIEW_GENERATOR_V2_TOOL_KEY}.` };
   }
-  if (workspace.repoReferenceKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
+  if (workspaceContext.repoReferenceKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
     return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace.repoReferenceKey must be ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.` };
   }
-  if (workspace.gameId !== manifest.gameId) {
+  if (workspaceContext.gameId !== manifest.gameId) {
     return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace.gameId must match manifest.gameId ${manifest.gameId}.` };
   }
-  if (workspace.gameRoot !== manifest.gameRoot || workspace.assetsPath !== manifest.assetsPath) {
+  if (workspaceContext.gameRoot !== manifest.gameRoot || workspaceContext.assetsPath !== manifest.assetsPath) {
     return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace gameRoot/assetsPath must match the workspace manifest.` };
   }
-  return { ok: true, workspace };
+  return { ok: true, workspace: workspaceContext };
 }
 
 function isProjectManifestContext(value) {

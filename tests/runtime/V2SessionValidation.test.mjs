@@ -116,21 +116,21 @@ function validateSvgAssetStudio(sessionContext) {
     return { state: "INVALID", message: "Session context is invalid. Expected an object containing payloadJson.vectorAssetDocument." };
   }
   if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
-    return { state: "INVALID", message: "SVG Asset Studio V2 session data is invalid. Expected payloadJson only." };
+    return { state: "INVALID", message: "Object vector session data is invalid. Expected payloadJson only." };
   }
   if (!sessionContext.payloadJson.vectorAssetDocument || typeof sessionContext.payloadJson.vectorAssetDocument !== "object" || Array.isArray(sessionContext.payloadJson.vectorAssetDocument)) {
-    return { state: "INVALID", message: "SVG Asset Studio V2 session data is invalid. Expected payloadJson.vectorAssetDocument." };
+    return { state: "INVALID", message: "Object vector session data is invalid. Expected payloadJson.vectorAssetDocument." };
   }
   if (typeof sessionContext.payloadJson.vectorAssetDocument.sourceName !== "string" || !sessionContext.payloadJson.vectorAssetDocument.sourceName.trim()) {
-    return { state: "INVALID", message: "SVG Asset Studio V2 session data is invalid. Expected vectorAssetDocument.sourceName." };
+    return { state: "INVALID", message: "Object vector session data is invalid. Expected vectorAssetDocument.sourceName." };
   }
   if (typeof sessionContext.payloadJson.vectorAssetDocument.svgText !== "string" || !sessionContext.payloadJson.vectorAssetDocument.svgText.trim()) {
-    return { state: "INVALID", message: "SVG Asset Studio V2 session data is invalid. Expected vectorAssetDocument.svgText." };
+    return { state: "INVALID", message: "Object vector session data is invalid. Expected vectorAssetDocument.svgText." };
   }
   if (!/^\s*<svg[\s>]/i.test(sessionContext.payloadJson.vectorAssetDocument.svgText)) {
-    return { state: "INVALID", message: "SVG Asset Studio V2 session data is invalid. svgText must start with an <svg> document." };
+    return { state: "INVALID", message: "Object vector session data is invalid. svgText must start with an <svg> document." };
   }
-  return { state: "VALID", message: "SVG Asset Studio V2 session payload is valid." };
+  return { state: "VALID", message: "Object vector session payload is valid." };
 }
 
 function validateTilemapStudio(sessionContext) {
@@ -175,22 +175,22 @@ function validateVectorMapEditor(sessionContext) {
     return { state: "INVALID", message: "Session context is invalid. Expected an object containing payloadJson.vectorMapDocument." };
   }
   if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
-    return { state: "INVALID", message: "Vector Map Editor V2 session data is invalid. Expected payloadJson only." };
+    return { state: "INVALID", message: "World vector session data is invalid. Expected payloadJson only." };
   }
   if (!sessionContext.payloadJson.vectorMapDocument || typeof sessionContext.payloadJson.vectorMapDocument !== "object" || Array.isArray(sessionContext.payloadJson.vectorMapDocument)) {
-    return { state: "INVALID", message: "Vector Map Editor V2 session data is invalid. Expected payloadJson.vectorMapDocument." };
+    return { state: "INVALID", message: "World vector session data is invalid. Expected payloadJson.vectorMapDocument." };
   }
   if (typeof sessionContext.payloadJson.vectorMapDocument.name !== "string" || !sessionContext.payloadJson.vectorMapDocument.name.trim()) {
-    return { state: "INVALID", message: "Vector Map Editor V2 session data is invalid. Expected vectorMapDocument.name." };
+    return { state: "INVALID", message: "World vector session data is invalid. Expected vectorMapDocument.name." };
   }
   if (!Number.isFinite(Number(sessionContext.payloadJson.vectorMapDocument.width)) || Number(sessionContext.payloadJson.vectorMapDocument.width) <= 0 || !Number.isFinite(Number(sessionContext.payloadJson.vectorMapDocument.height)) || Number(sessionContext.payloadJson.vectorMapDocument.height) <= 0) {
-    return { state: "INVALID", message: "Vector Map Editor V2 session data is invalid. Expected positive numeric vectorMapDocument.width and vectorMapDocument.height." };
+    return { state: "INVALID", message: "World vector session data is invalid. Expected positive numeric vectorMapDocument.width and vectorMapDocument.height." };
   }
   if (typeof sessionContext.payloadJson.vectorMapDocument.background !== "string" || !sessionContext.payloadJson.vectorMapDocument.background.trim()) {
-    return { state: "INVALID", message: "Vector Map Editor V2 session data is invalid. Expected vectorMapDocument.background." };
+    return { state: "INVALID", message: "World vector session data is invalid. Expected vectorMapDocument.background." };
   }
   if (!Array.isArray(sessionContext.payloadJson.vectorMapDocument.objects)) {
-    return { state: "INVALID", message: "Vector Map Editor V2 session data is invalid. Expected vectorMapDocument.objects[]." };
+    return { state: "INVALID", message: "World vector session data is invalid. Expected vectorMapDocument.objects[]." };
   }
   if (sessionContext.payloadJson.vectorMapDocument.objects.some((entry) =>
     !entry ||
@@ -217,15 +217,15 @@ function validateVectorMapEditor(sessionContext) {
       !Number.isFinite(Number(point.y))
     )
   )) {
-    return { state: "INVALID", message: "Vector Map Editor V2 session data is invalid. Every object requires name, kind, style.stroke, positive style.lineWidth, and points[]." };
+    return { state: "INVALID", message: "World vector session data is invalid. Every object requires name, kind, style.stroke, positive style.lineWidth, and points[]." };
   }
   if (sessionContext.payloadJson.vectorMapDocument.objects.some((entry) =>
     (entry.kind === "polygon" || entry.closed === true) &&
     (typeof entry.style.fill !== "string" || !entry.style.fill.trim())
   )) {
-    return { state: "INVALID", message: "Vector Map Editor V2 session data is invalid. Closed objects require style.fill." };
+    return { state: "INVALID", message: "World vector session data is invalid. Closed objects require style.fill." };
   }
-  return { state: "VALID", message: "Vector Map Editor V2 session payload is valid." };
+  return { state: "VALID", message: "World vector session payload is valid." };
 }
 
 function validateByTool(toolId, sessionContext) {

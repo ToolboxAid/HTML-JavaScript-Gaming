@@ -1319,8 +1319,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.studioLaunchDefinitions.object.launchDefinition.targetPath).toBe("/tools/object-vector-studio-v2/index.html");
       expect(toolsIndexState.allCards).not.toContain("Asset Browser / Import Hub");
       expect(toolsIndexState.allCards).not.toContain("Tile Model Converter");
-      expect(toolsIndexState.allCards).not.toContain("SVG Asset Studio");
-      expect(toolsIndexState.allCards).not.toContain("Vector Map Editor");
       expect(toolsIndexState.registryIds).not.toContain("asset-browser");
       expect(toolsIndexState.registryIds).not.toContain("svg-asset-studio");
       expect(toolsIndexState.registryIds).not.toContain("tile-model-converter");

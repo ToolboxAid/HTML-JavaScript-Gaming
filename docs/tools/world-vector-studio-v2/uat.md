@@ -11,4 +11,4 @@ Validate that World Vector Studio V2 is the active world/layout vector surface.
 - Tool launches from the tools index.
 - Tool appears on the Workspace Manager V2 tool launch surface.
 - Tool launches from Workspace Manager V2 when selected game context enables selected-game tools.
-- Deprecated Vector Map Editor launch references are replaced by World Vector Studio V2 references.
+- Current world/layout vector launch references resolve to World Vector Studio V2.

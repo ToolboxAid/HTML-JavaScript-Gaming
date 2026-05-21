@@ -27,8 +27,8 @@ Use World Vector Studio V2 instead for terrain, maps, tile/world geometry, layer
 
 ## Migration Direction
 
-- Object Vector Studio V2 replaces SVG Asset Studio for current vector asset authoring.
-- World Vector Studio V2 replaces Vector Map Editor for current map, layer, parallax, and world layout work.
+- Object Vector Studio V2 is the current vector asset authoring surface.
+- World Vector Studio V2 is the current map, layer, parallax, and world layout surface.
 - Current object geometry lives in Object Vector Studio V2 payloads as `objects[]`, `objects[].tags`, and `objects[].shapes`.
 
 ## Examples

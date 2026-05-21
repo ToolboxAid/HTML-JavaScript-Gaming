@@ -10,4 +10,4 @@ Validate that Object Vector Studio V2 is the active vector asset authoring surfa
 ## Expected
 - Tool launches from the tools index.
 - Tool launches from Workspace Manager V2 when selected game context enables it.
-- Deprecated SVG Asset Studio launch references are replaced by Object Vector Studio V2 references.
+- Current vector asset launch references resolve to Object Vector Studio V2.

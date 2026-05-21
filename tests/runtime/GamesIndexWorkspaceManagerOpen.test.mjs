@@ -769,13 +769,13 @@ export async function run() {
       const gravityVectorUrl = new URL("/tools/Workspace%20Manager/index.html", baseUrl);
       gravityVectorUrl.searchParams.set("gameId", "GravityWell");
       gravityVectorUrl.searchParams.set("mount", "game");
-      gravityVectorUrl.searchParams.set("tool", "svg-asset-studio");
+      gravityVectorUrl.searchParams.set("tool", "object-vector-studio-v2");
 
       await page.navigate(gravityVectorUrl.toString());
       await wait(1200);
       const vectorFrameReady = await waitForMountedToolFrame(page);
       if (!vectorFrameReady) {
-        assetPresenceFailures.push("GravityWell vector binding check failed: SVG Asset Studio frame did not mount.");
+        assetPresenceFailures.push("GravityWell vector binding check failed: Object Vector Studio V2 frame did not mount.");
       } else {
         const vectorState = await inspectVectorAssetSelectionState(page);
         gravityWellVectorBindingCheck = {
@@ -786,7 +786,7 @@ export async function run() {
         };
 
         if (vectorState.paletteSelectedFalse) {
-          assetPresenceFailures.push("GravityWell vector binding check failed: SVG Asset Studio reported Palette Selected: false.");
+          assetPresenceFailures.push("GravityWell vector binding check failed: Object Vector Studio V2 reported Palette Selected: false.");
         }
         if (gravityWellExpectation.expectedVectorStrokeEnabled === true && vectorState.strokeSelectedFalse) {
           assetPresenceFailures.push("GravityWell vector binding check failed: stroke-enabled vector reported Stroke selected: false.");
