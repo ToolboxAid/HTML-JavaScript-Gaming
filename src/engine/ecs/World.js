@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 World.js
 */
-import { COMPONENT_SCHEMAS } from '../components/index.js';
+import { COMPONENT_SCHEMAS } from '../components/Components.js';
 
 export default class World {
   constructor({ dev = false } = {}) {

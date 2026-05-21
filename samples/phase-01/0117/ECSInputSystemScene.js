@@ -15,7 +15,7 @@ import {
   createSpeed,
   createInputControlled,
   createRenderable,
-} from '/src/engine/components/index.js';
+} from '/src/engine/components/Components.js';
 import { drawSceneFrame } from '/src/engine/debug/DebugPanel.js';
 import { applyInputControl } from '/src/engine/systems/InputControlSystem.js';
 import { moveEntities } from '/src/engine/systems/MovementSystem.js';

@@ -1,4 +1,4 @@
-import { trimSafe } from "../stringUtils.js";
+import { trimSafe } from "../../../src/shared/string/strings.js";
 
 export function sanitizeVectorText(value, fallback = "") {
   const text = trimSafe(value);

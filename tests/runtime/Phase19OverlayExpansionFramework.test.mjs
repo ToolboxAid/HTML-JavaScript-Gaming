@@ -5,16 +5,36 @@ David Quesenberry
 Phase19OverlayExpansionFramework.test.mjs
 */
 import assert from 'node:assert/strict';
+import path from 'node:path';
 import { readFileSync } from 'node:fs';
-import * as overlayRuntimeModule from '../../samples/phase-17/shared/overlayGameplayRuntime.js';
-import { LEVEL17_OVERLAY_CYCLE_KEY } from '../../samples/phase-17/shared/overlayCycleInput.js';
-import {
+import { registerHooks } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
+const ROOT_ALIASES = ['/src/', '/games/', '/tools/', '/samples/'];
+
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (ROOT_ALIASES.some((prefix) => specifier.startsWith(prefix))) {
+      return nextResolve(pathToFileURL(path.join(repoRoot, specifier.slice(1))).href, context);
+    }
+
+    return nextResolve(specifier, context);
+  },
+});
+
+const overlayRuntimeModule = await import('../../samples/phase-17/shared/overlayGameplayRuntime.js');
+const overlayCycleInputModule = await import('../../samples/phase-17/shared/overlayCycleInput.js');
+const phase19OverlayExpansionFrameworkModule = await import('../../samples/phase-19/shared/overlay/createPhase19OverlayExpansionFramework.js');
+
+const {
+  LEVEL17_OVERLAY_CYCLE_KEY,
   isOverlayRuntimeCycleModifierActive,
   isOverlayRuntimeToggleModifierActive,
   LEVEL19_OVERLAY_RUNTIME_CYCLE_MODIFIERS,
   LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS,
-} from '../../samples/phase-17/shared/overlayCycleInput.js';
-import {
+} = overlayCycleInputModule;
+const {
   applyOverlayGameplayRuntimePreset,
   exportOverlayGameplayRuntimeProfile,
   exportOverlayGameplayRuntimeSharePackage,
@@ -37,10 +57,11 @@ import {
   stepOverlayGameplayRuntimePointerInteractions,
   stepOverlayGameplayRuntimeControls,
   stepOverlayGameplayRuntime,
-} from '../../samples/phase-17/shared/overlayGameplayRuntime.js';
-import createPhase19OverlayExpansionFramework, {
+} = overlayRuntimeModule;
+const {
+  default: createPhase19OverlayExpansionFramework,
   definePhase19OverlayExtension,
-} from '../../samples/phase-19/shared/overlay/createPhase19OverlayExpansionFramework.js';
+} = phase19OverlayExpansionFrameworkModule;
 
 function createRendererProbe(width = 960, height = 540) {
   return {
@@ -88,12 +109,12 @@ function assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper() {
     (match) => String(match[1] || '').trim()
   );
   assert.equal(
-    runtimeSource.includes("import { asFiniteNumber } from '/src/shared/number/index.js';"),
+    runtimeSource.includes("import { asFiniteNumber } from '/src/shared/number/numbers.js';"),
     true,
     'Overlay runtime slice should import finite-number normalization from shared number helpers.'
   );
   assert.equal(
-    runtimeSource.includes("import { cloneJsonData, safeJsonParse, safeJsonStringify } from '/src/shared/io/index.js';"),
+    runtimeSource.includes("import { cloneJsonData, safeJsonParse, safeJsonStringify } from '/src/shared/json/jsonIO.js';"),
     true,
     'Overlay runtime slice should import shared JSON IO helpers instead of local JSON clone/parse/stringify logic.'
   );

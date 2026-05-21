@@ -4,17 +4,17 @@ import {
   sanitizeText,
   normalizeString,
   escapeHtml
-} from "../../src/shared/string/index.js";
+} from "../../src/shared/string/strings.js";
 import {
   normalizeId,
   createStableId,
   isValidId
-} from "../../src/shared/id/index.js";
+} from "../../src/shared/id/ids.js";
 import {
   isFiniteNumber,
   asPositiveNumber,
   toFiniteNumber
-} from "../../src/shared/number/index.js";
+} from "../../src/shared/number/numbers.js";
 
 export function run() {
   assert.equal(sanitizeText("  hello  "), "hello");

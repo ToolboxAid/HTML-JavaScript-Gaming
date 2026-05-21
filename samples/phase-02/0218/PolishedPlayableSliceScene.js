@@ -18,7 +18,7 @@ import {
   spawnProjectile,
   updateProjectiles
 } from '/src/engine/systems/ProjectileSystem.js';
-import { createPlayerPrefab, createEnemyPrefab } from '/src/engine/prefabs/index.js';
+import { createPlayerPrefab, createEnemyPrefab } from '/src/engine/prefabs/PrefabFactory.js';
 
 const theme = new Theme(ThemeTokens);
 

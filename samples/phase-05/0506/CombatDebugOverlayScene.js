@@ -16,7 +16,7 @@ import {
   startAttack,
   updateAttackState,
   updateCombatant,
-} from '/src/engine/combat/index.js';
+} from '/src/engine/combat/Combat.js';
 
 const theme = new Theme(ThemeTokens);
 

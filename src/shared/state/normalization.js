@@ -7,7 +7,7 @@ normalization.js
 import { normalizeRecord } from "../object/objects.js";
 import { isNonEmptyString } from "../string/strings.js";
 import { isBoolean } from "../types/typeGuards.js";
-import { SHARED_PROMOTION_MODES } from "./contracts.js";
+import { SHARED_PROMOTION_MODES } from "../contracts/sharedStateContracts.js";
 import { createPromotionStateSnapshot } from "./createPromotionStateSnapshot.js";
 
 function normalizeMode(lastEvaluation, promoted) {

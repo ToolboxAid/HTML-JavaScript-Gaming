@@ -17,7 +17,7 @@ import {
   createCollider,
   createSolid,
   createRenderable,
-} from '/src/engine/components/index.js';
+} from '/src/engine/components/Components.js';
 import { drawSceneFrame } from '/src/engine/debug/DebugPanel.js';
 import { drawValidationPanel, validateWorldEntities } from '/src/engine/debug/Validation.js';
 import { applyInputControl } from '/src/engine/systems/InputControlSystem.js';

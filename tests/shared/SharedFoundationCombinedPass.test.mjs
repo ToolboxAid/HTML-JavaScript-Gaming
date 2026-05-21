@@ -19,29 +19,43 @@ import {
   createId,
   createStableId,
   isValidId,
-} from "../../src/shared/id/index.js";
+} from "../../src/shared/id/ids.js";
 import {
   asPositiveInteger,
   roundNumber,
+} from "../../src/shared/math/numberNormalization.js";
+import {
   vectorFromAngle,
+} from "../../src/shared/math/vectorMath.js";
+import {
   safeNormalize,
-} from "../../src/shared/math/index.js";
-import { normalizeRecord, normalizeArray, normalizeRecordArray } from "../../src/shared/data/index.js";
-import { safeJsonParse, safeJsonStringify, cloneJsonData } from "../../src/shared/io/index.js";
-import { isRecord, isFunction, isNonEmptyString, isBoolean } from "../../src/shared/types/index.js";
+} from "../../src/shared/math/vectorNormalize.js";
+import { normalizeRecord } from "../../src/shared/object/objects.js";
+import { normalizeArray } from "../../src/shared/array/arrays.js";
+import { normalizeRecordArray } from "../../src/shared/array/recordArrays.js";
+import { safeJsonParse, safeJsonStringify, cloneJsonData } from "../../src/shared/json/jsonIO.js";
+import { isRecord } from "../../src/shared/object/objects.js";
+import { isFunction, isBoolean } from "../../src/shared/types/typeGuards.js";
+import { isNonEmptyString } from "../../src/shared/string/strings.js";
 import {
   SHARED_PROMOTION_CONTRACT_ID,
   SHARED_PROMOTION_CONTRACT_VERSION,
   SHARED_PROMOTION_MODES,
   isSharedPromotionMode,
+} from "../../src/shared/contracts/sharedStateContracts.js";
+import {
   normalizePromotionStateInput,
   createNormalizedPromotionSnapshot,
+} from "../../src/shared/state/normalization.js";
+import {
   isStateContainer,
   isPromotionStateSnapshot,
+} from "../../src/shared/state/guards.js";
+import {
   getSimulationState,
   getReplayState,
   getEditorState,
-} from "../../src/shared/state/index.js";
+} from "../../src/shared/state/selectors.js";
 
 export function run() {
   assert.deepEqual(ensureArray(null), []);

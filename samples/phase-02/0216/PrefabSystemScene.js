@@ -13,7 +13,7 @@ import {
   createEnemyPrefab,
   createPickupPrefab,
   createProjectilePrefab,
-} from '/src/engine/prefabs/index.js';
+} from '/src/engine/prefabs/PrefabFactory.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
 
 const theme = new Theme(ThemeTokens);

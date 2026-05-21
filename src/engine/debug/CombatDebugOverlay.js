@@ -10,7 +10,7 @@ import {
   getAttackPhaseProgress,
   getCombatantHurtboxes,
   isAttackActive,
-} from '../combat/index.js';
+} from '../combat/Combat.js';
 
 function drawBoxSet(renderer, boxes, fillColor, strokeColor) {
   boxes.forEach((box) => {

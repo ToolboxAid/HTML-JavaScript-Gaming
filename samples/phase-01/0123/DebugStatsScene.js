@@ -13,7 +13,7 @@ import {
   createSize,
   createVelocity,
   createRenderable,
-} from '/src/engine/components/index.js';
+} from '/src/engine/components/Components.js';
 import { drawSceneFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import StatsTracker from '/src/engine/debug/StatsTracker.js';
 import { moveEntities } from '/src/engine/systems/MovementSystem.js';
