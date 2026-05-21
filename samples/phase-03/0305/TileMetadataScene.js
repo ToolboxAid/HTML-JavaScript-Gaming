@@ -4,17 +4,18 @@ David Quesenberry
 03/21/2026
 TileMetadataScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import Camera2D from '/src/engine/camera/Camera2D.js';
 import { followCameraTarget, worldRectToScreen } from '/src/engine/camera/CameraSystem.js';
-import { Tilemap, renderTilemap } from '/src/engine/tilemap/index.js';
+import Tilemap from '/src/engine/tilemap/Tilemap.js';
+import { renderTilemap } from '/src/engine/tilemap/TilemapRenderSystem.js';
 import SpriteAtlas from '/src/engine/assets/SpriteAtlas.js';
 import ImageAssetLoader from '/src/engine/assets/ImageAssetLoader.js';
 import AnimationController from '/src/engine/animation/AnimationController.js';
-import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
 import { stepArcadeBody, moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
 import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';
 

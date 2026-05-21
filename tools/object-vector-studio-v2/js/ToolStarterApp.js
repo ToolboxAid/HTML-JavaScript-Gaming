@@ -1,16 +1,6 @@
-import {
-  CANONICAL_WORLD_TO_SCREEN_SCALE,
-  combineObjectVectorBounds,
-  inverseTransformObjectVectorShapePoint,
-  normalizeObjectVectorOrigin,
-  normalizeRotationDegrees as normalizeSharedRotationDegrees,
-  objectVectorBoundsCornerPoints,
-  objectVectorSvgTransformAttribute,
-  rotatePointAround as rotateSharedPointAround,
-  transformedObjectVectorShapeBounds,
-  transformObjectVectorShapePoint,
-  ObjectVectorRuntimeAssetService
-} from "../../../src/engine/rendering/index.js";
+import { CANONICAL_WORLD_TO_SCREEN_SCALE } from '../../../src/engine/rendering/WorldScreenTransform.js';
+import { combineObjectVectorBounds, inverseTransformObjectVectorShapePoint, normalizeObjectVectorOrigin, normalizeRotationDegrees as normalizeSharedRotationDegrees, objectVectorBoundsCornerPoints, objectVectorSvgTransformAttribute, rotatePointAround as rotateSharedPointAround, transformedObjectVectorShapeBounds, transformObjectVectorShapePoint } from '../../../src/engine/rendering/OrientationTransform.js';
+import ObjectVectorRuntimeAssetService from '../../../src/engine/rendering/ObjectVectorRuntimeAssetService.js';
 import { downloadTextFile, readFileText } from '../../../src/engine/persistence/FilePersistenceService.js';
 import { isPlainObject } from "../../../src/shared/object/objects.js";
 

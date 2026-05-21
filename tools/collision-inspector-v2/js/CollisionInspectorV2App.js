@@ -1,5 +1,5 @@
 import { evaluateObjectVectorCollisionPair, normalizeObjectVectorCollisionMode, OBJECT_VECTOR_COLLISION_MODE_LABELS, recommendObjectVectorCollisionMode } from "../../../src/engine/collision/objectVector.js";
-import { CANONICAL_WORLD_TO_SCREEN_SCALE } from "../../../src/engine/rendering/index.js";
+import { CANONICAL_WORLD_TO_SCREEN_SCALE } from '../../../src/engine/rendering/WorldScreenTransform.js';
 import { resolveManifestScreenDimensions } from "../../../src/tools/common/GameManifestLoader.js";
 import { asFiniteNumber } from "../../../src/shared/number/numbers.js";
 import { deepClone } from "../../../src/shared/json/clone.js";

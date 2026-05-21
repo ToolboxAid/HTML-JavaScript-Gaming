@@ -14,7 +14,7 @@ import PlaylistManager from '../../src/engine/audio/PlaylistManager.js';
 import ParticleSystem from '../../src/engine/fx/ParticleSystem.js';
 import UIFramework from '../../src/engine/ui/UIFramework.js';
 import InputContextService from '../../src/engine/input/InputContextService.js';
-import { SceneTransitionController } from '../../src/engine/scene/index.js';
+import SceneTransitionController from '../../src/engine/scene/SceneTransitionController.js';
 import SaveSlotManager from '../../src/engine/persistence/SaveSlotManager.js';
 import StorageService from '../../src/engine/persistence/StorageService.js';
 import CookieStorageService from '../../src/engine/persistence/CookieStorageService.js';

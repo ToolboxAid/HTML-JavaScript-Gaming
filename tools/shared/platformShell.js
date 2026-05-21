@@ -15,7 +15,7 @@ import { escapeHtml } from "../../src/shared/string/strings.js";
 import Logger from "../../src/engine/logging/Logger.js";
 import LocalStorageService from '../../src/engine/persistence/LocalStorageService.js';
 import SessionStorageService from '../../src/engine/persistence/SessionStorageService.js';
-import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js";
+import { createRuntimeMonitoringHooks } from '../../src/engine/runtime/RuntimeMonitoringHooks.js';
 import { logToolUiControlReady, logToolUiFinalReady, logToolUiLifecycle } from "./toolLoadDiagnostics.js";
 
 let workspaceController = null;

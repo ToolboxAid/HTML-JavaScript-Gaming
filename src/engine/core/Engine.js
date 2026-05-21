@@ -4,20 +4,18 @@ David Quesenberry
 03/21/2026
 Engine.js
 */
-import { CanvasRenderer } from '../rendering/index.js';
+import CanvasRenderer from '../rendering/CanvasRenderer.js';
 import RuntimeMetrics from './RuntimeMetrics.js';
 import FrameClock from './FrameClock.js';
 import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
 import Camera3D from '../camera/Camera3D.js';
-import {
-  backgroundColor,
-  backgroundImage,
-  fullscreenBezel,
-  FullscreenService,
-  resolvePreferredFullscreenTarget,
-  createRuntimeMonitoringHooks
-} from '../runtime/index.js';
+import backgroundColor from '../runtime/backgroundColor.js';
+import backgroundImage from '../runtime/backgroundImage.js';
+import fullscreenBezel from '../runtime/fullscreenBezel.js';
+import FullscreenService from '../runtime/FullscreenService.js';
+import { resolvePreferredFullscreenTarget } from '../runtime/fullscreenBezel.js';
+import { createRuntimeMonitoringHooks } from '../runtime/RuntimeMonitoringHooks.js';
 import AudioService from '../audio/AudioService.js';
 import Logger from '../logging/Logger.js';
 import SettingsSystem from '../release/SettingsSystem.js';

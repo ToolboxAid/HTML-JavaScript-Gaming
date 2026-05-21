@@ -8,7 +8,7 @@ import Engine from '/src/engine/core/Engine.js';
 import TransitionProofScene from './TransitionProofScene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { SceneTransitionController } from '/src/engine/scene/index.js';
+import SceneTransitionController from '/src/engine/scene/SceneTransitionController.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

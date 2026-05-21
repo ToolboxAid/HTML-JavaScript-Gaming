@@ -1,7 +1,5 @@
-import {
-  createWorldScreenTransform,
-  headingPointFromRotation
-} from "../../../src/engine/rendering/index.js";
+import { createWorldScreenTransform } from '../../../src/engine/rendering/WorldScreenTransform.js';
+import { headingPointFromRotation } from '../../../src/engine/rendering/OrientationTransform.js';
 import {
   clampCollisionZoom,
   COLLISION_ZOOM_DEFAULT

@@ -1,4 +1,4 @@
-import { createWorldScreenTransform } from "../../../src/engine/rendering/index.js";
+import { createWorldScreenTransform } from '../../../src/engine/rendering/WorldScreenTransform.js';
 import { asFiniteNumber } from "../../../src/shared/number/numbers.js";
 import {
   collisionZoomToPercent,

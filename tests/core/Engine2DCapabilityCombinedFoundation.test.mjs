@@ -6,10 +6,11 @@ Engine2DCapabilityCombinedFoundation.test.mjs
 */
 import assert from 'node:assert/strict';
 import { Engine } from '../../src/engine/core/index.js';
-import { Scene } from '../../src/engine/scene/index.js';
+import Scene from '../../src/engine/scene/Scene.js';
 import Camera2D from '../../src/engine/camera/Camera2D.js';
 import { followCameraTarget, worldRectToScreen } from '../../src/engine/camera/CameraSystem.js';
-import { Tilemap, renderTilemap } from '../../src/engine/tilemap/index.js';
+import Tilemap from '../../src/engine/tilemap/Tilemap.js';
+import { renderTilemap } from '../../src/engine/tilemap/TilemapRenderSystem.js';
 import { isColliding } from '../../src/engine/collision/aabb.js';
 import { runHybridCollision } from '../../src/engine/collision/hybrid.js';
 import { moveRectWithTilemapCollision } from '../../src/engine/systems/index.js';

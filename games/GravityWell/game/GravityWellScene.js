@@ -4,7 +4,7 @@ David Quesenberry
 03/23/2026
 GravityWellScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawPanel } from '/src/engine/debug/index.js';

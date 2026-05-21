@@ -1,4 +1,4 @@
-import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
+import Scene from '/src/engine/scene/Scene.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import AudioPreprocessPipeline from '/tools/shared/pipeline/AudioPreprocessPipeline.js';
 const theme = new Theme(ThemeTokens);
 export default class AudioPreprocessPipelineScene extends Scene {

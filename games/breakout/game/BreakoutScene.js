@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 BreakoutScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import BreakoutAudio from './BreakoutAudio.js';
 import BreakoutInputController from './BreakoutInputController.js';
 import BreakoutWorld from './BreakoutWorld.js';

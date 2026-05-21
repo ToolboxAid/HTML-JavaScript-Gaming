@@ -4,12 +4,14 @@ David Quesenberry
 03/21/2026
 TilemapSystemScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { Tilemap, renderTilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
+import Tilemap from '/src/engine/tilemap/Tilemap.js';
+import { renderTilemap } from '/src/engine/tilemap/TilemapRenderSystem.js';
+import { resolveRectVsTilemap } from '/src/engine/tilemap/TilemapCollision.js';
 
 const theme = new Theme(ThemeTokens);
 const TILEMAP_PRESET_PATH = '/samples/phase-02/0221/sample.0221.tile-map-editor.json';

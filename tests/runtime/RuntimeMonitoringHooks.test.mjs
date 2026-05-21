@@ -5,7 +5,7 @@ David Quesenberry
 RuntimeMonitoringHooks.test.mjs
 */
 import assert from 'node:assert/strict';
-import { createRuntimeMonitoringHooks } from '../../src/engine/runtime/index.js';
+import { createRuntimeMonitoringHooks } from '../../src/engine/runtime/RuntimeMonitoringHooks.js';
 import Logger from '../../src/engine/logging/Logger.js';
 
 function createWindowStub() {

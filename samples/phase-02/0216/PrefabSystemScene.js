@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 PrefabSystemScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
@@ -14,7 +14,7 @@ import {
   createPickupPrefab,
   createProjectilePrefab,
 } from '/src/engine/prefabs/index.js';
-import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

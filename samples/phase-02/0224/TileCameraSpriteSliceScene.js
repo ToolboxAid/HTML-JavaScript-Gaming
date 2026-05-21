@@ -4,15 +4,17 @@ David Quesenberry
 03/21/2026
 TileCameraSpriteSliceScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import Camera2D from '/src/engine/camera/Camera2D.js';
 import { followCameraTarget, worldRectToScreen } from '/src/engine/camera/CameraSystem.js';
-import { Tilemap, renderTilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
+import Tilemap from '/src/engine/tilemap/Tilemap.js';
+import { renderTilemap } from '/src/engine/tilemap/TilemapRenderSystem.js';
+import { resolveRectVsTilemap } from '/src/engine/tilemap/TilemapCollision.js';
 import SpriteAtlas from '/src/engine/assets/SpriteAtlas.js';
-import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
 import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/WorldSerializer.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 

@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 SolarSystemScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import SolarSystemWorld from './SolarSystemWorld.js';
 import { toObject } from '/src/shared/object/objects.js';
 

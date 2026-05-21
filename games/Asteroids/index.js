@@ -4,7 +4,7 @@ import { highscoreFlow } from "./flow/highscore.js";
 import { createAsteroidsShowcaseDebugPlugin } from "./debug/asteroidsShowcaseDebug.js";
 import Engine from "/src/engine/core/Engine.js";
 import InputService from "/src/engine/input/InputService.js";
-import { ObjectVectorRuntimeAssetService } from "/src/engine/rendering/index.js";
+import ObjectVectorRuntimeAssetService from '/src/engine/rendering/ObjectVectorRuntimeAssetService.js';
 import { Theme } from "/src/engine/theme/Theme.js";
 import { ThemeTokens } from "/src/engine/theme/ThemeTokens.js";
 import { resolveDebugConfig } from "/src/shared/debug/config.js";

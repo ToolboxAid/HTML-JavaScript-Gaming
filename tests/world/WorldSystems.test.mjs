@@ -6,15 +6,13 @@ WorldSystems.test.mjs
 */
 import assert from 'node:assert/strict';
 import EventBus from '../../src/engine/events/EventBus.js';
-import {
-  CutsceneSystem,
-  DayNightCycle,
-  EventScriptSystem,
-  QuestSystem,
-  SpawnSystem,
-  WeatherSystem,
-  WorldStreamingSystem,
-} from '../../src/engine/world/index.js';
+import CutsceneSystem from '../../src/engine/world/CutsceneSystem.js';
+import DayNightCycle from '../../src/engine/world/DayNightCycle.js';
+import EventScriptSystem from '../../src/engine/world/EventScriptSystem.js';
+import QuestSystem from '../../src/engine/world/QuestSystem.js';
+import SpawnSystem from '../../src/engine/world/SpawnSystem.js';
+import WeatherSystem from '../../src/engine/world/WeatherSystem.js';
+import WorldStreamingSystem from '../../src/engine/world/WorldStreamingSystem.js';
 
 export function run() {
   const quests = new QuestSystem([{ id: 'collect', required: 2 }]);

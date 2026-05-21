@@ -49,7 +49,7 @@ async function canvasSignature(page) {
 
 async function runtimeObjectPixelBounds(page, objectId, instance) {
   return page.evaluate(async ({ instance, objectId }) => {
-    const { ObjectVectorRuntimeAssetService } = await import("/src/engine/rendering/index.js");
+    const { default: ObjectVectorRuntimeAssetService } = await import("/src/engine/rendering/ObjectVectorRuntimeAssetService.js");
     const runtime = new ObjectVectorRuntimeAssetService({
       logger: {
         error() {},
@@ -113,15 +113,15 @@ async function runtimeCollisionOrientationSamples(page, samples) {
   return page.evaluate(async ({ samples: requestedSamples }) => {
     const {
       createObjectVectorTransformPipeline,
-      createWorldScreenTransform,
-      ObjectVectorRuntimeAssetService,
       transformObjectVectorShapePoint,
       transformRuntimeOrientedPoint
-    } = await import("/src/engine/rendering/index.js");
+    } = await import("/src/engine/rendering/OrientationTransform.js");
+    const { createWorldScreenTransform } = await import("/src/engine/rendering/WorldScreenTransform.js");
+    const { default: ObjectVectorRuntimeAssetService } = await import("/src/engine/rendering/ObjectVectorRuntimeAssetService.js");
     const {
       createObjectVectorCollisionGeometry,
       getObjectVectorOrigin
-    } = await import("/src/engine/collision/index.js");
+    } = await import("/src/engine/collision/objectVector.js");
     const runtime = new ObjectVectorRuntimeAssetService({
       logger: {
         error() {},
@@ -711,7 +711,7 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/Object Vector Studio V2 editor zoom is viewport-only; runtime\/world scale remains 1:1/);
       const initialZoom = await page.evaluate(() => window.__objectVectorStudioV2App.viewport.zoom);
       const sharedScale = await page.evaluate(async () => {
-        const { CANONICAL_WORLD_TO_SCREEN_SCALE } = await import("/src/engine/rendering/index.js");
+        const { CANONICAL_WORLD_TO_SCREEN_SCALE } = await import("/src/engine/rendering/WorldScreenTransform.js");
         return CANONICAL_WORLD_TO_SCREEN_SCALE;
       });
       expect(sharedScale).toBe(1);
@@ -719,7 +719,7 @@ test.describe("Collision Inspector V2", () => {
       const editorZoom = await page.evaluate(() => window.__objectVectorStudioV2App.viewport.zoom);
       expect(editorZoom).toBeGreaterThan(initialZoom);
       const sharedScaleAfterZoom = await page.evaluate(async () => {
-        const { CANONICAL_WORLD_TO_SCREEN_SCALE } = await import("/src/engine/rendering/index.js");
+        const { CANONICAL_WORLD_TO_SCREEN_SCALE } = await import("/src/engine/rendering/WorldScreenTransform.js");
         return CANONICAL_WORLD_TO_SCREEN_SCALE;
       });
       expect(sharedScaleAfterZoom).toBe(1);
@@ -728,12 +728,12 @@ test.describe("Collision Inspector V2", () => {
           createObjectVectorTransformPipeline,
           inverseTransformObjectVectorShapePoint,
           normalizeRotationDegrees,
-          ObjectVectorTransformService,
           objectVectorSvgTransformAttribute,
           transformedObjectVectorShapeBounds,
-          transformObjectVectorShapePoint,
-          WorldScreenTransformService
-        } = await import("/src/engine/rendering/index.js");
+          transformObjectVectorShapePoint
+        } = await import("/src/engine/rendering/OrientationTransform.js");
+        const { ObjectVectorTransformService } = await import("/src/engine/rendering/ObjectVectorTransformService.js");
+        const { WorldScreenTransformService } = await import("/src/engine/rendering/WorldScreenTransform.js");
         const transform = { rotation: 45, scaleX: 1.25, scaleY: 0.75, x: 10, y: -4 };
         const origin = { x: 2, y: 3 };
         const point = { x: 8, y: 5 };

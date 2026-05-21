@@ -8,7 +8,8 @@ import Engine from '/src/engine/core/Engine.js';
 import IntroScene from './IntroScene.js';
 import PlayScene from './PlayScene.js';
 import InputService from '/src/engine/input/InputService.js';
-import { SceneTransition, TransitionScene } from '/src/engine/scene/index.js';
+import SceneTransition from '/src/engine/scene/SceneTransition.js';
+import TransitionScene from '/src/engine/scene/TransitionScene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 

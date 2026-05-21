@@ -5,23 +5,21 @@ David Quesenberry
 Section1FinalResidueStructure.test.mjs
 */
 import assert from 'node:assert/strict';
-import {
-  CanvasRenderer,
-  ResolutionScaler,
-  renderByLayers,
-  renderSpriteReadyEntities,
-} from '../../src/engine/rendering/index.js';
-import {
-  Scene,
-  SceneManager,
-  SceneTransition,
-  TransitionScene,
-  SceneTransitionController,
-  AttractModeController,
-  DEFAULT_ATTRACT_CONFIG,
-} from '../../src/engine/scene/index.js';
+import CanvasRenderer from '../../src/engine/rendering/CanvasRenderer.js';
+import ResolutionScaler from '../../src/engine/rendering/ResolutionScaler.js';
+import { renderByLayers } from '../../src/engine/rendering/LayeredRenderSystem.js';
+import { renderSpriteReadyEntities } from '../../src/engine/rendering/SpriteRenderSystem.js';
+import Scene from '../../src/engine/scene/Scene.js';
+import SceneManager from '../../src/engine/scene/SceneManager.js';
+import SceneTransition from '../../src/engine/scene/SceneTransition.js';
+import TransitionScene from '../../src/engine/scene/TransitionScene.js';
+import SceneTransitionController from '../../src/engine/scene/SceneTransitionController.js';
+import AttractModeController from '../../src/engine/scene/AttractModeController.js';
+import { DEFAULT_ATTRACT_CONFIG } from '../../src/engine/scene/AttractModeController.js';
 import { isColliding } from '../../src/engine/collision/aabb.js';
-import { applyDrag, stepArcadeBody, integrateVelocity2D } from '../../src/engine/physics/index.js';
+import { applyDrag } from '../../src/engine/physics/drag.js';
+import { stepArcadeBody } from '../../src/engine/physics/arcadeBody.js';
+import { integrateVelocity2D } from '../../src/engine/physics/integration.js';
 
 assert.equal(typeof CanvasRenderer, 'function');
 assert.equal(typeof ResolutionScaler, 'function');

@@ -1,4 +1,5 @@
-import { integrateVelocity2D, stepArcadeBody } from "../../src/engine/physics/index.js";
+import { integrateVelocity2D } from '../../src/engine/physics/integration.js';
+import { stepArcadeBody } from '../../src/engine/physics/arcadeBody.js';
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import {

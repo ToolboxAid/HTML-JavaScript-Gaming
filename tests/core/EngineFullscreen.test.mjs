@@ -6,7 +6,7 @@
 */
 import assert from 'node:assert/strict';
 import Engine from '../../src/engine/core/Engine.js';
-import { FullscreenService } from '../../src/engine/runtime/index.js';
+import FullscreenService from '../../src/engine/runtime/FullscreenService.js';
 
 function createCanvas() {
   const canvas = {

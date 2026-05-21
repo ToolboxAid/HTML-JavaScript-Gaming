@@ -4,12 +4,12 @@ David Quesenberry
 04/15/2026
 DungeonCrawler3DScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import World from '/src/engine/ecs/World.js';
-import { isAabbColliding3D } from '/src/engine/physics/index.js';
+import { isAabbColliding3D } from '/src/engine/physics/collision3d.js';
 import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
 import {
   applyPhase16CameraMode,

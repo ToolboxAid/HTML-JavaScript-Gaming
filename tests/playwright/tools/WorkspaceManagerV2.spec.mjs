@@ -7680,7 +7680,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
 
       const invalidRuntimeAssetResult = await page.evaluate(async () => {
-        const { ObjectVectorRuntimeAssetService } = await import("/src/engine/rendering/index.js");
+        const { default: ObjectVectorRuntimeAssetService } = await import("/src/engine/rendering/ObjectVectorRuntimeAssetService.js");
         const messages = [];
         const service = new ObjectVectorRuntimeAssetService({
           logger: {

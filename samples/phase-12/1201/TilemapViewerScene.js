@@ -4,12 +4,13 @@ David Quesenberry
 03/31/2026
 TilemapViewerScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import Camera2D from '/src/engine/camera/Camera2D.js';
-import { Tilemap, renderTilemap } from '/src/engine/tilemap/index.js';
+import Tilemap from '/src/engine/tilemap/Tilemap.js';
+import { renderTilemap } from '/src/engine/tilemap/TilemapRenderSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

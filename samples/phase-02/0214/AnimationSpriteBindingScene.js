@@ -4,13 +4,13 @@ David Quesenberry
 03/21/2026
 AnimationSpriteBindingScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import AnimationController from '/src/engine/animation/AnimationController.js';
-import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);

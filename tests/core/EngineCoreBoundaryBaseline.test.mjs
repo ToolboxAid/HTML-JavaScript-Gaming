@@ -6,11 +6,17 @@ EngineCoreBoundaryBaseline.test.mjs
 */
 import assert from 'node:assert/strict';
 import * as core from '../../src/engine/core/index.js';
-import * as scene from '../../src/engine/scene/index.js';
-import * as rendering from '../../src/engine/rendering/index.js';
+import Scene from '../../src/engine/scene/Scene.js';
+import SceneManager from '../../src/engine/scene/SceneManager.js';
+import CanvasRenderer from '../../src/engine/rendering/CanvasRenderer.js';
+import { renderByLayers } from '../../src/engine/rendering/LayeredRenderSystem.js';
 import InputService from '../../src/engine/input/InputService.js';
 import ActionInputService from '../../src/engine/input/ActionInputService.js';
-import * as physics from '../../src/engine/physics/index.js';
+import { stepArcadeBody } from '../../src/engine/physics/arcadeBody.js';
+import { applyDrag } from '../../src/engine/physics/drag.js';
+import { integrateVelocity3D } from '../../src/engine/physics/integration3d.js';
+import { isAabbColliding3D, resolveAabbCollision3D } from '../../src/engine/physics/collision3d.js';
+import { stepSceneBodies3D } from '../../src/engine/physics/scene3d.js';
 import AudioService from '../../src/engine/audio/AudioService.js';
 import * as systems from '../../src/engine/systems/index.js';
 
