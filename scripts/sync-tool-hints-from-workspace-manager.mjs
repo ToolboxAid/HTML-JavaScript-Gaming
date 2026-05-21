@@ -19,9 +19,8 @@ import { getToolRegistry } from "../tools/toolRegistry.js";
 const ROOT = process.cwd();
 const METADATA_PATH = path.join(ROOT, "games", "metadata", "games.index.metadata.json");
 
-const GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
-const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
-const GAME_ASSET_CATALOG_VERSION = 1;
+const GAME_MANIFEST_FILENAME = "game.manifest.json";
+const GAME_MANIFEST_SCHEMA = "html-js-gaming.game-manifest";
 
 const GAME_TOOLS_MANIFEST_FILENAME = "tools.manifest.json";
 const GAME_TOOLS_MANIFEST_SCHEMA = "html-js-gaming.game-asset-manifest";
@@ -29,15 +28,18 @@ const GAME_TOOLS_MANIFEST_VERSION = 1;
 
 const KIND_TO_TOOLS_USED = Object.freeze({
   palette: ["palette-manager-v2"],
+  color: ["asset-manager-v2"],
   sprite: ["sprite-editor"],
   tilemap: ["tile-map-editor"],
   parallax: ["parallax-editor"],
-  vector: ["svg-asset-studio"],
-  image: ["asset-browser"],
-  audio: ["asset-browser"],
-  video: ["asset-browser"],
-  shader: ["asset-browser"],
-  data: ["asset-browser"]
+  vector: ["object-vector-studio-v2"],
+  image: ["asset-manager-v2"],
+  audio: ["asset-manager-v2"],
+  video: ["asset-manager-v2"],
+  shader: ["asset-manager-v2"],
+  data: ["asset-manager-v2"],
+  font: ["asset-manager-v2"],
+  localization: ["asset-manager-v2"]
 });
 
 function readJson(filePath) {
@@ -73,7 +75,7 @@ function normalizeToolsUsed(value) {
   return output;
 }
 
-function normalizeCatalogKind(value) {
+function normalizeManifestAssetKind(value) {
   return normalizeToken(value);
 }
 
@@ -126,25 +128,27 @@ function getGameDirFromHref(gameHref) {
   return path.join(ROOT, relative);
 }
 
-function readWorkspaceAssetCatalog(gameDir) {
+function readGameManifestAssetManagerAssets(gameDir) {
   if (!gameDir) {
     return { valid: false, reason: "missing-game-dir", kinds: [], assetCount: 0 };
   }
 
-  const catalogPath = path.join(gameDir, "assets", GAME_ASSET_CATALOG_FILENAME);
-  if (!fs.existsSync(catalogPath)) {
+  const manifestPath = path.join(gameDir, GAME_MANIFEST_FILENAME);
+  if (!fs.existsSync(manifestPath)) {
     return { valid: false, reason: "missing-file", kinds: [], assetCount: 0 };
   }
 
   try {
-    const source = readJson(catalogPath);
+    const source = readJson(manifestPath);
     const schema = normalizeText(source?.schema);
     const version = Number(source?.version);
-    if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
+    if (schema !== GAME_MANIFEST_SCHEMA || !Number.isFinite(version) || version < 1) {
       return { valid: false, reason: "invalid-schema-or-version", kinds: [], assetCount: 0 };
     }
 
-    const assets = source?.assets && typeof source.assets === "object" ? source.assets : {};
+    const assets = source?.tools?.["asset-manager-v2"]?.assets && typeof source.tools["asset-manager-v2"].assets === "object"
+      ? source.tools["asset-manager-v2"].assets
+      : {};
     const kinds = [];
     let assetCount = 0;
 
@@ -157,7 +161,7 @@ function readWorkspaceAssetCatalog(gameDir) {
         return;
       }
       assetCount += 1;
-      const kind = normalizeCatalogKind(entry.kind);
+      const kind = normalizeManifestAssetKind(entry.type || entry.kind);
       if (kind) {
         kinds.push(kind);
       }
@@ -223,17 +227,17 @@ function readGameToolsManifest(gameDir) {
   }
 }
 
-function deriveToolsUsedFromManifests(catalogInfo, toolsManifestInfo) {
+function deriveToolsUsedFromManifests(assetManagerInfo, toolsManifestInfo) {
   const derived = [];
 
-  if (catalogInfo.valid) {
-    catalogInfo.kinds.forEach((kind) => {
+  if (assetManagerInfo.valid) {
+    assetManagerInfo.kinds.forEach((kind) => {
       const mapped = KIND_TO_TOOLS_USED[kind] || [];
       mapped.forEach((toolId) => derived.push(toolId));
     });
 
-    if (catalogInfo.assetCount > 0) {
-      derived.push("asset-browser");
+    if (assetManagerInfo.assetCount > 0) {
+      derived.push("asset-manager-v2");
     }
   }
 
@@ -267,10 +271,10 @@ function syncToolsUsed(metadata) {
       continue;
     }
 
-    const catalogInfo = readWorkspaceAssetCatalog(gameDir);
+    const assetManagerInfo = readGameManifestAssetManagerAssets(gameDir);
     const toolsManifestInfo = readGameToolsManifest(gameDir);
 
-    const hasAnyValidManifest = catalogInfo.valid || toolsManifestInfo.valid;
+    const hasAnyValidManifest = assetManagerInfo.valid || toolsManifestInfo.valid;
     if (!hasAnyValidManifest) {
       if (needsKeyMigration) {
         game.toolsUsed = existing;
@@ -279,11 +283,11 @@ function syncToolsUsed(metadata) {
         }
         updated += 1;
       }
-      warnings.push(`${gameId}: no valid manifest source (${GAME_ASSET_CATALOG_FILENAME} / ${GAME_TOOLS_MANIFEST_FILENAME})`);
+      warnings.push(`${gameId}: no valid manifest source (${GAME_MANIFEST_FILENAME} / ${GAME_TOOLS_MANIFEST_FILENAME})`);
       continue;
     }
 
-    const next = deriveToolsUsedFromManifests(catalogInfo, toolsManifestInfo);
+    const next = deriveToolsUsedFromManifests(assetManagerInfo, toolsManifestInfo);
     const invalid = next.filter((toolId) => !knownToolIds.has(toolId));
     if (invalid.length > 0) {
       throw new Error(`${gameId}: unknown tool id(s): ${invalid.join(", ")}`);

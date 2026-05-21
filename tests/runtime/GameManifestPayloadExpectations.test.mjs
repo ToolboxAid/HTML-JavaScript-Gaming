@@ -10,7 +10,7 @@ const gamesRoot = path.join(repoRoot, "games");
 const summaryPath = path.join(repoRoot, "tmp", "manifest-payload-expectations-results.json");
 
 const DISALLOWED_ROOT_KEYS = new Set(["lineage", "sources", "assets", "palette", "palettes"]);
-const LEGACY_PATH_MARKERS = ["workspace.asset-catalog.json", "tools.manifest.json"];
+const LEGACY_PATH_MARKERS = ["tools.manifest.json"];
 
 function isObjectRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);

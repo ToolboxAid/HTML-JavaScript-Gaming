@@ -7,7 +7,7 @@ AsteroidsAudio.js
 import GaplessLoopPlayer from '/src/engine/audio/GaplessLoopPlayer.js';
 import HtmlAudioMediaBackend from '/src/engine/audio/HtmlAudioMediaBackend.js';
 import MediaTrackService from '/src/engine/audio/MediaTrackService.js';
-import { resolveWorkspaceGameAssetPath } from '../../shared/workspaceGameAssetCatalog.js';
+import { resolveGameManifestAssetPath } from '../../shared/gameManifestAssets.js';
 
 const ASTEROIDS_GAME_ID = "Asteroids";
 const ASTEROIDS_AUDIO_ASSET_IDS = Object.freeze({
@@ -38,7 +38,7 @@ export default class AsteroidsAudio {
   }
 
   resolveAudioPath(assetId) {
-    return resolveWorkspaceGameAssetPath(ASTEROIDS_GAME_ID, assetId);
+    return resolveGameManifestAssetPath(ASTEROIDS_GAME_ID, assetId);
   }
 
   ensureInitialized() {

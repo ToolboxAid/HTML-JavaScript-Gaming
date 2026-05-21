@@ -1,5 +1,5 @@
 import { getWorkspaceGameRuntimeContext } from "/games/shared/workspaceGameRuntimeContext.js";
-import { primeWorkspaceGameAssetCatalog } from "/games/shared/workspaceGameAssetCatalog.js";
+import { primeGameManifestAssets } from "/games/shared/gameManifestAssets.js";
 import { normalizeGameId } from "../../src/shared/string/strings.js";
 
 export function hydrateWorkspaceGameRuntime(gameId) {
@@ -37,22 +37,26 @@ export function hydrateWorkspaceGameRuntime(gameId) {
       requiresService: context.game.requiresService === true,
       hostedAt: context.game.hostedAt,
       assetCatalogPath: context.game.assetCatalogPath,
-      assetCatalog: { ...context.game.assetCatalog }
+      assetCatalog: { ...context.game.assetCatalog },
+      manifestAssetSourcePath: context.game.assetCatalogPath,
+      manifestAssets: { ...context.game.assetCatalog }
     }
   };
 
   Object.freeze(runtime.game.classValues);
   Object.freeze(runtime.game.tags);
   Object.values(runtime.game.assetCatalog).forEach((entry) => Object.freeze(entry));
+  Object.values(runtime.game.manifestAssets).forEach((entry) => Object.freeze(entry));
   Object.freeze(runtime.game.assetCatalog);
+  Object.freeze(runtime.game.manifestAssets);
   Object.freeze(runtime.game);
   Object.freeze(runtime);
 
   window.__WORKSPACE_GAME_RUNTIME__ = runtime;
-  primeWorkspaceGameAssetCatalog({
+  primeGameManifestAssets({
     gameId: runtime.game.id,
-    assetCatalogPath: runtime.game.assetCatalogPath,
-    assetCatalog: runtime.game.assetCatalog
+    sourcePath: runtime.game.manifestAssetSourcePath,
+    assets: runtime.game.manifestAssets
   });
   return runtime;
 }

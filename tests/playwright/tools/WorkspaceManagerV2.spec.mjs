@@ -7173,7 +7173,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("resolves asset-manager-v2 audio catalog paths and plays Asteroids sounds", async ({ page }) => {
+  test("resolves asset-manager-v2 manifest audio paths and plays Asteroids sounds", async ({ page }) => {
     const server = await startRepoServer();
     const pageErrors = [];
 
@@ -7284,9 +7284,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     try {
       await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
       const result = await page.evaluate(async () => {
-        const catalog = await import("/games/shared/workspaceGameAssetCatalog.js");
-        await catalog.preloadWorkspaceGameAssetCatalog("SyntheticAudio", { catalogPath: "/synthetic-audio-game.manifest.json" });
-        await catalog.preloadWorkspaceGameAssetCatalog("Asteroids", { catalogPath: "/games/Asteroids/game.manifest.json" });
+        const manifestAssets = await import("/games/shared/gameManifestAssets.js");
+        await manifestAssets.preloadGameManifestAssets("SyntheticAudio", { manifestPath: "/synthetic-audio-game.manifest.json" });
+        await manifestAssets.preloadGameManifestAssets("Asteroids", { manifestPath: "/games/Asteroids/game.manifest.json" });
         const { default: AsteroidsAudio } = await import("/games/Asteroids/systems/AsteroidsAudio.js");
         const audioWarnings = [];
         const audio = new AsteroidsAudio({
@@ -7301,15 +7301,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         audio.stopAll();
         return {
           audioWarnings,
-          asteroidsExtraShip: catalog.resolveWorkspaceGameAssetPath("Asteroids", "assets.audio.sound.extra-ship"),
-          asteroidsFire: catalog.resolveWorkspaceGameAssetPath("Asteroids", "assets.audio.sound.fire"),
-          asteroidsMusic: catalog.resolveWorkspaceGameAssetPath("Asteroids", "assets.audio.music.beat-1"),
+          asteroidsExtraShip: manifestAssets.resolveGameManifestAssetPath("Asteroids", "assets.audio.sound.extra-ship"),
+          asteroidsFire: manifestAssets.resolveGameManifestAssetPath("Asteroids", "assets.audio.sound.fire"),
+          asteroidsMusic: manifestAssets.resolveGameManifestAssetPath("Asteroids", "assets.audio.music.beat-1"),
           fireState: audio.media.getState("fire"),
           loopPlayed,
           mediaPlayed,
           playCalls: window.__audioPlayCalls,
-          syntheticMp3: catalog.resolveWorkspaceGameAssetPath("SyntheticAudio", "assets.audio.music.theme"),
-          syntheticWav: catalog.resolveWorkspaceGameAssetPath("SyntheticAudio", "assets.audio.sound.click")
+          syntheticMp3: manifestAssets.resolveGameManifestAssetPath("SyntheticAudio", "assets.audio.music.theme"),
+          syntheticWav: manifestAssets.resolveGameManifestAssetPath("SyntheticAudio", "assets.audio.sound.click")
         };
       });
 

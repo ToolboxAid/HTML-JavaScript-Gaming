@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 SpaceInvadersAudio.js
 */
-import { resolveWorkspaceGameAssetPath } from "../../shared/workspaceGameAssetCatalog.js";
+import { resolveGameManifestAssetPath } from "../../shared/gameManifestAssets.js";
 
 const SPACE_INVADERS_GAME_ID = "SpaceInvaders";
 const EFFECT_ASSET_IDS = Object.freeze({
@@ -33,7 +33,7 @@ export default class SpaceInvadersAudio {
     if (!assetId) {
       return "";
     }
-    return resolveWorkspaceGameAssetPath(SPACE_INVADERS_GAME_ID, assetId);
+    return resolveGameManifestAssetPath(SPACE_INVADERS_GAME_ID, assetId);
   }
 
   setMuted(muted) {

@@ -1,22 +1,19 @@
 import { toObject } from "../../src/shared/object/objects.js";
 
-const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
-const GAME_ASSET_CATALOG_VERSION = 1;
 const GAME_MANIFEST_SCHEMA = "html-js-gaming.game-manifest";
-const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 
-const catalogCache = new Map();
+const manifestAssetCache = new Map();
 
 function normalizeGameId(value) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
-function normalizeCatalogPath(value) {
+function normalizeSourcePath(value) {
   const raw = typeof value === "string" ? value.trim() : "";
   if (!raw) {
     return "";
   }
-  if (/^(https?:|data:|blob:)/i.test(raw)) {
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) {
     return raw;
   }
   const normalized = raw.startsWith("/") ? raw : `/${raw.replace(/^\.?\//, "")}`;
@@ -29,32 +26,32 @@ function normalizeAssetsPath(value) {
     : "";
 }
 
-function normalizeAssetManagerPath(value, assetsPath) {
+function normalizeManifestAssetPath(value, assetsPath) {
   const raw = typeof value === "string" ? value.trim().replace(/\\/g, "/") : "";
   if (!raw) {
     return "";
   }
-  if (/^(https?:|data:|blob:)/i.test(raw) || raw.startsWith("/")) {
-    return normalizeCatalogPath(raw);
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw) || raw.startsWith("/")) {
+    return normalizeSourcePath(raw);
   }
 
   const baseAssetsPath = normalizeAssetsPath(assetsPath);
   if (!baseAssetsPath) {
-    return normalizeCatalogPath(raw);
+    return normalizeSourcePath(raw);
   }
   if (raw.startsWith("games/") || raw.startsWith(`${baseAssetsPath}/`)) {
-    return normalizeCatalogPath(raw);
+    return normalizeSourcePath(raw);
   }
 
   const relativePath = raw.startsWith("assets/")
     ? raw.slice("assets/".length)
     : raw.replace(/^\.?\//, "");
-  return normalizeCatalogPath(`${baseAssetsPath}/${relativePath}`);
+  return normalizeSourcePath(`${baseAssetsPath}/${relativePath}`);
 }
 
-function normalizeCatalogEntry(rawEntry) {
+function normalizeManifestAssetEntry(rawEntry, assetsPath) {
   const entry = toObject(rawEntry);
-  const path = normalizeCatalogPath(entry.path || entry.runtimePath || entry.href);
+  const path = normalizeManifestAssetPath(entry.path || entry.runtimePath || entry.href, assetsPath);
   if (!path) {
     return null;
   }
@@ -65,7 +62,7 @@ function normalizeCatalogEntry(rawEntry) {
   };
 }
 
-function normalizeCatalogEntries(rawEntries) {
+function normalizeManifestAssetEntries(rawEntries, assetsPath) {
   const entries = toObject(rawEntries);
   const normalized = {};
   Object.entries(entries).forEach(([assetId, rawEntry]) => {
@@ -73,7 +70,7 @@ function normalizeCatalogEntries(rawEntries) {
     if (!safeAssetId) {
       return;
     }
-    const normalizedEntry = normalizeCatalogEntry(rawEntry);
+    const normalizedEntry = normalizeManifestAssetEntry(rawEntry, assetsPath);
     if (!normalizedEntry) {
       return;
     }
@@ -82,9 +79,9 @@ function normalizeCatalogEntries(rawEntries) {
   return normalized;
 }
 
-function normalizeAssetManagerEntry(rawEntry, assetsPath) {
+function normalizeRuntimeAssetEntry(rawEntry) {
   const entry = toObject(rawEntry);
-  const path = normalizeAssetManagerPath(entry.path || entry.runtimePath || entry.href, assetsPath);
+  const path = normalizeSourcePath(entry.path || entry.runtimePath || entry.href);
   if (!path) {
     return null;
   }
@@ -95,7 +92,7 @@ function normalizeAssetManagerEntry(rawEntry, assetsPath) {
   };
 }
 
-function normalizeAssetManagerEntries(rawEntries, assetsPath) {
+function normalizeRuntimeAssetEntries(rawEntries) {
   const entries = toObject(rawEntries);
   const normalized = {};
   Object.entries(entries).forEach(([assetId, rawEntry]) => {
@@ -103,27 +100,13 @@ function normalizeAssetManagerEntries(rawEntries, assetsPath) {
     if (!safeAssetId) {
       return;
     }
-    const normalizedEntry = normalizeAssetManagerEntry(rawEntry, assetsPath);
+    const normalizedEntry = normalizeRuntimeAssetEntry(rawEntry);
     if (!normalizedEntry) {
       return;
     }
     normalized[safeAssetId] = normalizedEntry;
   });
   return normalized;
-}
-
-function deriveCatalogPathFromGameHref(gameHref) {
-  const href = normalizeCatalogPath(gameHref);
-  if (!href || !href.includes("/games/")) {
-    return "";
-  }
-  if (href.endsWith("/index.html")) {
-    return `${href.slice(0, -"/index.html".length)}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
-  }
-  if (href.endsWith("/")) {
-    return `${href}assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
-  }
-  return "";
 }
 
 function readRuntimeGameRecord(gameId) {
@@ -142,22 +125,22 @@ function readRuntimeGameRecord(gameId) {
   if (!runtimeGameId || runtimeGameId !== gameId) {
     return null;
   }
-  const assetCatalog = normalizeCatalogEntries(runtimeGame.assetCatalog);
-  const assetCatalogPath = normalizeCatalogPath(
-    runtimeGame.assetCatalogPath || deriveCatalogPathFromGameHref(runtimeGame.href)
+  const assets = normalizeRuntimeAssetEntries(runtimeGame.manifestAssets || runtimeGame.assetCatalog);
+  const sourcePath = normalizeSourcePath(
+    runtimeGame.manifestAssetSourcePath || runtimeGame.assetCatalogPath
   );
   return {
-    assetCatalog,
-    assetCatalogPath
+    assets,
+    sourcePath
   };
 }
 
-function getCachedCatalogRecord(gameId) {
-  return catalogCache.get(gameId) || null;
+function getCachedManifestRecord(gameId) {
+  return manifestAssetCache.get(gameId) || null;
 }
 
-function setCachedCatalogRecord(gameId, record) {
-  const current = catalogCache.get(gameId) || {};
+function setCachedManifestRecord(gameId, record) {
+  const current = manifestAssetCache.get(gameId) || {};
   const merged = {
     entries: current.entries || {},
     path: current.path || "",
@@ -165,35 +148,35 @@ function setCachedCatalogRecord(gameId, record) {
     promise: null,
     ...record
   };
-  catalogCache.set(gameId, merged);
+  manifestAssetCache.set(gameId, merged);
   return merged;
 }
 
-function primeCatalogFromRuntime(gameId) {
+function primeAssetsFromRuntime(gameId) {
   const runtimeRecord = readRuntimeGameRecord(gameId);
   if (!runtimeRecord) {
     return null;
   }
-  const hasEntries = Object.keys(runtimeRecord.assetCatalog).length > 0;
-  if (!hasEntries && !runtimeRecord.assetCatalogPath) {
+  const hasEntries = Object.keys(runtimeRecord.assets).length > 0;
+  if (!hasEntries && !runtimeRecord.sourcePath) {
     return null;
   }
-  return setCachedCatalogRecord(gameId, {
-    entries: hasEntries ? runtimeRecord.assetCatalog : (getCachedCatalogRecord(gameId)?.entries || {}),
-    path: runtimeRecord.assetCatalogPath || getCachedCatalogRecord(gameId)?.path || "",
+  return setCachedManifestRecord(gameId, {
+    entries: hasEntries ? runtimeRecord.assets : (getCachedManifestRecord(gameId)?.entries || {}),
+    path: runtimeRecord.sourcePath || getCachedManifestRecord(gameId)?.path || "",
     status: hasEntries ? "ready" : "idle",
     promise: null
   });
 }
 
-export function primeWorkspaceGameAssetCatalog(options = {}) {
+export function primeGameManifestAssets(options = {}) {
   const gameId = normalizeGameId(options.gameId);
   if (!gameId) {
     return null;
   }
-  const entries = normalizeCatalogEntries(options.assetCatalog);
-  const path = normalizeCatalogPath(options.assetCatalogPath);
-  return setCachedCatalogRecord(gameId, {
+  const entries = normalizeRuntimeAssetEntries(options.assets || options.manifestAssets);
+  const path = normalizeSourcePath(options.manifestPath || options.sourcePath);
+  return setCachedManifestRecord(gameId, {
     entries,
     path,
     status: Object.keys(entries).length > 0 ? "ready" : "idle",
@@ -201,22 +184,7 @@ export function primeWorkspaceGameAssetCatalog(options = {}) {
   });
 }
 
-function normalizeCatalogPayload(payload) {
-  const source = toObject(payload);
-  const schema = typeof source.schema === "string" ? source.schema.trim() : "";
-  const version = Number(source.version);
-  const entries = normalizeCatalogEntries(source.assets || source.entries);
-  const isValidSchema = schema === GAME_ASSET_CATALOG_SCHEMA;
-  const isValidVersion = Number.isFinite(version) && version === GAME_ASSET_CATALOG_VERSION;
-  return {
-    schema,
-    version,
-    entries,
-    valid: isValidSchema && isValidVersion
-  };
-}
-
-function normalizeManifestCatalogPayload(payload) {
+function normalizeManifestPayload(payload) {
   const source = toObject(payload);
   const schema = typeof source.schema === "string" ? source.schema.trim() : "";
   const version = Number(source.version);
@@ -224,7 +192,7 @@ function normalizeManifestCatalogPayload(payload) {
   const tools = toObject(source.tools || workspace.tools);
   const gameFolder = typeof source.game?.folder === "string" ? source.game.folder.trim() : "";
   const assetsPath = normalizeAssetsPath(workspace.assetsPath || source.assetsPath || (gameFolder ? `games/${gameFolder}/assets` : ""));
-  const assetManagerEntries = normalizeAssetManagerEntries(
+  const assetManagerEntries = normalizeManifestAssetEntries(
     tools?.["asset-manager-v2"]?.assets,
     assetsPath
   );
@@ -238,22 +206,14 @@ function normalizeManifestCatalogPayload(payload) {
   };
 }
 
-function extractCatalogFromPayload(payload) {
-  const catalogPayload = normalizeCatalogPayload(payload);
-  if (catalogPayload.valid || Object.keys(catalogPayload.entries).length > 0) {
-    return catalogPayload;
-  }
-  return normalizeManifestCatalogPayload(payload);
-}
-
-export async function preloadWorkspaceGameAssetCatalog(gameIdInput, options = {}) {
+export async function preloadGameManifestAssets(gameIdInput, options = {}) {
   const gameId = normalizeGameId(gameIdInput);
   if (!gameId) {
     return {};
   }
 
-  const primed = primeCatalogFromRuntime(gameId);
-  const current = primed || getCachedCatalogRecord(gameId);
+  const primed = primeAssetsFromRuntime(gameId);
+  const current = primed || getCachedManifestRecord(gameId);
   if (current?.status === "ready") {
     return current.entries;
   }
@@ -261,33 +221,33 @@ export async function preloadWorkspaceGameAssetCatalog(gameIdInput, options = {}
     return current.promise;
   }
 
-  const requestedPath = normalizeCatalogPath(options.catalogPath);
-  const catalogPath = requestedPath || current?.path || "";
-  if (!catalogPath || typeof fetch !== "function") {
+  const requestedPath = normalizeSourcePath(options.manifestPath || options.sourcePath);
+  const manifestPath = requestedPath || current?.path || "";
+  if (!manifestPath || typeof fetch !== "function") {
     return current?.entries || {};
   }
 
   const pending = (async () => {
     try {
-      const response = await fetch(catalogPath, { cache: "no-store" });
+      const response = await fetch(manifestPath, { cache: "no-store" });
       if (!response.ok) {
-        setCachedCatalogRecord(gameId, {
+        setCachedManifestRecord(gameId, {
           status: "error",
           promise: null
         });
         return current?.entries || {};
       }
       const payload = await response.json();
-      const normalized = extractCatalogFromPayload(payload);
-      setCachedCatalogRecord(gameId, {
+      const normalized = normalizeManifestPayload(payload);
+      setCachedManifestRecord(gameId, {
         entries: normalized.entries,
-        path: catalogPath,
+        path: manifestPath,
         status: normalized.valid ? "ready" : "invalid",
         promise: null
       });
       return normalized.entries;
     } catch {
-      setCachedCatalogRecord(gameId, {
+      setCachedManifestRecord(gameId, {
         status: "error",
         promise: null
       });
@@ -295,8 +255,8 @@ export async function preloadWorkspaceGameAssetCatalog(gameIdInput, options = {}
     }
   })();
 
-  setCachedCatalogRecord(gameId, {
-    path: catalogPath,
+  setCachedManifestRecord(gameId, {
+    path: manifestPath,
     status: "loading",
     promise: pending
   });
@@ -304,22 +264,22 @@ export async function preloadWorkspaceGameAssetCatalog(gameIdInput, options = {}
   return pending;
 }
 
-function getCatalogEntries(gameIdInput) {
+function getManifestAssetEntries(gameIdInput) {
   const gameId = normalizeGameId(gameIdInput);
   if (!gameId) {
     return {};
   }
-  const primed = primeCatalogFromRuntime(gameId);
-  return (primed || getCachedCatalogRecord(gameId))?.entries || {};
+  const primed = primeAssetsFromRuntime(gameId);
+  return (primed || getCachedManifestRecord(gameId))?.entries || {};
 }
 
-export function resolveWorkspaceGameAssetPath(gameId, assetId) {
+export function resolveGameManifestAssetPath(gameId, assetId) {
   const safeAssetId = typeof assetId === "string" ? assetId.trim() : "";
   if (!safeAssetId) {
     return "";
   }
 
-  const entries = getCatalogEntries(gameId);
+  const entries = getManifestAssetEntries(gameId);
   const entry = entries[safeAssetId];
   if (entry?.path) {
     return entry.path;
@@ -327,11 +287,11 @@ export function resolveWorkspaceGameAssetPath(gameId, assetId) {
   return "";
 }
 
-export function getWorkspaceGameAssetCatalogPath(gameIdInput) {
+export function getGameManifestAssetSourcePath(gameIdInput) {
   const gameId = normalizeGameId(gameIdInput);
   if (!gameId) {
     return "";
   }
-  const primed = primeCatalogFromRuntime(gameId);
-  return (primed || getCachedCatalogRecord(gameId))?.path || "";
+  const primed = primeAssetsFromRuntime(gameId);
+  return (primed || getCachedManifestRecord(gameId))?.path || "";
 }

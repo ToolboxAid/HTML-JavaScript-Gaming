@@ -167,12 +167,12 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "games/shared/workspaceGameAssetCatalog.js",
+      "file": "games/shared/gameManifestAssets.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "games/shared/workspaceGameAssetCatalog.js",
+      "file": "games/shared/gameManifestAssets.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },

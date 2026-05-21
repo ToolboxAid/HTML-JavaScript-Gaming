@@ -12,7 +12,7 @@ import { createNoopDevConsoleIntegration } from "/src/shared/debug/noopDevConsol
 import { asPositiveInteger } from "/src/shared/number/numbers.js";
 import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
 import { loadAsteroidsObjectGeometryFromManifest } from "./game/asteroidsObjectGeometryManifest.js";
-import { preloadWorkspaceGameAssetCatalog } from "../shared/workspaceGameAssetCatalog.js";
+import { preloadGameManifestAssets } from "../shared/gameManifestAssets.js";
 
 export const asteroidFlow = Object.freeze({
   attract: attractFlow,
@@ -162,10 +162,10 @@ export async function bootAsteroids({
       return null;
     }
 
-    stage = "preload-asset-catalog";
+    stage = "preload-manifest-assets";
     traceBoot(stage);
-    await preloadWorkspaceGameAssetCatalog("Asteroids", {
-      catalogPath: ASTEROIDS_MANIFEST_PATH
+    await preloadGameManifestAssets("Asteroids", {
+      manifestPath: ASTEROIDS_MANIFEST_PATH
     });
 
     stage = "load-game-manifest";

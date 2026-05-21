@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 SoundController.js
 */
-import { resolveWorkspaceGameAssetPath } from "../../shared/workspaceGameAssetCatalog.js";
+import { resolveGameManifestAssetPath } from "../../shared/gameManifestAssets.js";
 
 const SPACE_DUEL_GAME_ID = "SpaceDuel";
 const EFFECT_ASSET_IDS = Object.freeze({
@@ -31,7 +31,7 @@ export default class SoundController {
     if (!assetId) {
       return "";
     }
-    return resolveWorkspaceGameAssetPath(SPACE_DUEL_GAME_ID, assetId);
+    return resolveGameManifestAssetPath(SPACE_DUEL_GAME_ID, assetId);
   }
 
   play(effectId, { volume = 0.42 } = {}) {

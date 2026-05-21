@@ -17,7 +17,6 @@ const browserProfileDir = path.join(tmpRoot, "workspace-manager-open-browser");
 
 const DEBUG_PORT = 9224;
 const DIAGNOSTIC_TEXT = "Workspace Manager game launch requires a valid gameId";
-const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 const MISSING_SHARED_PALETTE_TEXT = "Shared Palette: No shared palette selected";
 const MISSING_SHARED_ASSET_TEXT = "Shared Assets: No shared asset selected";
 
@@ -352,11 +351,13 @@ function readExpectedMetadataSets() {
         : entry.href.replace(/\/$/, "");
       const gameFolderPath = path.join(repoRoot, gameFolderHref.replace(/^\//, ""));
       const manifestPath = path.join(gameFolderPath, "game.manifest.json");
-      const catalogPath = path.join(gameFolderPath, "assets", DEFAULT_GAME_ASSET_CATALOG_FILENAME);
 
       let hasManifestPalette = false;
       let hasManifestToolAsset = false;
       let hasManifestVectors = false;
+      let catalogKinds = [];
+      let hasCatalogPalette = false;
+      let hasCatalogNonPalette = false;
       let expectedVectorStrokeEnabled = false;
       let expectedVectorFillEnabled = false;
       if (fs.existsSync(manifestPath)) {
@@ -368,6 +369,7 @@ function readExpectedMetadataSets() {
           const tileMapEntries = manifest?.tools?.["tile-map-editor"]?.maps;
           const parallaxEntries = manifest?.tools?.["parallax-editor"]?.parallaxLevels;
           const vectorEntries = manifest?.tools?.["svg-asset-studio"]?.vectors;
+          const assetManagerEntries = manifest?.tools?.["asset-manager-v2"]?.assets;
 
           const countEntries = (value) => {
             if (Array.isArray(value)) {
@@ -384,6 +386,20 @@ function readExpectedMetadataSets() {
             || countEntries(parallaxEntries) > 0
             || countEntries(vectorEntries) > 0
           );
+          const assetManagerValues = assetManagerEntries && typeof assetManagerEntries === "object"
+            ? Object.values(assetManagerEntries)
+            : [];
+          const kinds = assetManagerValues
+            .map((value) => {
+              if (typeof value?.type === "string" && value.type.trim()) {
+                return value.type.trim().toLowerCase();
+              }
+              return typeof value?.kind === "string" ? value.kind.trim().toLowerCase() : "";
+            })
+            .filter(Boolean);
+          catalogKinds = [...new Set(kinds)];
+          hasCatalogPalette = catalogKinds.includes("palette") || catalogKinds.includes("color");
+          hasCatalogNonPalette = catalogKinds.some((kind) => kind !== "palette" && kind !== "color");
           hasManifestVectors = countEntries(vectorEntries) > 0;
           if (hasManifestVectors) {
             const firstVector = Array.isArray(vectorEntries)
@@ -402,26 +418,6 @@ function readExpectedMetadataSets() {
           }
         } catch {
           // Leave expected values as false/empty when manifest parse fails.
-        }
-      }
-
-      let catalogKinds = [];
-      let hasCatalogPalette = false;
-      let hasCatalogNonPalette = false;
-      if (fs.existsSync(catalogPath)) {
-        try {
-          const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
-          const entries = catalog?.assets && typeof catalog.assets === "object"
-            ? Object.values(catalog.assets)
-            : (catalog?.entries && typeof catalog.entries === "object" ? Object.values(catalog.entries) : []);
-          const kinds = entries
-            .map((value) => (typeof value?.kind === "string" ? value.kind.trim().toLowerCase() : ""))
-            .filter(Boolean);
-          catalogKinds = [...new Set(kinds)];
-          hasCatalogPalette = catalogKinds.includes("palette");
-          hasCatalogNonPalette = catalogKinds.some((kind) => kind !== "palette");
-        } catch {
-          // Keep derived catalog expectations empty when parsing fails.
         }
       }
 
