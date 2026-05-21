@@ -11,6 +11,7 @@
     "check:phase24-closeout-guard": "node tools/dev/checkPhase24CloseoutExecutionGuard.mjs",
     "check:style-system-guard": "node tools/dev/checkStyleSystemGuard.mjs",
     "check:intentional-alias-ledger": "node tools/dev/checkIntentionalAliasLedgerGuard.mjs",
+    "check:internal-barrel-guard": "node tools/dev/checkInternalBarrelGuard.mjs",
     "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
     "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
     "test:asset-manager-v2": "playwright test tests/playwright/tools/AssetManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list",
