@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Mapping V2</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css">
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+  <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+  <link rel="stylesheet" href="../common/toolShellCommon.css">
+  <link rel="stylesheet" href="./styles/inputMappingV2.css">
+  <script type="module" src="./js/bootstrap.js"></script>
+</head>
+<body class="tools-platform-tool-page input-mapping-v2" data-tool-id="input-mapping-v2">
+  <main class="tool-shell-common__app-shell" aria-labelledby="inputMappingV2Title">
+    <header class="tool-shell-common__header input-mapping-v2__header" data-input-mapping-v2-header>
+      <details class="tool-shell-common__summary-frame input-mapping-v2__summary-frame" open>
+        <summary class="tool-shell-common__summary-toggle" data-input-mapping-v2-summary>
+          <div>
+            <p class="tool-shell-common__eyebrow">Input binding diagnostics</p>
+            <h1 id="inputMappingV2Title">Input Mapping V2</h1>
+            <p class="tool-shell-common__description">
+              Map keyboard and gamepad inputs for games, tools, and samples.
+            </p>
+          </div>
+          <span class="tool-shell-common__summary-indicator" aria-hidden="true">Collapse</span>
+        </summary>
+        <div class="tool-shell-common__toolbar-row">
+          <nav class="tool-shell-common__menu input-mapping-v2__tool-menu" aria-label="Input Mapping V2 links" data-launch-mode-nav="tool">
+            <a href="../index.html">Tools</a>
+            <a href="./README.md">Read Me</a>
+            <a href="./how_to_use.html">How To Use</a>
+          </nav>
+          <nav class="tool-shell-common__menu input-mapping-v2__workspace-menu" aria-label="Workspace launch links" data-launch-mode-nav="workspace" hidden>
+            <button id="returnToWorkspaceButton" class="tool-shell-common__button" type="button">Return to Workspace</button>
+            <a href="./README.md">Read Me</a>
+            <a href="./how_to_use.html">How To Use</a>
+          </nav>
+        </div>
+      </details>
+    </header>
+
+    <section class="tool-shell-common__status-banner" aria-live="polite" data-input-mapping-v2-banner>
+      Ready to capture input mappings.
+    </section>
+
+    <section class="tool-shell-common__fullscreen-root input-mapping-v2__workspace" aria-label="Input Mapping V2 workspace">
+      <aside class="tool-shell-common__panel input-mapping-v2__left-panel" aria-label="Input mapping controls">
+        <section class="accordion-v2 input-mapping-v2__accordion" data-accordion-section>
+          <button class="accordion-v2__header" type="button" aria-expanded="true">
+            <span>Actions</span>
+            <span class="accordion-v2__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-v2__content">
+            <label class="input-mapping-v2__field">
+              <span>Selected Action</span>
+              <select id="inputMappingV2ActionSelect"></select>
+            </label>
+            <label class="input-mapping-v2__field">
+              <span>Custom Action</span>
+              <input id="inputMappingV2CustomActionInput" type="text" autocomplete="off" placeholder="thrust, jump, menuOpen">
+            </label>
+            <div class="input-mapping-v2__button-row">
+              <button id="inputMappingV2AddActionButton" class="tool-shell-common__button" type="button">Add Action</button>
+              <button id="inputMappingV2ClearSelectedButton" class="tool-shell-common__button" type="button">Clear Selected</button>
+            </div>
+            <button id="inputMappingV2ResetButton" class="tool-shell-common__button input-mapping-v2__wide-button" type="button">Reset Defaults</button>
+          </div>
+        </section>
+
+        <section class="accordion-v2 input-mapping-v2__accordion" data-accordion-section>
+          <button class="accordion-v2__header" type="button" aria-expanded="true">
+            <span>Capture</span>
+            <span class="accordion-v2__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-v2__content">
+            <p id="inputMappingV2SelectedAction" class="input-mapping-v2__readout">Selected action: Move Up</p>
+            <div class="input-mapping-v2__button-row">
+              <button id="inputMappingV2CaptureKeyboardButton" class="tool-shell-common__button" type="button">Capture Keyboard</button>
+              <button id="inputMappingV2CaptureGamepadButton" class="tool-shell-common__button" type="button">Capture Gamepad</button>
+            </div>
+            <button id="inputMappingV2RefreshDevicesButton" class="tool-shell-common__button input-mapping-v2__wide-button" type="button">Refresh Devices</button>
+            <p id="inputMappingV2CaptureStatus" class="input-mapping-v2__readout">Keyboard is available. Connect a gamepad to capture gamepad inputs.</p>
+          </div>
+        </section>
+      </aside>
+
+      <section class="tool-shell-common__panel input-mapping-v2__center-panel" aria-label="Current input mappings">
+        <section class="accordion-v2 input-mapping-v2__accordion input-mapping-v2__mapping-accordion" data-accordion-section>
+          <button class="accordion-v2__header" type="button" aria-expanded="true">
+            <span>Mappings</span>
+            <span class="accordion-v2__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-v2__content">
+            <div id="inputMappingV2MappingList" class="input-mapping-v2__mapping-list"></div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 input-mapping-v2__accordion" data-accordion-section>
+          <button class="accordion-v2__header" type="button" aria-expanded="true">
+            <span>Last Input</span>
+            <span class="accordion-v2__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-v2__content">
+            <pre id="inputMappingV2LastInput" class="input-mapping-v2__pre">No input captured yet.</pre>
+          </div>
+        </section>
+      </section>
+
+      <aside class="tool-shell-common__panel input-mapping-v2__right-panel" aria-label="Input mapping output and devices">
+        <section class="accordion-v2 input-mapping-v2__accordion input-mapping-v2__json-accordion" data-accordion-section>
+          <button class="accordion-v2__header" type="button" aria-expanded="true">
+            <span>Mapping JSON</span>
+            <span class="accordion-v2__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-v2__content">
+            <button id="inputMappingV2CopyJsonButton" class="tool-shell-common__button input-mapping-v2__wide-button" type="button">Copy JSON</button>
+            <pre id="inputMappingV2JsonOutput" class="input-mapping-v2__pre input-mapping-v2__json-output"></pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 input-mapping-v2__accordion" data-accordion-section>
+          <button class="accordion-v2__header" type="button" aria-expanded="true">
+            <span>Devices</span>
+            <span class="accordion-v2__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-v2__content">
+            <div id="inputMappingV2DeviceList" class="input-mapping-v2__device-list"></div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 input-mapping-v2__accordion input-mapping-v2__status-accordion" data-accordion-section>
+          <button class="accordion-v2__header" type="button" aria-expanded="true">
+            <span>Status</span>
+            <span class="accordion-v2__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-v2__content">
+            <button id="inputMappingV2ClearStatusButton" class="tool-shell-common__button input-mapping-v2__wide-button" type="button">Clear Status</button>
+            <pre id="statusLog" class="input-mapping-v2__pre input-mapping-v2__status-log"></pre>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

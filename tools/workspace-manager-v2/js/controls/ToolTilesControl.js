@@ -70,6 +70,9 @@ export class ToolTilesControl {
     if (tool.id === "collision-inspector-v2") {
       return `${objectVectorCount} inspectable objects`;
     }
+    if (tool.id === "input-mapping-v2") {
+      return "Keyboard/gamepad mappings";
+    }
     if (tool.id === "storage-inspector-v2") {
       return "";
     }

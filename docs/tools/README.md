@@ -28,6 +28,7 @@ This folder is standardized on UAT documentation.
 - [Palette Manager V2](./palette-manager-v2/uat.md)
 - [World Vector Studio V2](./world-vector-studio-v2/uat.md)
 - [Object Vector Studio V2](./object-vector-studio-v2/uat.md)
+- [Input Mapping V2](./input-mapping-v2/uat.md)
 
 ## UAT Reports
 - [Tool Inventory](../dev/reports/tool_inventory.md)

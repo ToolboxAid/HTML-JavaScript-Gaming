@@ -292,6 +292,30 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "input-mapping-v2",
+    name: "Input Mapping V2",
+    displayName: "Input Mapping V2",
+    shortDescription: "Keyboard and gamepad mapping diagnostics for games, tools, and samples.",
+    shortLabel: "Input",
+    path: "input-mapping-v2",
+    folderName: "input-mapping-v2",
+    entryPoint: "input-mapping-v2/index.html",
+    description: "Generic V2 tool for mapping keyboard and gamepad inputs across games, tools, and samples.",
+    showcaseTag: "Input",
+    showcaseStatus: "Mapping Ready",
+    readOnly: false,
+    active: true,
+    legacy: false,
+    order: 7.8,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "input-mapping-v2/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "state-inspector",
     name: "State Inspector",
     displayName: "State Inspector",

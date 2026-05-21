@@ -11,6 +11,7 @@ const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const COLLISION_INSPECTOR_V2_TOOL_KEY = "collision-inspector-v2";
+const INPUT_MAPPING_V2_TOOL_KEY = "input-mapping-v2";
 const OBJECT_VECTOR_STUDIO_V2_TOOL_KEY = "object-vector-studio-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
@@ -52,6 +53,7 @@ const WORKSPACE_CONTEXT_REQUIRED_TOOL_IDS = Object.freeze([
 ]);
 const WORKSPACE_CONTEXT_ALLOWED_TOOL_IDS = Object.freeze(new Set(Object.keys(TOOL_PAYLOAD_SCHEMA_REFS)));
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
+  INPUT_MAPPING_V2_TOOL_KEY,
   "preview-generator-v2",
   "storage-inspector-v2",
   TEXT2SPEECH_V2_TOOL_KEY,
@@ -99,6 +101,13 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     id: COLLISION_INSPECTOR_V2_TOOL_KEY,
     name: "Collision Inspector V2",
     path: "../collision-inspector-v2/index.html"
+  }),
+  Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Utilities",
+    id: INPUT_MAPPING_V2_TOOL_KEY,
+    name: "Input Mapping V2",
+    path: "../input-mapping-v2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
