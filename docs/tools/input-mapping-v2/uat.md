@@ -10,8 +10,15 @@
 
 - Select `Move Left`.
 - Click `Capture Keyboard`.
-- Press `ArrowLeft`.
-- Confirm the mapping list and JSON output include `moveLeft` with `ArrowLeft`.
+- Press `KeyA`.
+- Confirm the mapping list and JSON output include `moveLeft` with `Keyboard KeyA`.
+- Click the `Keyboard KeyA` captured input token.
+- Confirm the mapping is deleted.
+
+## Default Actions
+
+- Confirm the default actions include movement, confirm/cancel, fire, thrust, and rotation actions.
+- Confirm `Pause` is not present in the default action dropdown.
 
 ## Gamepad Capture
 
@@ -19,9 +26,8 @@
 - Press or hold a button or axis.
 - Click `Capture Gamepad`.
 - Confirm the mapping list and JSON output include the detected gamepad input.
+- If the browser does not expose a live gamepad value, confirm the Status log shows an actionable WARN.
 
 ## Device Refresh
 
-- Click `Refresh Devices`.
-- Confirm keyboard availability is shown.
-- Confirm connected gamepads are listed with button and axis counts.
+- Confirm Engine Input Sources lists `InputService + KeyboardState`, `InputService + MouseState`, `InputService + GamepadState + GamepadInputAdapter`, and `GamepadInputAdapter`.

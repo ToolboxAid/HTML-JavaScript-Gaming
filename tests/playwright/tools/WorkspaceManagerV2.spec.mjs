@@ -1400,20 +1400,30 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     try {
       await expect(page.locator("body[data-tool-id='input-mapping-v2']")).toBeVisible();
-      await expect(page.locator("[data-input-mapping-v2-summary]")).toContainText("Input Mapping V2");
-      await expect(page.locator(".input-mapping-v2__tool-menu")).toBeVisible();
-      await expect(page.locator(".input-mapping-v2__workspace-menu")).toBeHidden();
-      await expect(page.locator("#inputMappingV2ActionSelect")).toContainText("Move Left");
+      await expect(page.locator("[data-tool-starter-summary]")).toBeVisible();
+      await expect(page.locator(".tools-platform-frame__title[data-tool-id='input-mapping-v2']")).toHaveText("Input Mapping V2");
+      await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
+      await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + KeyboardState");
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + MouseState");
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + GamepadState + GamepadInputAdapter");
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("GamepadInputAdapter");
+      const actionOptions = await page.locator("#inputMappingV2ActionSelect option").allTextContents();
+      expect(actionOptions).toEqual(expect.arrayContaining(["Move Left", "Confirm", "Cancel", "Fire", "Thrust", "Rotate Left", "Rotate Right"]));
+      expect(actionOptions).not.toContain("Pause");
       await page.locator("#inputMappingV2ActionSelect").selectOption("moveLeft");
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
-      await expect(page.locator("[data-input-mapping-v2-banner]")).toContainText("Press a keyboard key");
-      await page.keyboard.press("ArrowLeft");
-      await expect(page.locator("#inputMappingV2MappingList")).toContainText("Move Left");
-      await expect(page.locator("#inputMappingV2MappingList")).toContainText("Keyboard ArrowLeft");
-      await expect(page.locator("#inputMappingV2JsonOutput")).toContainText('"action": "moveLeft"');
-      await expect(page.locator("#inputMappingV2JsonOutput")).toContainText('"code": "ArrowLeft"');
-      await expect(page.locator("#inputMappingV2LastInput")).toContainText('"type": "keyboard"');
-      await expect(page.locator("#inputMappingV2DeviceList")).toContainText("Keyboard");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
+      await page.keyboard.press("KeyA");
+      await expect(page.locator("#previewOutput")).toContainText("Move Left");
+      await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyA");
+      await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
+      await page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" }).click();
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" })).toHaveCount(0);
+      await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
+      await page.locator("#inputMappingV2CaptureGamepadButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Gamepad capture unavailable:/);
       await page.evaluate(() => {
         Object.defineProperty(navigator, "clipboard", {
           configurable: true,
@@ -1424,9 +1434,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           }
         });
       });
-      await page.locator("#inputMappingV2CopyJsonButton").click();
+      await page.locator("#toolCopyJsonButton").click();
       expect(await page.evaluate(() => window.__inputMappingV2Clipboard)).toContain('"toolId": "input-mapping-v2"');
-      await expect(page.locator("#statusLog")).toContainText("[OK] Copied mapping JSON to clipboard.");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Mapping JSON copied\./);
       expect(pageErrors).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -11226,7 +11236,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
       await inputMappingTile.click();
       await expect(page).toHaveURL(/input-mapping-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator(".input-mapping-v2__workspace-menu")).toBeVisible();
+      await expect(page.locator(".tool-starter__workspace__menu")).toBeVisible();
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toBeVisible();
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?.*hostContextId=workspace-manager-v2-/);

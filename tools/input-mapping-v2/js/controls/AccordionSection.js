@@ -1,24 +1,30 @@
 export class AccordionSection {
   constructor(section) {
     this.section = section;
-    this.header = section.querySelector(".accordion-v2__header");
-    this.content = section.querySelector(".accordion-v2__content");
+    this.header = section?.querySelector(".accordion-v2__header") || null;
+    this.content = section?.querySelector(".accordion-v2__content") || null;
+    this.icon = this.header?.querySelector(".accordion-v2__icon") || null;
   }
 
   mount() {
-    if (!this.header || !this.content) {
+    if (!this.section || !this.header || !this.content || this.header.dataset.accordionV2Bound === "true") {
       return;
     }
-    this.header.addEventListener("click", () => this.toggle());
-    this.update(this.header.getAttribute("aria-expanded") !== "false");
+
+    this.header.dataset.accordionV2Bound = "true";
+    this.setOpen(this.section.dataset.accordionV2Open !== "false");
+    this.header.addEventListener("click", () => {
+      this.setOpen(!this.section.classList.contains("is-open"));
+    });
   }
 
-  toggle() {
-    this.update(this.header.getAttribute("aria-expanded") === "false");
-  }
-
-  update(expanded) {
-    this.header.setAttribute("aria-expanded", expanded ? "true" : "false");
-    this.content.hidden = !expanded;
+  setOpen(isOpen) {
+    this.section.classList.toggle("is-open", isOpen);
+    this.section.dataset.accordionV2Open = String(isOpen);
+    this.header.setAttribute("aria-expanded", String(isOpen));
+    this.content.hidden = !isOpen;
+    if (this.icon) {
+      this.icon.dataset.accordionV2IconState = isOpen ? "open" : "closed";
+    }
   }
 }

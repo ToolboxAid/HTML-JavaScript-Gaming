@@ -1,35 +1,40 @@
 export class StatusLogControl {
-  constructor({ logElement, clearButton }) {
-    this.logElement = logElement;
+  constructor({ log, clearButton }) {
+    this.log = log;
     this.clearButton = clearButton;
-    this.lines = [];
-    this.clearButton?.addEventListener("click", () => this.clear());
   }
 
-  ok(message) {
-    this.write("OK", message);
-  }
-
-  warn(message) {
-    this.write("WARN", message);
-  }
-
-  fail(message) {
-    this.write("FAIL", message);
-  }
-
-  write(level, message) {
-    this.lines.push(`[${level}] ${message}`);
-    if (this.logElement) {
-      this.logElement.textContent = this.lines.join("\n");
-      this.logElement.scrollTop = this.logElement.scrollHeight;
-    }
+  mount() {
+    this.clearButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      this.clear();
+    });
   }
 
   clear() {
-    this.lines = [];
-    if (this.logElement) {
-      this.logElement.textContent = "";
-    }
+    this.log.value = "";
+  }
+
+  error(message) {
+    this.fail(message);
+  }
+
+  ok(message) {
+    this.write(`OK ${message}`);
+  }
+
+  warn(message) {
+    this.write(`WARN ${message}`);
+  }
+
+  fail(message) {
+    this.write(`FAIL ${message}`);
+  }
+
+  write(message) {
+    const timestamp = new Date().toLocaleTimeString();
+    const nextLine = `[${timestamp}] ${message}`;
+    this.log.value = this.log.value ? `${this.log.value}\n${nextLine}` : nextLine;
+    this.log.scrollTop = this.log.scrollHeight;
   }
 }
