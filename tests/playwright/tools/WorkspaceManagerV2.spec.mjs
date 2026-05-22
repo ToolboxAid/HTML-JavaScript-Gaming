@@ -1439,8 +1439,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK 2 connected gamepads detected: USB gamepad \(Gamepad 0\), Logitech RumblePad 2 \(Gamepad 1\)/);
       await expect(page.locator("#inputMappingV2StartGamepadPollingButton")).toHaveCount(0);
       await expect(page.locator("button", { hasText: /Start Listening|Poll Gamepads/ })).toHaveCount(0);
-      const captureBottomElementId = await page.locator("#captureInputContent").evaluate((content) => content.lastElementChild?.id);
-      expect(captureBottomElementId).toBe("inputMappingV2RefreshGamepadsButton");
+      const captureBottom = await page.locator("#captureInputContent").evaluate((content) => {
+        const refresh = content.querySelector("#inputMappingV2RefreshGamepadsButton");
+        return {
+          lastElementId: content.lastElementChild?.id,
+          separatorClass: refresh?.previousElementSibling?.className,
+          separatorTag: refresh?.previousElementSibling?.tagName
+        };
+      });
+      expect(captureBottom).toEqual({
+        lastElementId: "inputMappingV2RefreshGamepadsButton",
+        separatorClass: "input-mapping-v2__capture-separator",
+        separatorTag: "HR"
+      });
       expect(pageErrors).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -1485,8 +1496,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(Math.max(...fullscreenLayout.rightAccordionHeights) - Math.min(...fullscreenLayout.rightAccordionHeights)).toBeLessThanOrEqual(3);
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + KeyboardState");
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + MouseState");
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + PointerDragState");
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("Mouse Primary Drag Rectangle");
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + GamepadState + GamepadInputAdapter");
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("GamepadInputAdapter");
+      await expect(page.locator(".input-mapping-v2__pointer-drag-capture-button")).toHaveCount(5);
+      await expect(page.locator(".input-mapping-v2__pointer-drag-capture-button")).toContainText([
+        "Mouse Primary Button Down",
+        "Mouse Primary Button Up",
+        "Mouse Primary Drag",
+        "Mouse Primary Drag Release",
+        "Mouse Primary Drag Rectangle"
+      ]);
       const actionOptions = await page.locator("#inputMappingV2ActionSelect option").allTextContents();
       expect(actionOptions).toEqual([...actionOptions].sort((left, right) => left.localeCompare(right)));
       expect(actionOptions).toEqual(expect.arrayContaining(["Move Left", "Confirm", "Cancel", "Fire", "Thrust", "Rotate Left", "Rotate Right", "Pause", "Select", "Start"]));
@@ -1513,9 +1534,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(captureButtonLayout.every((entry) => entry.width > 250)).toBe(true);
       expect(new Set(captureButtonLayout.map((entry) => entry.left)).size).toBe(1);
       expect(captureButtonLayout[1].top).toBeGreaterThan(captureButtonLayout[0].top);
-      const captureBottomElementId = await page.locator("#captureInputContent").evaluate((content) => content.lastElementChild?.id);
+      const captureBottom = await page.locator("#captureInputContent").evaluate((content) => {
+        const refresh = content.querySelector("#inputMappingV2RefreshGamepadsButton");
+        return {
+          lastElementId: content.lastElementChild?.id,
+          separatorClass: refresh?.previousElementSibling?.className,
+          separatorTag: refresh?.previousElementSibling?.tagName
+        };
+      });
       expect(captureButtonLayout[2].top).toBeGreaterThan(captureButtonLayout[1].top);
-      expect(captureBottomElementId).toBe("inputMappingV2RefreshGamepadsButton");
+      expect(captureBottom).toEqual({
+        lastElementId: "inputMappingV2RefreshGamepadsButton",
+        separatorClass: "input-mapping-v2__capture-separator",
+        separatorTag: "HR"
+      });
       await expect(page.locator("#inputMappingV2StartGamepadPollingButton")).toHaveCount(0);
       await expect(page.locator("button", { hasText: /Start Listening|Poll Gamepads/ })).toHaveCount(0);
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Raw navigator.getGamepads()");
@@ -1539,11 +1571,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__tile-action-select")).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__empty-token", { hasText: "No inputs captured." })).toHaveCount(1);
       const emptyMappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
-      expect(Math.round(emptyMappingTileBox.width)).toBe(225);
-      expect(Math.round(emptyMappingTileBox.height)).toBe(175);
+      expect(Math.round(emptyMappingTileBox.width)).toBe(275);
+      expect(Math.round(emptyMappingTileBox.height)).toBe(225);
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Keyboard capture canceled for Move Left\./);
+      await page.evaluate(() => {
+        window.__inputMappingV2CaptureTimeoutMs = 500;
+      });
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capturing/);
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/, { timeout: 2000 });
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Mouse capture timed out for Move Left\./);
+      await page.evaluate(() => {
+        delete window.__inputMappingV2CaptureTimeoutMs;
+      });
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await page.keyboard.press("KeyA");
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
@@ -1558,18 +1604,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/);
+      await page.locator(".input-mapping-v2__pointer-drag-capture-button", { hasText: "Mouse Primary Drag Release" }).click();
+      await page.locator(".input-mapping-v2__pointer-drag-capture-button", { hasText: "Mouse Primary Drag Rectangle" }).click();
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(1);
       const mappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
-      expect(Math.round(mappingTileBox.width)).toBe(225);
-      expect(Math.round(mappingTileBox.height)).toBe(175);
+      expect(Math.round(mappingTileBox.width)).toBe(275);
+      expect(Math.round(mappingTileBox.height)).toBe(225);
       await expect(page.locator("#previewOutput")).toContainText("Move Left");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyA");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyD");
       await expect(page.locator("#previewOutput")).toContainText("Mouse Button 1");
+      await expect(page.locator("#previewOutput")).toContainText("Mouse Primary Drag Release");
+      await expect(page.locator("#previewOutput")).toContainText("Mouse Primary Drag Rectangle");
       await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyD"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MouseButton1"');
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MousePrimaryDragRelease"');
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MousePrimaryDragRectangle"');
       await page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" }).click();
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" })).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyD" })).toHaveCount(1);
@@ -1577,10 +1629,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#inputMappingV2AddActionButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(2);
       await expect(page.locator("#inputMappingV2ActionSelect option[value='confirm']")).toHaveJSProperty("disabled", true);
-      await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click();
+      await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click({ position: { x: 12, y: 12 } });
       await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("moveLeft");
       await expect(page.locator(".input-mapping-v2__mapping-card.is-selected")).toContainText("Move Left");
-      await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='confirm']").click();
+      await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='confirm']").click({ position: { x: 12, y: 12 } });
       await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("confirm");
       await expect(page.locator(".input-mapping-v2__mapping-card.is-selected")).toContainText("Confirm");
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
@@ -1656,7 +1708,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(gamepadButtonLayout.every((entry) => entry.width > 250)).toBe(true);
       expect(new Set(gamepadButtonLayout.map((entry) => entry.left)).size).toBe(1);
       expect(gamepadButtonLayout[1].top).toBeGreaterThan(gamepadButtonLayout[0].top);
-      await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click();
+      await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click({ position: { x: 12, y: 12 } });
       await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("moveLeft");
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']").click();
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).toHaveClass(/is-capturing/);
@@ -1669,14 +1721,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).not.toHaveClass(/is-capturing/);
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyD");
-      await expect(page.locator("#previewOutput")).toContainText("Logitech RumblePad 2 Button 2");
+      await expect(page.locator("#previewOutput")).toContainText("Game Controller X");
       await expect(page.locator("#previewOutput")).not.toContainText("(Gamepad 1)");
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Logitech RumblePad 2" })).toHaveAttribute("title", "Logitech RumblePad 2 USB\nSTANDARD GAMEPAD\nVendor: 046d Product: c218\nButton 2");
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" })).toHaveAttribute("title", "Logitech RumblePad 2 USB\nSTANDARD GAMEPAD\nVendor: 046d Product: c218\nX");
       await expect(page.locator("#inspectorOutput")).toContainText('"source": "gamepad"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad1:Button2"');
-      await expect(page.locator("#inspectorOutput")).toContainText('"label": "Logitech RumblePad 2 Button 2"');
-      await page.locator(".input-mapping-v2__input-token", { hasText: "Logitech RumblePad 2" }).click();
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Logitech RumblePad 2" })).toHaveCount(0);
+      await expect(page.locator("#inspectorOutput")).toContainText('"label": "Game Controller X"');
+      await page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" }).click();
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" })).toHaveCount(0);
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: [
+            { pressed: false },
+            { pressed: false },
+            { pressed: false },
+            { pressed: false },
+            { pressed: false },
+            { pressed: true }
+          ],
+          mapping: "",
+          timestamp: 45
+        };
+      });
+      await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
+      await expect(page.locator("#previewOutput")).toContainText("Game Controller Button 5");
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad0:Button5"');
+      await page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "Button 5" }).click();
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "Button 5" })).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyD" })).toHaveCount(1);
       const asteroidsManifestInputMapping = await page.evaluate(async () => {
         const response = await fetch("/games/Asteroids/game.manifest.json");

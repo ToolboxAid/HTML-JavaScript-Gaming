@@ -3,6 +3,24 @@ import InputService from "/src/engine/input/InputService.js";
 
 const GAMEPAD_AXIS_THRESHOLD = 0.35;
 const GAMEPAD_CAPTURE_WAITING_MESSAGE = "No live button or axis value is active yet.";
+const STANDARD_GAMEPAD_BUTTON_NAMES = Object.freeze([
+  "A",
+  "B",
+  "X",
+  "Y",
+  "LB",
+  "RB",
+  "LT",
+  "RT",
+  "Back",
+  "Start",
+  "L3",
+  "R3",
+  "DPad Up",
+  "DPad Down",
+  "DPad Left",
+  "DPad Right"
+]);
 
 export class EngineInputSourceService {
   constructor({ windowRef = window } = {}) {
@@ -38,6 +56,11 @@ export class EngineInputSourceService {
         name: "Mouse",
         detail: "Mouse buttons captured through InputService and MouseState.",
         engine: "InputService + MouseState"
+      },
+      {
+        name: "Pointer Drag",
+        detail: this.pointerDragDescriptors().map((descriptor) => descriptor.label).join(", "),
+        engine: "InputService + PointerDragState"
       },
       {
         name: "Gamepad Buttons",
@@ -76,6 +99,31 @@ export class EngineInputSourceService {
     };
   }
 
+  pointerDragDescriptors() {
+    return this.inputService.getPointerDragDescriptors();
+  }
+
+  capturePointerDrag(binding) {
+    const descriptor = this.inputService.getPointerDragDescriptor(binding);
+    if (!descriptor) {
+      return {
+        ok: false,
+        message: `Pointer drag capture unavailable: ${binding} is not a known pointer drag gesture.`
+      };
+    }
+    return {
+      ok: true,
+      input: {
+        source: descriptor.source,
+        binding: descriptor.binding,
+        displayLabelLines: descriptor.displayLabelLines,
+        label: descriptor.label,
+        title: descriptor.title,
+        engine: descriptor.engine
+      }
+    };
+  }
+
   captureGamepad(gamepadIndex) {
     if (typeof this.window.navigator?.getGamepads !== "function") {
       return {
@@ -107,14 +155,14 @@ export class EngineInputSourceService {
     }
     const buttonIndex = pad.buttonsDown.findIndex(Boolean);
     if (buttonIndex >= 0) {
-      const buttonLabel = `Button ${buttonIndex}`;
+      const buttonLabel = gamepadButtonLabel(deviceInfo, buttonIndex);
       return {
         ok: true,
         input: {
           source: "gamepad",
           binding: `Pad${selectedIndex}:Button${buttonIndex}`,
-          displayLabelLines: [deviceInfo.displayName, buttonLabel],
-          label: `${deviceInfo.displayName} ${buttonLabel}`,
+          displayLabelLines: ["Game Controller", buttonLabel],
+          label: `Game Controller ${buttonLabel}`,
           title: gamepadInputTitle(deviceInfo, buttonLabel),
           engine: "GamepadInputAdapter"
         }
@@ -129,8 +177,8 @@ export class EngineInputSourceService {
         input: {
           source: "gamepad",
           binding: `Pad${selectedIndex}:Axis${axisIndex}${direction}`,
-          displayLabelLines: [deviceInfo.displayName, axisLabel],
-          label: `${deviceInfo.displayName} ${axisLabel}`,
+          displayLabelLines: ["Game Controller", axisLabel],
+          label: `Game Controller ${axisLabel}`,
           title: gamepadInputTitle(deviceInfo, axisLabel),
           engine: "GamepadInputAdapter"
         }
@@ -322,6 +370,13 @@ function gamepadInputTitle(deviceInfo, inputLabel) {
     deviceInfo.vendorProductLine,
     inputLabel
   ].filter(Boolean).join("\n");
+}
+
+function gamepadButtonLabel(deviceInfo, buttonIndex) {
+  if (deviceInfo.mapping === "standard" && STANDARD_GAMEPAD_BUTTON_NAMES[buttonIndex]) {
+    return STANDARD_GAMEPAD_BUTTON_NAMES[buttonIndex];
+  }
+  return `Button ${buttonIndex}`;
 }
 
 function parseUsbIds(id) {

@@ -67,5 +67,16 @@ export function run() {
     assert(snapshot.moveRight.down === true, 'Action snapshot should expose current action state.');
     assert(Array.isArray(snapshot.moveRight.inputs), 'Action snapshot should expose bound inputs.');
 
+    target.dispatch('pointerdown', { button: 0, pointerId: 7, clientX: 10, clientY: 12 });
+    target.dispatch('pointermove', { pointerId: 7, clientX: 30, clientY: 42 });
+    target.dispatch('pointerup', { pointerId: 7, clientX: 50, clientY: 52 });
+    const dragSnapshot = input.getPointerDragSnapshot();
+    assert(dragSnapshot.wasReleased === true, 'Pointer drag should track drag release state.');
+    assert(dragSnapshot.dragBounds.width === 40, 'Pointer drag bounds should track drag width.');
+    assert(dragSnapshot.dragBounds.height === 40, 'Pointer drag bounds should track drag height.');
+    const dragRectangle = input.getPointerDragDescriptor('MousePrimaryDragRectangle');
+    assert(dragRectangle.label === 'Mouse Primary Drag Rectangle', 'Pointer drag descriptors should expose rectangle gestures.');
+    assert(dragRectangle.source === 'mouse', 'Pointer drag descriptors should remain schema-compatible mouse inputs.');
+
     input.detach();
 }

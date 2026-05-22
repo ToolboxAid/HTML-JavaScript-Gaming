@@ -18,17 +18,20 @@
 .input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
 .input-mapping-v2 #inputMappingV2CaptureMouseButton,
 .input-mapping-v2 #inputMappingV2RefreshGamepadsButton,
+.input-mapping-v2__pointer-drag-capture-button,
 .input-mapping-v2__gamepad-capture-button {
   width: 100%;
 }
 
 .input-mapping-v2__capture-button.is-capturing,
+.input-mapping-v2__pointer-drag-capture-button.is-capturing,
 .input-mapping-v2__gamepad-capture-button.is-capturing {
   border-color: var(--tool-starter-accent) !important;
   box-shadow: inset 0 0 0 2px var(--tool-starter-accent);
   background: var(--tool-starter-input-surface);
 }
 
+.input-mapping-v2__pointer-drag-buttons,
 .input-mapping-v2__gamepad-buttons {
   display: grid;
   grid-template-columns: 1fr;
@@ -42,6 +45,13 @@
 
 .input-mapping-v2__gamepad-empty {
   margin: 0;
+}
+
+.input-mapping-v2__capture-separator {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--tool-starter-line);
+  margin: 2px 0;
 }
 
 .input-mapping-v2 .tool-starter__panel--center,
@@ -64,8 +74,8 @@
 }
 
 .input-mapping-v2__mapping-list {
-  grid-template-columns: repeat(auto-fill, 225px);
-  grid-auto-rows: 175px;
+  grid-template-columns: repeat(auto-fill, 275px);
+  grid-auto-rows: 225px;
   align-content: start;
   align-items: stretch;
   justify-content: start;
@@ -93,8 +103,8 @@
 }
 
 .input-mapping-v2__mapping-card {
-  width: 225px;
-  height: 175px;
+  width: 275px;
+  height: 225px;
   align-content: start;
   overflow: auto;
   cursor: pointer;

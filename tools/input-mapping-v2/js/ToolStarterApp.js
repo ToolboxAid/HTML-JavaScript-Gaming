@@ -63,6 +63,7 @@ export class ToolStarterApp {
       onCaptureGamepad: (gamepadIndex) => this.startGamepadCapture(gamepadIndex),
       onCaptureKeyboard: () => this.startKeyboardCapture(),
       onCaptureMouse: () => this.startMouseCapture(),
+      onCapturePointerDrag: (binding) => this.capturePointerDrag(binding),
       onRefreshGamepads: () => this.refreshGamepads()
     });
     this.engineInputSources.attach();
@@ -107,12 +108,20 @@ export class ToolStarterApp {
   }
 
   startKeyboardCapture() {
+    if (this.isCaptureActive("keyboard")) {
+      this.cancelCapture("Keyboard");
+      return;
+    }
     this.beginCapture("keyboard");
     this.capture.showMessage(`Press a keyboard key to bind it to ${this.state.selectedActionLabel()}.`);
     this.statusLog.ok(`Keyboard capture armed for ${this.state.selectedActionLabel()}.`);
   }
 
   startMouseCapture() {
+    if (this.isCaptureActive("mouse")) {
+      this.cancelCapture("Mouse");
+      return;
+    }
     this.beginCapture("mouse");
     this.capture.showMessage(`Click a mouse button to bind it to ${this.state.selectedActionLabel()}.`);
     this.statusLog.ok(`Mouse capture armed for ${this.state.selectedActionLabel()}.`);
@@ -124,10 +133,24 @@ export class ToolStarterApp {
       this.statusLog.warn("Gamepad capture unavailable: choose a detected gamepad device before capturing.");
       return;
     }
+    if (this.isCaptureActive(`gamepad:${selectedIndex}`)) {
+      this.cancelCapture(`Gamepad ${selectedIndex}`);
+      return;
+    }
     this.beginCapture(`gamepad:${selectedIndex}`);
     this.capture.showMessage(`Press a button or move a stick on Gamepad ${selectedIndex} to bind it to ${this.state.selectedActionLabel()}.`);
     this.statusLog.ok(`Gamepad ${selectedIndex} capture armed for ${this.state.selectedActionLabel()}.`);
     this.tryCaptureActiveGamepad();
+  }
+
+  capturePointerDrag(binding) {
+    const result = this.engineInputSources.capturePointerDrag(binding);
+    if (!result.ok) {
+      this.statusLog.warn(result.message);
+      this.refreshActions();
+      return;
+    }
+    this.addCapturedInput(result.input);
   }
 
   handleKeyDown(event) {
@@ -228,12 +251,13 @@ export class ToolStarterApp {
       this.activeGamepadIndex = null;
     }
     this.capture.setActiveCapture(captureId);
+    const timeoutMs = this.captureTimeoutDelay();
     this.captureTimeoutTimer = this.window.setTimeout?.(() => {
       this.capture.showMessage(`${this.captureLabel()} capture timed out for ${this.state.selectedActionLabel()}.`);
       this.statusLog.warn(`${this.captureLabel()} capture timed out for ${this.state.selectedActionLabel()}.`);
       this.clearCapture();
       this.refreshActions();
-    }, this.captureTimeoutMs) ?? null;
+    }, timeoutMs) ?? null;
   }
 
   clearCapture() {
@@ -244,6 +268,27 @@ export class ToolStarterApp {
     this.captureMode = "";
     this.activeGamepadIndex = null;
     this.capture.clearActiveCapture();
+  }
+
+  cancelCapture(captureLabel) {
+    this.capture.showMessage(`${captureLabel} capture canceled for ${this.state.selectedActionLabel()}.`);
+    this.statusLog.warn(`${captureLabel} capture canceled for ${this.state.selectedActionLabel()}.`);
+    this.clearCapture();
+    this.refreshActions();
+  }
+
+  isCaptureActive(captureId) {
+    if (this.captureMode === "gamepad" && Number.isInteger(this.activeGamepadIndex)) {
+      return captureId === `gamepad:${this.activeGamepadIndex}`;
+    }
+    return captureId === this.captureMode;
+  }
+
+  captureTimeoutDelay() {
+    const configuredTimeout = Number(this.window.__inputMappingV2CaptureTimeoutMs);
+    return Number.isFinite(configuredTimeout) && configuredTimeout > 0
+      ? configuredTimeout
+      : this.captureTimeoutMs;
   }
 
   captureLabel() {
@@ -296,7 +341,7 @@ export class ToolStarterApp {
   refreshActions(gamepadStatus = this.engineInputSources.refreshGamepadState()) {
     this.actionNav.setToolActionsEnabled(true);
     this.actionSelection.render(this.state.actions(), this.state.selectedActionId);
-    this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads);
+    this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads, this.engineInputSources.pointerDragDescriptors());
     this.preview.render(this.state.actions(), this.state.selectedActionId);
     this.inspector.showObject(this.state.payload());
     this.sourceInventory.render(this.engineInputSources.sources(gamepadStatus));

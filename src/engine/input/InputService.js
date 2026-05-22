@@ -7,6 +7,7 @@ InputService.js
 import KeyboardState from './KeyboardState.js';
 import MouseState from './MouseState.js';
 import GamepadState from './GamepadState.js';
+import PointerDragState from './PointerDragState.js';
 import InputMap from './InputMap.js';
 
 export default class InputService {
@@ -15,6 +16,7 @@ export default class InputService {
         keyboard = null,
         mouse = null,
         gamepads = null,
+        pointerDrag = null,
         inputMap = null,
         getGamepads = null,
     } = {}) {
@@ -22,6 +24,7 @@ export default class InputService {
         this.keyboard = keyboard ?? new KeyboardState();
         this.mouse = mouse ?? new MouseState();
         this.gamepads = gamepads ?? new GamepadState();
+        this.pointerDrag = pointerDrag ?? new PointerDragState();
         this.inputMap = inputMap ?? new InputMap();
         this.getGamepadsFromNavigator = getGamepads ?? (() => {
             if (typeof navigator === 'undefined' || typeof navigator.getGamepads !== 'function') {
@@ -35,12 +38,17 @@ export default class InputService {
         this.mousePosition = { x: 0, y: 0 };
         this.mouseDelta = { x: 0, y: 0 };
         this.isAttached = false;
+        this.pointerEventsAvailable = typeof PointerEvent !== 'undefined';
 
         this.onKeyDown = this.onKeyDown.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
+        this.onPointerDown = this.onPointerDown.bind(this);
+        this.onPointerMove = this.onPointerMove.bind(this);
+        this.onPointerUp = this.onPointerUp.bind(this);
+        this.onPointerCancel = this.onPointerCancel.bind(this);
         this.onBlur = this.onBlur.bind(this);
     }
 
@@ -54,6 +62,10 @@ export default class InputService {
         this.target.addEventListener('mousemove', this.onMouseMove);
         this.target.addEventListener('mousedown', this.onMouseDown);
         this.target.addEventListener('mouseup', this.onMouseUp);
+        this.target.addEventListener('pointerdown', this.onPointerDown);
+        this.target.addEventListener('pointermove', this.onPointerMove);
+        this.target.addEventListener('pointerup', this.onPointerUp);
+        this.target.addEventListener('pointercancel', this.onPointerCancel);
         this.target.addEventListener('blur', this.onBlur);
         this.isAttached = true;
     }
@@ -68,6 +80,10 @@ export default class InputService {
         this.target.removeEventListener('mousemove', this.onMouseMove);
         this.target.removeEventListener('mousedown', this.onMouseDown);
         this.target.removeEventListener('mouseup', this.onMouseUp);
+        this.target.removeEventListener('pointerdown', this.onPointerDown);
+        this.target.removeEventListener('pointermove', this.onPointerMove);
+        this.target.removeEventListener('pointerup', this.onPointerUp);
+        this.target.removeEventListener('pointercancel', this.onPointerCancel);
         this.target.removeEventListener('blur', this.onBlur);
         this.isAttached = false;
         this.reset();
@@ -94,6 +110,7 @@ export default class InputService {
         this.keyboard.reset();
         this.mouse.reset();
         this.gamepads.reset();
+        this.pointerDrag.reset();
     }
 
     setInputMap(inputMap) {
@@ -131,6 +148,7 @@ export default class InputService {
         return {
             keyboard: this.keyboard.getSnapshot(),
             mouse: this.mouse.getSnapshot(),
+            pointerDrag: this.pointerDrag.getSnapshot(),
             gamepads: this.gamepads.getGamepads(),
             actions: this.getActionSnapshot(),
         };
@@ -152,6 +170,18 @@ export default class InputService {
         return this.mouse.isPressed(button);
     }
 
+    getPointerDragSnapshot() {
+        return this.pointerDrag.getSnapshot();
+    }
+
+    getPointerDragDescriptors() {
+        return this.pointerDrag.getDescriptors();
+    }
+
+    getPointerDragDescriptor(binding) {
+        return this.pointerDrag.getDescriptor(binding);
+    }
+
     getGamepad(index) {
         return this.gamepads.getGamepad(index);
     }
@@ -169,6 +199,9 @@ export default class InputService {
     }
 
     onMouseMove(event) {
+        if (!this.pointerEventsAvailable) {
+            this.pointerDrag.pointerMove(event);
+        }
         const eventTarget = event?.target ?? null;
         const isCanvasTarget = typeof HTMLCanvasElement !== 'undefined'
             && eventTarget instanceof HTMLCanvasElement;
@@ -185,16 +218,39 @@ export default class InputService {
 
     onMouseDown(event) {
         this.liveMouseButtonsDown.add(event.button ?? 0);
+        if (!this.pointerEventsAvailable) {
+            this.pointerDrag.pointerDown(event);
+        }
     }
 
     onMouseUp(event) {
         this.liveMouseButtonsDown.delete(event.button ?? 0);
+        if (!this.pointerEventsAvailable) {
+            this.pointerDrag.pointerUp(event);
+        }
+    }
+
+    onPointerDown(event) {
+        this.pointerDrag.pointerDown(event);
+    }
+
+    onPointerMove(event) {
+        this.pointerDrag.pointerMove(event);
+    }
+
+    onPointerUp(event) {
+        this.pointerDrag.pointerUp(event);
+    }
+
+    onPointerCancel(event) {
+        this.pointerDrag.pointerCancel(event);
     }
 
     onBlur() {
         this.liveKeysDown.clear();
         this.liveMouseButtonsDown.clear();
         this.mouseDelta = { x: 0, y: 0 };
+        this.pointerDrag.reset();
     }
 
     readConnectedGamepads() {

@@ -52,6 +52,7 @@ window.addEventListener("DOMContentLoaded", () => {
       captureKeyboardButton: requireElement("#inputMappingV2CaptureKeyboardButton"),
       captureMessage: requireElement("#inputMappingV2CaptureMessage"),
       captureMouseButton: requireElement("#inputMappingV2CaptureMouseButton"),
+      capturePointerDragButtons: requireElement("#inputMappingV2PointerDragCaptureButtons"),
       refreshGamepadsButton: requireElement("#inputMappingV2RefreshGamepadsButton"),
       selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel")
     }),
