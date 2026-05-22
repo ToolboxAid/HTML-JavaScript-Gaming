@@ -12,7 +12,10 @@
 }
 
 .input-mapping-v2 #captureInputContent .input-mapping-v2__button-row {
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1 1 260px;
+  order: 1;
 }
 
 .input-mapping-v2__checkbox-field {
@@ -25,9 +28,27 @@
 
 .input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
 .input-mapping-v2 #inputMappingV2CaptureMouseButton,
-.input-mapping-v2 #inputMappingV2RefreshGamepadsButton,
 .input-mapping-v2__gamepad-capture-button {
   width: 100%;
+}
+
+.input-mapping-v2 #captureInputContent {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 8px;
+}
+
+.input-mapping-v2 #inputMappingV2SelectedActionLabel {
+  flex: 1 0 100%;
+  min-width: 100%;
+  order: 0;
+}
+
+.input-mapping-v2 #captureInputContent .input-mapping-v2__capture-button {
+  flex: 1 1 120px;
+  width: auto;
 }
 
 .input-mapping-v2__capture-button.is-capturing,
@@ -39,7 +60,9 @@
 
 .input-mapping-v2__gamepad-buttons {
   display: grid;
-  grid-template-columns: 1fr;
+  flex: 1 1 320px;
+  order: 1;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 8px;
 }
 
@@ -53,10 +76,27 @@
 }
 
 .input-mapping-v2__capture-separator {
+  flex: 1 0 100%;
+  min-width: 100%;
+  order: 21;
   width: 100%;
   border: 0;
   border-top: 1px solid var(--tool-starter-line);
   margin: 2px 0;
+}
+
+.input-mapping-v2 #inputMappingV2CaptureMessage {
+  flex: 1 0 100%;
+  min-width: 100%;
+  margin: 0;
+  order: 20;
+}
+
+.input-mapping-v2 #inputMappingV2RefreshGamepadsButton {
+  flex: 1 0 100%;
+  min-width: 100%;
+  order: 22;
+  width: 100%;
 }
 
 .input-mapping-v2 .tool-starter__panel--center,
@@ -77,6 +117,11 @@
 .input-mapping-v2__gesture-groups {
   display: grid;
   gap: 10px;
+}
+
+.input-mapping-v2__gesture-groups {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  align-items: start;
 }
 
 .input-mapping-v2__mapping-list {
@@ -184,8 +229,8 @@
 }
 
 .input-mapping-v2__gesture-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
   gap: 8px;
 }
 

@@ -1518,6 +1518,35 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2GestureList")).toContainText("Drag Rectangle");
       await expect(page.locator("#inputMappingV2GestureList")).toContainText("Wheel Up");
       await expect(page.locator("#inputMappingV2GestureList")).toContainText("Button");
+      const gestureFlowLayout = await page.locator("#inputMappingV2GestureList").evaluate((container) => {
+        const wantedGroups = ["Keyboard", "Mouse", "Game Controller"];
+        const groupLayouts = wantedGroups.map((label) => {
+          const group = Array.from(container.querySelectorAll(".input-mapping-v2__gesture-group"))
+            .find((candidate) => candidate.textContent.includes(label));
+          const box = group.getBoundingClientRect();
+          const buttons = Array.from(group.querySelectorAll(".input-mapping-v2__gesture-button")).map((button) => {
+            const buttonBox = button.getBoundingClientRect();
+            return {
+              left: Math.round(buttonBox.left),
+              top: Math.round(buttonBox.top)
+            };
+          });
+          return {
+            label,
+            left: Math.round(box.left),
+            top: Math.round(box.top),
+            width: Math.round(box.width),
+            buttons
+          };
+        });
+        return { groupLayouts };
+      });
+      expect(gestureFlowLayout.groupLayouts.every((entry) => entry.width >= 210)).toBe(true);
+      expect(Math.max(...gestureFlowLayout.groupLayouts.map((entry) => entry.top)) - Math.min(...gestureFlowLayout.groupLayouts.map((entry) => entry.top))).toBeLessThanOrEqual(1);
+      expect(new Set(gestureFlowLayout.groupLayouts.map((entry) => entry.left)).size).toBe(3);
+      const keyboardGestureButtons = gestureFlowLayout.groupLayouts.find((entry) => entry.label === "Keyboard").buttons;
+      expect(new Set(keyboardGestureButtons.map((entry) => entry.left)).size).toBeGreaterThan(1);
+      expect(new Set(keyboardGestureButtons.map((entry) => entry.top)).size).toBeGreaterThan(1);
       await page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='wheel'] input").uncheck();
       await expect(page.locator(".input-mapping-v2__gesture-button", { hasText: "Wheel Up" })).toHaveCount(0);
       await page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='wheel'] input").check();
@@ -1534,24 +1563,30 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
       expect(await page.locator("#previewOutput").evaluate((node) => getComputedStyle(node).overflowY)).toBe("auto");
-      const captureButtonLayout = await page.locator("#captureInputContent").evaluate((content) => {
-        const buttons = [
-          content.querySelector("#inputMappingV2CaptureKeyboardButton"),
-          content.querySelector("#inputMappingV2CaptureMouseButton"),
-          content.querySelector("#inputMappingV2RefreshGamepadsButton")
-        ];
-        return buttons.map((button) => {
-          const box = button.getBoundingClientRect();
+      const captureFlowLayout = await page.locator("#captureInputContent").evaluate((content) => {
+        const rectFor = (selector) => {
+          const box = content.querySelector(selector).getBoundingClientRect();
           return {
             left: Math.round(box.left),
             top: Math.round(box.top),
             width: Math.round(box.width)
           };
-        });
+        };
+        return {
+          keyboard: rectFor("#inputMappingV2CaptureKeyboardButton"),
+          mouse: rectFor("#inputMappingV2CaptureMouseButton"),
+          note: rectFor("#inputMappingV2CaptureMessage"),
+          refresh: rectFor("#inputMappingV2RefreshGamepadsButton"),
+          separator: rectFor(".input-mapping-v2__capture-separator")
+        };
       });
-      expect(captureButtonLayout.every((entry) => entry.width > 250)).toBe(true);
-      expect(new Set(captureButtonLayout.map((entry) => entry.left)).size).toBe(1);
-      expect(captureButtonLayout[1].top).toBeGreaterThan(captureButtonLayout[0].top);
+      expect(captureFlowLayout.keyboard.width).toBeGreaterThan(110);
+      expect(captureFlowLayout.mouse.width).toBeGreaterThan(110);
+      expect(captureFlowLayout.mouse.left).toBeGreaterThan(captureFlowLayout.keyboard.left);
+      expect(Math.abs(captureFlowLayout.mouse.top - captureFlowLayout.keyboard.top)).toBeLessThanOrEqual(1);
+      expect(captureFlowLayout.note.top).toBeGreaterThan(captureFlowLayout.keyboard.top);
+      expect(captureFlowLayout.separator.top).toBeGreaterThan(captureFlowLayout.note.top);
+      expect(captureFlowLayout.refresh.top).toBeGreaterThan(captureFlowLayout.separator.top);
       const captureBottom = await page.locator("#captureInputContent").evaluate((content) => {
         const refresh = content.querySelector("#inputMappingV2RefreshGamepadsButton");
         return {
@@ -1560,7 +1595,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           separatorTag: refresh?.previousElementSibling?.tagName
         };
       });
-      expect(captureButtonLayout[2].top).toBeGreaterThan(captureButtonLayout[1].top);
       expect(captureBottom).toEqual({
         lastElementId: "inputMappingV2RefreshGamepadsButton",
         separatorClass: "input-mapping-v2__capture-separator",
@@ -1769,9 +1803,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           width: Math.round(box.width)
         };
       }));
-      expect(gamepadButtonLayout.every((entry) => entry.width > 250)).toBe(true);
-      expect(new Set(gamepadButtonLayout.map((entry) => entry.left)).size).toBe(1);
-      expect(gamepadButtonLayout[1].top).toBeGreaterThan(gamepadButtonLayout[0].top);
+      expect(gamepadButtonLayout.every((entry) => entry.width > 170)).toBe(true);
+      expect(new Set(gamepadButtonLayout.map((entry) => entry.left)).size).toBe(2);
+      expect(Math.abs(gamepadButtonLayout[1].top - gamepadButtonLayout[0].top)).toBeLessThanOrEqual(1);
       await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click({ position: { x: 12, y: 12 } });
       await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("moveLeft");
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']").click();
