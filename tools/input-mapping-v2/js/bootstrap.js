@@ -49,6 +49,7 @@ window.addEventListener("DOMContentLoaded", () => {
       captureKeyboardButton: requireElement("#inputMappingV2CaptureKeyboardButton"),
       captureMessage: requireElement("#inputMappingV2CaptureMessage"),
       captureMouseButton: requireElement("#inputMappingV2CaptureMouseButton"),
+      disableContextCheckbox: requireElement("#inputMappingV2DisableContextCheckbox"),
       refreshGamepadsButton: requireElement("#inputMappingV2RefreshGamepadsButton"),
       selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel"),
       usedInputHighlights: requireElement("#inputMappingV2UsedInputHighlights")
@@ -69,13 +70,13 @@ window.addEventListener("DOMContentLoaded", () => {
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     preview: new PreviewPanelControl({
       deleteActionButton: requireElement("#inputMappingV2MappingDeleteActionButton"),
-      deleteAllButton: requireElement("#inputMappingV2ClearActionButton"),
       deleteMappingsButton: requireElement("#inputMappingV2DeleteMappingsButton"),
       output: requireElement("#previewOutput")
     }),
     shell: new ToolStarterShellControl(),
     state: new InputMappingState(),
     statusLog,
+    workspaceRoot: requireElement(".input-mapping-v2"),
     windowRef: window
   });
 

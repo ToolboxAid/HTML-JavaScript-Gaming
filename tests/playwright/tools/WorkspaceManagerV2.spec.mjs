@@ -1583,9 +1583,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(actionOptions).toEqual([...actionOptions].sort((left, right) => left.localeCompare(right)));
       expect(actionOptions).toEqual(expect.arrayContaining(["Move Left", "Confirm", "Cancel", "Fire", "Thrust", "Rotate Left", "Rotate Right", "Pause", "Select", "Start"]));
       await expect(page.locator("#inputMappingV2ResetActionsButton")).toHaveCount(0);
-      await expect(page.locator("#inputMappingV2ClearActionButton")).toHaveText("Delete All");
+      await expect(page.locator("#inputMappingV2ClearActionButton")).toHaveCount(0);
       await expect(page.locator("#actionSetupContent .input-mapping-v2__button-row button")).toHaveText(["Add", "Delete"]);
-      await expect(page.locator("#mappingPanelContent #inputMappingV2ClearActionButton")).toBeVisible();
+      await expect(page.locator(".input-mapping-v2__capture-header #inputMappingV2DisableContextCheckbox")).toBeVisible();
+      expect(await page.locator(".input-mapping-v2").evaluate((root) => {
+        const event = new MouseEvent("contextmenu", { bubbles: true, button: 2, cancelable: true });
+        const dispatchResult = root.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: false, dispatchResult: true });
+      await page.locator("#inputMappingV2DisableContextCheckbox").check();
+      expect(await page.locator(".input-mapping-v2").evaluate((root) => {
+        const event = new MouseEvent("contextmenu", { bubbles: true, button: 2, cancelable: true });
+        const dispatchResult = root.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: true, dispatchResult: false });
+      expect(await page.evaluate(() => {
+        const event = new MouseEvent("contextmenu", { bubbles: true, button: 2, cancelable: true });
+        const dispatchResult = document.body.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: false, dispatchResult: true });
+      await page.locator("#inputMappingV2DisableContextCheckbox").uncheck();
+      expect(await page.locator(".input-mapping-v2").evaluate((root) => {
+        const event = new MouseEvent("contextmenu", { bubbles: true, button: 2, cancelable: true });
+        const dispatchResult = root.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: false, dispatchResult: true });
       await expect(page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='gameController'] #inputMappingV2RumbleFeedbackCheckbox")).toBeVisible();
       await page.locator("#inputMappingV2RumbleFeedbackCheckbox").check();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Gamepad rumble unavailable:/);
@@ -1594,17 +1616,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.locator("#previewOutput").evaluate((node) => getComputedStyle(node).overflowY)).toBe("auto");
       const capturedMappingsActionPlacement = await page.locator("#mappingPanelContent").evaluate((content) => ({
         actionButtonTexts: Array.from(content.querySelectorAll(".input-mapping-v2__mapping-actions button")).map((button) => button.textContent),
+        justifyContent: getComputedStyle(content.querySelector(".input-mapping-v2__mapping-actions")).justifyContent,
         lastElementClass: content.lastElementChild?.className,
         previousElementClass: content.lastElementChild?.previousElementSibling?.className,
         previousElementTag: content.lastElementChild?.previousElementSibling?.tagName,
         radii: Array.from(content.querySelectorAll(".input-mapping-v2__mapping-actions button")).map((button) => getComputedStyle(button).borderRadius)
       }));
       expect(capturedMappingsActionPlacement).toEqual({
-        actionButtonTexts: ["Delete Action", "Delete Mappings", "Delete All"],
+        actionButtonTexts: ["Delete Action", "Delete Mappings"],
+        justifyContent: "center",
         lastElementClass: "input-mapping-v2__mapping-actions",
         previousElementClass: "input-mapping-v2__mapping-actions-separator",
         previousElementTag: "HR",
-        radii: ["6px", "6px", "6px"]
+        radii: ["6px", "6px"]
       });
       const captureFlowLayout = await page.locator("#captureInputContent").evaluate((content) => {
         const rectFor = (selector) => {
@@ -1815,6 +1839,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2UsedInputHighlights")).toContainText("Keyboard KeyA Press");
       await expect(page.locator("#inputMappingV2UsedInputHighlights")).toContainText("Mouse Middle Button Click");
       await expect(page.locator("#inputMappingV2UsedInputHighlights")).toContainText("Mouse Left Button Drag Release");
+      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='keyboard'] .input-mapping-v2__used-control", { hasText: "Keyboard KeyA Press" })).toHaveCount(1);
+      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='mouse'] .input-mapping-v2__used-control", { hasText: "Mouse Left Button Drag Release" })).toHaveCount(1);
       await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyD"');
@@ -1838,6 +1864,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.keyboard.press("KeyB");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Keyboard KeyB mapped to Confirm\./);
       await expect(page.locator("#captureInputContent")).not.toContainText("Keyboard KeyB mapped to Confirm.");
+      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='keyboard'] .input-mapping-v2__used-control", { hasText: "Keyboard KeyB Press" })).toHaveCount(1);
+      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='keyboard'] .input-mapping-v2__used-control", { hasText: "Keyboard KeyA Press" })).toHaveCount(0);
       await page.locator("#inputMappingV2DeleteMappingsButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toHaveCount(1);
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toContainText("No inputs captured.");
@@ -1958,6 +1986,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewOutput")).not.toContainText("(Gamepad 1)");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).toHaveClass(/has-used-input/);
       await expect(page.locator("#inputMappingV2UsedInputHighlights")).toContainText("Game Controller X Button");
+      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='gameController'] .input-mapping-v2__used-control", { hasText: "Game Controller X Button" })).toHaveCount(1);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" })).toHaveAttribute("title", "Logitech RumblePad 2 USB\nSTANDARD GAMEPAD\nVendor: 046d Product: c218\nX");
       await expect(page.locator("#inspectorOutput")).toContainText('"source": "gamepad"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad1:Button2"');
@@ -2013,10 +2042,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#toolCopyJsonButton").click();
       expect(await page.evaluate(() => window.__inputMappingV2Clipboard)).toContain('"toolId": "input-mapping-v2"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Mapping JSON copied\./);
-      await page.locator("#inputMappingV2ClearActionButton").click();
-      await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
-      await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted \d+ captured mappings\./);
+      await expect(page.locator("#inputMappingV2ClearActionButton")).toHaveCount(0);
       expect(pageErrors).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);

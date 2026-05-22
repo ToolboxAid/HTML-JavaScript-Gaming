@@ -14,6 +14,7 @@ export class ToolStarterApp {
     shell,
     state,
     statusLog,
+    workspaceRoot,
     windowRef = window
   }) {
     this.accordions = accordions;
@@ -30,6 +31,7 @@ export class ToolStarterApp {
     this.shell = shell;
     this.state = state;
     this.statusLog = statusLog;
+    this.workspaceRoot = workspaceRoot;
     this.window = windowRef;
     this.captureMode = "";
     this.activeGamepadIndex = null;
@@ -37,6 +39,7 @@ export class ToolStarterApp {
     this.rumbleFeedbackEnabled = false;
     this.captureTimeoutMs = 8000;
     this.captureTimeoutTimer = null;
+    this.contextMenuDisabled = false;
     this.gamepadPollIntervalMs = 750;
     this.gamepadPollTimer = null;
     this.lastGamepadStatusSignature = "";
@@ -44,6 +47,7 @@ export class ToolStarterApp {
     this.enabledDevicesInitialized = false;
     this.handleGamepadConnectionChange = this.handleGamepadConnectionChange.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleContextMenu = this.handleContextMenu.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleWheel = this.handleWheel.bind(this);
     this.pollGamepadDevices = this.pollGamepadDevices.bind(this);
@@ -73,6 +77,7 @@ export class ToolStarterApp {
       onCaptureGamepad: (gamepadIndex) => this.startGamepadCapture(gamepadIndex),
       onCaptureKeyboard: () => this.startKeyboardCapture(),
       onCaptureMouse: () => this.startMouseCapture(),
+      onDisableContextChanged: (isDisabled) => this.setContextMenuDisabled(isDisabled),
       onRefreshGamepads: () => this.refreshGamepads()
     });
     this.deviceList.mount({
@@ -90,10 +95,10 @@ export class ToolStarterApp {
     this.window.addEventListener("keydown", this.handleKeyDown, true);
     this.window.addEventListener("mousedown", this.handleMouseDown, true);
     this.window.addEventListener("wheel", this.handleWheel, true);
+    this.workspaceRoot.addEventListener("contextmenu", this.handleContextMenu);
     this.statusLog.mount();
     this.preview.mount({
       onDeleteAction: () => this.deleteSelectedAction(),
-      onDeleteAllMappings: () => this.deleteAllMappings(),
       onDeleteMappings: () => this.deleteSelectedMappings(),
       onSelectAction: (actionId) => this.selectAction(actionId)
     });
@@ -118,12 +123,6 @@ export class ToolStarterApp {
 
   deleteSelectedAction() {
     const result = this.state.deleteSelectedAction();
-    this.statusLog[result.ok ? "ok" : "warn"](result.message);
-    this.refreshActions();
-  }
-
-  deleteAllMappings() {
-    const result = this.state.deleteAllMappings();
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
     this.refreshActions();
   }
@@ -238,6 +237,12 @@ export class ToolStarterApp {
     this.tryCaptureComboGamepad();
   }
 
+  handleContextMenu(event) {
+    if (this.contextMenuDisabled) {
+      event.preventDefault();
+    }
+  }
+
   tryCaptureActiveGamepad() {
     if (this.captureMode !== "gamepad" || !Number.isInteger(this.activeGamepadIndex)) {
       return false;
@@ -337,6 +342,11 @@ export class ToolStarterApp {
     if (result.ok) {
       this.statusLog.ok("Gamepad rumble/haptic feedback is UI-local because Input Mapping V2 toolState has no options field.");
     }
+  }
+
+  setContextMenuDisabled(isDisabled) {
+    this.contextMenuDisabled = isDisabled;
+    this.statusLog.ok(`Browser context menu ${isDisabled ? "disabled" : "enabled"} within Input Mapping V2 workspace.`);
   }
 
   setDeviceEnabled(deviceId, isEnabled) {

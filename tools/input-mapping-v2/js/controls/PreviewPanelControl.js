@@ -1,18 +1,15 @@
 export class PreviewPanelControl {
-  constructor({ deleteActionButton, deleteAllButton, deleteMappingsButton, output }) {
+  constructor({ deleteActionButton, deleteMappingsButton, output }) {
     this.deleteActionButton = deleteActionButton;
-    this.deleteAllButton = deleteAllButton;
     this.deleteMappingsButton = deleteMappingsButton;
     this.output = output;
     this.onDeleteAction = () => {};
-    this.onDeleteAllMappings = () => {};
     this.onDeleteMappings = () => {};
     this.onSelectAction = () => {};
   }
 
-  mount({ onDeleteAction, onDeleteAllMappings, onDeleteMappings, onSelectAction }) {
+  mount({ onDeleteAction, onDeleteMappings, onSelectAction }) {
     this.onDeleteAction = onDeleteAction;
-    this.onDeleteAllMappings = onDeleteAllMappings;
     this.onDeleteMappings = onDeleteMappings;
     this.onSelectAction = onSelectAction;
     this.deleteActionButton.addEventListener("click", () => {
@@ -20,9 +17,6 @@ export class PreviewPanelControl {
     });
     this.deleteMappingsButton.addEventListener("click", () => {
       this.onDeleteMappings();
-    });
-    this.deleteAllButton.addEventListener("click", () => {
-      this.onDeleteAllMappings();
     });
   }
 

@@ -149,23 +149,6 @@ export class InputMappingState {
     return { ok: true, message: `Deleted captured mappings from ${action.label}.` };
   }
 
-  deleteAllMappings() {
-    const visibleCount = this.actionEntries.filter((action) => action.tileVisible || action.inputs.length > 0).length;
-    if (!visibleCount) {
-      return { ok: false, message: "No captured mappings are available to delete." };
-    }
-    this.actionEntries = sortActions(this.actionEntries
-      .filter((action) => this.defaultActionIds.has(action.id))
-      .map((action) => ({
-        ...action,
-        inputs: [],
-        tileVisible: false
-      })));
-    this.selectedActionId = this.actionEntries[0]?.id ?? "";
-    this.syncInputMap();
-    return { ok: true, message: `Deleted ${visibleCount} captured mapping${visibleCount === 1 ? "" : "s"}.` };
-  }
-
   payload() {
     return {
       toolId: "input-mapping-v2",

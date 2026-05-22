@@ -4,6 +4,7 @@ export class CaptureControl {
     captureKeyboardButton,
     captureMessage,
     captureMouseButton,
+    disableContextCheckbox,
     refreshGamepadsButton,
     selectedActionLabel,
     usedInputHighlights
@@ -12,6 +13,7 @@ export class CaptureControl {
     this.captureKeyboardButton = captureKeyboardButton;
     this.captureMessage = captureMessage;
     this.captureMouseButton = captureMouseButton;
+    this.disableContextCheckbox = disableContextCheckbox;
     this.activeCaptureId = "";
     this.onCaptureGamepad = () => {};
     this.refreshGamepadsButton = refreshGamepadsButton;
@@ -19,10 +21,19 @@ export class CaptureControl {
     this.usedInputHighlights = usedInputHighlights;
   }
 
-  mount({ onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onRefreshGamepads }) {
+  mount({ onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onDisableContextChanged, onRefreshGamepads }) {
     this.onCaptureGamepad = onCaptureGamepad;
     this.captureKeyboardButton.addEventListener("click", onCaptureKeyboard);
     this.captureMouseButton.addEventListener("click", onCaptureMouse);
+    this.disableContextCheckbox.closest("label")?.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+    this.disableContextCheckbox.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+    this.disableContextCheckbox.addEventListener("change", () => {
+      onDisableContextChanged(this.disableContextCheckbox.checked);
+    });
     this.refreshGamepadsButton.addEventListener("click", onRefreshGamepads);
   }
 
@@ -69,9 +80,9 @@ export class CaptureControl {
     }
 
     const groups = [
-      { label: "Keyboard", inputs: selectedInputs.filter(usesKeyboard) },
-      { label: "Mouse", inputs: selectedInputs.filter(usesMouse) },
-      { label: "Game Controller", inputs: selectedInputs.filter(usesGamepad) }
+      { id: "keyboard", label: "Keyboard", inputs: selectedInputs.filter(usesKeyboard) },
+      { id: "mouse", label: "Mouse", inputs: selectedInputs.filter(usesMouse) },
+      { id: "gameController", label: "Game Controller", inputs: selectedInputs.filter(usesGamepad) }
     ].filter((group) => group.inputs.length);
 
     this.usedInputHighlights.hidden = !groups.length;
@@ -79,17 +90,19 @@ export class CaptureControl {
       const section = document.createElement("section");
       section.className = "input-mapping-v2__used-source";
       section.dataset.inputMappingUsedSource = group.label;
+      section.dataset.inputMappingUsedSourceId = group.id;
 
       const title = document.createElement("strong");
       title.textContent = group.label;
 
       const controls = document.createElement("div");
       controls.className = "input-mapping-v2__used-controls";
-      controls.append(...group.inputs.map((input) => {
+      controls.append(...usedControlSummaries(group.inputs, group.id).map((summary) => {
         const control = document.createElement("span");
         control.className = "input-mapping-v2__used-control";
-        control.textContent = inputSummary(input);
-        control.title = input.title || input.label;
+        control.dataset.inputMappingUsedBinding = summary.binding;
+        control.textContent = summary.label;
+        control.title = summary.title;
         return control;
       }));
 
@@ -155,4 +168,67 @@ function inputSummary(input) {
     return input.displayLabelLines.map((line) => String(line || "").trim()).filter(Boolean).join(" ");
   }
   return input.label;
+}
+
+function usedControlSummaries(inputs, sourceId) {
+  return inputs.flatMap((input) => {
+    const parts = comboPartSummaries(input).filter((part) => part.sourceId === sourceId);
+    if (parts.length) {
+      return parts;
+    }
+    return [{
+      binding: input.binding || "",
+      label: inputSummary(input),
+      sourceId,
+      title: input.title || input.label
+    }];
+  });
+}
+
+function comboPartSummaries(input) {
+  const parts = comboParts(input);
+  if (!parts.length) {
+    return [];
+  }
+  const labels = comboLabels(input, parts.length);
+  return parts.map((binding, index) => {
+    const sourceId = sourceIdForBinding(binding);
+    return {
+      binding,
+      label: formatUsedControlLabel(sourceId, labels[index] || binding),
+      sourceId,
+      title: input.title || input.label
+    };
+  });
+}
+
+function comboLabels(input, expectedCount) {
+  const comboLine = Array.isArray(input.displayLabelLines)
+    ? String(input.displayLabelLines[1] || "")
+    : "";
+  const labels = comboLine.split(" + ").map((label) => label.trim()).filter(Boolean);
+  return labels.length === expectedCount ? labels : [];
+}
+
+function sourceIdForBinding(binding) {
+  if (binding.startsWith("Mouse")) {
+    return "mouse";
+  }
+  if (binding.startsWith("Pad")) {
+    return "gameController";
+  }
+  return "keyboard";
+}
+
+function formatUsedControlLabel(sourceId, label) {
+  if (sourceId === "keyboard") {
+    return label.startsWith("Keyboard ") ? label : `Keyboard ${label}`;
+  }
+  if (sourceId === "mouse") {
+    return label.startsWith("Mouse ") ? label : `Mouse ${label}`;
+  }
+  if (sourceId === "gameController") {
+    return label.startsWith("Game Controller ") ? label : `Game Controller ${label}`;
+  }
+  return label;
 }

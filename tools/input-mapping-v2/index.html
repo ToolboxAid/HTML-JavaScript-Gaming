@@ -102,10 +102,16 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="captureInputContent">
+          <div class="accordion-v2__header input-mapping-v2__capture-header" aria-expanded="true" aria-controls="captureInputContent">
             <span>Capture</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
+            <div class="input-mapping-v2__capture-header-actions">
+              <label class="input-mapping-v2__context-toggle" for="inputMappingV2DisableContextCheckbox">
+                <input id="inputMappingV2DisableContextCheckbox" type="checkbox">
+                <span>Disable Context</span>
+              </label>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
           <div id="captureInputContent" class="accordion-v2__content">
             <p id="inputMappingV2SelectedActionLabel" class="tool-starter__hint">Selected action: Move Up</p>
             <div class="input-mapping-v2__button-row">
@@ -133,7 +139,6 @@
             <div class="input-mapping-v2__mapping-actions">
               <button id="inputMappingV2MappingDeleteActionButton" type="button">Delete Action</button>
               <button id="inputMappingV2DeleteMappingsButton" type="button">Delete Mappings</button>
-              <button id="inputMappingV2ClearActionButton" type="button">Delete All</button>
             </div>
           </div>
         </section>
