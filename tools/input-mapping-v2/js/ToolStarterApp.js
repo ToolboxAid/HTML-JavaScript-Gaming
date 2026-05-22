@@ -92,8 +92,9 @@ export class ToolStarterApp {
     this.window.addEventListener("wheel", this.handleWheel, true);
     this.statusLog.mount();
     this.preview.mount({
+      onDeleteAction: () => this.deleteSelectedAction(),
       onDeleteAllMappings: () => this.deleteAllMappings(),
-      onDeleteBinding: ({ actionId, binding }) => this.deleteBinding(actionId, binding),
+      onDeleteMappings: () => this.deleteSelectedMappings(),
       onSelectAction: (actionId) => this.selectAction(actionId)
     });
     this.statusLog.ok("Input Mapping V2 ready.");
@@ -127,6 +128,12 @@ export class ToolStarterApp {
     this.refreshActions();
   }
 
+  deleteSelectedMappings() {
+    const result = this.state.deleteSelectedMappings();
+    this.statusLog[result.ok ? "ok" : "warn"](result.message);
+    this.refreshActions();
+  }
+
   startKeyboardCapture() {
     if (this.isCaptureActive("keyboard")) {
       this.cancelCapture("Keyboard");
@@ -154,8 +161,9 @@ export class ToolStarterApp {
     }
     this.comboCaptureInputs = [];
     this.beginCapture("combo");
-    this.capture.showMessage(`Press two keys, mouse buttons, wheel inputs, or game controller inputs to bind a combo to ${this.state.selectedActionLabel()}.`);
+    this.capture.showMessage(`Combo capture: press any two keyboard, mouse, wheel, or game controller inputs for ${this.state.selectedActionLabel()}.`);
     this.statusLog.ok(`${deviceLabel} combo capture armed for ${this.state.selectedActionLabel()}.`);
+    this.tryCaptureComboGamepad();
   }
 
   startGamepadCapture(gamepadIndex) {
@@ -193,6 +201,7 @@ export class ToolStarterApp {
       event.preventDefault();
       event.stopPropagation();
       this.recordComboInput(this.engineInputSources.captureKeyboard(event));
+      this.tryCaptureComboGamepad();
       return;
     }
     if (this.captureMode !== "keyboard") {
@@ -208,6 +217,7 @@ export class ToolStarterApp {
       event.preventDefault();
       event.stopPropagation();
       this.recordComboInput(this.engineInputSources.captureMouse(event));
+      this.tryCaptureComboGamepad();
       return;
     }
     if (this.captureMode !== "mouse") {
@@ -225,6 +235,7 @@ export class ToolStarterApp {
     event.preventDefault();
     event.stopPropagation();
     this.recordComboInput(this.engineInputSources.captureWheel(event));
+    this.tryCaptureComboGamepad();
   }
 
   tryCaptureActiveGamepad() {
@@ -255,7 +266,7 @@ export class ToolStarterApp {
 
     this.comboCaptureInputs.push(input);
     if (this.comboCaptureInputs.length < 2) {
-      this.capture.showMessage(`Combo capture recorded ${input.label}. Press one more key or mouse button.`);
+      this.capture.showMessage(`Combo capture recorded ${input.label}. Press one more key, mouse, wheel, or game controller input.`);
       return;
     }
 
@@ -423,12 +434,6 @@ export class ToolStarterApp {
     }
     this.recordComboInput(result.input);
     return true;
-  }
-
-  deleteBinding(actionId, binding) {
-    const result = this.state.removeBinding(actionId, binding);
-    this.statusLog[result.ok ? "ok" : "warn"](result.message);
-    this.refreshActions();
   }
 
   exportToolState() {

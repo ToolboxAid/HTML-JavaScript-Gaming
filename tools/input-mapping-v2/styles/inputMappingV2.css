@@ -130,7 +130,7 @@
 
 .input-mapping-v2 #mappingPanelContent {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto auto;
   gap: 8px;
   overflow: hidden;
 }
@@ -216,6 +216,7 @@
 }
 
 .input-mapping-v2__input-token {
+  border: 1px solid var(--tool-starter-line);
   background: var(--tool-starter-input-surface);
   flex-direction: column;
   align-items: flex-start;
@@ -248,9 +249,23 @@
   line-height: 1.2;
 }
 
+.input-mapping-v2__mapping-actions-separator {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--tool-starter-line);
+  margin: 0;
+}
+
 .input-mapping-v2__mapping-actions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: flex-end;
+}
+
+.input-mapping-v2__mapping-actions button {
+  border-radius: 6px !important;
+  min-height: 34px;
 }
 
 .input-mapping-v2__empty-token {

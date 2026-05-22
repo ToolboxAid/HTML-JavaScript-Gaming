@@ -68,7 +68,9 @@ window.addEventListener("DOMContentLoaded", () => {
     gestureList: new GestureListControl(requireElement("#inputMappingV2GestureList")),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     preview: new PreviewPanelControl({
+      deleteActionButton: requireElement("#inputMappingV2MappingDeleteActionButton"),
       deleteAllButton: requireElement("#inputMappingV2ClearActionButton"),
+      deleteMappingsButton: requireElement("#inputMappingV2DeleteMappingsButton"),
       output: requireElement("#previewOutput")
     }),
     shell: new ToolStarterShellControl(),

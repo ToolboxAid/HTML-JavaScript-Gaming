@@ -110,20 +110,6 @@ export class InputMappingState {
     return { ok: true, message: `${input.label} mapped to ${action.label}.` };
   }
 
-  removeBinding(actionId, binding) {
-    const action = this.actionEntries.find((candidate) => candidate.id === actionId);
-    if (!action) {
-      return { ok: false, message: "Captured input could not be deleted because the action no longer exists." };
-    }
-    const beforeCount = action.inputs.length;
-    action.inputs = action.inputs.filter((input) => input.binding !== binding);
-    if (action.inputs.length === beforeCount) {
-      return { ok: false, message: `Captured input ${binding} was not found.` };
-    }
-    this.syncInputMap();
-    return { ok: true, message: `Deleted captured input ${binding} from ${action.label}.` };
-  }
-
   deleteSelectedAction() {
     const action = this.selectedAction();
     if (!action) {
@@ -144,6 +130,23 @@ export class InputMappingState {
     this.selectedActionId = this.nextSelectableActionId() ?? this.actionEntries[0]?.id ?? "";
     this.syncInputMap();
     return { ok: true, message: `Deleted action tile for ${deletedLabel}.` };
+  }
+
+  deleteSelectedMappings() {
+    const action = this.selectedAction();
+    if (!action) {
+      return { ok: false, message: "Select an action before deleting its mappings." };
+    }
+    if (!action.tileVisible) {
+      return { ok: false, message: `${action.label} does not have an action tile.` };
+    }
+    if (!action.inputs.length) {
+      return { ok: false, message: `${action.label} has no captured mappings to delete.` };
+    }
+    action.inputs = [];
+    action.tileVisible = true;
+    this.syncInputMap();
+    return { ok: true, message: `Deleted captured mappings from ${action.label}.` };
   }
 
   deleteAllMappings() {

@@ -85,6 +85,11 @@ export function run() {
     assert(!capabilities.some((device) => device.label === 'Wheel'), 'Input capabilities should treat wheel as mouse input instead of a device.');
     const gestures = input.getInputGestureDescriptors({ enabledDeviceIds: ['keyboard', 'mouse'] });
     assert(gestures.some((gesture) => gesture.binding === 'MouseWheelUp'), 'Input gestures should expose wheel descriptors through Mouse when wheel is available.');
+    assert(gestures.some((gesture) => gesture.binding === 'CrossDeviceCombo'), 'Input gestures should expose cross-device combos when two combo-capable devices are enabled.');
+    assert(
+        gestures.find((gesture) => gesture.binding === 'MousePrimaryDrag').title.includes('continuous movement while held'),
+        'Gesture descriptors should expose use-case title help.'
+    );
     const gesturesWithoutWheelSupport = input.getInputGestureDescriptors({ enabledDeviceIds: ['keyboard', 'mouse'], wheelAvailable: false });
     assert(!gesturesWithoutWheelSupport.some((gesture) => gesture.binding === 'MouseWheelUp'), 'Input gestures should hide wheel descriptors when wheel support is unavailable.');
     assert(!gestures.some((gesture) => gesture.binding === 'MousePrimaryDragRectangle'), 'Visible input gestures should not expose Drag Rectangle.');

@@ -65,24 +65,25 @@ const DEVICE_DEFINITIONS = Object.freeze([
 ]);
 
 const GESTURE_DEFINITIONS = Object.freeze([
-    keyboardGesture('KeyboardPress', 'Press', 'Keyboard key press', 'keyboard'),
-    keyboardGesture('KeyboardRelease', 'Release', 'Keyboard key release', 'keyboard'),
-    keyboardGesture('KeyboardHold', 'Hold', 'Keyboard key hold', 'keyboard'),
-    comboGesture('KeyboardCombo', 'Keyboard', ['keyboard']),
-    mouseGesture('MouseClick', 'Click', 'Mouse click', 'mouse'),
-    mouseGesture('MouseDoubleClick', 'Double Click', 'Mouse double click', 'mouse'),
-    pointerGesture('MousePrimaryDrag', 'Drag', 'Mouse drag', 'mouse'),
-    pointerGesture('MousePrimaryDragRelease', 'Drag Release', 'Mouse drag release', 'mouse'),
-    wheelGesture('MouseWheelUp', 'Wheel Up', 'Mouse wheel up'),
-    wheelGesture('MouseWheelDown', 'Wheel Down', 'Mouse wheel down'),
-    wheelGesture('MouseWheelLeft', 'Wheel Left', 'Mouse wheel left'),
-    wheelGesture('MouseWheelRight', 'Wheel Right', 'Mouse wheel right'),
-    comboGesture('MouseCombo', 'Mouse', ['mouse']),
-    gameControllerGesture('GameControllerButton', 'Button', 'Game controller button', 'gameController'),
-    gameControllerGesture('GameControllerTrigger', 'Trigger', 'Game controller trigger', 'gameController'),
-    gameControllerGesture('GameControllerStick', 'Stick', 'Game controller stick', 'gameController'),
-    gameControllerGesture('GameControllerDPad', 'DPad', 'Game controller DPad', 'gameController'),
-    comboGesture('GameControllerCombo', 'Game Controller', ['gameController'])
+    keyboardGesture('KeyboardPress', 'Press', 'Keyboard key press. Use for one-shot actions such as jump, confirm, or fire.', 'keyboard'),
+    keyboardGesture('KeyboardRelease', 'Release', 'Keyboard key release. Use for actions that trigger when a key is lifted.', 'keyboard'),
+    keyboardGesture('KeyboardHold', 'Hold', 'Keyboard key hold. Use for continuous movement while a key remains down.', 'keyboard'),
+    comboGesture('KeyboardCombo', 'Keyboard', ['keyboard'], 'Keyboard Combo. Use for shortcuts such as Ctrl + R. Capture two keyboard inputs for one selected action.'),
+    mouseGesture('MouseClick', 'Click', 'Mouse click. Use for direct pointing actions such as select, confirm, or fire.', 'mouse'),
+    mouseGesture('MouseDoubleClick', 'Double Click', 'Mouse double click. Use for quick repeated pointer actions such as open, focus, or inspect.', 'mouse'),
+    pointerGesture('MousePrimaryDrag', 'Drag', 'Mouse Drag. Use for continuous movement while held, such as panning or scrolling a map.', 'mouse'),
+    pointerGesture('MousePrimaryDragRelease', 'Drag Release', 'Mouse Drag Release. Use for completed drag gestures, such as box-selecting objects from start/end positions.', 'mouse'),
+    wheelGesture('MouseWheelUp', 'Wheel Up', 'Mouse Wheel Up. Use for zoom, scrolling, or cycling selections.'),
+    wheelGesture('MouseWheelDown', 'Wheel Down', 'Mouse Wheel Down. Use for zoom, scrolling, or cycling selections.'),
+    wheelGesture('MouseWheelLeft', 'Wheel Left', 'Mouse Wheel Left. Use for horizontal scrolling or cycling selections.'),
+    wheelGesture('MouseWheelRight', 'Wheel Right', 'Mouse Wheel Right. Use for horizontal scrolling or cycling selections.'),
+    comboGesture('MouseCombo', 'Mouse', ['mouse'], 'Mouse Combo. Use for combinations such as Shift + Mouse Right Button. Capture keyboard, mouse, wheel, or controller inputs for one selected action.'),
+    gameControllerGesture('GameControllerButton', 'Button', 'Game controller button. Use for face buttons, shoulder buttons, and digital controller controls.', 'gameController'),
+    gameControllerGesture('GameControllerTrigger', 'Trigger', 'Game controller trigger. Use for analog trigger actions such as accelerate, brake, or charge.', 'gameController'),
+    gameControllerGesture('GameControllerStick', 'Stick', 'Game controller stick. Use for analog movement, aiming, or steering.', 'gameController'),
+    gameControllerGesture('GameControllerDPad', 'DPad', 'Game controller DPad. Use for directional menu or movement actions.', 'gameController'),
+    comboGesture('GameControllerCombo', 'Game Controller', ['gameController'], 'Game Controller Combo. Use for controller combinations such as Button 1 + Button 2.'),
+    crossDeviceComboGesture()
 ]);
 
 export function inputDeviceCapabilities({
@@ -157,6 +158,7 @@ export function inputGestureDescriptors({
     const enabled = new Set(enabledDeviceIds);
     return GESTURE_DEFINITIONS.filter((gesture) => (
         gesture.requiredDeviceIds.every((deviceId) => enabled.has(deviceId))
+        && (!gesture.anyOfDeviceIds || gesture.anyOfDeviceIds.filter((deviceId) => enabled.has(deviceId)).length >= gesture.minimumEnabledDevices)
         && (gesture.captureKind !== 'wheel' || wheelAvailable || advancedModeAvailable)
     )).map((gesture) => ({ ...gesture }));
 }
@@ -243,7 +245,7 @@ function wheelGesture(binding, label, title) {
     };
 }
 
-function comboGesture(binding, deviceLabel, requiredDeviceIds) {
+function comboGesture(binding, deviceLabel, requiredDeviceIds, title) {
     return {
         binding,
         captureKind: 'combo',
@@ -253,7 +255,23 @@ function comboGesture(binding, deviceLabel, requiredDeviceIds) {
         label: 'Combo',
         requiredDeviceIds,
         source: requiredDeviceIds[0] === 'gameController' ? 'gamepad' : requiredDeviceIds[0],
-        title: `${deviceLabel} combo`
+        title
+    };
+}
+
+function crossDeviceComboGesture() {
+    return {
+        binding: 'CrossDeviceCombo',
+        captureKind: 'combo',
+        deviceLabel: 'Cross-device',
+        displayLabelLines: ['Cross-device', 'Combo'],
+        engine: 'InputService Combo',
+        label: 'Combo',
+        anyOfDeviceIds: ['keyboard', 'mouse', 'gameController'],
+        minimumEnabledDevices: 2,
+        requiredDeviceIds: [],
+        source: 'keyboard',
+        title: 'Cross-device Combo. Use for combinations such as Joystick Button 1 + Keyboard Alt. Capture any two keyboard, mouse, wheel, or game controller inputs for one selected action.'
     };
 }
 

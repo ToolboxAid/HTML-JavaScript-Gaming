@@ -1526,6 +1526,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })).toContainText("Wheel Up");
       const gestureGroupTitles = await page.locator(".input-mapping-v2__gesture-group strong").allTextContents();
       expect(gestureGroupTitles).not.toContain("Wheel");
+      expect(gestureGroupTitles).toContain("Cross-device");
+      await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MousePrimaryDrag']")).toHaveAttribute("title", /continuous movement while held/);
+      await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MousePrimaryDragRelease']")).toHaveAttribute("title", /box-selecting objects/);
+      await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MouseWheelUp']")).toHaveAttribute("title", /zoom, scrolling, or cycling selections/);
+      await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardCombo']")).toHaveAttribute("title", /Ctrl \+ R/);
+      await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MouseCombo']")).toHaveAttribute("title", /Shift \+ Mouse Right Button/);
+      await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerCombo']")).toHaveAttribute("title", /Button 1 \+ Button 2/);
+      await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='CrossDeviceCombo']")).toHaveAttribute("title", /Joystick Button 1 \+ Keyboard Alt/);
       const compactAccordionSpacing = await page.locator("#gestureSetupContent, #captureInputContent").evaluateAll((contents) => (
         contents.map((content) => ({
           columnGap: getComputedStyle(content).columnGap,
@@ -1585,12 +1593,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
       expect(await page.locator("#previewOutput").evaluate((node) => getComputedStyle(node).overflowY)).toBe("auto");
       const capturedMappingsActionPlacement = await page.locator("#mappingPanelContent").evaluate((content) => ({
+        actionButtonTexts: Array.from(content.querySelectorAll(".input-mapping-v2__mapping-actions button")).map((button) => button.textContent),
         lastElementClass: content.lastElementChild?.className,
-        lastButtonText: content.lastElementChild?.querySelector("button")?.textContent
+        previousElementClass: content.lastElementChild?.previousElementSibling?.className,
+        previousElementTag: content.lastElementChild?.previousElementSibling?.tagName,
+        radii: Array.from(content.querySelectorAll(".input-mapping-v2__mapping-actions button")).map((button) => getComputedStyle(button).borderRadius)
       }));
       expect(capturedMappingsActionPlacement).toEqual({
+        actionButtonTexts: ["Delete Action", "Delete Mappings", "Delete All"],
         lastElementClass: "input-mapping-v2__mapping-actions",
-        lastButtonText: "Delete All"
+        previousElementClass: "input-mapping-v2__mapping-actions-separator",
+        previousElementTag: "HR",
+        radii: ["6px", "6px", "6px"]
       });
       const captureFlowLayout = await page.locator("#captureInputContent").evaluate((content) => {
         const rectFor = (selector) => {
@@ -1704,6 +1718,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator("#previewOutput")).toContainText("Combo Shift + Mouse Wheel Up");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ShiftLeft+MouseWheelUp"');
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "ShiftLeft",
+          key: "Shift",
+          shiftKey: true
+        }));
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 2,
+          cancelable: true,
+          shiftKey: true
+        }));
+      });
+      await expect(page.locator("#previewOutput")).toContainText("Combo Shift + Mouse Right Button");
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ShiftLeft+MouseButton2"');
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
@@ -1790,7 +1822,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MousePrimaryDragRelease"');
       await expect(page.locator("#inspectorOutput")).not.toContainText('"binding": "MousePrimaryDragRectangle"');
       await page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" }).click();
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" })).toHaveCount(0);
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" })).toHaveCount(1);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyD" })).toHaveCount(1);
       await page.locator("#inputMappingV2ActionSelect").selectOption("confirm");
       await page.locator("#inputMappingV2AddActionButton").click();
@@ -1806,7 +1838,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.keyboard.press("KeyB");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Keyboard KeyB mapped to Confirm\./);
       await expect(page.locator("#captureInputContent")).not.toContainText("Keyboard KeyB mapped to Confirm.");
-      await page.locator("#inputMappingV2DeleteActionButton").click();
+      await page.locator("#inputMappingV2DeleteMappingsButton").click();
+      await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toHaveCount(1);
+      await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toContainText("No inputs captured.");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted captured mappings from Confirm\./);
+      await page.locator("#inputMappingV2MappingDeleteActionButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Move Left" })).toHaveCount(1);
       await expect(page.locator("#inputMappingV2ActionSelect option[value='confirm']")).toHaveJSProperty("disabled", false);
@@ -1878,6 +1914,35 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(Math.abs(gamepadButtonLayout[1].top - gamepadButtonLayout[0].top)).toBeLessThanOrEqual(1);
       await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click({ position: { x: 12, y: 12 } });
       await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("moveLeft");
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: [{ pressed: false }, { pressed: true }],
+          id: "Arcade Joystick",
+          mapping: "",
+          timestamp: 43.5
+        };
+      });
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Cross-device" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Combo capture recorded Game Controller Button 1");
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          altKey: true,
+          bubbles: true,
+          cancelable: true,
+          code: "AltLeft",
+          key: "Alt"
+        }));
+      });
+      await expect(page.locator("#previewOutput")).toContainText("Combo Game Controller Button 1 + Alt");
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:Pad0:Button1+AltLeft"');
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: [{ pressed: false }, { pressed: false }],
+          timestamp: 43.6
+        };
+      });
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']").click();
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).toHaveClass(/is-capturing/);
       await page.evaluate(() => {
@@ -1898,7 +1963,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad1:Button2"');
       await expect(page.locator("#inspectorOutput")).toContainText('"label": "Game Controller X"');
       await page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" }).click();
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" })).toHaveCount(0);
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" })).toHaveCount(1);
       await page.evaluate(() => {
         window.__inputMappingV2MockGamepads[0] = {
           ...window.__inputMappingV2MockGamepads[0],
@@ -1918,7 +1983,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewOutput")).toContainText("Game Controller Button 5");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad0:Button5"');
       await page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "Button 5" }).click();
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "Button 5" })).toHaveCount(0);
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "Button 5" })).toHaveCount(1);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyD" })).toHaveCount(1);
       const asteroidsManifestInputMapping = await page.evaluate(async () => {
         const response = await fetch("/games/Asteroids/game.manifest.json");

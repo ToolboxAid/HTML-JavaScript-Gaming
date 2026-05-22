@@ -1,16 +1,26 @@
 export class PreviewPanelControl {
-  constructor({ deleteAllButton, output }) {
+  constructor({ deleteActionButton, deleteAllButton, deleteMappingsButton, output }) {
+    this.deleteActionButton = deleteActionButton;
     this.deleteAllButton = deleteAllButton;
+    this.deleteMappingsButton = deleteMappingsButton;
     this.output = output;
+    this.onDeleteAction = () => {};
     this.onDeleteAllMappings = () => {};
-    this.onDeleteBinding = () => {};
+    this.onDeleteMappings = () => {};
     this.onSelectAction = () => {};
   }
 
-  mount({ onDeleteAllMappings, onDeleteBinding, onSelectAction }) {
+  mount({ onDeleteAction, onDeleteAllMappings, onDeleteMappings, onSelectAction }) {
+    this.onDeleteAction = onDeleteAction;
     this.onDeleteAllMappings = onDeleteAllMappings;
-    this.onDeleteBinding = onDeleteBinding;
+    this.onDeleteMappings = onDeleteMappings;
     this.onSelectAction = onSelectAction;
+    this.deleteActionButton.addEventListener("click", () => {
+      this.onDeleteAction();
+    });
+    this.deleteMappingsButton.addEventListener("click", () => {
+      this.onDeleteMappings();
+    });
     this.deleteAllButton.addEventListener("click", () => {
       this.onDeleteAllMappings();
     });
@@ -66,17 +76,12 @@ export class PreviewPanelControl {
   }
 
   createInputToken(actionId, input) {
-    const token = document.createElement("button");
-    token.type = "button";
+    const token = document.createElement("span");
     token.className = "input-mapping-v2__input-token";
     token.textContent = inputLabelLines(input).join("\n");
     token.title = input.title || input.label;
     token.dataset.inputMappingActionId = actionId;
     token.dataset.inputMappingBinding = input.binding;
-    token.addEventListener("click", (event) => {
-      event.stopPropagation();
-      this.onDeleteBinding({ actionId, binding: input.binding });
-    });
     return token;
   }
 

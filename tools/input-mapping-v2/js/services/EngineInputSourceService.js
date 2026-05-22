@@ -51,11 +51,7 @@ export class EngineInputSourceService {
   }
 
   gestures(enabledDeviceIds) {
-    return this.inputService.getInputGestureDescriptors({
-      advancedModeAvailable: Boolean(this.window.__inputMappingV2AdvancedInputMode),
-      enabledDeviceIds,
-      wheelAvailable: this.wheelInputAvailable()
-    });
+    return this.inputService.getInputGestureDescriptors(this.gestureOptions(enabledDeviceIds));
   }
 
   captureKeyboard(event) {
@@ -115,7 +111,7 @@ export class EngineInputSourceService {
   }
 
   captureGesture(binding, enabledDeviceIds) {
-    const gesture = this.inputService.getInputGestureDescriptor(binding, { enabledDeviceIds });
+    const gesture = this.inputService.getInputGestureDescriptor(binding, this.gestureOptions(enabledDeviceIds));
     if (!gesture) {
       return {
         ok: false,
@@ -421,6 +417,14 @@ export class EngineInputSourceService {
   wheelInputAvailable() {
     return typeof this.window.WheelEvent === "function" || "onwheel" in this.window;
   }
+
+  gestureOptions(enabledDeviceIds) {
+    return {
+      advancedModeAvailable: Boolean(this.window.__inputMappingV2AdvancedInputMode),
+      enabledDeviceIds,
+      wheelAvailable: this.wheelInputAvailable()
+    };
+  }
 }
 
 function formatGamepadDeviceLabel(gamepad) {
@@ -514,6 +518,9 @@ function comboInputLabel(input) {
   }
   if (input.source === "mouse") {
     return input.label.replace(/^Mouse\s+/, "Mouse ");
+  }
+  if (input.source === "gamepad") {
+    return input.label.replace(/^Game Controller\s+/, "Game Controller ");
   }
   return input.label;
 }
