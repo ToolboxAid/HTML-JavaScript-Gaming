@@ -91,34 +91,6 @@ export class InputMappingState {
     return { ok: true, message: `Added empty mapping tile for ${action.label}.` };
   }
 
-  changeTileAction(actionId, nextActionId) {
-    const action = this.actionEntries.find((candidate) => candidate.id === actionId);
-    const nextAction = this.actionEntries.find((candidate) => candidate.id === nextActionId);
-    if (!action || !nextAction) {
-      return { ok: false, message: "Captured mapping tile action could not be changed because an action is missing." };
-    }
-    if (action.id === nextAction.id) {
-      this.selectedActionId = nextAction.id;
-      nextAction.tileVisible = true;
-      return { ok: true, message: `Captured mapping tile remains assigned to ${nextAction.label}.` };
-    }
-    const movedCount = action.inputs.length;
-    action.inputs.forEach((input) => {
-      if (!nextAction.inputs.some((candidate) => candidate.binding === input.binding)) {
-        nextAction.inputs.push({ ...input });
-      }
-    });
-    action.inputs = [];
-    action.tileVisible = false;
-    nextAction.tileVisible = true;
-    this.selectedActionId = nextAction.id;
-    this.syncInputMap();
-    return {
-      ok: true,
-      message: `Captured mapping tile changed from ${action.label} to ${nextAction.label}${movedCount ? ` with ${movedCount} input${movedCount === 1 ? "" : "s"}` : ""}.`
-    };
-  }
-
   addBindingToSelectedAction(input) {
     const action = this.selectedAction();
     if (!action) {

@@ -17,8 +17,20 @@
 
 .input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
 .input-mapping-v2 #inputMappingV2CaptureMouseButton,
-.input-mapping-v2 #inputMappingV2CaptureGamepadButton {
+.input-mapping-v2 #inputMappingV2RefreshGamepadsButton,
+.input-mapping-v2 #inputMappingV2StartGamepadPollingButton,
+.input-mapping-v2__gamepad-capture-button {
   width: 100%;
+}
+
+.input-mapping-v2__gamepad-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.input-mapping-v2__gamepad-empty {
+  margin: 0;
 }
 
 .input-mapping-v2 .tool-starter__panel--center,
@@ -76,17 +88,12 @@
   overflow: auto;
 }
 
-.input-mapping-v2__tile-action-field {
+.input-mapping-v2__tile-action-label {
   min-width: 0;
-  display: grid;
-  gap: 6px;
-  font-size: 0.85rem;
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
   font-weight: 700;
-}
-
-.input-mapping-v2__tile-action-select {
-  width: 100%;
-  min-width: 0;
 }
 
 .input-mapping-v2__token-list {
@@ -122,4 +129,67 @@
 .input-mapping-v2__source-card code {
   white-space: normal;
   word-break: break-word;
+}
+
+.input-mapping-v2__gamepad-diagnostics {
+  display: grid;
+  gap: 10px;
+  overflow: auto;
+}
+
+.input-mapping-v2__diagnostics-summary,
+.input-mapping-v2__diagnostics-device {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px 8px;
+  margin: 0;
+}
+
+.input-mapping-v2__diagnostics-summary dt,
+.input-mapping-v2__diagnostics-device dt {
+  color: var(--tool-starter-muted);
+  font-weight: 700;
+}
+
+.input-mapping-v2__diagnostics-summary dd,
+.input-mapping-v2__diagnostics-device dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.input-mapping-v2__diagnostics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.input-mapping-v2__diagnostics-card {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-surface);
+  padding: 10px;
+}
+
+.input-mapping-v2__diagnostics-card p {
+  margin: 0;
+}
+
+.input-mapping-v2__diagnostics-card code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.input-mapping-v2__diagnostics-devices {
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .input-mapping-v2__diagnostics-grid {
+    grid-template-columns: 1fr;
+  }
 }

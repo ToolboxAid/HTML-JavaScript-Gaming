@@ -5,6 +5,7 @@ export class ToolStarterApp {
     actionSelection,
     capture,
     engineInputSources,
+    gamepadDiagnostics,
     inspector,
     preview,
     shell,
@@ -18,6 +19,7 @@ export class ToolStarterApp {
     this.actionSelection = actionSelection;
     this.capture = capture;
     this.engineInputSources = engineInputSources;
+    this.gamepadDiagnostics = gamepadDiagnostics;
     this.inspector = inspector;
     this.preview = preview;
     this.shell = shell;
@@ -26,9 +28,13 @@ export class ToolStarterApp {
     this.statusLog = statusLog;
     this.window = windowRef;
     this.captureMode = "";
+    this.gamepadPollIntervalMs = 750;
+    this.gamepadPollTimer = null;
+    this.lastGamepadStatusSignature = "";
     this.handleGamepadConnectionChange = this.handleGamepadConnectionChange.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.pollGamepadDevices = this.pollGamepadDevices.bind(this);
   }
 
   start() {
@@ -47,13 +53,14 @@ export class ToolStarterApp {
     this.actionSelection.mount({
       onActionChanged: (actionId) => this.selectAction(actionId),
       onAddAction: (label) => this.addAction(label),
-      onClearAction: () => this.clearSelectedAction(),
-      onResetActions: () => this.resetActions()
+      onClearAction: () => this.clearSelectedAction()
     });
     this.capture.mount({
-      onCaptureGamepad: () => this.captureGamepad(),
+      onCaptureGamepad: (gamepadIndex) => this.captureGamepad(gamepadIndex),
       onCaptureKeyboard: () => this.startKeyboardCapture(),
-      onCaptureMouse: () => this.startMouseCapture()
+      onCaptureMouse: () => this.startMouseCapture(),
+      onRefreshGamepads: () => this.refreshGamepads(),
+      onStartGamepadPolling: () => this.startListeningForGamepads()
     });
     this.engineInputSources.attach();
     this.window.addEventListener("gamepadconnected", this.handleGamepadConnectionChange);
@@ -62,11 +69,13 @@ export class ToolStarterApp {
     this.window.addEventListener("mousedown", this.handleMouseDown, true);
     this.statusLog.mount();
     this.preview.mount({
-      onChangeTileAction: ({ actionId, nextActionId }) => this.changeTileAction(actionId, nextActionId),
       onDeleteBinding: ({ actionId, binding }) => this.deleteBinding(actionId, binding)
     });
-    this.refreshActions();
     this.statusLog.ok("Input Mapping V2 ready.");
+    const initialGamepadStatus = this.engineInputSources.refreshGamepadState();
+    this.trackGamepadStatus(initialGamepadStatus, { log: true });
+    this.refreshActions(initialGamepadStatus);
+    this.startGamepadPolling();
   }
 
   selectAction(actionId) {
@@ -81,22 +90,9 @@ export class ToolStarterApp {
     this.refreshActions();
   }
 
-  changeTileAction(actionId, nextActionId) {
-    const result = this.state.changeTileAction(actionId, nextActionId);
-    this.statusLog[result.ok ? "ok" : "warn"](result.message);
-    this.refreshActions();
-  }
-
   clearSelectedAction() {
     const result = this.state.clearSelectedAction();
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
-    this.refreshActions();
-  }
-
-  resetActions() {
-    this.state.reset();
-    this.captureMode = "";
-    this.statusLog.ok("Default actions restored.");
     this.refreshActions();
   }
 
@@ -132,8 +128,8 @@ export class ToolStarterApp {
     this.addCapturedInput(this.engineInputSources.captureMouse(event));
   }
 
-  captureGamepad() {
-    const result = this.engineInputSources.captureGamepad();
+  captureGamepad(gamepadIndex) {
+    const result = this.engineInputSources.captureGamepad(gamepadIndex);
     if (!result.ok) {
       this.capture.showMessage(result.message);
       this.statusLog.warn(result.message);
@@ -144,13 +140,55 @@ export class ToolStarterApp {
   }
 
   handleGamepadConnectionChange() {
+    this.refreshGamepads();
+  }
+
+  refreshGamepads() {
     const status = this.engineInputSources.refreshGamepadState();
+    this.trackGamepadStatus(status, { log: true });
+    this.refreshActions(status);
+  }
+
+  startListeningForGamepads() {
+    this.startGamepadPolling();
+    const status = this.engineInputSources.refreshGamepadState();
+    this.trackGamepadStatus(status, { log: true });
+    this.capture.showMessage("Gamepad polling is active. Keep this browser tab focused and press a controller button if the browser has not exposed the device yet.");
+    this.statusLog.ok("Gamepad listening/polling is active.");
+    this.refreshActions(status);
+  }
+
+  startGamepadPolling() {
+    if (this.gamepadPollTimer || typeof this.window.setInterval !== "function") {
+      return;
+    }
+    this.gamepadPollTimer = this.window.setInterval(this.pollGamepadDevices, this.gamepadPollIntervalMs);
+  }
+
+  pollGamepadDevices() {
+    const status = this.engineInputSources.refreshGamepadState();
+    const changed = this.trackGamepadStatus(status);
+    if (changed) {
+      this.refreshActions(status);
+    }
+  }
+
+  trackGamepadStatus(status, { log = false } = {}) {
+    const signature = `${status.warning}|${status.connectedCount}|${status.connectedLabels}`;
+    const changed = signature !== this.lastGamepadStatusSignature;
+    if (log || (changed && this.lastGamepadStatusSignature)) {
+      this.logGamepadStatus(status);
+    }
+    this.lastGamepadStatusSignature = signature;
+    return changed;
+  }
+
+  logGamepadStatus(status) {
     if (status.warning) {
       this.statusLog.warn(status.warning);
-    } else {
-      this.statusLog.ok(status.message);
+      return;
     }
-    this.refreshActions();
+    this.statusLog.ok(status.message);
   }
 
   addCapturedInput(input) {
@@ -194,12 +232,13 @@ export class ToolStarterApp {
     this.refreshActions();
   }
 
-  refreshActions() {
+  refreshActions(gamepadStatus = this.engineInputSources.refreshGamepadState()) {
     this.actionNav.setToolActionsEnabled(true);
     this.actionSelection.render(this.state.actions(), this.state.selectedActionId);
-    this.capture.render(this.state.selectedActionLabel());
+    this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads);
     this.preview.render(this.state.actions());
     this.inspector.showObject(this.state.payload());
-    this.sourceInventory.render(this.engineInputSources.sources());
+    this.sourceInventory.render(this.engineInputSources.sources(gamepadStatus));
+    this.gamepadDiagnostics.render(this.engineInputSources.gamepadDiagnostics(gamepadStatus));
   }
 }

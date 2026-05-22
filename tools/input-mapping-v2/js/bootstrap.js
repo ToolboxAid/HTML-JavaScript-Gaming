@@ -3,6 +3,7 @@ import { AccordionSection } from "./controls/AccordionSection.js";
 import { ActionSelectionControl } from "./controls/ActionSelectionControl.js";
 import { CaptureControl } from "./controls/CaptureControl.js";
 import { EngineInputSourceService } from "./services/EngineInputSourceService.js";
+import { GamepadDiagnosticsControl } from "./controls/GamepadDiagnosticsControl.js";
 import { InputMappingState } from "./services/InputMappingState.js";
 import { InspectorControl } from "./controls/InspectorControl.js";
 import { PreviewPanelControl } from "./controls/PreviewPanelControl.js";
@@ -43,17 +44,19 @@ window.addEventListener("DOMContentLoaded", () => {
       actionSelect: requireElement("#inputMappingV2ActionSelect"),
       addActionButton: requireElement("#inputMappingV2AddActionButton"),
       clearActionButton: requireElement("#inputMappingV2ClearActionButton"),
-      customActionInput: requireElement("#inputMappingV2CustomActionInput"),
-      resetActionsButton: requireElement("#inputMappingV2ResetActionsButton")
+      customActionInput: requireElement("#inputMappingV2CustomActionInput")
     }),
     capture: new CaptureControl({
-      captureGamepadButton: requireElement("#inputMappingV2CaptureGamepadButton"),
+      captureGamepadButtons: requireElement("#inputMappingV2GamepadCaptureButtons"),
       captureKeyboardButton: requireElement("#inputMappingV2CaptureKeyboardButton"),
       captureMessage: requireElement("#inputMappingV2CaptureMessage"),
       captureMouseButton: requireElement("#inputMappingV2CaptureMouseButton"),
-      selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel")
+      refreshGamepadsButton: requireElement("#inputMappingV2RefreshGamepadsButton"),
+      selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel"),
+      startGamepadPollingButton: requireElement("#inputMappingV2StartGamepadPollingButton")
     }),
     engineInputSources: new EngineInputSourceService({ windowRef: window }),
+    gamepadDiagnostics: new GamepadDiagnosticsControl(requireElement("#inputMappingV2GamepadDiagnostics")),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     preview: new PreviewPanelControl(requireElement("#previewOutput")),
     shell: new ToolStarterShellControl(),

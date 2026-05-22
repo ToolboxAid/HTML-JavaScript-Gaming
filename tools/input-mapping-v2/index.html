@@ -70,7 +70,6 @@
               <button id="inputMappingV2AddActionButton" type="button">Add Action</button>
               <button id="inputMappingV2ClearActionButton" type="button">Clear Action Inputs</button>
             </div>
-            <button id="inputMappingV2ResetActionsButton" type="button">Reset Default Actions</button>
             <p id="inputMappingV2ActionHint" class="tool-starter__hint">Default actions are engine-style action names sorted alphabetically.</p>
           </div>
         </section>
@@ -86,7 +85,9 @@
               <button id="inputMappingV2CaptureKeyboardButton" type="button">Capture Keyboard</button>
               <button id="inputMappingV2CaptureMouseButton" type="button">Capture Mouse</button>
             </div>
-            <button id="inputMappingV2CaptureGamepadButton" type="button">Capture Gamepad</button>
+            <button id="inputMappingV2RefreshGamepadsButton" type="button">Refresh Gamepads</button>
+            <button id="inputMappingV2StartGamepadPollingButton" type="button">Start Listening / Poll Gamepads</button>
+            <div id="inputMappingV2GamepadCaptureButtons" class="input-mapping-v2__gamepad-buttons" aria-label="Detected gamepad capture buttons"></div>
             <p id="inputMappingV2CaptureMessage" class="tool-starter__hint">Keyboard, mouse, and gamepad sources are provided by src/engine/input.</p>
           </div>
         </section>
@@ -114,6 +115,16 @@
           </button>
           <div id="sourceInventoryContent" class="accordion-v2__content">
             <div id="inputMappingV2SourceList" class="input-mapping-v2__source-list"></div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="gamepadDiagnosticsContent">
+            <span>Gamepad Diagnostics</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="gamepadDiagnosticsContent" class="accordion-v2__content">
+            <div id="inputMappingV2GamepadDiagnostics" class="input-mapping-v2__gamepad-diagnostics" aria-label="Gamepad diagnostics"></div>
           </div>
         </section>
 

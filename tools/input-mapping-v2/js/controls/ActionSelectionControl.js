@@ -4,25 +4,22 @@ export class ActionSelectionControl {
     actionSelect,
     addActionButton,
     clearActionButton,
-    customActionInput,
-    resetActionsButton
+    customActionInput
   }) {
     this.actionHint = actionHint;
     this.actionSelect = actionSelect;
     this.addActionButton = addActionButton;
     this.clearActionButton = clearActionButton;
     this.customActionInput = customActionInput;
-    this.resetActionsButton = resetActionsButton;
   }
 
-  mount({ onActionChanged, onAddAction, onClearAction, onResetActions }) {
+  mount({ onActionChanged, onAddAction, onClearAction }) {
     this.actionSelect.addEventListener("change", () => onActionChanged(this.actionSelect.value));
     this.addActionButton.addEventListener("click", () => {
       onAddAction(this.customActionInput.value);
       this.customActionInput.value = "";
     });
     this.clearActionButton.addEventListener("click", () => onClearAction());
-    this.resetActionsButton.addEventListener("click", () => onResetActions());
   }
 
   render(actions, selectedActionId) {
