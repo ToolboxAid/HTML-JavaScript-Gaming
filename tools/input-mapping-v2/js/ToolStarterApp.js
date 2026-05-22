@@ -61,12 +61,13 @@ export class ToolStarterApp {
       onCopyJson: () => {
         void this.copyJson();
       },
-      onExport: () => this.exportToolState()
+      onExport: () => this.exportToolState(),
+      onImport: () => this.importJson()
     });
     this.actionSelection.mount({
       onActionChanged: (actionId) => this.selectAction(actionId),
       onAddAction: (label) => this.addAction(label),
-      onClearAction: () => this.clearSelectedAction(),
+      onClearAction: () => this.deleteSelectedAction(),
       onDeleteAction: () => this.deleteSelectedAction()
     });
     this.capture.mount({
@@ -432,7 +433,11 @@ export class ToolStarterApp {
 
   exportToolState() {
     this.inspector.showObject(this.state.toolState());
-    this.statusLog.ok("Input Mapping V2 export preview written.");
+    this.statusLog.ok("Input Mapping V2 JSON preview written.");
+  }
+
+  importJson() {
+    this.statusLog.warn("Input Mapping V2 Import is available through workspace launch data; standalone file import is not wired for this tool.");
   }
 
   async copyJson() {

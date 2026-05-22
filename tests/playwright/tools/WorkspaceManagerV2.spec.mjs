@@ -1430,8 +1430,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         buttons.map((button) => button.textContent.split("\n").map((line) => line.trim()).filter(Boolean))
       ));
       expect(gamepadCaptureLabels).toEqual([
-        ["Capture (Gamepad 0)", "Vendor: 081f Product: e401", "USB gamepad"],
-        ["Capture Logitech RumblePad 2", "Vendor: 046d Product: c218", "Logitech RumblePad 2"]
+        ["Capture Game", "Vendor: 081f Product: e401"],
+        ["Capture Game", "Vendor: 046d Product: c218"]
       ]);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toContainText("Product: e401)");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).not.toContainText("Product: c218)");
@@ -1473,9 +1473,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("[data-tool-starter-summary]")).toBeVisible();
       await expect(page.locator(".tools-platform-frame__title[data-tool-id='input-mapping-v2']")).toHaveText("Input Mapping V2");
       await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Export", "Copy JSON"]);
+      await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "JSON"]);
       await expect(page.locator("#toolExportToolStateButton")).toHaveCount(0);
       await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
+      await page.locator("#toolImportButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Input Mapping V2 Import is available through workspace launch data/);
       const fullscreenLayout = await page.locator(".input-mapping-v2.tool-starter.app-shell").evaluate((shell) => {
         const left = shell.querySelector(".tool-starter__panel--left").getBoundingClientRect();
         const center = shell.querySelector(".tool-starter__panel--center").getBoundingClientRect();
@@ -1496,9 +1498,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(fullscreenLayout.rightGap).toBeLessThan(40);
       expect(fullscreenLayout.centerWidth).toBeGreaterThan(1000);
       expect(Math.max(...fullscreenLayout.rightAccordionHeights) - Math.min(...fullscreenLayout.rightAccordionHeights)).toBeLessThanOrEqual(3);
-      await expect(page.locator(".tool-starter__panel--left > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Actions", "Devices", "Gestures", "Capture"]);
-      await expect(page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Captured Mappings"]);
-      await expect(page.locator(".tool-starter__panel--right > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Diagnostics", "Status / Log", "Export"]);
+      await expect(page.locator(".tool-starter__panel--left > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Actions", "Devices"]);
+      await expect(page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Gestures", "Capture", "Captured Mappings"]);
+      await expect(page.locator(".tool-starter__panel--right > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Diagnostics", "JSON", "Status / Log"]);
       await expect(page.locator(".input-mapping-v2__device-card strong")).toHaveText([
         "Keyboard",
         "Mouse",
@@ -1524,8 +1526,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(actionOptions).toEqual([...actionOptions].sort((left, right) => left.localeCompare(right)));
       expect(actionOptions).toEqual(expect.arrayContaining(["Move Left", "Confirm", "Cancel", "Fire", "Thrust", "Rotate Left", "Rotate Right", "Pause", "Select", "Start"]));
       await expect(page.locator("#inputMappingV2ResetActionsButton")).toHaveCount(0);
-      await expect(page.locator("#inputMappingV2ClearActionButton")).toHaveText("Clear Actions");
-      await expect(page.locator("#actionSetupContent .input-mapping-v2__button-row button")).toHaveText(["Add Action", "Clear Actions", "Delete Action"]);
+      await expect(page.locator("#inputMappingV2ClearActionButton")).toHaveText("Delete");
+      await expect(page.locator("#actionSetupContent .input-mapping-v2__button-row button")).toHaveText(["Add", "Delete", "Delete"]);
       await expect(page.locator("#inputMappingV2RumbleFeedbackCheckbox")).toBeVisible();
       await page.locator("#inputMappingV2RumbleFeedbackCheckbox").check();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Gamepad rumble unavailable:/);
@@ -1569,7 +1571,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Engine input capabilities");
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Raw navigator.getGamepads()");
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("InputService gamepad state");
-      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Sample 0104 engine/input path");
+      await expect(page.locator("#inputMappingV2Diagnostics")).not.toContainText("Sample 0104 engine/input path");
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Browser API available");
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("navigator.getGamepads() count");
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Last poll timestamp");
@@ -1702,8 +1704,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.keyboard.press("KeyB");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Keyboard KeyB mapped to Confirm\./);
       await expect(page.locator("#captureInputContent")).not.toContainText("Keyboard KeyB mapped to Confirm.");
-      await page.locator("#inputMappingV2DeleteActionButton").click();
+      await page.locator("#inputMappingV2ClearActionButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toHaveCount(0);
+      await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Move Left" })).toHaveCount(1);
       await expect(page.locator("#inputMappingV2ActionSelect option[value='confirm']")).toHaveJSProperty("disabled", false);
       const actionValues = await page.locator("#inputMappingV2ActionSelect option").evaluateAll((options) => (
         options.filter((option) => !option.disabled).map((option) => option.value)
@@ -1756,8 +1759,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText(/navigator\.getGamepads\(\) count2/);
       await expect(page.locator("#inputMappingV2DeviceList")).toContainText("2 connected game controllers detected.");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button")).toHaveCount(2);
-      await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(0)).toContainText("Mock Flight Stick");
-      await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(1)).toContainText("Logitech RumblePad 2");
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(0)).toContainText("Capture Game");
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(1)).toContainText("Vendor: 046d Product: c218");
       const gamepadButtonLayout = await page.locator(".input-mapping-v2__gamepad-capture-button").evaluateAll((buttons) => buttons.map((button) => {
         const box = button.getBoundingClientRect();
         return {
@@ -1825,7 +1828,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(asteroidsManifestInputMapping.actions.map((action) => action.label)).toEqual(actionOptions);
       await page.locator("#toolExportButton").click();
       await expect(page.locator("#inspectorOutput")).toContainText('"payload"');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Input Mapping V2 export preview written\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Input Mapping V2 JSON preview written\./);
       await page.evaluate(() => {
         Object.defineProperty(navigator, "clipboard", {
           configurable: true,

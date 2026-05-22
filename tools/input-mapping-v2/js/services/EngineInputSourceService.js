@@ -339,13 +339,6 @@ export class EngineInputSourceService {
 
   gamepadDiagnostics(status = this.gamepadStatus()) {
     const inputServiceGamepads = this.inputService.getGamepads().map(normalizeDiagnosticGamepad);
-    const sampleEngine = { input: this.inputService };
-    const sampleGamepads = (sampleEngine.input.getGamepads?.() ?? []).map(normalizeDiagnosticGamepad);
-    const gamepadZero = sampleEngine.input.getGamepad?.(0);
-    const samplePath = gamepadZero
-      ? "engine.input.getGamepads() + engine.input.getGamepad(0)"
-      : "engine.input.getGamepads() + engine.input.getGamepad(0 disconnected)";
-
     return {
       apiAvailable: status.apiAvailable,
       rawCount: status.rawCount,
@@ -372,12 +365,6 @@ export class EngineInputSourceService {
           path: "InputService.update() -> inputService.getGamepads()",
           count: inputServiceGamepads.length,
           gamepads: inputServiceGamepads
-        },
-        {
-          name: "Sample 0104 engine/input path",
-          path: samplePath,
-          count: sampleGamepads.length,
-          gamepads: sampleGamepads
         }
       ]
     };
@@ -440,7 +427,7 @@ function gamepadDeviceInfo(gamepad) {
   const vendorProductLine = vendorProductText(usbIds);
   const detailName = detailDeviceName(displayName, id, usbIds);
   return {
-    captureLines: captureLines({ displayName, index, vendorProductLine }),
+    captureLines: captureLines({ vendorProductLine }),
     detailName,
     displayName,
     id,
@@ -454,11 +441,8 @@ function gamepadDeviceInfo(gamepad) {
   };
 }
 
-function captureLines({ displayName, index, vendorProductLine }) {
-  const firstLine = isGenericGamepadName(displayName)
-    ? `Capture (Gamepad ${index})`
-    : `Capture ${displayName}`;
-  return [firstLine, vendorProductLine, displayName].filter(Boolean);
+function captureLines({ vendorProductLine }) {
+  return ["Capture Game", vendorProductLine].filter(Boolean);
 }
 
 function detailDeviceName(displayName, id, usbIds) {

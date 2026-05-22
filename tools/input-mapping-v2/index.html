@@ -37,6 +37,12 @@
       </div>
     </details>
 
+    <nav id="inputMappingV2ToolNav" class="tool-starter__menu tool-starter__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <button id="toolImportButton" type="button">Import</button>
+      <button id="toolCopyJsonButton" type="button">Copy JSON</button>
+      <button id="toolExportButton" type="button">JSON</button>
+    </nav>
+
     <nav class="tool-starter__menu tool-starter__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
       <button id="workspaceImportManifestButton" type="button">Import manifest</button>
       <button id="workspaceCopyManifestButton" type="button">Copy manifest</button>
@@ -61,9 +67,9 @@
               <input id="inputMappingV2CustomActionInput" type="text" autocomplete="off" placeholder="dash, interact, inspect">
             </label>
             <div class="input-mapping-v2__button-row">
-              <button id="inputMappingV2AddActionButton" type="button">Add Action</button>
-              <button id="inputMappingV2ClearActionButton" type="button">Clear Actions</button>
-              <button id="inputMappingV2DeleteActionButton" type="button">Delete Action</button>
+              <button id="inputMappingV2AddActionButton" type="button">Add</button>
+              <button id="inputMappingV2ClearActionButton" type="button">Delete</button>
+              <button id="inputMappingV2DeleteActionButton" type="button">Delete</button>
             </div>
             <p id="inputMappingV2ActionHint" class="tool-starter__hint">Default actions are engine-style action names sorted alphabetically.</p>
           </div>
@@ -83,6 +89,9 @@
           </div>
         </section>
 
+      </aside>
+
+      <section class="tool-starter__panel tool-starter__panel--center" aria-label="Captured mappings">
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="gestureSetupContent">
             <span>Gestures</span>
@@ -110,9 +119,7 @@
             <button id="inputMappingV2RefreshGamepadsButton" type="button">Refresh Gamepads</button>
           </div>
         </section>
-      </aside>
 
-      <section class="tool-starter__panel tool-starter__panel--center" aria-label="Captured mappings">
         <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="mappingPanelContent">
             <span>Captured Mappings</span>
@@ -138,6 +145,16 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="exportContent">
+            <span>JSON</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="exportContent" class="accordion-v2__content">
+            <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <div class="accordion-v2__header tool-starter__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
             <span>Status / Log</span>
             <div class="tool-starter__status-header-actions">
@@ -147,20 +164,6 @@
           </div>
           <div id="statusLogContent" class="accordion-v2__content">
             <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
-          </div>
-        </section>
-
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="exportContent">
-            <span>Export</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="exportContent" class="accordion-v2__content">
-            <nav id="inputMappingV2ExportNav" class="tool-starter__menu tool-starter__tool__menu input-mapping-v2__export-menu" aria-label="Export actions" data-launch-mode-nav="tool">
-              <button id="toolExportButton" type="button">Export</button>
-              <button id="toolCopyJsonButton" type="button">Copy JSON</button>
-            </nav>
-            <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
           </div>
         </section>
       </aside>

@@ -61,7 +61,8 @@ window.addEventListener("DOMContentLoaded", () => {
     exportControl: new ExportControl({
       copyJsonButton: requireElement("#toolCopyJsonButton"),
       exportButton: requireElement("#toolExportButton"),
-      nav: requireElement("#inputMappingV2ExportNav")
+      importButton: requireElement("#toolImportButton"),
+      nav: requireElement("#inputMappingV2ToolNav")
     }),
     gamepadDiagnostics: new GamepadDiagnosticsControl(requireElement("#inputMappingV2Diagnostics")),
     gestureList: new GestureListControl(requireElement("#inputMappingV2GestureList")),
