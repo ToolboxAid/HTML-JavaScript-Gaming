@@ -11,6 +11,7 @@ export class CaptureControl {
     this.captureKeyboardButton = captureKeyboardButton;
     this.captureMessage = captureMessage;
     this.captureMouseButton = captureMouseButton;
+    this.activeCaptureId = "";
     this.onCaptureGamepad = () => {};
     this.refreshGamepadsButton = refreshGamepadsButton;
     this.selectedActionLabel = selectedActionLabel;
@@ -40,9 +41,11 @@ export class CaptureControl {
     this.captureGamepadButtons.replaceChildren(...gamepads.map((gamepad) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "input-mapping-v2__gamepad-capture-button";
+      const captureId = this.gamepadCaptureId(gamepad.index);
+      button.className = `input-mapping-v2__gamepad-capture-button${this.activeCaptureId === captureId ? " is-capturing" : ""}`;
       button.dataset.inputMappingGamepadIndex = String(gamepad.index);
-      button.textContent = `Capture ${gamepad.label}`;
+      button.ariaPressed = this.activeCaptureId === captureId ? "true" : "false";
+      button.textContent = gamepad.captureLines.join("\n");
       button.title = `Capture input from ${gamepad.label}`;
       button.addEventListener("click", () => {
         this.onCaptureGamepad(gamepad.index);
@@ -53,5 +56,26 @@ export class CaptureControl {
 
   showMessage(message) {
     this.captureMessage.textContent = message;
+  }
+
+  setActiveCapture(captureId) {
+    this.activeCaptureId = captureId;
+    this.captureKeyboardButton.classList.toggle("is-capturing", captureId === "keyboard");
+    this.captureKeyboardButton.ariaPressed = captureId === "keyboard" ? "true" : "false";
+    this.captureMouseButton.classList.toggle("is-capturing", captureId === "mouse");
+    this.captureMouseButton.ariaPressed = captureId === "mouse" ? "true" : "false";
+    this.captureGamepadButtons.querySelectorAll(".input-mapping-v2__gamepad-capture-button").forEach((button) => {
+      const isActive = captureId === this.gamepadCaptureId(button.dataset.inputMappingGamepadIndex);
+      button.classList.toggle("is-capturing", isActive);
+      button.ariaPressed = isActive ? "true" : "false";
+    });
+  }
+
+  clearActiveCapture() {
+    this.setActiveCapture("");
+  }
+
+  gamepadCaptureId(index) {
+    return `gamepad:${Number(index)}`;
   }
 }

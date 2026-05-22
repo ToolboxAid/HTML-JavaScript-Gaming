@@ -63,8 +63,8 @@ export class PreviewPanelControl {
     const token = document.createElement("button");
     token.type = "button";
     token.className = "input-mapping-v2__input-token";
-    token.textContent = input.label;
-    token.title = `Delete ${input.label}`;
+    token.textContent = inputLabelLines(input).join("\n");
+    token.title = input.title || input.label;
     token.dataset.inputMappingActionId = actionId;
     token.dataset.inputMappingBinding = input.binding;
     token.addEventListener("click", (event) => {
@@ -79,4 +79,11 @@ export class PreviewPanelControl {
     emptyState.textContent = "No inputs captured yet.";
     return emptyState;
   }
+}
+
+function inputLabelLines(input) {
+  if (Array.isArray(input.displayLabelLines) && input.displayLabelLines.length) {
+    return input.displayLabelLines.map((line) => String(line || "").trim()).filter(Boolean);
+  }
+  return [input.label];
 }

@@ -22,10 +22,22 @@
   width: 100%;
 }
 
+.input-mapping-v2__capture-button.is-capturing,
+.input-mapping-v2__gamepad-capture-button.is-capturing {
+  border-color: var(--tool-starter-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--tool-starter-accent);
+  background: var(--tool-starter-input-surface);
+}
+
 .input-mapping-v2__gamepad-buttons {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
+}
+
+.input-mapping-v2__gamepad-capture-button {
+  min-height: 74px;
+  white-space: pre-line;
 }
 
 .input-mapping-v2__gamepad-empty {
@@ -52,7 +64,7 @@
 }
 
 .input-mapping-v2__mapping-list {
-  grid-template-columns: repeat(auto-fill, 175px);
+  grid-template-columns: repeat(auto-fill, 225px);
   grid-auto-rows: 175px;
   align-content: start;
   align-items: stretch;
@@ -81,7 +93,7 @@
 }
 
 .input-mapping-v2__mapping-card {
-  width: 175px;
+  width: 225px;
   height: 175px;
   align-content: start;
   overflow: auto;
@@ -120,6 +132,11 @@
 
 .input-mapping-v2__input-token {
   background: var(--tool-starter-input-surface);
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  text-align: left;
+  white-space: pre-line;
 }
 
 .input-mapping-v2__empty-token {

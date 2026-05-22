@@ -164,7 +164,7 @@ export class InputMappingState {
       actions: this.actions().map((action) => ({
         action: action.id,
         label: action.label,
-        inputs: action.inputs
+        inputs: action.inputs.map(schemaInput)
       }))
     };
   }
@@ -199,4 +199,13 @@ function normalizeActionId(label) {
 
 function sortActions(actions) {
   return [...actions].sort((left, right) => left.label.localeCompare(right.label, undefined, { sensitivity: "base" }));
+}
+
+function schemaInput(input) {
+  return {
+    source: input.source,
+    binding: input.binding,
+    label: input.label,
+    engine: input.engine
+  };
 }

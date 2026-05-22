@@ -1397,7 +1397,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           axes: [0, 0],
           buttons: [{ pressed: false }, { pressed: false }],
           connected: true,
-          id: "Load Pad Alpha",
+          id: "USB gamepad (Vendor: 081f Product: e401)",
           index: 0,
           mapping: "standard",
           timestamp: 11
@@ -1406,7 +1406,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           axes: [0, 0, 0, 0],
           buttons: [{ pressed: false }, { pressed: false }, { pressed: false }],
           connected: true,
-          id: "Load Pad Beta",
+          id: "Logitech RumblePad 2 USB (Vendor: 046d Product: c218)",
           index: 1,
           mapping: "standard",
           timestamp: 12
@@ -1426,10 +1426,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     try {
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button")).toHaveCount(2);
-      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).toContainText("Load Pad Alpha (Gamepad 0)");
-      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).toContainText("Load Pad Beta (Gamepad 1)");
+      const gamepadCaptureLabels = await page.locator(".input-mapping-v2__gamepad-capture-button").evaluateAll((buttons) => (
+        buttons.map((button) => button.textContent.split("\n").map((line) => line.trim()).filter(Boolean))
+      ));
+      expect(gamepadCaptureLabels).toEqual([
+        ["Capture (Gamepad 0)", "Vendor: 081f Product: e401", "USB gamepad"],
+        ["Capture Logitech RumblePad 2", "Vendor: 046d Product: c218", "Logitech RumblePad 2"]
+      ]);
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toContainText("Product: e401)");
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).not.toContainText("Product: c218)");
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("2 connected gamepads");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK 2 connected gamepads detected: Load Pad Alpha \(Gamepad 0\), Load Pad Beta \(Gamepad 1\)/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK 2 connected gamepads detected: USB gamepad \(Gamepad 0\), Logitech RumblePad 2 \(Gamepad 1\)/);
       await expect(page.locator("#inputMappingV2StartGamepadPollingButton")).toHaveCount(0);
       await expect(page.locator("button", { hasText: /Start Listening|Poll Gamepads/ })).toHaveCount(0);
       const captureBottomElementId = await page.locator("#captureInputContent").evaluate((content) => content.lastElementChild?.id);
@@ -1532,23 +1539,37 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__tile-action-select")).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__empty-token", { hasText: "No inputs captured." })).toHaveCount(1);
       const emptyMappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
-      expect(Math.round(emptyMappingTileBox.width)).toBe(175);
+      expect(Math.round(emptyMappingTileBox.width)).toBe(225);
       expect(Math.round(emptyMappingTileBox.height)).toBe(175);
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
       await page.keyboard.press("KeyA");
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await page.keyboard.press("KeyD");
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capturing/);
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 1,
+          cancelable: true
+        }));
+      });
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/);
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(1);
       const mappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
-      expect(Math.round(mappingTileBox.width)).toBe(175);
+      expect(Math.round(mappingTileBox.width)).toBe(225);
       expect(Math.round(mappingTileBox.height)).toBe(175);
       await expect(page.locator("#previewOutput")).toContainText("Move Left");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyA");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyD");
+      await expect(page.locator("#previewOutput")).toContainText("Mouse Button 1");
       await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyD"');
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MouseButton1"');
       await page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" }).click();
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" })).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyD" })).toHaveCount(1);
@@ -1598,7 +1619,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             axes: [0, 0, 0, 0],
             buttons: [{ pressed: false }, { pressed: false }, { pressed: false }],
             connected: true,
-            id: "Arcade Twin Stick",
+            id: "Logitech RumblePad 2 USB (Vendor: 046d Product: c218)",
             index: 1,
             mapping: "standard",
             timestamp: 43
@@ -1611,19 +1632,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button")).toHaveCount(2);
       await page.locator("#inputMappingV2RefreshGamepadsButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK 2 connected gamepads detected: Mock Flight Stick \(Gamepad 0\), Arcade Twin Stick \(Gamepad 1\)/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK 2 connected gamepads detected: Mock Flight Stick \(Gamepad 0\), Logitech RumblePad 2 \(Gamepad 1\)/);
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Mock Flight Stick");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Arcade Twin Stick");
+      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Logitech RumblePad 2");
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("index");
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("button count");
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("axis count");
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText(/navigator\.getGamepads\(\) count2/);
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("2 connected gamepads");
       await expect(page.locator("#inputMappingV2SourceList")).toContainText("Mock Flight Stick");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("Arcade Twin Stick");
+      await expect(page.locator("#inputMappingV2SourceList")).toContainText("Logitech RumblePad 2");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button")).toHaveCount(2);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(0)).toContainText("Mock Flight Stick");
-      await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(1)).toContainText("Arcade Twin Stick");
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(1)).toContainText("Logitech RumblePad 2");
       const gamepadButtonLayout = await page.locator(".input-mapping-v2__gamepad-capture-button").evaluateAll((buttons) => buttons.map((button) => {
         const box = button.getBoundingClientRect();
         return {
@@ -1635,8 +1656,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(gamepadButtonLayout.every((entry) => entry.width > 250)).toBe(true);
       expect(new Set(gamepadButtonLayout.map((entry) => entry.left)).size).toBe(1);
       expect(gamepadButtonLayout[1].top).toBeGreaterThan(gamepadButtonLayout[0].top);
+      await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click();
+      await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("moveLeft");
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Gamepad capture unavailable: Arcade Twin Stick \(Gamepad 1\) is detected, but no live button or axis value is active/);
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).toHaveClass(/is-capturing/);
       await page.evaluate(() => {
         window.__inputMappingV2MockGamepads[1] = {
           ...window.__inputMappingV2MockGamepads[1],
@@ -1644,16 +1667,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           timestamp: 44
         };
       });
-      await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click();
-      await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("moveLeft");
-      await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']").click();
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).not.toHaveClass(/is-capturing/);
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyD");
-      await expect(page.locator("#previewOutput")).toContainText("Arcade Twin Stick (Gamepad 1) Button 2");
+      await expect(page.locator("#previewOutput")).toContainText("Logitech RumblePad 2 Button 2");
+      await expect(page.locator("#previewOutput")).not.toContainText("(Gamepad 1)");
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Logitech RumblePad 2" })).toHaveAttribute("title", "Logitech RumblePad 2 USB\nSTANDARD GAMEPAD\nVendor: 046d Product: c218\nButton 2");
       await expect(page.locator("#inspectorOutput")).toContainText('"source": "gamepad"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad1:Button2"');
-      await expect(page.locator("#inspectorOutput")).toContainText('"label": "Arcade Twin Stick (Gamepad 1) Button 2"');
-      await page.locator(".input-mapping-v2__input-token", { hasText: "Arcade Twin Stick (Gamepad 1) Button 2" }).click();
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Arcade Twin Stick (Gamepad 1) Button 2" })).toHaveCount(0);
+      await expect(page.locator("#inspectorOutput")).toContainText('"label": "Logitech RumblePad 2 Button 2"');
+      await page.locator(".input-mapping-v2__input-token", { hasText: "Logitech RumblePad 2" }).click();
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Logitech RumblePad 2" })).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyD" })).toHaveCount(1);
       const asteroidsManifestInputMapping = await page.evaluate(async () => {
         const response = await fetch("/games/Asteroids/game.manifest.json");
