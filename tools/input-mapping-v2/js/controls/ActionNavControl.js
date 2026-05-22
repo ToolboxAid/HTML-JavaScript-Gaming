@@ -3,9 +3,6 @@ export class ActionNavControl {
     locationRef = window.location,
     returnToWorkspaceButton,
     windowRef = window,
-    toolCopyJsonButton,
-    toolExportButton,
-    toolNav,
     workspaceCopyManifestButton,
     workspaceExportManifestButton,
     workspaceImportManifestButton,
@@ -13,9 +10,6 @@ export class ActionNavControl {
   }) {
     this.location = locationRef;
     this.returnToWorkspaceButton = returnToWorkspaceButton;
-    this.toolCopyJsonButton = toolCopyJsonButton;
-    this.toolExportButton = toolExportButton;
-    this.toolNav = toolNav;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
     this.workspaceExportManifestButton = workspaceExportManifestButton;
     this.workspaceImportManifestButton = workspaceImportManifestButton;
@@ -24,15 +18,11 @@ export class ActionNavControl {
   }
 
   mount({
-    onToolCopyJson,
-    onToolExport,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
     onWorkspaceImportManifest
   }) {
     this.applyLaunchMode();
-    this.toolExportButton.addEventListener("click", onToolExport);
-    this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
     this.workspaceImportManifestButton.addEventListener("click", onWorkspaceImportManifest);
     this.workspaceCopyManifestButton.addEventListener("click", onWorkspaceCopyManifest);
     this.workspaceExportManifestButton.addEventListener("click", onWorkspaceExportManifest);
@@ -47,7 +37,6 @@ export class ActionNavControl {
       ? "workspace"
       : "tool";
     const isWorkspaceManagerLaunch = mode === "workspace" && params.get("fromTool") === "workspace-manager-v2";
-    this.toolNav.hidden = mode !== "tool";
     this.workspaceNav.hidden = mode !== "workspace";
     this.workspaceImportManifestButton.hidden = isWorkspaceManagerLaunch;
     this.workspaceCopyManifestButton.hidden = isWorkspaceManagerLaunch;
@@ -56,8 +45,8 @@ export class ActionNavControl {
   }
 
   setToolActionsEnabled(isEnabled) {
-    this.toolExportButton.disabled = !isEnabled;
-    this.toolCopyJsonButton.disabled = !isEnabled;
+    this.workspaceCopyManifestButton.disabled = !isEnabled;
+    this.workspaceExportManifestButton.disabled = !isEnabled;
   }
 
   workspaceManagerUrl() {

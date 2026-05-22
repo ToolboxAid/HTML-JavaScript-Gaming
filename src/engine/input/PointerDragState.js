@@ -6,11 +6,11 @@ PointerDragState.js
 */
 const PRIMARY_BUTTON = 0;
 const POINTER_DRAG_DESCRIPTORS = Object.freeze([
-    createDescriptor('MousePrimaryButtonDown', 'Mouse Primary Button Down', 'Primary Button Down'),
-    createDescriptor('MousePrimaryButtonUp', 'Mouse Primary Button Up', 'Primary Button Up'),
-    createDescriptor('MousePrimaryDrag', 'Mouse Primary Drag', 'Primary Drag'),
-    createDescriptor('MousePrimaryDragRelease', 'Mouse Primary Drag Release', 'Primary Drag Release'),
-    createDescriptor('MousePrimaryDragRectangle', 'Mouse Primary Drag Rectangle', 'Primary Drag Rectangle'),
+    createDescriptor('MousePrimaryButtonDown', 'Mouse Left Button Down', 'Left Button Down'),
+    createDescriptor('MousePrimaryButtonUp', 'Mouse Left Button Up', 'Left Button Up'),
+    createDescriptor('MousePrimaryDrag', 'Mouse Drag', 'Drag'),
+    createDescriptor('MousePrimaryDragRelease', 'Mouse Drag Release', 'Drag Release'),
+    createDescriptor('MousePrimaryDragRectangle', 'Mouse Drag Rectangle', 'Drag Rectangle'),
 ]);
 
 export default class PointerDragState {

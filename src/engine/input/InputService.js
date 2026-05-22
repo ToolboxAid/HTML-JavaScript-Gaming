@@ -9,6 +9,13 @@ import MouseState from './MouseState.js';
 import GamepadState from './GamepadState.js';
 import PointerDragState from './PointerDragState.js';
 import InputMap from './InputMap.js';
+import {
+    getInputGestureDescriptor,
+    inputDeviceCapabilities,
+    inputGestureDescriptors,
+    wheelDescriptorFromEvent,
+    wheelInputDescriptor
+} from './InputCapabilityDescriptors.js';
 
 export default class InputService {
     constructor({
@@ -39,6 +46,8 @@ export default class InputService {
         this.mouseDelta = { x: 0, y: 0 };
         this.isAttached = false;
         this.pointerEventsAvailable = typeof PointerEvent !== 'undefined';
+        this.touchAvailable = false;
+        this.penAvailable = false;
 
         this.onKeyDown = this.onKeyDown.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
@@ -182,6 +191,37 @@ export default class InputService {
         return this.pointerDrag.getDescriptor(binding);
     }
 
+    getInputDeviceCapabilities(options = {}) {
+        return inputDeviceCapabilities({
+            pointerEventsAvailable: this.pointerEventsAvailable,
+            touchAvailable: this.touchAvailable,
+            penAvailable: this.penAvailable,
+            ...options,
+        });
+    }
+
+    getInputGestureDescriptors(options = {}) {
+        return inputGestureDescriptors(options);
+    }
+
+    getInputGestureDescriptor(binding, options = {}) {
+        return getInputGestureDescriptor(binding, options);
+    }
+
+    getWheelDescriptor(binding) {
+        const detailByBinding = {
+            MouseWheelUp: 'Wheel Up',
+            MouseWheelDown: 'Wheel Down',
+            MouseWheelLeft: 'Wheel Left',
+            MouseWheelRight: 'Wheel Right',
+        };
+        return detailByBinding[binding] ? wheelInputDescriptor(binding, detailByBinding[binding]) : null;
+    }
+
+    captureWheelDescriptor(event) {
+        return wheelDescriptorFromEvent(event);
+    }
+
     getGamepad(index) {
         return this.gamepads.getGamepad(index);
     }
@@ -231,19 +271,32 @@ export default class InputService {
     }
 
     onPointerDown(event) {
+        this.trackPointerCapability(event);
         this.pointerDrag.pointerDown(event);
     }
 
     onPointerMove(event) {
+        this.trackPointerCapability(event);
         this.pointerDrag.pointerMove(event);
     }
 
     onPointerUp(event) {
+        this.trackPointerCapability(event);
         this.pointerDrag.pointerUp(event);
     }
 
     onPointerCancel(event) {
+        this.trackPointerCapability(event);
         this.pointerDrag.pointerCancel(event);
+    }
+
+    trackPointerCapability(event = {}) {
+        if (event.pointerType === 'touch') {
+            this.touchAvailable = true;
+        }
+        if (event.pointerType === 'pen') {
+            this.penAvailable = true;
+        }
     }
 
     onBlur() {

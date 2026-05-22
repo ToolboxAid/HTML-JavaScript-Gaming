@@ -1,7 +1,7 @@
 .input-mapping-v2.tool-starter.app-shell {
   width: 100%;
   max-width: none;
-  grid-template-columns: 340px minmax(0, 1fr) 360px;
+  grid-template-columns: 360px minmax(0, 1fr) 380px;
   margin-inline: 0;
 }
 
@@ -25,22 +25,18 @@
 
 .input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
 .input-mapping-v2 #inputMappingV2CaptureMouseButton,
-.input-mapping-v2 #inputMappingV2CaptureComboButton,
 .input-mapping-v2 #inputMappingV2RefreshGamepadsButton,
-.input-mapping-v2__pointer-drag-capture-button,
 .input-mapping-v2__gamepad-capture-button {
   width: 100%;
 }
 
 .input-mapping-v2__capture-button.is-capturing,
-.input-mapping-v2__pointer-drag-capture-button.is-capturing,
 .input-mapping-v2__gamepad-capture-button.is-capturing {
   border-color: var(--tool-starter-accent) !important;
   box-shadow: inset 0 0 0 2px var(--tool-starter-accent);
   background: var(--tool-starter-input-surface);
 }
 
-.input-mapping-v2__pointer-drag-buttons,
 .input-mapping-v2__gamepad-buttons {
   display: grid;
   grid-template-columns: 1fr;
@@ -77,13 +73,14 @@
 }
 
 .input-mapping-v2__mapping-list,
-.input-mapping-v2__source-list {
+.input-mapping-v2__device-list,
+.input-mapping-v2__gesture-groups {
   display: grid;
   gap: 10px;
 }
 
 .input-mapping-v2__mapping-list {
-  grid-template-columns: repeat(auto-fill, 275px);
+  grid-template-columns: repeat(auto-fill, 225px);
   grid-auto-rows: 225px;
   align-content: start;
   align-items: stretch;
@@ -102,7 +99,8 @@
 }
 
 .input-mapping-v2__mapping-card,
-.input-mapping-v2__source-card {
+.input-mapping-v2__device-card,
+.input-mapping-v2__gesture-group {
   display: grid;
   gap: 8px;
   border: 1px solid var(--tool-starter-line);
@@ -112,7 +110,7 @@
 }
 
 .input-mapping-v2__mapping-card {
-  width: 275px;
+  width: 225px;
   height: 225px;
   align-content: start;
   overflow: auto;
@@ -163,14 +161,40 @@
   color: var(--tool-starter-muted);
 }
 
-.input-mapping-v2__source-card p {
+.input-mapping-v2__device-card p,
+.input-mapping-v2__gesture-group p {
   margin: 0;
   color: var(--tool-starter-muted);
 }
 
-.input-mapping-v2__source-card code {
+.input-mapping-v2__device-card code {
   white-space: normal;
   word-break: break-word;
+}
+
+.input-mapping-v2__device-card.is-unavailable {
+  opacity: 0.76;
+}
+
+.input-mapping-v2__device-toggle {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.input-mapping-v2__gesture-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.input-mapping-v2__gesture-button {
+  min-height: 30px;
+}
+
+.input-mapping-v2__export-menu {
+  margin: 0;
 }
 
 .input-mapping-v2__gamepad-diagnostics {

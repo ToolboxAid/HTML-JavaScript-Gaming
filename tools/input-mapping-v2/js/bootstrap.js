@@ -2,12 +2,14 @@ import { ActionNavControl } from "./controls/ActionNavControl.js";
 import { AccordionSection } from "./controls/AccordionSection.js";
 import { ActionSelectionControl } from "./controls/ActionSelectionControl.js";
 import { CaptureControl } from "./controls/CaptureControl.js";
+import { DeviceListControl } from "./controls/DeviceListControl.js";
 import { EngineInputSourceService } from "./services/EngineInputSourceService.js";
+import { ExportControl } from "./controls/ExportControl.js";
 import { GamepadDiagnosticsControl } from "./controls/GamepadDiagnosticsControl.js";
+import { GestureListControl } from "./controls/GestureListControl.js";
 import { InputMappingState } from "./services/InputMappingState.js";
 import { InspectorControl } from "./controls/InspectorControl.js";
 import { PreviewPanelControl } from "./controls/PreviewPanelControl.js";
-import { SourceInventoryControl } from "./controls/SourceInventoryControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolStarterApp } from "./ToolStarterApp.js";
 import { ToolStarterShellControl } from "./controls/ToolStarterShellControl.js";
@@ -30,9 +32,6 @@ window.addEventListener("DOMContentLoaded", () => {
     accordions,
     actionNav: new ActionNavControl({
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
-      toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
-      toolExportButton: requireElement("#toolExportButton"),
-      toolNav: requireElement(".tool-starter__tool__menu"),
       workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
       workspaceExportManifestButton: requireElement("#workspaceExportManifestButton"),
       workspaceImportManifestButton: requireElement("#workspaceImportManifestButton"),
@@ -44,25 +43,31 @@ window.addEventListener("DOMContentLoaded", () => {
       addActionButton: requireElement("#inputMappingV2AddActionButton"),
       clearActionButton: requireElement("#inputMappingV2ClearActionButton"),
       customActionInput: requireElement("#inputMappingV2CustomActionInput"),
-      deleteActionButton: requireElement("#inputMappingV2DeleteActionButton"),
-      rumbleFeedbackCheckbox: requireElement("#inputMappingV2RumbleFeedbackCheckbox")
+      deleteActionButton: requireElement("#inputMappingV2DeleteActionButton")
     }),
     capture: new CaptureControl({
-      captureComboButton: requireElement("#inputMappingV2CaptureComboButton"),
       captureGamepadButtons: requireElement("#inputMappingV2GamepadCaptureButtons"),
       captureKeyboardButton: requireElement("#inputMappingV2CaptureKeyboardButton"),
       captureMessage: requireElement("#inputMappingV2CaptureMessage"),
       captureMouseButton: requireElement("#inputMappingV2CaptureMouseButton"),
-      capturePointerDragButtons: requireElement("#inputMappingV2PointerDragCaptureButtons"),
       refreshGamepadsButton: requireElement("#inputMappingV2RefreshGamepadsButton"),
       selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel")
     }),
+    deviceList: new DeviceListControl({
+      container: requireElement("#inputMappingV2DeviceList"),
+      rumbleFeedbackCheckbox: requireElement("#inputMappingV2RumbleFeedbackCheckbox")
+    }),
     engineInputSources: new EngineInputSourceService({ windowRef: window }),
-    gamepadDiagnostics: new GamepadDiagnosticsControl(requireElement("#inputMappingV2GamepadDiagnostics")),
+    exportControl: new ExportControl({
+      copyJsonButton: requireElement("#toolCopyJsonButton"),
+      exportButton: requireElement("#toolExportButton"),
+      nav: requireElement("#inputMappingV2ExportNav")
+    }),
+    gamepadDiagnostics: new GamepadDiagnosticsControl(requireElement("#inputMappingV2Diagnostics")),
+    gestureList: new GestureListControl(requireElement("#inputMappingV2GestureList")),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     preview: new PreviewPanelControl(requireElement("#previewOutput")),
     shell: new ToolStarterShellControl(),
-    sourceInventory: new SourceInventoryControl(requireElement("#inputMappingV2SourceList")),
     state: new InputMappingState(),
     statusLog,
     windowRef: window

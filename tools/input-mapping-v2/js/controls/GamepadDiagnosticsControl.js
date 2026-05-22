@@ -45,7 +45,9 @@ export class GamepadDiagnosticsControl {
 
     const list = document.createElement("div");
     list.className = "input-mapping-v2__diagnostics-devices";
-    if (!source.gamepads.length) {
+    if (Array.isArray(source.entries)) {
+      list.append(...source.entries.map((entry) => this.createEntryDetails(entry)));
+    } else if (!source.gamepads.length) {
       const empty = document.createElement("p");
       empty.textContent = "No gamepads reported.";
       list.append(empty);
@@ -55,6 +57,16 @@ export class GamepadDiagnosticsControl {
 
     card.append(title, path, count, list);
     return card;
+  }
+
+  createEntryDetails(entry) {
+    const details = document.createElement("dl");
+    details.className = "input-mapping-v2__diagnostics-device";
+    details.append(
+      this.createTerm("name", entry.name),
+      this.createTerm("detail", entry.detail)
+    );
+    return details;
   }
 
   createGamepadDetails(gamepad) {

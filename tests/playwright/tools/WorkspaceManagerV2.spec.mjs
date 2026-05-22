@@ -1435,7 +1435,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ]);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toContainText("Product: e401)");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).not.toContainText("Product: c218)");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("2 connected gamepads");
+      await expect(page.locator("#inputMappingV2DeviceList")).toContainText("2 connected game controllers detected.");
       await expect(page.locator("#statusLog")).toHaveValue(/OK 2 connected gamepads detected: USB gamepad \(Gamepad 0\), Logitech RumblePad 2 \(Gamepad 1\)/);
       await expect(page.locator("#inputMappingV2StartGamepadPollingButton")).toHaveCount(0);
       await expect(page.locator("button", { hasText: /Start Listening|Poll Gamepads/ })).toHaveCount(0);
@@ -1496,20 +1496,30 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(fullscreenLayout.rightGap).toBeLessThan(40);
       expect(fullscreenLayout.centerWidth).toBeGreaterThan(1000);
       expect(Math.max(...fullscreenLayout.rightAccordionHeights) - Math.min(...fullscreenLayout.rightAccordionHeights)).toBeLessThanOrEqual(3);
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + KeyboardState");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + MouseState");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + PointerDragState");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("Mouse Primary Drag Rectangle");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("InputService + GamepadState + GamepadInputAdapter");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("GamepadInputAdapter");
-      await expect(page.locator(".input-mapping-v2__pointer-drag-capture-button")).toHaveCount(5);
-      await expect(page.locator(".input-mapping-v2__pointer-drag-capture-button")).toContainText([
-        "Mouse Primary Button Down",
-        "Mouse Primary Button Up",
-        "Mouse Primary Drag",
-        "Mouse Primary Drag Release",
-        "Mouse Primary Drag Rectangle"
+      await expect(page.locator(".tool-starter__panel--left > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Actions", "Devices", "Gestures", "Capture"]);
+      await expect(page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Captured Mappings"]);
+      await expect(page.locator(".tool-starter__panel--right > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Diagnostics", "Status / Log", "Export"]);
+      await expect(page.locator(".input-mapping-v2__device-card strong")).toHaveText([
+        "Keyboard",
+        "Mouse",
+        "Game Controller",
+        "Touch",
+        "Pen",
+        "Wheel",
+        "Flight Stick",
+        "VR Controller"
       ]);
+      await expect(page.locator("#inputMappingV2DeviceList")).toContainText("InputService + KeyboardState");
+      await expect(page.locator("#inputMappingV2DeviceList")).toContainText("InputService + MouseState + PointerDragState");
+      await expect(page.locator("#inputMappingV2DeviceList")).toContainText("InputService + GamepadState + GamepadInputAdapter");
+      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Press");
+      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Drag Rectangle");
+      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Wheel Up");
+      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Button");
+      await page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='wheel'] input").uncheck();
+      await expect(page.locator(".input-mapping-v2__gesture-button", { hasText: "Wheel Up" })).toHaveCount(0);
+      await page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='wheel'] input").check();
+      await expect(page.locator(".input-mapping-v2__gesture-button", { hasText: "Wheel Up" })).toHaveCount(1);
       const actionOptions = await page.locator("#inputMappingV2ActionSelect option").allTextContents();
       expect(actionOptions).toEqual([...actionOptions].sort((left, right) => left.localeCompare(right)));
       expect(actionOptions).toEqual(expect.arrayContaining(["Move Left", "Confirm", "Cancel", "Fire", "Thrust", "Rotate Left", "Rotate Right", "Pause", "Select", "Start"]));
@@ -1556,14 +1566,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator("#inputMappingV2StartGamepadPollingButton")).toHaveCount(0);
       await expect(page.locator("button", { hasText: /Start Listening|Poll Gamepads/ })).toHaveCount(0);
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Raw navigator.getGamepads()");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("InputService gamepad state");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Sample 0104 engine/input path");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Browser API available");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("navigator.getGamepads() count");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Last poll timestamp");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText(/Window focus(yes|no)/);
-      const diagnosticsCardLayout = await page.locator("#inputMappingV2GamepadDiagnostics").evaluate((container) => {
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Engine input capabilities");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Raw navigator.getGamepads()");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("InputService gamepad state");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Sample 0104 engine/input path");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Browser API available");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("navigator.getGamepads() count");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Last poll timestamp");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText(/Window focus(yes|no)/);
+      const diagnosticsCardLayout = await page.locator("#inputMappingV2Diagnostics").evaluate((container) => {
         const containerWidth = container.clientWidth;
         return Array.from(container.querySelectorAll(".input-mapping-v2__diagnostics-card")).map((card) => ({
           cardWidth: Math.round(card.getBoundingClientRect().width),
@@ -1586,10 +1597,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__tile-action-select")).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__empty-token", { hasText: "No inputs captured." })).toHaveCount(1);
       const emptyMappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
-      expect(Math.round(emptyMappingTileBox.width)).toBe(275);
+      expect(Math.round(emptyMappingTileBox.width)).toBe(225);
       expect(Math.round(emptyMappingTileBox.height)).toBe(225);
-      await page.locator("#inputMappingV2CaptureComboButton").click();
-      await expect(page.locator("#inputMappingV2CaptureComboButton")).toHaveClass(/is-capturing/);
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
       await page.evaluate(() => {
         window.dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true,
@@ -1606,9 +1616,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           key: "r"
         }));
       });
-      await expect(page.locator("#inputMappingV2CaptureComboButton")).not.toHaveClass(/is-capturing/);
       await expect(page.locator("#previewOutput")).toContainText("Combo Ctrl + R");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ControlLeft+KeyR"');
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "ShiftLeft",
+          key: "Shift",
+          shiftKey: true
+        }));
+        window.dispatchEvent(new WheelEvent("wheel", {
+          bubbles: true,
+          cancelable: true,
+          deltaY: -120,
+          shiftKey: true
+        }));
+      });
+      await expect(page.locator("#previewOutput")).toContainText("Combo Shift + Mouse Wheel Up");
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ShiftLeft+MouseWheelUp"');
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
@@ -1640,18 +1667,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/);
-      await page.locator(".input-mapping-v2__pointer-drag-capture-button", { hasText: "Mouse Primary Drag Release" }).click();
-      await page.locator(".input-mapping-v2__pointer-drag-capture-button", { hasText: "Mouse Primary Drag Rectangle" }).click();
+      await page.locator(".input-mapping-v2__gesture-button", { hasText: "Drag Release" }).click();
+      await page.locator(".input-mapping-v2__gesture-button", { hasText: "Drag Rectangle" }).click();
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(1);
       const mappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
-      expect(Math.round(mappingTileBox.width)).toBe(275);
+      expect(Math.round(mappingTileBox.width)).toBe(225);
       expect(Math.round(mappingTileBox.height)).toBe(225);
       await expect(page.locator("#previewOutput")).toContainText("Move Left");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyA");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyD");
-      await expect(page.locator("#previewOutput")).toContainText("Mouse Button 1");
-      await expect(page.locator("#previewOutput")).toContainText("Mouse Primary Drag Release");
-      await expect(page.locator("#previewOutput")).toContainText("Mouse Primary Drag Rectangle");
+      await expect(page.locator("#previewOutput")).toContainText("Mouse Middle Button");
+      await expect(page.locator("#previewOutput")).toContainText("Mouse Drag Release");
+      await expect(page.locator("#previewOutput")).toContainText("Mouse Drag Rectangle");
       await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyD"');
@@ -1721,15 +1748,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button")).toHaveCount(2);
       await page.locator("#inputMappingV2RefreshGamepadsButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK 2 connected gamepads detected: Mock Flight Stick \(Gamepad 0\), Logitech RumblePad 2 \(Gamepad 1\)/);
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Mock Flight Stick");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Logitech RumblePad 2");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("index");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("button count");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("axis count");
-      await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText(/navigator\.getGamepads\(\) count2/);
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("2 connected gamepads");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("Mock Flight Stick");
-      await expect(page.locator("#inputMappingV2SourceList")).toContainText("Logitech RumblePad 2");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Mock Flight Stick");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Logitech RumblePad 2");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("index");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("button count");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("axis count");
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText(/navigator\.getGamepads\(\) count2/);
+      await expect(page.locator("#inputMappingV2DeviceList")).toContainText("2 connected game controllers detected.");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button")).toHaveCount(2);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(0)).toContainText("Mock Flight Stick");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(1)).toContainText("Logitech RumblePad 2");

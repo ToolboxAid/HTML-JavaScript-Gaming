@@ -4,12 +4,14 @@ export class ToolStarterApp {
     actionNav,
     actionSelection,
     capture,
+    deviceList,
     engineInputSources,
+    exportControl,
     gamepadDiagnostics,
+    gestureList,
     inspector,
     preview,
     shell,
-    sourceInventory,
     state,
     statusLog,
     windowRef = window
@@ -18,12 +20,14 @@ export class ToolStarterApp {
     this.actionNav = actionNav;
     this.actionSelection = actionSelection;
     this.capture = capture;
+    this.deviceList = deviceList;
     this.engineInputSources = engineInputSources;
+    this.exportControl = exportControl;
     this.gamepadDiagnostics = gamepadDiagnostics;
+    this.gestureList = gestureList;
     this.inspector = inspector;
     this.preview = preview;
     this.shell = shell;
-    this.sourceInventory = sourceInventory;
     this.state = state;
     this.statusLog = statusLog;
     this.window = windowRef;
@@ -36,9 +40,12 @@ export class ToolStarterApp {
     this.gamepadPollIntervalMs = 750;
     this.gamepadPollTimer = null;
     this.lastGamepadStatusSignature = "";
+    this.enabledDeviceIds = new Set();
+    this.enabledDevicesInitialized = false;
     this.handleGamepadConnectionChange = this.handleGamepadConnectionChange.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleWheel = this.handleWheel.bind(this);
     this.pollGamepadDevices = this.pollGamepadDevices.bind(this);
   }
 
@@ -46,36 +53,43 @@ export class ToolStarterApp {
     this.shell.mount();
     this.accordions.forEach((accordion) => accordion.mount());
     this.actionNav.mount({
-      onToolCopyJson: () => {
-        void this.copyJson();
-      },
-      onToolExport: () => this.exportToolState(),
       onWorkspaceCopyManifest: () => this.statusLog.ok("Input Mapping V2 workspace copy action is ready."),
       onWorkspaceExportManifest: () => this.statusLog.ok("Input Mapping V2 workspace export action is ready."),
       onWorkspaceImportManifest: () => this.statusLog.ok("Input Mapping V2 workspace import action is ready.")
+    });
+    this.exportControl.mount({
+      onCopyJson: () => {
+        void this.copyJson();
+      },
+      onExport: () => this.exportToolState()
     });
     this.actionSelection.mount({
       onActionChanged: (actionId) => this.selectAction(actionId),
       onAddAction: (label) => this.addAction(label),
       onClearAction: () => this.clearSelectedAction(),
-      onDeleteAction: () => this.deleteSelectedAction(),
+      onDeleteAction: () => this.deleteSelectedAction()
+    });
+    this.capture.mount({
+      onCaptureGamepad: (gamepadIndex) => this.startGamepadCapture(gamepadIndex),
+      onCaptureKeyboard: () => this.startKeyboardCapture(),
+      onCaptureMouse: () => this.startMouseCapture(),
+      onRefreshGamepads: () => this.refreshGamepads()
+    });
+    this.deviceList.mount({
+      onDeviceEnabledChanged: (deviceId, isEnabled) => this.setDeviceEnabled(deviceId, isEnabled),
       onRumbleFeedbackChanged: (isEnabled) => {
         void this.setRumbleFeedback(isEnabled);
       }
     });
-    this.capture.mount({
-      onCaptureCombo: () => this.startComboCapture(),
-      onCaptureGamepad: (gamepadIndex) => this.startGamepadCapture(gamepadIndex),
-      onCaptureKeyboard: () => this.startKeyboardCapture(),
-      onCaptureMouse: () => this.startMouseCapture(),
-      onCapturePointerDrag: (binding) => this.capturePointerDrag(binding),
-      onRefreshGamepads: () => this.refreshGamepads()
+    this.gestureList.mount({
+      onGestureSelected: (gesture) => this.captureGesture(gesture)
     });
     this.engineInputSources.attach();
     this.window.addEventListener("gamepadconnected", this.handleGamepadConnectionChange);
     this.window.addEventListener("gamepaddisconnected", this.handleGamepadConnectionChange);
     this.window.addEventListener("keydown", this.handleKeyDown, true);
     this.window.addEventListener("mousedown", this.handleMouseDown, true);
+    this.window.addEventListener("wheel", this.handleWheel, true);
     this.statusLog.mount();
     this.preview.mount({
       onDeleteBinding: ({ actionId, binding }) => this.deleteBinding(actionId, binding),
@@ -132,15 +146,15 @@ export class ToolStarterApp {
     this.statusLog.ok(`Mouse capture armed for ${this.state.selectedActionLabel()}.`);
   }
 
-  startComboCapture() {
+  startComboCapture(deviceLabel = "Combo") {
     if (this.isCaptureActive("combo")) {
-      this.cancelCapture("Combo");
+      this.cancelCapture(deviceLabel);
       return;
     }
     this.comboCaptureInputs = [];
     this.beginCapture("combo");
-    this.capture.showMessage(`Press two keys or mouse buttons to bind a combo to ${this.state.selectedActionLabel()}.`);
-    this.statusLog.ok(`Combo capture armed for ${this.state.selectedActionLabel()}.`);
+    this.capture.showMessage(`Press two keys, mouse buttons, wheel inputs, or game controller inputs to bind a combo to ${this.state.selectedActionLabel()}.`);
+    this.statusLog.ok(`${deviceLabel} combo capture armed for ${this.state.selectedActionLabel()}.`);
   }
 
   startGamepadCapture(gamepadIndex) {
@@ -159,11 +173,15 @@ export class ToolStarterApp {
     this.tryCaptureActiveGamepad();
   }
 
-  capturePointerDrag(binding) {
-    const result = this.engineInputSources.capturePointerDrag(binding);
+  captureGesture(gesture) {
+    const result = this.engineInputSources.captureGesture(gesture.binding, this.enabledDeviceIds);
     if (!result.ok) {
       this.statusLog.warn(result.message);
       this.refreshActions();
+      return;
+    }
+    if (result.combo) {
+      this.startComboCapture(gesture.deviceLabel);
       return;
     }
     this.addCapturedInput(result.input);
@@ -197,6 +215,15 @@ export class ToolStarterApp {
     event.preventDefault();
     event.stopPropagation();
     this.addCapturedInput(this.engineInputSources.captureMouse(event));
+  }
+
+  handleWheel(event) {
+    if (this.captureMode !== "combo") {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.recordComboInput(this.engineInputSources.captureWheel(event));
   }
 
   tryCaptureActiveGamepad() {
@@ -264,6 +291,7 @@ export class ToolStarterApp {
     if (changed) {
       this.refreshActions(status);
     }
+    this.tryCaptureComboGamepad();
     this.tryCaptureActiveGamepad();
   }
 
@@ -297,6 +325,17 @@ export class ToolStarterApp {
     if (result.ok) {
       this.statusLog.ok("Gamepad rumble/haptic feedback is UI-local because Input Mapping V2 toolState has no options field.");
     }
+  }
+
+  setDeviceEnabled(deviceId, isEnabled) {
+    if (isEnabled) {
+      this.enabledDeviceIds.add(deviceId);
+      this.statusLog.ok(`${this.deviceLabel(deviceId)} gestures enabled.`);
+    } else {
+      this.enabledDeviceIds.delete(deviceId);
+      this.statusLog.ok(`${this.deviceLabel(deviceId)} gestures disabled.`);
+    }
+    this.refreshActions();
   }
 
   addCapturedInput(input) {
@@ -373,6 +412,18 @@ export class ToolStarterApp {
     return "Input";
   }
 
+  tryCaptureComboGamepad() {
+    if (this.captureMode !== "combo" || !this.enabledDeviceIds.has("gameController")) {
+      return false;
+    }
+    const result = this.engineInputSources.captureFirstActiveGamepad();
+    if (!result.ok) {
+      return false;
+    }
+    this.recordComboInput(result.input);
+    return true;
+  }
+
   deleteBinding(actionId, binding) {
     const result = this.state.removeBinding(actionId, binding);
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
@@ -403,12 +454,32 @@ export class ToolStarterApp {
   }
 
   refreshActions(gamepadStatus = this.engineInputSources.refreshGamepadState()) {
+    const devices = this.engineInputSources.devices(gamepadStatus);
+    this.initializeEnabledDevices(devices);
+    const gestures = this.engineInputSources.gestures(this.enabledDeviceIds);
     this.actionNav.setToolActionsEnabled(true);
+    this.exportControl.setEnabled(true);
     this.actionSelection.render(this.state.actions(), this.state.selectedActionId);
-    this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads, this.engineInputSources.pointerDragDescriptors());
+    this.deviceList.render(devices, this.enabledDeviceIds);
+    this.gestureList.render(gestures);
+    this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads);
     this.preview.render(this.state.actions(), this.state.selectedActionId);
     this.inspector.showObject(this.state.payload());
-    this.sourceInventory.render(this.engineInputSources.sources(gamepadStatus));
     this.gamepadDiagnostics.render(this.engineInputSources.gamepadDiagnostics(gamepadStatus));
+  }
+
+  initializeEnabledDevices(devices) {
+    if (this.enabledDevicesInitialized) {
+      return;
+    }
+    this.enabledDeviceIds = new Set(devices
+      .filter((device) => device.available && device.defaultEnabled)
+      .map((device) => device.id));
+    this.enabledDevicesInitialized = true;
+  }
+
+  deviceLabel(deviceId) {
+    return this.engineInputSources.devices()
+      .find((device) => device.id === deviceId)?.label ?? deviceId;
   }
 }

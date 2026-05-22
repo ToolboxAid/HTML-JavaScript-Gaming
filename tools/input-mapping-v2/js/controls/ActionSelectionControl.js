@@ -5,8 +5,7 @@ export class ActionSelectionControl {
     addActionButton,
     clearActionButton,
     customActionInput,
-    deleteActionButton,
-    rumbleFeedbackCheckbox
+    deleteActionButton
   }) {
     this.actionHint = actionHint;
     this.actionSelect = actionSelect;
@@ -14,10 +13,9 @@ export class ActionSelectionControl {
     this.clearActionButton = clearActionButton;
     this.customActionInput = customActionInput;
     this.deleteActionButton = deleteActionButton;
-    this.rumbleFeedbackCheckbox = rumbleFeedbackCheckbox;
   }
 
-  mount({ onActionChanged, onAddAction, onClearAction, onDeleteAction, onRumbleFeedbackChanged }) {
+  mount({ onActionChanged, onAddAction, onClearAction, onDeleteAction }) {
     this.actionSelect.addEventListener("change", () => onActionChanged(this.actionSelect.value));
     this.addActionButton.addEventListener("click", () => {
       onAddAction(this.customActionInput.value);
@@ -25,9 +23,6 @@ export class ActionSelectionControl {
     });
     this.clearActionButton.addEventListener("click", () => onClearAction());
     this.deleteActionButton.addEventListener("click", () => onDeleteAction());
-    this.rumbleFeedbackCheckbox.addEventListener("change", () => {
-      onRumbleFeedbackChanged(this.rumbleFeedbackCheckbox.checked);
-    });
   }
 
   render(actions, selectedActionId) {

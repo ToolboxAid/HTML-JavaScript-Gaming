@@ -1,5 +1,6 @@
 import GamepadInputAdapter from "/src/engine/input/GamepadInputAdapter.js";
 import InputService from "/src/engine/input/InputService.js";
+import { mouseButtonLabel } from "/src/engine/input/InputCapabilityDescriptors.js";
 
 const GAMEPAD_AXIS_THRESHOLD = 0.35;
 const GAMEPAD_CAPTURE_WAITING_MESSAGE = "No live button or axis value is active yet.";
@@ -41,38 +42,16 @@ export class EngineInputSourceService {
     this.inputService.attach();
   }
 
-  sources(status = this.refreshGamepadState()) {
-    const gamepadCount = status.connectedCount;
-    const gamepadSummary = status.connectedLabels
-      ? `: ${status.connectedLabels}`
-      : ".";
-    return [
-      {
-        name: "Keyboard",
-        detail: "Keyboard codes captured through InputService and KeyboardState.",
-        engine: "InputService + KeyboardState"
-      },
-      {
-        name: "Mouse",
-        detail: "Mouse buttons captured through InputService and MouseState.",
-        engine: "InputService + MouseState"
-      },
-      {
-        name: "Pointer Drag",
-        detail: this.pointerDragDescriptors().map((descriptor) => descriptor.label).join(", "),
-        engine: "InputService + PointerDragState"
-      },
-      {
-        name: "Gamepad Buttons",
-        detail: status.warning || `${gamepadCount} connected gamepad${gamepadCount === 1 ? "" : "s"} detected for button capture${gamepadSummary}`,
-        engine: "InputService + GamepadState + GamepadInputAdapter"
-      },
-      {
-        name: "Gamepad Axes",
-        detail: status.warning || "Analog axes are reported when a connected gamepad axis crosses the capture threshold.",
-        engine: "GamepadInputAdapter"
-      }
-    ];
+  devices(status = this.refreshGamepadState()) {
+    return this.inputService.getInputDeviceCapabilities({
+      gamepadCount: status.connectedCount,
+      gamepadWarning: status.warning,
+      webXrAvailable: typeof this.window.navigator?.xr !== "undefined"
+    });
+  }
+
+  gestures(enabledDeviceIds) {
+    return this.inputService.getInputGestureDescriptors({ enabledDeviceIds });
   }
 
   captureKeyboard(event) {
@@ -89,14 +68,19 @@ export class EngineInputSourceService {
 
   captureMouse(event) {
     const button = Number(event.button ?? 0);
+    const buttonLabel = mouseButtonLabel(button);
     return {
       source: "mouse",
       binding: `MouseButton${button}`,
-      displayLabelLines: ["Mouse", `Button ${button}`],
-      label: `Mouse Button ${button}`,
-      title: `Mouse\nButton ${button}`,
+      displayLabelLines: ["Mouse", buttonLabel.replace(/^Mouse\s+/, "")],
+      label: buttonLabel,
+      title: `Mouse\n${buttonLabel}`,
       engine: "MouseState"
     };
+  }
+
+  captureWheel(event) {
+    return this.inputService.captureWheelDescriptor(event);
   }
 
   captureCombo(inputs) {
@@ -126,6 +110,33 @@ export class EngineInputSourceService {
     return this.inputService.getPointerDragDescriptors();
   }
 
+  captureGesture(binding, enabledDeviceIds) {
+    const gesture = this.inputService.getInputGestureDescriptor(binding, { enabledDeviceIds });
+    if (!gesture) {
+      return {
+        ok: false,
+        message: `Gesture capture unavailable: ${binding} is not visible for the enabled devices.`
+      };
+    }
+    if (gesture.captureKind === "combo") {
+      return {
+        ok: true,
+        combo: true,
+        message: `${gesture.deviceLabel} combo capture armed.`
+      };
+    }
+    if (gesture.captureKind === "pointer-drag") {
+      return this.capturePointerDrag(binding);
+    }
+    if (gesture.captureKind === "wheel") {
+      return this.captureWheelGesture(binding);
+    }
+    return {
+      ok: false,
+      message: `${gesture.deviceLabel} ${gesture.label} is a capability descriptor. Use live Capture controls when browser events are required.`
+    };
+  }
+
   capturePointerDrag(binding) {
     const descriptor = this.inputService.getPointerDragDescriptor(binding);
     if (!descriptor) {
@@ -144,6 +155,20 @@ export class EngineInputSourceService {
         title: descriptor.title,
         engine: descriptor.engine
       }
+    };
+  }
+
+  captureWheelGesture(binding) {
+    const descriptor = this.inputService.getWheelDescriptor(binding);
+    if (!descriptor) {
+      return {
+        ok: false,
+        message: `Wheel capture unavailable: ${binding} is not a known wheel gesture.`
+      };
+    }
+    return {
+      ok: true,
+      input: descriptor
     };
   }
 
@@ -211,6 +236,21 @@ export class EngineInputSourceService {
       ok: false,
       message: `${GAMEPAD_CAPTURE_WAITING_MESSAGE} Hold a button or move a stick on ${deviceInfo.statusLabel}.`,
       waiting: true
+    };
+  }
+
+  captureFirstActiveGamepad() {
+    const gamepads = this.inputService.getGamepads();
+    for (const gamepad of gamepads) {
+      const result = this.captureGamepad(gamepad.index);
+      if (result.ok) {
+        return result;
+      }
+    }
+    return {
+      ok: false,
+      waiting: true,
+      message: GAMEPAD_CAPTURE_WAITING_MESSAGE
     };
   }
 
@@ -312,6 +352,15 @@ export class EngineInputSourceService {
       windowFocused: this.lastWindowFocused,
       lastPollTimestamp: status.lastPollTimestamp,
       sources: [
+        {
+          name: "Engine input capabilities",
+          path: "InputService.getInputDeviceCapabilities() + getInputGestureDescriptors()",
+          count: this.devices(status).length,
+          entries: this.devices(status).map((device) => ({
+            name: device.label,
+            detail: `${device.available ? "available" : "unavailable"} - ${device.engine}`
+          }))
+        },
         {
           name: "Raw navigator.getGamepads()",
           path: "navigator.getGamepads()",

@@ -37,11 +37,6 @@
       </div>
     </details>
 
-    <nav class="tool-starter__menu tool-starter__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
-      <button id="toolExportButton" type="button">Export</button>
-      <button id="toolCopyJsonButton" type="button">Copy JSON</button>
-    </nav>
-
     <nav class="tool-starter__menu tool-starter__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
       <button id="workspaceImportManifestButton" type="button">Import manifest</button>
       <button id="workspaceCopyManifestButton" type="button">Copy manifest</button>
@@ -65,16 +60,36 @@
               <span>Custom action</span>
               <input id="inputMappingV2CustomActionInput" type="text" autocomplete="off" placeholder="dash, interact, inspect">
             </label>
-            <label class="input-mapping-v2__checkbox-field" for="inputMappingV2RumbleFeedbackCheckbox">
-              <input id="inputMappingV2RumbleFeedbackCheckbox" type="checkbox">
-              <span>Gamepad rumble/haptic feedback</span>
-            </label>
             <div class="input-mapping-v2__button-row">
               <button id="inputMappingV2AddActionButton" type="button">Add Action</button>
               <button id="inputMappingV2ClearActionButton" type="button">Clear Actions</button>
               <button id="inputMappingV2DeleteActionButton" type="button">Delete Action</button>
             </div>
             <p id="inputMappingV2ActionHint" class="tool-starter__hint">Default actions are engine-style action names sorted alphabetically.</p>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="deviceSetupContent">
+            <span>Devices</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="deviceSetupContent" class="accordion-v2__content">
+            <div id="inputMappingV2DeviceList" class="input-mapping-v2__device-list" aria-label="Input devices"></div>
+            <label class="input-mapping-v2__checkbox-field" for="inputMappingV2RumbleFeedbackCheckbox">
+              <input id="inputMappingV2RumbleFeedbackCheckbox" type="checkbox">
+              <span>Gamepad rumble/haptic feedback</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="gestureSetupContent">
+            <span>Gestures</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="gestureSetupContent" class="accordion-v2__content">
+            <div id="inputMappingV2GestureList" class="input-mapping-v2__gesture-groups" aria-label="Input gestures"></div>
           </div>
         </section>
 
@@ -88,11 +103,9 @@
             <div class="input-mapping-v2__button-row">
               <button id="inputMappingV2CaptureKeyboardButton" class="input-mapping-v2__capture-button" type="button">Capture Keyboard</button>
               <button id="inputMappingV2CaptureMouseButton" class="input-mapping-v2__capture-button" type="button">Capture Mouse</button>
-              <button id="inputMappingV2CaptureComboButton" class="input-mapping-v2__capture-button" type="button">Capture Combo</button>
             </div>
-            <div id="inputMappingV2PointerDragCaptureButtons" class="input-mapping-v2__pointer-drag-buttons" aria-label="Pointer drag capture buttons"></div>
             <div id="inputMappingV2GamepadCaptureButtons" class="input-mapping-v2__gamepad-buttons" aria-label="Detected gamepad capture buttons"></div>
-            <p id="inputMappingV2CaptureMessage" class="tool-starter__hint">Keyboard, mouse, pointer drag, and gamepad sources are provided by src/engine/input.</p>
+            <p id="inputMappingV2CaptureMessage" class="tool-starter__hint">Keyboard, mouse, wheel, drag, and game controller sources are provided by src/engine/input.</p>
             <hr class="input-mapping-v2__capture-separator">
             <button id="inputMappingV2RefreshGamepadsButton" type="button">Refresh Gamepads</button>
           </div>
@@ -115,38 +128,18 @@
 
       <aside class="tool-starter__panel tool-starter__panel--right" aria-label="Input Mapping V2 output">
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourceInventoryContent">
-            <span>Engine Input Sources</span>
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="diagnosticsContent">
+            <span>Diagnostics</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="sourceInventoryContent" class="accordion-v2__content">
-            <div id="inputMappingV2SourceList" class="input-mapping-v2__source-list"></div>
-          </div>
-        </section>
-
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="gamepadDiagnosticsContent">
-            <span>Gamepad Diagnostics</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="gamepadDiagnosticsContent" class="accordion-v2__content">
-            <div id="inputMappingV2GamepadDiagnostics" class="input-mapping-v2__gamepad-diagnostics" aria-label="Gamepad diagnostics"></div>
-          </div>
-        </section>
-
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
-            <span>Mapping JSON</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="inspectorContent" class="accordion-v2__content">
-            <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
+          <div id="diagnosticsContent" class="accordion-v2__content">
+            <div id="inputMappingV2Diagnostics" class="input-mapping-v2__gamepad-diagnostics" aria-label="Input diagnostics"></div>
           </div>
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <div class="accordion-v2__header tool-starter__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
-            <span>Status</span>
+            <span>Status / Log</span>
             <div class="tool-starter__status-header-actions">
               <button id="clearStatusButton" class="tool-starter__status-clear-button" type="button">Clear</button>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -154,6 +147,20 @@
           </div>
           <div id="statusLogContent" class="accordion-v2__content">
             <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="exportContent">
+            <span>Export</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="exportContent" class="accordion-v2__content">
+            <nav id="inputMappingV2ExportNav" class="tool-starter__menu tool-starter__tool__menu input-mapping-v2__export-menu" aria-label="Export actions" data-launch-mode-nav="tool">
+              <button id="toolExportButton" type="button">Export</button>
+              <button id="toolCopyJsonButton" type="button">Copy JSON</button>
+            </nav>
+            <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
           </div>
         </section>
       </aside>
