@@ -37,7 +37,8 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-content: start;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 6px 8px;
 }
 
 .input-mapping-v2 #inputMappingV2SelectedActionLabel {
@@ -67,7 +68,7 @@
 }
 
 .input-mapping-v2__gamepad-capture-button {
-  min-height: 74px;
+  min-height: 50px;
   white-space: pre-line;
 }
 
@@ -82,7 +83,7 @@
   width: 100%;
   border: 0;
   border-top: 1px solid var(--tool-starter-line);
-  margin: 2px 0;
+  margin: 0;
 }
 
 .input-mapping-v2 #inputMappingV2CaptureMessage {
@@ -116,7 +117,7 @@
 .input-mapping-v2__device-list,
 .input-mapping-v2__gesture-groups {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .input-mapping-v2__gesture-groups {
@@ -236,6 +237,15 @@
 
 .input-mapping-v2__gesture-button {
   min-height: 30px;
+}
+
+.input-mapping-v2 #gestureSetupContent,
+.input-mapping-v2 #captureInputContent {
+  padding-bottom: 6px;
+}
+
+.input-mapping-v2 #captureInputContent .input-mapping-v2__capture-button {
+  min-height: 34px;
 }
 
 .input-mapping-v2__export-menu {

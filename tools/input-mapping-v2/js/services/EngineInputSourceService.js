@@ -152,8 +152,9 @@ export class EngineInputSourceService {
         binding: descriptor.binding,
         displayLabelLines: descriptor.displayLabelLines,
         label: descriptor.label,
-        title: descriptor.title,
-        engine: descriptor.engine
+        title: pointerDragTitle(descriptor),
+        engine: descriptor.engine,
+        pointerDrag: descriptor.snapshot
       }
     };
   }
@@ -416,6 +417,17 @@ export class EngineInputSourceService {
 
 function formatGamepadDeviceLabel(gamepad) {
   return gamepadDeviceInfo(gamepad).statusLabel;
+}
+
+function pointerDragTitle(descriptor) {
+  const bounds = descriptor.snapshot?.dragBounds;
+  if (!bounds) {
+    return descriptor.title;
+  }
+  return [
+    descriptor.title,
+    `Bounds: x ${bounds.x}, y ${bounds.y}, width ${bounds.width}, height ${bounds.height}`
+  ].join("\n");
 }
 
 function gamepadDeviceInfo(gamepad) {

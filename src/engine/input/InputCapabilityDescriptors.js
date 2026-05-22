@@ -81,7 +81,6 @@ const GESTURE_DEFINITIONS = Object.freeze([
     mouseGesture('MouseDoubleClick', 'Double Click', 'Mouse double click', 'mouse'),
     pointerGesture('MousePrimaryDrag', 'Drag', 'Mouse drag', 'mouse'),
     pointerGesture('MousePrimaryDragRelease', 'Drag Release', 'Mouse drag release', 'mouse'),
-    pointerGesture('MousePrimaryDragRectangle', 'Drag Rectangle', 'Mouse drag rectangle', 'mouse'),
     wheelGesture('MouseWheelUp', 'Wheel Up', 'Mouse wheel up', ['mouse', 'wheel']),
     wheelGesture('MouseWheelDown', 'Wheel Down', 'Mouse wheel down', ['mouse', 'wheel']),
     wheelGesture('MouseWheelLeft', 'Wheel Left', 'Mouse wheel left', ['mouse', 'wheel']),

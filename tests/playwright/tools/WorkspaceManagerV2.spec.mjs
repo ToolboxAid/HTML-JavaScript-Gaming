@@ -1515,9 +1515,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2DeviceList")).toContainText("InputService + MouseState + PointerDragState");
       await expect(page.locator("#inputMappingV2DeviceList")).toContainText("InputService + GamepadState + GamepadInputAdapter");
       await expect(page.locator("#inputMappingV2GestureList")).toContainText("Press");
-      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Drag Rectangle");
       await expect(page.locator("#inputMappingV2GestureList")).toContainText("Wheel Up");
+      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Wheel Down");
+      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Wheel Left");
+      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Wheel Right");
+      await expect(page.locator("#inputMappingV2GestureList")).toContainText("Drag Release");
+      await expect(page.locator("#inputMappingV2GestureList")).not.toContainText("Drag Rectangle");
+      await expect(page.locator("#inputMappingV2GestureList")).not.toContainText(/Mouse Move [XY]/);
       await expect(page.locator("#inputMappingV2GestureList")).toContainText("Button");
+      const compactAccordionSpacing = await page.locator("#gestureSetupContent, #captureInputContent").evaluateAll((contents) => (
+        contents.map((content) => ({
+          columnGap: getComputedStyle(content).columnGap,
+          id: content.id,
+          paddingBottom: getComputedStyle(content).paddingBottom,
+          rowGap: getComputedStyle(content).rowGap
+        }))
+      ));
+      expect(compactAccordionSpacing).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: "gestureSetupContent", paddingBottom: "6px" }),
+        expect.objectContaining({ id: "captureInputContent", paddingBottom: "6px", rowGap: "6px" })
+      ]));
       const gestureFlowLayout = await page.locator("#inputMappingV2GestureList").evaluate((container) => {
         const wantedGroups = ["Keyboard", "Mouse", "Game Controller"];
         const groupLayouts = wantedGroups.map((label) => {
@@ -1567,6 +1584,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const rectFor = (selector) => {
           const box = content.querySelector(selector).getBoundingClientRect();
           return {
+            height: Math.round(box.height),
             left: Math.round(box.left),
             top: Math.round(box.top),
             width: Math.round(box.width)
@@ -1581,7 +1599,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(captureFlowLayout.keyboard.width).toBeGreaterThan(110);
+      expect(captureFlowLayout.keyboard.height).toBeLessThanOrEqual(36);
       expect(captureFlowLayout.mouse.width).toBeGreaterThan(110);
+      expect(captureFlowLayout.mouse.height).toBeLessThanOrEqual(36);
       expect(captureFlowLayout.mouse.left).toBeGreaterThan(captureFlowLayout.keyboard.left);
       expect(Math.abs(captureFlowLayout.mouse.top - captureFlowLayout.keyboard.top)).toBeLessThanOrEqual(1);
       expect(captureFlowLayout.note.top).toBeGreaterThan(captureFlowLayout.keyboard.top);
@@ -1703,8 +1723,38 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/);
+      await page.evaluate(() => {
+        window.dispatchEvent(new PointerEvent("pointerdown", {
+          bubbles: true,
+          button: 0,
+          cancelable: true,
+          clientX: 12,
+          clientY: 16,
+          pointerId: 9,
+          pointerType: "mouse"
+        }));
+        window.dispatchEvent(new PointerEvent("pointermove", {
+          bubbles: true,
+          button: 0,
+          buttons: 1,
+          cancelable: true,
+          clientX: 52,
+          clientY: 66,
+          pointerId: 9,
+          pointerType: "mouse"
+        }));
+        window.dispatchEvent(new PointerEvent("pointerup", {
+          bubbles: true,
+          button: 0,
+          buttons: 0,
+          cancelable: true,
+          clientX: 72,
+          clientY: 96,
+          pointerId: 9,
+          pointerType: "mouse"
+        }));
+      });
       await page.locator(".input-mapping-v2__gesture-button", { hasText: "Drag Release" }).click();
-      await page.locator(".input-mapping-v2__gesture-button", { hasText: "Drag Rectangle" }).click();
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(1);
       const mappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
       expect(Math.round(mappingTileBox.width)).toBe(225);
@@ -1714,13 +1764,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewOutput")).toContainText("Keyboard KeyD");
       await expect(page.locator("#previewOutput")).toContainText("Mouse Middle Button");
       await expect(page.locator("#previewOutput")).toContainText("Mouse Drag Release");
-      await expect(page.locator("#previewOutput")).toContainText("Mouse Drag Rectangle");
+      await expect(page.locator("#previewOutput")).not.toContainText("Mouse Drag Rectangle");
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Mouse Drag Release" })).toHaveAttribute("title", /Bounds: x 12, y 16, width 60, height 80/);
       await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyD"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MouseButton1"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MousePrimaryDragRelease"');
-      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MousePrimaryDragRectangle"');
+      await expect(page.locator("#inspectorOutput")).not.toContainText('"binding": "MousePrimaryDragRectangle"');
       await page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" }).click();
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyA" })).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Keyboard KeyD" })).toHaveCount(1);
@@ -1798,12 +1849,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const gamepadButtonLayout = await page.locator(".input-mapping-v2__gamepad-capture-button").evaluateAll((buttons) => buttons.map((button) => {
         const box = button.getBoundingClientRect();
         return {
+          height: Math.round(box.height),
           left: Math.round(box.left),
           top: Math.round(box.top),
           width: Math.round(box.width)
         };
       }));
       expect(gamepadButtonLayout.every((entry) => entry.width > 170)).toBe(true);
+      expect(gamepadButtonLayout.every((entry) => entry.height <= 60)).toBe(true);
       expect(new Set(gamepadButtonLayout.map((entry) => entry.left)).size).toBe(2);
       expect(Math.abs(gamepadButtonLayout[1].top - gamepadButtonLayout[0].top)).toBeLessThanOrEqual(1);
       await page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='moveLeft']").click({ position: { x: 12, y: 12 } });

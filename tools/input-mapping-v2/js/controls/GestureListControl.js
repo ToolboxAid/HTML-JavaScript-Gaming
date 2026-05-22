@@ -44,6 +44,11 @@ export class GestureListControl {
     button.dataset.inputMappingGestureBinding = gesture.binding;
     button.textContent = gesture.label;
     button.title = gesture.title;
+    ["pointerdown", "pointermove", "pointerup", "pointercancel"].forEach((eventName) => {
+      button.addEventListener(eventName, (event) => {
+        event.stopPropagation();
+      });
+    });
     button.addEventListener("click", () => {
       this.onGestureSelected(gesture);
     });
