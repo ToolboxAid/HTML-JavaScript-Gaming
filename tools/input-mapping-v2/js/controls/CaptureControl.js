@@ -5,7 +5,8 @@ export class CaptureControl {
     captureMessage,
     captureMouseButton,
     refreshGamepadsButton,
-    selectedActionLabel
+    selectedActionLabel,
+    usedInputHighlights
   }) {
     this.captureGamepadButtons = captureGamepadButtons;
     this.captureKeyboardButton = captureKeyboardButton;
@@ -15,6 +16,7 @@ export class CaptureControl {
     this.onCaptureGamepad = () => {};
     this.refreshGamepadsButton = refreshGamepadsButton;
     this.selectedActionLabel = selectedActionLabel;
+    this.usedInputHighlights = usedInputHighlights;
   }
 
   mount({ onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onRefreshGamepads }) {
@@ -24,12 +26,16 @@ export class CaptureControl {
     this.refreshGamepadsButton.addEventListener("click", onRefreshGamepads);
   }
 
-  render(actionLabel, gamepads = []) {
+  render(actionLabel, gamepads = [], selectedInputs = [], captureMode = "") {
     this.selectedActionLabel.textContent = `Selected action: ${actionLabel}`;
-    this.renderGamepadButtons(gamepads);
+    const canHighlightUsedInputs = !captureMode;
+    this.captureKeyboardButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesKeyboard));
+    this.captureMouseButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesMouse));
+    this.renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs);
+    this.renderUsedInputHighlights(selectedInputs, canHighlightUsedInputs);
   }
 
-  renderGamepadButtons(gamepads) {
+  renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs) {
     if (!gamepads.length) {
       const empty = document.createElement("p");
       empty.className = "tool-starter__hint input-mapping-v2__gamepad-empty";
@@ -42,7 +48,8 @@ export class CaptureControl {
       const button = document.createElement("button");
       button.type = "button";
       const captureId = this.gamepadCaptureId(gamepad.index);
-      button.className = `input-mapping-v2__gamepad-capture-button${this.activeCaptureId === captureId ? " is-capturing" : ""}`;
+      const isUsed = canHighlightUsedInputs && selectedInputs.some((input) => usesGamepadIndex(input, gamepad.index));
+      button.className = `input-mapping-v2__gamepad-capture-button${this.activeCaptureId === captureId ? " is-capturing" : ""}${isUsed ? " has-used-input" : ""}`;
       button.dataset.inputMappingGamepadIndex = String(gamepad.index);
       button.ariaPressed = this.activeCaptureId === captureId ? "true" : "false";
       button.textContent = gamepad.captureLines.join("\n");
@@ -51,6 +58,43 @@ export class CaptureControl {
         this.onCaptureGamepad(gamepad.index);
       });
       return button;
+    }));
+  }
+
+  renderUsedInputHighlights(selectedInputs, canHighlightUsedInputs) {
+    if (!canHighlightUsedInputs || !selectedInputs.length) {
+      this.usedInputHighlights.hidden = true;
+      this.usedInputHighlights.replaceChildren();
+      return;
+    }
+
+    const groups = [
+      { label: "Keyboard", inputs: selectedInputs.filter(usesKeyboard) },
+      { label: "Mouse", inputs: selectedInputs.filter(usesMouse) },
+      { label: "Game Controller", inputs: selectedInputs.filter(usesGamepad) }
+    ].filter((group) => group.inputs.length);
+
+    this.usedInputHighlights.hidden = !groups.length;
+    this.usedInputHighlights.replaceChildren(...groups.map((group) => {
+      const section = document.createElement("section");
+      section.className = "input-mapping-v2__used-source";
+      section.dataset.inputMappingUsedSource = group.label;
+
+      const title = document.createElement("strong");
+      title.textContent = group.label;
+
+      const controls = document.createElement("div");
+      controls.className = "input-mapping-v2__used-controls";
+      controls.append(...group.inputs.map((input) => {
+        const control = document.createElement("span");
+        control.className = "input-mapping-v2__used-control";
+        control.textContent = inputSummary(input);
+        control.title = input.title || input.label;
+        return control;
+      }));
+
+      section.append(title, controls);
+      return section;
     }));
   }
 
@@ -78,4 +122,37 @@ export class CaptureControl {
   gamepadCaptureId(index) {
     return `gamepad:${Number(index)}`;
   }
+}
+
+function usesKeyboard(input) {
+  return input.source === "keyboard" || comboParts(input).some(isKeyboardBinding);
+}
+
+function usesMouse(input) {
+  return input.source === "mouse" || comboParts(input).some((binding) => binding.startsWith("Mouse"));
+}
+
+function usesGamepad(input) {
+  return input.source === "gamepad" || comboParts(input).some((binding) => binding.startsWith("Pad"));
+}
+
+function usesGamepadIndex(input, gamepadIndex) {
+  const prefix = `Pad${Number(gamepadIndex)}:`;
+  return input.binding?.startsWith(prefix) || comboParts(input).some((binding) => binding.startsWith(prefix));
+}
+
+function comboParts(input) {
+  const binding = String(input.binding || "");
+  return binding.startsWith("Combo:") ? binding.slice("Combo:".length).split("+") : [];
+}
+
+function isKeyboardBinding(binding) {
+  return /^(?:Key[A-Z]|Digit[0-9]|Control|Shift|Alt|Meta|Space|Enter|Escape|Tab|Backspace|Delete)/.test(binding);
+}
+
+function inputSummary(input) {
+  if (Array.isArray(input.displayLabelLines) && input.displayLabelLines.length) {
+    return input.displayLabelLines.map((line) => String(line || "").trim()).filter(Boolean).join(" ");
+  }
+  return input.label;
 }

@@ -47,14 +47,6 @@ const DEVICE_DEFINITIONS = Object.freeze([
         detail: 'Pen support depends on browser PointerEvent input. This tool exposes capability status only until pen capture is testable here.'
     },
     {
-        id: 'wheel',
-        label: 'Wheel',
-        engine: 'InputService wheel descriptor',
-        supported: true,
-        defaultEnabled: true,
-        detail: 'Mouse wheel directions can be captured directly or as combo inputs.'
-    },
-    {
         id: 'flightStick',
         label: 'Flight Stick',
         engine: 'GamepadInputAdapter capability descriptor',
@@ -81,10 +73,10 @@ const GESTURE_DEFINITIONS = Object.freeze([
     mouseGesture('MouseDoubleClick', 'Double Click', 'Mouse double click', 'mouse'),
     pointerGesture('MousePrimaryDrag', 'Drag', 'Mouse drag', 'mouse'),
     pointerGesture('MousePrimaryDragRelease', 'Drag Release', 'Mouse drag release', 'mouse'),
-    wheelGesture('MouseWheelUp', 'Wheel Up', 'Mouse wheel up', ['mouse', 'wheel']),
-    wheelGesture('MouseWheelDown', 'Wheel Down', 'Mouse wheel down', ['mouse', 'wheel']),
-    wheelGesture('MouseWheelLeft', 'Wheel Left', 'Mouse wheel left', ['mouse', 'wheel']),
-    wheelGesture('MouseWheelRight', 'Wheel Right', 'Mouse wheel right', ['mouse', 'wheel']),
+    wheelGesture('MouseWheelUp', 'Wheel Up', 'Mouse wheel up'),
+    wheelGesture('MouseWheelDown', 'Wheel Down', 'Mouse wheel down'),
+    wheelGesture('MouseWheelLeft', 'Wheel Left', 'Mouse wheel left'),
+    wheelGesture('MouseWheelRight', 'Wheel Right', 'Mouse wheel right'),
     comboGesture('MouseCombo', 'Mouse', ['mouse']),
     gameControllerGesture('GameControllerButton', 'Button', 'Game controller button', 'gameController'),
     gameControllerGesture('GameControllerTrigger', 'Trigger', 'Game controller trigger', 'gameController'),
@@ -99,7 +91,6 @@ export function inputDeviceCapabilities({
     pointerEventsAvailable = false,
     touchAvailable = false,
     penAvailable = false,
-    wheelAvailable = true,
     webXrAvailable = false
 } = {}) {
     return DEVICE_DEFINITIONS.map((device) => {
@@ -131,13 +122,6 @@ export function inputDeviceCapabilities({
                     : 'Pen capture requires browser PointerEvent support.'
             };
         }
-        if (device.id === 'wheel') {
-            return {
-                ...device,
-                available: wheelAvailable,
-                emptyState: wheelAvailable ? '' : 'Wheel input requires browser wheel event support.'
-            };
-        }
         if (device.id === 'flightStick') {
             return {
                 ...device,
@@ -165,10 +149,15 @@ export function inputDeviceCapabilities({
     });
 }
 
-export function inputGestureDescriptors({ enabledDeviceIds = [] } = {}) {
+export function inputGestureDescriptors({
+    advancedModeAvailable = false,
+    enabledDeviceIds = [],
+    wheelAvailable = true
+} = {}) {
     const enabled = new Set(enabledDeviceIds);
     return GESTURE_DEFINITIONS.filter((gesture) => (
         gesture.requiredDeviceIds.every((deviceId) => enabled.has(deviceId))
+        && (gesture.captureKind !== 'wheel' || wheelAvailable || advancedModeAvailable)
     )).map((gesture) => ({ ...gesture }));
 }
 
@@ -213,7 +202,7 @@ export function wheelInputDescriptor(binding, detail) {
     return {
         source: 'mouse',
         binding,
-        displayLabelLines: ['Mouse', detail],
+        displayLabelLines: ['Mouse', detail, 'Wheel'],
         label: `Mouse ${detail}`,
         title: `Mouse\n${detail}`,
         engine: 'InputService Wheel'
@@ -240,7 +229,7 @@ function pointerGesture(binding, label, title, deviceId) {
     };
 }
 
-function wheelGesture(binding, label, title, requiredDeviceIds) {
+function wheelGesture(binding, label, title) {
     return {
         binding,
         captureKind: 'wheel',
@@ -248,7 +237,7 @@ function wheelGesture(binding, label, title, requiredDeviceIds) {
         displayLabelLines: ['Mouse', label],
         engine: 'InputService Wheel',
         label,
-        requiredDeviceIds,
+        requiredDeviceIds: ['mouse'],
         source: 'mouse',
         title
     };

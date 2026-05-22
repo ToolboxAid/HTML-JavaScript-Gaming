@@ -67,7 +67,6 @@ export class ToolStarterApp {
     this.actionSelection.mount({
       onActionChanged: (actionId) => this.selectAction(actionId),
       onAddAction: (label) => this.addAction(label),
-      onClearAction: () => this.deleteSelectedAction(),
       onDeleteAction: () => this.deleteSelectedAction()
     });
     this.capture.mount({
@@ -93,6 +92,7 @@ export class ToolStarterApp {
     this.window.addEventListener("wheel", this.handleWheel, true);
     this.statusLog.mount();
     this.preview.mount({
+      onDeleteAllMappings: () => this.deleteAllMappings(),
       onDeleteBinding: ({ actionId, binding }) => this.deleteBinding(actionId, binding),
       onSelectAction: (actionId) => this.selectAction(actionId)
     });
@@ -115,14 +115,14 @@ export class ToolStarterApp {
     this.refreshActions();
   }
 
-  clearSelectedAction() {
-    const result = this.state.clearSelectedAction();
+  deleteSelectedAction() {
+    const result = this.state.deleteSelectedAction();
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
     this.refreshActions();
   }
 
-  deleteSelectedAction() {
-    const result = this.state.deleteSelectedAction();
+  deleteAllMappings() {
+    const result = this.state.deleteAllMappings();
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
     this.refreshActions();
   }
@@ -462,13 +462,15 @@ export class ToolStarterApp {
     const devices = this.engineInputSources.devices(gamepadStatus);
     this.initializeEnabledDevices(devices);
     const gestures = this.engineInputSources.gestures(this.enabledDeviceIds);
+    const actions = this.state.actions();
+    const selectedAction = actions.find((action) => action.id === this.state.selectedActionId);
     this.actionNav.setToolActionsEnabled(true);
     this.exportControl.setEnabled(true);
-    this.actionSelection.render(this.state.actions(), this.state.selectedActionId);
+    this.actionSelection.render(actions, this.state.selectedActionId);
     this.deviceList.render(devices, this.enabledDeviceIds);
     this.gestureList.render(gestures);
-    this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads);
-    this.preview.render(this.state.actions(), this.state.selectedActionId);
+    this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads, selectedAction?.inputs ?? [], this.captureMode);
+    this.preview.render(actions, this.state.selectedActionId);
     this.inspector.showObject(this.state.payload());
     this.gamepadDiagnostics.render(this.engineInputSources.gamepadDiagnostics(gamepadStatus));
   }

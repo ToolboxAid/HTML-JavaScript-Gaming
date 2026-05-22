@@ -82,8 +82,11 @@ export function run() {
     assert(dragRelease.snapshot.dragBounds.height === 40, 'Drag release descriptors should carry drag bounds height.');
     const capabilities = input.getInputDeviceCapabilities({ gamepadCount: 0 });
     assert(capabilities.some((device) => device.label === 'VR Controller'), 'Input capabilities should expose safe VR controller descriptors.');
-    const gestures = input.getInputGestureDescriptors({ enabledDeviceIds: ['keyboard', 'mouse', 'wheel'] });
-    assert(gestures.some((gesture) => gesture.binding === 'MouseWheelUp'), 'Input gestures should expose wheel descriptors when wheel is enabled.');
+    assert(!capabilities.some((device) => device.label === 'Wheel'), 'Input capabilities should treat wheel as mouse input instead of a device.');
+    const gestures = input.getInputGestureDescriptors({ enabledDeviceIds: ['keyboard', 'mouse'] });
+    assert(gestures.some((gesture) => gesture.binding === 'MouseWheelUp'), 'Input gestures should expose wheel descriptors through Mouse when wheel is available.');
+    const gesturesWithoutWheelSupport = input.getInputGestureDescriptors({ enabledDeviceIds: ['keyboard', 'mouse'], wheelAvailable: false });
+    assert(!gesturesWithoutWheelSupport.some((gesture) => gesture.binding === 'MouseWheelUp'), 'Input gestures should hide wheel descriptors when wheel support is unavailable.');
     assert(!gestures.some((gesture) => gesture.binding === 'MousePrimaryDragRectangle'), 'Visible input gestures should not expose Drag Rectangle.');
 
     input.detach();

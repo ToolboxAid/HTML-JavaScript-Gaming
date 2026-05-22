@@ -2,6 +2,7 @@ export class DeviceListControl {
   constructor({ container, rumbleFeedbackCheckbox }) {
     this.container = container;
     this.rumbleFeedbackCheckbox = rumbleFeedbackCheckbox;
+    this.rumbleFeedbackField = rumbleFeedbackCheckbox.closest(".input-mapping-v2__checkbox-field");
     this.onDeviceEnabledChanged = () => {};
   }
 
@@ -44,6 +45,9 @@ export class DeviceListControl {
     engine.textContent = device.engine;
 
     card.append(label, detail, engine);
+    if (device.id === "gameController" && this.rumbleFeedbackField) {
+      card.append(this.rumbleFeedbackField);
+    }
     if (!device.available && device.emptyState) {
       const empty = document.createElement("p");
       empty.className = "tool-starter__hint";

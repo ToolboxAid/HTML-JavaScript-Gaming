@@ -51,7 +51,11 @@ export class EngineInputSourceService {
   }
 
   gestures(enabledDeviceIds) {
-    return this.inputService.getInputGestureDescriptors({ enabledDeviceIds });
+    return this.inputService.getInputGestureDescriptors({
+      advancedModeAvailable: Boolean(this.window.__inputMappingV2AdvancedInputMode),
+      enabledDeviceIds,
+      wheelAvailable: this.wheelInputAvailable()
+    });
   }
 
   captureKeyboard(event) {
@@ -59,7 +63,7 @@ export class EngineInputSourceService {
     return {
       source: "keyboard",
       binding,
-      displayLabelLines: ["Keyboard", binding],
+      displayLabelLines: ["Keyboard", binding, "Press"],
       label: `Keyboard ${binding}`,
       title: `Keyboard\n${binding}`,
       engine: "KeyboardState"
@@ -72,7 +76,7 @@ export class EngineInputSourceService {
     return {
       source: "mouse",
       binding: `MouseButton${button}`,
-      displayLabelLines: ["Mouse", buttonLabel.replace(/^Mouse\s+/, "")],
+      displayLabelLines: ["Mouse", buttonLabel.replace(/^Mouse\s+/, ""), "Click"],
       label: buttonLabel,
       title: `Mouse\n${buttonLabel}`,
       engine: "MouseState"
@@ -150,7 +154,7 @@ export class EngineInputSourceService {
       input: {
         source: descriptor.source,
         binding: descriptor.binding,
-        displayLabelLines: descriptor.displayLabelLines,
+        displayLabelLines: pointerDragLabelLines(descriptor),
         label: descriptor.label,
         title: pointerDragTitle(descriptor),
         engine: descriptor.engine,
@@ -210,7 +214,7 @@ export class EngineInputSourceService {
         input: {
           source: "gamepad",
           binding: `Pad${selectedIndex}:Button${buttonIndex}`,
-          displayLabelLines: ["Game Controller", buttonLabel],
+          displayLabelLines: ["Game Controller", buttonLabel, "Button"],
           label: `Game Controller ${buttonLabel}`,
           title: gamepadInputTitle(deviceInfo, buttonLabel),
           engine: "GamepadInputAdapter"
@@ -226,7 +230,7 @@ export class EngineInputSourceService {
         input: {
           source: "gamepad",
           binding: `Pad${selectedIndex}:Axis${axisIndex}${direction}`,
-          displayLabelLines: ["Game Controller", axisLabel],
+          displayLabelLines: ["Game Controller", axisLabel, "Stick"],
           label: `Game Controller ${axisLabel}`,
           title: gamepadInputTitle(deviceInfo, axisLabel),
           engine: "GamepadInputAdapter"
@@ -413,6 +417,10 @@ export class EngineInputSourceService {
       return [];
     }
   }
+
+  wheelInputAvailable() {
+    return typeof this.window.WheelEvent === "function" || "onwheel" in this.window;
+  }
 }
 
 function formatGamepadDeviceLabel(gamepad) {
@@ -428,6 +436,11 @@ function pointerDragTitle(descriptor) {
     descriptor.title,
     `Bounds: x ${bounds.x}, y ${bounds.y}, width ${bounds.width}, height ${bounds.height}`
   ].join("\n");
+}
+
+function pointerDragLabelLines(descriptor) {
+  const gestureLabel = descriptor.displayLabelLines?.[1] || descriptor.label.replace(/^Mouse\s+/, "");
+  return [mouseButtonLabel(descriptor.snapshot?.button ?? 0), gestureLabel];
 }
 
 function gamepadDeviceInfo(gamepad) {

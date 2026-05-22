@@ -59,6 +59,12 @@
   background: var(--tool-starter-input-surface);
 }
 
+.input-mapping-v2__capture-button.has-used-input,
+.input-mapping-v2__gamepad-capture-button.has-used-input {
+  border-color: var(--tool-starter-accent);
+  box-shadow: inset 0 0 0 1px var(--tool-starter-accent);
+}
+
 .input-mapping-v2__gamepad-buttons {
   display: grid;
   flex: 1 1 320px;
@@ -93,6 +99,19 @@
   order: 20;
 }
 
+.input-mapping-v2__used-input-highlights {
+  display: grid;
+  flex: 1 0 100%;
+  min-width: 100%;
+  order: 2;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.input-mapping-v2__used-input-highlights[hidden] {
+  display: none;
+}
+
 .input-mapping-v2 #inputMappingV2RefreshGamepadsButton {
   flex: 1 0 100%;
   min-width: 100%;
@@ -110,6 +129,9 @@
 }
 
 .input-mapping-v2 #mappingPanelContent {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 8px;
   overflow: hidden;
 }
 
@@ -200,6 +222,35 @@
   line-height: 1.2;
   text-align: left;
   white-space: pre-line;
+}
+
+.input-mapping-v2__used-source {
+  display: grid;
+  gap: 6px;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-surface);
+  padding: 8px;
+}
+
+.input-mapping-v2__used-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.input-mapping-v2__used-control {
+  border: 1px solid var(--tool-starter-accent);
+  border-radius: 999px;
+  background: var(--tool-starter-input-surface);
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.input-mapping-v2__mapping-actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .input-mapping-v2__empty-token {

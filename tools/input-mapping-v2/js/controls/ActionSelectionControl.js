@@ -3,25 +3,22 @@ export class ActionSelectionControl {
     actionHint,
     actionSelect,
     addActionButton,
-    clearActionButton,
     customActionInput,
     deleteActionButton
   }) {
     this.actionHint = actionHint;
     this.actionSelect = actionSelect;
     this.addActionButton = addActionButton;
-    this.clearActionButton = clearActionButton;
     this.customActionInput = customActionInput;
     this.deleteActionButton = deleteActionButton;
   }
 
-  mount({ onActionChanged, onAddAction, onClearAction, onDeleteAction }) {
+  mount({ onActionChanged, onAddAction, onDeleteAction }) {
     this.actionSelect.addEventListener("change", () => onActionChanged(this.actionSelect.value));
     this.addActionButton.addEventListener("click", () => {
       onAddAction(this.customActionInput.value);
       this.customActionInput.value = "";
     });
-    this.clearActionButton.addEventListener("click", () => onClearAction());
     this.deleteActionButton.addEventListener("click", () => onDeleteAction());
   }
 

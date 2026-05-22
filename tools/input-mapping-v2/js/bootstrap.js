@@ -41,7 +41,6 @@ window.addEventListener("DOMContentLoaded", () => {
       actionHint: requireElement("#inputMappingV2ActionHint"),
       actionSelect: requireElement("#inputMappingV2ActionSelect"),
       addActionButton: requireElement("#inputMappingV2AddActionButton"),
-      clearActionButton: requireElement("#inputMappingV2ClearActionButton"),
       customActionInput: requireElement("#inputMappingV2CustomActionInput"),
       deleteActionButton: requireElement("#inputMappingV2DeleteActionButton")
     }),
@@ -51,7 +50,8 @@ window.addEventListener("DOMContentLoaded", () => {
       captureMessage: requireElement("#inputMappingV2CaptureMessage"),
       captureMouseButton: requireElement("#inputMappingV2CaptureMouseButton"),
       refreshGamepadsButton: requireElement("#inputMappingV2RefreshGamepadsButton"),
-      selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel")
+      selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel"),
+      usedInputHighlights: requireElement("#inputMappingV2UsedInputHighlights")
     }),
     deviceList: new DeviceListControl({
       container: requireElement("#inputMappingV2DeviceList"),
@@ -67,7 +67,10 @@ window.addEventListener("DOMContentLoaded", () => {
     gamepadDiagnostics: new GamepadDiagnosticsControl(requireElement("#inputMappingV2Diagnostics")),
     gestureList: new GestureListControl(requireElement("#inputMappingV2GestureList")),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
-    preview: new PreviewPanelControl(requireElement("#previewOutput")),
+    preview: new PreviewPanelControl({
+      deleteAllButton: requireElement("#inputMappingV2ClearActionButton"),
+      output: requireElement("#previewOutput")
+    }),
     shell: new ToolStarterShellControl(),
     state: new InputMappingState(),
     statusLog,
