@@ -44,7 +44,8 @@ window.addEventListener("DOMContentLoaded", () => {
       actionSelect: requireElement("#inputMappingV2ActionSelect"),
       addActionButton: requireElement("#inputMappingV2AddActionButton"),
       clearActionButton: requireElement("#inputMappingV2ClearActionButton"),
-      customActionInput: requireElement("#inputMappingV2CustomActionInput")
+      customActionInput: requireElement("#inputMappingV2CustomActionInput"),
+      deleteActionButton: requireElement("#inputMappingV2DeleteActionButton")
     }),
     capture: new CaptureControl({
       captureGamepadButtons: requireElement("#inputMappingV2GamepadCaptureButtons"),
@@ -52,8 +53,7 @@ window.addEventListener("DOMContentLoaded", () => {
       captureMessage: requireElement("#inputMappingV2CaptureMessage"),
       captureMouseButton: requireElement("#inputMappingV2CaptureMouseButton"),
       refreshGamepadsButton: requireElement("#inputMappingV2RefreshGamepadsButton"),
-      selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel"),
-      startGamepadPollingButton: requireElement("#inputMappingV2StartGamepadPollingButton")
+      selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel")
     }),
     engineInputSources: new EngineInputSourceService({ windowRef: window }),
     gamepadDiagnostics: new GamepadDiagnosticsControl(requireElement("#inputMappingV2GamepadDiagnostics")),

@@ -18,7 +18,6 @@
 .input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
 .input-mapping-v2 #inputMappingV2CaptureMouseButton,
 .input-mapping-v2 #inputMappingV2RefreshGamepadsButton,
-.input-mapping-v2 #inputMappingV2StartGamepadPollingButton,
 .input-mapping-v2__gamepad-capture-button {
   width: 100%;
 }
@@ -86,6 +85,13 @@
   height: 175px;
   align-content: start;
   overflow: auto;
+  cursor: pointer;
+}
+
+.input-mapping-v2__mapping-card.is-selected {
+  border-color: var(--tool-starter-accent);
+  box-shadow: inset 0 0 0 2px var(--tool-starter-accent);
+  background: var(--tool-starter-input-surface);
 }
 
 .input-mapping-v2__tile-action-label {

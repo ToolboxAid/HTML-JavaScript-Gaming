@@ -24,6 +24,7 @@ const DEFAULT_ACTIONS = Object.freeze([
 export class InputMappingState {
   constructor({ defaultActions = DEFAULT_ACTIONS } = {}) {
     this.defaultActions = defaultActions;
+    this.defaultActionIds = new Set(defaultActions.map((action) => action.id));
     this.selectedActionId = defaultActions[0]?.id ?? "";
     this.inputMap = new InputMap();
     this.actionEntries = [];
@@ -70,7 +71,8 @@ export class InputMappingState {
       return this.addTileForSelectedAction();
     }
     const actionId = normalizeActionId(actionLabel);
-    if (this.actionEntries.some((action) => action.id === actionId)) {
+    const existingAction = this.actionEntries.find((action) => action.id === actionId);
+    if (existingAction) {
       this.selectedActionId = actionId;
       return this.addTileForSelectedAction();
     }
@@ -85,6 +87,9 @@ export class InputMappingState {
     const action = this.selectedAction();
     if (!action) {
       return { ok: false, message: "Select an action before adding a mapping tile." };
+    }
+    if (action.tileVisible) {
+      return { ok: false, message: `${action.label} already has an action tile. Delete it before creating another.` };
     }
     action.tileVisible = true;
     this.syncInputMap();
@@ -129,6 +134,28 @@ export class InputMappingState {
     return { ok: true, message: `Cleared inputs for ${action.label}.` };
   }
 
+  deleteSelectedAction() {
+    const action = this.selectedAction();
+    if (!action) {
+      return { ok: false, message: "Select an action before deleting it." };
+    }
+    if (!action.tileVisible && action.inputs.length === 0) {
+      return { ok: false, message: `${action.label} does not have an action tile to delete.` };
+    }
+
+    const deletedLabel = action.label;
+    if (this.defaultActionIds.has(action.id)) {
+      action.inputs = [];
+      action.tileVisible = false;
+    } else {
+      this.actionEntries = this.actionEntries.filter((candidate) => candidate.id !== action.id);
+    }
+
+    this.selectedActionId = this.nextSelectableActionId() ?? this.actionEntries[0]?.id ?? "";
+    this.syncInputMap();
+    return { ok: true, message: `Deleted action tile for ${deletedLabel}.` };
+  }
+
   payload() {
     return {
       toolId: "input-mapping-v2",
@@ -156,6 +183,10 @@ export class InputMappingState {
       action.inputs.map((input) => input.binding)
     ]));
     this.inputMap.setBindings(bindings);
+  }
+
+  nextSelectableActionId() {
+    return this.actionEntries.find((action) => !action.tileVisible)?.id ?? null;
   }
 }
 

@@ -53,14 +53,14 @@ export class ToolStarterApp {
     this.actionSelection.mount({
       onActionChanged: (actionId) => this.selectAction(actionId),
       onAddAction: (label) => this.addAction(label),
-      onClearAction: () => this.clearSelectedAction()
+      onClearAction: () => this.clearSelectedAction(),
+      onDeleteAction: () => this.deleteSelectedAction()
     });
     this.capture.mount({
       onCaptureGamepad: (gamepadIndex) => this.captureGamepad(gamepadIndex),
       onCaptureKeyboard: () => this.startKeyboardCapture(),
       onCaptureMouse: () => this.startMouseCapture(),
-      onRefreshGamepads: () => this.refreshGamepads(),
-      onStartGamepadPolling: () => this.startListeningForGamepads()
+      onRefreshGamepads: () => this.refreshGamepads()
     });
     this.engineInputSources.attach();
     this.window.addEventListener("gamepadconnected", this.handleGamepadConnectionChange);
@@ -69,7 +69,8 @@ export class ToolStarterApp {
     this.window.addEventListener("mousedown", this.handleMouseDown, true);
     this.statusLog.mount();
     this.preview.mount({
-      onDeleteBinding: ({ actionId, binding }) => this.deleteBinding(actionId, binding)
+      onDeleteBinding: ({ actionId, binding }) => this.deleteBinding(actionId, binding),
+      onSelectAction: (actionId) => this.selectAction(actionId)
     });
     this.statusLog.ok("Input Mapping V2 ready.");
     const initialGamepadStatus = this.engineInputSources.refreshGamepadState();
@@ -92,6 +93,12 @@ export class ToolStarterApp {
 
   clearSelectedAction() {
     const result = this.state.clearSelectedAction();
+    this.statusLog[result.ok ? "ok" : "warn"](result.message);
+    this.refreshActions();
+  }
+
+  deleteSelectedAction() {
+    const result = this.state.deleteSelectedAction();
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
     this.refreshActions();
   }
@@ -149,15 +156,6 @@ export class ToolStarterApp {
     this.refreshActions(status);
   }
 
-  startListeningForGamepads() {
-    this.startGamepadPolling();
-    const status = this.engineInputSources.refreshGamepadState();
-    this.trackGamepadStatus(status, { log: true });
-    this.capture.showMessage("Gamepad polling is active. Keep this browser tab focused and press a controller button if the browser has not exposed the device yet.");
-    this.statusLog.ok("Gamepad listening/polling is active.");
-    this.refreshActions(status);
-  }
-
   startGamepadPolling() {
     if (this.gamepadPollTimer || typeof this.window.setInterval !== "function") {
       return;
@@ -193,7 +191,6 @@ export class ToolStarterApp {
 
   addCapturedInput(input) {
     const result = this.state.addBindingToSelectedAction(input);
-    this.capture.showMessage(result.message);
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
     this.refreshActions();
   }
@@ -236,7 +233,7 @@ export class ToolStarterApp {
     this.actionNav.setToolActionsEnabled(true);
     this.actionSelection.render(this.state.actions(), this.state.selectedActionId);
     this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads);
-    this.preview.render(this.state.actions());
+    this.preview.render(this.state.actions(), this.state.selectedActionId);
     this.inspector.showObject(this.state.payload());
     this.sourceInventory.render(this.engineInputSources.sources(gamepadStatus));
     this.gamepadDiagnostics.render(this.engineInputSources.gamepadDiagnostics(gamepadStatus));

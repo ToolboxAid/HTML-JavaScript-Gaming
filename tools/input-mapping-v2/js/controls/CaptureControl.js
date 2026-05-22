@@ -5,8 +5,7 @@ export class CaptureControl {
     captureMessage,
     captureMouseButton,
     refreshGamepadsButton,
-    selectedActionLabel,
-    startGamepadPollingButton
+    selectedActionLabel
   }) {
     this.captureGamepadButtons = captureGamepadButtons;
     this.captureKeyboardButton = captureKeyboardButton;
@@ -15,15 +14,13 @@ export class CaptureControl {
     this.onCaptureGamepad = () => {};
     this.refreshGamepadsButton = refreshGamepadsButton;
     this.selectedActionLabel = selectedActionLabel;
-    this.startGamepadPollingButton = startGamepadPollingButton;
   }
 
-  mount({ onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onRefreshGamepads, onStartGamepadPolling }) {
+  mount({ onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onRefreshGamepads }) {
     this.onCaptureGamepad = onCaptureGamepad;
     this.captureKeyboardButton.addEventListener("click", onCaptureKeyboard);
     this.captureMouseButton.addEventListener("click", onCaptureMouse);
     this.refreshGamepadsButton.addEventListener("click", onRefreshGamepads);
-    this.startGamepadPollingButton.addEventListener("click", onStartGamepadPolling);
   }
 
   render(actionLabel, gamepads = []) {

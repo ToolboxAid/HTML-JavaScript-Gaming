@@ -4,22 +4,25 @@ export class ActionSelectionControl {
     actionSelect,
     addActionButton,
     clearActionButton,
-    customActionInput
+    customActionInput,
+    deleteActionButton
   }) {
     this.actionHint = actionHint;
     this.actionSelect = actionSelect;
     this.addActionButton = addActionButton;
     this.clearActionButton = clearActionButton;
     this.customActionInput = customActionInput;
+    this.deleteActionButton = deleteActionButton;
   }
 
-  mount({ onActionChanged, onAddAction, onClearAction }) {
+  mount({ onActionChanged, onAddAction, onClearAction, onDeleteAction }) {
     this.actionSelect.addEventListener("change", () => onActionChanged(this.actionSelect.value));
     this.addActionButton.addEventListener("click", () => {
       onAddAction(this.customActionInput.value);
       this.customActionInput.value = "";
     });
     this.clearActionButton.addEventListener("click", () => onClearAction());
+    this.deleteActionButton.addEventListener("click", () => onDeleteAction());
   }
 
   render(actions, selectedActionId) {
@@ -27,9 +30,11 @@ export class ActionSelectionControl {
       const option = document.createElement("option");
       option.value = action.id;
       option.textContent = action.label;
+      option.disabled = action.tileVisible;
       option.selected = action.id === selectedActionId;
       return option;
     }));
-    this.actionHint.textContent = `${actions.length} actions available. Actions are sorted alphabetically.`;
+    const availableCount = actions.filter((action) => !action.tileVisible).length;
+    this.actionHint.textContent = `${availableCount} actions available. Created action tiles are single-instance.`;
   }
 }

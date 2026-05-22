@@ -2,24 +2,42 @@ export class PreviewPanelControl {
   constructor(output) {
     this.output = output;
     this.onDeleteBinding = () => {};
+    this.onSelectAction = () => {};
   }
 
-  mount({ onDeleteBinding }) {
+  mount({ onDeleteBinding, onSelectAction }) {
     this.onDeleteBinding = onDeleteBinding;
+    this.onSelectAction = onSelectAction;
   }
 
-  render(actions) {
+  render(actions, selectedActionId) {
     const visibleActions = actions.filter((action) => action.tileVisible || action.inputs.length > 0);
     if (!visibleActions.length) {
       this.output.replaceChildren(this.createEmptyState());
       return;
     }
-    this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action)));
+    this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action, selectedActionId)));
   }
 
-  createActionCard(action) {
+  createActionCard(action, selectedActionId) {
     const card = document.createElement("article");
-    card.className = "input-mapping-v2__mapping-card";
+    const isSelected = action.id === selectedActionId;
+    card.className = `input-mapping-v2__mapping-card${isSelected ? " is-selected" : ""}`;
+    card.dataset.inputMappingTileActionId = action.id;
+    card.tabIndex = 0;
+    card.role = "button";
+    card.ariaCurrent = isSelected ? "true" : "false";
+    card.setAttribute("aria-label", `Select ${action.label} mapping`);
+    card.addEventListener("click", () => {
+      this.onSelectAction(action.id);
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      event.preventDefault();
+      this.onSelectAction(action.id);
+    });
 
     const actionLabel = document.createElement("strong");
     actionLabel.className = "input-mapping-v2__tile-action-label";
@@ -49,7 +67,8 @@ export class PreviewPanelControl {
     token.title = `Delete ${input.label}`;
     token.dataset.inputMappingActionId = actionId;
     token.dataset.inputMappingBinding = input.binding;
-    token.addEventListener("click", () => {
+    token.addEventListener("click", (event) => {
+      event.stopPropagation();
       this.onDeleteBinding({ actionId, binding: input.binding });
     });
     return token;
