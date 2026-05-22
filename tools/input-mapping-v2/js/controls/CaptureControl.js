@@ -1,5 +1,6 @@
 export class CaptureControl {
   constructor({
+    captureComboButton,
     captureGamepadButtons,
     captureKeyboardButton,
     captureMessage,
@@ -8,6 +9,7 @@ export class CaptureControl {
     refreshGamepadsButton,
     selectedActionLabel
   }) {
+    this.captureComboButton = captureComboButton;
     this.captureGamepadButtons = captureGamepadButtons;
     this.captureKeyboardButton = captureKeyboardButton;
     this.captureMessage = captureMessage;
@@ -20,9 +22,10 @@ export class CaptureControl {
     this.selectedActionLabel = selectedActionLabel;
   }
 
-  mount({ onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onCapturePointerDrag, onRefreshGamepads }) {
+  mount({ onCaptureCombo, onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onCapturePointerDrag, onRefreshGamepads }) {
     this.onCaptureGamepad = onCaptureGamepad;
     this.onCapturePointerDrag = onCapturePointerDrag;
+    this.captureComboButton.addEventListener("click", onCaptureCombo);
     this.captureKeyboardButton.addEventListener("click", onCaptureKeyboard);
     this.captureMouseButton.addEventListener("click", onCaptureMouse);
     this.refreshGamepadsButton.addEventListener("click", onRefreshGamepads);
@@ -86,6 +89,8 @@ export class CaptureControl {
     this.captureKeyboardButton.ariaPressed = captureId === "keyboard" ? "true" : "false";
     this.captureMouseButton.classList.toggle("is-capturing", captureId === "mouse");
     this.captureMouseButton.ariaPressed = captureId === "mouse" ? "true" : "false";
+    this.captureComboButton.classList.toggle("is-capturing", captureId === "combo");
+    this.captureComboButton.ariaPressed = captureId === "combo" ? "true" : "false";
     this.capturePointerDragButtons.querySelectorAll(".input-mapping-v2__pointer-drag-capture-button").forEach((button) => {
       const isActive = captureId === this.pointerDragCaptureId(button.dataset.inputMappingPointerDragBinding);
       button.classList.toggle("is-capturing", isActive);

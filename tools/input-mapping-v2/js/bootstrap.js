@@ -32,7 +32,6 @@ window.addEventListener("DOMContentLoaded", () => {
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
       toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
       toolExportButton: requireElement("#toolExportButton"),
-      toolExportToolStateButton: requireElement("#toolExportToolStateButton"),
       toolNav: requireElement(".tool-starter__tool__menu"),
       workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
       workspaceExportManifestButton: requireElement("#workspaceExportManifestButton"),
@@ -45,9 +44,11 @@ window.addEventListener("DOMContentLoaded", () => {
       addActionButton: requireElement("#inputMappingV2AddActionButton"),
       clearActionButton: requireElement("#inputMappingV2ClearActionButton"),
       customActionInput: requireElement("#inputMappingV2CustomActionInput"),
-      deleteActionButton: requireElement("#inputMappingV2DeleteActionButton")
+      deleteActionButton: requireElement("#inputMappingV2DeleteActionButton"),
+      rumbleFeedbackCheckbox: requireElement("#inputMappingV2RumbleFeedbackCheckbox")
     }),
     capture: new CaptureControl({
+      captureComboButton: requireElement("#inputMappingV2CaptureComboButton"),
       captureGamepadButtons: requireElement("#inputMappingV2GamepadCaptureButtons"),
       captureKeyboardButton: requireElement("#inputMappingV2CaptureKeyboardButton"),
       captureMessage: requireElement("#inputMappingV2CaptureMessage"),

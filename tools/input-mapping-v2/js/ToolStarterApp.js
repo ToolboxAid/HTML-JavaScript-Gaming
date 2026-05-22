@@ -29,6 +29,8 @@ export class ToolStarterApp {
     this.window = windowRef;
     this.captureMode = "";
     this.activeGamepadIndex = null;
+    this.comboCaptureInputs = [];
+    this.rumbleFeedbackEnabled = false;
     this.captureTimeoutMs = 8000;
     this.captureTimeoutTimer = null;
     this.gamepadPollIntervalMs = 750;
@@ -47,8 +49,7 @@ export class ToolStarterApp {
       onToolCopyJson: () => {
         void this.copyJson();
       },
-      onToolExport: () => this.exportMappings(),
-      onToolExportToolState: () => this.exportToolState(),
+      onToolExport: () => this.exportToolState(),
       onWorkspaceCopyManifest: () => this.statusLog.ok("Input Mapping V2 workspace copy action is ready."),
       onWorkspaceExportManifest: () => this.statusLog.ok("Input Mapping V2 workspace export action is ready."),
       onWorkspaceImportManifest: () => this.statusLog.ok("Input Mapping V2 workspace import action is ready.")
@@ -57,9 +58,13 @@ export class ToolStarterApp {
       onActionChanged: (actionId) => this.selectAction(actionId),
       onAddAction: (label) => this.addAction(label),
       onClearAction: () => this.clearSelectedAction(),
-      onDeleteAction: () => this.deleteSelectedAction()
+      onDeleteAction: () => this.deleteSelectedAction(),
+      onRumbleFeedbackChanged: (isEnabled) => {
+        void this.setRumbleFeedback(isEnabled);
+      }
     });
     this.capture.mount({
+      onCaptureCombo: () => this.startComboCapture(),
       onCaptureGamepad: (gamepadIndex) => this.startGamepadCapture(gamepadIndex),
       onCaptureKeyboard: () => this.startKeyboardCapture(),
       onCaptureMouse: () => this.startMouseCapture(),
@@ -127,6 +132,17 @@ export class ToolStarterApp {
     this.statusLog.ok(`Mouse capture armed for ${this.state.selectedActionLabel()}.`);
   }
 
+  startComboCapture() {
+    if (this.isCaptureActive("combo")) {
+      this.cancelCapture("Combo");
+      return;
+    }
+    this.comboCaptureInputs = [];
+    this.beginCapture("combo");
+    this.capture.showMessage(`Press two keys or mouse buttons to bind a combo to ${this.state.selectedActionLabel()}.`);
+    this.statusLog.ok(`Combo capture armed for ${this.state.selectedActionLabel()}.`);
+  }
+
   startGamepadCapture(gamepadIndex) {
     const selectedIndex = Number(gamepadIndex);
     if (!Number.isInteger(selectedIndex)) {
@@ -154,6 +170,12 @@ export class ToolStarterApp {
   }
 
   handleKeyDown(event) {
+    if (this.captureMode === "combo") {
+      event.preventDefault();
+      event.stopPropagation();
+      this.recordComboInput(this.engineInputSources.captureKeyboard(event));
+      return;
+    }
     if (this.captureMode !== "keyboard") {
       return;
     }
@@ -163,6 +185,12 @@ export class ToolStarterApp {
   }
 
   handleMouseDown(event) {
+    if (this.captureMode === "combo") {
+      event.preventDefault();
+      event.stopPropagation();
+      this.recordComboInput(this.engineInputSources.captureMouse(event));
+      return;
+    }
     if (this.captureMode !== "mouse") {
       return;
     }
@@ -188,6 +216,29 @@ export class ToolStarterApp {
     }
     this.addCapturedInput(result.input);
     return true;
+  }
+
+  recordComboInput(input) {
+    if (this.comboCaptureInputs.some((candidate) => candidate.binding === input.binding)) {
+      this.capture.showMessage("Combo capture needs two different inputs.");
+      this.statusLog.warn("Combo capture needs two different inputs.");
+      return;
+    }
+
+    this.comboCaptureInputs.push(input);
+    if (this.comboCaptureInputs.length < 2) {
+      this.capture.showMessage(`Combo capture recorded ${input.label}. Press one more key or mouse button.`);
+      return;
+    }
+
+    const result = this.engineInputSources.captureCombo(this.comboCaptureInputs);
+    if (!result.ok) {
+      this.statusLog.warn(result.message);
+      this.clearCapture();
+      this.refreshActions();
+      return;
+    }
+    this.addCapturedInput(result.input);
   }
 
   handleGamepadConnectionChange() {
@@ -234,6 +285,20 @@ export class ToolStarterApp {
     this.statusLog.ok(status.message);
   }
 
+  async setRumbleFeedback(isEnabled) {
+    this.rumbleFeedbackEnabled = isEnabled;
+    if (!isEnabled) {
+      this.statusLog.ok("Gamepad rumble/haptic feedback disabled for this tool session.");
+      return;
+    }
+
+    const result = await this.engineInputSources.requestGamepadRumblePreview();
+    this.statusLog[result.ok ? "ok" : "warn"](result.message);
+    if (result.ok) {
+      this.statusLog.ok("Gamepad rumble/haptic feedback is UI-local because Input Mapping V2 toolState has no options field.");
+    }
+  }
+
   addCapturedInput(input) {
     const result = this.state.addBindingToSelectedAction(input);
     this.clearCapture();
@@ -267,6 +332,7 @@ export class ToolStarterApp {
     this.captureTimeoutTimer = null;
     this.captureMode = "";
     this.activeGamepadIndex = null;
+    this.comboCaptureInputs = [];
     this.capture.clearActiveCapture();
   }
 
@@ -298,6 +364,9 @@ export class ToolStarterApp {
     if (this.captureMode === "mouse") {
       return "Mouse";
     }
+    if (this.captureMode === "combo") {
+      return "Combo";
+    }
     if (this.captureMode === "gamepad") {
       return "Gamepad";
     }
@@ -310,14 +379,9 @@ export class ToolStarterApp {
     this.refreshActions();
   }
 
-  exportMappings() {
-    this.inspector.showObject(this.state.payload());
-    this.statusLog.ok("Mapping JSON preview written.");
-  }
-
   exportToolState() {
     this.inspector.showObject(this.state.toolState());
-    this.statusLog.ok("Input Mapping V2 toolState preview written.");
+    this.statusLog.ok("Input Mapping V2 export preview written.");
   }
 
   async copyJson() {

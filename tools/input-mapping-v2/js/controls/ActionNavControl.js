@@ -5,7 +5,6 @@ export class ActionNavControl {
     windowRef = window,
     toolCopyJsonButton,
     toolExportButton,
-    toolExportToolStateButton,
     toolNav,
     workspaceCopyManifestButton,
     workspaceExportManifestButton,
@@ -16,7 +15,6 @@ export class ActionNavControl {
     this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.toolCopyJsonButton = toolCopyJsonButton;
     this.toolExportButton = toolExportButton;
-    this.toolExportToolStateButton = toolExportToolStateButton;
     this.toolNav = toolNav;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
     this.workspaceExportManifestButton = workspaceExportManifestButton;
@@ -28,7 +26,6 @@ export class ActionNavControl {
   mount({
     onToolCopyJson,
     onToolExport,
-    onToolExportToolState,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
     onWorkspaceImportManifest
@@ -36,7 +33,6 @@ export class ActionNavControl {
     this.applyLaunchMode();
     this.toolExportButton.addEventListener("click", onToolExport);
     this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
-    this.toolExportToolStateButton.addEventListener("click", onToolExportToolState);
     this.workspaceImportManifestButton.addEventListener("click", onWorkspaceImportManifest);
     this.workspaceCopyManifestButton.addEventListener("click", onWorkspaceCopyManifest);
     this.workspaceExportManifestButton.addEventListener("click", onWorkspaceExportManifest);
@@ -62,7 +58,6 @@ export class ActionNavControl {
   setToolActionsEnabled(isEnabled) {
     this.toolExportButton.disabled = !isEnabled;
     this.toolCopyJsonButton.disabled = !isEnabled;
-    this.toolExportToolStateButton.disabled = !isEnabled;
   }
 
   workspaceManagerUrl() {

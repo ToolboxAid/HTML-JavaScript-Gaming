@@ -15,8 +15,17 @@
   grid-template-columns: 1fr;
 }
 
+.input-mapping-v2__checkbox-field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  color: var(--tool-starter-muted);
+}
+
 .input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
 .input-mapping-v2 #inputMappingV2CaptureMouseButton,
+.input-mapping-v2 #inputMappingV2CaptureComboButton,
 .input-mapping-v2 #inputMappingV2RefreshGamepadsButton,
 .input-mapping-v2__pointer-drag-capture-button,
 .input-mapping-v2__gamepad-capture-button {
@@ -192,7 +201,7 @@
 
 .input-mapping-v2__diagnostics-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
@@ -204,7 +213,9 @@
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
   background: var(--tool-starter-surface);
+  box-sizing: border-box;
   padding: 10px;
+  width: 100%;
 }
 
 .input-mapping-v2__diagnostics-card p {
@@ -219,10 +230,4 @@
 .input-mapping-v2__diagnostics-devices {
   display: grid;
   gap: 8px;
-}
-
-@media (max-width: 1100px) {
-  .input-mapping-v2__diagnostics-grid {
-    grid-template-columns: 1fr;
-  }
 }

@@ -99,6 +99,29 @@ export class EngineInputSourceService {
     };
   }
 
+  captureCombo(inputs) {
+    const parts = Array.isArray(inputs) ? inputs.slice(0, 2) : [];
+    if (parts.length !== 2) {
+      return {
+        ok: false,
+        message: "Combo capture requires exactly two inputs."
+      };
+    }
+
+    const comboLabel = parts.map(comboInputLabel).join(" + ");
+    return {
+      ok: true,
+      input: {
+        source: parts.every((input) => input.source === parts[0].source) ? parts[0].source : "keyboard",
+        binding: `Combo:${parts.map((input) => input.binding).join("+")}`,
+        displayLabelLines: ["Combo", comboLabel],
+        label: `Combo ${comboLabel}`,
+        title: parts.map((input) => input.title || input.label).join("\n+\n"),
+        engine: "InputService Combo"
+      }
+    };
+  }
+
   pointerDragDescriptors() {
     return this.inputService.getPointerDragDescriptors();
   }
@@ -189,6 +212,54 @@ export class EngineInputSourceService {
       message: `${GAMEPAD_CAPTURE_WAITING_MESSAGE} Hold a button or move a stick on ${deviceInfo.statusLabel}.`,
       waiting: true
     };
+  }
+
+  async requestGamepadRumblePreview() {
+    if (typeof this.window.navigator?.getGamepads !== "function") {
+      return {
+        ok: false,
+        message: "Gamepad rumble unavailable: browser Gamepad API is not available. Use a focused browser tab with a compatible controller."
+      };
+    }
+
+    let gamepads = [];
+    try {
+      gamepads = Array.from(this.window.navigator.getGamepads() || []).filter(Boolean);
+    } catch (error) {
+      return {
+        ok: false,
+        message: `Gamepad rumble unavailable: navigator.getGamepads() failed (${error?.message || "unknown error"}). Click inside this page, reconnect the controller, and try again.`
+      };
+    }
+
+    const actuator = findHapticActuator(gamepads);
+    if (!actuator) {
+      return {
+        ok: false,
+        message: "Gamepad rumble unavailable: no connected gamepad exposes GamepadHapticActuator or vibrationActuator. Connect a compatible controller, click inside this page, and try again."
+      };
+    }
+
+    try {
+      if (typeof actuator.playEffect === "function") {
+        await actuator.playEffect("dual-rumble", {
+          duration: 80,
+          strongMagnitude: 0.25,
+          weakMagnitude: 0.15
+        });
+      } else {
+        await actuator.pulse(0.25, 80);
+      }
+      return {
+        ok: true,
+        message: "Gamepad rumble/haptic feedback enabled for this tool session."
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        message: `Gamepad rumble unavailable: haptic actuator request failed (${error?.message || "unknown error"}). Try a compatible controller with browser haptics support.`
+      };
+    }
   }
 
   refreshGamepadState() {
@@ -377,6 +448,61 @@ function gamepadButtonLabel(deviceInfo, buttonIndex) {
     return STANDARD_GAMEPAD_BUTTON_NAMES[buttonIndex];
   }
   return `Button ${buttonIndex}`;
+}
+
+function comboInputLabel(input) {
+  if (input.source === "keyboard") {
+    return keyboardComboLabel(input.binding);
+  }
+  if (input.source === "mouse") {
+    return input.label.replace(/^Mouse\s+/, "Mouse ");
+  }
+  return input.label;
+}
+
+function keyboardComboLabel(binding) {
+  const namedKeys = {
+    AltLeft: "Alt",
+    AltRight: "Alt",
+    Backspace: "Backspace",
+    ControlLeft: "Ctrl",
+    ControlRight: "Ctrl",
+    Delete: "Delete",
+    Enter: "Enter",
+    Escape: "Esc",
+    MetaLeft: "Meta",
+    MetaRight: "Meta",
+    ShiftLeft: "Shift",
+    ShiftRight: "Shift",
+    Space: "Space",
+    Tab: "Tab"
+  };
+  if (namedKeys[binding]) {
+    return namedKeys[binding];
+  }
+  if (/^Key[A-Z]$/.test(binding)) {
+    return binding.slice(3);
+  }
+  if (/^Digit[0-9]$/.test(binding)) {
+    return binding.slice(5);
+  }
+  return binding;
+}
+
+function findHapticActuator(gamepads) {
+  for (const gamepad of gamepads) {
+    const vibrationActuator = gamepad?.vibrationActuator;
+    if (vibrationActuator && typeof vibrationActuator.playEffect === "function") {
+      return vibrationActuator;
+    }
+    const hapticActuator = Array.isArray(gamepad?.hapticActuators)
+      ? gamepad.hapticActuators.find((actuator) => typeof actuator?.pulse === "function")
+      : null;
+    if (hapticActuator) {
+      return hapticActuator;
+    }
+  }
+  return null;
 }
 
 function parseUsbIds(id) {

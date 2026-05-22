@@ -1473,6 +1473,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("[data-tool-starter-summary]")).toBeVisible();
       await expect(page.locator(".tools-platform-frame__title[data-tool-id='input-mapping-v2']")).toHaveText("Input Mapping V2");
       await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
+      await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Export", "Copy JSON"]);
+      await expect(page.locator("#toolExportToolStateButton")).toHaveCount(0);
       await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
       const fullscreenLayout = await page.locator(".input-mapping-v2.tool-starter.app-shell").evaluate((shell) => {
         const left = shell.querySelector(".tool-starter__panel--left").getBoundingClientRect();
@@ -1513,6 +1515,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(actionOptions).toEqual(expect.arrayContaining(["Move Left", "Confirm", "Cancel", "Fire", "Thrust", "Rotate Left", "Rotate Right", "Pause", "Select", "Start"]));
       await expect(page.locator("#inputMappingV2ResetActionsButton")).toHaveCount(0);
       await expect(page.locator("#inputMappingV2ClearActionButton")).toHaveText("Clear Actions");
+      await expect(page.locator("#actionSetupContent .input-mapping-v2__button-row button")).toHaveText(["Add Action", "Clear Actions", "Delete Action"]);
+      await expect(page.locator("#inputMappingV2RumbleFeedbackCheckbox")).toBeVisible();
+      await page.locator("#inputMappingV2RumbleFeedbackCheckbox").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Gamepad rumble unavailable:/);
       await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
       expect(await page.locator("#previewOutput").evaluate((node) => getComputedStyle(node).overflowY)).toBe("auto");
@@ -1557,6 +1563,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("navigator.getGamepads() count");
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText("Last poll timestamp");
       await expect(page.locator("#inputMappingV2GamepadDiagnostics")).toContainText(/Window focus(yes|no)/);
+      const diagnosticsCardLayout = await page.locator("#inputMappingV2GamepadDiagnostics").evaluate((container) => {
+        const containerWidth = container.clientWidth;
+        return Array.from(container.querySelectorAll(".input-mapping-v2__diagnostics-card")).map((card) => ({
+          cardWidth: Math.round(card.getBoundingClientRect().width),
+          containerWidth
+        }));
+      });
+      expect(diagnosticsCardLayout.length).toBeGreaterThan(0);
+      expect(diagnosticsCardLayout.every((entry) => Math.abs(entry.cardWidth - entry.containerWidth) <= 2)).toBe(true);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button")).toHaveCount(0);
       await page.locator("#inputMappingV2ActionSelect").selectOption("moveLeft");
       await page.locator("#inputMappingV2AddActionButton").click();
@@ -1573,6 +1588,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const emptyMappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
       expect(Math.round(emptyMappingTileBox.width)).toBe(275);
       expect(Math.round(emptyMappingTileBox.height)).toBe(225);
+      await page.locator("#inputMappingV2CaptureComboButton").click();
+      await expect(page.locator("#inputMappingV2CaptureComboButton")).toHaveClass(/is-capturing/);
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "ControlLeft",
+          ctrlKey: true,
+          key: "Control"
+        }));
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "KeyR",
+          ctrlKey: true,
+          key: "r"
+        }));
+      });
+      await expect(page.locator("#inputMappingV2CaptureComboButton")).not.toHaveClass(/is-capturing/);
+      await expect(page.locator("#previewOutput")).toContainText("Combo Ctrl + R");
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ControlLeft+KeyR"');
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
@@ -1762,6 +1798,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         version: 1
       });
       expect(asteroidsManifestInputMapping.actions.map((action) => action.label)).toEqual(actionOptions);
+      await page.locator("#toolExportButton").click();
+      await expect(page.locator("#inspectorOutput")).toContainText('"payload"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Input Mapping V2 export preview written\./);
       await page.evaluate(() => {
         Object.defineProperty(navigator, "clipboard", {
           configurable: true,

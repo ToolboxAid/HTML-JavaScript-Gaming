@@ -40,7 +40,6 @@
     <nav class="tool-starter__menu tool-starter__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
       <button id="toolExportButton" type="button">Export</button>
       <button id="toolCopyJsonButton" type="button">Copy JSON</button>
-      <button id="toolExportToolStateButton" type="button">Export toolState</button>
     </nav>
 
     <nav class="tool-starter__menu tool-starter__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
@@ -66,10 +65,14 @@
               <span>Custom action</span>
               <input id="inputMappingV2CustomActionInput" type="text" autocomplete="off" placeholder="dash, interact, inspect">
             </label>
+            <label class="input-mapping-v2__checkbox-field" for="inputMappingV2RumbleFeedbackCheckbox">
+              <input id="inputMappingV2RumbleFeedbackCheckbox" type="checkbox">
+              <span>Gamepad rumble/haptic feedback</span>
+            </label>
             <div class="input-mapping-v2__button-row">
               <button id="inputMappingV2AddActionButton" type="button">Add Action</button>
-              <button id="inputMappingV2DeleteActionButton" type="button">Delete Action</button>
               <button id="inputMappingV2ClearActionButton" type="button">Clear Actions</button>
+              <button id="inputMappingV2DeleteActionButton" type="button">Delete Action</button>
             </div>
             <p id="inputMappingV2ActionHint" class="tool-starter__hint">Default actions are engine-style action names sorted alphabetically.</p>
           </div>
@@ -85,6 +88,7 @@
             <div class="input-mapping-v2__button-row">
               <button id="inputMappingV2CaptureKeyboardButton" class="input-mapping-v2__capture-button" type="button">Capture Keyboard</button>
               <button id="inputMappingV2CaptureMouseButton" class="input-mapping-v2__capture-button" type="button">Capture Mouse</button>
+              <button id="inputMappingV2CaptureComboButton" class="input-mapping-v2__capture-button" type="button">Capture Combo</button>
             </div>
             <div id="inputMappingV2PointerDragCaptureButtons" class="input-mapping-v2__pointer-drag-buttons" aria-label="Pointer drag capture buttons"></div>
             <div id="inputMappingV2GamepadCaptureButtons" class="input-mapping-v2__gamepad-buttons" aria-label="Detected gamepad capture buttons"></div>
