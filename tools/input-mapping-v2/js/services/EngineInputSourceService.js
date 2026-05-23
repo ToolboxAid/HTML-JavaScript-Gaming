@@ -58,27 +58,31 @@ export class EngineInputSourceService {
     return this.inputService.getInputGestureDescriptors(this.gestureOptions(enabledDeviceIds));
   }
 
-  captureKeyboard(event) {
+  captureKeyboard(event, gesture = null) {
     const binding = event.code || event.key;
+    const detail = keyboardGestureDetail(gesture);
+    const isDefaultGesture = !gesture || gesture.binding === "KeyboardPress";
     return {
       source: "keyboard",
-      binding,
-      displayLabelLines: ["Keyboard", binding, "Press"],
-      label: `Keyboard ${binding}`,
-      title: `Keyboard\n${binding}`,
+      binding: gestureBinding(binding, gesture, "KeyboardPress"),
+      displayLabelLines: ["Keyboard", binding, detail],
+      label: `Keyboard ${binding}${isDefaultGesture ? "" : ` ${detail}`}`,
+      title: isDefaultGesture ? `Keyboard\n${binding}` : `Keyboard\n${binding}\n${detail}`,
       engine: "KeyboardState"
     };
   }
 
-  captureMouse(event) {
+  captureMouse(event, gesture = null) {
     const button = Number(event.button ?? 0);
     const buttonLabel = mouseButtonLabel(button);
+    const detail = mouseGestureDetail(gesture);
+    const isDefaultGesture = !gesture || gesture.binding === "MouseClick";
     return {
       source: "mouse",
-      binding: `MouseButton${button}`,
-      displayLabelLines: ["Mouse", buttonLabel.replace(/^Mouse\s+/, ""), "Click"],
-      label: buttonLabel,
-      title: `Mouse\n${buttonLabel}`,
+      binding: gestureBinding(`MouseButton${button}`, gesture, "MouseClick"),
+      displayLabelLines: ["Mouse", buttonLabel.replace(/^Mouse\s+/, ""), detail],
+      label: `${buttonLabel}${isDefaultGesture ? "" : ` ${detail}`}`,
+      title: isDefaultGesture ? `Mouse\n${buttonLabel}` : `Mouse\n${buttonLabel}\n${detail}`,
       engine: "MouseState"
     };
   }
@@ -177,7 +181,7 @@ export class EngineInputSourceService {
     };
   }
 
-  captureGamepad(gamepadIndex) {
+  captureGamepad(gamepadIndex, gesture = null) {
     if (typeof this.window.navigator?.getGamepads !== "function") {
       return {
         ok: false,
@@ -209,14 +213,16 @@ export class EngineInputSourceService {
     const buttonIndex = pad.buttonsDown.findIndex(Boolean);
     if (buttonIndex >= 0) {
       const buttonLabel = gamepadButtonLabel(deviceInfo, buttonIndex);
+      const detail = gamepadGestureDetail(gesture, "Button");
+      const isDefaultGesture = !gesture || gesture.binding === "GameControllerButton";
       return {
         ok: true,
         input: {
           source: "gamepad",
-          binding: `Pad${selectedIndex}:Button${buttonIndex}`,
-          displayLabelLines: ["Game Controller", buttonLabel, "Button"],
-          label: `Game Controller ${buttonLabel}`,
-          title: gamepadInputTitle(deviceInfo, buttonLabel),
+          binding: gestureBinding(`Pad${selectedIndex}:Button${buttonIndex}`, gesture, "GameControllerButton"),
+          displayLabelLines: ["Game Controller", buttonLabel, detail],
+          label: `Game Controller ${buttonLabel}${isDefaultGesture ? "" : ` ${detail}`}`,
+          title: gamepadInputTitle(deviceInfo, isDefaultGesture ? buttonLabel : `${buttonLabel}\n${detail}`),
           engine: "GamepadInputAdapter"
         }
       };
@@ -225,14 +231,16 @@ export class EngineInputSourceService {
     if (axisIndex >= 0) {
       const direction = pad.axes[axisIndex] < 0 ? "-" : "+";
       const axisLabel = `Axis ${axisIndex} ${direction}`;
+      const detail = gamepadGestureDetail(gesture, "Stick");
+      const isDefaultGesture = !gesture || gesture.binding === "GameControllerStick";
       return {
         ok: true,
         input: {
           source: "gamepad",
-          binding: `Pad${selectedIndex}:Axis${axisIndex}${direction}`,
-          displayLabelLines: ["Game Controller", axisLabel, "Stick"],
-          label: `Game Controller ${axisLabel}`,
-          title: gamepadInputTitle(deviceInfo, axisLabel),
+          binding: gestureBinding(`Pad${selectedIndex}:Axis${axisIndex}${direction}`, gesture, "GameControllerStick"),
+          displayLabelLines: ["Game Controller", axisLabel, detail],
+          label: `Game Controller ${axisLabel}${isDefaultGesture ? "" : ` ${detail}`}`,
+          title: gamepadInputTitle(deviceInfo, isDefaultGesture ? axisLabel : `${axisLabel}\n${detail}`),
           engine: "GamepadInputAdapter"
         }
       };
@@ -484,6 +492,40 @@ function gamepadButtonLabel(deviceInfo, buttonIndex) {
     return STANDARD_GAMEPAD_BUTTON_NAMES[buttonIndex];
   }
   return `Button ${buttonIndex}`;
+}
+
+function keyboardGestureDetail(gesture) {
+  if (gesture?.binding === "KeyboardRelease") {
+    return "Release";
+  }
+  if (gesture?.binding === "KeyboardHold") {
+    return "Hold";
+  }
+  return "Press";
+}
+
+function mouseGestureDetail(gesture) {
+  if (gesture?.binding === "MouseDoubleClick") {
+    return "Double Click";
+  }
+  return "Click";
+}
+
+function gamepadGestureDetail(gesture, defaultDetail) {
+  const details = {
+    GameControllerButton: "Button",
+    GameControllerDPad: "DPad",
+    GameControllerStick: "Stick",
+    GameControllerTrigger: "Trigger"
+  };
+  return details[gesture?.binding] ?? defaultDetail;
+}
+
+function gestureBinding(controlBinding, gesture, defaultGestureBinding) {
+  if (!gesture || gesture.binding === defaultGestureBinding) {
+    return controlBinding;
+  }
+  return `${controlBinding}:${gesture.binding}`;
 }
 
 function comboInputLabel(input) {

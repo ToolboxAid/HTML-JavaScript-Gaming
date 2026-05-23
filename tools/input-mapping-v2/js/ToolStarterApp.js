@@ -36,6 +36,7 @@ export class ToolStarterApp {
     this.captureMode = "";
     this.activeGamepadIndex = null;
     this.comboCaptureInputs = [];
+    this.selectedGesture = null;
     this.rumbleSettingsByActionId = new Map();
     this.captureTimeoutMs = 8000;
     this.captureTimeoutTimer = null;
@@ -93,7 +94,7 @@ export class ToolStarterApp {
       }
     });
     this.gestureList.mount({
-      onGestureSelected: (gesture) => this.captureGesture(gesture)
+      onGestureSelected: (gesture) => this.selectGesture(gesture)
     });
     this.engineInputSources.attach();
     this.window.addEventListener("gamepadconnected", this.handleGamepadConnectionChange);
@@ -189,18 +190,25 @@ export class ToolStarterApp {
     this.tryCaptureActiveGamepad();
   }
 
-  captureGesture(gesture) {
-    const result = this.engineInputSources.captureGesture(gesture.binding, this.enabledDeviceIds);
-    if (!result.ok) {
-      this.statusLog.warn(result.message);
+  selectGesture(gesture) {
+    this.selectedGesture = gesture;
+    if (gesture.captureKind === "combo") {
+      this.startComboCapture(gesture.deviceLabel);
       this.refreshActions();
       return;
     }
-    if (result.combo) {
-      this.startComboCapture(gesture.deviceLabel);
+    if (gesture.captureKind === "pointer-drag" || gesture.captureKind === "wheel") {
+      const result = this.engineInputSources.captureGesture(gesture.binding, this.enabledDeviceIds);
+      if (!result.ok) {
+        this.statusLog.warn(result.message);
+        this.refreshActions();
+        return;
+      }
+      this.addCapturedInput(result.input);
       return;
     }
-    this.addCapturedInput(result.input);
+    this.statusLog.ok(`${gesture.deviceLabel} ${gesture.label} selected for next capture.`);
+    this.refreshActions();
   }
 
   handleKeyDown(event) {
@@ -220,7 +228,7 @@ export class ToolStarterApp {
     }
     event.preventDefault();
     event.stopPropagation();
-    this.addCapturedInput(this.engineInputSources.captureKeyboard(event));
+    this.addCapturedInput(this.engineInputSources.captureKeyboard(event, this.selectedGestureForSource("keyboard")));
   }
 
   handleMouseDown(event) {
@@ -236,7 +244,7 @@ export class ToolStarterApp {
     }
     event.preventDefault();
     event.stopPropagation();
-    this.addCapturedInput(this.engineInputSources.captureMouse(event));
+    this.addCapturedInput(this.engineInputSources.captureMouse(event, this.selectedGestureForSource("mouse")));
   }
 
   handleWheel(event) {
@@ -264,7 +272,7 @@ export class ToolStarterApp {
     if (this.captureMode !== "gamepad" || !Number.isInteger(this.activeGamepadIndex)) {
       return false;
     }
-    const result = this.engineInputSources.captureGamepad(this.activeGamepadIndex);
+    const result = this.engineInputSources.captureGamepad(this.activeGamepadIndex, this.selectedGestureForSource("gamepad"));
     if (result.waiting) {
       return false;
     }
@@ -512,6 +520,13 @@ export class ToolStarterApp {
       && (event.ctrlKey || event.metaKey);
   }
 
+  selectedGestureForSource(source) {
+    if (this.selectedGesture?.source !== source || this.selectedGesture.captureKind !== "descriptor") {
+      return null;
+    }
+    return this.selectedGesture;
+  }
+
   isWorkspaceEvent(event) {
     const path = typeof event.composedPath === "function" ? event.composedPath() : [];
     return path.includes(this.workspaceRoot) || this.workspaceRoot.contains(event.target);
@@ -554,7 +569,7 @@ export class ToolStarterApp {
     this.exportControl.setEnabled(true);
     this.actionSelection.render(actions, this.state.selectedActionId);
     this.deviceList.render(devices, this.enabledDeviceIds, gamepadStatus.haptics, this.selectedRumbleSettings());
-    this.gestureList.render(gestures);
+    this.gestureList.render(gestures, this.selectedGesture?.binding ?? "");
     this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads, selectedAction?.inputs ?? [], this.captureMode);
     this.preview.render(actions, this.state.selectedActionId);
     this.inspector.showObject(this.state.payload());

@@ -82,8 +82,7 @@ const GESTURE_DEFINITIONS = Object.freeze([
     gameControllerGesture('GameControllerTrigger', 'Trigger', 'Game controller trigger. Use for analog trigger actions such as accelerate, brake, or charge.', 'gameController'),
     gameControllerGesture('GameControllerStick', 'Stick', 'Game controller stick. Use for analog movement, aiming, or steering.', 'gameController'),
     gameControllerGesture('GameControllerDPad', 'DPad', 'Game controller DPad. Use for directional menu or movement actions.', 'gameController'),
-    comboGesture('GameControllerCombo', 'Game Controller', ['gameController'], 'Game Controller Combo. Use for controller combinations such as Button 1 + Button 2.'),
-    crossDeviceComboGesture()
+    comboGesture('GameControllerCombo', 'Game Controller', ['gameController'], 'Game Controller Combo. Use for controller combinations such as Button 1 + Button 2. Cross-device combinations such as Joystick Button 1 + Keyboard Alt are supported during combo capture.')
 ]);
 
 export function inputDeviceCapabilities({
@@ -256,22 +255,6 @@ function comboGesture(binding, deviceLabel, requiredDeviceIds, title) {
         requiredDeviceIds,
         source: requiredDeviceIds[0] === 'gameController' ? 'gamepad' : requiredDeviceIds[0],
         title
-    };
-}
-
-function crossDeviceComboGesture() {
-    return {
-        binding: 'CrossDeviceCombo',
-        captureKind: 'combo',
-        deviceLabel: 'Cross-device',
-        displayLabelLines: ['Cross-device', 'Combo'],
-        engine: 'InputService Combo',
-        label: 'Combo',
-        anyOfDeviceIds: ['keyboard', 'mouse', 'gameController'],
-        minimumEnabledDevices: 2,
-        requiredDeviceIds: [],
-        source: 'keyboard',
-        title: 'Cross-device Combo. Use for combinations such as Joystick Button 1 + Keyboard Alt. Capture any two keyboard, mouse, wheel, or game controller inputs for one selected action.'
     };
 }
 

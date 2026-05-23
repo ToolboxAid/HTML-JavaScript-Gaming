@@ -8,7 +8,7 @@ export class GestureListControl {
     this.onGestureSelected = onGestureSelected;
   }
 
-  render(gestures) {
+  render(gestures, selectedGestureBinding = "") {
     if (!gestures.length) {
       const empty = document.createElement("p");
       empty.className = "tool-starter__hint";
@@ -18,10 +18,10 @@ export class GestureListControl {
     }
 
     const groups = groupGestures(gestures);
-    this.container.replaceChildren(...groups.map((group) => this.createGestureGroup(group)));
+    this.container.replaceChildren(...groups.map((group) => this.createGestureGroup(group, selectedGestureBinding)));
   }
 
-  createGestureGroup(group) {
+  createGestureGroup(group, selectedGestureBinding) {
     const section = document.createElement("article");
     section.className = "input-mapping-v2__gesture-group";
     section.dataset.inputMappingGestureDevice = group.deviceLabel;
@@ -31,17 +31,19 @@ export class GestureListControl {
 
     const list = document.createElement("div");
     list.className = "input-mapping-v2__gesture-list";
-    list.append(...group.gestures.map((gesture) => this.createGestureButton(gesture)));
+    list.append(...group.gestures.map((gesture) => this.createGestureButton(gesture, selectedGestureBinding)));
 
     section.append(title, list);
     return section;
   }
 
-  createGestureButton(gesture) {
+  createGestureButton(gesture, selectedGestureBinding) {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "input-mapping-v2__gesture-button";
+    const isSelected = gesture.binding === selectedGestureBinding;
+    button.className = `input-mapping-v2__gesture-button${isSelected ? " is-selected" : ""}`;
     button.dataset.inputMappingGestureBinding = gesture.binding;
+    button.ariaPressed = isSelected ? "true" : "false";
     button.textContent = gesture.label;
     button.title = gesture.title;
     ["pointerdown", "pointermove", "pointerup", "pointercancel"].forEach((eventName) => {
