@@ -104,16 +104,6 @@
 
       <section class="tool-starter__panel tool-starter__panel--center" aria-label="Captured mappings">
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="gestureSetupContent">
-            <span>Gestures</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="gestureSetupContent" class="accordion-v2__content">
-            <div id="inputMappingV2GestureList" class="input-mapping-v2__gesture-groups" aria-label="Input gestures"></div>
-          </div>
-        </section>
-
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <div class="accordion-v2__header input-mapping-v2__capture-header" aria-expanded="true" aria-controls="captureInputContent">
             <span>Capture</span>
             <div class="input-mapping-v2__capture-header-actions">
@@ -138,6 +128,16 @@
             <p id="inputMappingV2CaptureMessage" class="tool-starter__hint">Keyboard, mouse, wheel, drag, and game controller sources are provided by src/engine/input.</p>
             <hr class="input-mapping-v2__capture-separator">
             <button id="inputMappingV2RefreshGamepadsButton" type="button">Refresh Gamepads</button>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="gestureSetupContent">
+            <span>Gestures</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="gestureSetupContent" class="accordion-v2__content">
+            <div id="inputMappingV2GestureList" class="input-mapping-v2__gesture-groups" aria-label="Input gestures"></div>
           </div>
         </section>
 

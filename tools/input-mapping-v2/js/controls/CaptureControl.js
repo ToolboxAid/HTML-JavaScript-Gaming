@@ -16,6 +16,7 @@ export class CaptureControl {
     this.disableContextCheckbox = disableContextCheckbox;
     this.activeCaptureId = "";
     this.captureState = "idle";
+    this.selectedCaptureId = "";
     this.onCaptureGamepad = () => {};
     this.refreshGamepadsButton = refreshGamepadsButton;
     this.selectedActionLabel = selectedActionLabel;
@@ -37,7 +38,8 @@ export class CaptureControl {
     this.refreshGamepadsButton.addEventListener("click", onRefreshGamepads);
   }
 
-  render(actionLabel, gamepads = [], selectedInputs = [], captureMode = "", captureAvailability = allCaptureAvailable()) {
+  render(actionLabel, gamepads = [], selectedInputs = [], captureMode = "", captureAvailability = allCaptureAvailable(), selectedCaptureId = "") {
+    this.selectedCaptureId = selectedCaptureId;
     this.selectedActionLabel.textContent = `Selected action: ${actionLabel}`;
     const canHighlightUsedInputs = true;
     this.setCaptureButtonEnabled(this.captureKeyboardButton, captureAvailability.keyboard, "keyboard");
@@ -45,6 +47,7 @@ export class CaptureControl {
     this.captureKeyboardButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesKeyboard));
     this.captureMouseButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesMouse));
     this.renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs, captureAvailability.gamepad);
+    this.applySelectedCaptureState();
     this.applyCaptureState();
   }
 
@@ -68,7 +71,8 @@ export class CaptureControl {
       button.type = "button";
       const captureId = this.gamepadCaptureId(gamepad.index);
       const isUsed = canHighlightUsedInputs && selectedInputs.some((input) => usesGamepadIndex(input, gamepad.index));
-      button.className = `input-mapping-v2__gamepad-capture-button${this.activeCaptureId === captureId ? " is-capturing" : ""}${isUsed ? " has-used-input" : ""}`;
+      const isSelected = this.selectedCaptureId === captureId;
+      button.className = `input-mapping-v2__gamepad-capture-button${this.activeCaptureId === captureId ? " is-capturing" : ""}${isSelected ? " is-selected-capture-device" : ""}${isUsed ? " has-used-input" : ""}`;
       button.dataset.inputMappingGamepadIndex = String(gamepad.index);
       button.disabled = !canCaptureGamepad && this.activeCaptureId !== captureId;
       button.ariaDisabled = button.disabled ? "true" : "false";
@@ -105,6 +109,11 @@ export class CaptureControl {
     this.applyCaptureState();
   }
 
+  setSelectedCapture(captureId) {
+    this.selectedCaptureId = captureId;
+    this.applySelectedCaptureState();
+  }
+
   clearActiveCapture() {
     this.setActiveCapture("");
     this.setCaptureState("idle");
@@ -127,6 +136,18 @@ export class CaptureControl {
         button.dataset.inputMappingCaptureState = state;
       } else {
         delete button.dataset.inputMappingCaptureState;
+      }
+    });
+  }
+
+  applySelectedCaptureState() {
+    this.allCaptureButtons().forEach((button) => {
+      const isSelected = this.captureIdForButton(button) === this.selectedCaptureId;
+      button.classList.toggle("is-selected-capture-device", isSelected);
+      if (isSelected) {
+        button.dataset.inputMappingSelectedCaptureDevice = "true";
+      } else {
+        delete button.dataset.inputMappingSelectedCaptureDevice;
       }
     });
   }

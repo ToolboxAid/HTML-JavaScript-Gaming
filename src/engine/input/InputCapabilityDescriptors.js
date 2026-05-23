@@ -78,7 +78,6 @@ const GESTURE_DEFINITIONS = Object.freeze([
     wheelGesture('MouseWheelLeft', 'Wheel Left', 'Mouse Wheel Left. Use for horizontal scrolling or cycling selections.'),
     wheelGesture('MouseWheelRight', 'Wheel Right', 'Mouse Wheel Right. Use for horizontal scrolling or cycling selections.'),
     comboGesture('MouseCombo', 'Mouse', ['mouse'], 'Mouse Combo. Use for combinations such as Shift + Mouse Right Button. Capture keyboard, mouse, wheel, or controller inputs for one selected action.'),
-    gameControllerGesture('GameControllerButton', 'Button', 'Game controller button. Use for face buttons, shoulder buttons, and digital controller controls.', 'gameController'),
     gameControllerGesture('GameControllerButtonPress', 'Btn Press', 'Game controller button press. Use when an action should trigger on the transition from up to down.', 'gameController'),
     gameControllerGesture('GameControllerButtonHold', 'Btn Hold', 'Game controller button hold. Use while a game controller button remains held.', 'gameController'),
     gameControllerGesture('GameControllerButtonRelease', 'Btn Release', 'Game controller button release. Use when an action should trigger after a held button is released.', 'gameController'),
