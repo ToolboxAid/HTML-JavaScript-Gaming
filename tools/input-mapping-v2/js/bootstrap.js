@@ -52,8 +52,7 @@ window.addEventListener("DOMContentLoaded", () => {
       disableContextCheckbox: requireElement("#inputMappingV2DisableContextCheckbox"),
       refreshGamepadsButton: requireElement("#inputMappingV2RefreshGamepadsButton"),
       selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel"),
-      suppressShortcutsCheckbox: requireElement("#inputMappingV2SuppressShortcutsCheckbox"),
-      usedInputHighlights: requireElement("#inputMappingV2UsedInputHighlights")
+      suppressShortcutsCheckbox: requireElement("#inputMappingV2SuppressShortcutsCheckbox")
     }),
     deviceList: new DeviceListControl({
       container: requireElement("#inputMappingV2DeviceList"),

@@ -34,8 +34,10 @@ export class ToolStarterApp {
     this.workspaceRoot = workspaceRoot;
     this.window = windowRef;
     this.captureMode = "";
+    this.activeCaptureId = "";
     this.activeGamepadIndex = null;
     this.comboCaptureInputs = [];
+    this.pendingGestureInput = null;
     this.selectedGesture = null;
     this.rumbleSettingsByActionId = new Map();
     this.captureTimeoutMs = 8000;
@@ -155,6 +157,13 @@ export class ToolStarterApp {
   }
 
   startKeyboardCapture() {
+    if (!this.ensureSelectedTileForCapture()) {
+      return;
+    }
+    if (this.selectedGesture?.captureKind === "combo") {
+      this.startComboCapture(this.selectedGesture.deviceLabel, "keyboard");
+      return;
+    }
     if (this.isCaptureActive("keyboard")) {
       this.cancelCapture("Keyboard");
       return;
@@ -165,6 +174,17 @@ export class ToolStarterApp {
   }
 
   startMouseCapture() {
+    if (!this.ensureSelectedTileForCapture()) {
+      return;
+    }
+    if (this.selectedGesture?.captureKind === "combo") {
+      this.startComboCapture(this.selectedGesture.deviceLabel, "mouse");
+      return;
+    }
+    if (this.selectedGesture?.captureKind === "pointer-drag" || this.selectedGesture?.captureKind === "wheel") {
+      this.captureSelectedGesture();
+      return;
+    }
     if (this.isCaptureActive("mouse")) {
       this.cancelCapture("Mouse");
       return;
@@ -174,22 +194,34 @@ export class ToolStarterApp {
     this.statusLog.ok(`Mouse capture armed for ${this.state.selectedActionLabel()}.`);
   }
 
-  startComboCapture(deviceLabel = "Combo") {
-    if (this.isCaptureActive("combo")) {
+  startComboCapture(deviceLabel = "Combo", captureId = "combo") {
+    if (!this.ensureSelectedTileForCapture()) {
+      return;
+    }
+    if (this.isCaptureActive(captureId)) {
       this.cancelCapture(deviceLabel);
       return;
     }
     this.comboCaptureInputs = [];
-    this.beginCapture("combo");
+    this.beginCapture(captureId, { mode: "combo" });
     this.capture.showMessage(`Combo capture: press any two keyboard, mouse, wheel, or game controller inputs for ${this.state.selectedActionLabel()}.`);
     this.statusLog.ok(`${deviceLabel} combo capture armed for ${this.state.selectedActionLabel()}.`);
-    this.tryCaptureComboGamepad();
+    if (captureId.startsWith("gamepad:")) {
+      this.tryCaptureComboGamepad();
+    }
   }
 
   startGamepadCapture(gamepadIndex) {
+    if (!this.ensureSelectedTileForCapture()) {
+      return;
+    }
     const selectedIndex = Number(gamepadIndex);
     if (!Number.isInteger(selectedIndex)) {
       this.statusLog.warn("Gamepad capture unavailable: choose a detected gamepad device before capturing.");
+      return;
+    }
+    if (this.selectedGesture?.captureKind === "combo") {
+      this.startComboCapture(this.selectedGesture.deviceLabel, `gamepad:${selectedIndex}`);
       return;
     }
     if (this.isCaptureActive(`gamepad:${selectedIndex}`)) {
@@ -204,20 +236,17 @@ export class ToolStarterApp {
 
   selectGesture(gesture) {
     this.selectedGesture = gesture;
+    this.pendingGestureInput = null;
     if (gesture.captureKind === "combo") {
-      this.startComboCapture(gesture.deviceLabel);
+      this.statusLog.ok(`${gesture.deviceLabel} ${gesture.label} selected. Press a Capture button to record a two-input combo.`);
       this.refreshActions();
       return;
     }
     if (gesture.captureKind === "pointer-drag" || gesture.captureKind === "wheel") {
       const result = this.engineInputSources.captureGesture(gesture.binding, this.enabledDeviceIds);
-      if (!result.ok) {
-        this.statusLog.warn(result.message);
-        this.refreshActions();
-        return;
+      if (result.ok) {
+        this.pendingGestureInput = result.input;
       }
-      this.addCapturedInput(result.input);
-      return;
     }
     this.statusLog.ok(`${gesture.deviceLabel} ${gesture.label} selected for next capture.`);
     this.refreshActions();
@@ -503,13 +532,14 @@ export class ToolStarterApp {
       || [...this.activeInputBindings].some((binding) => !previous.has(binding));
   }
 
-  beginCapture(captureId) {
+  beginCapture(captureId, { mode = "" } = {}) {
     this.clearCapture();
+    const captureMode = mode || (captureId.startsWith("gamepad:") ? "gamepad" : captureId);
+    this.captureMode = captureMode;
+    this.activeCaptureId = captureId;
     if (captureId.startsWith("gamepad:")) {
-      this.captureMode = "gamepad";
       this.activeGamepadIndex = Number(captureId.slice("gamepad:".length));
     } else {
-      this.captureMode = captureId;
       this.activeGamepadIndex = null;
     }
     this.capture.setActiveCapture(captureId);
@@ -528,6 +558,7 @@ export class ToolStarterApp {
     }
     this.captureTimeoutTimer = null;
     this.captureMode = "";
+    this.activeCaptureId = "";
     this.activeGamepadIndex = null;
     this.comboCaptureInputs = [];
     this.capture.clearActiveCapture();
@@ -541,10 +572,7 @@ export class ToolStarterApp {
   }
 
   isCaptureActive(captureId) {
-    if (this.captureMode === "gamepad" && Number.isInteger(this.activeGamepadIndex)) {
-      return captureId === `gamepad:${this.activeGamepadIndex}`;
-    }
-    return captureId === this.captureMode;
+    return captureId === this.activeCaptureId;
   }
 
   captureTimeoutDelay() {
@@ -580,6 +608,34 @@ export class ToolStarterApp {
     }
     this.recordComboInput(result.input, { silentDuplicate: true });
     return true;
+  }
+
+  captureSelectedGesture() {
+    const pendingInput = this.pendingGestureInput?.binding === this.selectedGesture.binding
+      ? this.pendingGestureInput
+      : null;
+    const result = pendingInput
+      ? { ok: true, input: pendingInput }
+      : this.engineInputSources.captureGesture(this.selectedGesture.binding, this.enabledDeviceIds);
+    if (!result.ok) {
+      this.statusLog.warn(result.message);
+      this.refreshActions();
+      return;
+    }
+    this.pendingGestureInput = null;
+    this.addCapturedInput(result.input);
+  }
+
+  ensureSelectedTileForCapture() {
+    if (this.state.selectedActionHasTile()) {
+      return true;
+    }
+    const message = "Capture requires an existing selected mapping tile. Select an action and click Add before capturing input.";
+    this.capture.showMessage(message);
+    this.statusLog.warn(message);
+    this.clearCapture();
+    this.refreshActions();
+    return false;
   }
 
   selectedRumbleSettings() {

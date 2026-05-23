@@ -1515,16 +1515,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(cancelTileKeyPToken).toHaveAttribute("aria-current", "true");
       await expect(cancelTileKeyPToken).toHaveCSS("box-shadow", /rgba/);
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/has-used-input/);
-      const cancelKeyPUsedControl = page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='keyboard'] .input-mapping-v2__used-control", { hasText: /^Keyboard KeyP$/ });
-      await expect(cancelKeyPUsedControl).toHaveClass(/is-selected-mapping-input/);
-      await expect(cancelKeyPUsedControl).toHaveAttribute("aria-current", "true");
-      await expect(cancelKeyPUsedControl).toHaveAttribute("data-input-mapping-used-control", "KeyP");
-      await expect(cancelKeyPUsedControl).toHaveAttribute("data-input-mapping-used-gesture", "Press");
-      await expect(cancelKeyPUsedControl).toHaveAttribute("title", /Press/);
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
 
       await page.locator("#inputMappingV2ActionSelect").selectOption("confirm");
       await page.locator("#inputMappingV2AddActionButton").click();
-      await expect(cancelKeyPUsedControl).toHaveCount(0);
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/has-used-input/);
       await expect(cancelTileKeyPToken).not.toHaveClass(/is-selected-mapping-input/);
       const cancelTile = page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='cancel']");
       await cancelTile.scrollIntoViewIfNeeded();
@@ -1547,7 +1542,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await cancelTileActionLabel.click();
       await expect(page.locator("#inputMappingV2ActionSelect")).toHaveValue("cancel");
       await expect(cancelTileKeyPToken).toHaveClass(/is-selected-mapping-input/);
-      await expect(cancelKeyPUsedControl).toHaveClass(/is-selected-mapping-input/);
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/has-used-input/);
       expect(await page.evaluate(() => window.__inputMappingV2KeyPEventsAfterTileSelect)).toBe(0);
       await expect(cancelTileKeyPToken).toHaveAttribute("data-input-mapping-action-active", "false");
       await page.keyboard.down("KeyP");
@@ -1619,11 +1614,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='pause'] .input-mapping-v2__input-token[data-input-mapping-binding='KeyP:KeyboardRelease']")).toHaveClass(/is-selected-mapping-input/);
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyP:KeyboardRelease"');
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/has-used-input/);
-      const pauseKeyPUsedControl = page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='keyboard'] .input-mapping-v2__used-control", { hasText: /^Keyboard KeyP$/ });
-      await expect(pauseKeyPUsedControl).toHaveClass(/is-selected-mapping-input/);
-      await expect(pauseKeyPUsedControl).toHaveAttribute("data-input-mapping-used-control", "KeyP");
-      await expect(pauseKeyPUsedControl).toHaveAttribute("data-input-mapping-used-gesture", "Release");
-      await expect(pauseKeyPUsedControl).toHaveAttribute("title", /Release/);
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
 
       await page.locator("#inputMappingV2ActionSelect").selectOption("fire");
       await page.locator("#inputMappingV2AddActionButton").click();
@@ -1642,11 +1633,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='fire']")).toContainText("Mouse, Right Button, Click");
       await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='fire'] .input-mapping-v2__input-token[data-input-mapping-binding='MouseButton2']")).toHaveClass(/is-selected-mapping-input/);
       await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/has-used-input/);
-      const mouseRightUsedControl = page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='mouse'] .input-mapping-v2__used-control", { hasText: /^Mouse Right Button$/ });
-      await expect(mouseRightUsedControl).toHaveClass(/is-selected-mapping-input/);
-      await expect(mouseRightUsedControl).toHaveAttribute("data-input-mapping-used-control", "MouseButton2");
-      await expect(mouseRightUsedControl).toHaveAttribute("data-input-mapping-used-gesture", "Click");
-      await expect(mouseRightUsedControl).toHaveAttribute("title", /Click/);
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
 
       await page.locator("#inputMappingV2ActionSelect").selectOption("start");
       await page.locator("#inputMappingV2AddActionButton").click();
@@ -1666,16 +1653,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start']")).toContainText("Game Controller, Button 1, Button");
       await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start'] .input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button1']")).toHaveClass(/is-selected-mapping-input/);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).toHaveClass(/has-used-input/);
-      const gamepadButtonUsedControl = page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='gameController'] .input-mapping-v2__used-control", { hasText: /^Game Controller Button 1$/ });
-      await expect(gamepadButtonUsedControl).toHaveClass(/is-selected-mapping-input/);
-      await expect(gamepadButtonUsedControl).toHaveAttribute("data-input-mapping-used-control", "Pad0:Button1");
-      await expect(gamepadButtonUsedControl).toHaveAttribute("data-input-mapping-used-gesture", "Button");
-      await expect(gamepadButtonUsedControl).toHaveAttribute("title", /Button 1/);
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
 
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" })
         .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerCombo']")
         .click();
       await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerCombo']")).toHaveClass(/is-selected/);
+      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start']")).not.toContainText("Combo, Game Controller Button 1 + Alt");
+      await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Combo capture recorded Game Controller Button 1");
       await page.evaluate(() => {
         window.dispatchEvent(new KeyboardEvent("keydown", {
@@ -1786,6 +1771,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })
         .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MouseWheelUp']")
         .click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
 
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" })
         .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerButton']")
@@ -1815,6 +1801,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(cancelTile.locator(".input-mapping-v2__input-separator")).toHaveCount(0);
       const tokenLayout = await cancelTile.locator(".input-mapping-v2__input-token").evaluateAll((tokens) => tokens.map((token) => ({
         cardWidth: Math.round(token.closest(".input-mapping-v2__mapping-card").getBoundingClientRect().width),
+        flexBasis: getComputedStyle(token).flexBasis,
         text: token.textContent,
         title: token.title,
         whiteSpace: getComputedStyle(token).whiteSpace,
@@ -1829,7 +1816,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(tokenLayout.every((entry) => !entry.text.includes("\n"))).toBe(true);
       expect(tokenLayout.every((entry) => !entry.text.includes("[") && !entry.text.includes("]"))).toBe(true);
       expect(tokenLayout.every((entry) => entry.whiteSpace === "nowrap")).toBe(true);
-      expect(tokenLayout.every((entry) => entry.width === 250)).toBe(true);
+      expect(tokenLayout.every((entry) => entry.cardWidth === 250)).toBe(true);
+      expect(tokenLayout.every((entry) => entry.flexBasis === "100%")).toBe(true);
+      expect(tokenLayout.every((entry) => entry.width < entry.cardWidth && entry.width > 200)).toBe(true);
       expect(tokenLayout.some((entry) => entry.title.includes("\n"))).toBe(true);
 
       const keyToken = cancelTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyP']");
@@ -2003,10 +1992,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(fireTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton0']")).toHaveAttribute("title", "Mouse\nMouse Left Button");
       await expect(fireTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Axis0+:GameControllerButton']")).toHaveAttribute("title", /Arcade Flight Stick[\s\S]*Axis 0\+[\s\S]*Button/);
       const tokenMetrics = await fireTile.locator(".input-mapping-v2__input-token").evaluateAll((tokens) => tokens.map((token) => ({
+        cardWidth: Math.round(token.closest(".input-mapping-v2__mapping-card").getBoundingClientRect().width),
+        flexBasis: getComputedStyle(token).flexBasis,
         text: token.textContent,
         width: Math.round(token.getBoundingClientRect().width)
       })));
-      expect(tokenMetrics.every((token) => token.width === 250)).toBe(true);
+      expect(tokenMetrics.every((token) => token.cardWidth === 250)).toBe(true);
+      expect(tokenMetrics.every((token) => token.flexBasis === "100%")).toBe(true);
+      expect(tokenMetrics.every((token) => token.width < token.cardWidth && token.width > 200)).toBe(true);
       expect(tokenMetrics.every((token) => !token.text.includes("[") && !token.text.includes("]"))).toBe(true);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -2024,8 +2017,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const server = await openInputMappingV2(page);
     try {
       await expect(page.locator("body[data-tool-id='input-mapping-v2']")).toBeVisible();
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
       await page.locator("#inputMappingV2ActionSelect").selectOption("fire");
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Capture requires an existing selected mapping tile\. Select an action and click Add before capturing input\./);
+      await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
       await page.locator("#inputMappingV2AddActionButton").click();
+      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='fire']")).toHaveCount(1);
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" })
         .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardPress']")
         .click();
@@ -2038,15 +2036,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       const fireTile = page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='fire']");
       const overflowState = await fireTile.evaluate((card) => ({
+        cardWidth: Math.round(card.getBoundingClientRect().width),
         clientHeight: card.clientHeight,
         overflowY: getComputedStyle(card).overflowY,
         scrollHeight: card.scrollHeight,
+        tokenFlexBasis: Array.from(card.querySelectorAll(".input-mapping-v2__input-token"))
+          .map((token) => getComputedStyle(token).flexBasis),
         tokenWidths: Array.from(card.querySelectorAll(".input-mapping-v2__input-token"))
           .map((token) => Math.round(token.getBoundingClientRect().width))
       }));
+      expect(overflowState.cardWidth).toBe(250);
       expect(overflowState.overflowY).toBe("auto");
       expect(overflowState.scrollHeight).toBeGreaterThan(overflowState.clientHeight);
-      expect(overflowState.tokenWidths.every((width) => width === 250)).toBe(true);
+      expect(overflowState.tokenFlexBasis.every((flexBasis) => flexBasis === "100%")).toBe(true);
+      expect(overflowState.tokenWidths.every((width) => width < overflowState.cardWidth && width > 200)).toBe(true);
 
       const selectedScrollTop = await fireTile.evaluate((card) => {
         card.scrollTop = 32;
@@ -2061,6 +2064,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" })
         .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardCombo']")
         .click();
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyS']")).toHaveCount(0);
+      await expect(page.locator("#inspectorOutput")).not.toContainText('"binding": "Combo:ControlLeft+KeyS"');
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "ControlLeft",
+          ctrlKey: true,
+          key: "Control"
+        }));
+      });
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyS']")).toHaveCount(0);
+      await expect(page.locator("#inspectorOutput")).not.toContainText('"binding": "Combo:ControlLeft+KeyS"');
+      await expect.poll(() => fireTile.evaluate((card) => card.scrollTop)).toBe(selectedScrollTop);
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await page.evaluate(() => {
         window.dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true,
@@ -2071,22 +2091,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText(/Combo capture recorded Keyboard ControlLeft\. Press one more/);
-      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyA']")).toHaveCount(0);
-      await expect(page.locator("#inspectorOutput")).not.toContainText('"binding": "Combo:ControlLeft+KeyA"');
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyS']")).toHaveCount(0);
+      await expect(page.locator("#inspectorOutput")).not.toContainText('"binding": "Combo:ControlLeft+KeyS"');
       await expect.poll(() => fireTile.evaluate((card) => card.scrollTop)).toBe(selectedScrollTop);
 
       await page.evaluate(() => {
         window.dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true,
           cancelable: true,
-          code: "KeyA",
+          code: "KeyS",
           ctrlKey: true,
-          key: "a"
+          key: "s"
         }));
       });
-      const comboToken = fireTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyA']");
-      await expect(comboToken).toHaveText("Combo, Ctrl + A");
-      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ControlLeft+KeyA"');
+      const comboToken = fireTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyS']");
+      await expect(comboToken).toHaveText("Combo, Ctrl + S");
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ControlLeft+KeyS"');
       await expect.poll(() => fireTile.evaluate((card) => card.scrollTop)).toBe(selectedScrollTop);
 
       await page.locator("#inputMappingV2RefreshGamepadsButton").click();
@@ -2098,7 +2118,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(comboToken).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyQ']")).toHaveCount(1);
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyW']")).toHaveCount(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted Combo Ctrl \+ A from Fire\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted Combo Ctrl \+ S from Fire\./);
       await expect.poll(() => fireTile.evaluate((card) => card.scrollTop)).toBe(selectedScrollTop);
 
       const tokenText = await fireTile.locator(".input-mapping-v2__input-token").allTextContents();
@@ -2320,6 +2340,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Gamepad rumble unavailable:/);
       await expect(page.locator("#previewOutput")).toContainText("No inputs captured yet.");
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Capture requires an existing selected mapping tile\. Select an action and click Add before capturing input\./);
+      await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(0);
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
       expect(await page.locator("#previewOutput").evaluate((node) => getComputedStyle(node).overflowY)).toBe("auto");
       const capturedMappingsActionPlacement = await page.locator("#mappingPanelContent").evaluate((content) => ({
         actionButtonTexts: Array.from(content.querySelectorAll(".input-mapping-v2__mapping-actions button")).map((button) => button.textContent),
@@ -2410,9 +2435,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__tile-action-select")).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__empty-token", { hasText: "No inputs captured." })).toHaveCount(1);
       const emptyMappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
-      expect(Math.round(emptyMappingTileBox.width)).toBe(225);
+      expect(Math.round(emptyMappingTileBox.width)).toBe(250);
       expect(Math.round(emptyMappingTileBox.height)).toBe(225);
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
+      await expect(page.locator("#previewOutput")).not.toContainText("Combo, Ctrl + R");
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await page.evaluate(() => {
         window.dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true,
@@ -2432,6 +2459,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewOutput")).toContainText("Combo, Ctrl + R");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ControlLeft+KeyR"');
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
       await page.evaluate(() => {
         window.dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true,
@@ -2450,6 +2478,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewOutput")).toContainText("Combo, Shift + Mouse Wheel Up");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ShiftLeft+MouseWheelUp"');
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
       await page.evaluate(() => {
         window.dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true,
@@ -2467,12 +2496,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator("#previewOutput")).toContainText("Combo, Shift + Mouse Right Button");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:ShiftLeft+MouseButton2"');
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardPress']")
+        .click();
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Press a keyboard key");
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Keyboard capture canceled for Move Left\./);
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MouseClick']")
+        .click();
       await page.evaluate(() => {
         window.__inputMappingV2CaptureTimeoutMs = 500;
       });
@@ -2483,11 +2518,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.evaluate(() => {
         delete window.__inputMappingV2CaptureTimeoutMs;
       });
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardPress']")
+        .click();
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await page.keyboard.press("KeyA");
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
       await page.keyboard.press("KeyD");
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MouseClick']")
+        .click();
       await page.locator("#inputMappingV2CaptureMouseButton").click();
       await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capturing/);
       await page.evaluate(() => {
@@ -2530,9 +2571,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await page.locator(".input-mapping-v2__gesture-button", { hasText: "Drag Release" }).click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(1);
       const mappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
-      expect(Math.round(mappingTileBox.width)).toBe(225);
+      expect(Math.round(mappingTileBox.width)).toBe(250);
       expect(Math.round(mappingTileBox.height)).toBe(225);
       await expect(page.locator("#previewOutput")).toContainText("Move Left");
       await expect(page.locator("#previewOutput")).toContainText("Keyboard, KeyA, Press");
@@ -2543,11 +2585,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Mouse Left Button" }).filter({ hasText: "Drag Release" })).toHaveAttribute("title", /Bounds: x 12, y 16, width 60, height 80/);
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/has-used-input/);
       await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/has-used-input/);
-      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toContainText("Keyboard KeyA");
-      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toContainText("Mouse Middle Button");
-      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toContainText("Mouse Left Button");
-      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='keyboard'] .input-mapping-v2__used-control", { hasText: /^Keyboard KeyA$/ })).toHaveAttribute("data-input-mapping-used-gesture", "Press");
-      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='mouse'] .input-mapping-v2__used-control", { hasText: /^Mouse Left Button$/ })).toHaveAttribute("data-input-mapping-used-gesture", "Drag Release");
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
       await expect(page.locator("#inspectorOutput")).toContainText('"action": "moveLeft"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyD"');
@@ -2575,8 +2613,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.keyboard.press("KeyB");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Keyboard KeyB mapped to Confirm\./);
       await expect(page.locator("#captureInputContent")).not.toContainText("Keyboard KeyB mapped to Confirm.");
-      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='keyboard'] .input-mapping-v2__used-control", { hasText: /^Keyboard KeyB$/ })).toHaveAttribute("data-input-mapping-used-gesture", "Press");
-      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='keyboard'] .input-mapping-v2__used-control", { hasText: /^Keyboard KeyA$/ })).toHaveCount(0);
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/has-used-input/);
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
       await page.locator("#inputMappingV2DeleteMappingsButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toHaveCount(1);
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toContainText("No inputs captured.");
@@ -2696,6 +2734,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
+      await expect(page.locator("#previewOutput")).not.toContainText("Combo, Game Controller Button 1 + Alt");
+      await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Combo capture recorded Game Controller Button 1");
       await page.evaluate(() => {
         window.dispatchEvent(new KeyboardEvent("keydown", {
@@ -2715,6 +2755,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           timestamp: 43.6
         };
       });
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerButton']")
+        .click();
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']").click();
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).toHaveClass(/is-capturing/);
       await page.evaluate(() => {
@@ -2729,8 +2772,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewOutput")).toContainText("Game Controller, X, Button");
       await expect(page.locator("#previewOutput")).not.toContainText("(Gamepad 1)");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).toHaveClass(/has-used-input/);
-      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toContainText("Game Controller X");
-      await expect(page.locator(".input-mapping-v2__used-source[data-input-mapping-used-source-id='gameController'] .input-mapping-v2__used-control", { hasText: /^Game Controller X$/ })).toHaveAttribute("data-input-mapping-used-gesture", "Button");
+      await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" })).toHaveAttribute("title", "Logitech RumblePad 2 USB\nSTANDARD GAMEPAD\nVendor: 046d Product: c218\nX");
       await expect(page.locator("#inspectorOutput")).toContainText('"source": "gamepad"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad1:Button2"');
@@ -2753,6 +2795,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           timestamp: 45
         };
       });
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerButton']")
+        .click();
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
       await expect(page.locator("#previewOutput")).toContainText("Game Controller, Button 5, Button");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad0:Button5"');

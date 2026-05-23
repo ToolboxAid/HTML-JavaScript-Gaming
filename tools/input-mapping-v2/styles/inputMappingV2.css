@@ -144,19 +144,6 @@
   order: 20;
 }
 
-.input-mapping-v2__used-input-highlights {
-  display: grid;
-  flex: 1 0 100%;
-  min-width: 100%;
-  order: 2;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px;
-}
-
-.input-mapping-v2__used-input-highlights[hidden] {
-  display: none;
-}
-
 .input-mapping-v2 #inputMappingV2RefreshGamepadsButton {
   flex: 1 0 100%;
   min-width: 100%;
@@ -238,7 +225,7 @@
 }
 
 .input-mapping-v2__mapping-list {
-  grid-template-columns: repeat(auto-fill, 225px);
+  grid-template-columns: repeat(auto-fill, 250px);
   grid-auto-rows: 225px;
   align-content: start;
   align-items: stretch;
@@ -273,7 +260,7 @@
 }
 
 .input-mapping-v2__mapping-card {
-  width: 225px;
+  width: 250px;
   height: 225px;
   align-content: start;
   overflow-x: hidden;
@@ -314,13 +301,13 @@
 }
 
 .input-mapping-v2__input-token {
-  width: 250px;
-  max-width: 250px;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   border: 1px solid var(--tool-starter-line);
   background: var(--tool-starter-input-surface);
   cursor: pointer;
-  flex: 0 0 250px;
+  flex: 1 1 100%;
   line-height: 1.2;
   overflow: hidden;
   text-align: left;
@@ -338,43 +325,6 @@
   border-color: #f59f00;
   box-shadow: 0 0 0 2px #f59f00, 0 0 16px rgba(245, 159, 0, 0.42);
   color: var(--tool-starter-text);
-}
-
-.input-mapping-v2__used-source {
-  display: grid;
-  gap: 6px;
-  border: 1px solid var(--tool-starter-line);
-  border-radius: 8px;
-  background: var(--tool-starter-surface);
-  padding: 8px;
-}
-
-.input-mapping-v2__used-source.is-selected-mapping-source {
-  border-color: var(--tool-starter-accent);
-  background: rgba(221, 214, 254, 0.08);
-}
-
-.input-mapping-v2__used-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.input-mapping-v2__used-control {
-  border: 1px solid var(--tool-starter-line);
-  border-radius: 999px;
-  background: var(--tool-starter-input-surface);
-  padding: 3px 8px;
-  font-size: 0.8rem;
-  line-height: 1.2;
-}
-
-.input-mapping-v2__used-control.is-selected-mapping-input {
-  border-color: var(--tool-starter-accent);
-  background: var(--tool-starter-accent);
-  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.28);
-  color: #161225;
-  font-weight: 700;
 }
 
 .input-mapping-v2__mapping-actions-separator {

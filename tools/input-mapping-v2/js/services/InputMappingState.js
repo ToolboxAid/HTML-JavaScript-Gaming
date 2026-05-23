@@ -65,6 +65,10 @@ export class InputMappingState {
     return this.selectedAction()?.label ?? "Unknown action";
   }
 
+  selectedActionHasTile() {
+    return this.selectedAction()?.tileVisible === true;
+  }
+
   addAction(label) {
     const actionLabel = String(label || "").trim();
     if (!actionLabel) {
@@ -101,11 +105,13 @@ export class InputMappingState {
     if (!action) {
       return { ok: false, message: "Select an action before capturing input." };
     }
+    if (!action.tileVisible) {
+      return { ok: false, message: "Capture requires an existing selected mapping tile. Select an action and click Add before capturing input." };
+    }
     if (action.inputs.some((candidate) => candidate.binding === input.binding)) {
       return { ok: false, message: `${input.label} is already mapped to ${action.label}.` };
     }
     action.inputs.push({ ...input });
-    action.tileVisible = true;
     this.syncInputMap();
     return { ok: true, message: `${input.label} mapped to ${action.label}.` };
   }
