@@ -7,6 +7,7 @@ export class CaptureControl {
     disableContextCheckbox,
     refreshGamepadsButton,
     selectedActionLabel,
+    suppressShortcutsCheckbox,
     usedInputHighlights
   }) {
     this.captureGamepadButtons = captureGamepadButtons;
@@ -18,21 +19,21 @@ export class CaptureControl {
     this.onCaptureGamepad = () => {};
     this.refreshGamepadsButton = refreshGamepadsButton;
     this.selectedActionLabel = selectedActionLabel;
+    this.suppressShortcutsCheckbox = suppressShortcutsCheckbox;
     this.usedInputHighlights = usedInputHighlights;
   }
 
-  mount({ onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onDisableContextChanged, onRefreshGamepads }) {
+  mount({ onCaptureGamepad, onCaptureKeyboard, onCaptureMouse, onDisableContextChanged, onRefreshGamepads, onSuppressShortcutsChanged }) {
     this.onCaptureGamepad = onCaptureGamepad;
     this.captureKeyboardButton.addEventListener("click", onCaptureKeyboard);
     this.captureMouseButton.addEventListener("click", onCaptureMouse);
-    this.disableContextCheckbox.closest("label")?.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
-    this.disableContextCheckbox.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
+    stopHeaderToggle(this.disableContextCheckbox);
+    stopHeaderToggle(this.suppressShortcutsCheckbox);
     this.disableContextCheckbox.addEventListener("change", () => {
       onDisableContextChanged(this.disableContextCheckbox.checked);
+    });
+    this.suppressShortcutsCheckbox.addEventListener("change", () => {
+      onSuppressShortcutsChanged(this.suppressShortcutsCheckbox.checked);
     });
     this.refreshGamepadsButton.addEventListener("click", onRefreshGamepads);
   }
@@ -231,4 +232,13 @@ function formatUsedControlLabel(sourceId, label) {
     return label.startsWith("Game Controller ") ? label : `Game Controller ${label}`;
   }
   return label;
+}
+
+function stopHeaderToggle(checkbox) {
+  checkbox.closest("label")?.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+  checkbox.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
 }

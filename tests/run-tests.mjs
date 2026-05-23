@@ -76,6 +76,7 @@ import { run as runEventBus } from './events/EventBus.test.mjs';
 import { run as runEventBusNaming } from './events/EventBusNaming.test.mjs';
 import { run as runInputMap } from './input/InputMap.test.mjs';
 import { run as runGamepadInputAdapter } from './input/GamepadInputAdapter.test.mjs';
+import { run as runGamepadHapticsService } from './input/GamepadHapticsService.test.mjs';
 import { run as runInputService } from './input/InputService.test.mjs';
 import { run as runKeyboardState } from './input/KeyboardState.test.mjs';
 import { run as runMouseState } from './input/MouseState.test.mjs';
@@ -230,6 +231,7 @@ const tests = [
     ['EventBusNaming', runEventBusNaming],
     ['InputMap', runInputMap],
     ['GamepadInputAdapter', runGamepadInputAdapter],
+    ['GamepadHapticsService', runGamepadHapticsService],
     ['InputService', runInputService],
     ['KeyboardState', runKeyboardState],
     ['MouseState', runMouseState],

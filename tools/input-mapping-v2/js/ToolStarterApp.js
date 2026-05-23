@@ -36,10 +36,11 @@ export class ToolStarterApp {
     this.captureMode = "";
     this.activeGamepadIndex = null;
     this.comboCaptureInputs = [];
-    this.rumbleFeedbackEnabled = false;
+    this.rumbleSettingsByActionId = new Map();
     this.captureTimeoutMs = 8000;
     this.captureTimeoutTimer = null;
     this.contextMenuDisabled = false;
+    this.shortcutSuppressionEnabled = false;
     this.gamepadPollIntervalMs = 750;
     this.gamepadPollTimer = null;
     this.lastGamepadStatusSignature = "";
@@ -78,12 +79,17 @@ export class ToolStarterApp {
       onCaptureKeyboard: () => this.startKeyboardCapture(),
       onCaptureMouse: () => this.startMouseCapture(),
       onDisableContextChanged: (isDisabled) => this.setContextMenuDisabled(isDisabled),
-      onRefreshGamepads: () => this.refreshGamepads()
+      onRefreshGamepads: () => this.refreshGamepads(),
+      onSuppressShortcutsChanged: (isEnabled) => this.setShortcutSuppressionEnabled(isEnabled)
     });
     this.deviceList.mount({
       onDeviceEnabledChanged: (deviceId, isEnabled) => this.setDeviceEnabled(deviceId, isEnabled),
       onRumbleFeedbackChanged: (isEnabled) => {
-        void this.setRumbleFeedback(isEnabled);
+        this.setSelectedActionRumbleEnabled(isEnabled);
+      },
+      onRumbleSettingsChanged: (settings) => this.setSelectedActionRumbleSettings(settings),
+      onTestRumble: (gamepadIndex, settings) => {
+        void this.testGamepadRumble(gamepadIndex, settings);
       }
     });
     this.gestureList.mount({
@@ -94,8 +100,10 @@ export class ToolStarterApp {
     this.window.addEventListener("gamepaddisconnected", this.handleGamepadConnectionChange);
     this.window.addEventListener("keydown", this.handleKeyDown, true);
     this.window.addEventListener("mousedown", this.handleMouseDown, true);
-    this.window.addEventListener("wheel", this.handleWheel, true);
+    this.window.addEventListener("wheel", this.handleWheel, { capture: true, passive: false });
     this.workspaceRoot.addEventListener("contextmenu", this.handleContextMenu);
+    this.workspaceRoot.addEventListener("keydown", this.handleKeyDown, true);
+    this.workspaceRoot.addEventListener("wheel", this.handleWheel, { capture: true, passive: false });
     this.statusLog.mount();
     this.preview.mount({
       onDeleteAction: () => this.deleteSelectedAction(),
@@ -204,6 +212,10 @@ export class ToolStarterApp {
       return;
     }
     if (this.captureMode !== "keyboard") {
+      if (this.shouldSuppressKeyboardShortcut(event)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       return;
     }
     event.preventDefault();
@@ -228,6 +240,11 @@ export class ToolStarterApp {
   }
 
   handleWheel(event) {
+    if (this.shouldSuppressWheelShortcut(event)) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
     if (this.captureMode !== "combo") {
       return;
     }
@@ -262,8 +279,11 @@ export class ToolStarterApp {
     return true;
   }
 
-  recordComboInput(input) {
+  recordComboInput(input, { silentDuplicate = false } = {}) {
     if (this.comboCaptureInputs.some((candidate) => candidate.binding === input.binding)) {
+      if (silentDuplicate) {
+        return;
+      }
       this.capture.showMessage("Combo capture needs two different inputs.");
       this.statusLog.warn("Combo capture needs two different inputs.");
       return;
@@ -330,23 +350,45 @@ export class ToolStarterApp {
     this.statusLog.ok(status.message);
   }
 
-  async setRumbleFeedback(isEnabled) {
-    this.rumbleFeedbackEnabled = isEnabled;
+  setSelectedActionRumbleEnabled(isEnabled) {
+    this.setSelectedActionRumbleSettings({
+      ...this.selectedRumbleSettings(),
+      enabled: isEnabled
+    });
     if (!isEnabled) {
-      this.statusLog.ok("Gamepad rumble/haptic feedback disabled for this tool session.");
+      this.statusLog.ok(`Rumble disabled for ${this.state.selectedActionLabel()}.`);
       return;
     }
 
-    const result = await this.engineInputSources.requestGamepadRumblePreview();
-    this.statusLog[result.ok ? "ok" : "warn"](result.message);
-    if (result.ok) {
-      this.statusLog.ok("Gamepad rumble/haptic feedback is UI-local because Input Mapping V2 toolState has no options field.");
+    if (!this.hasSupportedHaptics()) {
+      this.statusLog.warn("Gamepad rumble unavailable: no connected gamepad exposes GamepadHapticActuator, hapticActuators, or vibrationActuator. Connect a compatible controller, click inside this page, and try Test Rumble.");
+      return;
     }
+    this.statusLog.ok(`Rumble enabled for ${this.state.selectedActionLabel()} as UI-local action configuration.`);
+  }
+
+  setSelectedActionRumbleSettings(settings) {
+    this.rumbleSettingsByActionId.set(this.state.selectedActionId, {
+      durationMs: Math.max(20, Math.min(2000, Number(settings.durationMs) || 80)),
+      enabled: settings.enabled === true,
+      strength: Math.max(0, Math.min(1, Number(settings.strength) || 0))
+    });
+    this.refreshActions();
+  }
+
+  async testGamepadRumble(gamepadIndex, settings) {
+    const result = await this.engineInputSources.testGamepadRumble(gamepadIndex, settings);
+    this.statusLog[result.ok ? "ok" : "warn"](result.message);
   }
 
   setContextMenuDisabled(isDisabled) {
     this.contextMenuDisabled = isDisabled;
     this.statusLog.ok(`Browser context menu ${isDisabled ? "disabled" : "enabled"} within Input Mapping V2 workspace.`);
+  }
+
+  setShortcutSuppressionEnabled(isEnabled) {
+    this.shortcutSuppressionEnabled = isEnabled;
+    this.statusLog.ok(`Browser shortcut suppression ${isEnabled ? "enabled" : "disabled"} within Input Mapping V2 workspace.`);
   }
 
   setDeviceEnabled(deviceId, isEnabled) {
@@ -442,8 +484,37 @@ export class ToolStarterApp {
     if (!result.ok) {
       return false;
     }
-    this.recordComboInput(result.input);
+    this.recordComboInput(result.input, { silentDuplicate: true });
     return true;
+  }
+
+  selectedRumbleSettings() {
+    return this.rumbleSettingsByActionId.get(this.state.selectedActionId) ?? {
+      durationMs: 80,
+      enabled: false,
+      strength: 0.25
+    };
+  }
+
+  hasSupportedHaptics() {
+    return this.engineInputSources.refreshGamepadState().haptics.gamepads.some((gamepad) => gamepad.supported);
+  }
+
+  shouldSuppressKeyboardShortcut(event) {
+    return this.shortcutSuppressionEnabled
+      && this.isWorkspaceEvent(event)
+      && (event.key === "Alt" || event.altKey || event.ctrlKey || event.metaKey);
+  }
+
+  shouldSuppressWheelShortcut(event) {
+    return this.shortcutSuppressionEnabled
+      && this.isWorkspaceEvent(event)
+      && (event.ctrlKey || event.metaKey);
+  }
+
+  isWorkspaceEvent(event) {
+    const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+    return path.includes(this.workspaceRoot) || this.workspaceRoot.contains(event.target);
   }
 
   exportToolState() {
@@ -482,7 +553,7 @@ export class ToolStarterApp {
     this.actionNav.setToolActionsEnabled(true);
     this.exportControl.setEnabled(true);
     this.actionSelection.render(actions, this.state.selectedActionId);
-    this.deviceList.render(devices, this.enabledDeviceIds);
+    this.deviceList.render(devices, this.enabledDeviceIds, gamepadStatus.haptics, this.selectedRumbleSettings());
     this.gestureList.render(gestures);
     this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads, selectedAction?.inputs ?? [], this.captureMode);
     this.preview.render(actions, this.state.selectedActionId);

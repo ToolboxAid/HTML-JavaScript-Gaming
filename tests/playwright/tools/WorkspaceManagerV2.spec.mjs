@@ -1586,6 +1586,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2ClearActionButton")).toHaveCount(0);
       await expect(page.locator("#actionSetupContent .input-mapping-v2__button-row button")).toHaveText(["Add", "Delete"]);
       await expect(page.locator(".input-mapping-v2__capture-header #inputMappingV2DisableContextCheckbox")).toBeVisible();
+      await expect(page.locator(".input-mapping-v2__capture-header #inputMappingV2SuppressShortcutsCheckbox")).toBeVisible();
       expect(await page.locator(".input-mapping-v2").evaluate((root) => {
         const event = new MouseEvent("contextmenu", { bubbles: true, button: 2, cancelable: true });
         const dispatchResult = root.dispatchEvent(event);
@@ -1605,6 +1606,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#inputMappingV2DisableContextCheckbox").uncheck();
       expect(await page.locator(".input-mapping-v2").evaluate((root) => {
         const event = new MouseEvent("contextmenu", { bubbles: true, button: 2, cancelable: true });
+        const dispatchResult = root.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: false, dispatchResult: true });
+      expect(await page.locator(".input-mapping-v2").evaluate((root) => {
+        const event = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true, deltaY: -120 });
+        const dispatchResult = root.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: false, dispatchResult: true });
+      await page.locator("#inputMappingV2SuppressShortcutsCheckbox").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Browser shortcut suppression enabled within Input Mapping V2 workspace\./);
+      expect(await page.locator(".input-mapping-v2").evaluate((root) => {
+        const event = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true, deltaY: -120 });
+        const dispatchResult = root.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: true, dispatchResult: false });
+      expect(await page.locator(".input-mapping-v2").evaluate((root) => {
+        const event = new KeyboardEvent("keydown", { altKey: true, bubbles: true, cancelable: true, code: "AltLeft", key: "Alt" });
+        const dispatchResult = root.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: true, dispatchResult: false });
+      expect(await page.evaluate(() => {
+        const event = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true, deltaY: -120 });
+        const dispatchResult = document.body.dispatchEvent(event);
+        return { defaultPrevented: event.defaultPrevented, dispatchResult };
+      })).toEqual({ defaultPrevented: false, dispatchResult: true });
+      await page.locator("#inputMappingV2SuppressShortcutsCheckbox").uncheck();
+      expect(await page.locator(".input-mapping-v2").evaluate((root) => {
+        const event = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true, deltaY: -120 });
         const dispatchResult = root.dispatchEvent(event);
         return { defaultPrevented: event.defaultPrevented, dispatchResult };
       })).toEqual({ defaultPrevented: false, dispatchResult: true });
@@ -1889,6 +1918,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(mappingListScroll.overflowY).toBe("auto");
       expect(mappingListScroll.scrollHeight).toBeGreaterThan(mappingListScroll.clientHeight);
       await page.evaluate(() => {
+        window.__inputMappingV2RumbleCalls = [];
         window.__inputMappingV2MockGamepads = [
           {
             axes: [0, 0, 0, 0],
@@ -1906,7 +1936,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             id: "Logitech RumblePad 2 USB (Vendor: 046d Product: c218)",
             index: 1,
             mapping: "standard",
-            timestamp: 43
+            timestamp: 43,
+            vibrationActuator: {
+              playEffect: async (effect, parameters) => {
+                window.__inputMappingV2RumbleCalls.push({ effect, parameters });
+              }
+            }
           }
         ];
         Object.defineProperty(navigator, "getGamepads", {
@@ -1923,7 +1958,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("button count");
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("axis count");
       await expect(page.locator("#inputMappingV2Diagnostics")).toContainText(/navigator\.getGamepads\(\) count2/);
+      await expect(page.locator("#inputMappingV2Diagnostics")).toContainText("Gamepad haptics");
       await expect(page.locator("#inputMappingV2DeviceList")).toContainText("2 connected game controllers detected.");
+      await expect(page.locator("#inputMappingV2HapticsSupportList")).toContainText("Mock Flight Stick (Gamepad 0): haptics unavailable");
+      await expect(page.locator("#inputMappingV2HapticsSupportList")).toContainText("Logitech RumblePad 2 USB (Vendor: 046d Product: c218) (Gamepad 1): haptics supported via vibrationActuator");
+      await expect(page.locator("[data-input-mapping-test-rumble-index='1']")).toHaveText("Test Rumble");
+      await expect(page.locator("[data-input-mapping-test-rumble-index='0']")).toHaveCount(0);
+      await page.locator("#inputMappingV2RumbleStrengthInput").evaluate((input) => {
+        input.value = "0.6";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      await page.locator("#inputMappingV2RumbleDurationInput").evaluate((input) => {
+        input.value = "120";
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      await expect(page.locator("#inputMappingV2RumbleStrengthOutput")).toHaveText("60%");
+      await expect(page.locator(".input-mapping-v2__mapping-card.is-selected")).toContainText("Start");
+      await page.locator("#inputMappingV2RumbleFeedbackCheckbox").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rumble enabled for Start as UI-local action configuration\./);
+      await page.locator("[data-input-mapping-test-rumble-index='1']").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Test rumble sent to Logitech RumblePad 2 USB \(Vendor: 046d Product: c218\) \(Gamepad 1\)\./);
+      expect(await page.evaluate(() => window.__inputMappingV2RumbleCalls)).toEqual([{
+        effect: "dual-rumble",
+        parameters: {
+          duration: 120,
+          strongMagnitude: 0.6,
+          weakMagnitude: 0.15
+        }
+      }]);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button")).toHaveCount(2);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(0)).toContainText("Capture Game");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button").nth(1)).toContainText("Vendor: 046d Product: c218");

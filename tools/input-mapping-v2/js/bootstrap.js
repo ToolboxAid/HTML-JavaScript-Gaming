@@ -52,11 +52,16 @@ window.addEventListener("DOMContentLoaded", () => {
       disableContextCheckbox: requireElement("#inputMappingV2DisableContextCheckbox"),
       refreshGamepadsButton: requireElement("#inputMappingV2RefreshGamepadsButton"),
       selectedActionLabel: requireElement("#inputMappingV2SelectedActionLabel"),
+      suppressShortcutsCheckbox: requireElement("#inputMappingV2SuppressShortcutsCheckbox"),
       usedInputHighlights: requireElement("#inputMappingV2UsedInputHighlights")
     }),
     deviceList: new DeviceListControl({
       container: requireElement("#inputMappingV2DeviceList"),
-      rumbleFeedbackCheckbox: requireElement("#inputMappingV2RumbleFeedbackCheckbox")
+      hapticsSupportList: requireElement("#inputMappingV2HapticsSupportList"),
+      rumbleDurationInput: requireElement("#inputMappingV2RumbleDurationInput"),
+      rumbleFeedbackCheckbox: requireElement("#inputMappingV2RumbleFeedbackCheckbox"),
+      rumbleStrengthInput: requireElement("#inputMappingV2RumbleStrengthInput"),
+      rumbleStrengthOutput: requireElement("#inputMappingV2RumbleStrengthOutput")
     }),
     engineInputSources: new EngineInputSourceService({ windowRef: window }),
     exportControl: new ExportControl({

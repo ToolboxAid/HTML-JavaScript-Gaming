@@ -26,9 +26,36 @@
   color: var(--tool-starter-muted);
 }
 
+.input-mapping-v2__haptics-panel {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--tool-starter-line);
+  padding-top: 8px;
+}
+
+.input-mapping-v2__haptics-support-list,
+.input-mapping-v2__haptics-device {
+  display: grid;
+  gap: 6px;
+}
+
+.input-mapping-v2__haptics-device {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.input-mapping-v2__haptics-device.is-supported {
+  border-color: var(--tool-starter-accent);
+}
+
 .input-mapping-v2__capture-header-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
   margin-left: auto;
 }

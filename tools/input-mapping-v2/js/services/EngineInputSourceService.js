@@ -1,4 +1,5 @@
 import GamepadInputAdapter from "/src/engine/input/GamepadInputAdapter.js";
+import GamepadHapticsService from "/src/engine/input/GamepadHapticsService.js";
 import InputService from "/src/engine/input/InputService.js";
 import { mouseButtonLabel } from "/src/engine/input/InputCapabilityDescriptors.js";
 
@@ -31,6 +32,9 @@ export class EngineInputSourceService {
       getGamepads: () => this.readNavigatorGamepads()
     });
     this.gamepadAdapter = new GamepadInputAdapter({ input: this.inputService });
+    this.gamepadHaptics = new GamepadHapticsService({
+      getGamepads: () => this.readNavigatorGamepads()
+    });
     this.lastApiAvailable = false;
     this.lastGamepadReadError = "";
     this.lastPollTimestamp = "";
@@ -255,52 +259,8 @@ export class EngineInputSourceService {
     };
   }
 
-  async requestGamepadRumblePreview() {
-    if (typeof this.window.navigator?.getGamepads !== "function") {
-      return {
-        ok: false,
-        message: "Gamepad rumble unavailable: browser Gamepad API is not available. Use a focused browser tab with a compatible controller."
-      };
-    }
-
-    let gamepads = [];
-    try {
-      gamepads = Array.from(this.window.navigator.getGamepads() || []).filter(Boolean);
-    } catch (error) {
-      return {
-        ok: false,
-        message: `Gamepad rumble unavailable: navigator.getGamepads() failed (${error?.message || "unknown error"}). Click inside this page, reconnect the controller, and try again.`
-      };
-    }
-
-    const actuator = findHapticActuator(gamepads);
-    if (!actuator) {
-      return {
-        ok: false,
-        message: "Gamepad rumble unavailable: no connected gamepad exposes GamepadHapticActuator or vibrationActuator. Connect a compatible controller, click inside this page, and try again."
-      };
-    }
-
-    try {
-      if (typeof actuator.playEffect === "function") {
-        await actuator.playEffect("dual-rumble", {
-          duration: 80,
-          strongMagnitude: 0.25,
-          weakMagnitude: 0.15
-        });
-      } else {
-        await actuator.pulse(0.25, 80);
-      }
-      return {
-        ok: true,
-        message: "Gamepad rumble/haptic feedback enabled for this tool session."
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        message: `Gamepad rumble unavailable: haptic actuator request failed (${error?.message || "unknown error"}). Try a compatible controller with browser haptics support.`
-      };
-    }
+  async testGamepadRumble(gamepadIndex, settings) {
+    return this.gamepadHaptics.testRumble(gamepadIndex, settings);
   }
 
   refreshGamepadState() {
@@ -311,6 +271,7 @@ export class EngineInputSourceService {
   gamepadStatus() {
     const gamepads = this.inputService.getGamepads();
     const devices = gamepads.map(gamepadDeviceInfo);
+    const haptics = this.gamepadHaptics.getStatusReport();
     const connectedLabels = gamepads
       .map((gamepad) => formatGamepadDeviceLabel(gamepad))
       .join(", ");
@@ -320,6 +281,7 @@ export class EngineInputSourceService {
         connectedCount: 0,
         connectedLabels: "",
         gamepads: [],
+        haptics,
         lastPollTimestamp: this.lastPollTimestamp,
         message: "Gamepad API access blocked.",
         rawCount: this.lastRawGamepads.length,
@@ -331,6 +293,7 @@ export class EngineInputSourceService {
       connectedCount: gamepads.length,
       connectedLabels,
       gamepads: devices,
+      haptics,
       lastPollTimestamp: this.lastPollTimestamp,
       message: `${gamepads.length} connected gamepad${gamepads.length === 1 ? "" : "s"} detected${connectedLabels ? `: ${connectedLabels}` : "."}`,
       rawCount: this.lastRawGamepads.length,
@@ -366,6 +329,17 @@ export class EngineInputSourceService {
           path: "InputService.update() -> inputService.getGamepads()",
           count: inputServiceGamepads.length,
           gamepads: inputServiceGamepads
+        },
+        {
+          name: "Gamepad haptics",
+          path: "GamepadHapticsService.getStatusReport()",
+          count: status.haptics?.gamepads?.length ?? 0,
+          entries: (status.haptics?.gamepads ?? []).map((gamepad) => ({
+            name: gamepad.label,
+            detail: gamepad.supported
+              ? `haptics supported via ${gamepad.actuatorType}`
+              : "haptics unavailable - no GamepadHapticActuator, hapticActuators, or vibrationActuator"
+          }))
         }
       ]
     };
@@ -552,22 +526,6 @@ function keyboardComboLabel(binding) {
     return binding.slice(5);
   }
   return binding;
-}
-
-function findHapticActuator(gamepads) {
-  for (const gamepad of gamepads) {
-    const vibrationActuator = gamepad?.vibrationActuator;
-    if (vibrationActuator && typeof vibrationActuator.playEffect === "function") {
-      return vibrationActuator;
-    }
-    const hapticActuator = Array.isArray(gamepad?.hapticActuators)
-      ? gamepad.hapticActuators.find((actuator) => typeof actuator?.pulse === "function")
-      : null;
-    if (hapticActuator) {
-      return hapticActuator;
-    }
-  }
-  return null;
 }
 
 function parseUsbIds(id) {
