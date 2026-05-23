@@ -210,45 +210,43 @@ export class EngineInputSourceService {
         message: `Gamepad capture unavailable: ${deviceInfo.statusLabel} is no longer visible to the browser. Click inside this page, press a controller button, and try again.`
       };
     }
-    const buttonIndex = pad.buttonsDown.findIndex(Boolean);
-    if (buttonIndex >= 0) {
-      const buttonLabel = gamepadButtonLabel(deviceInfo, buttonIndex);
-      const detail = gamepadGestureDetail(gesture, "Button");
-      const isDefaultGesture = !gesture || gesture.binding === "GameControllerButton";
-      return {
-        ok: true,
-        input: {
-          source: "gamepad",
-          binding: gestureBinding(`Pad${selectedIndex}:Button${buttonIndex}`, gesture, "GameControllerButton"),
-          displayLabelLines: ["Game Controller", buttonLabel, detail],
-          label: `Game Controller ${buttonLabel}${isDefaultGesture ? "" : ` ${detail}`}`,
-          title: gamepadInputTitle(deviceInfo, isDefaultGesture ? buttonLabel : `${buttonLabel}\n${detail}`),
-          engine: "GamepadInputAdapter"
-        }
-      };
-    }
-    const axisIndex = pad.axes.findIndex((axis) => Math.abs(Number(axis) || 0) >= GAMEPAD_AXIS_THRESHOLD);
-    if (axisIndex >= 0) {
-      const direction = pad.axes[axisIndex] < 0 ? "-" : "+";
-      const axisLabel = `Axis ${axisIndex}${direction}`;
-      const detail = gamepadGestureDetail(gesture, "Stick");
-      const isDefaultGesture = !gesture || gesture.binding === "GameControllerStick";
-      return {
-        ok: true,
-        input: {
-          source: "gamepad",
-          binding: gestureBinding(`Pad${selectedIndex}:Axis${axisIndex}${direction}`, gesture, "GameControllerStick"),
-          displayLabelLines: ["Game Controller", axisLabel, detail],
-          label: `Game Controller ${axisLabel}${isDefaultGesture ? "" : ` ${detail}`}`,
-          title: gamepadInputTitle(deviceInfo, isDefaultGesture ? axisLabel : `${axisLabel}\n${detail}`),
-          engine: "GamepadInputAdapter"
-        }
-      };
+    const candidates = activeGamepadCandidates(pad, deviceInfo, gesture);
+    const expectedKind = gamepadGestureKind(gesture);
+    if (expectedKind) {
+      const match = candidates.find((candidate) => candidate.kind === expectedKind);
+      if (match) {
+        return this.createGamepadCaptureResult(match, deviceInfo, gesture);
+      }
+      if (candidates.length) {
+        return {
+          ok: false,
+          invalid: true,
+          message: gamepadGestureMismatchMessage(gesture, candidates[0])
+        };
+      }
+    } else if (candidates.length) {
+      return this.createGamepadCaptureResult(candidates[0], deviceInfo, gesture);
     }
     return {
       ok: false,
       message: `${GAMEPAD_CAPTURE_WAITING_MESSAGE} Hold a button or move a stick on ${deviceInfo.statusLabel}.`,
       waiting: true
+    };
+  }
+
+  createGamepadCaptureResult(candidate, deviceInfo, gesture) {
+    const detail = gamepadGestureDetail(gesture, candidate.defaultDetail);
+    const isDefaultGesture = !gesture || gesture.binding === candidate.defaultGestureBinding;
+    return {
+      ok: true,
+      input: {
+        source: "gamepad",
+        binding: gestureBinding(candidate.binding, gesture, candidate.defaultGestureBinding),
+        displayLabelLines: ["Game Controller", candidate.label, detail],
+        label: `Game Controller ${candidate.label}${isDefaultGesture ? "" : ` ${detail}`}`,
+        title: gamepadInputTitle(deviceInfo, isDefaultGesture ? candidate.label : `${candidate.label}\n${detail}`),
+        engine: "GamepadInputAdapter"
+      }
     };
   }
 
@@ -511,6 +509,76 @@ function activeGamepadBindings(gamepad) {
     return gamepadAxisBindingVariants(index, axisIndex, value < 0 ? "-" : "+");
   });
   return [...buttonBindings, ...axisBindings];
+}
+
+function activeGamepadCandidates(pad, deviceInfo, gesture) {
+  const index = Number.isInteger(Number(pad?.index)) ? Number(pad.index) : 0;
+  const buttonCandidates = (pad.buttonsDown ?? []).flatMap((isDown, buttonIndex) => {
+    if (!isDown) {
+      return [];
+    }
+    const buttonLabel = gamepadButtonLabel(deviceInfo, buttonIndex);
+    const kind = gamepadButtonKind(deviceInfo, buttonIndex);
+    return [{
+      binding: `Pad${index}:Button${buttonIndex}`,
+      defaultDetail: kind === "trigger" ? "Trigger" : kind === "dpad" ? "DPad" : "Button",
+      defaultGestureBinding: kind === "trigger" ? "GameControllerTrigger" : kind === "dpad" ? "GameControllerDPad" : "GameControllerButton",
+      kind,
+      label: buttonLabel
+    }];
+  });
+  const axisCandidates = (pad.axes ?? []).flatMap((axis, axisIndex) => {
+    const value = Number(axis) || 0;
+    if (Math.abs(value) < GAMEPAD_AXIS_THRESHOLD) {
+      return [];
+    }
+    const direction = value < 0 ? "-" : "+";
+    const kind = gesture?.binding === "GameControllerTrigger" ? "trigger" : "stick";
+    return [{
+      binding: `Pad${index}:Axis${axisIndex}${direction}`,
+      defaultDetail: kind === "trigger" ? "Trigger" : "Stick",
+      defaultGestureBinding: kind === "trigger" ? "GameControllerTrigger" : "GameControllerStick",
+      kind,
+      label: `Axis ${axisIndex}${direction}`
+    }];
+  });
+  return [...buttonCandidates, ...axisCandidates];
+}
+
+function gamepadGestureKind(gesture) {
+  const kinds = {
+    GameControllerButton: "button",
+    GameControllerDPad: "dpad",
+    GameControllerStick: "stick",
+    GameControllerTrigger: "trigger"
+  };
+  return kinds[gesture?.binding] ?? "";
+}
+
+function gamepadButtonKind(deviceInfo, buttonIndex) {
+  if (deviceInfo.mapping === "standard" && (buttonIndex === 6 || buttonIndex === 7)) {
+    return "trigger";
+  }
+  if (deviceInfo.mapping === "standard" && buttonIndex >= 12 && buttonIndex <= 15) {
+    return "dpad";
+  }
+  return "button";
+}
+
+function gamepadGestureMismatchMessage(gesture, candidate) {
+  const expected = gamepadKindLabel(gamepadGestureKind(gesture));
+  const actual = gamepadKindLabel(candidate.kind);
+  return `Game Controller ${gesture.label} capture expects ${expected} input; ${candidate.label} is ${actual} input. Select the matching gesture or press a matching control.`;
+}
+
+function gamepadKindLabel(kind) {
+  const labels = {
+    button: "button",
+    dpad: "DPad",
+    stick: "stick/axis",
+    trigger: "trigger"
+  };
+  return labels[kind] ?? "game controller";
 }
 
 function gamepadButtonBindingVariants(gamepadIndex, buttonIndex) {

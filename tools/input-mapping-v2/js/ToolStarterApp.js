@@ -37,11 +37,16 @@ export class ToolStarterApp {
     this.activeCaptureId = "";
     this.activeGamepadIndex = null;
     this.comboCaptureInputs = [];
+    this.doubleClickThresholdMs = 1000;
+    this.doubleClickTimer = null;
+    this.pendingDoubleClickInput = null;
+    this.pendingKeyboardReleaseInput = null;
     this.pendingGestureInput = null;
     this.selectedGesture = null;
     this.rumbleSettingsByActionId = new Map();
     this.captureTimeoutMs = 8000;
     this.captureTimeoutTimer = null;
+    this.lastCaptureWarning = "";
     this.contextMenuDisabled = false;
     this.shortcutSuppressionEnabled = false;
     this.activeInputBindings = new Set();
@@ -169,7 +174,11 @@ export class ToolStarterApp {
       return;
     }
     this.beginCapture("keyboard");
-    this.capture.showMessage(`Press a keyboard key to bind it to ${this.state.selectedActionLabel()}.`);
+    const gesture = this.selectedGestureForCaptureSource("keyboard");
+    const message = gesture?.binding === "KeyboardRelease"
+      ? `Press and release a keyboard key to bind ${gesture.label} to ${this.state.selectedActionLabel()}.`
+      : `Press a keyboard key to bind it to ${this.state.selectedActionLabel()}.`;
+    this.capture.showMessage(message);
     this.statusLog.ok(`Keyboard capture armed for ${this.state.selectedActionLabel()}.`);
   }
 
@@ -181,7 +190,7 @@ export class ToolStarterApp {
       this.startComboCapture(this.selectedGesture.deviceLabel, "mouse");
       return;
     }
-    if (this.selectedGesture?.captureKind === "pointer-drag" || this.selectedGesture?.captureKind === "wheel") {
+    if (this.selectedGesture?.captureKind === "pointer-drag") {
       this.captureSelectedGesture();
       return;
     }
@@ -190,7 +199,9 @@ export class ToolStarterApp {
       return;
     }
     this.beginCapture("mouse");
-    this.capture.showMessage(`Click a mouse button to bind it to ${this.state.selectedActionLabel()}.`);
+    const gesture = this.selectedGestureForCaptureSource("mouse");
+    const message = mouseCaptureMessage(gesture, this.state.selectedActionLabel());
+    this.capture.showMessage(message);
     this.statusLog.ok(`Mouse capture armed for ${this.state.selectedActionLabel()}.`);
   }
 
@@ -272,10 +283,22 @@ export class ToolStarterApp {
     }
     event.preventDefault();
     event.stopPropagation();
-    this.addCapturedInput(this.engineInputSources.captureKeyboard(event, this.selectedGestureForSource("keyboard")));
+    const gesture = this.selectedGestureForSource("keyboard");
+    if (gesture?.binding === "KeyboardRelease") {
+      this.pendingKeyboardReleaseInput = this.engineInputSources.captureKeyboard(event, gesture);
+      this.capture.showMessage(`Keyboard Release recorded ${this.pendingKeyboardReleaseInput.displayLabelLines[1]}. Waiting for release.`);
+      return;
+    }
+    this.addCapturedInput(this.engineInputSources.captureKeyboard(event, gesture));
   }
 
   handleKeyUp(event) {
+    if (this.captureMode === "keyboard" && this.selectedGestureForSource("keyboard")?.binding === "KeyboardRelease") {
+      event.preventDefault();
+      event.stopPropagation();
+      this.commitKeyboardRelease(event);
+      return;
+    }
     if (this.captureMode) {
       return;
     }
@@ -298,6 +321,15 @@ export class ToolStarterApp {
     }
     event.preventDefault();
     event.stopPropagation();
+    const gesture = this.selectedGestureForCaptureSource("mouse");
+    if (gesture?.captureKind === "wheel") {
+      this.warnActiveCapture(`${gesture.deviceLabel} ${gesture.label} capture expects wheel input; mouse click ignored.`);
+      return;
+    }
+    if (gesture?.binding === "MouseDoubleClick") {
+      this.recordDoubleClickInput(event, gesture);
+      return;
+    }
     this.addCapturedInput(this.engineInputSources.captureMouse(event, this.selectedGestureForSource("mouse")));
   }
 
@@ -312,6 +344,12 @@ export class ToolStarterApp {
     if (this.shouldSuppressWheelShortcut(event)) {
       event.preventDefault();
       event.stopPropagation();
+      return;
+    }
+    if (this.captureMode === "mouse") {
+      event.preventDefault();
+      event.stopPropagation();
+      this.captureWheelInput(event);
       return;
     }
     if (this.captureMode !== "combo") {
@@ -341,6 +379,10 @@ export class ToolStarterApp {
       return false;
     }
     if (!result.ok) {
+      if (result.invalid) {
+        this.warnActiveCapture(result.message);
+        return false;
+      }
       this.capture.showMessage(result.message);
       this.statusLog.warn(result.message);
       this.clearCapture();
@@ -363,7 +405,7 @@ export class ToolStarterApp {
 
     this.comboCaptureInputs.push(input);
     if (this.comboCaptureInputs.length < 2) {
-      this.capture.showMessage(`Combo capture recorded ${input.label}. Press one more key, mouse, wheel, or game controller input.`);
+      this.capture.showMessage(`Combo capture recorded ${input.label}. Waiting for second input.`);
       return;
     }
 
@@ -556,11 +598,18 @@ export class ToolStarterApp {
     if (this.captureTimeoutTimer && typeof this.window.clearTimeout === "function") {
       this.window.clearTimeout(this.captureTimeoutTimer);
     }
+    if (this.doubleClickTimer && typeof this.window.clearTimeout === "function") {
+      this.window.clearTimeout(this.doubleClickTimer);
+    }
     this.captureTimeoutTimer = null;
+    this.doubleClickTimer = null;
     this.captureMode = "";
     this.activeCaptureId = "";
     this.activeGamepadIndex = null;
     this.comboCaptureInputs = [];
+    this.lastCaptureWarning = "";
+    this.pendingDoubleClickInput = null;
+    this.pendingKeyboardReleaseInput = null;
     this.capture.clearActiveCapture();
   }
 
@@ -626,6 +675,84 @@ export class ToolStarterApp {
     this.addCapturedInput(result.input);
   }
 
+  commitKeyboardRelease(event) {
+    if (!this.pendingKeyboardReleaseInput) {
+      this.warnActiveCapture("Keyboard Release capture needs a key down before release; press and release the key again.");
+      return;
+    }
+    const releasedBinding = event.code || event.key;
+    if (baseBinding(this.pendingKeyboardReleaseInput.binding) !== releasedBinding) {
+      this.warnActiveCapture(`Keyboard Release capture is waiting for ${baseBinding(this.pendingKeyboardReleaseInput.binding)}; ${releasedBinding} was ignored.`);
+      return;
+    }
+    this.addCapturedInput(this.pendingKeyboardReleaseInput);
+  }
+
+  recordDoubleClickInput(event, gesture) {
+    const now = this.captureEventTime(event);
+    const input = this.engineInputSources.captureMouse(event, gesture);
+    const button = Number(event.button ?? 0);
+    if (!this.pendingDoubleClickInput) {
+      this.startPendingDoubleClick({ button, input, startedAt: now });
+      return;
+    }
+    if (this.pendingDoubleClickInput.button !== button) {
+      this.warnActiveCapture("Mouse Double Click capture needs the second click on the same mouse button; starting over with the latest click.");
+      this.startPendingDoubleClick({ button, input, startedAt: now });
+      return;
+    }
+    if (now - this.pendingDoubleClickInput.startedAt > this.doubleClickThresholdMs) {
+      this.warnActiveCapture("Mouse Double Click capture needs two clicks within the double-click threshold; starting over with the latest click.");
+      this.startPendingDoubleClick({ button, input, startedAt: now });
+      return;
+    }
+    this.addCapturedInput(input);
+  }
+
+  startPendingDoubleClick(pendingInput) {
+    if (this.doubleClickTimer && typeof this.window.clearTimeout === "function") {
+      this.window.clearTimeout(this.doubleClickTimer);
+    }
+    this.pendingDoubleClickInput = pendingInput;
+    this.capture.showMessage(`Mouse Double Click recorded first click on ${pendingInput.input.displayLabelLines[1]}. Waiting for second click.`);
+    this.doubleClickTimer = this.window.setTimeout?.(() => {
+      this.capture.showMessage(`Mouse Double Click capture timed out waiting for the second click for ${this.state.selectedActionLabel()}.`);
+      this.statusLog.warn(`Mouse Double Click capture timed out waiting for the second click for ${this.state.selectedActionLabel()}.`);
+      this.clearCapture();
+      this.refreshActions();
+    }, this.doubleClickThresholdMs) ?? null;
+  }
+
+  captureWheelInput(event) {
+    const gesture = this.selectedGestureForCaptureSource("mouse");
+    if (gesture?.captureKind !== "wheel") {
+      this.warnActiveCapture(`${gesture?.deviceLabel ?? "Mouse"} ${gesture?.label ?? "gesture"} capture expects mouse button input; wheel input ignored.`);
+      return;
+    }
+    const input = this.engineInputSources.captureWheel(event);
+    if (input.binding !== gesture.binding) {
+      this.warnActiveCapture(`${gesture.deviceLabel} ${gesture.label} capture expects ${gesture.label}; ${input.displayLabelLines[1]} was ignored.`);
+      return;
+    }
+    this.addCapturedInput(input);
+  }
+
+  warnActiveCapture(message) {
+    this.capture.showMessage(message);
+    if (message !== this.lastCaptureWarning) {
+      this.statusLog.warn(message);
+      this.lastCaptureWarning = message;
+    }
+  }
+
+  captureEventTime(event) {
+    const eventTime = Number(event?.timeStamp);
+    if (Number.isFinite(eventTime) && eventTime > 0) {
+      return eventTime;
+    }
+    return Number(this.window.performance?.now?.()) || Date.now();
+  }
+
   ensureSelectedTileForCapture() {
     if (this.state.selectedActionHasTile()) {
       return true;
@@ -667,6 +794,10 @@ export class ToolStarterApp {
       return null;
     }
     return this.selectedGesture;
+  }
+
+  selectedGestureForCaptureSource(source) {
+    return this.selectedGesture?.source === source ? this.selectedGesture : null;
   }
 
   isWorkspaceEvent(event) {
@@ -782,4 +913,18 @@ function allCaptureAvailable() {
     keyboard: true,
     mouse: true
   };
+}
+
+function baseBinding(binding) {
+  return String(binding || "").split(":")[0];
+}
+
+function mouseCaptureMessage(gesture, actionLabel) {
+  if (gesture?.binding === "MouseDoubleClick") {
+    return `Double-click a mouse button to bind it to ${actionLabel}.`;
+  }
+  if (gesture?.captureKind === "wheel") {
+    return `Scroll ${gesture.label.toLowerCase()} to bind it to ${actionLabel}.`;
+  }
+  return `Click a mouse button to bind it to ${actionLabel}.`;
 }
