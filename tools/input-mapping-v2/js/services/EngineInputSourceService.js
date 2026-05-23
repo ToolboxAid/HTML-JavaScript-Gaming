@@ -167,6 +167,33 @@ export class EngineInputSourceService {
     };
   }
 
+  capturePointerDragSnapshot(binding, snapshot) {
+    const descriptor = this.inputService.getPointerDragDescriptor(binding);
+    if (!descriptor) {
+      return {
+        ok: false,
+        message: `Pointer drag capture unavailable: ${binding} is not a known pointer drag gesture.`
+      };
+    }
+    const inputDescriptor = {
+      ...descriptor,
+      snapshot
+    };
+    const button = Number(snapshot?.button ?? 0);
+    return {
+      ok: true,
+      input: {
+        source: inputDescriptor.source,
+        binding: `MouseButton${button}:${inputDescriptor.binding}`,
+        displayLabelLines: pointerDragLabelLines(inputDescriptor),
+        label: `${mouseButtonLabel(button)} ${inputDescriptor.displayLabelLines?.[1] || inputDescriptor.label}`,
+        title: pointerDragTitle(inputDescriptor),
+        engine: inputDescriptor.engine,
+        pointerDrag: snapshot
+      }
+    };
+  }
+
   captureWheelGesture(binding) {
     const descriptor = this.inputService.getWheelDescriptor(binding);
     if (!descriptor) {

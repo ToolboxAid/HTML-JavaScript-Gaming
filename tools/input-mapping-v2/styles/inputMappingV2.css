@@ -110,6 +110,32 @@
   background: var(--tool-starter-input-surface);
 }
 
+.input-mapping-v2__capture-button.is-capture-waiting,
+.input-mapping-v2__gamepad-capture-button.is-capture-waiting {
+  border-color: #7dd3fc !important;
+  box-shadow: inset 0 0 0 2px #7dd3fc, 0 0 0 3px rgba(125, 211, 252, 0.22);
+}
+
+.input-mapping-v2__capture-button.is-capture-pending,
+.input-mapping-v2__gamepad-capture-button.is-capture-pending {
+  border-color: #f59f00 !important;
+  box-shadow: inset 0 0 0 2px #f59f00, 0 0 0 3px rgba(245, 159, 0, 0.26);
+}
+
+.input-mapping-v2__capture-button.is-capture-complete,
+.input-mapping-v2__gamepad-capture-button.is-capture-complete {
+  border-color: #34d399 !important;
+  box-shadow: inset 0 0 0 2px #34d399, 0 0 0 3px rgba(52, 211, 153, 0.22);
+}
+
+.input-mapping-v2__capture-button.is-capture-canceled,
+.input-mapping-v2__gamepad-capture-button.is-capture-canceled,
+.input-mapping-v2__capture-button.is-capture-warning,
+.input-mapping-v2__gamepad-capture-button.is-capture-warning {
+  border-color: #fb7185 !important;
+  box-shadow: inset 0 0 0 2px #fb7185, 0 0 0 3px rgba(251, 113, 133, 0.22);
+}
+
 .input-mapping-v2__gamepad-buttons {
   display: grid;
   flex: 1 1 320px;
@@ -142,6 +168,39 @@
   min-width: 100%;
   margin: 0;
   order: 20;
+  padding: 6px 8px;
+  border: 1px solid var(--tool-starter-line);
+  border-left: 4px solid transparent;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--tool-starter-muted);
+  font-weight: 700;
+  white-space: pre-line;
+}
+
+.input-mapping-v2 #inputMappingV2CaptureMessage[data-input-mapping-capture-state="waiting"] {
+  border-left-color: #7dd3fc;
+  box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.12);
+  color: #e0f2fe;
+}
+
+.input-mapping-v2 #inputMappingV2CaptureMessage[data-input-mapping-capture-state="pending"] {
+  border-left-color: #f59f00;
+  box-shadow: inset 0 0 0 1px rgba(245, 159, 0, 0.18);
+  color: #fde68a;
+}
+
+.input-mapping-v2 #inputMappingV2CaptureMessage[data-input-mapping-capture-state="complete"] {
+  border-left-color: #34d399;
+  box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.14);
+  color: #bbf7d0;
+}
+
+.input-mapping-v2 #inputMappingV2CaptureMessage[data-input-mapping-capture-state="canceled"],
+.input-mapping-v2 #inputMappingV2CaptureMessage[data-input-mapping-capture-state="warning"] {
+  border-left-color: #fb7185;
+  box-shadow: inset 0 0 0 1px rgba(251, 113, 133, 0.16);
+  color: #fecdd3;
 }
 
 .input-mapping-v2 #inputMappingV2RefreshGamepadsButton {

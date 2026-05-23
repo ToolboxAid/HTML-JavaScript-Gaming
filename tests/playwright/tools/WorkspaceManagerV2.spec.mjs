@@ -1887,6 +1887,166 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("live-highlights Input Mapping V2 release, combo, and double-click mapping tokens", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await page.addInitScript(() => {
+      window.__inputMappingV2CaptureVisualMinimumMs = 0;
+    });
+    const pageErrors = [];
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    const server = await openInputMappingV2(page);
+    try {
+      await expect(page.locator("body[data-tool-id='input-mapping-v2']")).toBeVisible();
+
+      await page.locator("#inputMappingV2ActionSelect").selectOption("cancel");
+      await page.locator("#inputMappingV2AddActionButton").click();
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardRelease']")
+        .click();
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await page.keyboard.down("KeyP");
+      await page.keyboard.up("KeyP");
+      const releaseToken = page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='cancel'] .input-mapping-v2__input-token[data-input-mapping-binding='KeyP:KeyboardRelease']");
+      await expect(releaseToken).toHaveText("Keyboard, KeyP, Release");
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/, { timeout: 2000 });
+
+      await page.keyboard.down("KeyP");
+      await expect(releaseToken).not.toHaveClass(/is-action-active/);
+      await page.keyboard.up("KeyP");
+      await expect(releaseToken).toHaveClass(/is-action-active/);
+      await expect(releaseToken).toHaveCSS("border-top-color", "rgb(245, 159, 0)");
+
+      await page.locator("#inputMappingV2ActionSelect").selectOption("confirm");
+      await page.locator("#inputMappingV2AddActionButton").click();
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardCombo']")
+        .click();
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "ControlLeft",
+          ctrlKey: true,
+          key: "Control"
+        }));
+      });
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Combo capture recorded Keyboard ControlLeft. Waiting for second input.");
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "KeyS",
+          ctrlKey: true,
+          key: "s"
+        }));
+      });
+      const comboToken = page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='confirm'] .input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyS']");
+      await expect(comboToken).toHaveText("Combo, Ctrl + S");
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/, { timeout: 2000 });
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keyup", {
+          bubbles: true,
+          cancelable: true,
+          code: "KeyS",
+          ctrlKey: true,
+          key: "s"
+        }));
+        window.dispatchEvent(new KeyboardEvent("keyup", {
+          bubbles: true,
+          cancelable: true,
+          code: "ControlLeft",
+          key: "Control"
+        }));
+      });
+
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "ControlLeft",
+          ctrlKey: true,
+          key: "Control"
+        }));
+      });
+      await expect(comboToken).not.toHaveClass(/is-action-active/);
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          code: "KeyS",
+          ctrlKey: true,
+          key: "s"
+        }));
+      });
+      await expect(comboToken).toHaveClass(/is-action-active/);
+      await expect(comboToken).toHaveCSS("border-top-color", "rgb(245, 159, 0)");
+      await page.evaluate(() => {
+        window.dispatchEvent(new KeyboardEvent("keyup", {
+          bubbles: true,
+          cancelable: true,
+          code: "KeyS",
+          ctrlKey: true,
+          key: "s"
+        }));
+        window.dispatchEvent(new KeyboardEvent("keyup", {
+          bubbles: true,
+          cancelable: true,
+          code: "ControlLeft",
+          key: "Control"
+        }));
+      });
+      await expect(comboToken).not.toHaveClass(/is-action-active/);
+
+      await page.locator("#inputMappingV2ActionSelect").selectOption("fire");
+      await page.locator("#inputMappingV2AddActionButton").click();
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MouseDoubleClick']")
+        .click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 0,
+          cancelable: true
+        }));
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 0,
+          cancelable: true
+        }));
+      });
+      const doubleClickToken = page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='fire'] .input-mapping-v2__input-token[data-input-mapping-binding='MouseButton0:MouseDoubleClick']");
+      await expect(doubleClickToken).toHaveText("Mouse, Left Button, Double Click");
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/, { timeout: 2000 });
+
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 0,
+          cancelable: true,
+          detail: 2
+        }));
+      });
+      await expect(doubleClickToken).toHaveClass(/is-action-active/);
+      await expect(doubleClickToken).toHaveCSS("border-top-color", "rgb(245, 159, 0)");
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mouseup", {
+          bubbles: true,
+          button: 0,
+          cancelable: true
+        }));
+      });
+      await expect(doubleClickToken).not.toHaveClass(/is-action-active/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("renders Input Mapping V2 tokens and gates capture by selected gesture", async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 900 });
     await page.addInitScript(() => {
@@ -2140,6 +2300,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
   test("honors Input Mapping V2 gesture-specific capture sessions", async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 900 });
     await page.addInitScript(() => {
+      window.__inputMappingV2CaptureVisualMinimumMs = 700;
       const buttons = Array.from({ length: 16 }, () => ({ pressed: false }));
       window.__inputMappingV2MockGamepads = [{
         axes: [0, 0, 0, 0],
@@ -2170,12 +2331,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardRelease']")
         .click();
       await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "waiting");
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capture-waiting/);
       await page.keyboard.down("KeyP");
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Keyboard Release recorded KeyP. Waiting for release.");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "pending");
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capture-pending/);
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyP:KeyboardRelease']")).toHaveCount(0);
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await page.keyboard.up("KeyP");
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyP:KeyboardRelease']")).toHaveText("Keyboard, KeyP, Release");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "complete");
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capture-complete/);
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
 
       await page.locator("#inputMappingV2ActionSelect").selectOption("confirm");
@@ -2194,6 +2361,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Combo capture recorded Keyboard ControlLeft. Waiting for second input.");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "pending");
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capture-pending/);
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyS']")).toHaveCount(0);
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capturing/);
       await page.evaluate(() => {
@@ -2206,6 +2375,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Combo:ControlLeft+KeyS']")).toHaveText("Combo, Ctrl + S");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "complete");
+      await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).toHaveClass(/is-capture-complete/);
       await expect(page.locator("#inputMappingV2CaptureKeyboardButton")).not.toHaveClass(/is-capturing/);
 
       await page.locator("#inputMappingV2ActionSelect").selectOption("fire");
@@ -2222,6 +2393,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Mouse Double Click capture expects mouse button input; wheel input ignored\./);
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "warning");
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton0:MouseDoubleClick']")).toHaveCount(0);
       await page.evaluate(() => {
         window.dispatchEvent(new MouseEvent("mousedown", {
@@ -2231,6 +2403,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Mouse Double Click recorded first click on Left Button. Waiting for second click.");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "pending");
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capture-pending/);
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton0:MouseDoubleClick']")).toHaveCount(0);
       await page.evaluate(() => {
         window.dispatchEvent(new MouseEvent("mousedown", {
@@ -2240,6 +2414,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton0:MouseDoubleClick']")).toHaveText("Mouse, Left Button, Double Click");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "complete");
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capture-complete/);
       await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/);
 
       await page.locator("#inputMappingV2ActionSelect").selectOption("jump");
@@ -2332,6 +2508,178 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button1']")).toHaveText("Game Controller, B, Button", { timeout: 2500 });
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toHaveClass(/is-capturing/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("captures Input Mapping V2 mouse drag from live input and keeps visual capture states observable", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await page.addInitScript(() => {
+      window.__inputMappingV2CaptureVisualMinimumMs = 500;
+    });
+    const pageErrors = [];
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    const server = await openInputMappingV2(page);
+    try {
+      await expect(page.locator("body[data-tool-id='input-mapping-v2']")).toBeVisible();
+
+      await page.locator("#inputMappingV2ActionSelect").selectOption("rotateLeft");
+      await page.locator("#inputMappingV2AddActionButton").click();
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MousePrimaryDrag']")
+        .click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capturing/);
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "waiting");
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capture-waiting/);
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton2:MousePrimaryDrag']")).toHaveCount(0);
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 2,
+          cancelable: true,
+          clientX: 10,
+          clientY: 20
+        }));
+      });
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Mouse Drag started with Mouse Right Button");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "pending");
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capture-pending/);
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton2:MousePrimaryDrag']")).toHaveCount(0);
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousemove", {
+          bubbles: true,
+          button: 2,
+          buttons: 2,
+          cancelable: true,
+          clientX: 55,
+          clientY: 70
+        }));
+      });
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton2:MousePrimaryDrag']")).toHaveText("Mouse Right Button, Drag");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Capture complete.");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "complete");
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capture-complete/);
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capturing/);
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/, { timeout: 2500 });
+      const dragToken = page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton2:MousePrimaryDrag']");
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 2,
+          buttons: 2,
+          cancelable: true,
+          clientX: 14,
+          clientY: 18
+        }));
+        window.dispatchEvent(new MouseEvent("mousemove", {
+          bubbles: true,
+          button: 2,
+          buttons: 2,
+          cancelable: true,
+          clientX: 64,
+          clientY: 78
+        }));
+      });
+      await expect(dragToken).toHaveClass(/is-action-active/);
+      await expect(dragToken).toHaveCSS("border-top-color", "rgb(245, 159, 0)");
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mouseup", {
+          bubbles: true,
+          button: 2,
+          buttons: 0,
+          cancelable: true,
+          clientX: 64,
+          clientY: 78
+        }));
+      });
+      await expect(dragToken).not.toHaveClass(/is-action-active/);
+
+      await page.locator("#inputMappingV2ActionSelect").selectOption("rotateRight");
+      await page.locator("#inputMappingV2AddActionButton").click();
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MousePrimaryDragRelease']")
+        .click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "waiting");
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 1,
+          cancelable: true,
+          clientX: 30,
+          clientY: 40
+        }));
+      });
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Mouse Drag Release started with Mouse Middle Button");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "pending");
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capture-pending/);
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousemove", {
+          bubbles: true,
+          button: 1,
+          buttons: 4,
+          cancelable: true,
+          clientX: 90,
+          clientY: 100
+        }));
+      });
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Mouse Drag Release tracking Mouse Middle Button. Release to commit.");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "pending");
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton1:MousePrimaryDragRelease']")).toHaveCount(0);
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capturing/);
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mouseup", {
+          bubbles: true,
+          button: 1,
+          buttons: 0,
+          cancelable: true,
+          clientX: 95,
+          clientY: 120
+        }));
+      });
+      const dragReleaseToken = page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton1:MousePrimaryDragRelease']");
+      await expect(dragReleaseToken).toHaveText("Mouse Middle Button, Drag Release");
+      await expect(dragReleaseToken).toHaveAttribute("title", /Bounds: x 30, y 40, width 65, height 80/);
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Capture complete.");
+      await expect(page.locator("#inputMappingV2CaptureMessage")).toHaveAttribute("data-input-mapping-capture-state", "complete");
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capture-complete/);
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).toHaveClass(/is-capturing/);
+      await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/, { timeout: 2500 });
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 1,
+          buttons: 4,
+          cancelable: true,
+          clientX: 30,
+          clientY: 40
+        }));
+        window.dispatchEvent(new MouseEvent("mousemove", {
+          bubbles: true,
+          button: 1,
+          buttons: 4,
+          cancelable: true,
+          clientX: 92,
+          clientY: 104
+        }));
+        window.dispatchEvent(new MouseEvent("mouseup", {
+          bubbles: true,
+          button: 1,
+          buttons: 0,
+          cancelable: true,
+          clientX: 96,
+          clientY: 124
+        }));
+      });
+      await expect(dragReleaseToken).toHaveClass(/is-action-active/);
+      await expect(dragReleaseToken).toHaveCSS("border-top-color", "rgb(245, 159, 0)");
+      await expect(dragReleaseToken).not.toHaveClass(/is-action-active/, { timeout: 1000 });
       expect(pageErrors).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -2748,39 +3096,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
       });
       await expect(page.locator("#inputMappingV2CaptureMouseButton")).not.toHaveClass(/is-capturing/);
+      await page.locator(".input-mapping-v2__gesture-button", { hasText: "Drag Release" }).click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
       await page.evaluate(() => {
-        window.dispatchEvent(new PointerEvent("pointerdown", {
+        window.dispatchEvent(new MouseEvent("mousedown", {
           bubbles: true,
           button: 0,
           cancelable: true,
           clientX: 12,
-          clientY: 16,
-          pointerId: 9,
-          pointerType: "mouse"
+          clientY: 16
         }));
-        window.dispatchEvent(new PointerEvent("pointermove", {
+        window.dispatchEvent(new MouseEvent("mousemove", {
           bubbles: true,
           button: 0,
           buttons: 1,
           cancelable: true,
           clientX: 52,
-          clientY: 66,
-          pointerId: 9,
-          pointerType: "mouse"
+          clientY: 66
         }));
-        window.dispatchEvent(new PointerEvent("pointerup", {
+        window.dispatchEvent(new MouseEvent("mouseup", {
           bubbles: true,
           button: 0,
           buttons: 0,
           cancelable: true,
           clientX: 72,
-          clientY: 96,
-          pointerId: 9,
-          pointerType: "mouse"
+          clientY: 96
         }));
       });
-      await page.locator(".input-mapping-v2__gesture-button", { hasText: "Drag Release" }).click();
-      await page.locator("#inputMappingV2CaptureMouseButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card")).toHaveCount(1);
       const mappingTileBox = await page.locator(".input-mapping-v2__mapping-card").first().boundingBox();
       expect(Math.round(mappingTileBox.width)).toBe(250);
@@ -2799,7 +3141,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyA"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "KeyD"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MouseButton1"');
-      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MousePrimaryDragRelease"');
+      await expect(page.locator("#inspectorOutput")).toContainText('"binding": "MouseButton0:MousePrimaryDragRelease"');
       await expect(page.locator("#inspectorOutput")).not.toContainText('"binding": "MousePrimaryDragRectangle"');
       await page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyA']").click();
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyA']")).toHaveCount(0);

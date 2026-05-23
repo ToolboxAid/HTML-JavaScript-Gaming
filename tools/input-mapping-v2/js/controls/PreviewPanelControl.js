@@ -79,7 +79,7 @@ export class PreviewPanelControl {
 
   createInputToken(action, input, isSelected, activeInputBindings) {
     const token = document.createElement("span");
-    const isActive = activeInputBindings.has(input.binding);
+    const isActive = inputBindingIsActive(input.binding, activeInputBindings);
     const tokenText = inputLabelLines(input).join(", ");
     token.className = [
       "input-mapping-v2__input-token",
@@ -138,6 +138,35 @@ export class PreviewPanelControl {
     return Array.from(this.output.querySelectorAll(".input-mapping-v2__mapping-card"))
       .find((card) => card.dataset.inputMappingTileActionId === actionId) ?? null;
   }
+}
+
+function inputBindingIsActive(binding, activeInputBindings) {
+  const bindingText = String(binding || "");
+  if (activeInputBindings.has(bindingText)) {
+    return true;
+  }
+  if (!bindingText.startsWith("Combo:")) {
+    return false;
+  }
+  const parts = bindingText.slice("Combo:".length).split("+").filter(Boolean);
+  return parts.length > 0 && parts.every((part) => liveBindingCandidates(part).some((candidate) => activeInputBindings.has(candidate)));
+}
+
+function liveBindingCandidates(binding) {
+  const bindingText = String(binding || "");
+  const candidates = [bindingText];
+  if (bindingText.startsWith("Pad")) {
+    const [pad, control] = bindingText.split(":");
+    if (pad && control) {
+      candidates.push(`${pad}:${control}`);
+    }
+    return candidates;
+  }
+  const baseBinding = bindingText.split(":")[0];
+  if (baseBinding && baseBinding !== bindingText) {
+    candidates.push(baseBinding);
+  }
+  return candidates;
 }
 
 function inputLabelLines(input) {

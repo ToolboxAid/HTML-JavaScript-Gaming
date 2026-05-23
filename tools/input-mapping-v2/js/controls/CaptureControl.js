@@ -15,6 +15,7 @@ export class CaptureControl {
     this.captureMouseButton = captureMouseButton;
     this.disableContextCheckbox = disableContextCheckbox;
     this.activeCaptureId = "";
+    this.captureState = "idle";
     this.onCaptureGamepad = () => {};
     this.refreshGamepadsButton = refreshGamepadsButton;
     this.selectedActionLabel = selectedActionLabel;
@@ -38,12 +39,13 @@ export class CaptureControl {
 
   render(actionLabel, gamepads = [], selectedInputs = [], captureMode = "", captureAvailability = allCaptureAvailable()) {
     this.selectedActionLabel.textContent = `Selected action: ${actionLabel}`;
-    const canHighlightUsedInputs = !captureMode;
+    const canHighlightUsedInputs = true;
     this.setCaptureButtonEnabled(this.captureKeyboardButton, captureAvailability.keyboard, "keyboard");
     this.setCaptureButtonEnabled(this.captureMouseButton, captureAvailability.mouse, "mouse");
     this.captureKeyboardButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesKeyboard));
     this.captureMouseButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesMouse));
     this.renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs, captureAvailability.gamepad);
+    this.applyCaptureState();
   }
 
   setCaptureButtonEnabled(button, isEnabled, captureId) {
@@ -84,6 +86,11 @@ export class CaptureControl {
     this.captureMessage.textContent = message;
   }
 
+  setCaptureState(state) {
+    this.captureState = state || "idle";
+    this.applyCaptureState();
+  }
+
   setActiveCapture(captureId) {
     this.activeCaptureId = captureId;
     this.captureKeyboardButton.classList.toggle("is-capturing", captureId === "keyboard");
@@ -95,16 +102,61 @@ export class CaptureControl {
       button.classList.toggle("is-capturing", isActive);
       button.ariaPressed = isActive ? "true" : "false";
     });
+    this.applyCaptureState();
   }
 
   clearActiveCapture() {
     this.setActiveCapture("");
+    this.setCaptureState("idle");
   }
 
   gamepadCaptureId(index) {
     return `gamepad:${Number(index)}`;
   }
+
+  applyCaptureState() {
+    const state = this.captureState || "idle";
+    this.captureMessage.dataset.inputMappingCaptureState = state;
+    this.allCaptureButtons().forEach((button) => {
+      const isActive = this.captureIdForButton(button) === this.activeCaptureId;
+      CAPTURE_STATE_CLASSES.forEach((className) => {
+        button.classList.remove(className);
+      });
+      if (isActive && state !== "idle") {
+        button.classList.add(`is-capture-${state}`);
+        button.dataset.inputMappingCaptureState = state;
+      } else {
+        delete button.dataset.inputMappingCaptureState;
+      }
+    });
+  }
+
+  allCaptureButtons() {
+    return [
+      this.captureKeyboardButton,
+      this.captureMouseButton,
+      ...this.captureGamepadButtons.querySelectorAll(".input-mapping-v2__gamepad-capture-button")
+    ];
+  }
+
+  captureIdForButton(button) {
+    if (button === this.captureKeyboardButton) {
+      return "keyboard";
+    }
+    if (button === this.captureMouseButton) {
+      return "mouse";
+    }
+    return this.gamepadCaptureId(button.dataset.inputMappingGamepadIndex);
+  }
 }
+
+const CAPTURE_STATE_CLASSES = [
+  "is-capture-waiting",
+  "is-capture-pending",
+  "is-capture-complete",
+  "is-capture-canceled",
+  "is-capture-warning"
+];
 
 function usesKeyboard(input) {
   return input.source === "keyboard" || comboParts(input).some(isKeyboardBinding);
