@@ -89,7 +89,7 @@ export class CaptureControl {
     this.usedInputHighlights.hidden = !groups.length;
     this.usedInputHighlights.replaceChildren(...groups.map((group) => {
       const section = document.createElement("section");
-      section.className = "input-mapping-v2__used-source";
+      section.className = "input-mapping-v2__used-source is-selected-mapping-source";
       section.dataset.inputMappingUsedSource = group.label;
       section.dataset.inputMappingUsedSourceId = group.id;
 
@@ -100,8 +100,12 @@ export class CaptureControl {
       controls.className = "input-mapping-v2__used-controls";
       controls.append(...usedControlSummaries(group.inputs, group.id).map((summary) => {
         const control = document.createElement("span");
-        control.className = "input-mapping-v2__used-control";
+        control.className = "input-mapping-v2__used-control is-selected-mapping-input";
         control.dataset.inputMappingUsedBinding = summary.binding;
+        control.dataset.inputMappingUsedControl = summary.control;
+        control.dataset.inputMappingUsedGesture = summary.gesture;
+        control.dataset.inputMappingUsedSourceId = group.id;
+        control.ariaCurrent = "true";
         control.textContent = summary.label;
         control.title = summary.title;
         return control;
@@ -177,12 +181,7 @@ function usedControlSummaries(inputs, sourceId) {
     if (parts.length) {
       return parts;
     }
-    return [{
-      binding: input.binding || "",
-      label: inputSummary(input),
-      sourceId,
-      title: input.title || input.label
-    }];
+    return [inputControlSummary(input, sourceId)];
   });
 }
 
@@ -194,13 +193,74 @@ function comboPartSummaries(input) {
   const labels = comboLabels(input, parts.length);
   return parts.map((binding, index) => {
     const sourceId = sourceIdForBinding(binding);
+    const label = formatUsedControlLabel(sourceId, labels[index] || binding);
     return {
       binding,
-      label: formatUsedControlLabel(sourceId, labels[index] || binding),
+      control: controlBinding(binding),
+      gesture: "Combo",
+      label,
       sourceId,
-      title: input.title || input.label
+      title: input.title || label
     };
   });
+}
+
+function inputControlSummary(input, sourceId) {
+  const lines = inputDisplayLines(input);
+  const label = inputControlLabel(input, sourceId, lines);
+  const gesture = inputGestureLabel(input, lines);
+  return {
+    binding: input.binding || "",
+    control: controlBinding(input.binding || ""),
+    gesture,
+    label,
+    sourceId,
+    title: usedControlTitle(input, gesture)
+  };
+}
+
+function inputDisplayLines(input) {
+  return Array.isArray(input.displayLabelLines)
+    ? input.displayLabelLines.map((line) => String(line || "").trim()).filter(Boolean)
+    : [];
+}
+
+function inputControlLabel(input, sourceId, lines) {
+  if (sourceId === "keyboard") {
+    return formatUsedControlLabel(sourceId, lines[1] || controlBinding(input.binding || "") || input.label);
+  }
+  if (sourceId === "mouse") {
+    return mouseControlLabel(input, lines);
+  }
+  if (sourceId === "gameController") {
+    return formatUsedControlLabel(sourceId, lines[1] || controlBinding(input.binding || "") || input.label);
+  }
+  return inputSummary(input);
+}
+
+function mouseControlLabel(input, lines) {
+  if (lines[0]?.startsWith("Mouse ")) {
+    return lines[0];
+  }
+  return formatUsedControlLabel("mouse", lines[1] || controlBinding(input.binding || "") || input.label);
+}
+
+function inputGestureLabel(input, lines) {
+  if (input.binding?.startsWith("Combo:")) {
+    return "Combo";
+  }
+  if (lines[0]?.startsWith("Mouse ") && lines[1]) {
+    return lines[1];
+  }
+  return lines[2] || "";
+}
+
+function usedControlTitle(input, gesture) {
+  const title = input.title || inputSummary(input);
+  if (!gesture || title.includes(gesture)) {
+    return title;
+  }
+  return `${title}\n${gesture}`;
 }
 
 function comboLabels(input, expectedCount) {
@@ -232,6 +292,14 @@ function formatUsedControlLabel(sourceId, label) {
     return label.startsWith("Game Controller ") ? label : `Game Controller ${label}`;
   }
   return label;
+}
+
+function controlBinding(binding) {
+  const value = String(binding || "");
+  if (/^Pad\d+:(?:Button|Axis)/.test(value)) {
+    return value.replace(/:GameController[A-Za-z]+$/, "");
+  }
+  return value.split(":")[0];
 }
 
 function stopHeaderToggle(checkbox) {

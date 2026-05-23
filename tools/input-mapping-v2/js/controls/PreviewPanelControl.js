@@ -20,16 +20,16 @@ export class PreviewPanelControl {
     });
   }
 
-  render(actions, selectedActionId) {
+  render(actions, selectedActionId, activeInputBindings = new Set()) {
     const visibleActions = actions.filter((action) => action.tileVisible || action.inputs.length > 0);
     if (!visibleActions.length) {
       this.output.replaceChildren(this.createEmptyState());
       return;
     }
-    this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action, selectedActionId)));
+    this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action, selectedActionId, activeInputBindings)));
   }
 
-  createActionCard(action, selectedActionId) {
+  createActionCard(action, selectedActionId, activeInputBindings) {
     const card = document.createElement("article");
     const isSelected = action.id === selectedActionId;
     card.className = `input-mapping-v2__mapping-card${isSelected ? " is-selected" : ""}`;
@@ -62,20 +62,27 @@ export class PreviewPanelControl {
       empty.textContent = "No inputs captured.";
       tokens.append(empty);
     } else {
-      tokens.append(...action.inputs.map((input) => this.createInputToken(action.id, input)));
+      tokens.append(...action.inputs.map((input) => this.createInputToken(action.id, input, isSelected, activeInputBindings)));
     }
 
     card.append(actionLabel, tokens);
     return card;
   }
 
-  createInputToken(actionId, input) {
+  createInputToken(actionId, input, isSelected, activeInputBindings) {
     const token = document.createElement("span");
-    token.className = "input-mapping-v2__input-token";
+    const isActive = activeInputBindings.has(input.binding);
+    token.className = [
+      "input-mapping-v2__input-token",
+      isSelected ? "is-selected-mapping-input" : "",
+      isActive ? "is-action-active" : ""
+    ].filter(Boolean).join(" ");
     token.textContent = inputLabelLines(input).join("\n");
     token.title = input.title || input.label;
+    token.ariaCurrent = isSelected ? "true" : "false";
     token.dataset.inputMappingActionId = actionId;
     token.dataset.inputMappingBinding = input.binding;
+    token.dataset.inputMappingActionActive = isActive ? "true" : "false";
     return token;
   }
 

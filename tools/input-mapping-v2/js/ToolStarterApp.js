@@ -42,6 +42,7 @@ export class ToolStarterApp {
     this.captureTimeoutTimer = null;
     this.contextMenuDisabled = false;
     this.shortcutSuppressionEnabled = false;
+    this.activeInputBindings = new Set();
     this.gamepadPollIntervalMs = 750;
     this.gamepadPollTimer = null;
     this.lastGamepadStatusSignature = "";
@@ -49,6 +50,7 @@ export class ToolStarterApp {
     this.enabledDevicesInitialized = false;
     this.handleGamepadConnectionChange = this.handleGamepadConnectionChange.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
     this.handleContextMenu = this.handleContextMenu.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleWheel = this.handleWheel.bind(this);
@@ -100,6 +102,7 @@ export class ToolStarterApp {
     this.window.addEventListener("gamepadconnected", this.handleGamepadConnectionChange);
     this.window.addEventListener("gamepaddisconnected", this.handleGamepadConnectionChange);
     this.window.addEventListener("keydown", this.handleKeyDown, true);
+    this.window.addEventListener("keyup", this.handleKeyUp, true);
     this.window.addEventListener("mousedown", this.handleMouseDown, true);
     this.window.addEventListener("wheel", this.handleWheel, { capture: true, passive: false });
     this.workspaceRoot.addEventListener("contextmenu", this.handleContextMenu);
@@ -220,6 +223,9 @@ export class ToolStarterApp {
       return;
     }
     if (this.captureMode !== "keyboard") {
+      if (!isEditableInputEventTarget(event.target)) {
+        this.activateInputBindings(keyboardDownBindings(event.code));
+      }
       if (this.shouldSuppressKeyboardShortcut(event)) {
         event.preventDefault();
         event.stopPropagation();
@@ -229,6 +235,13 @@ export class ToolStarterApp {
     event.preventDefault();
     event.stopPropagation();
     this.addCapturedInput(this.engineInputSources.captureKeyboard(event, this.selectedGestureForSource("keyboard")));
+  }
+
+  handleKeyUp(event) {
+    if (this.captureMode) {
+      return;
+    }
+    this.clearActiveInputBindings(keyboardDownBindings(event.code));
   }
 
   handleMouseDown(event) {
@@ -417,6 +430,31 @@ export class ToolStarterApp {
     this.refreshActions();
   }
 
+  activateInputBindings(bindings) {
+    let changed = false;
+    bindings.filter(Boolean).forEach((binding) => {
+      if (!this.activeInputBindings.has(binding)) {
+        this.activeInputBindings.add(binding);
+        changed = true;
+      }
+    });
+    if (changed) {
+      this.refreshActions();
+    }
+  }
+
+  clearActiveInputBindings(bindings) {
+    let changed = false;
+    bindings.filter(Boolean).forEach((binding) => {
+      if (this.activeInputBindings.delete(binding)) {
+        changed = true;
+      }
+    });
+    if (changed) {
+      this.refreshActions();
+    }
+  }
+
   beginCapture(captureId) {
     this.clearCapture();
     if (captureId.startsWith("gamepad:")) {
@@ -571,7 +609,7 @@ export class ToolStarterApp {
     this.deviceList.render(devices, this.enabledDeviceIds, gamepadStatus.haptics, this.selectedRumbleSettings());
     this.gestureList.render(gestures, this.selectedGesture?.binding ?? "");
     this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads, selectedAction?.inputs ?? [], this.captureMode);
-    this.preview.render(actions, this.state.selectedActionId);
+    this.preview.render(actions, this.state.selectedActionId, this.activeInputBindings);
     this.inspector.showObject(this.state.payload());
     this.gamepadDiagnostics.render(this.engineInputSources.gamepadDiagnostics(gamepadStatus));
   }
@@ -590,4 +628,18 @@ export class ToolStarterApp {
     return this.engineInputSources.devices()
       .find((device) => device.id === deviceId)?.label ?? deviceId;
   }
+}
+
+function keyboardDownBindings(code) {
+  if (!code) {
+    return [];
+  }
+  return [code, `${code}:KeyboardHold`];
+}
+
+function isEditableInputEventTarget(target) {
+  if (!target || typeof target.closest !== "function") {
+    return false;
+  }
+  return Boolean(target.closest("input, textarea, [contenteditable='true'], [contenteditable='']"));
 }
