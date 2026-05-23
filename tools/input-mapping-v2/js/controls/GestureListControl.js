@@ -8,7 +8,8 @@ export class GestureListControl {
     this.onGestureSelected = onGestureSelected;
   }
 
-  render(gestures, selectedGestureBinding = "", selectedCaptureSource = "") {
+  render(gestures, selectedGestureBinding = "", selectedCaptureSource = "", canCaptureGesture = true) {
+    this.setSectionDisabled(!canCaptureGesture || !selectedCaptureSource);
     if (!gestures.length) {
       const empty = document.createElement("p");
       empty.className = "tool-starter__hint";
@@ -18,12 +19,12 @@ export class GestureListControl {
     }
 
     const groups = groupGestures(gestures);
-    this.container.replaceChildren(...groups.map((group) => this.createGestureGroup(group, selectedGestureBinding, selectedCaptureSource)));
+    this.container.replaceChildren(...groups.map((group) => this.createGestureGroup(group, selectedGestureBinding, selectedCaptureSource, canCaptureGesture)));
   }
 
-  createGestureGroup(group, selectedGestureBinding, selectedCaptureSource) {
+  createGestureGroup(group, selectedGestureBinding, selectedCaptureSource, canCaptureGesture) {
     const section = document.createElement("article");
-    const isDisabled = Boolean(selectedCaptureSource) && group.source !== selectedCaptureSource;
+    const isDisabled = !canCaptureGesture || !selectedCaptureSource || group.source !== selectedCaptureSource;
     section.className = `input-mapping-v2__gesture-group${isDisabled ? " is-disabled" : ""}`;
     section.dataset.inputMappingGestureDevice = group.deviceLabel;
     section.dataset.inputMappingGestureSource = group.source;
@@ -33,17 +34,17 @@ export class GestureListControl {
 
     const list = document.createElement("div");
     list.className = "input-mapping-v2__gesture-list";
-    list.append(...group.gestures.map((gesture) => this.createGestureButton(gesture, selectedGestureBinding, selectedCaptureSource)));
+    list.append(...group.gestures.map((gesture) => this.createGestureButton(gesture, selectedGestureBinding, selectedCaptureSource, canCaptureGesture)));
 
     section.append(title, list);
     return section;
   }
 
-  createGestureButton(gesture, selectedGestureBinding, selectedCaptureSource) {
+  createGestureButton(gesture, selectedGestureBinding, selectedCaptureSource, canCaptureGesture) {
     const button = document.createElement("button");
     button.type = "button";
     const isSelected = gesture.binding === selectedGestureBinding;
-    const isDisabled = Boolean(selectedCaptureSource) && gesture.source !== selectedCaptureSource;
+    const isDisabled = !canCaptureGesture || !selectedCaptureSource || gesture.source !== selectedCaptureSource;
     button.className = `input-mapping-v2__gesture-button${isSelected ? " is-selected" : ""}${isDisabled ? " is-disabled" : ""}`;
     button.dataset.inputMappingGestureBinding = gesture.binding;
     button.dataset.inputMappingGestureSource = gesture.source;
@@ -64,6 +65,12 @@ export class GestureListControl {
       this.onGestureSelected(gesture);
     });
     return button;
+  }
+
+  setSectionDisabled(isDisabled) {
+    this.container
+      .closest(".tool-starter__accordion")
+      ?.classList.toggle("input-mapping-v2__section-disabled", isDisabled);
   }
 }
 

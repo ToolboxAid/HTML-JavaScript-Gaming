@@ -71,6 +71,11 @@
   font-weight: 700;
 }
 
+.input-mapping-v2__section-disabled > .accordion-v2__header,
+.input-mapping-v2__section-disabled > .accordion-v2__content {
+  opacity: 0.58;
+}
+
 .input-mapping-v2 #inputMappingV2CaptureKeyboardButton,
 .input-mapping-v2 #inputMappingV2CaptureMouseButton,
 .input-mapping-v2__gamepad-capture-button {

@@ -153,6 +153,8 @@ export class ToolStarterApp {
   deleteSelectedAction() {
     const result = this.state.deleteSelectedAction();
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
+    this.clearSelectedCaptureDevice();
+    this.clearCapture();
     this.refreshActions();
   }
 
@@ -176,8 +178,9 @@ export class ToolStarterApp {
       this.cancelCapture("Keyboard");
       return;
     }
+    const hadSelectedCaptureDevice = this.selectedCaptureSource === "keyboard" && this.selectedCaptureId === "keyboard";
     this.selectCaptureDevice("keyboard", "keyboard", "Keyboard");
-    if (!this.selectedGestureForCaptureSource("keyboard")) {
+    if (!hadSelectedCaptureDevice || !this.selectedGestureForCaptureSource("keyboard")) {
       this.capture.showMessage(`Keyboard capture device selected for ${this.state.selectedActionLabel()}. Choose a Keyboard gesture to capture.`);
       this.statusLog.ok(`Keyboard capture device selected for ${this.state.selectedActionLabel()}.`);
       this.refreshActions();
@@ -204,8 +207,9 @@ export class ToolStarterApp {
       this.cancelCapture("Mouse");
       return;
     }
+    const hadSelectedCaptureDevice = this.selectedCaptureSource === "mouse" && this.selectedCaptureId === "mouse";
     this.selectCaptureDevice("mouse", "mouse", "Mouse");
-    if (!this.selectedGestureForCaptureSource("mouse")) {
+    if (!hadSelectedCaptureDevice || !this.selectedGestureForCaptureSource("mouse")) {
       this.capture.showMessage(`Mouse capture device selected for ${this.state.selectedActionLabel()}. Choose a Mouse gesture to capture.`);
       this.statusLog.ok(`Mouse capture device selected for ${this.state.selectedActionLabel()}.`);
       this.refreshActions();
@@ -256,8 +260,9 @@ export class ToolStarterApp {
       this.cancelCapture(`Gamepad ${selectedIndex}`);
       return;
     }
+    const hadSelectedCaptureDevice = this.selectedCaptureSource === "gamepad" && this.selectedCaptureId === captureId;
     this.selectCaptureDevice("gamepad", captureId, `Gamepad ${selectedIndex}`);
-    if (!this.selectedGestureForCaptureSource("gamepad")) {
+    if (!hadSelectedCaptureDevice || !this.selectedGestureForCaptureSource("gamepad")) {
       this.capture.showMessage(`Gamepad ${selectedIndex} capture device selected for ${this.state.selectedActionLabel()}. Choose a Game Controller gesture to capture.`);
       this.statusLog.ok(`Gamepad ${selectedIndex} capture device selected for ${this.state.selectedActionLabel()}.`);
       this.refreshActions();
@@ -1076,18 +1081,20 @@ export class ToolStarterApp {
     const gestures = this.engineInputSources.gestures(this.enabledDeviceIds);
     const actions = this.state.actions();
     const selectedAction = actions.find((action) => action.id === this.state.selectedActionId);
+    const hasSelectedActionTile = this.state.selectedActionHasTile();
     this.actionNav.setToolActionsEnabled(true);
     this.exportControl.setEnabled(true);
     this.actionSelection.render(actions, this.state.selectedActionId);
     this.deviceList.render(devices, this.enabledDeviceIds, gamepadStatus.haptics, this.selectedRumbleSettings());
-    this.gestureList.render(gestures, this.selectedGesture?.binding ?? "", this.captureGestureSourceFilter());
+    this.gestureList.render(gestures, this.selectedGesture?.binding ?? "", this.captureGestureSourceFilter(), hasSelectedActionTile);
     this.capture.render(
       this.state.selectedActionLabel(),
       gamepadStatus.gamepads,
       selectedAction?.inputs ?? [],
       this.captureMode,
       this.captureAvailability(),
-      this.selectedCaptureId || this.activeCaptureId
+      this.selectedCaptureId || this.activeCaptureId,
+      hasSelectedActionTile
     );
     this.preview.render(
       this.engineInputSources.actionsWithActiveInputState(actions),

@@ -75,8 +75,6 @@ const GESTURE_DEFINITIONS = Object.freeze([
     pointerGesture('MousePrimaryDragRelease', 'Drag Release', 'Mouse Drag Release. Use for completed drag gestures, such as box-selecting objects from start/end positions.', 'mouse'),
     wheelGesture('MouseWheelUp', 'Wheel Up', 'Mouse Wheel Up. Use for zoom, scrolling, or cycling selections.'),
     wheelGesture('MouseWheelDown', 'Wheel Down', 'Mouse Wheel Down. Use for zoom, scrolling, or cycling selections.'),
-    wheelGesture('MouseWheelLeft', 'Wheel Left', 'Mouse Wheel Left. Use for horizontal scrolling or cycling selections.'),
-    wheelGesture('MouseWheelRight', 'Wheel Right', 'Mouse Wheel Right. Use for horizontal scrolling or cycling selections.'),
     comboGesture('MouseCombo', 'Mouse', ['mouse'], 'Mouse Combo. Use for combinations such as Shift + Mouse Right Button. Capture keyboard, mouse, wheel, or controller inputs for one selected action.'),
     gameControllerGesture('GameControllerButtonPress', 'Btn Press', 'Game controller button press. Use when an action should trigger on the transition from up to down.', 'gameController'),
     gameControllerGesture('GameControllerButtonHold', 'Btn Hold', 'Game controller button hold. Use while a game controller button remains held.', 'gameController'),

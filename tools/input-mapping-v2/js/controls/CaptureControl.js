@@ -38,15 +38,18 @@ export class CaptureControl {
     this.refreshGamepadsButton.addEventListener("click", onRefreshGamepads);
   }
 
-  render(actionLabel, gamepads = [], selectedInputs = [], captureMode = "", captureAvailability = allCaptureAvailable(), selectedCaptureId = "") {
+  render(actionLabel, gamepads = [], selectedInputs = [], captureMode = "", captureAvailability = allCaptureAvailable(), selectedCaptureId = "", canSelectInputDevice = true) {
     this.selectedCaptureId = selectedCaptureId;
     this.selectedActionLabel.textContent = `Selected action: ${actionLabel}`;
     const canHighlightUsedInputs = true;
-    this.setCaptureButtonEnabled(this.captureKeyboardButton, captureAvailability.keyboard, "keyboard");
-    this.setCaptureButtonEnabled(this.captureMouseButton, captureAvailability.mouse, "mouse");
+    this.setSectionDisabled(!canSelectInputDevice);
+    this.setCaptureButtonEnabled(this.captureKeyboardButton, canSelectInputDevice && captureAvailability.keyboard, "keyboard");
+    this.setCaptureButtonEnabled(this.captureMouseButton, canSelectInputDevice && captureAvailability.mouse, "mouse");
+    this.refreshGamepadsButton.disabled = !canSelectInputDevice;
+    this.refreshGamepadsButton.ariaDisabled = this.refreshGamepadsButton.disabled ? "true" : "false";
     this.captureKeyboardButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesKeyboard));
     this.captureMouseButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesMouse));
-    this.renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs, captureAvailability.gamepad);
+    this.renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs, canSelectInputDevice && captureAvailability.gamepad);
     this.applySelectedCaptureState();
     this.applyCaptureState();
   }
@@ -150,6 +153,12 @@ export class CaptureControl {
         delete button.dataset.inputMappingSelectedCaptureDevice;
       }
     });
+  }
+
+  setSectionDisabled(isDisabled) {
+    this.captureKeyboardButton
+      .closest(".tool-starter__accordion")
+      ?.classList.toggle("input-mapping-v2__section-disabled", isDisabled);
   }
 
   allCaptureButtons() {
