@@ -276,7 +276,8 @@
   width: 225px;
   height: 225px;
   align-content: start;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   cursor: pointer;
 }
 
@@ -313,11 +314,13 @@
 }
 
 .input-mapping-v2__input-token {
-  max-width: 100%;
+  width: 250px;
+  max-width: 250px;
   min-width: 0;
   border: 1px solid var(--tool-starter-line);
   background: var(--tool-starter-input-surface);
-  flex: 0 1 auto;
+  cursor: pointer;
+  flex: 0 0 250px;
   line-height: 1.2;
   overflow: hidden;
   text-align: left;

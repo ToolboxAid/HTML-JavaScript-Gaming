@@ -149,6 +149,24 @@ export class InputMappingState {
     return { ok: true, message: `Deleted captured mappings from ${action.label}.` };
   }
 
+  deleteActionInput(actionId, binding) {
+    const action = this.actionEntries.find((candidate) => candidate.id === actionId) ?? null;
+    if (!action) {
+      return { ok: false, message: "Select an action before deleting a captured mapping." };
+    }
+    const input = action.inputs.find((candidate) => candidate.binding === binding) ?? null;
+    if (!input) {
+      this.selectedActionId = action.id;
+      return { ok: false, message: `${action.label} does not have that captured mapping.` };
+    }
+
+    action.inputs = action.inputs.filter((candidate) => candidate.binding !== binding);
+    action.tileVisible = true;
+    this.selectedActionId = action.id;
+    this.syncInputMap();
+    return { ok: true, message: `Deleted ${input.label} from ${action.label}.` };
+  }
+
   payload() {
     return {
       toolId: "input-mapping-v2",

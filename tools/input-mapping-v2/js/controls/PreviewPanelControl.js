@@ -4,14 +4,16 @@ export class PreviewPanelControl {
     this.deleteMappingsButton = deleteMappingsButton;
     this.output = output;
     this.onDeleteAction = () => {};
+    this.onDeleteInput = () => {};
     this.onDeleteMappings = () => {};
     this.onSelectAction = () => {};
   }
 
-  mount({ onDeleteAction, onDeleteMappings, onSelectAction }) {
-    this.onDeleteAction = onDeleteAction;
-    this.onDeleteMappings = onDeleteMappings;
-    this.onSelectAction = onSelectAction;
+  mount({ onDeleteAction, onDeleteInput, onDeleteMappings, onSelectAction }) {
+    this.onDeleteAction = typeof onDeleteAction === "function" ? onDeleteAction : () => {};
+    this.onDeleteInput = typeof onDeleteInput === "function" ? onDeleteInput : () => {};
+    this.onDeleteMappings = typeof onDeleteMappings === "function" ? onDeleteMappings : () => {};
+    this.onSelectAction = typeof onSelectAction === "function" ? onSelectAction : () => {};
     this.deleteActionButton.addEventListener("click", () => {
       this.onDeleteAction();
     });
@@ -22,11 +24,13 @@ export class PreviewPanelControl {
 
   render(actions, selectedActionId, activeInputBindings = new Set()) {
     const visibleActions = actions.filter((action) => action.tileVisible || action.inputs.length > 0);
+    const selectedScrollTop = this.selectedCardScrollTop(selectedActionId);
     if (!visibleActions.length) {
       this.output.replaceChildren(this.createEmptyState());
       return;
     }
     this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action, selectedActionId, activeInputBindings)));
+    this.restoreSelectedCardScrollTop(selectedActionId, selectedScrollTop);
   }
 
   createActionCard(action, selectedActionId, activeInputBindings) {
@@ -70,21 +74,37 @@ export class PreviewPanelControl {
   }
 
   createInputTokens(action, isSelected, activeInputBindings) {
-    return action.inputs.map((input) => this.createInputToken(action.id, input, isSelected, activeInputBindings));
+    return action.inputs.map((input) => this.createInputToken(action, input, isSelected, activeInputBindings));
   }
 
-  createInputToken(actionId, input, isSelected, activeInputBindings) {
+  createInputToken(action, input, isSelected, activeInputBindings) {
     const token = document.createElement("span");
     const isActive = activeInputBindings.has(input.binding);
+    const tokenText = inputLabelLines(input).join(", ");
     token.className = [
       "input-mapping-v2__input-token",
       isSelected ? "is-selected-mapping-input" : "",
       isActive ? "is-action-active" : ""
     ].filter(Boolean).join(" ");
-    token.textContent = `[${inputLabelLines(input).join(", ")}]`;
+    token.textContent = tokenText;
     token.title = input.title || inputLabelLines(input).join("\n") || input.label;
     token.ariaCurrent = isSelected ? "true" : "false";
-    token.dataset.inputMappingActionId = actionId;
+    token.role = "button";
+    token.tabIndex = 0;
+    token.setAttribute("aria-label", `Delete ${tokenText} from ${action.label}`);
+    token.addEventListener("click", (event) => {
+      event.stopPropagation();
+      this.onDeleteInput(action.id, input.binding);
+    });
+    token.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      this.onDeleteInput(action.id, input.binding);
+    });
+    token.dataset.inputMappingActionId = action.id;
     token.dataset.inputMappingBinding = input.binding;
     token.dataset.inputMappingActionActive = isActive ? "true" : "false";
     return token;
@@ -94,6 +114,29 @@ export class PreviewPanelControl {
     const emptyState = document.createElement("p");
     emptyState.textContent = "No inputs captured yet.";
     return emptyState;
+  }
+
+  selectedCardScrollTop(selectedActionId) {
+    const selectedCard = this.findActionCard(selectedActionId);
+    return selectedCard ? selectedCard.scrollTop : null;
+  }
+
+  restoreSelectedCardScrollTop(selectedActionId, scrollTop) {
+    if (!Number.isFinite(scrollTop)) {
+      return;
+    }
+    const selectedCard = this.findActionCard(selectedActionId);
+    if (selectedCard) {
+      selectedCard.scrollTop = scrollTop;
+    }
+  }
+
+  findActionCard(actionId) {
+    if (!actionId) {
+      return null;
+    }
+    return Array.from(this.output.querySelectorAll(".input-mapping-v2__mapping-card"))
+      .find((card) => card.dataset.inputMappingTileActionId === actionId) ?? null;
   }
 }
 

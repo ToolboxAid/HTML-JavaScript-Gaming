@@ -113,6 +113,7 @@ export class ToolStarterApp {
     this.statusLog.mount();
     this.preview.mount({
       onDeleteAction: () => this.deleteSelectedAction(),
+      onDeleteInput: (actionId, binding) => this.deleteActionInput(actionId, binding),
       onDeleteMappings: () => this.deleteSelectedMappings(),
       onSelectAction: (actionId) => this.selectAction(actionId)
     });
@@ -143,6 +144,12 @@ export class ToolStarterApp {
 
   deleteSelectedMappings() {
     const result = this.state.deleteSelectedMappings();
+    this.statusLog[result.ok ? "ok" : "warn"](result.message);
+    this.refreshActions();
+  }
+
+  deleteActionInput(actionId, binding) {
+    const result = this.state.deleteActionInput(actionId, binding);
     this.statusLog[result.ok ? "ok" : "warn"](result.message);
     this.refreshActions();
   }
