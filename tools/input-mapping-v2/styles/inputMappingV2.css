@@ -325,12 +325,6 @@
   white-space: nowrap;
 }
 
-.input-mapping-v2__input-separator {
-  flex: 0 0 auto;
-  color: var(--tool-starter-muted);
-  font-weight: 700;
-}
-
 .input-mapping-v2__input-token.is-selected-mapping-input {
   border-color: var(--tool-starter-accent);
   box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.3), 0 0 14px rgba(221, 214, 254, 0.28);

@@ -230,7 +230,7 @@ export class EngineInputSourceService {
     const axisIndex = pad.axes.findIndex((axis) => Math.abs(Number(axis) || 0) >= GAMEPAD_AXIS_THRESHOLD);
     if (axisIndex >= 0) {
       const direction = pad.axes[axisIndex] < 0 ? "-" : "+";
-      const axisLabel = `Axis ${axisIndex} ${direction}`;
+      const axisLabel = `Axis ${axisIndex}${direction}`;
       const detail = gamepadGestureDetail(gesture, "Stick");
       const isDefaultGesture = !gesture || gesture.binding === "GameControllerStick";
       return {

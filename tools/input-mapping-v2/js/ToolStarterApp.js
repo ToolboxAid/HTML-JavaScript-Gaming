@@ -649,7 +649,13 @@ export class ToolStarterApp {
     this.actionSelection.render(actions, this.state.selectedActionId);
     this.deviceList.render(devices, this.enabledDeviceIds, gamepadStatus.haptics, this.selectedRumbleSettings());
     this.gestureList.render(gestures, this.selectedGesture?.binding ?? "");
-    this.capture.render(this.state.selectedActionLabel(), gamepadStatus.gamepads, selectedAction?.inputs ?? [], this.captureMode);
+    this.capture.render(
+      this.state.selectedActionLabel(),
+      gamepadStatus.gamepads,
+      selectedAction?.inputs ?? [],
+      this.captureMode,
+      this.captureAvailability()
+    );
     this.preview.render(actions, this.state.selectedActionId, this.activeInputBindings);
     this.inspector.showObject(this.state.payload());
     this.gamepadDiagnostics.render(this.engineInputSources.gamepadDiagnostics(gamepadStatus));
@@ -668,6 +674,17 @@ export class ToolStarterApp {
   deviceLabel(deviceId) {
     return this.engineInputSources.devices()
       .find((device) => device.id === deviceId)?.label ?? deviceId;
+  }
+
+  captureAvailability() {
+    if (!this.selectedGesture || this.selectedGesture.captureKind === "combo") {
+      return allCaptureAvailable();
+    }
+    return {
+      gamepad: this.selectedGesture.source === "gamepad",
+      keyboard: this.selectedGesture.source === "keyboard",
+      mouse: this.selectedGesture.source === "mouse"
+    };
   }
 }
 
@@ -694,4 +711,12 @@ function isInteractiveInputMappingTarget(target) {
     return false;
   }
   return Boolean(target.closest("button, input, select, textarea, label, .input-mapping-v2__mapping-card, [contenteditable='true'], [contenteditable='']"));
+}
+
+function allCaptureAvailable() {
+  return {
+    gamepad: true,
+    keyboard: true,
+    mouse: true
+  };
 }

@@ -38,16 +38,24 @@ export class CaptureControl {
     this.refreshGamepadsButton.addEventListener("click", onRefreshGamepads);
   }
 
-  render(actionLabel, gamepads = [], selectedInputs = [], captureMode = "") {
+  render(actionLabel, gamepads = [], selectedInputs = [], captureMode = "", captureAvailability = allCaptureAvailable()) {
     this.selectedActionLabel.textContent = `Selected action: ${actionLabel}`;
     const canHighlightUsedInputs = !captureMode;
+    this.setCaptureButtonEnabled(this.captureKeyboardButton, captureAvailability.keyboard, "keyboard");
+    this.setCaptureButtonEnabled(this.captureMouseButton, captureAvailability.mouse, "mouse");
     this.captureKeyboardButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesKeyboard));
     this.captureMouseButton.classList.toggle("has-used-input", canHighlightUsedInputs && selectedInputs.some(usesMouse));
-    this.renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs);
+    this.renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs, captureAvailability.gamepad);
     this.renderUsedInputHighlights(selectedInputs, canHighlightUsedInputs);
   }
 
-  renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs) {
+  setCaptureButtonEnabled(button, isEnabled, captureId) {
+    const isActive = this.activeCaptureId === captureId;
+    button.disabled = !isEnabled && !isActive;
+    button.ariaDisabled = button.disabled ? "true" : "false";
+  }
+
+  renderGamepadButtons(gamepads, selectedInputs, canHighlightUsedInputs, canCaptureGamepad = true) {
     if (!gamepads.length) {
       const empty = document.createElement("p");
       empty.className = "tool-starter__hint input-mapping-v2__gamepad-empty";
@@ -63,6 +71,8 @@ export class CaptureControl {
       const isUsed = canHighlightUsedInputs && selectedInputs.some((input) => usesGamepadIndex(input, gamepad.index));
       button.className = `input-mapping-v2__gamepad-capture-button${this.activeCaptureId === captureId ? " is-capturing" : ""}${isUsed ? " has-used-input" : ""}`;
       button.dataset.inputMappingGamepadIndex = String(gamepad.index);
+      button.disabled = !canCaptureGamepad && this.activeCaptureId !== captureId;
+      button.ariaDisabled = button.disabled ? "true" : "false";
       button.ariaPressed = this.activeCaptureId === captureId ? "true" : "false";
       button.textContent = gamepad.captureLines.join("\n");
       button.title = `Capture input from ${gamepad.label}`;
@@ -309,4 +319,12 @@ function stopHeaderToggle(checkbox) {
   checkbox.addEventListener("click", (event) => {
     event.stopPropagation();
   });
+}
+
+function allCaptureAvailable() {
+  return {
+    gamepad: true,
+    keyboard: true,
+    mouse: true
+  };
 }
