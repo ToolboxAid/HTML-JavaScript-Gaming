@@ -53,6 +53,7 @@ export class ToolStarterApp {
     this.handleKeyUp = this.handleKeyUp.bind(this);
     this.handleContextMenu = this.handleContextMenu.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleWheel = this.handleWheel.bind(this);
     this.pollGamepadDevices = this.pollGamepadDevices.bind(this);
   }
@@ -104,6 +105,7 @@ export class ToolStarterApp {
     this.window.addEventListener("keydown", this.handleKeyDown, true);
     this.window.addEventListener("keyup", this.handleKeyUp, true);
     this.window.addEventListener("mousedown", this.handleMouseDown, true);
+    this.window.addEventListener("mouseup", this.handleMouseUp, true);
     this.window.addEventListener("wheel", this.handleWheel, { capture: true, passive: false });
     this.workspaceRoot.addEventListener("contextmenu", this.handleContextMenu);
     this.workspaceRoot.addEventListener("keydown", this.handleKeyDown, true);
@@ -253,11 +255,21 @@ export class ToolStarterApp {
       return;
     }
     if (this.captureMode !== "mouse") {
+      if (!isInteractiveInputMappingTarget(event.target)) {
+        this.activateInputBindings([mouseButtonBinding(event)]);
+      }
       return;
     }
     event.preventDefault();
     event.stopPropagation();
     this.addCapturedInput(this.engineInputSources.captureMouse(event, this.selectedGestureForSource("mouse")));
+  }
+
+  handleMouseUp(event) {
+    if (this.captureMode) {
+      return;
+    }
+    this.clearActiveInputBindings([mouseButtonBinding(event)]);
   }
 
   handleWheel(event) {
@@ -267,6 +279,9 @@ export class ToolStarterApp {
       return;
     }
     if (this.captureMode !== "combo") {
+      if (!isEditableInputEventTarget(event.target)) {
+        this.activateInputBindings([this.engineInputSources.captureWheel(event).binding], { transient: true });
+      }
       return;
     }
     event.preventDefault();
@@ -333,6 +348,7 @@ export class ToolStarterApp {
   refreshGamepads() {
     const status = this.engineInputSources.refreshGamepadState();
     this.trackGamepadStatus(status, { log: true });
+    this.syncGamepadActiveInputBindings();
     this.refreshActions(status);
   }
 
@@ -346,7 +362,8 @@ export class ToolStarterApp {
   pollGamepadDevices() {
     const status = this.engineInputSources.refreshGamepadState();
     const changed = this.trackGamepadStatus(status);
-    if (changed) {
+    const gamepadChanged = this.syncGamepadActiveInputBindings();
+    if (changed || gamepadChanged) {
       this.refreshActions(status);
     }
     this.tryCaptureComboGamepad();
@@ -430,12 +447,17 @@ export class ToolStarterApp {
     this.refreshActions();
   }
 
-  activateInputBindings(bindings) {
+  activateInputBindings(bindings, { transient = false } = {}) {
     let changed = false;
     bindings.filter(Boolean).forEach((binding) => {
       if (!this.activeInputBindings.has(binding)) {
         this.activeInputBindings.add(binding);
         changed = true;
+      }
+      if (transient) {
+        this.window.setTimeout?.(() => {
+          this.clearActiveInputBindings([binding]);
+        }, 260);
       }
     });
     if (changed) {
@@ -453,6 +475,25 @@ export class ToolStarterApp {
     if (changed) {
       this.refreshActions();
     }
+  }
+
+  syncGamepadActiveInputBindings() {
+    return this.replaceActiveInputBindings(
+      (binding) => binding.startsWith("Pad"),
+      this.engineInputSources.activeGamepadBindings()
+    );
+  }
+
+  replaceActiveInputBindings(shouldReplace, nextBindings) {
+    const previous = this.activeInputBindings;
+    const next = new Set(nextBindings);
+    this.activeInputBindings = new Set([
+      ...[...previous].filter((binding) => !shouldReplace(binding)),
+      ...next
+    ]);
+    return previous.size !== this.activeInputBindings.size
+      || [...previous].some((binding) => !this.activeInputBindings.has(binding))
+      || [...this.activeInputBindings].some((binding) => !previous.has(binding));
   }
 
   beginCapture(captureId) {
@@ -637,9 +678,20 @@ function keyboardDownBindings(code) {
   return [code, `${code}:KeyboardHold`];
 }
 
+function mouseButtonBinding(event) {
+  return `MouseButton${Number(event?.button ?? 0)}`;
+}
+
 function isEditableInputEventTarget(target) {
   if (!target || typeof target.closest !== "function") {
     return false;
   }
   return Boolean(target.closest("input, textarea, [contenteditable='true'], [contenteditable='']"));
+}
+
+function isInteractiveInputMappingTarget(target) {
+  if (!target || typeof target.closest !== "function") {
+    return false;
+  }
+  return Boolean(target.closest("button, input, select, textarea, label, .input-mapping-v2__mapping-card, [contenteditable='true'], [contenteditable='']"));
 }

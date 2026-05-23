@@ -1486,13 +1486,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         expect.objectContaining({ id: "captureInputContent", paddingBottom: "2px" })
       ]));
       expect(compactBottomWhitespace.every((entry) => entry.bottomGap <= 4)).toBe(true);
-      const setupContentFit = await page.locator("#gestureSetupContent, #captureInputContent").evaluateAll((contents) => (
-        contents.map((content) => ({
-          id: content.id,
-          overflowDelta: content.scrollHeight - content.clientHeight
-        }))
-      ));
-      expect(setupContentFit.every((entry) => entry.overflowDelta <= 2)).toBe(true);
       const gestureDeviceBottomGaps = await page.locator("#inputMappingV2GestureList .input-mapping-v2__gesture-group").evaluateAll((groups) => (
         groups.map((group) => {
           const groupBox = group.getBoundingClientRect();
@@ -1517,7 +1510,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.keyboard.press("KeyP");
       await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='cancel']")).toContainText("Keyboard KeyP Press");
       const cancelTileKeyPToken = page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='cancel'] .input-mapping-v2__input-token[data-input-mapping-binding='KeyP']");
-      await expect(cancelTileKeyPToken).toHaveText("Keyboard\nKeyP\nPress");
+      await expect(cancelTileKeyPToken).toHaveText("Keyboard KeyP Press");
       await expect(cancelTileKeyPToken).toHaveClass(/is-selected-mapping-input/);
       await expect(cancelTileKeyPToken).toHaveAttribute("aria-current", "true");
       await expect(cancelTileKeyPToken).toHaveCSS("box-shadow", /rgba/);
@@ -1702,6 +1695,198 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("sizes Input Mapping V2 columns and live-highlights mapped non-keyboard inputs", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await page.addInitScript(() => {
+      window.__inputMappingV2MockGamepads = [
+        {
+          axes: [0, 0, 0, 0],
+          buttons: [{ pressed: false }, { pressed: false }],
+          connected: true,
+          id: "Arcade Flight Stick (Vendor: 1234 Product: abcd)",
+          index: 0,
+          mapping: "",
+          timestamp: 20
+        }
+      ];
+      Object.defineProperty(navigator, "getGamepads", {
+        configurable: true,
+        value: () => window.__inputMappingV2MockGamepads
+      });
+    });
+    const pageErrors = [];
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    const server = await openInputMappingV2(page);
+    try {
+      await expect(page.locator("body[data-tool-id='input-mapping-v2']")).toBeVisible();
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).toBeVisible();
+
+      const columnSizing = await page.locator(".input-mapping-v2.tool-starter.app-shell").evaluate((shell) => {
+        const leftPanel = shell.querySelector(".tool-starter__panel--left");
+        const centerPanel = shell.querySelector(".tool-starter__panel--center");
+        const leftAccordions = Array.from(leftPanel.querySelectorAll(":scope > .tool-starter__accordion"));
+        const centerAccordions = Array.from(centerPanel.querySelectorAll(":scope > .tool-starter__accordion"));
+        const actions = leftAccordions[0];
+        const devices = leftAccordions[1];
+        const actionHeader = actions.querySelector(".accordion-v2__header");
+        const actionContent = actions.querySelector("#actionSetupContent");
+        const gestures = centerAccordions[0];
+        const capture = centerAccordions[1];
+        const captured = centerAccordions[2];
+        const leftBox = leftPanel.getBoundingClientRect();
+        const centerBox = centerPanel.getBoundingClientRect();
+        const leftInnerBottom = leftBox.bottom - Number.parseFloat(getComputedStyle(leftPanel).paddingBottom || "0");
+        const centerInnerBottom = centerBox.bottom - Number.parseFloat(getComputedStyle(centerPanel).paddingBottom || "0");
+        return {
+          actionContentOverflow: Math.round(actionContent.scrollHeight - actionContent.clientHeight),
+          actionExpectedMax: Math.ceil(actionHeader.getBoundingClientRect().height + actionContent.scrollHeight + 8),
+          actionHeight: Math.round(actions.getBoundingClientRect().height),
+          capturedBottomDelta: Math.round(centerInnerBottom - captured.getBoundingClientRect().bottom),
+          capturedHeight: Math.round(captured.getBoundingClientRect().height),
+          devicesBottomDelta: Math.round(leftInnerBottom - devices.getBoundingClientRect().bottom),
+          devicesHeight: Math.round(devices.getBoundingClientRect().height),
+          setupHeight: Math.round(gestures.getBoundingClientRect().height + capture.getBoundingClientRect().height)
+        };
+      });
+      expect(columnSizing.actionHeight).toBeLessThanOrEqual(columnSizing.actionExpectedMax);
+      expect(columnSizing.actionContentOverflow).toBeLessThanOrEqual(1);
+      expect(columnSizing.devicesHeight).toBeGreaterThan(columnSizing.actionHeight);
+      expect(Math.abs(columnSizing.devicesBottomDelta)).toBeLessThanOrEqual(2);
+      expect(columnSizing.capturedHeight).toBeGreaterThanOrEqual(300);
+      expect(columnSizing.capturedHeight).toBeGreaterThan(columnSizing.setupHeight / 2);
+      expect(Math.abs(columnSizing.capturedBottomDelta)).toBeLessThanOrEqual(2);
+
+      await expect(page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='touch']")).toContainText(/Touch capability|Touch capture/);
+      await expect(page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='pen']")).toContainText(/Pen capability|Pen capture/);
+      await expect(page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='flightStick']")).toContainText(/game controller capture|flight stick/i);
+      await expect(page.locator(".input-mapping-v2__device-card[data-input-mapping-device-id='vrController']")).toContainText(/WebXR|VR controller capture|not available/i);
+
+      await page.locator("#inputMappingV2ActionSelect").selectOption("cancel");
+      await page.locator("#inputMappingV2AddActionButton").click();
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Keyboard" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='KeyboardPress']")
+        .click();
+      await page.locator("#inputMappingV2CaptureKeyboardButton").click();
+      await page.keyboard.press("KeyP");
+
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MouseClick']")
+        .click();
+      await page.locator("#inputMappingV2CaptureMouseButton").click();
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 2,
+          cancelable: true
+        }));
+      });
+
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='MouseWheelUp']")
+        .click();
+
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerButton']")
+        .click();
+      await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: [{ pressed: false }, { pressed: true }],
+          timestamp: 21
+        };
+      });
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toHaveClass(/is-capturing/, { timeout: 2500 });
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: [{ pressed: false }, { pressed: false }],
+          timestamp: 22
+        };
+      });
+
+      const cancelTile = page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='cancel']");
+      await expect(cancelTile).toContainText("Keyboard KeyP Press, Mouse Right Button Click, Mouse Wheel Up Wheel, Game Controller Button 1 Button");
+      await expect(cancelTile.locator(".input-mapping-v2__input-separator")).toHaveCount(3);
+      const tokenLayout = await cancelTile.locator(".input-mapping-v2__input-token").evaluateAll((tokens) => tokens.map((token) => ({
+        cardWidth: Math.round(token.closest(".input-mapping-v2__mapping-card").getBoundingClientRect().width),
+        text: token.textContent,
+        title: token.title,
+        whiteSpace: getComputedStyle(token).whiteSpace,
+        width: Math.round(token.getBoundingClientRect().width)
+      })));
+      expect(tokenLayout.map((entry) => entry.text)).toEqual([
+        "Keyboard KeyP Press",
+        "Mouse Right Button Click",
+        "Mouse Wheel Up Wheel",
+        "Game Controller Button 1 Button"
+      ]);
+      expect(tokenLayout.every((entry) => !entry.text.includes("\n"))).toBe(true);
+      expect(tokenLayout.every((entry) => entry.whiteSpace === "nowrap")).toBe(true);
+      expect(tokenLayout.every((entry) => entry.width <= entry.cardWidth)).toBe(true);
+      expect(tokenLayout.some((entry) => entry.title.includes("\n"))).toBe(true);
+
+      const keyToken = cancelTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyP']");
+      await page.keyboard.down("KeyP");
+      await expect(keyToken).toHaveClass(/is-action-active/);
+      await page.keyboard.up("KeyP");
+      await expect(keyToken).not.toHaveClass(/is-action-active/);
+
+      const mouseToken = cancelTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton2']");
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mousedown", {
+          bubbles: true,
+          button: 2,
+          cancelable: true
+        }));
+      });
+      await expect(mouseToken).toHaveClass(/is-action-active/);
+      await page.evaluate(() => {
+        window.dispatchEvent(new MouseEvent("mouseup", {
+          bubbles: true,
+          button: 2,
+          cancelable: true
+        }));
+      });
+      await expect(mouseToken).not.toHaveClass(/is-action-active/);
+
+      const wheelToken = cancelTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseWheelUp']");
+      await page.evaluate(() => {
+        window.dispatchEvent(new WheelEvent("wheel", {
+          bubbles: true,
+          cancelable: true,
+          deltaY: -120
+        }));
+      });
+      await expect(wheelToken).toHaveClass(/is-action-active/, { timeout: 1000 });
+
+      const gamepadToken = cancelTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button1']");
+      await expect(gamepadToken).not.toHaveClass(/is-action-active/, { timeout: 2500 });
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: [{ pressed: false }, { pressed: true }],
+          timestamp: 23
+        };
+      });
+      await expect(gamepadToken).toHaveClass(/is-action-active/, { timeout: 2500 });
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: [{ pressed: false }, { pressed: false }],
+          timestamp: 24
+        };
+      });
+      await expect(gamepadToken).not.toHaveClass(/is-action-active/, { timeout: 2500 });
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("launches Input Mapping V2 and captures keyboard mappings", async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 900 });
     const server = await openInputMappingV2(page);
@@ -1803,13 +1988,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         })
       ));
       expect(compactBottomWhitespace.every((entry) => entry.bottomGap <= 4)).toBe(true);
-      const setupContentFit = await page.locator("#gestureSetupContent, #captureInputContent").evaluateAll((contents) => (
-        contents.map((content) => ({
-          id: content.id,
-          overflowDelta: content.scrollHeight - content.clientHeight
-        }))
-      ));
-      expect(setupContentFit.every((entry) => entry.overflowDelta <= 2)).toBe(true);
       const gestureFlowLayout = await page.locator("#inputMappingV2GestureList").evaluate((container) => {
         const wantedGroups = ["Keyboard", "Mouse", "Game Controller"];
         const groupLayouts = wantedGroups.map((label) => {

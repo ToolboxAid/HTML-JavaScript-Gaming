@@ -70,7 +70,7 @@ export class DeviceListControl {
     if (device.id === "gameController" && this.rumbleFeedbackField) {
       card.append(this.rumbleFeedbackField);
     }
-    if (!device.available && device.emptyState) {
+    if (device.emptyState) {
       const empty = document.createElement("p");
       empty.className = "tool-starter__hint";
       empty.textContent = device.emptyState;

@@ -166,7 +166,29 @@
 
 .input-mapping-v2 .tool-starter__panel--center {
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
+}
+
+.input-mapping-v2 .tool-starter__panel--left {
+  overflow: hidden;
+}
+
+.input-mapping-v2 .tool-starter__panel--left > .tool-starter__accordion:first-child.is-open {
+  flex: 0 0 auto;
+}
+
+.input-mapping-v2 .tool-starter__panel--left > .tool-starter__accordion:first-child.is-open > .accordion-v2__content {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.input-mapping-v2 .tool-starter__panel--left > .tool-starter__accordion:nth-child(2).is-open {
+  flex: 1 1 0;
+}
+
+.input-mapping-v2 .tool-starter__panel--left > .tool-starter__accordion:nth-child(2).is-open > .accordion-v2__content {
+  flex: 1 1 auto;
+  overflow: auto;
 }
 
 .input-mapping-v2 .tool-starter__panel--right {
@@ -174,15 +196,17 @@
 }
 
 .input-mapping-v2 .tool-starter__panel--center > .tool-starter__accordion.is-open:not(.tool-starter__accordion--fill) {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
 }
 
 .input-mapping-v2 .tool-starter__panel--center > .tool-starter__accordion.is-open:not(.tool-starter__accordion--fill) > .accordion-v2__content {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  overflow: auto;
 }
 
 .input-mapping-v2 .tool-starter__panel--center > .tool-starter__accordion--fill {
-  flex: 0 0 360px;
+  flex: 1 1 360px;
+  min-height: 300px;
 }
 
 .input-mapping-v2 .tool-starter__panel--right > .tool-starter__accordion.is-open {
@@ -194,6 +218,10 @@
   grid-template-rows: minmax(0, 1fr) auto auto;
   gap: 8px;
   overflow: hidden;
+}
+
+.input-mapping-v2 #previewOutput {
+  min-height: 0;
 }
 
 .input-mapping-v2__mapping-list,
@@ -269,7 +297,9 @@
 .input-mapping-v2__token-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
 }
 
 .input-mapping-v2__input-token,
@@ -283,13 +313,22 @@
 }
 
 .input-mapping-v2__input-token {
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid var(--tool-starter-line);
   background: var(--tool-starter-input-surface);
-  flex-direction: column;
-  align-items: flex-start;
+  flex: 0 1 auto;
   line-height: 1.2;
+  overflow: hidden;
   text-align: left;
-  white-space: pre-line;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.input-mapping-v2__input-separator {
+  flex: 0 0 auto;
+  color: var(--tool-starter-muted);
+  font-weight: 700;
 }
 
 .input-mapping-v2__input-token.is-selected-mapping-input {

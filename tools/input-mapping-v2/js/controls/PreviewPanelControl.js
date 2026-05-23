@@ -62,11 +62,24 @@ export class PreviewPanelControl {
       empty.textContent = "No inputs captured.";
       tokens.append(empty);
     } else {
-      tokens.append(...action.inputs.map((input) => this.createInputToken(action.id, input, isSelected, activeInputBindings)));
+      tokens.append(...this.createInputTokens(action, isSelected, activeInputBindings));
     }
 
     card.append(actionLabel, tokens);
     return card;
+  }
+
+  createInputTokens(action, isSelected, activeInputBindings) {
+    return action.inputs.flatMap((input, index) => {
+      const token = this.createInputToken(action.id, input, isSelected, activeInputBindings);
+      if (index === action.inputs.length - 1) {
+        return [token];
+      }
+      const separator = document.createElement("span");
+      separator.className = "input-mapping-v2__input-separator";
+      separator.textContent = ", ";
+      return [token, separator];
+    });
   }
 
   createInputToken(actionId, input, isSelected, activeInputBindings) {
@@ -77,8 +90,8 @@ export class PreviewPanelControl {
       isSelected ? "is-selected-mapping-input" : "",
       isActive ? "is-action-active" : ""
     ].filter(Boolean).join(" ");
-    token.textContent = inputLabelLines(input).join("\n");
-    token.title = input.title || input.label;
+    token.textContent = inputLabelLines(input).join(" ");
+    token.title = input.title || inputLabelLines(input).join("\n") || input.label;
     token.ariaCurrent = isSelected ? "true" : "false";
     token.dataset.inputMappingActionId = actionId;
     token.dataset.inputMappingBinding = input.binding;

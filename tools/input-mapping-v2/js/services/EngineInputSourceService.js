@@ -267,6 +267,10 @@ export class EngineInputSourceService {
     };
   }
 
+  activeGamepadBindings() {
+    return this.inputService.getGamepads().flatMap(activeGamepadBindings);
+  }
+
   async testGamepadRumble(gamepadIndex, settings) {
     return this.gamepadHaptics.testRumble(gamepadIndex, settings);
   }
@@ -492,6 +496,40 @@ function gamepadButtonLabel(deviceInfo, buttonIndex) {
     return STANDARD_GAMEPAD_BUTTON_NAMES[buttonIndex];
   }
   return `Button ${buttonIndex}`;
+}
+
+function activeGamepadBindings(gamepad) {
+  const index = Number.isInteger(Number(gamepad?.index)) ? Number(gamepad.index) : 0;
+  const buttonBindings = (gamepad?.buttonsDown ?? []).flatMap((isDown, buttonIndex) => (
+    isDown ? gamepadButtonBindingVariants(index, buttonIndex) : []
+  ));
+  const axisBindings = (gamepad?.axes ?? []).flatMap((axis, axisIndex) => {
+    const value = Number(axis) || 0;
+    if (Math.abs(value) < GAMEPAD_AXIS_THRESHOLD) {
+      return [];
+    }
+    return gamepadAxisBindingVariants(index, axisIndex, value < 0 ? "-" : "+");
+  });
+  return [...buttonBindings, ...axisBindings];
+}
+
+function gamepadButtonBindingVariants(gamepadIndex, buttonIndex) {
+  const binding = `Pad${gamepadIndex}:Button${buttonIndex}`;
+  return [
+    binding,
+    `${binding}:GameControllerButton`,
+    `${binding}:GameControllerDPad`,
+    `${binding}:GameControllerTrigger`
+  ];
+}
+
+function gamepadAxisBindingVariants(gamepadIndex, axisIndex, direction) {
+  const binding = `Pad${gamepadIndex}:Axis${axisIndex}${direction}`;
+  return [
+    binding,
+    `${binding}:GameControllerStick`,
+    `${binding}:GameControllerTrigger`
+  ];
 }
 
 function keyboardGestureDetail(gesture) {
