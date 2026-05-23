@@ -46,6 +46,7 @@ export default class GamepadInputAdapter {
       axes: [...(pad.axes ?? [])],
       buttonsDown: [...(pad.buttonsDown ?? [])],
       buttonsPressed: [...(pad.buttonsPressed ?? [])],
+      buttonsReleased: [...(pad.buttonsReleased ?? [])],
       leftStick: { x: leftX, y: leftY },
       rightStick: { x: rightX, y: rightY },
       dpad: {
@@ -66,6 +67,7 @@ export default class GamepadInputAdapter {
       rightShoulderPressed: this.isPressed(pad, 5),
       isDown: (buttonIndex) => this.isDown(pad, buttonIndex),
       isPressed: (buttonIndex) => this.isPressed(pad, buttonIndex),
+      isReleased: (buttonIndex) => this.isReleased(pad, buttonIndex),
     };
   }
 
@@ -107,6 +109,7 @@ export default class GamepadInputAdapter {
       axes: [],
       buttonsDown: [],
       buttonsPressed: [],
+      buttonsReleased: [],
       leftStick: { x: 0, y: 0 },
       rightStick: { x: 0, y: 0 },
       dpad: { up: false, down: false, left: false, right: false },
@@ -122,6 +125,7 @@ export default class GamepadInputAdapter {
       rightShoulderPressed: false,
       isDown: () => false,
       isPressed: () => false,
+      isReleased: () => false,
     };
   }
 
@@ -155,5 +159,9 @@ export default class GamepadInputAdapter {
 
   isPressed(pad, buttonIndex) {
     return Boolean(pad?.isPressed?.(buttonIndex));
+  }
+
+  isReleased(pad, buttonIndex) {
+    return Boolean(pad?.isReleased?.(buttonIndex));
   }
 }

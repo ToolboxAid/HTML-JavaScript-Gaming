@@ -82,6 +82,10 @@ export default class GamepadState {
             const wasDown = previous.buttonsDown[index] ?? false;
             return isDown && !wasDown;
         });
+        const buttonsReleased = current.buttonsDown.map((isDown, index) => {
+            const wasDown = previous.buttonsDown[index] ?? false;
+            return !isDown && wasDown;
+        });
 
         const snapshot = {
             index: current.index,
@@ -92,11 +96,15 @@ export default class GamepadState {
             axes: [...current.axes],
             buttonsDown: [...current.buttonsDown],
             buttonsPressed,
+            buttonsReleased,
             isDown(buttonIndex) {
                 return Boolean(this.buttonsDown[buttonIndex]);
             },
             isPressed(buttonIndex) {
                 return Boolean(this.buttonsPressed[buttonIndex]);
+            },
+            isReleased(buttonIndex) {
+                return Boolean(this.buttonsReleased[buttonIndex]);
             },
         };
 

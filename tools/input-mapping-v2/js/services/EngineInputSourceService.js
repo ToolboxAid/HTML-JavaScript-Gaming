@@ -23,6 +23,11 @@ const STANDARD_GAMEPAD_BUTTON_NAMES = Object.freeze([
   "DPad Left",
   "DPad Right"
 ]);
+const GAMEPAD_BUTTON_STATE_GESTURES = new Set([
+  "GameControllerButtonPress",
+  "GameControllerButtonHold",
+  "GameControllerButtonRelease"
+]);
 
 export class EngineInputSourceService {
   constructor({ windowRef = window } = {}) {
@@ -91,27 +96,32 @@ export class EngineInputSourceService {
     return this.inputService.captureWheelDescriptor(event);
   }
 
-  captureCombo(inputs) {
-    const parts = Array.isArray(inputs) ? inputs.slice(0, 2) : [];
-    if (parts.length !== 2) {
-      return {
-        ok: false,
-        message: "Combo capture requires exactly two inputs."
-      };
-    }
+  beginComboCapture(options = {}) {
+    return this.inputService.beginComboCapture(options);
+  }
 
-    const comboLabel = parts.map(comboInputLabel).join(" + ");
-    return {
-      ok: true,
-      input: {
-        source: parts.every((input) => input.source === parts[0].source) ? parts[0].source : "keyboard",
-        binding: `Combo:${parts.map((input) => input.binding).join("+")}`,
-        displayLabelLines: ["Combo", comboLabel],
-        label: `Combo ${comboLabel}`,
-        title: parts.map((input) => input.title || input.label).join("\n+\n"),
-        engine: "InputService Combo"
-      }
-    };
+  recordComboInput(input, options = {}) {
+    return this.inputService.recordComboInput(input, options);
+  }
+
+  resetComboCapture() {
+    this.inputService.resetComboCapture();
+  }
+
+  activateInputBindings(bindings, options = {}) {
+    return this.inputService.activateInputBindings(bindings, options);
+  }
+
+  clearActiveInputBindings(bindings) {
+    return this.inputService.clearActiveInputBindings(bindings);
+  }
+
+  replaceActiveInputBindings(shouldReplace, nextBindings) {
+    return this.inputService.replaceActiveInputBindings(shouldReplace, nextBindings);
+  }
+
+  actionsWithActiveInputState(actions) {
+    return this.inputService.decorateActionsWithInputState(actions);
   }
 
   pointerDragDescriptors() {
@@ -208,14 +218,14 @@ export class EngineInputSourceService {
     };
   }
 
-  captureGamepad(gamepadIndex, gesture = null) {
+  captureGamepad(gamepadIndex, gesture = null, { refresh = true } = {}) {
     if (typeof this.window.navigator?.getGamepads !== "function") {
       return {
         ok: false,
         message: "Gamepad capture unavailable: browser Gamepad API is not available in this context. Use a focused browser tab that supports navigator.getGamepads."
       };
     }
-    const status = this.refreshGamepadState();
+    const status = refresh ? this.refreshGamepadState() : this.gamepadStatus();
     if (status.warning) {
       return {
         ok: false,
@@ -238,11 +248,18 @@ export class EngineInputSourceService {
       };
     }
     const candidates = activeGamepadCandidates(pad, deviceInfo, gesture);
-    const expectedKind = gamepadGestureKind(gesture);
-    if (expectedKind) {
-      const match = candidates.find((candidate) => candidate.kind === expectedKind);
+    const expectation = gamepadGestureExpectation(gesture);
+    if (expectation.kind) {
+      const match = candidates.find((candidate) => gamepadCandidateMatches(candidate, expectation));
       if (match) {
         return this.createGamepadCaptureResult(match, deviceInfo, gesture);
+      }
+      if (expectation.state && candidates.some((candidate) => candidate.kind === expectation.kind)) {
+        return {
+          ok: false,
+          message: gamepadGestureWaitingMessage(gesture, deviceInfo),
+          waiting: true
+        };
       }
       if (candidates.length) {
         return {
@@ -263,12 +280,13 @@ export class EngineInputSourceService {
 
   createGamepadCaptureResult(candidate, deviceInfo, gesture) {
     const detail = gamepadGestureDetail(gesture, candidate.defaultDetail);
-    const isDefaultGesture = !gesture || gesture.binding === candidate.defaultGestureBinding;
+    const isButtonStateGesture = GAMEPAD_BUTTON_STATE_GESTURES.has(gesture?.binding);
+    const isDefaultGesture = !isButtonStateGesture && (!gesture || gesture.binding === candidate.defaultGestureBinding);
     return {
       ok: true,
       input: {
         source: "gamepad",
-        binding: gestureBinding(candidate.binding, gesture, candidate.defaultGestureBinding),
+        binding: isDefaultGesture ? candidate.binding : gestureBinding(candidate.binding, gesture, ""),
         displayLabelLines: ["Game Controller", candidate.label, detail],
         label: `Game Controller ${candidate.label}${isDefaultGesture ? "" : ` ${detail}`}`,
         title: gamepadInputTitle(deviceInfo, isDefaultGesture ? candidate.label : `${candidate.label}\n${detail}`),
@@ -277,10 +295,10 @@ export class EngineInputSourceService {
     };
   }
 
-  captureFirstActiveGamepad() {
+  captureFirstActiveGamepad(options = {}) {
     const gamepads = this.inputService.getGamepads();
     for (const gamepad of gamepads) {
-      const result = this.captureGamepad(gamepad.index);
+      const result = this.captureGamepad(gamepad.index, null, options);
       if (result.ok) {
         return result;
       }
@@ -528,6 +546,9 @@ function activeGamepadBindings(gamepad) {
   const buttonBindings = (gamepad?.buttonsDown ?? []).flatMap((isDown, buttonIndex) => (
     isDown ? gamepadButtonBindingVariants(index, buttonIndex) : []
   ));
+  const buttonReleaseBindings = (gamepad?.buttonsReleased ?? []).flatMap((isReleased, buttonIndex) => (
+    isReleased ? [`Pad${index}:Button${buttonIndex}:GameControllerButtonRelease`] : []
+  ));
   const axisBindings = (gamepad?.axes ?? []).flatMap((axis, axisIndex) => {
     const value = Number(axis) || 0;
     if (Math.abs(value) < GAMEPAD_AXIS_THRESHOLD) {
@@ -535,24 +556,63 @@ function activeGamepadBindings(gamepad) {
     }
     return gamepadAxisBindingVariants(index, axisIndex, value < 0 ? "-" : "+");
   });
-  return [...buttonBindings, ...axisBindings];
+  return [...buttonBindings, ...buttonReleaseBindings, ...axisBindings];
 }
 
 function activeGamepadCandidates(pad, deviceInfo, gesture) {
   const index = Number.isInteger(Number(pad?.index)) ? Number(pad.index) : 0;
-  const buttonCandidates = (pad.buttonsDown ?? []).flatMap((isDown, buttonIndex) => {
-    if (!isDown) {
-      return [];
-    }
+  const buttonCount = Math.max(
+    pad.buttonsDown?.length ?? 0,
+    pad.buttonsPressed?.length ?? 0,
+    pad.buttonsReleased?.length ?? 0
+  );
+  const buttonCandidates = Array.from({ length: buttonCount }).flatMap((_, buttonIndex) => {
     const buttonLabel = gamepadButtonLabel(deviceInfo, buttonIndex);
     const kind = gamepadButtonKind(deviceInfo, buttonIndex);
-    return [{
-      binding: `Pad${index}:Button${buttonIndex}`,
-      defaultDetail: kind === "trigger" ? "Trigger" : kind === "dpad" ? "DPad" : "Button",
-      defaultGestureBinding: kind === "trigger" ? "GameControllerTrigger" : kind === "dpad" ? "GameControllerDPad" : "GameControllerButton",
-      kind,
-      label: buttonLabel
-    }];
+    const defaultDetail = kind === "trigger" ? "Trigger" : kind === "dpad" ? "DPad" : "Button";
+    const defaultGestureBinding = kind === "trigger" ? "GameControllerTrigger" : kind === "dpad" ? "GameControllerDPad" : "GameControllerButton";
+    const candidates = [];
+    if (pad.buttonsDown?.[buttonIndex]) {
+      candidates.push({
+        binding: `Pad${index}:Button${buttonIndex}`,
+        defaultDetail,
+        defaultGestureBinding,
+        kind,
+        label: buttonLabel,
+        state: "hold"
+      });
+    }
+    if (kind === "button" && pad.buttonsPressed?.[buttonIndex]) {
+      candidates.push({
+        binding: `Pad${index}:Button${buttonIndex}`,
+        defaultDetail: "Btn Press",
+        defaultGestureBinding: "GameControllerButtonPress",
+        kind,
+        label: buttonLabel,
+        state: "press"
+      });
+    }
+    if (kind === "button" && pad.buttonsReleased?.[buttonIndex]) {
+      candidates.push({
+        binding: `Pad${index}:Button${buttonIndex}`,
+        defaultDetail: "Btn Release",
+        defaultGestureBinding: "GameControllerButtonRelease",
+        kind,
+        label: buttonLabel,
+        state: "release"
+      });
+    }
+    if (kind === "button" && pad.buttonsDown?.[buttonIndex]) {
+      candidates.push({
+        binding: `Pad${index}:Button${buttonIndex}`,
+        defaultDetail: "Btn Hold",
+        defaultGestureBinding: "GameControllerButtonHold",
+        kind,
+        label: buttonLabel,
+        state: "hold"
+      });
+    }
+    return candidates;
   });
   const axisCandidates = (pad.axes ?? []).flatMap((axis, axisIndex) => {
     const value = Number(axis) || 0;
@@ -566,20 +626,29 @@ function activeGamepadCandidates(pad, deviceInfo, gesture) {
       defaultDetail: kind === "trigger" ? "Trigger" : "Stick",
       defaultGestureBinding: kind === "trigger" ? "GameControllerTrigger" : "GameControllerStick",
       kind,
-      label: `Axis ${axisIndex}${direction}`
+      label: `Axis ${axisIndex}${direction}`,
+      state: "hold"
     }];
   });
   return [...buttonCandidates, ...axisCandidates];
 }
 
-function gamepadGestureKind(gesture) {
-  const kinds = {
-    GameControllerButton: "button",
-    GameControllerDPad: "dpad",
-    GameControllerStick: "stick",
-    GameControllerTrigger: "trigger"
+function gamepadGestureExpectation(gesture) {
+  const expectations = {
+    GameControllerButton: { kind: "button" },
+    GameControllerButtonPress: { kind: "button", state: "press" },
+    GameControllerButtonHold: { kind: "button", state: "hold" },
+    GameControllerButtonRelease: { kind: "button", state: "release" },
+    GameControllerDPad: { kind: "dpad" },
+    GameControllerStick: { kind: "stick" },
+    GameControllerTrigger: { kind: "trigger" }
   };
-  return kinds[gesture?.binding] ?? "";
+  return expectations[gesture?.binding] ?? { kind: "" };
+}
+
+function gamepadCandidateMatches(candidate, expectation) {
+  return candidate.kind === expectation.kind
+    && (!expectation.state || candidate.state === expectation.state);
 }
 
 function gamepadButtonKind(deviceInfo, buttonIndex) {
@@ -593,9 +662,26 @@ function gamepadButtonKind(deviceInfo, buttonIndex) {
 }
 
 function gamepadGestureMismatchMessage(gesture, candidate) {
-  const expected = gamepadKindLabel(gamepadGestureKind(gesture));
+  const expected = gamepadExpectationLabel(gamepadGestureExpectation(gesture));
   const actual = gamepadKindLabel(candidate.kind);
   return `Game Controller ${gesture.label} capture expects ${expected} input; ${candidate.label} is ${actual} input. Select the matching gesture or press a matching control.`;
+}
+
+function gamepadGestureWaitingMessage(gesture, deviceInfo) {
+  return `Game Controller ${gesture.label} capture is waiting for ${gamepadExpectationLabel(gamepadGestureExpectation(gesture))} input on ${deviceInfo.statusLabel}.`;
+}
+
+function gamepadExpectationLabel(expectation) {
+  if (expectation.state === "press") {
+    return "button press";
+  }
+  if (expectation.state === "hold") {
+    return "button hold";
+  }
+  if (expectation.state === "release") {
+    return "button release";
+  }
+  return gamepadKindLabel(expectation.kind);
 }
 
 function gamepadKindLabel(kind) {
@@ -613,6 +699,9 @@ function gamepadButtonBindingVariants(gamepadIndex, buttonIndex) {
   return [
     binding,
     `${binding}:GameControllerButton`,
+    `${binding}:GameControllerButtonPress`,
+    `${binding}:GameControllerButtonHold`,
+    `${binding}:GameControllerButtonRelease`,
     `${binding}:GameControllerDPad`,
     `${binding}:GameControllerTrigger`
   ];
@@ -647,6 +736,9 @@ function mouseGestureDetail(gesture) {
 function gamepadGestureDetail(gesture, defaultDetail) {
   const details = {
     GameControllerButton: "Button",
+    GameControllerButtonPress: "Btn Press",
+    GameControllerButtonHold: "Btn Hold",
+    GameControllerButtonRelease: "Btn Release",
     GameControllerDPad: "DPad",
     GameControllerStick: "Stick",
     GameControllerTrigger: "Trigger"
@@ -659,48 +751,6 @@ function gestureBinding(controlBinding, gesture, defaultGestureBinding) {
     return controlBinding;
   }
   return `${controlBinding}:${gesture.binding}`;
-}
-
-function comboInputLabel(input) {
-  if (input.source === "keyboard") {
-    return keyboardComboLabel(input.binding);
-  }
-  if (input.source === "mouse") {
-    return input.label.replace(/^Mouse\s+/, "Mouse ");
-  }
-  if (input.source === "gamepad") {
-    return input.label.replace(/^Game Controller\s+/, "Game Controller ");
-  }
-  return input.label;
-}
-
-function keyboardComboLabel(binding) {
-  const namedKeys = {
-    AltLeft: "Alt",
-    AltRight: "Alt",
-    Backspace: "Backspace",
-    ControlLeft: "Ctrl",
-    ControlRight: "Ctrl",
-    Delete: "Delete",
-    Enter: "Enter",
-    Escape: "Esc",
-    MetaLeft: "Meta",
-    MetaRight: "Meta",
-    ShiftLeft: "Shift",
-    ShiftRight: "Shift",
-    Space: "Space",
-    Tab: "Tab"
-  };
-  if (namedKeys[binding]) {
-    return namedKeys[binding];
-  }
-  if (/^Key[A-Z]$/.test(binding)) {
-    return binding.slice(3);
-  }
-  if (/^Digit[0-9]$/.test(binding)) {
-    return binding.slice(5);
-  }
-  return binding;
 }
 
 function parseUsbIds(id) {

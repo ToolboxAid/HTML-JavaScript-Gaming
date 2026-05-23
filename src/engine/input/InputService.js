@@ -8,6 +8,7 @@ import KeyboardState from './KeyboardState.js';
 import MouseState from './MouseState.js';
 import GamepadState from './GamepadState.js';
 import PointerDragState from './PointerDragState.js';
+import InputComboState from './InputComboState.js';
 import InputMap from './InputMap.js';
 import {
     getInputGestureDescriptor,
@@ -24,6 +25,7 @@ export default class InputService {
         mouse = null,
         gamepads = null,
         pointerDrag = null,
+        comboState = null,
         inputMap = null,
         getGamepads = null,
     } = {}) {
@@ -32,6 +34,7 @@ export default class InputService {
         this.mouse = mouse ?? new MouseState();
         this.gamepads = gamepads ?? new GamepadState();
         this.pointerDrag = pointerDrag ?? new PointerDragState();
+        this.comboState = comboState ?? new InputComboState();
         this.inputMap = inputMap ?? new InputMap();
         this.getGamepadsFromNavigator = getGamepads ?? (() => {
             if (typeof navigator === 'undefined' || typeof navigator.getGamepads !== 'function') {
@@ -48,6 +51,7 @@ export default class InputService {
         this.pointerEventsAvailable = typeof PointerEvent !== 'undefined';
         this.touchAvailable = false;
         this.penAvailable = false;
+        this.activeInputBindings = new Set();
 
         this.onKeyDown = this.onKeyDown.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
@@ -120,6 +124,8 @@ export default class InputService {
         this.mouse.reset();
         this.gamepads.reset();
         this.pointerDrag.reset();
+        this.comboState.reset();
+        this.activeInputBindings.clear();
     }
 
     setInputMap(inputMap) {
@@ -220,6 +226,68 @@ export default class InputService {
 
     captureWheelDescriptor(event) {
         return wheelDescriptorFromEvent(event);
+    }
+
+    beginComboCapture(options = {}) {
+        return this.comboState.begin(options);
+    }
+
+    recordComboInput(input, options = {}) {
+        return this.comboState.record(input, options);
+    }
+
+    resetComboCapture() {
+        this.comboState.reset();
+    }
+
+    isInputBindingActive(binding, activeInputBindings) {
+        return this.comboState.isBindingActive(binding, activeInputBindings);
+    }
+
+    activateInputBindings(bindings, { transient = false, durationMs = 260 } = {}) {
+        let changed = false;
+        bindings.filter(Boolean).forEach((binding) => {
+            if (!this.activeInputBindings.has(binding)) {
+                this.activeInputBindings.add(binding);
+                changed = true;
+            }
+            if (transient && typeof this.target.setTimeout === 'function') {
+                this.target.setTimeout(() => {
+                    this.clearActiveInputBindings([binding]);
+                }, durationMs);
+            }
+        });
+        return changed;
+    }
+
+    clearActiveInputBindings(bindings) {
+        let changed = false;
+        bindings.filter(Boolean).forEach((binding) => {
+            if (this.activeInputBindings.delete(binding)) {
+                changed = true;
+            }
+        });
+        return changed;
+    }
+
+    replaceActiveInputBindings(shouldReplace, nextBindings) {
+        const previous = this.activeInputBindings;
+        const next = new Set(nextBindings);
+        this.activeInputBindings = new Set([
+            ...[...previous].filter((binding) => !shouldReplace(binding)),
+            ...next
+        ]);
+        return previous.size !== this.activeInputBindings.size
+            || [...previous].some((binding) => !this.activeInputBindings.has(binding))
+            || [...this.activeInputBindings].some((binding) => !previous.has(binding));
+    }
+
+    getActiveInputBindings() {
+        return new Set(this.activeInputBindings);
+    }
+
+    decorateActionsWithInputState(actions = []) {
+        return this.comboState.decorateActions(actions, this.activeInputBindings);
     }
 
     getGamepad(index) {

@@ -22,18 +22,18 @@ export class PreviewPanelControl {
     });
   }
 
-  render(actions, selectedActionId, activeInputBindings = new Set()) {
+  render(actions, selectedActionId) {
     const visibleActions = actions.filter((action) => action.tileVisible || action.inputs.length > 0);
     const selectedScrollTop = this.selectedCardScrollTop(selectedActionId);
     if (!visibleActions.length) {
       this.output.replaceChildren(this.createEmptyState());
       return;
     }
-    this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action, selectedActionId, activeInputBindings)));
+    this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action, selectedActionId)));
     this.restoreSelectedCardScrollTop(selectedActionId, selectedScrollTop);
   }
 
-  createActionCard(action, selectedActionId, activeInputBindings) {
+  createActionCard(action, selectedActionId) {
     const card = document.createElement("article");
     const isSelected = action.id === selectedActionId;
     card.className = `input-mapping-v2__mapping-card${isSelected ? " is-selected" : ""}`;
@@ -66,21 +66,21 @@ export class PreviewPanelControl {
       empty.textContent = "No inputs captured.";
       tokens.append(empty);
     } else {
-      tokens.append(...this.createInputTokens(action, isSelected, activeInputBindings));
+      tokens.append(...this.createInputTokens(action, isSelected));
     }
 
     card.append(actionLabel, tokens);
     return card;
   }
 
-  createInputTokens(action, isSelected, activeInputBindings) {
-    return action.inputs.map((input) => this.createInputToken(action, input, isSelected, activeInputBindings));
+  createInputTokens(action, isSelected) {
+    return action.inputs.map((input) => this.createInputToken(action, input, isSelected));
   }
 
-  createInputToken(action, input, isSelected, activeInputBindings) {
+  createInputToken(action, input, isSelected) {
     const token = document.createElement("span");
-    const isActive = inputBindingIsActive(input.binding, activeInputBindings);
-    const tokenText = inputLabelLines(input).join(", ");
+    const isActive = input.isActionActive === true;
+    const tokenText = inputLabelLines(input).map(visibleInputLine).join(", ");
     token.className = [
       "input-mapping-v2__input-token",
       isSelected ? "is-selected-mapping-input" : "",
@@ -140,38 +140,13 @@ export class PreviewPanelControl {
   }
 }
 
-function inputBindingIsActive(binding, activeInputBindings) {
-  const bindingText = String(binding || "");
-  if (activeInputBindings.has(bindingText)) {
-    return true;
-  }
-  if (!bindingText.startsWith("Combo:")) {
-    return false;
-  }
-  const parts = bindingText.slice("Combo:".length).split("+").filter(Boolean);
-  return parts.length > 0 && parts.every((part) => liveBindingCandidates(part).some((candidate) => activeInputBindings.has(candidate)));
-}
-
-function liveBindingCandidates(binding) {
-  const bindingText = String(binding || "");
-  const candidates = [bindingText];
-  if (bindingText.startsWith("Pad")) {
-    const [pad, control] = bindingText.split(":");
-    if (pad && control) {
-      candidates.push(`${pad}:${control}`);
-    }
-    return candidates;
-  }
-  const baseBinding = bindingText.split(":")[0];
-  if (baseBinding && baseBinding !== bindingText) {
-    candidates.push(baseBinding);
-  }
-  return candidates;
-}
-
 function inputLabelLines(input) {
   if (Array.isArray(input.displayLabelLines) && input.displayLabelLines.length) {
     return input.displayLabelLines.map((line) => String(line || "").trim()).filter(Boolean);
   }
   return [input.label];
+}
+
+function visibleInputLine(line) {
+  return String(line || "").replaceAll("Game Controller", "GD");
 }

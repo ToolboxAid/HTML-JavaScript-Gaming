@@ -1459,6 +1459,40 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("keeps Input Mapping V2 combo and active input visuals engine-backed", async () => {
+    const [
+      comboStateSource,
+      inputServiceSource,
+      sourceServiceSource,
+      toolStarterSource,
+      previewPanelSource
+    ] = await Promise.all([
+      readFile("src/engine/input/InputComboState.js", "utf8"),
+      readFile("src/engine/input/InputService.js", "utf8"),
+      readFile("tools/input-mapping-v2/js/services/EngineInputSourceService.js", "utf8"),
+      readFile("tools/input-mapping-v2/js/ToolStarterApp.js", "utf8"),
+      readFile("tools/input-mapping-v2/js/controls/PreviewPanelControl.js", "utf8")
+    ]);
+
+    expect(inputServiceSource).toContain("import InputComboState");
+    expect(inputServiceSource).toContain("beginComboCapture(options = {})");
+    expect(inputServiceSource).toContain("recordComboInput(input, options = {})");
+    expect(inputServiceSource).toContain("decorateActionsWithInputState(actions = [])");
+    expect(comboStateSource).toContain("export default class InputComboState");
+    expect(comboStateSource).toContain("InputService ComboState");
+    expect(sourceServiceSource).toContain("this.inputService.beginComboCapture(options)");
+    expect(sourceServiceSource).toContain("this.inputService.recordComboInput(input, options)");
+    expect(sourceServiceSource).toContain("this.inputService.decorateActionsWithInputState(actions)");
+    expect(toolStarterSource).toContain("this.engineInputSources.beginComboCapture");
+    expect(toolStarterSource).toContain("this.engineInputSources.recordComboInput");
+    expect(toolStarterSource).toContain("this.engineInputSources.actionsWithActiveInputState(actions)");
+    expect(previewPanelSource).toContain("input.isActionActive === true");
+    expect(toolStarterSource).not.toContain("comboCaptureInputs");
+    expect(toolStarterSource).not.toContain("Combo:${");
+    expect(sourceServiceSource).not.toContain("captureCombo(inputs)");
+    expect(previewPanelSource).not.toContain("liveBindingCandidates");
+  });
+
   test("keeps Input Mapping V2 spacing compact and highlights saved selected inputs", async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 900 });
     const pageErrors = [];
@@ -1650,7 +1684,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toHaveClass(/is-capturing/, { timeout: 2000 });
-      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start']")).toContainText("Game Controller, Button 1, Button");
+      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start']")).toContainText("GD, Button 1, Button");
       await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start'] .input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button1']")).toHaveClass(/is-selected-mapping-input/);
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).toHaveClass(/has-used-input/);
       await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
@@ -1659,7 +1693,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerCombo']")
         .click();
       await expect(page.locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerCombo']")).toHaveClass(/is-selected/);
-      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start']")).not.toContainText("Combo, Game Controller Button 1 + Alt");
+      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start']")).not.toContainText("Combo, GD Button 1 + Alt");
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Combo capture recorded Game Controller Button 1");
       await page.evaluate(() => {
@@ -1671,7 +1705,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           key: "Alt"
         }));
       });
-      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start']")).toContainText("Combo, Game Controller Button 1 + Alt");
+      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='start']")).toContainText("Combo, GD Button 1 + Alt");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:Pad0:Button1+AltLeft"');
       expect(pageErrors).toEqual([]);
     } finally {
@@ -1804,7 +1838,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(cancelTile).toContainText("Keyboard, KeyP, Press");
       await expect(cancelTile).toContainText("Mouse, Right Button, Click");
       await expect(cancelTile).toContainText("Mouse, Wheel Up, Wheel");
-      await expect(cancelTile).toContainText("Game Controller, Button 1, Button");
+      await expect(cancelTile).toContainText("GD, Button 1, Button");
       await expect(cancelTile.locator(".input-mapping-v2__input-separator")).toHaveCount(0);
       const tokenLayout = await cancelTile.locator(".input-mapping-v2__input-token").evaluateAll((tokens) => tokens.map((token) => ({
         cardWidth: Math.round(token.closest(".input-mapping-v2__mapping-card").getBoundingClientRect().width),
@@ -1818,7 +1852,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "Keyboard, KeyP, Press",
         "Mouse, Right Button, Click",
         "Mouse, Wheel Up, Wheel",
-        "Game Controller, Button 1, Button"
+        "GD, Button 1, Button"
       ]);
       expect(tokenLayout.every((entry) => !entry.text.includes("\n"))).toBe(true);
       expect(tokenLayout.every((entry) => !entry.text.includes("[") && !entry.text.includes("]"))).toBe(true);
@@ -2150,11 +2184,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(fireTile.locator(".input-mapping-v2__input-token")).toHaveText([
         "Keyboard, KeyH, Hold",
         "Mouse, Left Button, Click",
-        "Game Controller, Axis 0+, Stick"
+        "GD, Axis 0+, Stick"
       ]);
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyH:KeyboardHold']")).toHaveText("Keyboard, KeyH, Hold");
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton0']")).toHaveText("Mouse, Left Button, Click");
-      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Axis0+']")).toHaveText("Game Controller, Axis 0+, Stick");
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Axis0+']")).toHaveText("GD, Axis 0+, Stick");
       await expect(fireTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyH:KeyboardHold']")).toHaveAttribute("title", "Keyboard\nKeyH\nHold");
       await expect(fireTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='MouseButton0']")).toHaveAttribute("title", "Mouse\nMouse Left Button");
       await expect(fireTile.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Axis0+']")).toHaveAttribute("title", /Arcade Flight Stick[\s\S]*Axis 0\+/);
@@ -2474,7 +2508,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           timestamp: 72
         };
       });
-      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button6']")).toHaveText("Game Controller, LT, Trigger", { timeout: 2500 });
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button6']")).toHaveText("GD, LT, Trigger", { timeout: 2500 });
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toHaveClass(/is-capturing/);
 
       await page.evaluate(() => {
@@ -2506,7 +2540,41 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           timestamp: 75
         };
       });
-      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button1']")).toHaveText("Game Controller, B, Button", { timeout: 2500 });
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button1']")).toHaveText("GD, B, Button", { timeout: 2500 });
+      await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toHaveClass(/is-capturing/);
+      const standardButtonToken = page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button1']");
+
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: window.__inputMappingV2MockGamepads[0].buttons.map(() => ({ pressed: false })),
+          timestamp: 76
+        };
+      });
+      await expect(standardButtonToken).not.toHaveClass(/is-action-active/, { timeout: 2500 });
+      await page.locator("#inputMappingV2ActionSelect").selectOption("select");
+      await page.locator("#inputMappingV2AddActionButton").click();
+      await page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" })
+        .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerButtonRelease']")
+        .click();
+      await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: window.__inputMappingV2MockGamepads[0].buttons.map((button, index) => ({ pressed: index === 2 })),
+          timestamp: 77
+        };
+      });
+      await page.waitForTimeout(900);
+      await expect(page.locator(".input-mapping-v2__mapping-card[data-input-mapping-tile-action-id='select'] .input-mapping-v2__input-token")).toHaveCount(0);
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: window.__inputMappingV2MockGamepads[0].buttons.map(() => ({ pressed: false })),
+          timestamp: 78
+        };
+      });
+      await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button2:GameControllerButtonRelease']")).toHaveText("GD, X, Btn Release", { timeout: 2500 });
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toHaveClass(/is-capturing/);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -2751,6 +2819,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#inputMappingV2GestureList")).not.toContainText("Drag Rectangle");
       await expect(page.locator("#inputMappingV2GestureList")).not.toContainText(/Mouse Move [XY]/);
       await expect(page.locator("#inputMappingV2GestureList")).toContainText("Button");
+      const gameControllerGestureGroup = page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" });
+      await expect(gameControllerGestureGroup).toContainText("Btn Press");
+      await expect(gameControllerGestureGroup).toContainText("Btn Hold");
+      await expect(gameControllerGestureGroup).toContainText("Btn Release");
       await expect(page.locator(".input-mapping-v2__gesture-group", { hasText: "Mouse" })).toContainText("Wheel Up");
       const gestureGroupTitles = await page.locator(".input-mapping-v2__gesture-group strong").allTextContents();
       expect(gestureGroupTitles).not.toContain("Wheel");
@@ -3285,7 +3357,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       await page.locator(".input-mapping-v2__gesture-group", { hasText: "Game Controller" }).locator(".input-mapping-v2__gesture-button", { hasText: "Combo" }).click();
-      await expect(page.locator("#previewOutput")).not.toContainText("Combo, Game Controller Button 1 + Alt");
+      await expect(page.locator("#previewOutput")).not.toContainText("Combo, GD Button 1 + Alt");
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
       await expect(page.locator("#inputMappingV2CaptureMessage")).toContainText("Combo capture recorded Game Controller Button 1");
       await page.evaluate(() => {
@@ -3297,7 +3369,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           key: "Alt"
         }));
       });
-      await expect(page.locator("#previewOutput")).toContainText("Combo, Game Controller Button 1 + Alt");
+      await expect(page.locator("#previewOutput")).toContainText("Combo, GD Button 1 + Alt");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Combo:Pad0:Button1+AltLeft"');
       await page.evaluate(() => {
         window.__inputMappingV2MockGamepads[0] = {
@@ -3320,16 +3392,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).not.toHaveClass(/is-capturing/);
       await expect(page.locator("#previewOutput")).toContainText("Keyboard, KeyD, Press");
-      await expect(page.locator("#previewOutput")).toContainText("Game Controller, X, Button");
+      await expect(page.locator("#previewOutput")).toContainText("GD, X, Button");
       await expect(page.locator("#previewOutput")).not.toContainText("(Gamepad 1)");
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='1']")).toHaveClass(/has-used-input/);
       await expect(page.locator("#inputMappingV2UsedInputHighlights")).toHaveCount(0);
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" })).toHaveAttribute("title", "Logitech RumblePad 2 USB\nSTANDARD GAMEPAD\nVendor: 046d Product: c218\nX");
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "GD" }).filter({ hasText: "X" })).toHaveAttribute("title", "Logitech RumblePad 2 USB\nSTANDARD GAMEPAD\nVendor: 046d Product: c218\nX");
       await expect(page.locator("#inspectorOutput")).toContainText('"source": "gamepad"');
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad1:Button2"');
       await expect(page.locator("#inspectorOutput")).toContainText('"label": "Game Controller X"');
-      await page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" }).click();
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "X" })).toHaveCount(0);
+      await page.locator(".input-mapping-v2__input-token", { hasText: "GD" }).filter({ hasText: "X" }).click();
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "GD" }).filter({ hasText: "X" })).toHaveCount(0);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted Game Controller X from Move Left\./);
       await page.evaluate(() => {
         window.__inputMappingV2MockGamepads[0] = {
@@ -3350,7 +3422,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         .locator(".input-mapping-v2__gesture-button[data-input-mapping-gesture-binding='GameControllerButton']")
         .click();
       await page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']").click();
-      await expect(page.locator("#previewOutput")).toContainText("Game Controller, Button 5, Button");
+      await expect(page.locator("#previewOutput")).toContainText("GD, Button 5, Button");
       await expect(page.locator("#inspectorOutput")).toContainText('"binding": "Pad0:Button5"');
       const button5Token = page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button5']");
       await page.evaluate(() => {
@@ -3368,8 +3440,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       await expect(button5Token).not.toHaveClass(/is-action-active/, { timeout: 2500 });
-      await page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "Button 5" }).click();
-      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "Game Controller" }).filter({ hasText: "Button 5" })).toHaveCount(0);
+      await page.locator(".input-mapping-v2__input-token", { hasText: "GD" }).filter({ hasText: "Button 5" }).click();
+      await expect(page.locator(".input-mapping-v2__input-token", { hasText: "GD" }).filter({ hasText: "Button 5" })).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='KeyD']")).toHaveCount(1);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted Game Controller Button 5 from Move Left\./);
       const asteroidsManifestInputMapping = await page.evaluate(async () => {

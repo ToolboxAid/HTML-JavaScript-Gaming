@@ -36,7 +36,6 @@ export class ToolStarterApp {
     this.captureMode = "";
     this.activeCaptureId = "";
     this.activeGamepadIndex = null;
-    this.comboCaptureInputs = [];
     this.doubleClickThresholdMs = 1000;
     this.doubleClickTimer = null;
     this.captureVisualStateMinimumMs = 300;
@@ -53,8 +52,7 @@ export class ToolStarterApp {
     this.lastCaptureWarning = "";
     this.contextMenuDisabled = false;
     this.shortcutSuppressionEnabled = false;
-    this.activeInputBindings = new Set();
-    this.gamepadPollIntervalMs = 750;
+    this.gamepadPollIntervalMs = 100;
     this.gamepadPollTimer = null;
     this.lastGamepadStatusSignature = "";
     this.enabledDeviceIds = new Set();
@@ -215,9 +213,12 @@ export class ToolStarterApp {
       this.cancelCapture(deviceLabel);
       return;
     }
-    this.comboCaptureInputs = [];
     this.beginCapture(captureId, { mode: "combo" });
-    this.capture.showMessage(`Combo capture: press any two keyboard, mouse, wheel, or game controller inputs for ${this.state.selectedActionLabel()}.`);
+    const result = this.engineInputSources.beginComboCapture({
+      actionLabel: this.state.selectedActionLabel(),
+      deviceLabel
+    });
+    this.capture.showMessage(result.message);
     this.statusLog.ok(`${deviceLabel} combo capture armed for ${this.state.selectedActionLabel()}.`);
     if (captureId.startsWith("gamepad:")) {
       this.tryCaptureComboGamepad();
@@ -405,11 +406,11 @@ export class ToolStarterApp {
     }
   }
 
-  tryCaptureActiveGamepad() {
+  tryCaptureActiveGamepad({ refresh = true } = {}) {
     if (this.captureMode !== "gamepad" || !Number.isInteger(this.activeGamepadIndex)) {
       return false;
     }
-    const result = this.engineInputSources.captureGamepad(this.activeGamepadIndex, this.selectedGestureForSource("gamepad"));
+    const result = this.engineInputSources.captureGamepad(this.activeGamepadIndex, this.selectedGestureForSource("gamepad"), { refresh });
     if (result.waiting) {
       return false;
     }
@@ -429,28 +430,19 @@ export class ToolStarterApp {
   }
 
   recordComboInput(input, { silentDuplicate = false } = {}) {
-    if (this.comboCaptureInputs.some((candidate) => candidate.binding === input.binding)) {
-      if (silentDuplicate) {
+    const result = this.engineInputSources.recordComboInput(input, { silentDuplicate });
+    if (!result.ok) {
+      if (result.silent) {
         return;
       }
-      this.capture.showMessage("Combo capture needs two different inputs.");
+      this.capture.showMessage(result.message);
       this.capture.setCaptureState("warning");
-      this.statusLog.warn("Combo capture needs two different inputs.");
-      return;
-    }
-
-    this.comboCaptureInputs.push(input);
-    if (this.comboCaptureInputs.length < 2) {
-      this.capture.showMessage(`Combo capture recorded ${input.label}. Waiting for second input.`);
-      this.capture.setCaptureState("pending");
-      return;
-    }
-
-    const result = this.engineInputSources.captureCombo(this.comboCaptureInputs);
-    if (!result.ok) {
       this.statusLog.warn(result.message);
-      this.clearCapture();
-      this.refreshActions();
+      return;
+    }
+    if (result.waiting) {
+      this.capture.showMessage(result.message);
+      this.capture.setCaptureState("pending");
       return;
     }
     this.addCapturedInput(result.input);
@@ -481,8 +473,8 @@ export class ToolStarterApp {
     if (changed || gamepadChanged) {
       this.refreshActions(status);
     }
-    this.tryCaptureComboGamepad();
-    this.tryCaptureActiveGamepad();
+    this.tryCaptureComboGamepad({ refresh: false });
+    this.tryCaptureActiveGamepad({ refresh: false });
   }
 
   trackGamepadStatus(status, { log = false } = {}) {
@@ -563,30 +555,19 @@ export class ToolStarterApp {
   }
 
   activateInputBindings(bindings, { transient = false } = {}) {
-    let changed = false;
-    bindings.filter(Boolean).forEach((binding) => {
-      if (!this.activeInputBindings.has(binding)) {
-        this.activeInputBindings.add(binding);
-        changed = true;
-      }
-      if (transient) {
-        this.window.setTimeout?.(() => {
-          this.clearActiveInputBindings([binding]);
-        }, 260);
-      }
-    });
+    const changed = this.engineInputSources.activateInputBindings(bindings, { transient });
     if (changed) {
       this.refreshActions();
+    }
+    if (transient) {
+      this.window.setTimeout?.(() => {
+        this.refreshActions();
+      }, 280);
     }
   }
 
   clearActiveInputBindings(bindings) {
-    let changed = false;
-    bindings.filter(Boolean).forEach((binding) => {
-      if (this.activeInputBindings.delete(binding)) {
-        changed = true;
-      }
-    });
+    const changed = this.engineInputSources.clearActiveInputBindings(bindings);
     if (changed) {
       this.refreshActions();
     }
@@ -600,15 +581,7 @@ export class ToolStarterApp {
   }
 
   replaceActiveInputBindings(shouldReplace, nextBindings) {
-    const previous = this.activeInputBindings;
-    const next = new Set(nextBindings);
-    this.activeInputBindings = new Set([
-      ...[...previous].filter((binding) => !shouldReplace(binding)),
-      ...next
-    ]);
-    return previous.size !== this.activeInputBindings.size
-      || [...previous].some((binding) => !this.activeInputBindings.has(binding))
-      || [...this.activeInputBindings].some((binding) => !previous.has(binding));
+    return this.engineInputSources.replaceActiveInputBindings(shouldReplace, nextBindings);
   }
 
   beginCapture(captureId, { mode = "" } = {}) {
@@ -648,7 +621,7 @@ export class ToolStarterApp {
     this.captureMode = "";
     this.activeCaptureId = "";
     this.activeGamepadIndex = null;
-    this.comboCaptureInputs = [];
+    this.engineInputSources.resetComboCapture();
     this.lastCaptureWarning = "";
     this.pendingDoubleClickInput = null;
     this.pendingKeyboardReleaseInput = null;
@@ -694,11 +667,11 @@ export class ToolStarterApp {
     return "Input";
   }
 
-  tryCaptureComboGamepad() {
+  tryCaptureComboGamepad({ refresh = true } = {}) {
     if (this.captureMode !== "combo" || !this.enabledDeviceIds.has("gameController")) {
       return false;
     }
-    const result = this.engineInputSources.captureFirstActiveGamepad();
+    const result = this.engineInputSources.captureFirstActiveGamepad({ refresh });
     if (!result.ok) {
       return false;
     }
@@ -903,7 +876,7 @@ export class ToolStarterApp {
     this.doubleClickTimer = null;
     this.captureMode = mode;
     this.capture.setCaptureState(mode);
-    this.comboCaptureInputs = [];
+    this.engineInputSources.resetComboCapture();
     this.lastCaptureWarning = "";
     this.pendingDoubleClickInput = null;
     this.pendingKeyboardReleaseInput = null;
@@ -1050,7 +1023,10 @@ export class ToolStarterApp {
       this.captureMode,
       this.captureAvailability()
     );
-    this.preview.render(actions, this.state.selectedActionId, this.activeInputBindings);
+    this.preview.render(
+      this.engineInputSources.actionsWithActiveInputState(actions),
+      this.state.selectedActionId
+    );
     this.inspector.showObject(this.state.payload());
     this.gamepadDiagnostics.render(this.engineInputSources.gamepadDiagnostics(gamepadStatus));
   }
