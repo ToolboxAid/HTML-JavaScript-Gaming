@@ -73,9 +73,15 @@ const ALL_REPO_GAME_OPTIONS = [
   "Pong",
   "Solar System",
   "Space Duel",
-  "Space Invaders Next",
+  "Space Invaders",
   "Vector Arcade Sample"
 ];
+const OBJECT_VECTOR_ENABLED_GAME_IDS = new Set([
+  "Asteroids",
+  "SpaceDuel",
+  "SpaceInvaders",
+  "vector-arcade-sample"
+]);
 
 async function openToolsIndex(page) {
   const server = await startRepoServer();
@@ -659,14 +665,15 @@ async function expectWorkspaceToolsDisabled(page) {
 }
 
 async function expectWorkspaceReturnRehydrated(page, { gameId = "Asteroids", repoName = "HTML-JavaScript-Gaming" } = {}) {
+  const objectVectorEnabled = OBJECT_VECTOR_ENABLED_GAME_IDS.has(gameId);
   await expect(page.locator("#repoSelectedValue")).toHaveText(repoName);
   await expect(page.locator("#pickRepoBtn")).toBeDisabled();
   await expect(page.locator("#activeGameSelect")).toHaveValue(gameId);
   await expect(page.locator("#activeGameSelect")).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
-  await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]'))[gameId === "Asteroids" ? "toBeEnabled" : "toBeDisabled"]();
+  await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]'))[objectVectorEnabled ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator('[data-workspace-tool-id="input-mapping-v2"]')).toBeEnabled();
-  await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]'))[gameId === "Asteroids" ? "toBeEnabled" : "toBeDisabled"]();
+  await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]'))[objectVectorEnabled ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="storage-inspector-v2"]')).toBeEnabled();
@@ -12688,6 +12695,74 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameId": "Asteroids"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"asset-manager-v2"/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("enables object vector and collision tools from manifest geometry without fallback defaults", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+    const selectAllRepoGames = async () => selectMockRepo(page, {
+      expectedGameOptions: ALL_REPO_GAME_OPTIONS,
+      manifestPaths: ALL_REPO_GAME_MANIFEST_PATHS
+    });
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectAllRepoGames();
+      await page.locator("#activeGameSelect").selectOption("SpaceInvaders");
+      await expect(page.locator("#activeGameSelect option:checked")).toHaveText("Space Invaders");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Space Invaders context uses games\/SpaceInvaders\/ and games\/SpaceInvaders\/assets\./);
+
+      const spaceInvadersContext = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
+      expect(spaceInvadersContext.name).toBe("Space Invaders Workspace Manager V2 Context");
+      expect(spaceInvadersContext.gameId).toBe("SpaceInvaders");
+      expect(JSON.stringify(spaceInvadersContext)).not.toContain("Space Invaders Next");
+      expect(spaceInvadersContext.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
+        "object.space-invaders.player-cannon",
+        "object.space-invaders.octopus-alien",
+        "object.space-invaders.crab-alien",
+        "object.space-invaders.squid-alien",
+        "object.space-invaders.ufo",
+        "object.space-invaders.player-laser",
+        "object.space-invaders.alien-bomb",
+        "object.space-invaders.shield"
+      ]));
+      await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeEnabled();
+      await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toContainText("8 object vector assets");
+      await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toBeEnabled();
+      await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toContainText("8 inspectable objects");
+      const invadersHydration = await readWorkspaceSessionHydration(page);
+      expect(invadersHydration.toolSessions["object-vector-studio-v2"].data.objects).toHaveLength(8);
+      expect(invadersHydration.toolSessions["collision-inspector-v2"].data).toBeNull();
+
+      await page.locator("#closeWorkspaceButton").click();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await selectAllRepoGames();
+      await page.locator("#activeGameSelect").selectOption("SpaceDuel");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Space Duel context uses games\/SpaceDuel\/ and games\/SpaceDuel\/assets\./);
+      await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeEnabled();
+      await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toContainText("6 object vector assets");
+      await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toBeEnabled();
+      await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toContainText("6 inspectable objects");
+
+      await page.locator("#closeWorkspaceButton").click();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await selectAllRepoGames();
+      await page.locator("#activeGameSelect").selectOption("Pong");
+      const pongContext = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
+      expect(pongContext.tools["object-vector-studio-v2"]).toBeUndefined();
+      await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeDisabled();
+      await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toBeDisabled();
+      const pongHydration = await readWorkspaceSessionHydration(page);
+      expect(pongHydration.toolSessions["object-vector-studio-v2"]).toBeUndefined();
+      expect(pongHydration.toolSessions["collision-inspector-v2"]).toBeUndefined();
       expect(pageErrors).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);

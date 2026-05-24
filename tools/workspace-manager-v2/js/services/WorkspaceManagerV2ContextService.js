@@ -1,5 +1,6 @@
 import { isPlainObject } from '../../../../src/shared/object/objects.js';
 import { deepClone } from '../../../../src/shared/json/clone.js';
+import { createObjectVectorCollisionGeometry } from '../../../../src/engine/collision/objectVector.js';
 import { readFileHandleText, writeFileHandleText } from '../../../../src/engine/persistence/FilePersistenceService.js';
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
@@ -181,6 +182,27 @@ function toolPayloadForContext(tool, context) {
   return context?.tools?.[tool.id];
 }
 
+function objectVectorPayloadObjects(payload) {
+  return Array.isArray(payload?.objects) ? payload.objects : [];
+}
+
+function objectVectorObjectHasCollisionGeometry(object) {
+  try {
+    return createObjectVectorCollisionGeometry(object).hasGeometry === true;
+  } catch {
+    return false;
+  }
+}
+
+function objectVectorPayloadHasCollisionGeometry(payload) {
+  return isPlainObject(payload)
+    && objectVectorPayloadObjects(payload).some(objectVectorObjectHasCollisionGeometry);
+}
+
+function contextHasObjectVectorCollisionGeometry(context) {
+  return objectVectorPayloadHasCollisionGeometry(context?.tools?.[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY]);
+}
+
 function objectVectorStudioWorkspacePayload(payload) {
   if (!isPlainObject(payload)) {
     return payload;
@@ -217,6 +239,9 @@ function workspaceContextWithObjectVectorPayload(context) {
 
 function hasToolPayload(tool, context) {
   const payload = toolPayloadForContext(tool, context);
+  if (tool?.id === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY || tool?.id === COLLISION_INSPECTOR_V2_TOOL_KEY) {
+    return contextHasObjectVectorCollisionGeometry(context);
+  }
   return tool?.id === TEXT2SPEECH_V2_TOOL_KEY
     ? Array.isArray(payload)
     : isPlainObject(payload);
@@ -226,14 +251,18 @@ function hydrationDecisionForTool(tool, context) {
   if (!tool?.id) {
     return { hydrate: false, reason: "tool is missing a registry id" };
   }
-  if (hasToolPayload(tool, context)) {
-    return { hydrate: true, reason: "tool data is present in selected game manifest" };
+  if (tool.id === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY) {
+    return contextHasObjectVectorCollisionGeometry(context)
+      ? { hydrate: true, reason: "tool has valid Object Vector Studio V2 manifest geometry" }
+      : { hydrate: false, reason: "tool requires valid Object Vector Studio V2 manifest geometry" };
   }
   if (tool.id === COLLISION_INSPECTOR_V2_TOOL_KEY) {
-    const objectVectorPayload = context.tools?.[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY];
-    return Array.isArray(objectVectorPayload?.objects) && objectVectorPayload.objects.length
-      ? { hydrate: true, reason: "tool inspects Object Vector Studio V2 manifest objects" }
-      : { hydrate: false, reason: "tool requires Object Vector Studio V2 manifest objects" };
+    return contextHasObjectVectorCollisionGeometry(context)
+      ? { hydrate: true, reason: "tool inspects valid Object Vector Studio V2 manifest geometry" }
+      : { hydrate: false, reason: "tool requires valid Object Vector Studio V2 manifest geometry" };
+  }
+  if (hasToolPayload(tool, context)) {
+    return { hydrate: true, reason: "tool data is present in selected game manifest" };
   }
   if (SELECTED_GAME_PURPOSE_TOOL_IDS.has(tool.id)) {
     return { hydrate: true, reason: "tool has a selected-game manifest launch purpose" };

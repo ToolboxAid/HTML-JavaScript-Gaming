@@ -99,7 +99,7 @@
     },
     {
       "id": "SpaceInvaders",
-      "title": "Space Invaders Next",
+      "title": "Space Invaders",
       "description": "Classic alien formation shooter with wave progression.",
       "level": "Level 4 - Classic Arcade",
       "status": "playable",
@@ -111,7 +111,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/GamepadInputAdapter", "engine/input/index/InputService", "engine/persistence/index/StorageService", "engine/scene/index/AttractModeController", "engine/scene/index/Scene", "engine/utils/math/clamp"],
-      "toolsUsed": ["asset-manager-v2"]
+      "toolsUsed": ["asset-manager-v2", "object-vector-studio-v2"]
     },
     {
       "id": "SpaceDuel",
@@ -127,7 +127,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/persistence/index/StorageService", "engine/scene/index/AttractModeController", "engine/scene/index/Scene", "engine/utils/math/clamp"],
-      "toolsUsed": ["asset-manager-v2"]
+      "toolsUsed": ["asset-manager-v2", "object-vector-studio-v2"]
     },
     {
       "id": "AITargetDummy",

@@ -4,7 +4,7 @@
   "version": 1,
   "game": {
     "id": "SpaceInvaders",
-    "name": "Space Invaders Next",
+    "name": "Space Invaders",
     "folder": "SpaceInvaders"
   },
   "launch": {
@@ -74,7 +74,7 @@
       "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
       "schema": "html-js-gaming.asset-manager-v2",
       "version": 1,
-      "name": "Space Invaders Next Asset Manager V2 Registry",
+      "name": "Space Invaders Asset Manager V2 Registry",
       "source": "manifest",
       "assets": {
         "assets.image.preview.preview": {
@@ -347,6 +347,338 @@
               "binding": "Enter",
               "label": "Keyboard Enter Press",
               "engine": "KeyboardState"
+            }
+          ]
+        }
+      ]
+    },
+    "object-vector-studio-v2": {
+      "version": 1,
+      "toolId": "object-vector-studio-v2",
+      "name": "Space Invaders Object Vector Assets",
+      "objects": [
+        {
+          "id": "object.space-invaders.player-cannon",
+          "name": "Player Cannon",
+          "tags": [
+            "player",
+            "collision"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "shapes": [
+            {
+              "tool": "rectangle",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "x": -25.5,
+                "y": -16.5,
+                "width": 51,
+                "height": 33
+              },
+              "style": {
+                "fill": "#66ff66",
+                "stroke": "#66ff66",
+                "strokeWidth": 2,
+                "fillOpacity": 0.16,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "object.space-invaders.octopus-alien",
+          "name": "Octopus Alien",
+          "tags": [
+            "alien",
+            "octopus",
+            "collision"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "shapes": [
+            {
+              "tool": "rectangle",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "x": -12,
+                "y": -12,
+                "width": 24,
+                "height": 24
+              },
+              "style": {
+                "fill": "#66ff66",
+                "stroke": "#66ff66",
+                "strokeWidth": 2,
+                "fillOpacity": 0.12,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "object.space-invaders.crab-alien",
+          "name": "Crab Alien",
+          "tags": [
+            "alien",
+            "crab",
+            "collision"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "shapes": [
+            {
+              "tool": "rectangle",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "x": -18,
+                "y": -12,
+                "width": 36,
+                "height": 24
+              },
+              "style": {
+                "fill": "#66ff66",
+                "stroke": "#66ff66",
+                "strokeWidth": 2,
+                "fillOpacity": 0.12,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "object.space-invaders.squid-alien",
+          "name": "Squid Alien",
+          "tags": [
+            "alien",
+            "squid",
+            "collision"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "shapes": [
+            {
+              "tool": "rectangle",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "x": -16.5,
+                "y": -12,
+                "width": 33,
+                "height": 24
+              },
+              "style": {
+                "fill": "#66ff66",
+                "stroke": "#66ff66",
+                "strokeWidth": 2,
+                "fillOpacity": 0.12,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "object.space-invaders.ufo",
+          "name": "UFO",
+          "tags": [
+            "ufo",
+            "collision"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "shapes": [
+            {
+              "tool": "rectangle",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "x": -24,
+                "y": -12,
+                "width": 48,
+                "height": 24
+              },
+              "style": {
+                "fill": "#ff4d4d",
+                "stroke": "#ff4d4d",
+                "strokeWidth": 2,
+                "fillOpacity": 0.16,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "object.space-invaders.player-laser",
+          "name": "Player Laser",
+          "tags": [
+            "projectile",
+            "player",
+            "collision"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "shapes": [
+            {
+              "tool": "rectangle",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "x": -1.5,
+                "y": -15,
+                "width": 3,
+                "height": 30
+              },
+              "style": {
+                "fill": "#ffffff",
+                "stroke": "#ffffff",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "object.space-invaders.alien-bomb",
+          "name": "Alien Bomb",
+          "tags": [
+            "projectile",
+            "alien",
+            "collision"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "shapes": [
+            {
+              "tool": "rectangle",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "x": -4.5,
+                "y": -12,
+                "width": 9,
+                "height": 24
+              },
+              "style": {
+                "fill": "#ff6666",
+                "stroke": "#ff6666",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "object.space-invaders.shield",
+          "name": "Shield",
+          "tags": [
+            "shield",
+            "collision"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "shapes": [
+            {
+              "tool": "rectangle",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "x": -37.5,
+                "y": -28.5,
+                "width": 75,
+                "height": 57
+              },
+              "style": {
+                "fill": "#66ff66",
+                "stroke": "#66ff66",
+                "strokeWidth": 2,
+                "fillOpacity": 0.1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
             }
           ]
         }
