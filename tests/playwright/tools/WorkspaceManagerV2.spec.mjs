@@ -2800,9 +2800,39 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "JSON"]);
       await expect(page.locator("#toolExportToolStateButton")).toHaveCount(0);
+      await expect(page.locator("#toolImportButton")).toBeDisabled();
+      await expect(page.locator("#toolImportButton")).toHaveAttribute("title", /Import disabled: Input Mapping V2 imports through Workspace Manager game\.manifest launch data/);
       await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
-      await page.locator("#toolImportButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Input Mapping V2 Import is available through workspace launch data/);
+      await page.goto(`${server.baseUrl}/tools/input-mapping-v2/index.html?launch=workspace`, { waitUntil: "networkidle" });
+      await expect(page.locator(".tool-starter__tool__menu")).toBeHidden();
+      await expect(page.locator(".tool-starter__workspace__menu")).toBeVisible();
+      await expect(page.locator('[data-launch-mode-nav="workspace"] button:not([hidden])')).toHaveText(["Import", "Copy JSON", "JSON"]);
+      await expect(page.locator("#workspaceImportManifestButton")).toBeDisabled();
+      await expect(page.locator("#workspaceImportManifestButton")).toHaveAttribute("title", /Import disabled: Input Mapping V2 imports through Workspace Manager game\.manifest launch data/);
+      await page.locator("#workspaceExportManifestButton").click();
+      const workspaceExportPayload = JSON.parse(await page.locator("#inspectorOutput").textContent());
+      expect(workspaceExportPayload).toMatchObject({
+        engineInputModel: "src/engine/input/InputMap",
+        toolId: "input-mapping-v2",
+        version: 1
+      });
+      expect(workspaceExportPayload.actions).toEqual([]);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Input Mapping V2 JSON preview written\./);
+      await page.evaluate(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            writeText: async (text) => {
+              window.__inputMappingV2WorkspaceClipboard = text;
+            }
+          }
+        });
+      });
+      await page.locator("#workspaceCopyManifestButton").click();
+      expect(JSON.parse(await page.evaluate(() => window.__inputMappingV2WorkspaceClipboard))).toEqual(workspaceExportPayload);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Mapping JSON copied\./);
+      await page.goto(`${server.baseUrl}/tools/input-mapping-v2/index.html`, { waitUntil: "networkidle" });
+      await expect(page.locator("body[data-tool-id='input-mapping-v2']")).toBeVisible();
       const fullscreenLayout = await page.locator(".input-mapping-v2.tool-starter.app-shell").evaluate((shell) => {
         const left = shell.querySelector(".tool-starter__panel--left").getBoundingClientRect();
         const center = shell.querySelector(".tool-starter__panel--center").getBoundingClientRect();
@@ -2824,7 +2854,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(fullscreenLayout.centerWidth).toBeGreaterThan(1000);
       expect(Math.max(...fullscreenLayout.rightAccordionHeights) - Math.min(...fullscreenLayout.rightAccordionHeights)).toBeLessThanOrEqual(3);
       await expect(page.locator(".tool-starter__panel--left > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Actions", "Devices"]);
-      await expect(page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Input Device(s)", "Capture Gestures", "Action Mappings"]);
+      await expect(page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Input Device(s)", "Capture Gestures", "Action Mapping(s)"]);
       const centerAccordionLabels = await page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child").allTextContents();
       expect(centerAccordionLabels.some((label) => /[{}]/.test(label))).toBe(false);
       await expect(page.locator(".tool-starter__panel--right > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Diagnostics", "JSON", "Status / Log"]);
@@ -3482,7 +3512,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(asteroidsManifestInputMapping.actions.map((action) => action.label)).toEqual(actionOptions);
       await page.locator("#toolExportButton").click();
-      await expect(page.locator("#inspectorOutput")).toContainText('"payload"');
+      const exportedInputMappingPayload = JSON.parse(await page.locator("#inspectorOutput").textContent());
+      expect(exportedInputMappingPayload).toMatchObject({
+        engineInputModel: "src/engine/input/InputMap",
+        toolId: "input-mapping-v2",
+        version: 1
+      });
+      expect(exportedInputMappingPayload.payload).toBeUndefined();
+      expect(exportedInputMappingPayload.actions.length).toBeGreaterThan(0);
+      expect(exportedInputMappingPayload.actions.every((action) => action.inputs.length > 0)).toBe(true);
+      expect(exportedInputMappingPayload.actions.map((action) => action.action)).toContain("moveLeft");
+      expect(exportedInputMappingPayload.actions.map((action) => action.action)).not.toContain("confirm");
+      expect(exportedInputMappingPayload.actions.map((action) => action.action)).not.toContain("start");
+      expect(exportedInputMappingPayload.actions.some((action) => action.inputs.some((input) => input.binding === "KeyD"))).toBe(true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Input Mapping V2 JSON preview written\./);
       await page.evaluate(() => {
         Object.defineProperty(navigator, "clipboard", {
@@ -3495,7 +3537,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         });
       });
       await page.locator("#toolCopyJsonButton").click();
-      expect(await page.evaluate(() => window.__inputMappingV2Clipboard)).toContain('"toolId": "input-mapping-v2"');
+      const copiedInputMappingPayload = JSON.parse(await page.evaluate(() => window.__inputMappingV2Clipboard));
+      expect(copiedInputMappingPayload).toEqual(exportedInputMappingPayload);
+      expect(copiedInputMappingPayload.actions.every((action) => action.inputs.length > 0)).toBe(true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Mapping JSON copied\./);
       await expect(page.locator("#inputMappingV2ClearActionButton")).toHaveCount(0);
       expect(pageErrors).toEqual([]);

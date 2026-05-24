@@ -178,11 +178,13 @@ export class InputMappingState {
       toolId: "input-mapping-v2",
       version: 1,
       engineInputModel: "src/engine/input/InputMap",
-      actions: this.actions().map((action) => ({
-        action: action.id,
-        label: action.label,
-        inputs: action.inputs.map(schemaInput)
-      }))
+      actions: this.actions()
+        .filter((action) => action.inputs.length > 0)
+        .map((action) => ({
+          action: action.id,
+          label: action.label,
+          inputs: action.inputs.map(schemaInput)
+        }))
     };
   }
 

@@ -1,3 +1,5 @@
+const IMPORT_DISABLED_REASON = "Import disabled: Input Mapping V2 imports through Workspace Manager game.manifest launch data. Edit game.manifest.json or relaunch from Workspace Manager with updated tool data.";
+
 export class ActionNavControl {
   constructor({
     locationRef = window.location,
@@ -23,6 +25,7 @@ export class ActionNavControl {
     onWorkspaceImportManifest
   }) {
     this.applyLaunchMode();
+    this.disableImportAction();
     this.workspaceImportManifestButton.addEventListener("click", onWorkspaceImportManifest);
     this.workspaceCopyManifestButton.addEventListener("click", onWorkspaceCopyManifest);
     this.workspaceExportManifestButton.addEventListener("click", onWorkspaceExportManifest);
@@ -45,8 +48,15 @@ export class ActionNavControl {
   }
 
   setToolActionsEnabled(isEnabled) {
+    this.disableImportAction();
     this.workspaceCopyManifestButton.disabled = !isEnabled;
     this.workspaceExportManifestButton.disabled = !isEnabled;
+  }
+
+  disableImportAction() {
+    this.workspaceImportManifestButton.disabled = true;
+    this.workspaceImportManifestButton.dataset.disabledReason = IMPORT_DISABLED_REASON;
+    this.workspaceImportManifestButton.title = IMPORT_DISABLED_REASON;
   }
 
   workspaceManagerUrl() {

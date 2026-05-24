@@ -74,9 +74,11 @@ export class ToolStarterApp {
     this.shell.mount();
     this.accordions.forEach((accordion) => accordion.mount());
     this.actionNav.mount({
-      onWorkspaceCopyManifest: () => this.statusLog.ok("Input Mapping V2 workspace copy action is ready."),
-      onWorkspaceExportManifest: () => this.statusLog.ok("Input Mapping V2 workspace export action is ready."),
-      onWorkspaceImportManifest: () => this.statusLog.ok("Input Mapping V2 workspace import action is ready.")
+      onWorkspaceCopyManifest: () => {
+        void this.copyJson();
+      },
+      onWorkspaceExportManifest: () => this.exportToolState(),
+      onWorkspaceImportManifest: () => this.importJson()
     });
     this.exportControl.mount({
       onCopyJson: () => {
@@ -1049,17 +1051,18 @@ export class ToolStarterApp {
   }
 
   exportToolState() {
-    this.inspector.showObject(this.state.toolState());
+    this.inspector.showObject(this.state.payload());
     this.statusLog.ok("Input Mapping V2 JSON preview written.");
   }
 
   importJson() {
-    this.statusLog.warn("Input Mapping V2 Import is available through workspace launch data; standalone file import is not wired for this tool.");
+    this.statusLog.warn("Import disabled: Input Mapping V2 imports through Workspace Manager game.manifest launch data. Edit game.manifest.json or relaunch from Workspace Manager with updated tool data.");
   }
 
   async copyJson() {
-    const json = JSON.stringify(this.state.payload(), null, 2);
-    this.inspector.showObject(this.state.payload());
+    const payload = this.state.payload();
+    const json = JSON.stringify(payload, null, 2);
+    this.inspector.showObject(payload);
     if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
       this.statusLog.warn("Mapping JSON preview written. Clipboard API is unavailable.");
       this.refreshActions();
