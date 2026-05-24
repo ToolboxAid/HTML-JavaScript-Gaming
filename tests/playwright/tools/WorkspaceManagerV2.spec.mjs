@@ -2586,8 +2586,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           timestamp: 78.75
         };
       });
-      await expect(gamepadReleaseToken).toHaveClass(/is-action-active/, { timeout: 2500 });
-      await expect(gamepadReleaseToken).toHaveCSS("border-top-color", "rgb(245, 159, 0)");
+      await page.waitForFunction(() => {
+        const token = document.querySelector(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button2:GameControllerButtonRelease']");
+        return token?.classList.contains("is-action-active")
+          && getComputedStyle(token).borderTopColor === "rgb(245, 159, 0)";
+      }, null, { timeout: 2500 });
 
       await page.evaluate(() => {
         window.__inputMappingV2MockGamepads[0] = {
@@ -2821,7 +2824,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(fullscreenLayout.centerWidth).toBeGreaterThan(1000);
       expect(Math.max(...fullscreenLayout.rightAccordionHeights) - Math.min(...fullscreenLayout.rightAccordionHeights)).toBeLessThanOrEqual(3);
       await expect(page.locator(".tool-starter__panel--left > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Actions", "Devices"]);
-      await expect(page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Input Device(s)", "Capture Gestures", "Captured Mappings"]);
+      await expect(page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Input Device(s)", "Capture Gestures", "Action Mappings"]);
       const centerAccordionLabels = await page.locator(".tool-starter__panel--center > .tool-starter__accordion > .accordion-v2__header > span:first-child").allTextContents();
       expect(centerAccordionLabels.some((label) => /[{}]/.test(label))).toBe(false);
       await expect(page.locator(".tool-starter__panel--right > .tool-starter__accordion > .accordion-v2__header > span:first-child")).toHaveText(["Diagnostics", "JSON", "Status / Log"]);
@@ -3254,7 +3257,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#inputMappingV2DeleteMappingsButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toHaveCount(1);
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toContainText("No inputs captured.");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted captured mappings from Confirm\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted action mappings from Confirm\./);
       await page.locator("#inputMappingV2MappingDeleteActionButton").click();
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Confirm" })).toHaveCount(0);
       await expect(page.locator(".input-mapping-v2__mapping-card", { hasText: "Move Left" })).toHaveCount(1);

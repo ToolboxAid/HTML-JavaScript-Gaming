@@ -4,6 +4,7 @@ PR: PR_26140_115-fix-input-mapping-v2-device-gesture-wiring
 
 ## Summary
 - Renamed the center-column Capture accordion to `Input Device(s)` and Gestures to `Capture Gestures`, with no braces in either visible label.
+- Renamed the center-column mapping workspace from `Captured Mappings` to `Action Mappings`, including related aria labels and mapping-deletion status text.
 - Disabled and grayed `Input Device(s)` until the selected action has an existing tile, and disabled `Capture Gestures` until an input device is selected.
 - Enforced device-first capture flow: selecting an input device enables only that device's gesture group, and stale selected gestures no longer auto-arm when a device is clicked after capture completion.
 - Removed visible Mouse Wheel Left/Right gesture descriptors because PR_115 only requires visible/wired Wheel Up and Wheel Down; underlying wheel input support remains available through the engine where used by existing capture/combo paths.
@@ -21,6 +22,9 @@ PR: PR_26140_115-fix-input-mapping-v2-device-gesture-wiring
 - PASS: targeted module import validation for changed engine/input and Input Mapping V2 JS modules.
 - PASS: focused Input Mapping V2 Playwright coverage: 11 passed.
 - PASS: `npm run test:workspace-v2`: 70 passed.
+- PASS: additional label follow-up targeted syntax validation with `node --check tools/input-mapping-v2/js/services/InputMappingState.js` and `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`.
+- PASS: additional label follow-up focused Playwright validation with `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "launches Input Mapping V2"`: 1 passed.
+- PASS: additional label follow-up full Workspace V2 validation with `npm run test:workspace-v2`: 70 passed.
 - SKIPPED as requested: full samples smoke test.
 
 ## Schema/Samples

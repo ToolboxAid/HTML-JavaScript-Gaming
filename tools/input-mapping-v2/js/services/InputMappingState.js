@@ -147,23 +147,23 @@ export class InputMappingState {
       return { ok: false, message: `${action.label} does not have an action tile.` };
     }
     if (!action.inputs.length) {
-      return { ok: false, message: `${action.label} has no captured mappings to delete.` };
+      return { ok: false, message: `${action.label} has no action mappings to delete.` };
     }
     action.inputs = [];
     action.tileVisible = true;
     this.syncInputMap();
-    return { ok: true, message: `Deleted captured mappings from ${action.label}.` };
+    return { ok: true, message: `Deleted action mappings from ${action.label}.` };
   }
 
   deleteActionInput(actionId, binding) {
     const action = this.actionEntries.find((candidate) => candidate.id === actionId) ?? null;
     if (!action) {
-      return { ok: false, message: "Select an action before deleting a captured mapping." };
+      return { ok: false, message: "Select an action before deleting an action mapping." };
     }
     const input = action.inputs.find((candidate) => candidate.binding === binding) ?? null;
     if (!input) {
       this.selectedActionId = action.id;
-      return { ok: false, message: `${action.label} does not have that captured mapping.` };
+      return { ok: false, message: `${action.label} does not have that action mapping.` };
     }
 
     action.inputs = action.inputs.filter((candidate) => candidate.binding !== binding);
