@@ -11,6 +11,115 @@
     "directPath": "/games/Pacman/index.html"
   },
   "tools": {
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
+      "version": 1,
+      "name": "Pacman Full AI Palette",
+      "source": "manifest",
+      "swatches": [
+        {
+          "symbol": "!",
+          "hex": "#020617",
+          "name": "Background"
+        },
+        {
+          "symbol": "#",
+          "hex": "#020B1E",
+          "name": "Maze Backdrop"
+        },
+        {
+          "symbol": "$",
+          "hex": "#1E3A8A",
+          "name": "Maze Frame"
+        },
+        {
+          "symbol": "%",
+          "hex": "#1D4ED8",
+          "name": "Wall Blue"
+        },
+        {
+          "symbol": "&",
+          "hex": "#38BDF8",
+          "name": "Wall Highlight"
+        },
+        {
+          "symbol": "(",
+          "hex": "#FDE68A",
+          "name": "Pellet"
+        },
+        {
+          "symbol": ")",
+          "hex": "#FEF9C3",
+          "name": "Power Pellet"
+        },
+        {
+          "symbol": "*",
+          "hex": "#FACC15",
+          "name": "Pacman Yellow"
+        },
+        {
+          "symbol": "+",
+          "hex": "#EF4444",
+          "name": "Blinky Red"
+        },
+        {
+          "symbol": ",",
+          "hex": "#F472B6",
+          "name": "Pinky Pink"
+        },
+        {
+          "symbol": "-",
+          "hex": "#22D3EE",
+          "name": "Inky Cyan"
+        },
+        {
+          "symbol": ".",
+          "hex": "#FB923C",
+          "name": "Clyde Orange"
+        },
+        {
+          "symbol": "/",
+          "hex": "#DBEAFE",
+          "name": "Eaten Ghost"
+        },
+        {
+          "symbol": "0",
+          "hex": "#F8FAFC",
+          "name": "Frightened Flash"
+        },
+        {
+          "symbol": "1",
+          "hex": "#E2E8F0",
+          "name": "HUD Text"
+        },
+        {
+          "symbol": "2",
+          "hex": "#CBD5E1",
+          "name": "Control Text"
+        },
+        {
+          "symbol": "3",
+          "hex": "#94A3B8",
+          "name": "Muted Debug"
+        },
+        {
+          "symbol": "4",
+          "hex": "#334155",
+          "name": "Debug Border"
+        },
+        {
+          "symbol": "5",
+          "hex": "#FECACA",
+          "name": "Game Over Text"
+        },
+        {
+          "symbol": "6",
+          "hex": "#0F172A",
+          "name": "Eye Detail"
+        }
+      ]
+    },
     "asset-manager-v2": {
       "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
       "schema": "html-js-gaming.asset-manager-v2",
@@ -26,6 +135,104 @@
           "source": "manifest"
         }
       }
+    },
+    "input-mapping-v2": {
+      "$schema": "tools/schemas/tools/input-mapping-v2.schema.json",
+      "toolId": "input-mapping-v2",
+      "version": 1,
+      "engineInputModel": "src/engine/input/InputMap",
+      "actions": [
+        {
+          "action": "cancel",
+          "label": "Cancel",
+          "inputs": []
+        },
+        {
+          "action": "confirm",
+          "label": "Confirm",
+          "inputs": []
+        },
+        {
+          "action": "fire",
+          "label": "Fire",
+          "inputs": []
+        },
+        {
+          "action": "interact",
+          "label": "Interact",
+          "inputs": []
+        },
+        {
+          "action": "jump",
+          "label": "Jump",
+          "inputs": []
+        },
+        {
+          "action": "menu",
+          "label": "Menu",
+          "inputs": []
+        },
+        {
+          "action": "moveDown",
+          "label": "Move Down",
+          "inputs": []
+        },
+        {
+          "action": "moveLeft",
+          "label": "Move Left",
+          "inputs": []
+        },
+        {
+          "action": "moveRight",
+          "label": "Move Right",
+          "inputs": []
+        },
+        {
+          "action": "moveUp",
+          "label": "Move Up",
+          "inputs": []
+        },
+        {
+          "action": "pause",
+          "label": "Pause",
+          "inputs": []
+        },
+        {
+          "action": "primaryAction",
+          "label": "Primary Action",
+          "inputs": []
+        },
+        {
+          "action": "rotateLeft",
+          "label": "Rotate Left",
+          "inputs": []
+        },
+        {
+          "action": "rotateRight",
+          "label": "Rotate Right",
+          "inputs": []
+        },
+        {
+          "action": "secondaryAction",
+          "label": "Secondary Action",
+          "inputs": []
+        },
+        {
+          "action": "select",
+          "label": "Select",
+          "inputs": []
+        },
+        {
+          "action": "start",
+          "label": "Start",
+          "inputs": []
+        },
+        {
+          "action": "thrust",
+          "label": "Thrust",
+          "inputs": []
+        }
+      ]
     }
   }
 }

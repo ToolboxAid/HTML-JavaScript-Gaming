@@ -15013,10 +15013,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"|"palette-browser"|"vector-map-editor"/);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("1 managed assets");
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("10 palette swatches");
+      await expect(page.locator('[data-workspace-tool-id="input-mapping-v2"]')).toContainText("Keyboard/gamepad mappings");
       await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Preview Not Found");
       const gravityManifest = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
       expect(gravityManifest.repoPath).toBe(manifestRepoPath(server));
-      expect(Object.keys(gravityManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
+      expect(Object.keys(gravityManifest.tools).sort()).toEqual(["asset-manager-v2", "input-mapping-v2", "palette-manager-v2"]);
+      expect(gravityManifest.tools["input-mapping-v2"]).toMatchObject({
+        engineInputModel: "src/engine/input/InputMap",
+        toolId: "input-mapping-v2",
+        version: 1
+      });
       expect(gravityManifest.tools["asset-manager-v2"].assets["assets.image.preview.preview"]).toEqual({
         path: "assets/images/preview.svg",
         type: "image",
@@ -15054,10 +15060,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"|"palette-browser"|"vector-map-editor"/);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("1 managed assets");
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("8 palette swatches");
+      await expect(page.locator('[data-workspace-tool-id="input-mapping-v2"]')).toContainText("Keyboard/gamepad mappings");
       await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Preview Not Found");
       const pongManifest = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
       expect(pongManifest.repoPath).toBe(manifestRepoPath(server));
-      expect(Object.keys(pongManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
+      expect(Object.keys(pongManifest.tools).sort()).toEqual(["asset-manager-v2", "input-mapping-v2", "palette-manager-v2"]);
+      expect(pongManifest.tools["input-mapping-v2"]).toMatchObject({
+        engineInputModel: "src/engine/input/InputMap",
+        toolId: "input-mapping-v2",
+        version: 1
+      });
       expect(pongManifest.tools["asset-manager-v2"].assets["assets.image.preview.preview"]).toEqual({
         path: "assets/images/preview1.svg",
         type: "image",

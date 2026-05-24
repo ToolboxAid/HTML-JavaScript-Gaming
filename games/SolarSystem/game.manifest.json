@@ -11,6 +11,70 @@
     "directPath": "/games/SolarSystem/index.html"
   },
   "tools": {
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
+      "version": 1,
+      "name": "Solar System Classic Palette",
+      "source": "manifest",
+      "swatches": [
+        {
+          "symbol": "!",
+          "hex": "#030712",
+          "name": "Space Background"
+        },
+        {
+          "symbol": "#",
+          "hex": "#DBEAFE",
+          "name": "Frame and Text"
+        },
+        {
+          "symbol": "$",
+          "hex": "#334155",
+          "name": "Orbits"
+        },
+        {
+          "symbol": "%",
+          "hex": "#FBBF24",
+          "name": "Sun"
+        },
+        {
+          "symbol": "&",
+          "hex": "#9CA3AF",
+          "name": "Mercury"
+        },
+        {
+          "symbol": "(",
+          "hex": "#38BDF8",
+          "name": "Earth"
+        },
+        {
+          "symbol": ")",
+          "hex": "#FB7185",
+          "name": "Mars"
+        },
+        {
+          "symbol": "*",
+          "hex": "#F59E0B",
+          "name": "Jupiter"
+        },
+        {
+          "symbol": "+",
+          "hex": "#EAB308",
+          "name": "Saturn"
+        },
+        {
+          "symbol": ",",
+          "hex": "#67E8F9",
+          "name": "Uranus"
+        },
+        {
+          "symbol": "-",
+          "hex": "#60A5FA",
+          "name": "Neptune"
+        }
+      ]
+    },
     "asset-manager-v2": {
       "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
       "schema": "html-js-gaming.asset-manager-v2",
@@ -26,6 +90,104 @@
           "source": "manifest"
         }
       }
+    },
+    "input-mapping-v2": {
+      "$schema": "tools/schemas/tools/input-mapping-v2.schema.json",
+      "toolId": "input-mapping-v2",
+      "version": 1,
+      "engineInputModel": "src/engine/input/InputMap",
+      "actions": [
+        {
+          "action": "cancel",
+          "label": "Cancel",
+          "inputs": []
+        },
+        {
+          "action": "confirm",
+          "label": "Confirm",
+          "inputs": []
+        },
+        {
+          "action": "fire",
+          "label": "Fire",
+          "inputs": []
+        },
+        {
+          "action": "interact",
+          "label": "Interact",
+          "inputs": []
+        },
+        {
+          "action": "jump",
+          "label": "Jump",
+          "inputs": []
+        },
+        {
+          "action": "menu",
+          "label": "Menu",
+          "inputs": []
+        },
+        {
+          "action": "moveDown",
+          "label": "Move Down",
+          "inputs": []
+        },
+        {
+          "action": "moveLeft",
+          "label": "Move Left",
+          "inputs": []
+        },
+        {
+          "action": "moveRight",
+          "label": "Move Right",
+          "inputs": []
+        },
+        {
+          "action": "moveUp",
+          "label": "Move Up",
+          "inputs": []
+        },
+        {
+          "action": "pause",
+          "label": "Pause",
+          "inputs": []
+        },
+        {
+          "action": "primaryAction",
+          "label": "Primary Action",
+          "inputs": []
+        },
+        {
+          "action": "rotateLeft",
+          "label": "Rotate Left",
+          "inputs": []
+        },
+        {
+          "action": "rotateRight",
+          "label": "Rotate Right",
+          "inputs": []
+        },
+        {
+          "action": "secondaryAction",
+          "label": "Secondary Action",
+          "inputs": []
+        },
+        {
+          "action": "select",
+          "label": "Select",
+          "inputs": []
+        },
+        {
+          "action": "start",
+          "label": "Start",
+          "inputs": []
+        },
+        {
+          "action": "thrust",
+          "label": "Thrust",
+          "inputs": []
+        }
+      ]
     }
   }
 }

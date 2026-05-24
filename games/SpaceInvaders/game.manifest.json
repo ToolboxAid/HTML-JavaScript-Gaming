@@ -11,6 +11,65 @@
     "directPath": "/games/SpaceInvaders/index.html"
   },
   "tools": {
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
+      "version": 1,
+      "name": "Space Invaders Classic Palette",
+      "source": "manifest",
+      "swatches": [
+        {
+          "symbol": "!",
+          "hex": "#000000",
+          "name": "Background"
+        },
+        {
+          "symbol": "#",
+          "hex": "#020702",
+          "name": "Playfield Backdrop"
+        },
+        {
+          "symbol": "$",
+          "hex": "#66FF66",
+          "name": "Alien Green"
+        },
+        {
+          "symbol": "%",
+          "hex": "#8DF58D",
+          "name": "HUD Green"
+        },
+        {
+          "symbol": "&",
+          "hex": "#FFFFFF",
+          "name": "White Ink"
+        },
+        {
+          "symbol": "(",
+          "hex": "#D0D0D0",
+          "name": "Score Label"
+        },
+        {
+          "symbol": ")",
+          "hex": "#FBBF24",
+          "name": "Score Accent"
+        },
+        {
+          "symbol": "*",
+          "hex": "#FF4D4D",
+          "name": "UFO Red"
+        },
+        {
+          "symbol": "+",
+          "hex": "#FF6666",
+          "name": "Bomb Red"
+        },
+        {
+          "symbol": ",",
+          "hex": "#FFD1D1",
+          "name": "Explosion Tint"
+        }
+      ]
+    },
     "asset-manager-v2": {
       "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
       "schema": "html-js-gaming.asset-manager-v2",
@@ -26,6 +85,104 @@
           "source": "manifest"
         }
       }
+    },
+    "input-mapping-v2": {
+      "$schema": "tools/schemas/tools/input-mapping-v2.schema.json",
+      "toolId": "input-mapping-v2",
+      "version": 1,
+      "engineInputModel": "src/engine/input/InputMap",
+      "actions": [
+        {
+          "action": "cancel",
+          "label": "Cancel",
+          "inputs": []
+        },
+        {
+          "action": "confirm",
+          "label": "Confirm",
+          "inputs": []
+        },
+        {
+          "action": "fire",
+          "label": "Fire",
+          "inputs": []
+        },
+        {
+          "action": "interact",
+          "label": "Interact",
+          "inputs": []
+        },
+        {
+          "action": "jump",
+          "label": "Jump",
+          "inputs": []
+        },
+        {
+          "action": "menu",
+          "label": "Menu",
+          "inputs": []
+        },
+        {
+          "action": "moveDown",
+          "label": "Move Down",
+          "inputs": []
+        },
+        {
+          "action": "moveLeft",
+          "label": "Move Left",
+          "inputs": []
+        },
+        {
+          "action": "moveRight",
+          "label": "Move Right",
+          "inputs": []
+        },
+        {
+          "action": "moveUp",
+          "label": "Move Up",
+          "inputs": []
+        },
+        {
+          "action": "pause",
+          "label": "Pause",
+          "inputs": []
+        },
+        {
+          "action": "primaryAction",
+          "label": "Primary Action",
+          "inputs": []
+        },
+        {
+          "action": "rotateLeft",
+          "label": "Rotate Left",
+          "inputs": []
+        },
+        {
+          "action": "rotateRight",
+          "label": "Rotate Right",
+          "inputs": []
+        },
+        {
+          "action": "secondaryAction",
+          "label": "Secondary Action",
+          "inputs": []
+        },
+        {
+          "action": "select",
+          "label": "Select",
+          "inputs": []
+        },
+        {
+          "action": "start",
+          "label": "Start",
+          "inputs": []
+        },
+        {
+          "action": "thrust",
+          "label": "Thrust",
+          "inputs": []
+        }
+      ]
     }
   }
 }
