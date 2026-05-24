@@ -1545,17 +1545,29 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     expect(sourceServiceSource).toContain("captureGamepadInput");
     expect(sourceServiceSource).toContain("inputDeviceGestureIsCompatible");
     expect(toolStarterSource).toContain("new InputCaptureSession");
-    expect(toolStarterSource).toContain("this.captureSession.startKeyboardRelease");
-    expect(toolStarterSource).toContain("this.captureSession.recordDoubleClick");
-    expect(toolStarterSource).toContain("this.captureSession.startPointerDrag");
-    expect(toolStarterSource).toContain("this.captureSession.updatePointerDrag");
-    expect(toolStarterSource).toContain("this.captureSession.finishPointerDrag");
+    expect(toolStarterSource).toContain("onStateChange: (event) => this.handleCaptureSessionState(event)");
+    expect(toolStarterSource).toContain("this.captureSession.handleKeyboardDown");
+    expect(toolStarterSource).toContain("this.captureSession.handleKeyboardUp");
+    expect(toolStarterSource).toContain("this.captureSession.handleMouseDown");
+    expect(toolStarterSource).toContain("this.captureSession.handleMouseMove");
+    expect(toolStarterSource).toContain("this.captureSession.handleMouseUp");
+    expect(toolStarterSource).toContain("this.captureSession.handleWheel");
+    expect(toolStarterSource).toContain("this.captureSession.handleComboRecord");
+    expect(toolStarterSource).toContain("this.captureSession.handleGamepadCaptureResult");
     expect(toolStarterSource).toContain("this.engineInputSources.isGestureCompatibleWithCaptureSource");
     expect(toolStarterSource).toContain("this.engineInputSources.beginComboCapture");
     expect(toolStarterSource).toContain("this.engineInputSources.recordComboInput");
     expect(toolStarterSource).toContain("this.engineInputSources.actionsWithActiveInputState(actions)");
     expect(previewPanelSource).toContain("input.isActionActive === true");
+    expect(inputCaptureSessionSource).toContain("handleKeyboardDown({ event = {}, gesture = null, input = null } = {})");
+    expect(inputCaptureSessionSource).toContain("handleComboRecord(result)");
+    expect(inputCaptureSessionSource).toContain("handleGamepadCaptureResult(result)");
+    expect(inputCaptureSessionSource).toContain("scheduleCaptureTimeout(timeoutMs = this.captureTimeoutMs)");
+    expect(inputCaptureSessionSource).toContain("schedulePendingTimeout(delayMs");
     expect(toolStarterSource).not.toMatch(/pending(?:DoubleClick|KeyboardRelease|MouseDrag|Gesture)Input/);
+    expect(toolStarterSource).not.toContain("capturePendingTimer");
+    expect(toolStarterSource).not.toContain("captureTimeoutTimer");
+    expect(toolStarterSource).not.toContain("captureVisualStateTimer");
     expect(toolStarterSource).not.toContain("mouseDragSnapshot");
     expect(toolStarterSource).not.toContain("dragDistance");
     expect(toolStarterSource).not.toContain("comboCaptureInputs");
@@ -1564,6 +1576,273 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     expect(sourceServiceSource).not.toContain("gamepadGestureExpectation");
     expect(sourceServiceSource).not.toContain("captureCombo(inputs)");
     expect(previewPanelSource).not.toContain("liveBindingCandidates");
+  });
+
+  test("runs Input Mapping V2 engine capture runtime flows", async ({ page }) => {
+    const server = await openInputMappingV2(page);
+    try {
+      await expect(page.locator("body[data-tool-id='input-mapping-v2']")).toBeVisible();
+      const runtimeResults = await page.evaluate(async () => {
+        const { default: InputCaptureService } = await import("/src/engine/input/InputCaptureService.js");
+        const { default: InputCaptureSession } = await import("/src/engine/input/InputCaptureSession.js");
+        const { default: InputService } = await import("/src/engine/input/InputService.js");
+        const { captureGamepadInput } = await import("/src/engine/input/GamepadInputClassifier.js");
+        const { inputDeviceGestureIsCompatible } = await import("/src/engine/input/InputCapabilityDescriptors.js");
+
+        const timers = [];
+        const events = [];
+        const createSession = () => new InputCaptureSession({
+          captureTimeoutMs: 500,
+          clearTimeout: (timer) => {
+            if (timer) {
+              timer.cleared = true;
+            }
+          },
+          doubleClickThresholdMs: 100,
+          onStateChange: (event) => events.push({
+            activeCaptureId: event.activeCaptureId,
+            mode: event.mode,
+            state: event.state,
+            type: event.type
+          }),
+          setTimeout: (callback, delay) => {
+            const timer = { callback, cleared: false, delay };
+            timers.push(timer);
+            return timer;
+          },
+          visualStateMinimumMs: 0
+        });
+        const inputService = new InputService({ target: window });
+        const captureService = new InputCaptureService({ inputService });
+        const gesture = (binding) => inputService.getInputGestureDescriptor(binding, {
+          enabledDeviceIds: ["keyboard", "mouse", "gameController"],
+          wheelAvailable: true
+        });
+
+        const comboInputService = new InputService({ target: window });
+        const comboSession = createSession();
+        comboSession.begin("keyboard", { actionLabel: "Confirm", mode: "combo" });
+        comboInputService.beginComboCapture({ actionLabel: "Confirm", deviceLabel: "Keyboard" });
+        const comboFirst = comboSession.handleComboRecord(comboInputService.recordComboInput(
+          captureService.captureKeyboard({ code: "ControlLeft", key: "Control" })
+        ));
+        const comboSecond = comboSession.handleComboRecord(comboInputService.recordComboInput(
+          captureService.captureKeyboard({ code: "KeyA", key: "a" })
+        ));
+
+        const releaseSession = createSession();
+        releaseSession.begin("keyboard", { actionLabel: "Pause", mode: "keyboard" });
+        const releaseGesture = gesture("KeyboardRelease");
+        const releasePending = releaseSession.handleKeyboardDown({
+          event: { code: "KeyP", key: "p" },
+          gesture: releaseGesture,
+          input: captureService.captureKeyboard({ code: "KeyP", key: "p" }, releaseGesture)
+        });
+        const releaseComplete = releaseSession.handleKeyboardUp({
+          event: { code: "KeyP", key: "p" },
+          gesture: releaseGesture
+        });
+
+        const holdSession = createSession();
+        holdSession.begin("keyboard", { actionLabel: "Hold", mode: "keyboard" });
+        const holdGesture = gesture("KeyboardHold");
+        const holdComplete = holdSession.handleKeyboardDown({
+          event: { code: "KeyH", key: "h" },
+          gesture: holdGesture,
+          input: captureService.captureKeyboard({ code: "KeyH", key: "h" }, holdGesture)
+        });
+
+        const doubleClickSession = createSession();
+        doubleClickSession.begin("mouse", { actionLabel: "Fire", mode: "mouse" });
+        const doubleClickGesture = gesture("MouseDoubleClick");
+        const doubleClickFirst = doubleClickSession.handleMouseDown({
+          event: { button: 0, detail: 1, timeStamp: 10 },
+          gesture: doubleClickGesture,
+          input: captureService.captureMouse({ button: 0 }, doubleClickGesture),
+          now: 10
+        });
+        const doubleClickSecond = doubleClickSession.handleMouseDown({
+          event: { button: 0, detail: 2, timeStamp: 60 },
+          gesture: doubleClickGesture,
+          input: captureService.captureMouse({ button: 0 }, doubleClickGesture),
+          now: 60
+        });
+
+        const dragSession = createSession();
+        dragSession.begin("mouse", { actionLabel: "Select", mode: "mouse" });
+        const dragGesture = gesture("MousePrimaryDragRelease");
+        const dragStart = dragSession.handleMouseDown({
+          event: { button: 2, clientX: 10, clientY: 20 },
+          gesture: dragGesture
+        });
+        const dragMove = dragSession.handleMouseMove({
+          event: { button: 2, buttons: 2, clientX: 50, clientY: 70 },
+          gesture: dragGesture
+        });
+        const dragRelease = dragSession.handleMouseUp({
+          event: { button: 2, buttons: 0, clientX: 80, clientY: 95 },
+          gesture: dragGesture
+        });
+        const dragCapture = captureService.capturePointerDragSnapshot(
+          dragRelease.commitPointerDrag.gesture.binding,
+          dragRelease.commitPointerDrag.snapshot
+        );
+
+        const wheelSession = createSession();
+        wheelSession.begin("mouse", { actionLabel: "Zoom", mode: "mouse" });
+        const wheelGesture = gesture("MouseWheelUp");
+        const wheelMismatch = wheelSession.handleWheel({
+          gesture: wheelGesture,
+          input: captureService.captureWheel({ deltaY: 120 })
+        });
+        const wheelComplete = wheelSession.handleWheel({
+          gesture: wheelGesture,
+          input: captureService.captureWheel({ deltaY: -120 })
+        });
+
+        let rawGamepads = [{
+          axes: [0, 0, 0, 0],
+          buttons: Array.from({ length: 16 }, () => ({ pressed: false })),
+          connected: true,
+          id: "Standard Controller",
+          index: 0,
+          mapping: "standard",
+          timestamp: 1
+        }];
+        const gamepadService = new InputService({
+          getGamepads: () => rawGamepads,
+          target: window
+        });
+        gamepadService.update();
+        const setGamepadButtons = (pressedIndexes, timestamp) => {
+          rawGamepads = [{
+            ...rawGamepads[0],
+            buttons: rawGamepads[0].buttons.map((button, index) => ({
+              pressed: pressedIndexes.includes(index)
+            })),
+            timestamp
+          }];
+          gamepadService.update();
+          return gamepadService.getGamepad(0);
+        };
+        const pressedPad = setGamepadButtons([1], 2);
+        const gamepadPress = captureGamepadInput({
+          gamepadIndex: 0,
+          gesture: gesture("GameControllerButtonPress"),
+          pad: pressedPad
+        });
+        const gamepadHold = captureGamepadInput({
+          gamepadIndex: 0,
+          gesture: gesture("GameControllerButtonHold"),
+          pad: pressedPad
+        });
+        const releasedPad = setGamepadButtons([], 3);
+        const gamepadRelease = captureGamepadInput({
+          gamepadIndex: 0,
+          gesture: gesture("GameControllerButtonRelease"),
+          pad: releasedPad
+        });
+
+        const lifecycleSession = createSession();
+        lifecycleSession.begin("keyboard", {
+          actionLabel: "Timeout Probe",
+          mode: "keyboard",
+          timeoutMs: 25
+        });
+        timers.find((timer) => timer.delay === 25 && !timer.cleared)?.callback();
+        timers.find((timer) => timer.delay === 0 && !timer.cleared)?.callback();
+
+        return {
+          combo: {
+            firstState: comboFirst.state,
+            firstWaiting: comboFirst.waiting,
+            secondBinding: comboSecond.commitInput.binding,
+            secondEngine: comboSecond.commitInput.engine
+          },
+          compatibility: {
+            keyboardRelease: inputDeviceGestureIsCompatible("keyboard", releaseGesture),
+            mouseRelease: inputDeviceGestureIsCompatible("mouse", releaseGesture)
+          },
+          doubleClick: {
+            firstState: doubleClickFirst.state,
+            firstWaiting: doubleClickFirst.waiting,
+            secondBinding: doubleClickSecond.commitInput.binding
+          },
+          drag: {
+            bounds: dragCapture.input.pointerDrag.dragBounds,
+            binding: dragCapture.input.binding,
+            moveState: dragMove.state,
+            startState: dragStart.state
+          },
+          gamepad: {
+            holdBinding: gamepadHold.input.binding,
+            pressBinding: gamepadPress.input.binding,
+            releaseBinding: gamepadRelease.input.binding
+          },
+          hold: {
+            binding: holdComplete.commitInput.binding,
+            label: holdComplete.commitInput.label
+          },
+          lifecycle: events.map((event) => event.type),
+          release: {
+            completeBinding: releaseComplete.commitInput.binding,
+            pendingState: releasePending.state,
+            pendingWaiting: releasePending.waiting
+          },
+          wheel: {
+            completeBinding: wheelComplete.commitInput.binding,
+            mismatchState: wheelMismatch.state
+          }
+        };
+      });
+
+      expect(runtimeResults.combo).toEqual({
+        firstState: "pending",
+        firstWaiting: true,
+        secondBinding: "Combo:ControlLeft+KeyA",
+        secondEngine: "InputService ComboState"
+      });
+      expect(runtimeResults.release).toEqual({
+        completeBinding: "KeyP:KeyboardRelease",
+        pendingState: "pending",
+        pendingWaiting: true
+      });
+      expect(runtimeResults.hold.binding).toBe("KeyH:KeyboardHold");
+      expect(runtimeResults.hold.label).toContain("Hold");
+      expect(runtimeResults.doubleClick).toEqual({
+        firstState: "pending",
+        firstWaiting: true,
+        secondBinding: "MouseButton0:MouseDoubleClick"
+      });
+      expect(runtimeResults.drag).toMatchObject({
+        binding: "MouseButton2:MousePrimaryDragRelease",
+        moveState: "pending",
+        startState: "pending"
+      });
+      expect(runtimeResults.drag.bounds).toMatchObject({
+        height: 75,
+        width: 70,
+        x: 10,
+        y: 20
+      });
+      expect(runtimeResults.wheel).toEqual({
+        completeBinding: "MouseWheelUp",
+        mismatchState: "warning"
+      });
+      expect(runtimeResults.gamepad).toEqual({
+        holdBinding: "Pad0:Button1:GameControllerButtonHold",
+        pressBinding: "Pad0:Button1:GameControllerButtonPress",
+        releaseBinding: "Pad0:Button1:GameControllerButtonRelease"
+      });
+      expect(runtimeResults.compatibility).toEqual({
+        keyboardRelease: true,
+        mouseRelease: false
+      });
+      expect(runtimeResults.lifecycle).toEqual(expect.arrayContaining(["begin", "timeout", "visual-reset"]));
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
   });
 
   test("keeps Input Mapping V2 spacing compact and highlights saved selected inputs", async ({ page }) => {

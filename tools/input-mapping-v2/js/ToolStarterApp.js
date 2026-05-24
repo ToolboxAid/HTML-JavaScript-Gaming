@@ -40,17 +40,21 @@ export class ToolStarterApp {
     this.statusLog = statusLog;
     this.workspaceRoot = workspaceRoot;
     this.window = windowRef;
+    this.captureTimeoutMs = 8000;
+    this.captureVisualStateMinimumMs = configuredVisualStateMinimumMs(windowRef);
     this.doubleClickThresholdMs = 1000;
-    this.captureSession = new InputCaptureSession({ doubleClickThresholdMs: this.doubleClickThresholdMs });
-    this.capturePendingTimer = null;
-    this.captureVisualStateMinimumMs = 300;
-    this.captureVisualStateTimer = null;
+    this.captureSession = new InputCaptureSession({
+      captureTimeoutMs: this.captureTimeoutMs,
+      clearTimeout: this.window.clearTimeout?.bind(this.window),
+      doubleClickThresholdMs: this.doubleClickThresholdMs,
+      onStateChange: (event) => this.handleCaptureSessionState(event),
+      setTimeout: this.window.setTimeout?.bind(this.window),
+      visualStateMinimumMs: this.captureVisualStateMinimumMs
+    });
     this.selectedGesture = null;
     this.selectedCaptureSource = "";
     this.selectedCaptureId = "";
     this.rumbleSettingsByActionId = new Map();
-    this.captureTimeoutMs = 8000;
-    this.captureTimeoutTimer = null;
     this.lastCaptureWarning = "";
     this.contextMenuDisabled = false;
     this.shortcutSuppressionEnabled = false;
@@ -334,20 +338,21 @@ export class ToolStarterApp {
     event.preventDefault();
     event.stopPropagation();
     const gesture = this.selectedGestureForSource("keyboard");
-    if (gesture?.binding === "KeyboardRelease") {
-      const result = this.captureSession.startKeyboardRelease(this.engineInputSources.captureKeyboard(event, gesture));
-      this.capture.showMessage(result.message);
-      this.capture.setCaptureState(result.state);
-      return;
-    }
-    this.addCapturedInput(this.engineInputSources.captureKeyboard(event, gesture));
+    this.applyCaptureRuntimeResult(this.captureSession.handleKeyboardDown({
+      event,
+      gesture,
+      input: this.engineInputSources.captureKeyboard(event, gesture)
+    }));
   }
 
   handleKeyUp(event) {
     if (this.captureMode === "keyboard" && this.selectedGestureForSource("keyboard")?.binding === "KeyboardRelease") {
       event.preventDefault();
       event.stopPropagation();
-      this.commitKeyboardRelease(event);
+      this.applyCaptureRuntimeResult(this.captureSession.handleKeyboardUp({
+        event,
+        gesture: this.selectedGestureForSource("keyboard")
+      }));
       return;
     }
     if (this.captureMode) {
@@ -379,26 +384,23 @@ export class ToolStarterApp {
     event.preventDefault();
     event.stopPropagation();
     const gesture = this.selectedGestureForCaptureSource("mouse");
-    if (gesture?.captureKind === "wheel") {
-      this.warnActiveCapture(`${gesture.deviceLabel} ${gesture.label} capture expects wheel input; mouse click ignored.`);
-      return;
-    }
-    if (gesture?.captureKind === "pointer-drag") {
-      this.startPendingMouseDrag(event, gesture);
-      return;
-    }
-    if (gesture?.binding === "MouseDoubleClick") {
-      this.recordDoubleClickInput(event, gesture);
-      return;
-    }
-    this.addCapturedInput(this.engineInputSources.captureMouse(event, this.selectedGestureForSource("mouse")));
+    this.applyCaptureRuntimeResult(this.captureSession.handleMouseDown({
+      event,
+      gesture,
+      input: this.engineInputSources.captureMouse(event, gesture),
+      now: this.captureEventTime(event)
+    }));
   }
 
   handleMouseMove(event) {
-    if (this.captureMode === "mouse" && this.selectedGestureForCaptureSource("mouse")?.captureKind === "pointer-drag") {
+    const gesture = this.selectedGestureForCaptureSource("mouse");
+    if (this.captureMode === "mouse" && (gesture?.captureKind === "pointer-drag" || this.captureSession.hasPendingPointerDrag())) {
       event.preventDefault();
       event.stopPropagation();
-      this.updatePendingMouseDrag(event);
+      this.applyCaptureRuntimeResult(this.captureSession.handleMouseMove({
+        event,
+        gesture
+      }));
       return;
     }
     if (this.captureMode) {
@@ -408,10 +410,14 @@ export class ToolStarterApp {
   }
 
   handleMouseUp(event) {
-    if (this.captureMode === "mouse" && this.selectedGestureForCaptureSource("mouse")?.captureKind === "pointer-drag") {
+    const gesture = this.selectedGestureForCaptureSource("mouse");
+    if (this.captureMode === "mouse" && (gesture?.captureKind === "pointer-drag" || this.captureSession.hasPendingPointerDrag())) {
       event.preventDefault();
       event.stopPropagation();
-      this.finishPendingMouseDrag(event);
+      this.applyCaptureRuntimeResult(this.captureSession.handleMouseUp({
+        event,
+        gesture
+      }));
       return;
     }
     if (this.captureMode) {
@@ -429,7 +435,10 @@ export class ToolStarterApp {
     if (this.captureMode === "mouse") {
       event.preventDefault();
       event.stopPropagation();
-      this.captureWheelInput(event);
+      this.applyCaptureRuntimeResult(this.captureSession.handleWheel({
+        gesture: this.selectedGestureForCaptureSource("mouse"),
+        input: this.engineInputSources.captureWheel(event)
+      }));
       return;
     }
     if (this.captureMode !== "combo") {
@@ -458,38 +467,12 @@ export class ToolStarterApp {
     if (result.waiting) {
       return false;
     }
-    if (!result.ok) {
-      if (result.invalid) {
-        this.warnActiveCapture(result.message);
-        return false;
-      }
-      this.capture.showMessage(result.message);
-      this.statusLog.warn(result.message);
-      this.clearCapture();
-      this.refreshActions();
-      return true;
-    }
-    this.addCapturedInput(result.input);
-    return true;
+    return this.applyCaptureRuntimeResult(this.captureSession.handleGamepadCaptureResult(result));
   }
 
   recordComboInput(input, { silentDuplicate = false } = {}) {
     const result = this.engineInputSources.recordComboInput(input, { silentDuplicate });
-    if (!result.ok) {
-      if (result.silent) {
-        return;
-      }
-      this.capture.showMessage(result.message);
-      this.capture.setCaptureState("warning");
-      this.statusLog.warn(result.message);
-      return;
-    }
-    if (result.waiting) {
-      this.capture.showMessage(result.message);
-      this.capture.setCaptureState("pending");
-      return;
-    }
-    this.addCapturedInput(result.input);
+    this.applyCaptureRuntimeResult(this.captureSession.handleComboRecord(result));
   }
 
   handleGamepadConnectionChange() {
@@ -660,35 +643,50 @@ export class ToolStarterApp {
 
   beginCapture(captureId, { mode = "" } = {}) {
     this.clearCapture();
-    this.captureSession.begin(captureId, { mode });
+    this.captureSession.begin(captureId, {
+      actionLabel: this.state.selectedActionLabel(),
+      mode,
+      timeoutMs: this.captureTimeoutDelay()
+    });
     this.capture.setActiveCapture(captureId);
     this.capture.setCaptureState("waiting");
-    const timeoutMs = this.captureTimeoutDelay();
-    this.captureTimeoutTimer = this.window.setTimeout?.(() => {
-      this.capture.showMessage(`${this.captureLabel()} capture timed out for ${this.state.selectedActionLabel()}.`);
-      this.statusLog.warn(`${this.captureLabel()} capture timed out for ${this.state.selectedActionLabel()}.`);
-      this.showCaptureCanceled();
-      this.refreshActions();
-    }, timeoutMs) ?? null;
   }
 
   clearCapture() {
-    if (this.captureTimeoutTimer && typeof this.window.clearTimeout === "function") {
-      this.window.clearTimeout(this.captureTimeoutTimer);
-    }
-    if (this.capturePendingTimer && typeof this.window.clearTimeout === "function") {
-      this.window.clearTimeout(this.capturePendingTimer);
-    }
-    if (this.captureVisualStateTimer && typeof this.window.clearTimeout === "function") {
-      this.window.clearTimeout(this.captureVisualStateTimer);
-    }
-    this.captureTimeoutTimer = null;
-    this.capturePendingTimer = null;
-    this.captureVisualStateTimer = null;
     this.captureSession.reset();
     this.engineInputSources.resetComboCapture();
     this.lastCaptureWarning = "";
     this.capture.clearActiveCapture();
+  }
+
+  handleCaptureSessionState(event) {
+    if (event.type === "begin" && event.activeCaptureId) {
+      this.capture.setActiveCapture(event.activeCaptureId);
+    }
+    if (event.type === "reset" || event.type === "visual-reset") {
+      this.capture.clearActiveCapture();
+      this.capture.setSelectedCapture(this.selectedCaptureId);
+    }
+    if (event.message) {
+      this.capture.showMessage(event.message);
+    }
+    if (event.state && event.state !== "idle") {
+      this.capture.setCaptureState(event.state);
+    }
+    if (event.severity === "warn" && event.message && event.message !== this.lastCaptureWarning) {
+      this.statusLog.warn(event.message);
+      this.lastCaptureWarning = event.message;
+    }
+    if (event.type === "timeout") {
+      this.clearSelectedCaptureDevice();
+      this.engineInputSources.resetComboCapture();
+      this.refreshActions();
+    }
+    if (event.type === "visual-reset") {
+      this.engineInputSources.resetComboCapture();
+      this.lastCaptureWarning = "";
+      this.refreshActions();
+    }
   }
 
   cancelCapture(captureLabel) {
@@ -729,57 +727,6 @@ export class ToolStarterApp {
     return true;
   }
 
-  captureSelectedGesture() {
-    const result = this.engineInputSources.captureGesture(this.selectedGesture.binding, this.enabledDeviceIds);
-    if (!result.ok) {
-      this.statusLog.warn(result.message);
-      this.refreshActions();
-      return;
-    }
-    this.addCapturedInput(result.input);
-  }
-
-  startPendingMouseDrag(event, gesture) {
-    const result = this.captureSession.startPointerDrag(event, gesture);
-    this.capture.showMessage(result.message);
-    this.capture.setCaptureState(result.state);
-  }
-
-  updatePendingMouseDrag(event) {
-    const result = this.captureSession.updatePointerDrag(event);
-    if (!result.ok) {
-      this.warnActiveCapture(result.message);
-      return;
-    }
-    if (result.complete) {
-      this.commitPendingMouseDrag(result);
-      return;
-    }
-    this.capture.showMessage(result.message);
-    this.capture.setCaptureState("pending");
-  }
-
-  finishPendingMouseDrag(event) {
-    const result = this.captureSession.finishPointerDrag(event);
-    if (!result.ok) {
-      this.warnActiveCapture(result.message);
-      return;
-    }
-    this.commitPendingMouseDrag(result);
-  }
-
-  commitPendingMouseDrag(result) {
-    if (!result?.gesture || !result.snapshot) {
-      return;
-    }
-    const captureResult = this.engineInputSources.capturePointerDragSnapshot(result.gesture.binding, result.snapshot);
-    if (!captureResult.ok) {
-      this.warnActiveCapture(captureResult.message);
-      return;
-    }
-    this.addCapturedInput(captureResult.input);
-  }
-
   startLiveMouseDrag(event) {
     this.captureSession.startLivePointerDrag(event);
   }
@@ -795,107 +742,59 @@ export class ToolStarterApp {
     this.activateInputBindings(result.transientBindings, { transient: true });
   }
 
-  commitKeyboardRelease(event) {
-    const result = this.captureSession.commitKeyboardRelease(event);
-    if (!result.ok) {
-      this.warnActiveCapture(result.message);
-      return;
+  applyCaptureRuntimeResult(result) {
+    if (!result?.handled || result.silent) {
+      return false;
     }
-    this.addCapturedInput(result.input);
-  }
-
-  recordDoubleClickInput(event, gesture) {
-    const input = this.engineInputSources.captureMouse(event, gesture);
-    const result = this.captureSession.recordDoubleClick(event, input, {
-      now: this.captureEventTime(event),
-      thresholdMs: this.doubleClickThresholdMs
-    });
     if (result.warning) {
       this.statusLog.warn(result.warning);
     }
-    if (result.waiting) {
-      this.startPendingDoubleClick(result);
-      return;
+    if (result.message) {
+      this.capture.showMessage(result.message);
     }
-    this.clearPendingCaptureTimer();
-    this.addCapturedInput(result.input);
-  }
-
-  startPendingDoubleClick(result) {
-    this.clearPendingCaptureTimer();
-    this.capture.showMessage(result.message);
-    this.capture.setCaptureState(result.state);
-    this.capturePendingTimer = this.window.setTimeout?.(() => {
-      this.captureSession.resetDoubleClick();
-      this.capture.showMessage(`Mouse Double Click capture timed out waiting for the second click for ${this.state.selectedActionLabel()}.`);
-      this.statusLog.warn(`Mouse Double Click capture timed out waiting for the second click for ${this.state.selectedActionLabel()}.`);
-      this.showCaptureCanceled();
-      this.refreshActions();
-    }, this.doubleClickThresholdMs) ?? null;
-  }
-
-  clearPendingCaptureTimer() {
-    if (this.capturePendingTimer && typeof this.window.clearTimeout === "function") {
-      this.window.clearTimeout(this.capturePendingTimer);
+    if (result.state) {
+      this.capture.setCaptureState(result.state);
     }
-    this.capturePendingTimer = null;
+    if (!result.ok) {
+      if (result.severity === "warn") {
+        this.warnActiveCapture(result.message);
+      }
+      if (result.cancel) {
+        this.clearCapture();
+        this.refreshActions();
+        return true;
+      }
+      return false;
+    }
+    if (result.commitPointerDrag) {
+      const captureResult = this.engineInputSources.capturePointerDragSnapshot(
+        result.commitPointerDrag.gesture.binding,
+        result.commitPointerDrag.snapshot
+      );
+      if (!captureResult.ok) {
+        this.warnActiveCapture(captureResult.message);
+        return false;
+      }
+      this.addCapturedInput(captureResult.input);
+      return true;
+    }
+    if (result.commitInput || result.input) {
+      this.addCapturedInput(result.commitInput ?? result.input);
+      return true;
+    }
+    return true;
   }
 
   showCaptureComplete() {
     this.clearSelectedCaptureDevice();
-    this.capture.showMessage("Capture complete.");
-    this.capture.setCaptureState("complete");
-    this.finishCaptureVisualState("complete");
+    this.captureSession.complete();
   }
 
   showCaptureCanceled() {
     this.clearSelectedCaptureDevice();
-    this.capture.setCaptureState("canceled");
-    this.finishCaptureVisualState("canceled");
-  }
-
-  finishCaptureVisualState(mode) {
-    if (this.captureTimeoutTimer && typeof this.window.clearTimeout === "function") {
-      this.window.clearTimeout(this.captureTimeoutTimer);
-    }
-    if (this.capturePendingTimer && typeof this.window.clearTimeout === "function") {
-      this.window.clearTimeout(this.capturePendingTimer);
-    }
-    if (this.captureVisualStateTimer && typeof this.window.clearTimeout === "function") {
-      this.window.clearTimeout(this.captureVisualStateTimer);
-    }
-    this.captureTimeoutTimer = null;
-    this.capturePendingTimer = null;
-    this.captureSession.setVisualMode(mode);
-    this.capture.setCaptureState(mode);
-    this.engineInputSources.resetComboCapture();
-    this.lastCaptureWarning = "";
-    this.captureVisualStateTimer = this.window.setTimeout?.(() => {
-      this.captureVisualStateTimer = null;
-      this.clearCapture();
-      this.refreshActions();
-    }, this.captureVisualStateDelay()) ?? null;
-  }
-
-  captureVisualStateDelay() {
-    const configuredDelay = Number(this.window.__inputMappingV2CaptureVisualMinimumMs);
-    return Number.isFinite(configuredDelay) && configuredDelay >= 0
-      ? configuredDelay
-      : this.captureVisualStateMinimumMs;
-  }
-
-  captureWheelInput(event) {
-    const gesture = this.selectedGestureForCaptureSource("mouse");
-    if (gesture?.captureKind !== "wheel") {
-      this.warnActiveCapture(`${gesture?.deviceLabel ?? "Mouse"} ${gesture?.label ?? "gesture"} capture expects mouse button input; wheel input ignored.`);
-      return;
-    }
-    const input = this.engineInputSources.captureWheel(event);
-    if (input.binding !== gesture.binding) {
-      this.warnActiveCapture(`${gesture.deviceLabel} ${gesture.label} capture expects ${gesture.label}; ${input.displayLabelLines[1]} was ignored.`);
-      return;
-    }
-    this.addCapturedInput(input);
+    this.captureSession.cancel({
+      message: `${this.captureLabel()} capture canceled for ${this.state.selectedActionLabel()}.`
+    });
   }
 
   warnActiveCapture(message) {
@@ -1100,4 +999,11 @@ function mouseCaptureMessage(gesture, actionLabel) {
     return `Scroll ${gesture.label.toLowerCase()} to bind it to ${actionLabel}.`;
   }
   return `Click a mouse button to bind it to ${actionLabel}.`;
+}
+
+function configuredVisualStateMinimumMs(windowRef) {
+  const configuredDelay = Number(windowRef.__inputMappingV2CaptureVisualMinimumMs);
+  return Number.isFinite(configuredDelay) && configuredDelay >= 0
+    ? configuredDelay
+    : 300;
 }
