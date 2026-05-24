@@ -1482,19 +1482,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("keeps Input Mapping V2 combo and active input visuals engine-backed", async () => {
+  test("keeps Input Mapping V2 capture sessions and active input visuals engine-backed", async () => {
     const [
+      capabilitySource,
       comboStateSource,
       gamepadAdapterSource,
+      gamepadClassifierSource,
       gamepadStateSource,
+      inputCaptureServiceSource,
+      inputCaptureSessionSource,
       inputServiceSource,
       sourceServiceSource,
       toolStarterSource,
       previewPanelSource
     ] = await Promise.all([
+      readFile("src/engine/input/InputCapabilityDescriptors.js", "utf8"),
       readFile("src/engine/input/InputComboState.js", "utf8"),
       readFile("src/engine/input/GamepadInputAdapter.js", "utf8"),
+      readFile("src/engine/input/GamepadInputClassifier.js", "utf8"),
       readFile("src/engine/input/GamepadState.js", "utf8"),
+      readFile("src/engine/input/InputCaptureService.js", "utf8"),
+      readFile("src/engine/input/InputCaptureSession.js", "utf8"),
       readFile("src/engine/input/InputService.js", "utf8"),
       readFile("tools/input-mapping-v2/js/services/EngineInputSourceService.js", "utf8"),
       readFile("tools/input-mapping-v2/js/ToolStarterApp.js", "utf8"),
@@ -1507,21 +1515,53 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     expect(inputServiceSource).toContain("decorateActionsWithInputState(actions = [])");
     expect(comboStateSource).toContain("export default class InputComboState");
     expect(comboStateSource).toContain("InputService ComboState");
+    expect(inputCaptureSessionSource).toContain("export default class InputCaptureSession");
+    expect(inputCaptureSessionSource).toContain("startKeyboardRelease(input)");
+    expect(inputCaptureSessionSource).toContain("commitKeyboardRelease(event = {})");
+    expect(inputCaptureSessionSource).toContain("recordDoubleClick(event, input");
+    expect(inputCaptureSessionSource).toContain("startPointerDrag(event, gesture)");
+    expect(inputCaptureSessionSource).toContain("updatePointerDrag(event)");
+    expect(inputCaptureSessionSource).toContain("finishPointerDrag(event)");
+    expect(inputCaptureSessionSource).toContain("startLivePointerDrag(event)");
+    expect(inputCaptureServiceSource).toContain("export default class InputCaptureService");
+    expect(inputCaptureServiceSource).toContain("captureKeyboard(event, gesture = null)");
+    expect(inputCaptureServiceSource).toContain("captureMouse(event, gesture = null)");
+    expect(inputCaptureServiceSource).toContain("captureWheel(event)");
+    expect(inputCaptureServiceSource).toContain("capturePointerDragSnapshot(binding, snapshot)");
+    expect(capabilitySource).toContain("inputDeviceGestureIsCompatible(source, gesture)");
     expect(gamepadStateSource).toContain("const buttonsReleased = current.buttonsDown.map");
     expect(gamepadStateSource).toContain("isReleased(buttonIndex)");
     expect(gamepadAdapterSource).toContain("buttonsReleased: [...(pad.buttonsReleased ?? [])]");
     expect(gamepadAdapterSource).toContain("isReleased: (buttonIndex) => this.isReleased(pad, buttonIndex)");
+    expect(gamepadClassifierSource).toContain("export function captureGamepadInput");
+    expect(gamepadClassifierSource).toContain("pad.buttonsReleased?.[buttonIndex]");
+    expect(gamepadClassifierSource).toContain("GameControllerButtonRelease: { kind: 'button', state: 'release' }");
+    expect(gamepadClassifierSource).toContain("GameControllerButtonHold: { kind: 'button', state: 'hold' }");
+    expect(gamepadClassifierSource).toContain("GameControllerTrigger: { kind: 'trigger' }");
     expect(sourceServiceSource).toContain("this.inputService.beginComboCapture(options)");
     expect(sourceServiceSource).toContain("this.inputService.recordComboInput(input, options)");
     expect(sourceServiceSource).toContain("this.inputService.decorateActionsWithInputState(actions)");
-    expect(sourceServiceSource).toContain("pad.buttonsReleased?.[buttonIndex]");
-    expect(sourceServiceSource).toContain("GameControllerButtonRelease: { kind: \"button\", state: \"release\" }");
+    expect(sourceServiceSource).toContain("new InputCaptureService");
+    expect(sourceServiceSource).toContain("captureGamepadInput");
+    expect(sourceServiceSource).toContain("inputDeviceGestureIsCompatible");
+    expect(toolStarterSource).toContain("new InputCaptureSession");
+    expect(toolStarterSource).toContain("this.captureSession.startKeyboardRelease");
+    expect(toolStarterSource).toContain("this.captureSession.recordDoubleClick");
+    expect(toolStarterSource).toContain("this.captureSession.startPointerDrag");
+    expect(toolStarterSource).toContain("this.captureSession.updatePointerDrag");
+    expect(toolStarterSource).toContain("this.captureSession.finishPointerDrag");
+    expect(toolStarterSource).toContain("this.engineInputSources.isGestureCompatibleWithCaptureSource");
     expect(toolStarterSource).toContain("this.engineInputSources.beginComboCapture");
     expect(toolStarterSource).toContain("this.engineInputSources.recordComboInput");
     expect(toolStarterSource).toContain("this.engineInputSources.actionsWithActiveInputState(actions)");
     expect(previewPanelSource).toContain("input.isActionActive === true");
+    expect(toolStarterSource).not.toMatch(/pending(?:DoubleClick|KeyboardRelease|MouseDrag|Gesture)Input/);
+    expect(toolStarterSource).not.toContain("mouseDragSnapshot");
+    expect(toolStarterSource).not.toContain("dragDistance");
     expect(toolStarterSource).not.toContain("comboCaptureInputs");
     expect(toolStarterSource).not.toContain("Combo:${");
+    expect(sourceServiceSource).not.toContain("activeGamepadCandidates");
+    expect(sourceServiceSource).not.toContain("gamepadGestureExpectation");
     expect(sourceServiceSource).not.toContain("captureCombo(inputs)");
     expect(previewPanelSource).not.toContain("liveBindingCandidates");
   });

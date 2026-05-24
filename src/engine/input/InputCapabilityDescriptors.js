@@ -166,6 +166,10 @@ export function getInputGestureDescriptor(binding, options = {}) {
     return inputGestureDescriptors(options).find((gesture) => gesture.binding === binding) ?? null;
 }
 
+export function inputDeviceGestureIsCompatible(source, gesture) {
+    return Boolean(source && gesture && gesture.source === source);
+}
+
 export function mouseButtonLabel(button) {
     const buttonNumber = Number(button);
     if (buttonNumber === 0) {

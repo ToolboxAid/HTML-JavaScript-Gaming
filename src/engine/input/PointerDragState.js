@@ -37,10 +37,6 @@ export default class PointerDragState {
 
     pointerDown(event = {}) {
         const button = Number(event.button ?? PRIMARY_BUTTON);
-        if (button !== PRIMARY_BUTTON) {
-            return;
-        }
-
         const point = pointFromEvent(event);
         this.activePointerId = pointerIdFromEvent(event);
         this.button = button;
