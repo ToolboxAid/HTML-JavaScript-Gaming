@@ -98,94 +98,88 @@
       "engineInputModel": "src/engine/input/InputMap",
       "actions": [
         {
-          "action": "cancel",
-          "label": "Cancel",
-          "inputs": []
-        },
-        {
-          "action": "confirm",
-          "label": "Confirm",
-          "inputs": []
-        },
-        {
-          "action": "fire",
-          "label": "Fire",
-          "inputs": []
-        },
-        {
-          "action": "interact",
-          "label": "Interact",
-          "inputs": []
-        },
-        {
-          "action": "jump",
-          "label": "Jump",
-          "inputs": []
-        },
-        {
-          "action": "menu",
-          "label": "Menu",
-          "inputs": []
-        },
-        {
-          "action": "moveDown",
-          "label": "Move Down",
-          "inputs": []
-        },
-        {
-          "action": "moveLeft",
-          "label": "Move Left",
-          "inputs": []
-        },
-        {
-          "action": "moveRight",
-          "label": "Move Right",
-          "inputs": []
-        },
-        {
-          "action": "moveUp",
-          "label": "Move Up",
-          "inputs": []
-        },
-        {
           "action": "pause",
           "label": "Pause",
-          "inputs": []
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyP",
+              "label": "Keyboard KeyP Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
-          "action": "primaryAction",
-          "label": "Primary Action",
-          "inputs": []
+          "action": "toggleLabels",
+          "label": "Toggle Labels",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyL",
+              "label": "Keyboard KeyL Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
-          "action": "rotateLeft",
-          "label": "Rotate Left",
-          "inputs": []
+          "action": "resetClock",
+          "label": "Reset Clock",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyR",
+              "label": "Keyboard KeyR Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
-          "action": "rotateRight",
-          "label": "Rotate Right",
-          "inputs": []
+          "action": "timeScale1",
+          "label": "Time Scale 1x",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Digit1",
+              "label": "Keyboard Digit1 Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
-          "action": "secondaryAction",
-          "label": "Secondary Action",
-          "inputs": []
+          "action": "timeScale2",
+          "label": "Time Scale 2x",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Digit2",
+              "label": "Keyboard Digit2 Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
-          "action": "select",
-          "label": "Select",
-          "inputs": []
+          "action": "timeScale3",
+          "label": "Time Scale 3x",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Digit3",
+              "label": "Keyboard Digit3 Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
-          "action": "start",
-          "label": "Start",
-          "inputs": []
-        },
-        {
-          "action": "thrust",
-          "label": "Thrust",
-          "inputs": []
+          "action": "timeScale4",
+          "label": "Time Scale 4x",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Digit4",
+              "label": "Keyboard Digit4 Press",
+              "engine": "KeyboardState"
+            }
+          ]
         }
       ]
     }

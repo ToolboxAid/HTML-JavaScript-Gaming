@@ -7,6 +7,7 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import ActionInputMap from '/src/engine/input/ActionInputMap.js';
 import ActionInputService from '/src/engine/input/ActionInputService.js';
+import { actionBindingsFromInputMappingPayload } from '/src/engine/input/InputMappingManifest.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import SpaceDuelScene from './game/SpaceDuelScene.js';
@@ -33,6 +34,7 @@ export function bootSpaceDuel({
   EngineClass = Engine,
   InputServiceClass = ActionInputService,
   ActionMapClass = ActionInputMap,
+  inputMappingPayload = null,
   SceneClass = SpaceDuelScene,
 } = {}) {
   if (!documentRef) {
@@ -48,7 +50,8 @@ export function bootSpaceDuel({
     return null;
   }
 
-  const actionMap = new ActionMapClass(ACTION_BINDINGS);
+  const manifestActionBindings = actionBindingsFromInputMappingPayload(inputMappingPayload);
+  const actionMap = new ActionMapClass(Object.keys(manifestActionBindings).length ? manifestActionBindings : ACTION_BINDINGS);
   const input = new InputServiceClass({ actionMap });
 
   const engine = new EngineClass({

@@ -11,6 +11,10 @@ import PointerDragState from './PointerDragState.js';
 import InputComboState from './InputComboState.js';
 import InputMap from './InputMap.js';
 import {
+    inputMappingGestureSuffix,
+    runtimeBindingFromInputMappingBinding
+} from './InputMappingManifest.js';
+import {
     getInputGestureDescriptor,
     inputDeviceCapabilities,
     inputGestureDescriptors,
@@ -141,11 +145,11 @@ export default class InputService {
     }
 
     isActionDown(action) {
-        return this.inputMap.isActionDown(action, (input) => this.isDown(input));
+        return this.inputMap.isActionDown(action, (input) => this.isInputBindingDown(input));
     }
 
     isActionPressed(action) {
-        return this.inputMap.isActionPressed(action, (input) => this.isPressed(input));
+        return this.inputMap.isActionPressed(action, (input) => this.isInputBindingPressed(input));
     }
 
     isAction(action) {
@@ -154,9 +158,35 @@ export default class InputService {
 
     getActionSnapshot() {
         return this.inputMap.getSnapshot(
-            (input) => this.isDown(input),
-            (input) => this.isPressed(input),
+            (input) => this.isInputBindingDown(input),
+            (input) => this.isInputBindingPressed(input),
         );
+    }
+
+    isInputBindingDown(binding) {
+        const normalizedBinding = runtimeBindingFromInputMappingBinding(binding);
+        if (normalizedBinding.startsWith('Pad')) {
+            return this.isGamepadBindingDown(normalizedBinding);
+        }
+        if (normalizedBinding.startsWith('MouseButton')) {
+            return this.isMouseDown(Number(normalizedBinding.replace(/^MouseButton/, '')));
+        }
+        return this.isDown(normalizedBinding);
+    }
+
+    isInputBindingPressed(binding) {
+        const normalizedBinding = runtimeBindingFromInputMappingBinding(binding);
+        const gesture = inputMappingGestureSuffix(binding);
+        if (normalizedBinding.startsWith('Pad')) {
+            if (gesture === 'GameControllerButtonRelease') {
+                return this.isGamepadBindingReleased(normalizedBinding);
+            }
+            return this.isGamepadBindingPressed(normalizedBinding);
+        }
+        if (normalizedBinding.startsWith('MouseButton')) {
+            return this.isMousePressed(Number(normalizedBinding.replace(/^MouseButton/, '')));
+        }
+        return this.isPressed(normalizedBinding);
     }
 
     getSnapshot() {
@@ -298,6 +328,41 @@ export default class InputService {
         return this.gamepads.getGamepads();
     }
 
+    isGamepadBindingDown(binding) {
+        const parsed = parseGamepadBinding(binding);
+        if (!parsed) {
+            return false;
+        }
+        const pad = this.getGamepad(parsed.padIndex);
+        if (!pad) {
+            return false;
+        }
+        if (parsed.kind === 'button') {
+            return Boolean(pad.isDown(parsed.inputIndex));
+        }
+        return gamepadAxisDirectionIsActive(pad.axes?.[parsed.inputIndex], parsed.direction);
+    }
+
+    isGamepadBindingPressed(binding) {
+        const parsed = parseGamepadBinding(binding);
+        if (!parsed) {
+            return false;
+        }
+        const pad = this.getGamepad(parsed.padIndex);
+        if (!pad) {
+            return false;
+        }
+        return parsed.kind === 'button' ? Boolean(pad.isPressed(parsed.inputIndex)) : false;
+    }
+
+    isGamepadBindingReleased(binding) {
+        const parsed = parseGamepadBinding(binding);
+        if (!parsed || parsed.kind !== 'button') {
+            return false;
+        }
+        return Boolean(this.getGamepad(parsed.padIndex)?.isReleased(parsed.inputIndex));
+    }
+
     onKeyDown(event) {
         this.liveKeysDown.add(event.code);
     }
@@ -390,4 +455,28 @@ export default class InputService {
                     : [],
             }));
     }
+}
+
+function parseGamepadBinding(binding) {
+    const match = /^Pad(\d+):(Button|Axis)(\d+)([+-]?)$/.exec(String(binding || ''));
+    if (!match) {
+        return null;
+    }
+    return {
+        direction: match[4] || '',
+        inputIndex: Number(match[3]),
+        kind: match[2] === 'Axis' ? 'axis' : 'button',
+        padIndex: Number(match[1])
+    };
+}
+
+function gamepadAxisDirectionIsActive(value, direction) {
+    const axis = Number(value) || 0;
+    if (direction === '-') {
+        return axis <= -0.35;
+    }
+    if (direction === '+') {
+        return axis >= 0.35;
+    }
+    return Math.abs(axis) >= 0.35;
 }

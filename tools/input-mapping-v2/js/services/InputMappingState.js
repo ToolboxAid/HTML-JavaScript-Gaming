@@ -42,6 +42,29 @@ export class InputMappingState {
     this.syncInputMap();
   }
 
+  loadPayload(payload) {
+    const mappedActions = Array.isArray(payload?.actions)
+      ? payload.actions
+        .map(payloadActionEntry)
+        .filter((action) => action.id && action.label && action.inputs.length > 0)
+      : [];
+    if (!mappedActions.length) {
+      return {
+        ok: false,
+        message: "Workspace launch data did not include any non-empty Input Mapping V2 actions."
+      };
+    }
+    this.actionEntries = sortActions(mappedActions);
+    this.selectedActionId = this.actionEntries[0]?.id ?? "";
+    this.syncInputMap();
+    return {
+      ok: true,
+      actionCount: this.actionEntries.length,
+      inputCount: this.actionEntries.reduce((count, action) => count + action.inputs.length, 0),
+      message: `Loaded ${this.actionEntries.length} source-derived action mapping${this.actionEntries.length === 1 ? "" : "s"} from Workspace Manager launch data.`
+    };
+  }
+
   actions() {
     return this.actionEntries.map((action) => ({
       id: action.id,
@@ -227,4 +250,132 @@ function schemaInput(input) {
     label: input.label,
     engine: input.engine
   };
+}
+
+function payloadActionEntry(action) {
+  return {
+    id: String(action?.action || "").trim(),
+    label: String(action?.label || action?.action || "").trim(),
+    inputs: Array.isArray(action?.inputs)
+      ? action.inputs.map(payloadInputEntry).filter((input) => input.binding)
+      : [],
+    tileVisible: true
+  };
+}
+
+function payloadInputEntry(input) {
+  const source = String(input?.source || "").trim();
+  const binding = String(input?.binding || "").trim();
+  const label = String(input?.label || "").trim();
+  const displayLabelLines = displayLabelLinesForPayloadInput({ binding, label, source });
+  return {
+    source,
+    binding,
+    label: label || displayLabelLines.join(" "),
+    engine: String(input?.engine || "").trim(),
+    displayLabelLines,
+    title: displayLabelLines.join("\n")
+  };
+}
+
+function displayLabelLinesForPayloadInput({ binding, label, source }) {
+  if (source === "keyboard") {
+    return ["Keyboard", baseBinding(binding), keyboardGestureLabel(binding, label)];
+  }
+  if (source === "gamepad") {
+    return ["Game Controller", gamepadInputLabel(binding, label), gamepadGestureLabel(binding, label)];
+  }
+  if (source === "mouse") {
+    return ["Mouse", mouseInputLabel(binding, label), mouseGestureLabel(binding, label)];
+  }
+  return [label || binding].filter(Boolean);
+}
+
+function baseBinding(binding) {
+  return String(binding || "").split(":")[0];
+}
+
+function suffix(binding) {
+  return String(binding || "").split(":").at(-1) || "";
+}
+
+function keyboardGestureLabel(binding, label) {
+  const gesture = suffix(binding);
+  if (gesture === "KeyboardHold" || /\bHold\b/i.test(label)) {
+    return "Hold";
+  }
+  if (gesture === "KeyboardRelease" || /\bRelease\b/i.test(label)) {
+    return "Release";
+  }
+  return "Press";
+}
+
+function gamepadGestureLabel(binding, label) {
+  const gesture = suffix(binding);
+  const labels = {
+    GameControllerButtonPress: "Btn Press",
+    GameControllerButtonHold: "Btn Hold",
+    GameControllerButtonRelease: "Btn Release",
+    GameControllerDPad: "DPad",
+    GameControllerStick: "Stick",
+    GameControllerTrigger: "Trigger"
+  };
+  if (labels[gesture]) {
+    return labels[gesture];
+  }
+  const match = String(label || "").match(/\b(Btn Press|Btn Hold|Btn Release|DPad|Stick|Trigger)\b/i);
+  return match?.[1] ?? "Button";
+}
+
+function gamepadInputLabel(binding, label) {
+  const axisMatch = String(binding || "").match(/^Pad\d+:Axis(\d+)([+-]?)/);
+  if (axisMatch) {
+    return `Axis ${axisMatch[1]}${axisMatch[2] || ""}`;
+  }
+  const buttonMatch = String(binding || "").match(/^Pad\d+:Button(\d+)/);
+  if (!buttonMatch) {
+    return label.replace(/^Game Controller\s+/i, "").replace(/\s+(?:Btn Press|Btn Hold|Btn Release|DPad|Stick|Trigger)$/i, "").trim() || binding;
+  }
+  const buttonIndex = Number(buttonMatch[1]);
+  const dpadLabels = {
+    12: "DPad Up",
+    13: "DPad Down",
+    14: "DPad Left",
+    15: "DPad Right"
+  };
+  return dpadLabels[buttonIndex] || `Button ${buttonIndex}`;
+}
+
+function mouseGestureLabel(binding, label) {
+  if (suffix(binding) === "MouseDoubleClick" || /\bDouble Click\b/i.test(label)) {
+    return "Double Click";
+  }
+  if (suffix(binding) === "MousePrimaryDragRelease" || /\bDrag Release\b/i.test(label)) {
+    return "Drag Release";
+  }
+  if (suffix(binding) === "MousePrimaryDrag" || /\bDrag\b/i.test(label)) {
+    return "Drag";
+  }
+  if (/Wheel/i.test(binding) || /Wheel/i.test(label)) {
+    return "Wheel";
+  }
+  return "Click";
+}
+
+function mouseInputLabel(binding, label) {
+  const buttonMatch = String(binding || "").match(/^MouseButton(\d+)/);
+  if (!buttonMatch) {
+    return label.replace(/^Mouse\s+/i, "").trim() || binding;
+  }
+  const buttonNumber = Number(buttonMatch[1]);
+  if (buttonNumber === 0) {
+    return "Left Button";
+  }
+  if (buttonNumber === 1) {
+    return "Middle Button";
+  }
+  if (buttonNumber === 2) {
+    return "Right Button";
+  }
+  return `Button ${buttonNumber + 1}`;
 }

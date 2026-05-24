@@ -95,94 +95,88 @@
       "engineInputModel": "src/engine/input/InputMap",
       "actions": [
         {
-          "action": "cancel",
-          "label": "Cancel",
-          "inputs": []
-        },
-        {
-          "action": "confirm",
-          "label": "Confirm",
-          "inputs": []
-        },
-        {
-          "action": "fire",
-          "label": "Fire",
-          "inputs": []
-        },
-        {
-          "action": "interact",
-          "label": "Interact",
-          "inputs": []
-        },
-        {
-          "action": "jump",
-          "label": "Jump",
-          "inputs": []
-        },
-        {
-          "action": "menu",
-          "label": "Menu",
-          "inputs": []
-        },
-        {
-          "action": "moveDown",
-          "label": "Move Down",
-          "inputs": []
-        },
-        {
-          "action": "moveLeft",
-          "label": "Move Left",
-          "inputs": []
-        },
-        {
-          "action": "moveRight",
-          "label": "Move Right",
-          "inputs": []
-        },
-        {
-          "action": "moveUp",
-          "label": "Move Up",
-          "inputs": []
-        },
-        {
-          "action": "pause",
-          "label": "Pause",
-          "inputs": []
-        },
-        {
-          "action": "primaryAction",
-          "label": "Primary Action",
-          "inputs": []
-        },
-        {
           "action": "rotateLeft",
           "label": "Rotate Left",
-          "inputs": []
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowLeft:KeyboardHold",
+              "label": "Keyboard ArrowLeft Hold",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
           "action": "rotateRight",
           "label": "Rotate Right",
-          "inputs": []
-        },
-        {
-          "action": "secondaryAction",
-          "label": "Secondary Action",
-          "inputs": []
-        },
-        {
-          "action": "select",
-          "label": "Select",
-          "inputs": []
-        },
-        {
-          "action": "start",
-          "label": "Start",
-          "inputs": []
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowRight:KeyboardHold",
+              "label": "Keyboard ArrowRight Hold",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
           "action": "thrust",
           "label": "Thrust",
-          "inputs": []
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowUp:KeyboardHold",
+              "label": "Keyboard ArrowUp Hold",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "brake",
+          "label": "Brake",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Space:KeyboardHold",
+              "label": "Keyboard Space Hold",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "startRun",
+          "label": "Start Run",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Enter",
+              "label": "Keyboard Enter Press",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "recordRun",
+          "label": "Record Run",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyR",
+              "label": "Keyboard KeyR Press",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "playbackRun",
+          "label": "Playback Run",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyP",
+              "label": "Keyboard KeyP Press",
+              "engine": "KeyboardState"
+            }
+          ]
         }
       ]
     }

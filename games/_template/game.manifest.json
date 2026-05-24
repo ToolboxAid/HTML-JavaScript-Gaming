@@ -40,105 +40,15 @@
       "id": "asset-manager-v2._template.registry",
       "name": "Game Template Asset Manager V2 Registry",
       "source": "manifest",
-      "assets": {}
-    },
-    "input-mapping-v2": {
-      "$schema": "tools/schemas/tools/input-mapping-v2.schema.json",
-      "toolId": "input-mapping-v2",
-      "version": 1,
-      "engineInputModel": "src/engine/input/InputMap",
-      "actions": [
-        {
-          "action": "cancel",
-          "label": "Cancel",
-          "inputs": []
-        },
-        {
-          "action": "confirm",
-          "label": "Confirm",
-          "inputs": []
-        },
-        {
-          "action": "fire",
-          "label": "Fire",
-          "inputs": []
-        },
-        {
-          "action": "interact",
-          "label": "Interact",
-          "inputs": []
-        },
-        {
-          "action": "jump",
-          "label": "Jump",
-          "inputs": []
-        },
-        {
-          "action": "menu",
-          "label": "Menu",
-          "inputs": []
-        },
-        {
-          "action": "moveDown",
-          "label": "Move Down",
-          "inputs": []
-        },
-        {
-          "action": "moveLeft",
-          "label": "Move Left",
-          "inputs": []
-        },
-        {
-          "action": "moveRight",
-          "label": "Move Right",
-          "inputs": []
-        },
-        {
-          "action": "moveUp",
-          "label": "Move Up",
-          "inputs": []
-        },
-        {
-          "action": "pause",
-          "label": "Pause",
-          "inputs": []
-        },
-        {
-          "action": "primaryAction",
-          "label": "Primary Action",
-          "inputs": []
-        },
-        {
-          "action": "rotateLeft",
-          "label": "Rotate Left",
-          "inputs": []
-        },
-        {
-          "action": "rotateRight",
-          "label": "Rotate Right",
-          "inputs": []
-        },
-        {
-          "action": "secondaryAction",
-          "label": "Secondary Action",
-          "inputs": []
-        },
-        {
-          "action": "select",
-          "label": "Select",
-          "inputs": []
-        },
-        {
-          "action": "start",
-          "label": "Start",
-          "inputs": []
-        },
-        {
-          "action": "thrust",
-          "label": "Thrust",
-          "inputs": []
+      "assets": {
+        "assets.image.preview.preview": {
+          "path": "assets/images/preview.svg",
+          "type": "image",
+          "kind": "svg",
+          "role": "preview",
+          "source": "manifest"
         }
-      ]
+      }
     }
   }
 }

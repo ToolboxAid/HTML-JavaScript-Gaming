@@ -85,94 +85,280 @@
       "engineInputModel": "src/engine/input/InputMap",
       "actions": [
         {
-          "action": "cancel",
-          "label": "Cancel",
-          "inputs": []
+          "action": "playerMoveLeft",
+          "label": "Player Move Left",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyA:KeyboardHold",
+              "label": "Keyboard KeyA Hold",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button14:GameControllerDPad",
+              "label": "Game Controller DPad Left DPad",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Axis0-:GameControllerStick",
+              "label": "Game Controller Axis 0- Stick",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "confirm",
-          "label": "Confirm",
-          "inputs": []
+          "action": "playerMoveRight",
+          "label": "Player Move Right",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyD:KeyboardHold",
+              "label": "Keyboard KeyD Hold",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button15:GameControllerDPad",
+              "label": "Game Controller DPad Right DPad",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Axis0+:GameControllerStick",
+              "label": "Game Controller Axis 0+ Stick",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "fire",
-          "label": "Fire",
-          "inputs": []
+          "action": "playerMoveUp",
+          "label": "Player Move Up",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyW:KeyboardHold",
+              "label": "Keyboard KeyW Hold",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button12:GameControllerDPad",
+              "label": "Game Controller DPad Up DPad",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Axis1-:GameControllerStick",
+              "label": "Game Controller Axis 1- Stick",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "interact",
-          "label": "Interact",
-          "inputs": []
+          "action": "playerMoveDown",
+          "label": "Player Move Down",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyS:KeyboardHold",
+              "label": "Keyboard KeyS Hold",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button13:GameControllerDPad",
+              "label": "Game Controller DPad Down DPad",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Axis1+:GameControllerStick",
+              "label": "Game Controller Axis 1+ Stick",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "jump",
-          "label": "Jump",
-          "inputs": []
+          "action": "opponentMoveUp",
+          "label": "Opponent Move Up",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowUp:KeyboardHold",
+              "label": "Keyboard ArrowUp Hold",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Button12:GameControllerDPad",
+              "label": "Game Controller DPad Up DPad",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Axis1-:GameControllerStick",
+              "label": "Game Controller Axis 1- Stick",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "menu",
-          "label": "Menu",
-          "inputs": []
+          "action": "opponentMoveDown",
+          "label": "Opponent Move Down",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowDown:KeyboardHold",
+              "label": "Keyboard ArrowDown Hold",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Button13:GameControllerDPad",
+              "label": "Game Controller DPad Down DPad",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Axis1+:GameControllerStick",
+              "label": "Game Controller Axis 1+ Stick",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "moveDown",
-          "label": "Move Down",
-          "inputs": []
-        },
-        {
-          "action": "moveLeft",
-          "label": "Move Left",
-          "inputs": []
-        },
-        {
-          "action": "moveRight",
-          "label": "Move Right",
-          "inputs": []
-        },
-        {
-          "action": "moveUp",
-          "label": "Move Up",
-          "inputs": []
+          "action": "serve",
+          "label": "Serve",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Space",
+              "label": "Keyboard Space Press",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "keyboard",
+              "binding": "Enter",
+              "label": "Keyboard Enter Press",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button0:GameControllerButtonPress",
+              "label": "Game Controller Button 0 Btn Press",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Button0:GameControllerButtonPress",
+              "label": "Game Controller Button 0 Btn Press",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
           "action": "pause",
           "label": "Pause",
-          "inputs": []
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyP",
+              "label": "Keyboard KeyP Press",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button9:GameControllerButtonPress",
+              "label": "Game Controller Button 9 Btn Press",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Button9:GameControllerButtonPress",
+              "label": "Game Controller Button 9 Btn Press",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "primaryAction",
-          "label": "Primary Action",
-          "inputs": []
+          "action": "exit",
+          "label": "Exit",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyX",
+              "label": "Keyboard KeyX Press",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button1:GameControllerButtonPress",
+              "label": "Game Controller Button 1 Btn Press",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Button1:GameControllerButtonPress",
+              "label": "Game Controller Button 1 Btn Press",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "rotateLeft",
-          "label": "Rotate Left",
-          "inputs": []
+          "action": "nextMode",
+          "label": "Next Mode",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyM",
+              "label": "Keyboard KeyM Press",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "keyboard",
+              "binding": "Tab",
+              "label": "Keyboard Tab Press",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button5:GameControllerButtonPress",
+              "label": "Game Controller Button 5 Btn Press",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Button5:GameControllerButtonPress",
+              "label": "Game Controller Button 5 Btn Press",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         },
         {
-          "action": "rotateRight",
-          "label": "Rotate Right",
-          "inputs": []
-        },
-        {
-          "action": "secondaryAction",
-          "label": "Secondary Action",
-          "inputs": []
-        },
-        {
-          "action": "select",
-          "label": "Select",
-          "inputs": []
-        },
-        {
-          "action": "start",
-          "label": "Start",
-          "inputs": []
-        },
-        {
-          "action": "thrust",
-          "label": "Thrust",
-          "inputs": []
+          "action": "previousMode",
+          "label": "Previous Mode",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyN",
+              "label": "Keyboard KeyN Press",
+              "engine": "KeyboardState"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad0:Button4:GameControllerButtonPress",
+              "label": "Game Controller Button 4 Btn Press",
+              "engine": "GamepadInputAdapter"
+            },
+            {
+              "source": "gamepad",
+              "binding": "Pad1:Button4:GameControllerButtonPress",
+              "label": "Game Controller Button 4 Btn Press",
+              "engine": "GamepadInputAdapter"
+            }
+          ]
         }
       ]
     }

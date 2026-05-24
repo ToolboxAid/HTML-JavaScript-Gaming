@@ -89,6 +89,9 @@ export class ToolStarterApp {
   start() {
     this.shell.mount();
     this.accordions.forEach((accordion) => accordion.mount());
+    this.workspaceRoot.querySelector(".input-mapping-v2__capture-header-actions")?.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
     this.actionNav.mount({
       onWorkspaceCopyManifest: () => {
         void this.copyJson();
@@ -142,6 +145,7 @@ export class ToolStarterApp {
     this.workspaceRoot.addEventListener("keydown", this.handleKeyDown, true);
     this.workspaceRoot.addEventListener("wheel", this.handleWheel, { capture: true, passive: false });
     this.statusLog.mount();
+    this.loadWorkspaceLaunchPayload();
     this.preview.mount({
       onDeleteAction: () => this.deleteSelectedAction(),
       onDeleteInput: (actionId, binding) => this.deleteActionInput(actionId, binding),
@@ -885,6 +889,50 @@ export class ToolStarterApp {
 
   importJson() {
     this.statusLog.warn("Import disabled: Input Mapping V2 imports through Workspace Manager game.manifest launch data. Edit game.manifest.json or relaunch from Workspace Manager with updated tool data.");
+  }
+
+  loadWorkspaceLaunchPayload() {
+    const payload = this.workspaceInputMappingPayload();
+    if (!payload) {
+      return;
+    }
+    const result = this.state.loadPayload(payload);
+    this.statusLog[result.ok ? "ok" : "warn"](result.message);
+  }
+
+  workspaceInputMappingPayload() {
+    const sessionPayload = this.workspaceToolSessionPayload();
+    if (sessionPayload) {
+      return sessionPayload;
+    }
+    const hostContext = this.workspaceHostContext();
+    return hostContext?.tools?.["input-mapping-v2"] ?? null;
+  }
+
+  workspaceToolSessionPayload() {
+    const session = this.readSessionJson("workspace.tools.input-mapping-v2");
+    return session?.data?.toolId === "input-mapping-v2" ? session.data : null;
+  }
+
+  workspaceHostContext() {
+    const params = new URLSearchParams(this.window.location?.search || "");
+    const hostContextId = params.get("hostContextId") || "";
+    if (!hostContextId) {
+      return null;
+    }
+    return this.readSessionJson(hostContextId);
+  }
+
+  readSessionJson(key) {
+    if (!key || typeof this.window.sessionStorage?.getItem !== "function") {
+      return null;
+    }
+    try {
+      const value = this.window.sessionStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
+    } catch {
+      return null;
+    }
   }
 
   async copyJson() {

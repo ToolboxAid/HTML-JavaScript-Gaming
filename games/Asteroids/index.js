@@ -4,6 +4,7 @@ import { highscoreFlow } from "./flow/highscore.js";
 import { createAsteroidsShowcaseDebugPlugin } from "./debug/asteroidsShowcaseDebug.js";
 import Engine from "/src/engine/core/Engine.js";
 import InputService from "/src/engine/input/InputService.js";
+import { inputMapFromManifest } from "/src/engine/input/InputMappingManifest.js";
 import ObjectVectorRuntimeAssetService from '/src/engine/rendering/ObjectVectorRuntimeAssetService.js';
 import { Theme } from "/src/engine/theme/Theme.js";
 import { ThemeTokens } from "/src/engine/theme/ThemeTokens.js";
@@ -197,6 +198,7 @@ export async function bootAsteroids({
     stage = "create-input";
     traceBoot(stage);
     const input = new InputServiceClass();
+    input.setInputMap?.(inputMapFromManifest(asteroidsManifest));
 
     stage = "create-engine";
     traceBoot(stage);

@@ -63,94 +63,160 @@
       "engineInputModel": "src/engine/input/InputMap",
       "actions": [
         {
-          "action": "cancel",
-          "label": "Cancel",
-          "inputs": []
+          "action": "startOnePlayer",
+          "label": "Start One Player",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Digit1",
+              "label": "Keyboard Digit1 Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
-          "action": "confirm",
-          "label": "Confirm",
-          "inputs": []
+          "action": "startTwoPlayer",
+          "label": "Start Two Player",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Digit2",
+              "label": "Keyboard Digit2 Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
-          "action": "fire",
-          "label": "Fire",
-          "inputs": []
-        },
-        {
-          "action": "interact",
-          "label": "Interact",
-          "inputs": []
-        },
-        {
-          "action": "jump",
-          "label": "Jump",
-          "inputs": []
-        },
-        {
-          "action": "menu",
-          "label": "Menu",
-          "inputs": []
-        },
-        {
-          "action": "moveDown",
-          "label": "Move Down",
-          "inputs": []
-        },
-        {
-          "action": "moveLeft",
-          "label": "Move Left",
-          "inputs": []
-        },
-        {
-          "action": "moveRight",
-          "label": "Move Right",
-          "inputs": []
-        },
-        {
-          "action": "moveUp",
-          "label": "Move Up",
-          "inputs": []
-        },
-        {
-          "action": "pause",
-          "label": "Pause",
-          "inputs": []
-        },
-        {
-          "action": "primaryAction",
-          "label": "Primary Action",
-          "inputs": []
+          "action": "continue",
+          "label": "Continue",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Enter",
+              "label": "Keyboard Enter Press",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
           "action": "rotateLeft",
           "label": "Rotate Left",
-          "inputs": []
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowLeft:KeyboardHold",
+              "label": "Keyboard ArrowLeft Hold",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
           "action": "rotateRight",
           "label": "Rotate Right",
-          "inputs": []
-        },
-        {
-          "action": "secondaryAction",
-          "label": "Secondary Action",
-          "inputs": []
-        },
-        {
-          "action": "select",
-          "label": "Select",
-          "inputs": []
-        },
-        {
-          "action": "start",
-          "label": "Start",
-          "inputs": []
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowRight:KeyboardHold",
+              "label": "Keyboard ArrowRight Hold",
+              "engine": "KeyboardState"
+            }
+          ]
         },
         {
           "action": "thrust",
           "label": "Thrust",
-          "inputs": []
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowUp:KeyboardHold",
+              "label": "Keyboard ArrowUp Hold",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "fire",
+          "label": "Fire",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Space",
+              "label": "Keyboard Space Press",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "pause",
+          "label": "Pause",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "KeyP",
+              "label": "Keyboard KeyP Press",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "initialsPrevious",
+          "label": "Initials Previous",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowLeft",
+              "label": "Keyboard ArrowLeft Press",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "initialsNext",
+          "label": "Initials Next",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowRight",
+              "label": "Keyboard ArrowRight Press",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "initialsUp",
+          "label": "Initials Up",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowUp",
+              "label": "Keyboard ArrowUp Press",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "initialsDown",
+          "label": "Initials Down",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "ArrowDown",
+              "label": "Keyboard ArrowDown Press",
+              "engine": "KeyboardState"
+            }
+          ]
+        },
+        {
+          "action": "initialsConfirm",
+          "label": "Initials Confirm",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Enter",
+              "label": "Keyboard Enter Press",
+              "engine": "KeyboardState"
+            }
+          ]
         }
       ]
     },
