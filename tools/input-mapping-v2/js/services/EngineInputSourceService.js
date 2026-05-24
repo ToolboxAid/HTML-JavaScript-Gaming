@@ -701,7 +701,6 @@ function gamepadButtonBindingVariants(gamepadIndex, buttonIndex) {
     `${binding}:GameControllerButton`,
     `${binding}:GameControllerButtonPress`,
     `${binding}:GameControllerButtonHold`,
-    `${binding}:GameControllerButtonRelease`,
     `${binding}:GameControllerDPad`,
     `${binding}:GameControllerTrigger`
   ];

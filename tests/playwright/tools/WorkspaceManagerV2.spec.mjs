@@ -2569,6 +2569,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button2:GameControllerButtonRelease']")).toHaveText("GD, X, Btn Release", { timeout: 2500 });
       await expect(page.locator(".input-mapping-v2__gamepad-capture-button[data-input-mapping-gamepad-index='0']")).not.toHaveClass(/is-capturing/);
+      const gamepadReleaseToken = page.locator(".input-mapping-v2__input-token[data-input-mapping-binding='Pad0:Button2:GameControllerButtonRelease']");
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: window.__inputMappingV2MockGamepads[0].buttons.map((button, index) => ({ pressed: index === 2 })),
+          timestamp: 78.5
+        };
+      });
+      await page.waitForTimeout(350);
+      await expect(gamepadReleaseToken).not.toHaveClass(/is-action-active/, { timeout: 2500 });
+      await page.evaluate(() => {
+        window.__inputMappingV2MockGamepads[0] = {
+          ...window.__inputMappingV2MockGamepads[0],
+          buttons: window.__inputMappingV2MockGamepads[0].buttons.map(() => ({ pressed: false })),
+          timestamp: 78.75
+        };
+      });
+      await expect(gamepadReleaseToken).toHaveClass(/is-action-active/, { timeout: 2500 });
+      await expect(gamepadReleaseToken).toHaveCSS("border-top-color", "rgb(245, 159, 0)");
 
       await page.evaluate(() => {
         window.__inputMappingV2MockGamepads[0] = {
