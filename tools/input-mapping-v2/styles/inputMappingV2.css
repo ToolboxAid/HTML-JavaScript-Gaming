@@ -266,6 +266,10 @@
   min-height: 300px;
 }
 
+.input-mapping-v2 .tool-starter__panel--center > .tool-starter__accordion:not(.tool-starter__accordion--fill) {
+  flex: 0 0 auto;
+}
+
 .input-mapping-v2 .tool-starter__panel--right > .tool-starter__accordion.is-open {
   flex: 1 1 0;
 }

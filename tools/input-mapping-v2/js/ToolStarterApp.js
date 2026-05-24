@@ -631,10 +631,22 @@ export class ToolStarterApp {
   }
 
   syncGamepadActiveInputBindings() {
+    const activeBindings = this.engineInputSources.activeGamepadBindings();
+    const releaseBindings = activeBindings.filter(isGamepadReleaseBinding);
+    const continuousBindings = activeBindings.filter((binding) => !isGamepadReleaseBinding(binding));
+    const releaseChanged = this.engineInputSources.activateInputBindings(releaseBindings, {
+      durationMs: 360,
+      transient: true
+    });
+    if (releaseChanged) {
+      this.window.setTimeout?.(() => {
+        this.refreshActions();
+      }, 360);
+    }
     return this.replaceActiveInputBindings(
-      (binding) => binding.startsWith("Pad"),
-      this.engineInputSources.activeGamepadBindings()
-    );
+      (binding) => binding.startsWith("Pad") && !isGamepadReleaseBinding(binding),
+      continuousBindings
+    ) || releaseChanged;
   }
 
   replaceActiveInputBindings(shouldReplace, nextBindings) {
@@ -983,6 +995,10 @@ function allCaptureAvailable() {
     keyboard: true,
     mouse: true
   };
+}
+
+function isGamepadReleaseBinding(binding) {
+  return String(binding || "").includes(":GameControllerButtonRelease");
 }
 
 function mouseCaptureMessage(gesture, actionLabel) {

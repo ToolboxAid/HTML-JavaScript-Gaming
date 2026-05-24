@@ -249,6 +249,9 @@ export default class InputCaptureSession {
             };
         }
         if (!result?.ok) {
+            if (result?.invalid === true) {
+                this.scheduleCaptureTimeout();
+            }
             return {
                 ...warning(result?.message ?? 'Gamepad capture unavailable.'),
                 cancel: result?.invalid !== true

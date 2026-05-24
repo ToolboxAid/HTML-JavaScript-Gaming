@@ -29,6 +29,14 @@ export class PreviewPanelControl {
       this.output.replaceChildren(this.createEmptyState());
       return;
     }
+    const currentCards = this.actionCards();
+    if (cardsMatchActions(currentCards, visibleActions)) {
+      currentCards.forEach((card, index) => {
+        this.updateActionCard(card, visibleActions[index], selectedActionId);
+      });
+      this.restoreSelectedCardScrollTop(selectedActionId, selectedScrollTop);
+      return;
+    }
     this.output.replaceChildren(...visibleActions.map((action) => this.createActionCard(action, selectedActionId)));
     this.restoreSelectedCardScrollTop(selectedActionId, selectedScrollTop);
   }
@@ -40,19 +48,26 @@ export class PreviewPanelControl {
     card.dataset.inputMappingTileActionId = action.id;
     card.tabIndex = 0;
     card.role = "button";
-    card.ariaCurrent = isSelected ? "true" : "false";
-    card.setAttribute("aria-label", `Select ${action.label} mapping`);
     card.addEventListener("click", () => {
-      this.onSelectAction(action.id);
+      this.onSelectAction(card.dataset.inputMappingTileActionId);
     });
     card.addEventListener("keydown", (event) => {
       if (event.key !== "Enter" && event.key !== " ") {
         return;
       }
       event.preventDefault();
-      this.onSelectAction(action.id);
+      this.onSelectAction(card.dataset.inputMappingTileActionId);
     });
 
+    return this.updateActionCard(card, action, selectedActionId);
+  }
+
+  updateActionCard(card, action, selectedActionId) {
+    const isSelected = action.id === selectedActionId;
+    card.className = `input-mapping-v2__mapping-card${isSelected ? " is-selected" : ""}`;
+    card.dataset.inputMappingTileActionId = action.id;
+    card.ariaCurrent = isSelected ? "true" : "false";
+    card.setAttribute("aria-label", `Select ${action.label} mapping`);
     const actionLabel = document.createElement("strong");
     actionLabel.className = "input-mapping-v2__tile-action-label";
     actionLabel.dataset.inputMappingTileActionId = action.id;
@@ -69,7 +84,7 @@ export class PreviewPanelControl {
       tokens.append(...this.createInputTokens(action, isSelected));
     }
 
-    card.append(actionLabel, tokens);
+    card.replaceChildren(actionLabel, tokens);
     return card;
   }
 
@@ -135,9 +150,18 @@ export class PreviewPanelControl {
     if (!actionId) {
       return null;
     }
-    return Array.from(this.output.querySelectorAll(".input-mapping-v2__mapping-card"))
+    return this.actionCards()
       .find((card) => card.dataset.inputMappingTileActionId === actionId) ?? null;
   }
+
+  actionCards() {
+    return Array.from(this.output.querySelectorAll(".input-mapping-v2__mapping-card"));
+  }
+}
+
+function cardsMatchActions(cards, actions) {
+  return cards.length === actions.length
+    && cards.every((card, index) => card.dataset.inputMappingTileActionId === actions[index].id);
 }
 
 function inputLabelLines(input) {

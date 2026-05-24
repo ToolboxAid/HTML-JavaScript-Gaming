@@ -54,7 +54,7 @@ export default class PointerDragState {
     }
 
     pointerMove(event = {}) {
-        if (!this.isDown || !this.matchesActivePointer(event)) {
+        if (!this.isDown || !this.matchesActivePointer(event) || !isButtonStillPressed(event, this.button)) {
             return;
         }
 
@@ -176,6 +176,31 @@ function pointFromEvent(event) {
         x: finiteNumber(event.offsetX ?? event.clientX ?? event.pageX),
         y: finiteNumber(event.offsetY ?? event.clientY ?? event.pageY),
     };
+}
+
+function isButtonStillPressed(event, button) {
+    if (event.buttons === undefined || event.buttons === null) {
+        return true;
+    }
+    const buttons = Number(event.buttons);
+    if (!Number.isFinite(buttons)) {
+        return true;
+    }
+    return (buttons & buttonMask(button)) !== 0;
+}
+
+function buttonMask(button) {
+    const normalizedButton = Number(button);
+    if (normalizedButton === 1) {
+        return 4;
+    }
+    if (normalizedButton === 2) {
+        return 2;
+    }
+    if (normalizedButton > 2) {
+        return 1 << normalizedButton;
+    }
+    return 1;
 }
 
 function pointerIdFromEvent(event) {
