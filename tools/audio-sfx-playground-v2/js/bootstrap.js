@@ -4,6 +4,7 @@ import { AccordionSection } from "./controls/AccordionSection.js";
 import { InspectorControl } from "./controls/InspectorControl.js";
 import { SfxControlPanel } from "./controls/SfxControlPanel.js";
 import { SfxPreviewControl } from "./controls/SfxPreviewControl.js";
+import { SfxTileListControl } from "./controls/SfxTileListControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
 import { AudioSfxEngine } from "./services/AudioSfxEngine.js";
@@ -38,16 +39,17 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     audioEngine: new AudioSfxEngine({ windowRef: window }),
     controls: new SfxControlPanel({
+      addButton: requireElement("#addSfxButton"),
       attackInput: requireElement("#attackInput"),
       attackValue: requireElement("#attackValue"),
       durationInput: requireElement("#durationInput"),
       durationValue: requireElement("#durationValue"),
       frequencyInput: requireElement("#frequencyInput"),
       frequencyValue: requireElement("#frequencyValue"),
+      nameInput: requireElement("#nameInput"),
       noiseInput: requireElement("#noiseInput"),
       pitchSweepInput: requireElement("#pitchSweepInput"),
       pitchSweepValue: requireElement("#pitchSweepValue"),
-      presetSelect: requireElement("#presetSelect"),
       releaseInput: requireElement("#releaseInput"),
       releaseValue: requireElement("#releaseValue"),
       validationMessage: requireElement("#sfxValidationMessage"),
@@ -60,6 +62,9 @@ window.addEventListener("DOMContentLoaded", () => {
     serializer: new ToolStateSerializer(),
     shell: new ToolShellControl(),
     statusLog,
+    tileList: new SfxTileListControl({
+      list: requireElement("#sfxTileList")
+    }),
     windowRef: window
   });
 
