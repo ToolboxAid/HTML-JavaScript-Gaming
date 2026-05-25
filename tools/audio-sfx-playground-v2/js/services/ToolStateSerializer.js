@@ -83,7 +83,7 @@ function readSound(value, label) {
 
   const attack = readNumber(value.attackMs, `${label}.attackMs`, 0, 250);
   const duration = readNumber(value.durationMs, `${label}.durationMs`, 60, 2000, 5);
-  const frequency = readNumber(value.frequencyHz, `${label}.frequencyHz`, 80, 1800);
+  const frequency = readNumber(value.frequencyHz, `${label}.frequencyHz`, 20, 20000);
   const noiseAmount = readNumber(value.noiseAmount, `${label}.noiseAmount`, 0, 1);
   const noiseDecay = readNumber(value.noiseDecayMs, `${label}.noiseDecayMs`, 20, 600, 5);
   const noiseFilter = readNumber(value.noiseFilterHz, `${label}.noiseFilterHz`, 400, 9000, 50);

@@ -90,8 +90,8 @@
         },
         "frequencyHz": {
           "type": "integer",
-          "minimum": 80,
-          "maximum": 1800
+          "minimum": 20,
+          "maximum": 20000
         },
         "name": {
           "type": "string",

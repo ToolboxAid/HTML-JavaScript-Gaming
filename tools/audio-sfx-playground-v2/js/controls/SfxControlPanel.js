@@ -1,7 +1,7 @@
 const SLIDER_LIMITS = Object.freeze({
   attackMs: Object.freeze({ min: 0, max: 250, step: 5, defaultValue: 5 }),
   durationMs: Object.freeze({ min: 60, max: 2000, step: 5, defaultValue: 180 }),
-  frequencyHz: Object.freeze({ min: 80, max: 1800, step: 1, defaultValue: 880 }),
+  frequencyHz: Object.freeze({ min: 20, max: 20000, step: 1, defaultValue: 880 }),
   noiseAmount: Object.freeze({ min: 0, max: 1, step: 0.01, defaultValue: 0.65 }),
   noiseDecayMs: Object.freeze({ min: 20, max: 600, step: 5, defaultValue: 95 }),
   noiseFilterHz: Object.freeze({ min: 400, max: 9000, step: 50, defaultValue: 5200 }),
@@ -21,6 +21,108 @@ const SLIDER_INPUTS = Object.freeze([
   Object.freeze({ soundKey: "releaseMs", inputProperty: "releaseInput" }),
   Object.freeze({ soundKey: "volume", inputProperty: "volumeInput" })
 ]);
+
+const STYLE_CLAMPS = Object.freeze({
+  "pure-tone": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 120 }),
+    durationMs: Object.freeze({ min: 80, max: 2000 }),
+    frequencyHz: Object.freeze({ min: 20, max: 20000 }),
+    noiseAmount: Object.freeze({ min: 0, max: 0.25 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 240 }),
+    noiseFilterHz: Object.freeze({ min: 1200, max: 9000 }),
+    pitchSweepCents: Object.freeze({ min: -1200, max: 1200 }),
+    releaseMs: Object.freeze({ min: 20, max: 700 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  }),
+  "noise-only": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 80 }),
+    durationMs: Object.freeze({ min: 60, max: 1200 }),
+    frequencyHz: Object.freeze({ min: 80, max: 4000 }),
+    noiseAmount: Object.freeze({ min: 0.2, max: 1 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 600 }),
+    noiseFilterHz: Object.freeze({ min: 400, max: 9000 }),
+    pitchSweepCents: Object.freeze({ min: -400, max: 400 }),
+    releaseMs: Object.freeze({ min: 20, max: 500 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  }),
+  "atari-style": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 80 }),
+    durationMs: Object.freeze({ min: 60, max: 900 }),
+    frequencyHz: Object.freeze({ min: 40, max: 4000 }),
+    noiseAmount: Object.freeze({ min: 0, max: 1 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 450 }),
+    noiseFilterHz: Object.freeze({ min: 400, max: 7000 }),
+    pitchSweepCents: Object.freeze({ min: -1200, max: 1200 }),
+    releaseMs: Object.freeze({ min: 20, max: 400 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  }),
+  "classic-arcade": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 100 }),
+    durationMs: Object.freeze({ min: 60, max: 1400 }),
+    frequencyHz: Object.freeze({ min: 60, max: 5000 }),
+    noiseAmount: Object.freeze({ min: 0, max: 1 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 520 }),
+    noiseFilterHz: Object.freeze({ min: 500, max: 8500 }),
+    pitchSweepCents: Object.freeze({ min: -1200, max: 1200 }),
+    releaseMs: Object.freeze({ min: 20, max: 500 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  }),
+  "early-analog": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 180 }),
+    durationMs: Object.freeze({ min: 100, max: 2000 }),
+    frequencyHz: Object.freeze({ min: 30, max: 8000 }),
+    noiseAmount: Object.freeze({ min: 0, max: 0.6 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 600 }),
+    noiseFilterHz: Object.freeze({ min: 400, max: 7000 }),
+    pitchSweepCents: Object.freeze({ min: -1200, max: 1200 }),
+    releaseMs: Object.freeze({ min: 40, max: 700 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  }),
+  "namco-style": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 90 }),
+    durationMs: Object.freeze({ min: 60, max: 900 }),
+    frequencyHz: Object.freeze({ min: 120, max: 6500 }),
+    noiseAmount: Object.freeze({ min: 0, max: 0.5 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 360 }),
+    noiseFilterHz: Object.freeze({ min: 1200, max: 9000 }),
+    pitchSweepCents: Object.freeze({ min: -900, max: 1200 }),
+    releaseMs: Object.freeze({ min: 20, max: 420 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  }),
+  "nintendo-style": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 80 }),
+    durationMs: Object.freeze({ min: 60, max: 1100 }),
+    frequencyHz: Object.freeze({ min: 80, max: 5000 }),
+    noiseAmount: Object.freeze({ min: 0, max: 0.9 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 450 }),
+    noiseFilterHz: Object.freeze({ min: 800, max: 9000 }),
+    pitchSweepCents: Object.freeze({ min: -900, max: 1200 }),
+    releaseMs: Object.freeze({ min: 20, max: 450 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  }),
+  "ttl-arcade": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 60 }),
+    durationMs: Object.freeze({ min: 60, max: 700 }),
+    frequencyHz: Object.freeze({ min: 80, max: 2500 }),
+    noiseAmount: Object.freeze({ min: 0, max: 1 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 300 }),
+    noiseFilterHz: Object.freeze({ min: 700, max: 9000 }),
+    pitchSweepCents: Object.freeze({ min: -800, max: 800 }),
+    releaseMs: Object.freeze({ min: 20, max: 260 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  }),
+  "vector-arcade": Object.freeze({
+    attackMs: Object.freeze({ min: 0, max: 140 }),
+    durationMs: Object.freeze({ min: 80, max: 1600 }),
+    frequencyHz: Object.freeze({ min: 100, max: 6000 }),
+    noiseAmount: Object.freeze({ min: 0, max: 0.6 }),
+    noiseDecayMs: Object.freeze({ min: 20, max: 500 }),
+    noiseFilterHz: Object.freeze({ min: 500, max: 8500 }),
+    pitchSweepCents: Object.freeze({ min: -1200, max: 1200 }),
+    releaseMs: Object.freeze({ min: 20, max: 600 }),
+    volume: Object.freeze({ min: 0, max: 1 })
+  })
+});
 
 const DEFAULT_SOUND = Object.freeze({
   attackMs: SLIDER_LIMITS.attackMs.defaultValue,
@@ -199,6 +301,7 @@ export class SfxControlPanel {
     volumeValue,
     waveformSelect
   }) {
+    this.activeSliderLimits = SLIDER_LIMITS;
     this.addButton = addButton;
     this.attackInput = attackInput;
     this.attackValue = attackValue;
@@ -271,14 +374,39 @@ export class SfxControlPanel {
     return SLIDER_INPUTS.map((item) => this[item.inputProperty]);
   }
 
-  applySliderLimits() {
+  applySliderLimits(styleKey = "custom", shouldClampValues = false) {
+    this.activeSliderLimits = styleKey === "custom" ? SLIDER_LIMITS : this.sliderLimitsForStyle(styleKey);
     SLIDER_INPUTS.forEach((item) => {
       const input = this[item.inputProperty];
-      const limits = SLIDER_LIMITS[item.soundKey];
+      const limits = this.activeSliderLimits[item.soundKey];
       input.min = String(limits.min);
       input.max = String(limits.max);
-      input.step = String(limits.step);
+      input.step = String(SLIDER_LIMITS[item.soundKey].step);
+      if (shouldClampValues) {
+        input.value = String(this.clampSliderValue(input, limits));
+      }
     });
+  }
+
+  sliderLimitsForStyle(styleKey) {
+    const clampProfile = STYLE_CLAMPS[styleKey] || {};
+    return Object.freeze(Object.fromEntries(SLIDER_INPUTS.map((item) => {
+      const baseLimits = SLIDER_LIMITS[item.soundKey];
+      const clampLimits = clampProfile[item.soundKey] || baseLimits;
+      return [item.soundKey, Object.freeze({
+        max: clampLimits.max,
+        min: clampLimits.min,
+        step: baseLimits.step
+      })];
+    })));
+  }
+
+  clampSliderValue(input, limits) {
+    const value = toNumber(input);
+    if (!Number.isFinite(value)) {
+      return limits.min;
+    }
+    return Math.min(limits.max, Math.max(limits.min, value));
   }
 
   focusSlider(input) {
@@ -289,6 +417,7 @@ export class SfxControlPanel {
 
   loadSound(sound) {
     this.styleProfileSelect.value = "custom";
+    this.applySliderLimits("custom");
     this.attackInput.value = String(sound.attackMs);
     this.durationInput.value = String(sound.durationMs);
     this.frequencyInput.value = String(sound.frequencyHz);
@@ -305,11 +434,19 @@ export class SfxControlPanel {
   }
 
   applyStyleProfile() {
-    const profile = STYLE_PROFILES[this.styleProfileSelect.value];
+    const styleKey = this.styleProfileSelect.value;
+    if (styleKey === "custom") {
+      this.applySliderLimits("custom", true);
+      this.syncOutputs();
+      return true;
+    }
+    const profile = STYLE_PROFILES[styleKey];
     if (!profile) {
       this.styleProfileSelect.value = "custom";
+      this.applySliderLimits("custom", true);
       return false;
     }
+    this.applySliderLimits(styleKey, true);
     this.attackInput.value = String(DEFAULT_SOUND.attackMs);
     this.durationInput.value = String(profile.durationMs);
     this.frequencyInput.value = String(profile.frequencyHz);
@@ -346,15 +483,15 @@ export class SfxControlPanel {
     if (!ALLOWED_WAVEFORMS.has(this.waveformSelect.value)) {
       return { valid: false, message: `Unsupported waveform: ${this.waveformSelect.value}.` };
     }
-    const frequency = readRange(this.frequencyInput, SLIDER_LIMITS.frequencyHz);
-    const duration = readRange(this.durationInput, SLIDER_LIMITS.durationMs);
-    const attack = readRange(this.attackInput, SLIDER_LIMITS.attackMs);
-    const release = readRange(this.releaseInput, SLIDER_LIMITS.releaseMs);
-    const volume = readRange(this.volumeInput, SLIDER_LIMITS.volume);
-    const pitchSweep = readRange(this.pitchSweepInput, SLIDER_LIMITS.pitchSweepCents);
-    const noiseAmount = readRange(this.noiseAmountInput, SLIDER_LIMITS.noiseAmount);
-    const noiseDecay = readRange(this.noiseDecayInput, SLIDER_LIMITS.noiseDecayMs);
-    const noiseFilter = readRange(this.noiseFilterInput, SLIDER_LIMITS.noiseFilterHz);
+    const frequency = readRange(this.frequencyInput, this.activeSliderLimits.frequencyHz);
+    const duration = readRange(this.durationInput, this.activeSliderLimits.durationMs);
+    const attack = readRange(this.attackInput, this.activeSliderLimits.attackMs);
+    const release = readRange(this.releaseInput, this.activeSliderLimits.releaseMs);
+    const volume = readRange(this.volumeInput, this.activeSliderLimits.volume);
+    const pitchSweep = readRange(this.pitchSweepInput, this.activeSliderLimits.pitchSweepCents);
+    const noiseAmount = readRange(this.noiseAmountInput, this.activeSliderLimits.noiseAmount);
+    const noiseDecay = readRange(this.noiseDecayInput, this.activeSliderLimits.noiseDecayMs);
+    const noiseFilter = readRange(this.noiseFilterInput, this.activeSliderLimits.noiseFilterHz);
     const failed = [frequency, duration, attack, release, volume, pitchSweep, noiseAmount, noiseDecay, noiseFilter].find((result) => !result.ok);
     if (failed) {
       return { valid: false, message: failed.message };
