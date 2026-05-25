@@ -132,6 +132,33 @@ body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__style-description {
   line-height: 1.28;
 }
 
+body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__style-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: -4px 0 0 74px;
+  padding: 0;
+  list-style: none;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__style-examples li {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 999px;
+  background: var(--tool-starter-panel-strong);
+  color: var(--tool-starter-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__settings-helper {
+  min-height: 34px;
+  margin: -2px 0 1px 74px;
+  line-height: 1.28;
+}
+
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__shape-actions {
   display: flex;
   justify-content: flex-end;

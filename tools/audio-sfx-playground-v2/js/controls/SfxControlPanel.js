@@ -59,6 +59,19 @@ const STYLE_DESCRIPTIONS = Object.freeze({
   "vector-arcade": "Clean vector-display era synth tones."
 });
 
+const STYLE_EXAMPLES = Object.freeze({
+  custom: Object.freeze(["Coin Pickup", "Laser Sweep", "Menu Confirm"]),
+  "pure-tone": Object.freeze(["Clean Beep", "UI Confirm", "Target Lock"]),
+  "noise-only": Object.freeze(["Analog Explosion", "Static Burst", "Shield Hit"]),
+  "atari-style": Object.freeze(["Asteroids Fire", "Analog Explosion", "Saucer Chirp"]),
+  "classic-arcade": Object.freeze(["Cabinet Coin", "Power-Up Zap", "Enemy Hit"]),
+  "early-analog": Object.freeze(["Synth Bloom", "Retro Engine", "Warm Alarm"]),
+  "namco-style": Object.freeze(["Maze Pickup", "Bonus Ping", "Ghost Alert"]),
+  "nintendo-style": Object.freeze(["Jump Pop", "Coin Tick", "Power Shot"]),
+  "ttl-arcade": Object.freeze(["Space Invaders Fire", "Digital Alarm", "Logic Hit"]),
+  "vector-arcade": Object.freeze(["Vector Thrust", "Clean Laser", "Hyperspace Sweep"])
+});
+
 const STYLE_CLAMPS = Object.freeze({
   "pure-tone": Object.freeze({
     attackMs: Object.freeze({ min: 0, max: 120 }),
@@ -343,7 +356,9 @@ export class SfxControlPanel {
     pitchSweepValue,
     releaseInput,
     releaseValue,
+    settingsHelper,
     styleDescription,
+    styleExamples,
     styleProfileSelect,
     validationMessage,
     volumeInput,
@@ -371,7 +386,9 @@ export class SfxControlPanel {
     this.pitchSweepValue = pitchSweepValue;
     this.releaseInput = releaseInput;
     this.releaseValue = releaseValue;
+    this.settingsHelper = settingsHelper;
     this.styleDescription = styleDescription;
+    this.styleExamples = styleExamples;
     this.styleProfileSelect = styleProfileSelect;
     this.validationMessage = validationMessage;
     this.volumeInput = volumeInput;
@@ -519,6 +536,7 @@ export class SfxControlPanel {
 
   syncOutputs() {
     this.syncRecommendedZones();
+    this.syncSettingsHelper();
     this.attackValue.textContent = this.valueWithRange("attackMs", `${Math.round(toNumber(this.attackInput))} ms`);
     this.durationValue.textContent = this.valueWithRange("durationMs", `${Math.round(toNumber(this.durationInput))} ms`);
     this.frequencyValue.textContent = this.valueWithRange("frequencyHz", `${Math.round(toNumber(this.frequencyInput))} Hz`);
@@ -547,6 +565,61 @@ export class SfxControlPanel {
   syncStyleDescription() {
     const styleKey = this.styleProfileSelect.value || "custom";
     this.styleDescription.textContent = STYLE_DESCRIPTIONS[styleKey] || STYLE_DESCRIPTIONS.custom;
+    this.styleExamples.replaceChildren(...this.exampleItemsFor(styleKey));
+  }
+
+  exampleItemsFor(styleKey) {
+    const examples = STYLE_EXAMPLES[styleKey] || STYLE_EXAMPLES.custom;
+    const documentRef = this.styleExamples.ownerDocument;
+    return examples.map((example) => {
+      const item = documentRef.createElement("li");
+      item.textContent = example;
+      return item;
+    });
+  }
+
+  syncSettingsHelper() {
+    this.settingsHelper.textContent = `Why this sounds this way: ${this.settingHelperMessages().join(" ")}`;
+  }
+
+  settingHelperMessages() {
+    const messages = [];
+    const waveform = this.waveformSelect.value;
+    const pitchSweep = toNumber(this.pitchSweepInput);
+    const release = toNumber(this.releaseInput);
+    const attack = toNumber(this.attackInput);
+    const duration = toNumber(this.durationInput);
+    const frequency = toNumber(this.frequencyInput);
+    const noiseAmount = toNumber(this.noiseAmountInput);
+    if (waveform === "noise") {
+      messages.push("Noise waveform produces explosion/static textures.");
+    } else if (this.noiseInput.checked && noiseAmount >= 0.4) {
+      messages.push("Noise layer adds grit and transient impact.");
+    }
+    if (pitchSweep <= -500) {
+      messages.push("Large negative sweep creates falling laser tones.");
+    } else if (pitchSweep >= 500) {
+      messages.push("Large positive sweep creates rising zaps.");
+    }
+    if (release <= 80) {
+      messages.push("Short release creates punchier arcade sounds.");
+    } else if (release >= 300) {
+      messages.push("Long release gives the sound a softer tail.");
+    }
+    if (duration <= 160) {
+      messages.push("Short duration keeps the effect snappy.");
+    } else if (duration >= 900) {
+      messages.push("Long duration makes the sound feel like a held tone or engine.");
+    }
+    if (attack <= 10) {
+      messages.push("Fast attack gives the sound an instant arcade edge.");
+    }
+    if (frequency >= 2000) {
+      messages.push("High frequency creates bright beeps and alarms.");
+    } else if (frequency <= 120) {
+      messages.push("Low frequency leans toward thuds and rumbles.");
+    }
+    return messages.length ? messages.slice(0, 3) : ["Balanced pitch, sweep, and envelope settings keep the sound neutral."];
   }
 
   syncRecommendedZones() {
