@@ -11,8 +11,12 @@ function barHeight(index, sound) {
   }
   const wave = Math.abs(Math.sin((index + 1) * (sound.frequencyHz / 220)));
   const sweepTilt = 1 + ((sound.pitchSweepCents / 1200) * (normalizedIndex - 0.5));
-  const noiseLift = sound.noise ? 0.18 : 0;
-  return Math.max(8, Math.round((20 + (wave * 76) + (noiseLift * 100)) * Math.max(envelope, 0.08) * sweepTilt));
+  const noiseDecayRatio = sound.noiseDecayMs / sound.durationMs;
+  const noiseTransient = sound.noise
+    ? sound.noiseAmount * Math.max(0, 1 - (normalizedIndex / Math.max(noiseDecayRatio, 0.001)))
+    : 0;
+  const noiseBrightness = sound.noise ? sound.noiseFilterHz / 9000 : 0;
+  return Math.max(8, Math.round((20 + (wave * 76) + (noiseTransient * 110) + (noiseBrightness * noiseTransient * 32)) * Math.max(envelope, 0.08) * sweepTilt));
 }
 
 export class SfxPreviewControl {

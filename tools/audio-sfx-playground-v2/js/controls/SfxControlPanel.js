@@ -4,6 +4,9 @@ const DEFAULT_SOUND = Object.freeze({
   frequencyHz: 880,
   name: "Coin",
   noise: false,
+  noiseAmount: 0.65,
+  noiseDecayMs: 95,
+  noiseFilterHz: 5200,
   pitchSweepCents: 700,
   releaseMs: 90,
   volume: 0.42,
@@ -37,6 +40,12 @@ export class SfxControlPanel {
     frequencyInput,
     frequencyValue,
     nameInput,
+    noiseAmountInput,
+    noiseAmountValue,
+    noiseDecayInput,
+    noiseDecayValue,
+    noiseFilterInput,
+    noiseFilterValue,
     noiseInput,
     pitchSweepInput,
     pitchSweepValue,
@@ -56,6 +65,12 @@ export class SfxControlPanel {
     this.frequencyInput = frequencyInput;
     this.frequencyValue = frequencyValue;
     this.nameInput = nameInput;
+    this.noiseAmountInput = noiseAmountInput;
+    this.noiseAmountValue = noiseAmountValue;
+    this.noiseDecayInput = noiseDecayInput;
+    this.noiseDecayValue = noiseDecayValue;
+    this.noiseFilterInput = noiseFilterInput;
+    this.noiseFilterValue = noiseFilterValue;
     this.noiseInput = noiseInput;
     this.pitchSweepInput = pitchSweepInput;
     this.pitchSweepValue = pitchSweepValue;
@@ -77,6 +92,9 @@ export class SfxControlPanel {
       this.durationInput,
       this.frequencyInput,
       this.nameInput,
+      this.noiseAmountInput,
+      this.noiseDecayInput,
+      this.noiseFilterInput,
       this.noiseInput,
       this.pitchSweepInput,
       this.releaseInput,
@@ -100,6 +118,9 @@ export class SfxControlPanel {
     this.frequencyInput.value = String(sound.frequencyHz);
     this.nameInput.value = sound.name;
     this.noiseInput.checked = sound.noise;
+    this.noiseAmountInput.value = String(sound.noiseAmount);
+    this.noiseDecayInput.value = String(sound.noiseDecayMs);
+    this.noiseFilterInput.value = String(sound.noiseFilterHz);
     this.pitchSweepInput.value = String(sound.pitchSweepCents);
     this.releaseInput.value = String(sound.releaseMs);
     this.volumeInput.value = String(sound.volume);
@@ -111,6 +132,9 @@ export class SfxControlPanel {
     this.attackValue.textContent = `${Math.round(toNumber(this.attackInput))} ms`;
     this.durationValue.textContent = `${Math.round(toNumber(this.durationInput))} ms`;
     this.frequencyValue.textContent = `${Math.round(toNumber(this.frequencyInput))} Hz`;
+    this.noiseAmountValue.textContent = toNumber(this.noiseAmountInput).toFixed(2);
+    this.noiseDecayValue.textContent = `${Math.round(toNumber(this.noiseDecayInput))} ms`;
+    this.noiseFilterValue.textContent = `${Math.round(toNumber(this.noiseFilterInput))} Hz`;
     this.pitchSweepValue.textContent = `${Math.round(toNumber(this.pitchSweepInput))} cents`;
     this.releaseValue.textContent = `${Math.round(toNumber(this.releaseInput))} ms`;
     this.volumeValue.textContent = toNumber(this.volumeInput).toFixed(2);
@@ -130,7 +154,10 @@ export class SfxControlPanel {
     const release = readRange(this.releaseInput);
     const volume = readRange(this.volumeInput);
     const pitchSweep = readRange(this.pitchSweepInput);
-    const failed = [frequency, duration, attack, release, volume, pitchSweep].find((result) => !result.ok);
+    const noiseAmount = readRange(this.noiseAmountInput);
+    const noiseDecay = readRange(this.noiseDecayInput);
+    const noiseFilter = readRange(this.noiseFilterInput);
+    const failed = [frequency, duration, attack, release, volume, pitchSweep, noiseAmount, noiseDecay, noiseFilter].find((result) => !result.ok);
     if (failed) {
       return { valid: false, message: failed.message };
     }
@@ -145,6 +172,9 @@ export class SfxControlPanel {
         frequencyHz: Math.round(frequency.value),
         name,
         noise: this.noiseInput.checked,
+        noiseAmount: Number(noiseAmount.value.toFixed(2)),
+        noiseDecayMs: Math.round(noiseDecay.value),
+        noiseFilterHz: Math.round(noiseFilter.value),
         pitchSweepCents: Math.round(pitchSweep.value),
         releaseMs: Math.round(release.value),
         volume: Number(volume.value.toFixed(2)),

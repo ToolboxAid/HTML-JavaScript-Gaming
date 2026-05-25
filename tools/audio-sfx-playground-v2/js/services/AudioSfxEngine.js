@@ -12,6 +12,10 @@ function createNoiseBuffer(context, durationSeconds) {
   return buffer;
 }
 
+function noiseDurationSeconds(sound, durationSeconds) {
+  return Math.min(durationSeconds, sound.noiseDecayMs / 1000);
+}
+
 export class AudioSfxEngine {
   constructor({ windowRef = window } = {}) {
     this.context = null;
@@ -62,14 +66,20 @@ export class AudioSfxEngine {
 
     if (sound.noise) {
       const noise = context.createBufferSource();
+      const noiseFilter = context.createBiquadFilter();
       const noiseGain = context.createGain();
-      noise.buffer = createNoiseBuffer(context, Math.min(durationSeconds, 0.18));
-      noiseGain.gain.setValueAtTime(sound.volume * 0.36, now);
-      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + Math.min(durationSeconds, 0.18));
-      noise.connect(noiseGain);
+      const noiseSeconds = noiseDurationSeconds(sound, durationSeconds);
+      const noiseStopAt = now + noiseSeconds;
+      noise.buffer = createNoiseBuffer(context, noiseSeconds);
+      noiseFilter.type = "lowpass";
+      noiseFilter.frequency.setValueAtTime(sound.noiseFilterHz, now);
+      noiseGain.gain.setValueAtTime(Math.max(0.0001, sound.volume * sound.noiseAmount * 1.2), now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, noiseStopAt);
+      noise.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
       noiseGain.connect(context.destination);
       noise.start(now);
-      noise.stop(now + Math.min(durationSeconds, 0.18));
+      noise.stop(noiseStopAt);
     }
 
     await new Promise((resolve) => {

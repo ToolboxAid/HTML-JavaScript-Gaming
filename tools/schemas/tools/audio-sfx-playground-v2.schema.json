@@ -74,7 +74,7 @@
     },
     "sound": {
       "type": "object",
-      "required": ["attackMs", "durationMs", "frequencyHz", "name", "noise", "pitchSweepCents", "releaseMs", "volume", "waveform"],
+      "required": ["attackMs", "durationMs", "frequencyHz", "name", "noise", "noiseAmount", "noiseDecayMs", "noiseFilterHz", "pitchSweepCents", "releaseMs", "volume", "waveform"],
       "additionalProperties": false,
       "properties": {
         "attackMs": {
@@ -85,7 +85,8 @@
         "durationMs": {
           "type": "integer",
           "minimum": 60,
-          "maximum": 1400
+          "maximum": 2000,
+          "multipleOf": 5
         },
         "frequencyHz": {
           "type": "integer",
@@ -99,15 +100,34 @@
         "noise": {
           "type": "boolean"
         },
+        "noiseAmount": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "noiseDecayMs": {
+          "type": "integer",
+          "minimum": 20,
+          "maximum": 600,
+          "multipleOf": 5
+        },
+        "noiseFilterHz": {
+          "type": "integer",
+          "minimum": 400,
+          "maximum": 9000,
+          "multipleOf": 50
+        },
         "pitchSweepCents": {
           "type": "integer",
           "minimum": -1200,
-          "maximum": 1200
+          "maximum": 1200,
+          "multipleOf": 5
         },
         "releaseMs": {
           "type": "integer",
           "minimum": 20,
-          "maximum": 700
+          "maximum": 700,
+          "multipleOf": 5
         },
         "volume": {
           "type": "number",

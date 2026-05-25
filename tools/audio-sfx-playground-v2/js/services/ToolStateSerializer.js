@@ -11,6 +11,9 @@ const SOUND_KEYS = Object.freeze(new Set([
   "frequencyHz",
   "name",
   "noise",
+  "noiseAmount",
+  "noiseDecayMs",
+  "noiseFilterHz",
   "pitchSweepCents",
   "releaseMs",
   "volume",
@@ -32,6 +35,9 @@ function serializeSound(sound) {
     frequencyHz: sound.frequencyHz,
     name: sound.name,
     noise: sound.noise,
+    noiseAmount: sound.noiseAmount,
+    noiseDecayMs: sound.noiseDecayMs,
+    noiseFilterHz: sound.noiseFilterHz,
     pitchSweepCents: sound.pitchSweepCents,
     releaseMs: sound.releaseMs,
     volume: sound.volume,
@@ -47,9 +53,12 @@ function readAllowedKeys(value, allowedKeys, label) {
   return { ok: true };
 }
 
-function readNumber(value, label, min, max) {
+function readNumber(value, label, min, max, multipleOf = null) {
   if (!Number.isFinite(value) || value < min || value > max) {
     return { ok: false, message: `${label} must be a number between ${min} and ${max}.` };
+  }
+  if (multipleOf !== null && value % multipleOf !== 0) {
+    return { ok: false, message: `${label} must use ${multipleOf} increments.` };
   }
   return { ok: true, value };
 }
@@ -73,12 +82,15 @@ function readSound(value, label) {
   }
 
   const attack = readNumber(value.attackMs, `${label}.attackMs`, 0, 250);
-  const duration = readNumber(value.durationMs, `${label}.durationMs`, 60, 1400);
+  const duration = readNumber(value.durationMs, `${label}.durationMs`, 60, 2000, 5);
   const frequency = readNumber(value.frequencyHz, `${label}.frequencyHz`, 80, 1800);
-  const pitchSweep = readNumber(value.pitchSweepCents, `${label}.pitchSweepCents`, -1200, 1200);
-  const release = readNumber(value.releaseMs, `${label}.releaseMs`, 20, 700);
+  const noiseAmount = readNumber(value.noiseAmount, `${label}.noiseAmount`, 0, 1);
+  const noiseDecay = readNumber(value.noiseDecayMs, `${label}.noiseDecayMs`, 20, 600, 5);
+  const noiseFilter = readNumber(value.noiseFilterHz, `${label}.noiseFilterHz`, 400, 9000, 50);
+  const pitchSweep = readNumber(value.pitchSweepCents, `${label}.pitchSweepCents`, -1200, 1200, 5);
+  const release = readNumber(value.releaseMs, `${label}.releaseMs`, 20, 700, 5);
   const volume = readNumber(value.volume, `${label}.volume`, 0, 1);
-  const failed = [attack, duration, frequency, pitchSweep, release, volume].find((result) => !result.ok);
+  const failed = [attack, duration, frequency, noiseAmount, noiseDecay, noiseFilter, pitchSweep, release, volume].find((result) => !result.ok);
   if (failed) {
     return failed;
   }
@@ -94,6 +106,9 @@ function readSound(value, label) {
       frequencyHz: Math.round(frequency.value),
       name: value.name.trim(),
       noise: value.noise,
+      noiseAmount: Number(noiseAmount.value.toFixed(2)),
+      noiseDecayMs: Math.round(noiseDecay.value),
+      noiseFilterHz: Math.round(noiseFilter.value),
       pitchSweepCents: Math.round(pitchSweep.value),
       releaseMs: Math.round(release.value),
       volume: Number(volume.value.toFixed(2)),
