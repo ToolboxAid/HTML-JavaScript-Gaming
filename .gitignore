@@ -28,9 +28,8 @@ docs/dev/reports/codex_review.diff
 docs/dev/reports/coverage_changed_js_guardrail.txt
 docs/dev/reports/playwright_v8_coverage_report.txt
 
-
 .npm-cache
+.ms-playwright
 
-# Ignore media files
 *.mp4
 *.mkv

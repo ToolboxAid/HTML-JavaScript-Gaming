@@ -325,16 +325,41 @@ export class AudioSfxPlaygroundV2App {
     }
 
     this.inspector.showObject(exportResult.toolState);
-    if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
-      this.statusLog.error("Copy JSON failed: Clipboard API is unavailable.");
+
+    try {
+      await this.writeClipboardText(exportResult.json);
+      this.statusLog.write(`Copied JSON for ${activeSoundFromToolState(exportResult.toolState)?.name || "audio-sfx"}.`);
+    } catch (error) {
+      this.statusLog.error(`Copy JSON failed: ${error.message}`);
+    }
+  }
+
+  async writeClipboardText(text) {
+    if (typeof this.window.navigator?.clipboard?.writeText === "function") {
+      await this.window.navigator.clipboard.writeText(text);
       return;
     }
 
+    const documentRef = this.window.document;
+    if (!documentRef?.body || typeof documentRef.execCommand !== "function") {
+      throw new Error("Clipboard API is unavailable.");
+    }
+
+    const textArea = documentRef.createElement("textarea");
+    textArea.value = text;
+    textArea.setAttribute("readonly", "");
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    textArea.style.top = "0";
     try {
-      await this.window.navigator.clipboard.writeText(exportResult.json);
-      this.statusLog.write("JSON copied.");
-    } catch (error) {
-      this.statusLog.error(`Copy JSON failed: ${error.message}`);
+      documentRef.body.append(textArea);
+      textArea.focus();
+      textArea.select();
+      if (!documentRef.execCommand("copy")) {
+        throw new Error("Browser copy command returned false.");
+      }
+    } finally {
+      textArea.remove();
     }
   }
 
