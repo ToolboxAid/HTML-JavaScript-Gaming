@@ -89,7 +89,9 @@ export class AudioSfxPlaygroundV2App {
       onRename: () => this.renameCurrentSound()
     });
     this.tileList.mount({
-      onSelect: (soundId) => this.selectSound(soundId)
+      onSelect: (soundId) => {
+        void this.selectSound(soundId);
+      }
     });
     this.statusLog.mount();
     this.renderSoundList();
@@ -230,7 +232,7 @@ export class AudioSfxPlaygroundV2App {
     this.statusLog.write(`Renamed SFX to ${entry.sound.name}.`);
   }
 
-  selectSound(soundId) {
+  async selectSound(soundId) {
     const entry = this.soundEntries.find((candidate) => candidate.id === soundId);
     if (!entry) {
       this.statusLog.error(`Unable to select missing SFX entry: ${soundId}.`);
@@ -241,6 +243,12 @@ export class AudioSfxPlaygroundV2App {
     this.renderSoundList();
     this.refreshPreview();
     this.statusLog.write(`Loaded ${entry.sound.name}.`);
+    try {
+      await this.audioEngine.play(entry.sound);
+      this.statusLog.write(`Played ${entry.sound.name}.`);
+    } catch (error) {
+      this.statusLog.error(`Audio playback failed: ${error.message}`);
+    }
   }
 
   renderSoundList() {
