@@ -13,7 +13,7 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__fie
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .audio-sfx__name-field {
-  grid-template-columns: 74px minmax(0, 1fr) auto;
+  grid-template-columns: 74px minmax(0, 1fr) 32px 32px;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .audio-sfx__name-field input {
@@ -22,7 +22,9 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .audio-sfx__name-f
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .audio-sfx__name-field button {
+  width: 32px;
   min-height: 32px;
+  padding-inline: 0;
   white-space: nowrap;
 }
 
@@ -32,7 +34,7 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__fie
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] {
-  grid-template-columns: 74px minmax(92px, 1fr) minmax(64px, max-content);
+  grid-template-columns: 74px minmax(0, 1fr) minmax(64px, max-content);
   min-height: 28px;
 }
 

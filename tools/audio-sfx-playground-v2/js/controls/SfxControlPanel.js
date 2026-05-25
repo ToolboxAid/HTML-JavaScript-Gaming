@@ -31,6 +31,7 @@ export class SfxControlPanel {
     addButton,
     attackInput,
     attackValue,
+    deleteButton,
     durationInput,
     durationValue,
     frequencyInput,
@@ -49,6 +50,7 @@ export class SfxControlPanel {
     this.addButton = addButton;
     this.attackInput = attackInput;
     this.attackValue = attackValue;
+    this.deleteButton = deleteButton;
     this.durationInput = durationInput;
     this.durationValue = durationValue;
     this.frequencyInput = frequencyInput;
@@ -65,9 +67,11 @@ export class SfxControlPanel {
     this.waveformSelect = waveformSelect;
   }
 
-  mount({ onAdd, onChange }) {
+  mount({ onAdd, onChange, onDelete }) {
     this.loadSound(DEFAULT_SOUND);
     this.addButton.addEventListener("click", onAdd);
+    this.deleteButton.addEventListener("click", onDelete);
+    this.setDeleteEnabled(false);
     [
       this.attackInput,
       this.durationInput,
@@ -152,5 +156,9 @@ export class SfxControlPanel {
   showMessage(message, isError) {
     this.validationMessage.textContent = message;
     this.validationMessage.classList.toggle("is-error", isError);
+  }
+
+  setDeleteEnabled(isEnabled) {
+    this.deleteButton.disabled = !isEnabled;
   }
 }

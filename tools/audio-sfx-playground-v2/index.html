@@ -38,8 +38,10 @@
     </details>
 
     <nav class="tool-starter__menu tool-starter__tool__menu audio-sfx__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <button id="toolImportJsonButton" type="button">Import JSON</button>
       <button id="toolCopyJsonButton" type="button">Copy JSON</button>
-      <button id="toolExportToolStateButton" type="button">Export toolState</button>
+      <button id="toolExportToolStateButton" type="button">Export JSON</button>
+      <input id="toolImportJsonInput" type="file" accept="application/json,.json" hidden>
     </nav>
 
     <nav class="tool-starter__menu tool-starter__workspace__menu audio-sfx__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
@@ -62,7 +64,8 @@
                 <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Names this sound in the tile list and exported toolState.">Name</span>
               </label>
               <input id="nameInput" type="text" maxlength="48" autocomplete="off">
-              <button id="addSfxButton" type="button">Add</button>
+              <button id="addSfxButton" type="button" aria-label="Add SFX">+</button>
+              <button id="deleteSfxButton" type="button" aria-label="Delete selected SFX">&#128465;</button>
             </div>
             <label class="tool-starter__field" for="waveformSelect">
               <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Chooses the oscillator shape that defines the sound character.">Wave</span>

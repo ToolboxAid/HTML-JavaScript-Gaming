@@ -12,6 +12,17 @@ function cloneSound(sound) {
   };
 }
 
+function nextSoundNumberAfter(soundEntries) {
+  let highest = 0;
+  soundEntries.forEach((entry) => {
+    const match = /^sfx-(\d+)$/.exec(entry.id);
+    if (match) {
+      highest = Math.max(highest, Number.parseInt(match[1], 10));
+    }
+  });
+  return highest + 1;
+}
+
 export class AudioSfxPlaygroundV2App {
   constructor({ accordions, actionNav, audioEngine, controls, inspector, preview, serializer, shell, statusLog, tileList, windowRef = window }) {
     this.accordions = accordions;
@@ -37,7 +48,10 @@ export class AudioSfxPlaygroundV2App {
       onToolCopyJson: () => {
         void this.copyJson();
       },
-      onToolExportToolState: () => this.exportToolState(),
+      onToolExportToolState: () => this.exportJson(),
+      onToolImportJson: (file) => {
+        void this.importJson(file);
+      },
       onToolPlay: () => {
         void this.play();
       },
@@ -47,7 +61,8 @@ export class AudioSfxPlaygroundV2App {
     });
     this.controls.mount({
       onAdd: () => this.addCurrentSound(),
-      onChange: () => this.handleEditorChange()
+      onChange: () => this.handleEditorChange(),
+      onDelete: () => this.deleteCurrentSound()
     });
     this.tileList.mount({
       onSelect: (soundId) => this.selectSound(soundId)
@@ -132,6 +147,7 @@ export class AudioSfxPlaygroundV2App {
       activeSoundId: this.activeSoundId,
       soundEntries: this.soundEntries
     });
+    this.controls.setDeleteEnabled(Boolean(this.activeSoundId));
   }
 
   async play() {
@@ -150,7 +166,21 @@ export class AudioSfxPlaygroundV2App {
     this.refreshPreview();
   }
 
-  exportToolState() {
+  deleteCurrentSound() {
+    const entryIndex = this.soundEntries.findIndex((entry) => entry.id === this.activeSoundId);
+    if (entryIndex === -1) {
+      this.statusLog.error("Select a saved SFX tile before deleting.");
+      this.controls.setDeleteEnabled(false);
+      return;
+    }
+    const [entry] = this.soundEntries.splice(entryIndex, 1);
+    this.activeSoundId = "";
+    this.renderSoundList();
+    this.refreshPreview();
+    this.statusLog.write(`Deleted ${entry.sound.name}.`);
+  }
+
+  exportJson() {
     const { toolState, validation } = this.currentToolState();
     if (!validation.valid) {
       this.statusLog.error(validation.message);
@@ -158,7 +188,31 @@ export class AudioSfxPlaygroundV2App {
       return;
     }
     this.inspector.showObject(toolState);
-    this.statusLog.write("toolState preview written to Output Summary.");
+    this.statusLog.write("JSON preview written to Output Summary.");
+  }
+
+  async importJson(file) {
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const result = this.serializer.readToolState(parsed);
+      if (!result.valid) {
+        this.statusLog.error(`Import JSON failed: ${result.message}`);
+        return;
+      }
+      this.activeSoundId = result.value.activeSoundId;
+      this.soundEntries = result.value.soundEntries.map((entry) => ({
+        id: entry.id,
+        sound: cloneSound(entry.sound)
+      }));
+      this.nextSoundNumber = nextSoundNumberAfter(this.soundEntries);
+      this.controls.loadSound(result.value.sound);
+      this.renderSoundList();
+      this.refreshPreview();
+      this.statusLog.write(`Imported JSON from ${file.name}.`);
+    } catch (error) {
+      this.statusLog.error(`Import JSON failed: ${error.message}`);
+    }
   }
 
   async copyJson() {

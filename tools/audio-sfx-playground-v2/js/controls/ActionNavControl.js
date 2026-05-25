@@ -5,6 +5,8 @@ export class ActionNavControl {
     windowRef = window,
     toolCopyJsonButton,
     toolExportToolStateButton,
+    toolImportJsonButton,
+    toolImportJsonInput,
     toolNav,
     toolPlayButton,
     workspaceCopyManifestButton,
@@ -16,6 +18,8 @@ export class ActionNavControl {
     this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.toolCopyJsonButton = toolCopyJsonButton;
     this.toolExportToolStateButton = toolExportToolStateButton;
+    this.toolImportJsonButton = toolImportJsonButton;
+    this.toolImportJsonInput = toolImportJsonInput;
     this.toolNav = toolNav;
     this.toolPlayButton = toolPlayButton;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
@@ -28,6 +32,7 @@ export class ActionNavControl {
   mount({
     onToolCopyJson,
     onToolExportToolState,
+    onToolImportJson,
     onToolPlay,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
@@ -35,6 +40,16 @@ export class ActionNavControl {
   }) {
     this.applyLaunchMode();
     this.toolPlayButton.addEventListener("click", onToolPlay);
+    this.toolImportJsonButton.addEventListener("click", () => {
+      this.toolImportJsonInput.value = "";
+      this.toolImportJsonInput.click();
+    });
+    this.toolImportJsonInput.addEventListener("change", () => {
+      const [file] = this.toolImportJsonInput.files;
+      if (file) {
+        onToolImportJson(file);
+      }
+    });
     this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
     this.toolExportToolStateButton.addEventListener("click", onToolExportToolState);
     this.workspaceImportManifestButton.addEventListener("click", onWorkspaceImportManifest);
