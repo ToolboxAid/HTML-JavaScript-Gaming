@@ -1,15 +1,39 @@
+const SLIDER_LIMITS = Object.freeze({
+  attackMs: Object.freeze({ min: 0, max: 250, step: 5, defaultValue: 5 }),
+  durationMs: Object.freeze({ min: 60, max: 2000, step: 5, defaultValue: 180 }),
+  frequencyHz: Object.freeze({ min: 80, max: 1800, step: 1, defaultValue: 880 }),
+  noiseAmount: Object.freeze({ min: 0, max: 1, step: 0.01, defaultValue: 0.65 }),
+  noiseDecayMs: Object.freeze({ min: 20, max: 600, step: 5, defaultValue: 95 }),
+  noiseFilterHz: Object.freeze({ min: 400, max: 9000, step: 50, defaultValue: 5200 }),
+  pitchSweepCents: Object.freeze({ min: -1200, max: 1200, step: 5, defaultValue: 700 }),
+  releaseMs: Object.freeze({ min: 20, max: 700, step: 5, defaultValue: 90 }),
+  volume: Object.freeze({ min: 0, max: 1, step: 0.01, defaultValue: 0.42 })
+});
+
+const SLIDER_INPUTS = Object.freeze([
+  Object.freeze({ soundKey: "attackMs", inputProperty: "attackInput" }),
+  Object.freeze({ soundKey: "durationMs", inputProperty: "durationInput" }),
+  Object.freeze({ soundKey: "frequencyHz", inputProperty: "frequencyInput" }),
+  Object.freeze({ soundKey: "noiseAmount", inputProperty: "noiseAmountInput" }),
+  Object.freeze({ soundKey: "noiseDecayMs", inputProperty: "noiseDecayInput" }),
+  Object.freeze({ soundKey: "noiseFilterHz", inputProperty: "noiseFilterInput" }),
+  Object.freeze({ soundKey: "pitchSweepCents", inputProperty: "pitchSweepInput" }),
+  Object.freeze({ soundKey: "releaseMs", inputProperty: "releaseInput" }),
+  Object.freeze({ soundKey: "volume", inputProperty: "volumeInput" })
+]);
+
 const DEFAULT_SOUND = Object.freeze({
-  attackMs: 5,
-  durationMs: 180,
-  frequencyHz: 880,
+  attackMs: SLIDER_LIMITS.attackMs.defaultValue,
+  durationMs: SLIDER_LIMITS.durationMs.defaultValue,
+  frequencyHz: SLIDER_LIMITS.frequencyHz.defaultValue,
   name: "Coin",
   noise: false,
-  noiseAmount: 0.65,
-  noiseDecayMs: 95,
-  noiseFilterHz: 5200,
-  pitchSweepCents: 700,
-  releaseMs: 90,
-  volume: 0.42,
+  noiseAmount: SLIDER_LIMITS.noiseAmount.defaultValue,
+  noiseDecayMs: SLIDER_LIMITS.noiseDecayMs.defaultValue,
+  noiseFilterHz: SLIDER_LIMITS.noiseFilterHz.defaultValue,
+  pitchSweepCents: SLIDER_LIMITS.pitchSweepCents.defaultValue,
+  releaseMs: SLIDER_LIMITS.releaseMs.defaultValue,
+  volume: SLIDER_LIMITS.volume.defaultValue,
   waveform: "square"
 });
 
@@ -138,10 +162,9 @@ function toNumber(input) {
   return Number.parseFloat(input.value);
 }
 
-function readRange(input) {
+function readRange(input, limits) {
   const value = toNumber(input);
-  const min = Number.parseFloat(input.min);
-  const max = Number.parseFloat(input.max);
+  const { min, max } = limits;
   if (!Number.isFinite(value) || value < min || value > max) {
     return { ok: false, message: `${input.id} must be between ${min} and ${max}.` };
   }
@@ -204,6 +227,7 @@ export class SfxControlPanel {
   }
 
   mount({ onAdd, onChange, onDelete }) {
+    this.applySliderLimits();
     this.loadSound(DEFAULT_SOUND);
     this.addButton.addEventListener("click", onAdd);
     this.deleteButton.addEventListener("click", onDelete);
@@ -236,6 +260,31 @@ export class SfxControlPanel {
         onChange();
       });
     });
+    this.sliderInputs().forEach((input) => {
+      input.addEventListener("pointerdown", () => this.focusSlider(input));
+      input.addEventListener("input", () => this.focusSlider(input));
+      input.addEventListener("change", () => this.focusSlider(input));
+    });
+  }
+
+  sliderInputs() {
+    return SLIDER_INPUTS.map((item) => this[item.inputProperty]);
+  }
+
+  applySliderLimits() {
+    SLIDER_INPUTS.forEach((item) => {
+      const input = this[item.inputProperty];
+      const limits = SLIDER_LIMITS[item.soundKey];
+      input.min = String(limits.min);
+      input.max = String(limits.max);
+      input.step = String(limits.step);
+    });
+  }
+
+  focusSlider(input) {
+    if (typeof input.focus === "function") {
+      input.focus({ preventScroll: true });
+    }
   }
 
   loadSound(sound) {
@@ -297,15 +346,15 @@ export class SfxControlPanel {
     if (!ALLOWED_WAVEFORMS.has(this.waveformSelect.value)) {
       return { valid: false, message: `Unsupported waveform: ${this.waveformSelect.value}.` };
     }
-    const frequency = readRange(this.frequencyInput);
-    const duration = readRange(this.durationInput);
-    const attack = readRange(this.attackInput);
-    const release = readRange(this.releaseInput);
-    const volume = readRange(this.volumeInput);
-    const pitchSweep = readRange(this.pitchSweepInput);
-    const noiseAmount = readRange(this.noiseAmountInput);
-    const noiseDecay = readRange(this.noiseDecayInput);
-    const noiseFilter = readRange(this.noiseFilterInput);
+    const frequency = readRange(this.frequencyInput, SLIDER_LIMITS.frequencyHz);
+    const duration = readRange(this.durationInput, SLIDER_LIMITS.durationMs);
+    const attack = readRange(this.attackInput, SLIDER_LIMITS.attackMs);
+    const release = readRange(this.releaseInput, SLIDER_LIMITS.releaseMs);
+    const volume = readRange(this.volumeInput, SLIDER_LIMITS.volume);
+    const pitchSweep = readRange(this.pitchSweepInput, SLIDER_LIMITS.pitchSweepCents);
+    const noiseAmount = readRange(this.noiseAmountInput, SLIDER_LIMITS.noiseAmount);
+    const noiseDecay = readRange(this.noiseDecayInput, SLIDER_LIMITS.noiseDecayMs);
+    const noiseFilter = readRange(this.noiseFilterInput, SLIDER_LIMITS.noiseFilterHz);
     const failed = [frequency, duration, attack, release, volume, pitchSweep, noiseAmount, noiseDecay, noiseFilter].find((result) => !result.ok);
     if (failed) {
       return { valid: false, message: failed.message };
