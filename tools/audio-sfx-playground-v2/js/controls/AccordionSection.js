@@ -1,8 +1,9 @@
 export class AccordionSection {
   constructor(section) {
     this.section = section;
-    this.header = section?.querySelector(".accordion-v2__header") || null;
-    this.content = section?.querySelector(".accordion-v2__content") || null;
+    const children = Array.from(section?.children || []);
+    this.header = children.find((child) => child.classList.contains("accordion-v2__header")) || null;
+    this.content = children.find((child) => child.classList.contains("accordion-v2__content")) || null;
     this.icon = this.header?.querySelector(".accordion-v2__icon") || null;
   }
 

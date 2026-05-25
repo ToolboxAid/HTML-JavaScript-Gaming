@@ -154,14 +154,14 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <div class="accordion-v2__header tool-starter__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
+          <button class="accordion-v2__header tool-starter__status-accordion-header" type="button" aria-expanded="true" aria-controls="statusLogContent">
             <span>Status</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="statusLogContent" class="accordion-v2__content">
             <div class="tool-starter__status-header-actions">
               <button id="clearStatusButton" class="tool-starter__status-clear-button" type="button">Clear</button>
-              <span class="accordion-v2__icon" aria-hidden="true">+</span>
             </div>
-          </div>
-          <div id="statusLogContent" class="accordion-v2__content">
             <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
           </div>
         </section>
