@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tools/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json",
-  "title": "Audio / SFX Playground V2 Tool State",
+  "$id": "tools/schemas/tools/audio-sfx-playground-v2.schema.json",
+  "title": "Audio / SFX Playground V2 Schema",
   "description": "Exported toolState wrapper for Audio / SFX Playground V2. Saved sounds are the single source of truth; activeSoundId identifies the selected sound.",
   "type": "object",
   "required": ["$schema", "schema", "version", "toolId", "payload"],
@@ -9,7 +9,7 @@
   "properties": {
     "$schema": {
       "type": "string",
-      "const": "tools/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json"
+      "const": "tools/schemas/tools/audio-sfx-playground-v2.schema.json"
     },
     "schema": {
       "type": "string",

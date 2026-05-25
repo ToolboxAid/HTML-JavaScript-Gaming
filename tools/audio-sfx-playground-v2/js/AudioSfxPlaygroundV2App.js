@@ -31,6 +31,14 @@ function exportFileName(name) {
   return `${baseName || "audio-sfx"}-tool-state.json`;
 }
 
+function duplicateSoundNameMessage(name) {
+  return `Duplicate SFX name: ${name.trim()}.`;
+}
+
+function normalizeSoundName(name) {
+  return name.trim().toLowerCase();
+}
+
 function activeSoundFromToolState(toolState) {
   return toolState.payload.sounds.find((entry) => entry.id === toolState.payload.activeSoundId)?.sound || null;
 }
@@ -114,10 +122,20 @@ export class AudioSfxPlaygroundV2App {
 
   handleEditorChange() {
     const validation = this.controls.validate();
+    if (validation.valid && this.activeSoundId && this.hasDuplicateSoundName(validation.value.name, this.activeSoundId)) {
+      this.statusLog.error(duplicateSoundNameMessage(validation.value.name));
+      this.controls.showMessage("Name must be unique.", true);
+      return;
+    }
     if (validation.valid && this.updateActiveSound(validation.value)) {
       this.renderSoundList();
     }
     this.refreshPreview();
+  }
+
+  hasDuplicateSoundName(name, excludedSoundId = "") {
+    const normalizedName = normalizeSoundName(name);
+    return this.soundEntries.some((entry) => entry.id !== excludedSoundId && normalizeSoundName(entry.sound.name) === normalizedName);
   }
 
   createSoundEntry(sound) {
@@ -141,7 +159,18 @@ export class AudioSfxPlaygroundV2App {
   }
 
   ensureActiveSoundEntry(sound) {
-    return this.updateActiveSound(sound) || this.createSoundEntry(sound);
+    const activeEntry = this.soundEntries.find((entry) => entry.id === this.activeSoundId);
+    const excludedSoundId = activeEntry?.id || "";
+    if (this.hasDuplicateSoundName(sound.name, excludedSoundId)) {
+      return {
+        valid: false,
+        message: duplicateSoundNameMessage(sound.name)
+      };
+    }
+    return {
+      valid: true,
+      entry: this.updateActiveSound(sound) || this.createSoundEntry(sound)
+    };
   }
 
   addCurrentSound() {
@@ -149,6 +178,11 @@ export class AudioSfxPlaygroundV2App {
     if (!validation.valid) {
       this.statusLog.error(validation.message);
       this.refreshPreview();
+      return;
+    }
+    if (this.hasDuplicateSoundName(validation.value.name)) {
+      this.statusLog.error(duplicateSoundNameMessage(validation.value.name));
+      this.controls.showMessage("Name must be unique.", true);
       return;
     }
 
@@ -218,7 +252,10 @@ export class AudioSfxPlaygroundV2App {
     if (!validation.valid) {
       return { valid: false, message: validation.message, toolState: null, json: "" };
     }
-    this.ensureActiveSoundEntry(validation.value);
+    const activeSoundEntry = this.ensureActiveSoundEntry(validation.value);
+    if (!activeSoundEntry.valid) {
+      return { valid: false, message: activeSoundEntry.message, toolState: null, json: "" };
+    }
     this.renderSoundList();
     const toolState = this.serializer.createToolState({
       activeSoundId: this.activeSoundId,

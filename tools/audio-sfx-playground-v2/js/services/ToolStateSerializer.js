@@ -1,6 +1,6 @@
 const TOOL_ID = "audio-sfx-playground-v2";
 const PAYLOAD_SCHEMA = "html-js-gaming.audio-sfx-playground-v2";
-const TOOL_STATE_SCHEMA_PATH = "tools/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json";
+const TOOL_SCHEMA_PATH = "tools/schemas/tools/audio-sfx-playground-v2.schema.json";
 const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth"]));
 const ROOT_KEYS = Object.freeze(new Set(["$schema", "schema", "version", "toolId", "payload"]));
 const PAYLOAD_KEYS = Object.freeze(new Set(["schema", "version", "toolId", "activeSoundId", "sounds"]));
@@ -19,6 +19,10 @@ const SOUND_KEYS = Object.freeze(new Set([
 
 function isPlainObject(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function normalizeSoundName(name) {
+  return name.trim().toLowerCase();
 }
 
 function serializeSound(sound) {
@@ -104,6 +108,7 @@ function readSoundEntries(value) {
   }
   const soundEntries = [];
   const ids = new Set();
+  const names = new Set();
   for (let index = 0; index < value.length; index += 1) {
     const item = value[index];
     if (!isPlainObject(item)) {
@@ -123,7 +128,12 @@ function readSoundEntries(value) {
     if (!sound.ok) {
       return sound;
     }
+    const normalizedName = normalizeSoundName(sound.value.name);
+    if (names.has(normalizedName)) {
+      return { ok: false, message: `Duplicate sound name: ${sound.value.name}.` };
+    }
     ids.add(item.id);
+    names.add(normalizedName);
     soundEntries.push({
       id: item.id,
       sound: sound.value
@@ -142,7 +152,7 @@ export class ToolStateSerializer {
       ? activeSoundId
       : "";
     return {
-      $schema: TOOL_STATE_SCHEMA_PATH,
+      $schema: TOOL_SCHEMA_PATH,
       schema: "html-js-gaming.tool-state",
       version: 1,
       toolId: TOOL_ID,
@@ -164,8 +174,8 @@ export class ToolStateSerializer {
     if (!rootKeys.ok) {
       return { valid: false, message: rootKeys.message };
     }
-    if (value.$schema !== TOOL_STATE_SCHEMA_PATH) {
-      return { valid: false, message: `Imported JSON $schema must be ${TOOL_STATE_SCHEMA_PATH}.` };
+    if (value.$schema !== TOOL_SCHEMA_PATH) {
+      return { valid: false, message: `Imported JSON $schema must be ${TOOL_SCHEMA_PATH}.` };
     }
     if (value.schema !== "html-js-gaming.tool-state") {
       return { valid: false, message: "Imported JSON schema must be html-js-gaming.tool-state." };
