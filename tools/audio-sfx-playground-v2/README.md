@@ -8,6 +8,7 @@ First-Class Tool V2 surface for browser-generated game sound effects.
 - Audition the current SFX with the Web Audio API from an explicit user action.
 - Inspect and copy/export a toolState-shaped JSON payload.
 - Launch directly from `tools/audio-sfx-playground-v2/index.html` or through Workspace Manager V2.
+- Render with the shared Tool Template V2 CSS pattern from `tools/_templates-v2/styles/toolStarter.css`.
 
 ## Contracts
 
@@ -16,6 +17,7 @@ First-Class Tool V2 surface for browser-generated game sound effects.
 - No `tools/shared` runtime dependency.
 - Persisted JSON uses structured fields only; no `imageDataUrl`.
 - Browser audio starts only after the user presses Play.
+- The tool folder contains only the runtime files needed by Audio / SFX Playground V2.
 
 ## Validation
 

@@ -28,7 +28,7 @@ export class SfxPreviewControl {
 
   render(sound) {
     const card = document.createElement("article");
-    card.className = "audio-sfx__preview-card";
+    card.className = "tool-starter__preview-card";
 
     const title = document.createElement("h2");
     title.textContent = sound.name;
@@ -37,7 +37,7 @@ export class SfxPreviewControl {
     summary.textContent = `${sound.waveform}, ${sound.frequencyHz} Hz, ${sound.durationMs} ms, ${sound.pitchSweepCents} cents`;
 
     const bars = document.createElement("div");
-    bars.className = "audio-sfx__waveform-bars";
+    bars.className = "tool-starter__meter-bars";
     bars.setAttribute("aria-hidden", "true");
     for (let index = 0; index < 32; index += 1) {
       const bar = document.createElement("span");
@@ -46,7 +46,7 @@ export class SfxPreviewControl {
     }
 
     const tags = document.createElement("div");
-    tags.className = "audio-sfx__preview-tags";
+    tags.className = "tool-starter__preview-tags";
     [sound.noise ? "noise transient" : "oscillator only", `volume ${sound.volume.toFixed(2)}`].forEach((label) => {
       const tag = document.createElement("span");
       tag.textContent = label;

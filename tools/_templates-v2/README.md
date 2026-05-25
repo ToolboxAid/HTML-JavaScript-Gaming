@@ -33,6 +33,7 @@ tools/_templates-v2/
     playwright/
       FirstClassToolStarter.spec.mjs
   starter-project-template/
+    config/starter.game.manifest.json
   vector-native-arcade/
 ```
 
@@ -52,7 +53,7 @@ tools/_templates-v2/
 
 ## Additional Template Folders
 
-- `starter-project-template/`: existing shared project manifest starter.
+- `starter-project-template/`: current minimal game manifest starter.
 - `vector-native-arcade/`: existing vector-native arcade project/game starter.
 
 These folders remain under `tools/_templates-v2/` as support/reference template assets. They are not the active First-Class Tool V2 starter shell.

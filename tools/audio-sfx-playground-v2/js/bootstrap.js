@@ -29,12 +29,12 @@ window.addEventListener("DOMContentLoaded", () => {
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
       toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
       toolExportToolStateButton: requireElement("#toolExportToolStateButton"),
-      toolNav: requireElement(".audio-sfx__tool__menu"),
+      toolNav: requireElement(".tool-starter__tool__menu"),
       toolPlayButton: requireElement("#toolPlayButton"),
       workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
       workspaceExportManifestButton: requireElement("#workspaceExportManifestButton"),
       workspaceImportManifestButton: requireElement("#workspaceImportManifestButton"),
-      workspaceNav: requireElement(".audio-sfx__workspace__menu")
+      workspaceNav: requireElement(".tool-starter__workspace__menu")
     }),
     audioEngine: new AudioSfxEngine({ windowRef: window }),
     controls: new SfxControlPanel({

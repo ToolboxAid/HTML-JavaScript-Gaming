@@ -1,6 +1,8 @@
 {
   "templateId": "vector-native-arcade",
   "schema": "toolbox.template/1",
+  "version": 1,
   "visualContract": "vector-only",
-  "runtimeEntry": "games/Asteroids/main.js#bootAsteroids"
+  "manifestPath": "tools/_templates-v2/starter-project-template/config/starter.game.manifest.json",
+  "requiredVectorIds": ["vector.template.player", "vector.template.obstacle.large", "vector.template.obstacle.small", "vector.template.ui.title", "vector.template.ui.hud"]
 }

@@ -1,0 +1,83 @@
+{
+  "$schema": "tools/schemas/game.manifest.schema.json",
+  "schema": "html-js-gaming.game-manifest",
+  "version": 1,
+  "game": {
+    "id": "starter-template",
+    "name": "Starter Template",
+    "folder": "_starter-template"
+  },
+  "screen": {
+    "width": 1280,
+    "height": 720
+  },
+  "launch": {
+    "directPath": "/games/_starter-template/index.html",
+    "workspaceManagerPath": "/tools/workspace-manager-v2/index.html",
+    "workspaceManagerOptional": true
+  },
+  "tools": {
+    "asset-manager-v2": {
+      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "schema": "html-js-gaming.asset-manager-v2",
+      "version": 1,
+      "id": "starter-template.assets",
+      "name": "Starter Template Assets",
+      "source": "manifest",
+      "assets": {}
+    },
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
+      "version": 1,
+      "id": "starter-template.palette",
+      "name": "Starter Template Palette",
+      "source": "tools/_templates-v2",
+      "sourceId": "tools/_templates-v2/starter-project-template/config/starter.game.manifest.json",
+      "locked": true,
+      "swatches": [
+        {
+          "symbol": "B",
+          "hex": "#05070D",
+          "name": "Template Background",
+          "source": "Tool Template V2",
+          "tags": ["background"]
+        },
+        {
+          "symbol": "L",
+          "hex": "#6FD3FF",
+          "name": "Template Line",
+          "source": "Tool Template V2",
+          "tags": ["line", "accent"]
+        },
+        {
+          "symbol": "F",
+          "hex": "#E8F0FF",
+          "name": "Template Fill",
+          "source": "Tool Template V2",
+          "tags": ["fill", "ui"]
+        }
+      ]
+    },
+    "input-mapping-v2": {
+      "$schema": "tools/schemas/tools/input-mapping-v2.schema.json",
+      "toolId": "input-mapping-v2",
+      "version": 1,
+      "engineInputModel": "src/engine/input/InputMap",
+      "actions": [
+        {
+          "action": "confirm",
+          "label": "Confirm",
+          "inputs": [
+            {
+              "source": "keyboard",
+              "binding": "Enter",
+              "label": "Enter",
+              "engine": "Keyboard"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

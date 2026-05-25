@@ -1,5 +1,0 @@
-{
-  "name": "Vector Native Arcade Arena",
-  "states": ["title", "start", "gameplay", "restart"],
-  "extensionPoints": ["spawn-patterns", "score-rules", "victory-conditions"]
-}
