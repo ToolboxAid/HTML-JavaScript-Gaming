@@ -34,13 +34,21 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__fie
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] {
+  align-items: center;
+  column-gap: 8px;
   grid-template-columns: 74px minmax(0, 1fr) minmax(64px, max-content);
   min-height: 28px;
 }
 
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] .audio-sfx__label-tip {
+  white-space: nowrap;
+}
+
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] input[type="range"] {
   height: 24px;
+  min-width: 0;
   padding-block: 0;
+  width: 100%;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] output {

@@ -28,6 +28,19 @@ const STYLE_PROFILES = Object.freeze({
     volume: 0.38,
     waveform: "sine"
   },
+  "noise-only": {
+    durationMs: 260,
+    frequencyHz: 880,
+    name: "Noise Only",
+    noise: false,
+    noiseAmount: 0.72,
+    noiseDecayMs: 120,
+    noiseFilterHz: 6200,
+    pitchSweepCents: 0,
+    releaseMs: 100,
+    volume: 0.44,
+    waveform: "noise"
+  },
   "atari-style": {
     durationMs: 180,
     frequencyHz: 520,

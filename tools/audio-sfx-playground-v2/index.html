@@ -72,6 +72,7 @@
               <select id="styleProfileSelect">
                 <option value="custom">Custom</option>
                 <option value="pure-tone">Pure Tone</option>
+                <option value="noise-only">Noise Only</option>
                 <option value="divider" disabled>────────────</option>
                 <option value="atari-style">Atari-style</option>
                 <option value="classic-arcade">Classic Arcade</option>
@@ -127,17 +128,17 @@
               <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Adds a short noise layer over oscillator waveforms for punchy hits and impacts.">Add Noise Layer</span>
             </label>
             <label class="tool-starter__field" for="noiseAmountInput" data-density-control="noiseAmount">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets how loud the arcade noise transient is when noise is enabled.">Noise Amount</span>
+              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets how loud the arcade transient is when the noise source or layer is enabled.">Amount</span>
               <input id="noiseAmountInput" type="range" min="0" max="1" step="0.01">
               <output id="noiseAmountValue" for="noiseAmountInput"></output>
             </label>
             <label class="tool-starter__field" for="noiseDecayInput" data-density-control="noiseDecay">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls how quickly the noise burst fades out.">Noise Decay</span>
+              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls how quickly the burst fades out.">Decay</span>
               <input id="noiseDecayInput" type="range" min="20" max="600" step="5">
               <output id="noiseDecayValue" for="noiseDecayInput"></output>
             </label>
             <label class="tool-starter__field" for="noiseFilterInput" data-density-control="noiseFilter">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Raises or lowers the transient brightness filter.">Noise Brightness</span>
+              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Raises or lowers the transient brightness filter.">Brightness</span>
               <input id="noiseFilterInput" type="range" min="400" max="9000" step="50">
               <output id="noiseFilterValue" for="noiseFilterInput"></output>
             </label>
