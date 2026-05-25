@@ -31,6 +31,10 @@ function exportFileName(name) {
   return `${baseName || "audio-sfx"}-tool-state.json`;
 }
 
+function activeSoundFromToolState(toolState) {
+  return toolState.payload.sounds.find((entry) => entry.id === toolState.payload.activeSoundId)?.sound || null;
+}
+
 export class AudioSfxPlaygroundV2App {
   constructor({ accordions, actionNav, audioEngine, controls, inspector, preview, serializer, shell, statusLog, tileList, windowRef = window }) {
     this.accordions = accordions;
@@ -89,7 +93,6 @@ export class AudioSfxPlaygroundV2App {
     }
     const toolState = this.serializer.createToolState({
       activeSoundId: this.activeSoundId,
-      sound: validation.value,
       soundEntries: this.soundEntries
     });
     this.controls.showMessage("Ready to audition.", false);
@@ -104,17 +107,41 @@ export class AudioSfxPlaygroundV2App {
       this.actionNav.setToolActionsEnabled(false);
       return;
     }
-    this.preview.render(toolState.payload.sound);
+    this.preview.render(validation.value);
     this.inspector.showObject(toolState);
     this.actionNav.setToolActionsEnabled(true);
   }
 
   handleEditorChange() {
-    if (this.activeSoundId) {
-      this.activeSoundId = "";
+    const validation = this.controls.validate();
+    if (validation.valid && this.updateActiveSound(validation.value)) {
       this.renderSoundList();
     }
     this.refreshPreview();
+  }
+
+  createSoundEntry(sound) {
+    const entry = {
+      id: `sfx-${this.nextSoundNumber}`,
+      sound: cloneSound(sound)
+    };
+    this.nextSoundNumber += 1;
+    this.soundEntries.push(entry);
+    this.activeSoundId = entry.id;
+    return entry;
+  }
+
+  updateActiveSound(sound) {
+    const entry = this.soundEntries.find((candidate) => candidate.id === this.activeSoundId);
+    if (!entry) {
+      return null;
+    }
+    entry.sound = cloneSound(sound);
+    return entry;
+  }
+
+  ensureActiveSoundEntry(sound) {
+    return this.updateActiveSound(sound) || this.createSoundEntry(sound);
   }
 
   addCurrentSound() {
@@ -125,13 +152,7 @@ export class AudioSfxPlaygroundV2App {
       return;
     }
 
-    const entry = {
-      id: `sfx-${this.nextSoundNumber}`,
-      sound: cloneSound(validation.value)
-    };
-    this.nextSoundNumber += 1;
-    this.soundEntries.push(entry);
-    this.activeSoundId = entry.id;
+    const entry = this.createSoundEntry(validation.value);
     this.renderSoundList();
     this.refreshPreview();
     this.statusLog.write(`Added ${entry.sound.name}.`);
@@ -159,15 +180,15 @@ export class AudioSfxPlaygroundV2App {
   }
 
   async play() {
-    const { toolState, validation } = this.currentToolState();
+    const { validation } = this.currentToolState();
     if (!validation.valid) {
       this.statusLog.error(validation.message);
       this.refreshPreview();
       return;
     }
     try {
-      await this.audioEngine.play(toolState.payload.sound);
-      this.statusLog.write(`Played ${toolState.payload.name}.`);
+      await this.audioEngine.play(validation.value);
+      this.statusLog.write(`Played ${validation.value.name}.`);
     } catch (error) {
       this.statusLog.error(`Audio playback failed: ${error.message}`);
     }
@@ -182,17 +203,27 @@ export class AudioSfxPlaygroundV2App {
       return;
     }
     const [entry] = this.soundEntries.splice(entryIndex, 1);
-    this.activeSoundId = "";
+    const nextEntry = this.soundEntries[Math.min(entryIndex, this.soundEntries.length - 1)] || null;
+    this.activeSoundId = nextEntry?.id || "";
+    if (nextEntry) {
+      this.controls.loadSound(nextEntry.sound);
+    }
     this.renderSoundList();
     this.refreshPreview();
     this.statusLog.write(`Deleted ${entry.sound.name}.`);
   }
 
   exportPayload() {
-    const { toolState, validation } = this.currentToolState();
+    const validation = this.controls.validate();
     if (!validation.valid) {
       return { valid: false, message: validation.message, toolState: null, json: "" };
     }
+    this.ensureActiveSoundEntry(validation.value);
+    this.renderSoundList();
+    const toolState = this.serializer.createToolState({
+      activeSoundId: this.activeSoundId,
+      soundEntries: this.soundEntries
+    });
 
     const exportValidation = this.serializer.readToolState(toolState);
     if (!exportValidation.valid) {
@@ -217,7 +248,7 @@ export class AudioSfxPlaygroundV2App {
     try {
       this.downloadJson(exportResult);
       this.inspector.showObject(exportResult.toolState);
-      this.statusLog.write(`Exported JSON for ${exportResult.toolState.payload.name}.`);
+      this.statusLog.write(`Exported JSON for ${activeSoundFromToolState(exportResult.toolState)?.name || "audio-sfx"}.`);
     } catch (error) {
       this.statusLog.error(`Export JSON failed: ${error.message}`);
     }
@@ -282,7 +313,7 @@ export class AudioSfxPlaygroundV2App {
     const url = urlApi.createObjectURL(blob);
     const link = documentRef.createElement("a");
     link.href = url;
-    link.download = exportFileName(exportResult.toolState.payload.name);
+    link.download = exportFileName(activeSoundFromToolState(exportResult.toolState)?.name || "audio-sfx");
     try {
       documentRef.body.append(link);
       link.click();

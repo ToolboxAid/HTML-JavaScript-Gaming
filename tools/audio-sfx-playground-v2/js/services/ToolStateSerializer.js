@@ -1,6 +1,21 @@
 const TOOL_ID = "audio-sfx-playground-v2";
 const PAYLOAD_SCHEMA = "html-js-gaming.audio-sfx-playground-v2";
+const TOOL_STATE_SCHEMA_PATH = "tools/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json";
 const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth"]));
+const ROOT_KEYS = Object.freeze(new Set(["$schema", "schema", "version", "toolId", "payload"]));
+const PAYLOAD_KEYS = Object.freeze(new Set(["schema", "version", "toolId", "activeSoundId", "sounds"]));
+const SOUND_ENTRY_KEYS = Object.freeze(new Set(["id", "sound"]));
+const SOUND_KEYS = Object.freeze(new Set([
+  "attackMs",
+  "durationMs",
+  "frequencyHz",
+  "name",
+  "noise",
+  "pitchSweepCents",
+  "releaseMs",
+  "volume",
+  "waveform"
+]));
 
 function isPlainObject(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -20,16 +35,12 @@ function serializeSound(sound) {
   };
 }
 
-function soundsMatch(first, second) {
-  return first.attackMs === second.attackMs
-    && first.durationMs === second.durationMs
-    && first.frequencyHz === second.frequencyHz
-    && first.name === second.name
-    && first.noise === second.noise
-    && first.pitchSweepCents === second.pitchSweepCents
-    && first.releaseMs === second.releaseMs
-    && first.volume === second.volume
-    && first.waveform === second.waveform;
+function readAllowedKeys(value, allowedKeys, label) {
+  const unknownKey = Object.keys(value).find((key) => !allowedKeys.has(key));
+  if (unknownKey) {
+    return { ok: false, message: `${label}.${unknownKey} is not allowed.` };
+  }
+  return { ok: true };
 }
 
 function readNumber(value, label, min, max) {
@@ -42,6 +53,10 @@ function readNumber(value, label, min, max) {
 function readSound(value, label) {
   if (!isPlainObject(value)) {
     return { ok: false, message: `${label} must be an object.` };
+  }
+  const allowedKeys = readAllowedKeys(value, SOUND_KEYS, label);
+  if (!allowedKeys.ok) {
+    return allowedKeys;
   }
   if (typeof value.name !== "string" || !value.name.trim()) {
     return { ok: false, message: `${label}.name is required.` };
@@ -94,6 +109,10 @@ function readSoundEntries(value) {
     if (!isPlainObject(item)) {
       return { ok: false, message: `payload.sounds[${index}] must be an object.` };
     }
+    const allowedKeys = readAllowedKeys(item, SOUND_ENTRY_KEYS, `payload.sounds[${index}]`);
+    if (!allowedKeys.ok) {
+      return allowedKeys;
+    }
     if (typeof item.id !== "string" || !item.id.trim()) {
       return { ok: false, message: `payload.sounds[${index}].id is required.` };
     }
@@ -114,8 +133,16 @@ function readSoundEntries(value) {
 }
 
 export class ToolStateSerializer {
-  createToolState({ activeSoundId, sound, soundEntries }) {
+  createToolState({ activeSoundId, soundEntries }) {
+    const sounds = soundEntries.map((entry) => ({
+      id: entry.id,
+      sound: serializeSound(entry.sound)
+    }));
+    const selectedActiveSoundId = sounds.some((entry) => entry.id === activeSoundId)
+      ? activeSoundId
+      : "";
     return {
+      $schema: TOOL_STATE_SCHEMA_PATH,
       schema: "html-js-gaming.tool-state",
       version: 1,
       toolId: TOOL_ID,
@@ -123,14 +150,8 @@ export class ToolStateSerializer {
         schema: PAYLOAD_SCHEMA,
         version: 1,
         toolId: TOOL_ID,
-        activeSoundId,
-        name: sound.name,
-        sound: serializeSound(sound),
-        sounds: soundEntries.map((entry) => ({
-          id: entry.id,
-          name: entry.sound.name,
-          sound: serializeSound(entry.sound)
-        }))
+        activeSoundId: selectedActiveSoundId,
+        sounds
       }
     };
   }
@@ -139,8 +160,18 @@ export class ToolStateSerializer {
     if (!isPlainObject(value)) {
       return { valid: false, message: "Imported JSON must be an object." };
     }
+    const rootKeys = readAllowedKeys(value, ROOT_KEYS, "Imported JSON");
+    if (!rootKeys.ok) {
+      return { valid: false, message: rootKeys.message };
+    }
+    if (value.$schema !== TOOL_STATE_SCHEMA_PATH) {
+      return { valid: false, message: `Imported JSON $schema must be ${TOOL_STATE_SCHEMA_PATH}.` };
+    }
     if (value.schema !== "html-js-gaming.tool-state") {
       return { valid: false, message: "Imported JSON schema must be html-js-gaming.tool-state." };
+    }
+    if (!Number.isInteger(value.version) || value.version < 1) {
+      return { valid: false, message: "Imported JSON version must be an integer greater than or equal to 1." };
     }
     if (value.toolId !== TOOL_ID) {
       return { valid: false, message: `Imported JSON toolId must be ${TOOL_ID}.` };
@@ -148,35 +179,39 @@ export class ToolStateSerializer {
     if (!isPlainObject(value.payload)) {
       return { valid: false, message: "Imported JSON payload must be an object." };
     }
+    const payloadKeys = readAllowedKeys(value.payload, PAYLOAD_KEYS, "payload");
+    if (!payloadKeys.ok) {
+      return { valid: false, message: payloadKeys.message };
+    }
     if (value.payload.schema !== PAYLOAD_SCHEMA || value.payload.toolId !== TOOL_ID) {
       return { valid: false, message: "Imported JSON payload is not for Audio / SFX Playground V2." };
     }
-
-    const sound = readSound(value.payload.sound, "payload.sound");
-    if (!sound.ok) {
-      return { valid: false, message: sound.message };
+    if (!Number.isInteger(value.payload.version) || value.payload.version < 1) {
+      return { valid: false, message: "Imported JSON payload.version must be an integer greater than or equal to 1." };
     }
+
     const soundEntries = readSoundEntries(value.payload.sounds);
     if (!soundEntries.ok) {
       return { valid: false, message: soundEntries.message };
     }
-    const activeSoundId = typeof value.payload.activeSoundId === "string"
-      ? value.payload.activeSoundId
-      : "";
-    const activeEntry = activeSoundId
-      ? soundEntries.value.find((entry) => entry.id === activeSoundId)
-      : null;
-    if (activeSoundId && !activeEntry) {
-      return { valid: false, message: `Active sound id is missing from payload.sounds: ${activeSoundId}.` };
+    if (soundEntries.value.length === 0) {
+      return { valid: false, message: "payload.sounds must include at least one saved sound." };
     }
-    if (activeEntry && !soundsMatch(sound.value, activeEntry.sound)) {
-      return { valid: false, message: `Active sound payload does not match payload.sounds entry: ${activeSoundId}.` };
+    const activeSoundId = typeof value.payload.activeSoundId === "string"
+      ? value.payload.activeSoundId.trim()
+      : "";
+    if (!activeSoundId) {
+      return { valid: false, message: "Active sound id is required." };
+    }
+    const activeEntry = soundEntries.value.find((entry) => entry.id === activeSoundId);
+    if (!activeEntry) {
+      return { valid: false, message: `Active sound id is missing from payload.sounds: ${activeSoundId}.` };
     }
     return {
       valid: true,
       value: {
         activeSoundId,
-        sound: sound.value,
+        sound: activeEntry.sound,
         soundEntries: soundEntries.value
       }
     };
