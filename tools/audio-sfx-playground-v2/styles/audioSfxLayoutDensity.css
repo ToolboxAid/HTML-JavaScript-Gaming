@@ -1,0 +1,43 @@
+body[data-tool-id="audio-sfx-playground-v2"] .tool-starter__panel--left {
+  gap: 10px;
+  padding: 10px;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent {
+  gap: 7px;
+  padding: 9px 10px 10px;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field {
+  gap: 6px;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field select {
+  min-height: 32px;
+  padding-block: 5px;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] {
+  grid-template-columns: 74px minmax(92px, 1fr) minmax(64px, max-content);
+  min-height: 28px;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] input[type="range"] {
+  height: 24px;
+  padding-block: 0;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] output {
+  min-width: 64px;
+  justify-self: end;
+  text-align: right;
+  white-space: nowrap;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__toggle {
+  min-height: 28px;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxValidationMessage {
+  line-height: 1.25;
+}

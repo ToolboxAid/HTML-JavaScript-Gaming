@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
     <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
     <link rel="stylesheet" href="../_templates-v2/styles/toolStarter.css">
+    <link rel="stylesheet" href="./styles/audioSfxLayoutDensity.css">
     <script type="module" src="./js/bootstrap.js"></script>
   </head>
   <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="audio-sfx-playground-v2">
@@ -76,32 +77,32 @@
                 <option value="sawtooth">Saw</option>
               </select>
             </label>
-            <label class="tool-starter__field" for="frequencyInput">
+            <label class="tool-starter__field" for="frequencyInput" data-density-control="frequency">
               <span>Frequency</span>
               <input id="frequencyInput" type="range" min="80" max="1800" step="1">
               <output id="frequencyValue" for="frequencyInput"></output>
             </label>
-            <label class="tool-starter__field" for="durationInput">
+            <label class="tool-starter__field" for="durationInput" data-density-control="duration">
               <span>Duration</span>
               <input id="durationInput" type="range" min="60" max="1400" step="10">
               <output id="durationValue" for="durationInput"></output>
             </label>
-            <label class="tool-starter__field" for="attackInput">
+            <label class="tool-starter__field" for="attackInput" data-density-control="attack">
               <span>Attack</span>
               <input id="attackInput" type="range" min="0" max="250" step="5">
               <output id="attackValue" for="attackInput"></output>
             </label>
-            <label class="tool-starter__field" for="releaseInput">
+            <label class="tool-starter__field" for="releaseInput" data-density-control="release">
               <span>Release</span>
               <input id="releaseInput" type="range" min="20" max="700" step="10">
               <output id="releaseValue" for="releaseInput"></output>
             </label>
-            <label class="tool-starter__field" for="volumeInput">
+            <label class="tool-starter__field" for="volumeInput" data-density-control="volume">
               <span>Volume</span>
               <input id="volumeInput" type="range" min="0" max="1" step="0.01">
               <output id="volumeValue" for="volumeInput"></output>
             </label>
-            <label class="tool-starter__field" for="pitchSweepInput">
+            <label class="tool-starter__field" for="pitchSweepInput" data-density-control="sweep">
               <span>Sweep</span>
               <input id="pitchSweepInput" type="range" min="-1200" max="1200" step="25">
               <output id="pitchSweepValue" for="pitchSweepInput"></output>
