@@ -86,74 +86,90 @@
             <p id="styleDescription" class="tool-starter__hint audio-sfx__style-description" aria-live="polite"></p>
             <ul id="styleExamples" class="audio-sfx__style-examples" aria-label="Example sound ideas"></ul>
             <p id="settingsHelper" class="tool-starter__hint audio-sfx__settings-helper" aria-live="polite"></p>
-            <label class="tool-starter__field" for="waveformSelect">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Chooses the oscillator shape or noise source; every waveform remains selectable for every Sound Style.">Wave</span>
-              <select id="waveformSelect">
-                <option value="sine">Sine</option>
-                <option value="square">Square</option>
-                <option value="triangle">Triangle</option>
-                <option value="sawtooth">Saw</option>
-                <option value="noise">Noise</option>
-              </select>
-            </label>
-            <label class="tool-starter__field" for="frequencyInput" data-density-control="frequency">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets the starting pitch before any sweep is applied.">Frequency</span>
-              <input id="frequencyInput" type="range">
-              <output id="frequencyValue" for="frequencyInput"></output>
-            </label>
-            <label class="tool-starter__field" for="durationInput" data-density-control="duration">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls the total playback length of the effect.">Duration</span>
-              <input id="durationInput" type="range">
-              <output id="durationValue" for="durationInput"></output>
-            </label>
-            <label class="tool-starter__field" for="attackInput" data-density-control="attack">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls how quickly the sound reaches full volume.">Attack</span>
-              <input id="attackInput" type="range">
-              <output id="attackValue" for="attackInput"></output>
-            </label>
-            <label class="tool-starter__field" for="releaseInput" data-density-control="release">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls how long the sound fades out at the end.">Release</span>
-              <input id="releaseInput" type="range">
-              <output id="releaseValue" for="releaseInput"></output>
-            </label>
-            <label class="tool-starter__field" for="volumeInput" data-density-control="volume">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets the playback loudness for audition and export.">Volume</span>
-              <input id="volumeInput" type="range">
-              <output id="volumeValue" for="volumeInput"></output>
-            </label>
-            <label class="tool-starter__field" for="pitchSweepInput" data-density-control="sweep">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Bends pitch over time in cents, positive upward and negative downward.">Sweep</span>
-              <input id="pitchSweepInput" type="range">
-              <output id="pitchSweepValue" for="pitchSweepInput"></output>
-            </label>
-            <label class="tool-starter__toggle" for="noiseInput">
-              <input id="noiseInput" type="checkbox">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Adds a short noise layer over oscillator waveforms for punchy hits and impacts.">Add Noise Layer</span>
-            </label>
-            <label class="tool-starter__field" for="noiseAmountInput" data-density-control="noiseAmount">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets how loud the arcade transient is when the noise source or layer is enabled.">Amount</span>
-              <input id="noiseAmountInput" type="range">
-              <output id="noiseAmountValue" for="noiseAmountInput"></output>
-            </label>
-            <label class="tool-starter__field" for="noiseDecayInput" data-density-control="noiseDecay">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls how quickly the burst fades out.">Decay</span>
-              <input id="noiseDecayInput" type="range">
-              <output id="noiseDecayValue" for="noiseDecayInput"></output>
-            </label>
-            <label class="tool-starter__field" for="noiseFilterInput" data-density-control="noiseFilter">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Raises or lowers the transient brightness filter.">Brightness</span>
-              <input id="noiseFilterInput" type="range">
-              <output id="noiseFilterValue" for="noiseFilterInput"></output>
-            </label>
             <p id="sfxValidationMessage" class="tool-starter__hint">Ready to audition.</p>
+          </div>
+        </section>
+      </aside>
+
+      <section class="tool-starter__panel tool-starter__panel--center" aria-label="SFX work area">
+        <section class="accordion-v2 tool-starter__accordion audio-sfx__design-accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="soundDesignContent">
+            <span>Sound Design</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="soundDesignContent" class="accordion-v2__content">
+            <div class="audio-sfx__control-grid">
+              <section class="audio-sfx__control-group" aria-labelledby="waveControlsHeading">
+                <h3 id="waveControlsHeading">Wave Controls</h3>
+                <label class="tool-starter__field" for="waveformSelect">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Chooses the oscillator shape or noise source; every waveform remains selectable for every Sound Style.">Wave</span>
+                  <select id="waveformSelect">
+                    <option value="sine">Sine</option>
+                    <option value="square">Square</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="sawtooth">Saw</option>
+                    <option value="noise">Noise</option>
+                  </select>
+                </label>
+                <label class="tool-starter__field" for="frequencyInput" data-density-control="frequency">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets the starting pitch before any sweep is applied.">Frequency</span>
+                  <input id="frequencyInput" type="range">
+                  <output id="frequencyValue" for="frequencyInput"></output>
+                </label>
+                <label class="tool-starter__field" for="durationInput" data-density-control="duration">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls the total playback length of the effect.">Duration</span>
+                  <input id="durationInput" type="range">
+                  <output id="durationValue" for="durationInput"></output>
+                </label>
+                <label class="tool-starter__field" for="attackInput" data-density-control="attack">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls how quickly the sound reaches full volume.">Attack</span>
+                  <input id="attackInput" type="range">
+                  <output id="attackValue" for="attackInput"></output>
+                </label>
+                <label class="tool-starter__field" for="releaseInput" data-density-control="release">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls how long the sound fades out at the end.">Release</span>
+                  <input id="releaseInput" type="range">
+                  <output id="releaseValue" for="releaseInput"></output>
+                </label>
+                <label class="tool-starter__field" for="volumeInput" data-density-control="volume">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets the playback loudness for audition and export.">Volume</span>
+                  <input id="volumeInput" type="range">
+                  <output id="volumeValue" for="volumeInput"></output>
+                </label>
+                <label class="tool-starter__field" for="pitchSweepInput" data-density-control="sweep">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Bends pitch over time in cents, positive upward and negative downward.">Sweep</span>
+                  <input id="pitchSweepInput" type="range">
+                  <output id="pitchSweepValue" for="pitchSweepInput"></output>
+                </label>
+              </section>
+              <section class="audio-sfx__control-group" aria-labelledby="noiseControlsHeading">
+                <h3 id="noiseControlsHeading">Noise Controls</h3>
+                <label class="tool-starter__toggle" for="noiseInput">
+                  <input id="noiseInput" type="checkbox">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Adds a short noise layer over oscillator waveforms for punchy hits and impacts.">Add Noise Layer</span>
+                </label>
+                <label class="tool-starter__field" for="noiseAmountInput" data-density-control="noiseAmount">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets how loud the arcade transient is when the noise source or layer is enabled.">Amount</span>
+                  <input id="noiseAmountInput" type="range">
+                  <output id="noiseAmountValue" for="noiseAmountInput"></output>
+                </label>
+                <label class="tool-starter__field" for="noiseDecayInput" data-density-control="noiseDecay">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Controls how quickly the burst fades out.">Decay</span>
+                  <input id="noiseDecayInput" type="range">
+                  <output id="noiseDecayValue" for="noiseDecayInput"></output>
+                </label>
+                <label class="tool-starter__field" for="noiseFilterInput" data-density-control="noiseFilter">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Raises or lowers the transient brightness filter.">Brightness</span>
+                  <input id="noiseFilterInput" type="range">
+                  <output id="noiseFilterValue" for="noiseFilterInput"></output>
+                </label>
+              </section>
+            </div>
             <div class="audio-sfx__shape-actions">
               <button id="toolPlayButton" type="button">Play</button>
             </div>
           </div>
         </section>
-      </aside>
-
-      <section class="tool-starter__panel tool-starter__panel--center" aria-label="SFX sound list">
         <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="soundListContent">
             <span>Created Sounds</span>
