@@ -9,6 +9,7 @@ import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
 import { AudioSfxEngine } from "./services/AudioSfxEngine.js";
 import { ToolStateSerializer } from "./services/ToolStateSerializer.js";
+import { WorkspaceDirtyBridge } from "./services/WorkspaceDirtyBridge.js";
 
 function requireElement(selector) {
   const element = document.querySelector(selector);
@@ -20,6 +21,7 @@ function requireElement(selector) {
 
 window.addEventListener("DOMContentLoaded", () => {
   const accordions = Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section));
+  const serializer = new ToolStateSerializer();
   const statusLog = new StatusLogControl({
     log: requireElement("#statusLog"),
     clearButton: requireElement("#clearStatusButton")
@@ -73,11 +75,15 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     preview: new SfxPreviewControl(requireElement("#previewOutput")),
-    serializer: new ToolStateSerializer(),
+    serializer,
     shell: new ToolShellControl(),
     statusLog,
     tileList: new SfxTileListControl({
       list: requireElement("#sfxTileList")
+    }),
+    workspaceDirtyBridge: new WorkspaceDirtyBridge({
+      serializer,
+      windowRef: window
     }),
     windowRef: window
   });

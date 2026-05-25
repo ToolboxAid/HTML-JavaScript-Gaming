@@ -89,6 +89,9 @@
       "required": ["asset-manager-v2"],
       "additionalProperties": false,
       "properties": {
+        "audio-sfx-playground-v2": {
+          "$ref": "tools/audio-sfx-playground-v2.schema.json#/$defs/audioSfxPayload"
+        },
         "asset-manager-v2": {
           "$ref": "tools/asset-manager-v2.schema.json"
         },

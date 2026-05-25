@@ -10,6 +10,7 @@ const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
 const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
+const AUDIO_SFX_PLAYGROUND_V2_TOOL_KEY = "audio-sfx-playground-v2";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const COLLISION_INSPECTOR_V2_TOOL_KEY = "collision-inspector-v2";
 const INPUT_MAPPING_V2_TOOL_KEY = "input-mapping-v2";
@@ -19,6 +20,7 @@ const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
 const WORLD_VECTOR_STUDIO_V2_TOOL_KEY = "world-vector-studio-v2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/tests/fixtures/workspace-v2/uat.manifest.json";
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
+  [AUDIO_SFX_PLAYGROUND_V2_TOOL_KEY]: "tools/schemas/tools/audio-sfx-playground-v2.schema.json#/$defs/audioSfxPayload",
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
   [COLLISION_INSPECTOR_V2_TOOL_KEY]: "tools/schemas/tools/collision-inspector-v2.schema.json",
   [INPUT_MAPPING_V2_TOOL_KEY]: "tools/schemas/tools/input-mapping-v2.schema.json",
@@ -59,7 +61,7 @@ const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
   "storage-inspector-v2",
   TEXT2SPEECH_V2_TOOL_KEY,
-  "audio-sfx-playground-v2",
+  AUDIO_SFX_PLAYGROUND_V2_TOOL_KEY,
   WORLD_VECTOR_STUDIO_V2_TOOL_KEY
 ]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
@@ -129,7 +131,7 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
     group: "Utilities",
-    id: "audio-sfx-playground-v2",
+    id: AUDIO_SFX_PLAYGROUND_V2_TOOL_KEY,
     name: "Audio / SFX Playground V2",
     path: "../audio-sfx-playground-v2/index.html"
   }),
@@ -1498,7 +1500,9 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async loadToolPayloadSchema(schemaPath) {
-    const normalizedSchemaPath = normalizeSchemaRegistryPath(schemaPath);
+    const [rawSchemaPath, rawPointer = ""] = String(schemaPath || "").split("#");
+    const normalizedSchemaPath = normalizeSchemaRegistryPath(rawSchemaPath);
+    const schemaPointer = rawPointer ? `#${rawPointer}` : "#";
     if (!normalizedSchemaPath) {
       return { ok: false, message: "Tool payload schema path is empty." };
     }
@@ -1521,7 +1525,17 @@ export class WorkspaceManagerV2ContextService {
       if (!referenceLoad.ok) {
         return referenceLoad;
       }
-      return { ok: true, schema, schemaPath: normalizedSchemaPath, schemaRegistry };
+      const selectedSchema = resolvePointer(schema, schemaPointer);
+      if (!selectedSchema) {
+        return { ok: false, message: `Tool payload schema fragment not found: ${schemaPath}.` };
+      }
+      return {
+        ok: true,
+        schema: selectedSchema,
+        rootSchema: schema,
+        schemaPath: normalizedSchemaPath,
+        schemaRegistry
+      };
     } catch (error) {
       return { ok: false, message: `Unable to load ${fetchPath}: ${error.message}` };
     }
@@ -1559,7 +1573,14 @@ export class WorkspaceManagerV2ContextService {
           errors.push(schemaResult.message);
           continue;
         }
-        errors.push(...validateSchemaValue(payload, schemaResult.schema, `root.tools.${toolId}`, schemaResult.schema, schemaResult.schemaRegistry, schemaResult.schemaPath));
+        errors.push(...validateSchemaValue(
+          payload,
+          schemaResult.schema,
+          `root.tools.${toolId}`,
+          schemaResult.rootSchema || schemaResult.schema,
+          schemaResult.schemaRegistry,
+          schemaResult.schemaPath
+        ));
       }
     }
     return errors.length
