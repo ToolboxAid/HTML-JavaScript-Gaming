@@ -85,7 +85,8 @@ export class AudioSfxPlaygroundV2App {
     this.controls.mount({
       onAdd: () => this.addCurrentSound(),
       onChange: () => this.handleEditorChange(),
-      onDelete: () => this.deleteCurrentSound()
+      onDelete: () => this.deleteCurrentSound(),
+      onRename: () => this.renameCurrentSound()
     });
     this.tileList.mount({
       onSelect: (soundId) => this.selectSound(soundId)
@@ -97,7 +98,7 @@ export class AudioSfxPlaygroundV2App {
   }
 
   currentToolState() {
-    const validation = this.controls.validate();
+    const validation = this.controls.validate({ nameOverride: this.activeSoundName() });
     if (!validation.valid) {
       this.controls.showMessage(validation.message, true);
       return { toolState: null, validation };
@@ -124,13 +125,8 @@ export class AudioSfxPlaygroundV2App {
   }
 
   handleEditorChange() {
-    const validation = this.controls.validate();
-    if (validation.valid && this.activeSoundId && this.hasDuplicateSoundName(validation.value.name, this.activeSoundId)) {
-      this.statusLog.error(duplicateSoundNameMessage(validation.value.name));
-      this.controls.showMessage("Name must be unique.", true);
-      return;
-    }
-    if (validation.valid && this.updateActiveSound(validation.value)) {
+    const validation = this.controls.validate({ nameOverride: this.activeSoundName() });
+    if (validation.valid && this.updateActiveSound(this.soundForActiveEditorValue(validation.value))) {
       this.renderSoundList();
     }
     this.refreshPreview();
@@ -139,6 +135,10 @@ export class AudioSfxPlaygroundV2App {
   hasDuplicateSoundName(name, excludedSoundId = "") {
     const normalizedName = normalizeSoundName(name);
     return this.soundEntries.some((entry) => entry.id !== excludedSoundId && normalizeSoundName(entry.sound.name) === normalizedName);
+  }
+
+  activeSoundName() {
+    return this.soundEntries.find((entry) => entry.id === this.activeSoundId)?.sound.name || "";
   }
 
   createSoundEntry(sound) {
@@ -159,6 +159,17 @@ export class AudioSfxPlaygroundV2App {
     }
     entry.sound = cloneSound(sound);
     return entry;
+  }
+
+  soundForActiveEditorValue(sound) {
+    const entry = this.soundEntries.find((candidate) => candidate.id === this.activeSoundId);
+    if (!entry) {
+      return sound;
+    }
+    return {
+      ...sound,
+      name: entry.sound.name
+    };
   }
 
   ensureActiveSoundEntry(sound) {
@@ -195,6 +206,30 @@ export class AudioSfxPlaygroundV2App {
     this.statusLog.write(`Added ${entry.sound.name}.`);
   }
 
+  renameCurrentSound() {
+    const entry = this.soundEntries.find((candidate) => candidate.id === this.activeSoundId);
+    if (!entry) {
+      this.statusLog.error("Select a saved SFX tile before renaming.");
+      this.controls.setRenameEnabled(false);
+      return;
+    }
+    const nextName = this.controls.currentName();
+    if (!nextName) {
+      this.statusLog.error("Name is required.");
+      this.controls.showMessage("Name is required.", true);
+      return;
+    }
+    if (this.hasDuplicateSoundName(nextName, entry.id)) {
+      this.statusLog.error(duplicateSoundNameMessage(nextName));
+      this.controls.showMessage("Name must be unique.", true);
+      return;
+    }
+    entry.sound.name = nextName;
+    this.renderSoundList();
+    this.refreshPreview();
+    this.statusLog.write(`Renamed SFX to ${entry.sound.name}.`);
+  }
+
   selectSound(soundId) {
     const entry = this.soundEntries.find((candidate) => candidate.id === soundId);
     if (!entry) {
@@ -214,6 +249,7 @@ export class AudioSfxPlaygroundV2App {
       soundEntries: this.soundEntries
     });
     this.controls.setDeleteEnabled(Boolean(this.activeSoundId));
+    this.controls.setRenameEnabled(Boolean(this.activeSoundId));
   }
 
   async play() {
@@ -224,8 +260,9 @@ export class AudioSfxPlaygroundV2App {
       return;
     }
     try {
-      await this.audioEngine.play(validation.value);
-      this.statusLog.write(`Played ${validation.value.name}.`);
+      const sound = this.soundForActiveEditorValue(validation.value);
+      await this.audioEngine.play(sound);
+      this.statusLog.write(`Played ${sound.name}.`);
     } catch (error) {
       this.statusLog.error(`Audio playback failed: ${error.message}`);
     }
@@ -251,11 +288,11 @@ export class AudioSfxPlaygroundV2App {
   }
 
   exportPayload() {
-    const validation = this.controls.validate();
+    const validation = this.controls.validate({ nameOverride: this.activeSoundName() });
     if (!validation.valid) {
       return { valid: false, message: validation.message, toolState: null, json: "" };
     }
-    const activeSoundEntry = this.ensureActiveSoundEntry(validation.value);
+    const activeSoundEntry = this.ensureActiveSoundEntry(this.soundForActiveEditorValue(validation.value));
     if (!activeSoundEntry.valid) {
       return { valid: false, message: activeSoundEntry.message, toolState: null, json: "" };
     }

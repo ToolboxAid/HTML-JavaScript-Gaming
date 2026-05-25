@@ -194,7 +194,6 @@ const STYLE_PROFILES = Object.freeze({
   "pure-tone": {
     durationMs: 240,
     frequencyHz: 660,
-    name: "Pure Tone",
     noise: false,
     noiseAmount: 0,
     noiseDecayMs: 80,
@@ -207,7 +206,6 @@ const STYLE_PROFILES = Object.freeze({
   "noise-only": {
     durationMs: 260,
     frequencyHz: 880,
-    name: "Noise Only",
     noise: false,
     noiseAmount: 0.72,
     noiseDecayMs: 120,
@@ -220,7 +218,6 @@ const STYLE_PROFILES = Object.freeze({
   "atari-style": {
     durationMs: 180,
     frequencyHz: 520,
-    name: "Atari Blip",
     noise: true,
     noiseAmount: 0.48,
     noiseDecayMs: 75,
@@ -233,7 +230,6 @@ const STYLE_PROFILES = Object.freeze({
   "classic-arcade": {
     durationMs: 220,
     frequencyHz: 880,
-    name: "Classic Zap",
     noise: true,
     noiseAmount: 0.65,
     noiseDecayMs: 95,
@@ -246,7 +242,6 @@ const STYLE_PROFILES = Object.freeze({
   "early-analog": {
     durationMs: 360,
     frequencyHz: 340,
-    name: "Analog Bloom",
     noise: false,
     noiseAmount: 0.22,
     noiseDecayMs: 140,
@@ -259,7 +254,6 @@ const STYLE_PROFILES = Object.freeze({
   "namco-style": {
     durationMs: 170,
     frequencyHz: 1040,
-    name: "Namco Ping",
     noise: false,
     noiseAmount: 0.15,
     noiseDecayMs: 70,
@@ -272,7 +266,6 @@ const STYLE_PROFILES = Object.freeze({
   "nintendo-style": {
     durationMs: 260,
     frequencyHz: 760,
-    name: "Nintendo Pop",
     noise: true,
     noiseAmount: 0.36,
     noiseDecayMs: 90,
@@ -285,7 +278,6 @@ const STYLE_PROFILES = Object.freeze({
   "ttl-arcade": {
     durationMs: 130,
     frequencyHz: 1180,
-    name: "TTL Tick",
     noise: true,
     noiseAmount: 0.72,
     noiseDecayMs: 50,
@@ -298,7 +290,6 @@ const STYLE_PROFILES = Object.freeze({
   "vector-arcade": {
     durationMs: 300,
     frequencyHz: 420,
-    name: "Vector Sweep",
     noise: false,
     noiseAmount: 0.12,
     noiseDecayMs: 120,
@@ -356,6 +347,7 @@ export class SfxControlPanel {
     pitchSweepValue,
     releaseInput,
     releaseValue,
+    renameButton,
     settingsHelper,
     styleDescription,
     styleExamples,
@@ -386,6 +378,7 @@ export class SfxControlPanel {
     this.pitchSweepValue = pitchSweepValue;
     this.releaseInput = releaseInput;
     this.releaseValue = releaseValue;
+    this.renameButton = renameButton;
     this.settingsHelper = settingsHelper;
     this.styleDescription = styleDescription;
     this.styleExamples = styleExamples;
@@ -396,22 +389,23 @@ export class SfxControlPanel {
     this.waveformSelect = waveformSelect;
   }
 
-  mount({ onAdd, onChange, onDelete }) {
+  mount({ onAdd, onChange, onDelete, onRename }) {
     this.applySliderLimits();
     this.loadSound(DEFAULT_SOUND);
     this.addButton.addEventListener("click", onAdd);
     this.deleteButton.addEventListener("click", onDelete);
+    this.renameButton.addEventListener("click", onRename);
     this.styleProfileSelect.addEventListener("change", () => {
       if (this.applyStyleProfile()) {
         onChange();
       }
     });
     this.setDeleteEnabled(false);
+    this.setRenameEnabled(false);
     [
       this.attackInput,
       this.durationInput,
       this.frequencyInput,
-      this.nameInput,
       this.noiseAmountInput,
       this.noiseDecayInput,
       this.noiseFilterInput,
@@ -520,7 +514,6 @@ export class SfxControlPanel {
     this.attackInput.value = String(DEFAULT_SOUND.attackMs);
     this.durationInput.value = String(profile.durationMs);
     this.frequencyInput.value = String(profile.frequencyHz);
-    this.nameInput.value = profile.name;
     this.noiseInput.checked = profile.noise;
     this.noiseAmountInput.value = String(profile.noiseAmount);
     this.noiseDecayInput.value = String(profile.noiseDecayMs);
@@ -675,8 +668,8 @@ export class SfxControlPanel {
     return Math.min(limits.max, Math.max(limits.min, value));
   }
 
-  validate() {
-    const name = this.nameInput.value.trim();
+  validate({ nameOverride = "" } = {}) {
+    const name = (nameOverride || this.nameInput.value).trim();
     if (!name) {
       return { valid: false, message: "Name is required." };
     }
@@ -725,5 +718,13 @@ export class SfxControlPanel {
 
   setDeleteEnabled(isEnabled) {
     this.deleteButton.disabled = !isEnabled;
+  }
+
+  currentName() {
+    return this.nameInput.value.trim();
+  }
+
+  setRenameEnabled(isEnabled) {
+    this.renameButton.disabled = !isEnabled;
   }
 }

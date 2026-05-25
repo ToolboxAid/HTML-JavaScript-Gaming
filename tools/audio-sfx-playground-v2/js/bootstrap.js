@@ -61,6 +61,7 @@ window.addEventListener("DOMContentLoaded", () => {
       pitchSweepValue: requireElement("#pitchSweepValue"),
       releaseInput: requireElement("#releaseInput"),
       releaseValue: requireElement("#releaseValue"),
+      renameButton: requireElement("#renameSfxButton"),
       settingsHelper: requireElement("#settingsHelper"),
       styleDescription: requireElement("#styleDescription"),
       styleExamples: requireElement("#styleExamples"),

@@ -33,6 +33,17 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .audio-sfx__name-f
   white-space: nowrap;
 }
 
+body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__rename-row {
+  display: flex;
+  justify-content: center;
+  margin-top: -1px;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__rename-row button {
+  min-width: 96px;
+  min-height: 30px;
+}
+
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field select,
 body[data-tool-id="audio-sfx-playground-v2"] #soundDesignContent .tool-starter__field select {
   min-height: 32px;
@@ -170,16 +181,18 @@ body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__design-accordion {
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #soundDesignContent {
-  gap: 10px;
+  gap: 8px;
   overflow-x: hidden;
+  padding: 8px 8px 10px;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__control-grid {
   min-width: 0;
   display: grid;
   grid-template-columns: minmax(256px, 1fr) minmax(256px, 1fr);
-  gap: 12px;
+  gap: 10px;
   align-items: start;
+  margin-top: 0;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__control-group {
@@ -202,7 +215,7 @@ body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__shape-actions {
   display: flex;
   justify-content: flex-end;
   border-top: 1px solid var(--tool-starter-line);
-  padding-top: 8px;
+  padding-top: 6px;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__shape-actions button {
