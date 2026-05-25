@@ -111,7 +111,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/GamepadInputAdapter", "engine/input/index/InputService", "engine/persistence/index/StorageService", "engine/scene/index/AttractModeController", "engine/scene/index/Scene", "engine/utils/math/clamp"],
-      "toolsUsed": ["asset-manager-v2", "object-vector-studio-v2"]
+      "toolsUsed": ["palette-manager-v2", "asset-manager-v2"]
     },
     {
       "id": "SpaceDuel",

@@ -79,7 +79,6 @@ const ALL_REPO_GAME_OPTIONS = [
 const OBJECT_VECTOR_ENABLED_GAME_IDS = new Set([
   "Asteroids",
   "SpaceDuel",
-  "SpaceInvaders",
   "vector-arcade-sample"
 ]);
 
@@ -12702,7 +12701,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("enables object vector and collision tools from manifest geometry without fallback defaults", async ({ page }) => {
+  test("enables object vector and collision tools only from manifest geometry without fallback defaults", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
     const selectAllRepoGames = async () => selectMockRepo(page, {
@@ -12723,30 +12722,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const spaceInvadersContext = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
       expect(spaceInvadersContext.name).toBe("Space Invaders Workspace Manager V2 Context");
       expect(spaceInvadersContext.gameId).toBe("SpaceInvaders");
+      expect(spaceInvadersContext.screen).toEqual({ width: 960, height: 720 });
       expect(JSON.stringify(spaceInvadersContext)).not.toContain("Space Invaders Next");
-      expect(spaceInvadersContext.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
-        "object.space-invaders.player-cannon",
-        "object.space-invaders.octopus-alien",
-        "object.space-invaders.crab-alien",
-        "object.space-invaders.squid-alien",
-        "object.space-invaders.ufo",
-        "object.space-invaders.player-laser",
-        "object.space-invaders.alien-bomb",
-        "object.space-invaders.shield"
-      ]));
-      await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeEnabled();
-      await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toContainText("8 object vector assets");
-      await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toBeEnabled();
-      await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toContainText("8 inspectable objects");
+      expect(spaceInvadersContext.tools["asset-manager-v2"].assets["assets.audio.space-invaders.shoot"].path).toBe("assets/audio/effects/shoot.wav");
+      expect(spaceInvadersContext.tools["asset-manager-v2"].assets["assets.audio.space-invaders.ufo-lowpitch"].role).toBe("loop");
+      expect(spaceInvadersContext.tools["object-vector-studio-v2"]).toBeUndefined();
+      await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeDisabled();
+      await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toBeDisabled();
       const invadersHydration = await readWorkspaceSessionHydration(page);
-      expect(invadersHydration.toolSessions["object-vector-studio-v2"].data.objects).toHaveLength(8);
-      expect(invadersHydration.toolSessions["collision-inspector-v2"].data).toBeNull();
+      expect(invadersHydration.toolSessions["object-vector-studio-v2"]).toBeUndefined();
+      expect(invadersHydration.toolSessions["collision-inspector-v2"]).toBeUndefined();
 
       await page.locator("#closeWorkspaceButton").click();
       await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
       await selectAllRepoGames();
       await page.locator("#activeGameSelect").selectOption("SpaceDuel");
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Space Duel context uses games\/SpaceDuel\/ and games\/SpaceDuel\/assets\./);
+      const spaceDuelContext = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
+      expect(spaceDuelContext.screen).toEqual({ width: 960, height: 720 });
       await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeEnabled();
       await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toContainText("6 object vector assets");
       await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toBeEnabled();

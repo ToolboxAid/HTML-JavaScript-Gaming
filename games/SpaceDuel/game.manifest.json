@@ -10,6 +10,10 @@
   "launch": {
     "directPath": "/games/SpaceDuel/index.html"
   },
+  "screen": {
+    "width": 960,
+    "height": 720
+  },
   "tools": {
     "palette-manager-v2": {
       "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",

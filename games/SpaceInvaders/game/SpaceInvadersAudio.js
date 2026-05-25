@@ -8,15 +8,15 @@ import { resolveGameManifestAssetPath } from "../../shared/gameManifestAssets.js
 
 const SPACE_INVADERS_GAME_ID = "SpaceInvaders";
 const EFFECT_ASSET_IDS = Object.freeze({
-  shoot: "audio.space-invaders.shoot",
-  invaderkilled: "audio.space-invaders.invaderkilled",
-  explosion: "audio.space-invaders.explosion",
-  fastinvader1: "audio.space-invaders.fastinvader1",
-  fastinvader2: "audio.space-invaders.fastinvader2",
-  fastinvader3: "audio.space-invaders.fastinvader3",
-  fastinvader4: "audio.space-invaders.fastinvader4",
-  ufo_lowpitch: "audio.space-invaders.ufo-lowpitch",
-  ufo_highpitch: "audio.space-invaders.ufo-highpitch"
+  shoot: "assets.audio.space-invaders.shoot",
+  invaderkilled: "assets.audio.space-invaders.invaderkilled",
+  explosion: "assets.audio.space-invaders.explosion",
+  fastinvader1: "assets.audio.space-invaders.fastinvader1",
+  fastinvader2: "assets.audio.space-invaders.fastinvader2",
+  fastinvader3: "assets.audio.space-invaders.fastinvader3",
+  fastinvader4: "assets.audio.space-invaders.fastinvader4",
+  ufo_lowpitch: "assets.audio.space-invaders.ufo-lowpitch",
+  ufo_highpitch: "assets.audio.space-invaders.ufo-highpitch"
 });
 
 export default class SpaceInvadersAudio {
