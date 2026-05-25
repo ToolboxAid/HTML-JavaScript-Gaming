@@ -67,6 +67,21 @@
               <button id="addSfxButton" type="button" aria-label="Add SFX">+</button>
               <button id="deleteSfxButton" type="button" aria-label="Delete selected SFX">&#128465;</button>
             </div>
+            <label class="tool-starter__field" for="styleProfileSelect">
+              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Applies a profile of default SFX ranges without saving the style name into toolState.">Sound Style</span>
+              <select id="styleProfileSelect">
+                <option value="custom">Custom</option>
+                <option value="pure-tone">Pure Tone</option>
+                <option value="divider" disabled>────────────</option>
+                <option value="atari-style">Atari-style</option>
+                <option value="classic-arcade">Classic Arcade</option>
+                <option value="early-analog">Early Analog</option>
+                <option value="namco-style">Namco-style</option>
+                <option value="nintendo-style">Nintendo-style</option>
+                <option value="ttl-arcade">TTL Arcade</option>
+                <option value="vector-arcade">Vector Arcade</option>
+              </select>
+            </label>
             <label class="tool-starter__field" for="waveformSelect">
               <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Chooses the oscillator shape that defines the sound character.">Wave</span>
               <select id="waveformSelect">

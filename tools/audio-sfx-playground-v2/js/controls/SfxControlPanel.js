@@ -14,6 +14,112 @@ const DEFAULT_SOUND = Object.freeze({
 });
 
 const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth"]));
+const STYLE_PROFILES = Object.freeze({
+  "pure-tone": {
+    durationMs: 240,
+    frequencyHz: 660,
+    name: "Pure Tone",
+    noise: false,
+    noiseAmount: 0,
+    noiseDecayMs: 80,
+    noiseFilterHz: 5200,
+    pitchSweepCents: 0,
+    releaseMs: 120,
+    volume: 0.38,
+    waveform: "sine"
+  },
+  "atari-style": {
+    durationMs: 180,
+    frequencyHz: 520,
+    name: "Atari Blip",
+    noise: true,
+    noiseAmount: 0.48,
+    noiseDecayMs: 75,
+    noiseFilterHz: 4200,
+    pitchSweepCents: -520,
+    releaseMs: 60,
+    volume: 0.5,
+    waveform: "square"
+  },
+  "classic-arcade": {
+    durationMs: 220,
+    frequencyHz: 880,
+    name: "Classic Zap",
+    noise: true,
+    noiseAmount: 0.65,
+    noiseDecayMs: 95,
+    noiseFilterHz: 5600,
+    pitchSweepCents: 700,
+    releaseMs: 85,
+    volume: 0.46,
+    waveform: "square"
+  },
+  "early-analog": {
+    durationMs: 360,
+    frequencyHz: 340,
+    name: "Analog Bloom",
+    noise: false,
+    noiseAmount: 0.22,
+    noiseDecayMs: 140,
+    noiseFilterHz: 3600,
+    pitchSweepCents: 240,
+    releaseMs: 180,
+    volume: 0.42,
+    waveform: "sawtooth"
+  },
+  "namco-style": {
+    durationMs: 170,
+    frequencyHz: 1040,
+    name: "Namco Ping",
+    noise: false,
+    noiseAmount: 0.15,
+    noiseDecayMs: 70,
+    noiseFilterHz: 6800,
+    pitchSweepCents: 420,
+    releaseMs: 70,
+    volume: 0.44,
+    waveform: "triangle"
+  },
+  "nintendo-style": {
+    durationMs: 260,
+    frequencyHz: 760,
+    name: "Nintendo Pop",
+    noise: true,
+    noiseAmount: 0.36,
+    noiseDecayMs: 90,
+    noiseFilterHz: 7600,
+    pitchSweepCents: 520,
+    releaseMs: 95,
+    volume: 0.4,
+    waveform: "square"
+  },
+  "ttl-arcade": {
+    durationMs: 130,
+    frequencyHz: 1180,
+    name: "TTL Tick",
+    noise: true,
+    noiseAmount: 0.72,
+    noiseDecayMs: 50,
+    noiseFilterHz: 8300,
+    pitchSweepCents: -260,
+    releaseMs: 45,
+    volume: 0.48,
+    waveform: "square"
+  },
+  "vector-arcade": {
+    durationMs: 300,
+    frequencyHz: 420,
+    name: "Vector Sweep",
+    noise: false,
+    noiseAmount: 0.12,
+    noiseDecayMs: 120,
+    noiseFilterHz: 4600,
+    pitchSweepCents: 900,
+    releaseMs: 130,
+    volume: 0.43,
+    waveform: "sawtooth"
+  }
+});
 
 function toNumber(input) {
   return Number.parseFloat(input.value);
@@ -51,6 +157,7 @@ export class SfxControlPanel {
     pitchSweepValue,
     releaseInput,
     releaseValue,
+    styleProfileSelect,
     validationMessage,
     volumeInput,
     volumeValue,
@@ -76,6 +183,7 @@ export class SfxControlPanel {
     this.pitchSweepValue = pitchSweepValue;
     this.releaseInput = releaseInput;
     this.releaseValue = releaseValue;
+    this.styleProfileSelect = styleProfileSelect;
     this.validationMessage = validationMessage;
     this.volumeInput = volumeInput;
     this.volumeValue = volumeValue;
@@ -86,6 +194,11 @@ export class SfxControlPanel {
     this.loadSound(DEFAULT_SOUND);
     this.addButton.addEventListener("click", onAdd);
     this.deleteButton.addEventListener("click", onDelete);
+    this.styleProfileSelect.addEventListener("change", () => {
+      if (this.applyStyleProfile()) {
+        onChange();
+      }
+    });
     this.setDeleteEnabled(false);
     [
       this.attackInput,
@@ -113,6 +226,7 @@ export class SfxControlPanel {
   }
 
   loadSound(sound) {
+    this.styleProfileSelect.value = "custom";
     this.attackInput.value = String(sound.attackMs);
     this.durationInput.value = String(sound.durationMs);
     this.frequencyInput.value = String(sound.frequencyHz);
@@ -126,6 +240,28 @@ export class SfxControlPanel {
     this.volumeInput.value = String(sound.volume);
     this.waveformSelect.value = sound.waveform;
     this.syncOutputs();
+  }
+
+  applyStyleProfile() {
+    const profile = STYLE_PROFILES[this.styleProfileSelect.value];
+    if (!profile) {
+      this.styleProfileSelect.value = "custom";
+      return false;
+    }
+    this.attackInput.value = String(DEFAULT_SOUND.attackMs);
+    this.durationInput.value = String(profile.durationMs);
+    this.frequencyInput.value = String(profile.frequencyHz);
+    this.nameInput.value = profile.name;
+    this.noiseInput.checked = profile.noise;
+    this.noiseAmountInput.value = String(profile.noiseAmount);
+    this.noiseDecayInput.value = String(profile.noiseDecayMs);
+    this.noiseFilterInput.value = String(profile.noiseFilterHz);
+    this.pitchSweepInput.value = String(profile.pitchSweepCents);
+    this.releaseInput.value = String(profile.releaseMs);
+    this.volumeInput.value = String(profile.volume);
+    this.waveformSelect.value = profile.waveform;
+    this.syncOutputs();
+    return true;
   }
 
   syncOutputs() {
