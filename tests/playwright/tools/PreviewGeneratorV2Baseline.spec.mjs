@@ -144,7 +144,7 @@ async function openPaletteManager(page) {
 async function openToolTemplate(page, query = "") {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/templates-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/tools/_templates-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 

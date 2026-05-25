@@ -86,6 +86,7 @@ function classifyToolGroup(toolId) {
   const utilityToolIds = new Set([
     "asset-manager-v2",
     "asset-pipeline",
+    "audio-sfx-playground-v2",
     "input-mapping-v2",
     "physics-sandbox",
     "text2speech-V2",

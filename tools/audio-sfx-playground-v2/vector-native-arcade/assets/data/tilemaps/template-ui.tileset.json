@@ -1,0 +1,6 @@
+{
+  "name": "Template UI Tileset",
+  "tileWidth": 8,
+  "tileHeight": 8,
+  "tiles": ["score-panel", "wave-panel", "status-panel"]
+}

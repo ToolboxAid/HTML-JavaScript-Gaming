@@ -59,6 +59,7 @@ const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
   "storage-inspector-v2",
   TEXT2SPEECH_V2_TOOL_KEY,
+  "audio-sfx-playground-v2",
   WORLD_VECTOR_STUDIO_V2_TOOL_KEY
 ]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
@@ -67,7 +68,7 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     group: "Viewers",
     id: "templates-v2",
     name: "Tool Starter V2",
-    path: "../templates-v2/index.html"
+    path: "../_templates-v2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
@@ -124,6 +125,13 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     id: TEXT2SPEECH_V2_TOOL_KEY,
     name: "Text to Speech V2",
     path: "../text2speech-V2/index.html"
+  }),
+  Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Utilities",
+    id: "audio-sfx-playground-v2",
+    name: "Audio / SFX Playground V2",
+    path: "../audio-sfx-playground-v2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),

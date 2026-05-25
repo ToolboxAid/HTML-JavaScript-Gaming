@@ -253,7 +253,7 @@ test.describe("Collision Inspector V2", () => {
     try {
       await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`, { waitUntil: "networkidle" });
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='collision-inspector-v2']")).toBeVisible();
-      await expect(page.locator("link[href='../templates-v2/styles/toolStarter.css']")).toHaveCount(1);
+      await expect(page.locator("link[href='../_templates-v2/styles/toolStarter.css']")).toHaveCount(1);
       await expect(page.locator(".tool-starter__header[data-tool-starter-header]")).toBeVisible();
       await expect(page.locator("nav.tool-starter__menu.tool-starter__tool__menu")).toBeVisible();
       await expect(page.locator("nav.tool-starter__menu.tool-starter__workspace__menu")).toBeHidden();

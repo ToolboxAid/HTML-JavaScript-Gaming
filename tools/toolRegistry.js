@@ -245,6 +245,29 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "audio-sfx-playground-v2",
+    name: "Audio / SFX Playground V2",
+    displayName: "Audio / SFX Playground V2",
+    shortDescription: "Tune and audition browser-generated game SFX payloads.",
+    shortLabel: "SFX",
+    path: "audio-sfx-playground-v2",
+    folderName: "audio-sfx-playground-v2",
+    entryPoint: "audio-sfx-playground-v2/index.html",
+    description: "First-Class Tool V2 for shaping oscillator and noise-based game sound effects with toolState export.",
+    showcaseTag: "Audio",
+    showcaseStatus: "SFX Playground",
+    active: true,
+    legacy: false,
+    order: 7.65,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "audio-sfx-playground-v2/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "collision-inspector-v2",
     name: "Collision Inspector V2",
     displayName: "Collision Inspector V2",

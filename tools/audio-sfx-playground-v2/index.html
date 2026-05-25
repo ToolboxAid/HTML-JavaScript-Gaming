@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Audio / SFX Playground V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="./styles/audioSfxPlaygroundV2.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="audio-sfx-playground-v2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-audio-sfx-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <div class="audio-sfx__header" data-audio-sfx-header>
+          <section class="tools-platform-frame audio-sfx__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="audio-sfx-playground-v2">Audio / SFX Playground V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface V2</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Browser SFX preview, tuning, and toolState export without a tools/shared dependency.</div>
+                </div>
+              </div>
+              <div class="tools-platform-frame__topline">
+                <p class="tools-platform-frame__description">Shape short oscillator and noise-based game effects, audition them, and inspect the exported audio payload.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </details>
+
+    <nav class="audio-sfx__menu audio-sfx__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <button id="toolPlayButton" type="button">Play</button>
+      <button id="toolCopyJsonButton" type="button">Copy JSON</button>
+      <button id="toolExportToolStateButton" type="button">Export toolState</button>
+    </nav>
+
+    <nav class="audio-sfx__menu audio-sfx__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <button id="workspaceImportManifestButton" type="button">Import manifest</button>
+      <button id="workspaceCopyManifestButton" type="button">Copy manifest</button>
+      <button id="workspaceExportManifestButton" type="button">Export manifest</button>
+      <button id="returnToWorkspaceButton" type="button" hidden>Return to Workspace</button>
+    </nav>
+
+    <main class="audio-sfx app-shell" data-tool-id="audio-sfx-playground-v2">
+      <aside class="audio-sfx__panel audio-sfx__panel--left" aria-label="SFX setup">
+        <section class="accordion-v2 audio-sfx__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sfxShapeContent">
+            <span>SFX Shape</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="sfxShapeContent" class="accordion-v2__content">
+            <label class="audio-sfx__field" for="presetSelect">
+              <span>Preset</span>
+              <select id="presetSelect">
+                <option value="coin">Coin</option>
+                <option value="laser">Laser</option>
+                <option value="jump">Jump</option>
+                <option value="hit">Hit</option>
+                <option value="powerup">Power Up</option>
+              </select>
+            </label>
+            <label class="audio-sfx__field" for="waveformSelect">
+              <span>Wave</span>
+              <select id="waveformSelect">
+                <option value="sine">Sine</option>
+                <option value="square">Square</option>
+                <option value="triangle">Triangle</option>
+                <option value="sawtooth">Saw</option>
+              </select>
+            </label>
+            <label class="audio-sfx__field" for="frequencyInput">
+              <span>Frequency</span>
+              <input id="frequencyInput" type="range" min="80" max="1800" step="1">
+              <output id="frequencyValue" for="frequencyInput"></output>
+            </label>
+            <label class="audio-sfx__field" for="durationInput">
+              <span>Duration</span>
+              <input id="durationInput" type="range" min="60" max="1400" step="10">
+              <output id="durationValue" for="durationInput"></output>
+            </label>
+            <label class="audio-sfx__field" for="attackInput">
+              <span>Attack</span>
+              <input id="attackInput" type="range" min="0" max="250" step="5">
+              <output id="attackValue" for="attackInput"></output>
+            </label>
+            <label class="audio-sfx__field" for="releaseInput">
+              <span>Release</span>
+              <input id="releaseInput" type="range" min="20" max="700" step="10">
+              <output id="releaseValue" for="releaseInput"></output>
+            </label>
+            <label class="audio-sfx__field" for="volumeInput">
+              <span>Volume</span>
+              <input id="volumeInput" type="range" min="0" max="1" step="0.01">
+              <output id="volumeValue" for="volumeInput"></output>
+            </label>
+            <label class="audio-sfx__field" for="pitchSweepInput">
+              <span>Sweep</span>
+              <input id="pitchSweepInput" type="range" min="-1200" max="1200" step="25">
+              <output id="pitchSweepValue" for="pitchSweepInput"></output>
+            </label>
+            <label class="audio-sfx__toggle" for="noiseInput">
+              <input id="noiseInput" type="checkbox">
+              <span>Blend noise transient</span>
+            </label>
+            <p id="sfxValidationMessage" class="audio-sfx__hint">Ready to audition.</p>
+          </div>
+        </section>
+      </aside>
+
+      <section class="audio-sfx__panel audio-sfx__panel--center" aria-label="SFX preview">
+        <section class="accordion-v2 audio-sfx__accordion audio-sfx__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="previewPanelContent">
+            <span>Wave Preview</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="previewPanelContent" class="accordion-v2__content">
+            <div id="previewOutput" class="audio-sfx__preview" role="img" aria-label="SFX envelope and waveform preview">
+              <p>No preview rendered yet.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="audio-sfx__panel audio-sfx__panel--right" aria-label="SFX output">
+        <section class="accordion-v2 audio-sfx__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
+            <span>Output Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="inspectorContent" class="accordion-v2__content">
+            <pre id="inspectorOutput" class="audio-sfx__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 audio-sfx__accordion is-open" data-accordion-v2-open="true">
+          <div class="accordion-v2__header audio-sfx__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
+            <span>Status</span>
+            <div class="audio-sfx__status-header-actions">
+              <button id="clearStatusButton" class="audio-sfx__status-clear-button" type="button">Clear</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
+          <div id="statusLogContent" class="accordion-v2__content">
+            <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
+          </div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>

@@ -21,7 +21,7 @@ function createReport(level, code, message) {
 }
 
 function remapPath(pathValue) {
-  return normalizeString(pathValue).replace("tools/templates-v2/vector-native-arcade/", "games/vector-arcade-sample/");
+  return normalizeString(pathValue).replace("tools/_templates-v2/vector-native-arcade/", "games/vector-arcade-sample/");
 }
 
 function remapRegistry(registry) {

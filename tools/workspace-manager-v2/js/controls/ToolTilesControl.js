@@ -82,6 +82,9 @@ export class ToolTilesControl {
     if (tool.id === "text2speech-V2") {
       return `${textToSpeechCount} text to speech`;
     }
+    if (tool.id === "audio-sfx-playground-v2") {
+      return "Browser-generated SFX payloads";
+    }
     return manifestStatus;
   }
 
