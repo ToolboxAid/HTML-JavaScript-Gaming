@@ -136,7 +136,7 @@
         },
         "waveform": {
           "type": "string",
-          "enum": ["sine", "square", "triangle", "sawtooth"]
+          "enum": ["sine", "square", "triangle", "sawtooth", "noise"]
         }
       }
     }

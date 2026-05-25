@@ -1,7 +1,7 @@
 const TOOL_ID = "audio-sfx-playground-v2";
 const PAYLOAD_SCHEMA = "html-js-gaming.audio-sfx-playground-v2";
 const TOOL_SCHEMA_PATH = "tools/schemas/tools/audio-sfx-playground-v2.schema.json";
-const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth"]));
+const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth", "noise"]));
 const ROOT_KEYS = Object.freeze(new Set(["$schema", "schema", "version", "toolId", "payload"]));
 const PAYLOAD_KEYS = Object.freeze(new Set(["schema", "version", "toolId", "activeSoundId", "sounds"]));
 const SOUND_ENTRY_KEYS = Object.freeze(new Set(["id", "sound"]));

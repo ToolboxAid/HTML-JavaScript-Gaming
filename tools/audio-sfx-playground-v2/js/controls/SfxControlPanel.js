@@ -13,7 +13,7 @@ const DEFAULT_SOUND = Object.freeze({
   waveform: "square"
 });
 
-const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth"]));
+const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth", "noise"]));
 const STYLE_PROFILES = Object.freeze({
   "pure-tone": {
     durationMs: 240,

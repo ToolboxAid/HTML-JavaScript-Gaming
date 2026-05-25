@@ -83,12 +83,13 @@
               </select>
             </label>
             <label class="tool-starter__field" for="waveformSelect">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Chooses the oscillator shape that defines the sound character.">Wave</span>
+              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Chooses the oscillator shape or noise source that defines the sound character.">Wave</span>
               <select id="waveformSelect">
                 <option value="sine">Sine</option>
                 <option value="square">Square</option>
                 <option value="triangle">Triangle</option>
                 <option value="sawtooth">Saw</option>
+                <option value="noise">Noise</option>
               </select>
             </label>
             <label class="tool-starter__field" for="frequencyInput" data-density-control="frequency">
@@ -123,7 +124,7 @@
             </label>
             <label class="tool-starter__toggle" for="noiseInput">
               <input id="noiseInput" type="checkbox">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Adds a short noise burst for punchy hits and impacts.">Blend noise transient</span>
+              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Adds a short noise layer over oscillator waveforms for punchy hits and impacts.">Add Noise Layer</span>
             </label>
             <label class="tool-starter__field" for="noiseAmountInput" data-density-control="noiseAmount">
               <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Sets how loud the arcade noise transient is when noise is enabled.">Noise Amount</span>
