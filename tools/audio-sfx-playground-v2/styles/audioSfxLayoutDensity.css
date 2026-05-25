@@ -142,49 +142,52 @@ body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__tile span {
   font-size: 0.88rem;
 }
 
-body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview-accordion {
-  flex: 0 0 auto;
+body[data-tool-id="audio-sfx-playground-v2"] .tool-starter__panel--right {
+  overflow: hidden;
 }
 
-body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview-accordion .accordion-v2__content {
-  flex: 0 0 auto;
+body[data-tool-id="audio-sfx-playground-v2"] .tool-starter__panel--right > .accordion-v2 {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] .tool-starter__panel--right > .accordion-v2.is-open {
+  flex: 1 1 0;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] .tool-starter__panel--right .accordion-v2__content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview {
-  min-height: 176px;
+  height: 100%;
+  min-height: 0;
   padding: 10px;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview .tool-starter__preview-card {
+  height: 100%;
+  min-height: 0;
   width: 100%;
+  display: flex;
+  flex-direction: column;
   padding: 12px;
 }
 
-body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview .tool-starter__preview-card h2 {
-  font-size: 1rem;
-}
-
-body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview .tool-starter__preview-card p {
-  margin-top: 5px;
-  font-size: 0.84rem;
+body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview .audio-sfx__preview-empty {
+  border-style: dashed;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview .tool-starter__meter-bars {
-  min-height: 86px;
+  min-height: 0;
+  flex: 1 1 auto;
   gap: 3px;
-  margin-top: 8px;
+  margin-top: 0;
   padding: 6px;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview .tool-starter__meter-bars span {
   max-height: 86px;
-}
-
-body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview .tool-starter__preview-tags {
-  gap: 6px;
-  margin-top: 8px;
-}
-
-body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__preview .tool-starter__preview-tags span {
-  padding: 3px 6px;
 }

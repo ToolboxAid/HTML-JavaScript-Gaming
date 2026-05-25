@@ -20,21 +20,16 @@ export class SfxPreviewControl {
     this.output = output;
   }
 
-  clear(message = "No preview rendered yet.") {
-    const emptyState = document.createElement("p");
-    emptyState.textContent = message;
+  clear() {
+    const emptyState = document.createElement("div");
+    emptyState.className = "tool-starter__preview-card audio-sfx__preview-empty";
+    emptyState.setAttribute("aria-hidden", "true");
     this.output.replaceChildren(emptyState);
   }
 
   render(sound) {
     const card = document.createElement("article");
     card.className = "tool-starter__preview-card";
-
-    const title = document.createElement("h2");
-    title.textContent = sound.name;
-
-    const summary = document.createElement("p");
-    summary.textContent = `${sound.waveform}, ${sound.frequencyHz} Hz, ${sound.durationMs} ms, ${sound.pitchSweepCents} cents`;
 
     const bars = document.createElement("div");
     bars.className = "tool-starter__meter-bars";
@@ -45,15 +40,7 @@ export class SfxPreviewControl {
       bars.append(bar);
     }
 
-    const tags = document.createElement("div");
-    tags.className = "tool-starter__preview-tags";
-    [sound.noise ? "noise transient" : "oscillator only", `volume ${sound.volume.toFixed(2)}`].forEach((label) => {
-      const tag = document.createElement("span");
-      tag.textContent = label;
-      tags.append(tag);
-    });
-
-    card.append(title, summary, bars, tags);
+    card.append(bars);
     this.output.replaceChildren(card);
   }
 }
