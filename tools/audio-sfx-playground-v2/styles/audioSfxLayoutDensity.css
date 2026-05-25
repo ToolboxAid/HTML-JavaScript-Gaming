@@ -45,10 +45,68 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__fie
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] input[type="range"] {
+  --audio-sfx-zone-start: 0%;
+  --audio-sfx-zone-end: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
   height: 24px;
   min-width: 0;
   padding-block: 0;
   width: 100%;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  border: 1px solid var(--tool-starter-surface-border);
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.1) var(--audio-sfx-zone-start),
+      rgba(134, 239, 172, 0.55) var(--audio-sfx-zone-start),
+      rgba(134, 239, 172, 0.55) var(--audio-sfx-zone-end),
+      rgba(255, 255, 255, 0.1) var(--audio-sfx-zone-end),
+      rgba(255, 255, 255, 0.1) 100%
+    );
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -5px;
+  border: 2px solid var(--tool-starter-panel);
+  border-radius: 999px;
+  background: var(--tool-starter-accent);
+  box-shadow: 0 0 0 1px var(--tool-starter-surface-border);
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] input[type="range"]::-moz-range-track {
+  height: 8px;
+  border: 1px solid var(--tool-starter-surface-border);
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.1) var(--audio-sfx-zone-start),
+      rgba(134, 239, 172, 0.55) var(--audio-sfx-zone-start),
+      rgba(134, 239, 172, 0.55) var(--audio-sfx-zone-end),
+      rgba(255, 255, 255, 0.1) var(--audio-sfx-zone-end),
+      rgba(255, 255, 255, 0.1) 100%
+    );
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--tool-starter-panel);
+  border-radius: 999px;
+  background: var(--tool-starter-accent);
+  box-shadow: 0 0 0 1px var(--tool-starter-surface-border);
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] output {
@@ -66,6 +124,12 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__tog
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxValidationMessage {
   line-height: 1.25;
+}
+
+body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__style-description {
+  min-height: 30px;
+  margin: -1px 0 0 74px;
+  line-height: 1.28;
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__shape-actions {

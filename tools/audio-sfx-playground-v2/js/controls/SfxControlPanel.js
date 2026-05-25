@@ -34,6 +34,31 @@ const SLIDER_RANGE_UNITS = Object.freeze({
   volume: ""
 });
 
+const RECOMMENDED_ZONE_SPAN = Object.freeze({
+  attackMs: 0.36,
+  durationMs: 0.34,
+  frequencyHz: 0.28,
+  noiseAmount: 0.36,
+  noiseDecayMs: 0.34,
+  noiseFilterHz: 0.32,
+  pitchSweepCents: 0.38,
+  releaseMs: 0.34,
+  volume: 0.3
+});
+
+const STYLE_DESCRIPTIONS = Object.freeze({
+  custom: "Full-range design mode for building a sound without a style preset.",
+  "pure-tone": "Clean oscillator tones with little noise and broad pitch control.",
+  "noise-only": "Transient noise bursts for impacts, hits, glitches, and static.",
+  "atari-style": "Softer analog-style arcade tones with midrange sweeps.",
+  "classic-arcade": "Punchy cabinet-era blips, zaps, and short mixed noise accents.",
+  "early-analog": "Warm early synth effects with slower envelopes and wider motion.",
+  "namco-style": "Bright melodic arcade pings with compact timing and clear pitch.",
+  "nintendo-style": "Crisp console-style square tones with tight envelopes.",
+  "ttl-arcade": "Harsh digital logic-style arcade sounds.",
+  "vector-arcade": "Clean vector-display era synth tones."
+});
+
 const STYLE_CLAMPS = Object.freeze({
   "pure-tone": Object.freeze({
     attackMs: Object.freeze({ min: 0, max: 120 }),
@@ -292,6 +317,10 @@ function formatRangeNumber(soundKey, value) {
   return String(Math.round(value));
 }
 
+function formatPercent(value) {
+  return `${Math.round(value * 1000) / 10}%`;
+}
+
 export class SfxControlPanel {
   constructor({
     addButton,
@@ -314,6 +343,7 @@ export class SfxControlPanel {
     pitchSweepValue,
     releaseInput,
     releaseValue,
+    styleDescription,
     styleProfileSelect,
     validationMessage,
     volumeInput,
@@ -341,6 +371,7 @@ export class SfxControlPanel {
     this.pitchSweepValue = pitchSweepValue;
     this.releaseInput = releaseInput;
     this.releaseValue = releaseValue;
+    this.styleDescription = styleDescription;
     this.styleProfileSelect = styleProfileSelect;
     this.validationMessage = validationMessage;
     this.volumeInput = volumeInput;
@@ -449,6 +480,7 @@ export class SfxControlPanel {
     this.releaseInput.value = String(sound.releaseMs);
     this.volumeInput.value = String(sound.volume);
     this.waveformSelect.value = sound.waveform;
+    this.syncStyleDescription();
     this.syncOutputs();
   }
 
@@ -456,6 +488,7 @@ export class SfxControlPanel {
     const styleKey = this.styleProfileSelect.value;
     if (styleKey === "custom") {
       this.applySliderLimits("custom", true);
+      this.syncStyleDescription();
       this.syncOutputs();
       return true;
     }
@@ -463,6 +496,7 @@ export class SfxControlPanel {
     if (!profile) {
       this.styleProfileSelect.value = "custom";
       this.applySliderLimits("custom", true);
+      this.syncStyleDescription();
       return false;
     }
     this.applySliderLimits(styleKey, true);
@@ -478,11 +512,13 @@ export class SfxControlPanel {
     this.releaseInput.value = String(profile.releaseMs);
     this.volumeInput.value = String(profile.volume);
     this.waveformSelect.value = profile.waveform;
+    this.syncStyleDescription();
     this.syncOutputs();
     return true;
   }
 
   syncOutputs() {
+    this.syncRecommendedZones();
     this.attackValue.textContent = this.valueWithRange("attackMs", `${Math.round(toNumber(this.attackInput))} ms`);
     this.durationValue.textContent = this.valueWithRange("durationMs", `${Math.round(toNumber(this.durationInput))} ms`);
     this.frequencyValue.textContent = this.valueWithRange("frequencyHz", `${Math.round(toNumber(this.frequencyInput))} Hz`);
@@ -499,10 +535,71 @@ export class SfxControlPanel {
   }
 
   rangeText(soundKey) {
-    const limits = this.activeSliderLimits[soundKey];
+    return this.formatRangeText(soundKey, this.activeSliderLimits[soundKey]);
+  }
+
+  formatRangeText(soundKey, limits) {
     const unit = SLIDER_RANGE_UNITS[soundKey];
     const range = `${formatRangeNumber(soundKey, limits.min)}-${formatRangeNumber(soundKey, limits.max)}`;
     return unit ? `${range} ${unit}` : range;
+  }
+
+  syncStyleDescription() {
+    const styleKey = this.styleProfileSelect.value || "custom";
+    this.styleDescription.textContent = STYLE_DESCRIPTIONS[styleKey] || STYLE_DESCRIPTIONS.custom;
+  }
+
+  syncRecommendedZones() {
+    SLIDER_INPUTS.forEach((item) => {
+      const input = this[item.inputProperty];
+      const zone = this.recommendedZoneFor(item.soundKey);
+      const limits = this.activeSliderLimits[item.soundKey];
+      const start = this.percentForValue(limits, zone.min);
+      const end = this.percentForValue(limits, zone.max);
+      input.style.setProperty("--audio-sfx-zone-start", formatPercent(start));
+      input.style.setProperty("--audio-sfx-zone-end", formatPercent(end));
+      input.dataset.recommendedZone = this.formatRangeText(item.soundKey, zone);
+      input.title = `Recommended Zone: ${input.dataset.recommendedZone}`;
+    });
+  }
+
+  recommendedZoneFor(soundKey) {
+    const styleKey = this.styleProfileSelect.value || "custom";
+    const limits = this.activeSliderLimits[soundKey];
+    if (styleKey === "custom") {
+      return { min: limits.min, max: limits.max };
+    }
+    const profile = STYLE_PROFILES[styleKey] || {};
+    const centerSource = Object.hasOwn(profile, soundKey) ? profile[soundKey] : DEFAULT_SOUND[soundKey];
+    const center = this.clampNumber(Number(centerSource), limits);
+    const totalRange = Math.max(0, limits.max - limits.min);
+    const span = Math.max(
+      SLIDER_LIMITS[soundKey].step,
+      totalRange * (RECOMMENDED_ZONE_SPAN[soundKey] || 0.34)
+    );
+    const halfSpan = span / 2;
+    let min = this.clampNumber(center - halfSpan, limits);
+    let max = this.clampNumber(center + halfSpan, limits);
+    if (min === max) {
+      min = this.clampNumber(center - SLIDER_LIMITS[soundKey].step, limits);
+      max = this.clampNumber(center + SLIDER_LIMITS[soundKey].step, limits);
+    }
+    return { min, max };
+  }
+
+  percentForValue(limits, value) {
+    const range = limits.max - limits.min;
+    if (range <= 0) {
+      return 0;
+    }
+    return (this.clampNumber(value, limits) - limits.min) / range;
+  }
+
+  clampNumber(value, limits) {
+    if (!Number.isFinite(value)) {
+      return limits.min;
+    }
+    return Math.min(limits.max, Math.max(limits.min, value));
   }
 
   validate() {
