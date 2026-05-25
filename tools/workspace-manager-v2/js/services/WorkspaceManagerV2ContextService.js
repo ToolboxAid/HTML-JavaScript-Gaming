@@ -1185,6 +1185,126 @@ export class WorkspaceManagerV2ContextService {
     };
   }
 
+  toolById(toolId) {
+    return this.workspaceLaunchableTools().find((tool) => tool.id === toolId) || null;
+  }
+
+  isWorkspaceToolLaunch() {
+    const params = new URLSearchParams(this.location.search || "");
+    return params.get("launch") === "workspace" && params.get("fromTool") === "workspace-manager-v2";
+  }
+
+  workspaceToolLaunchHostContextId(hostContextId = "") {
+    return String(hostContextId || new URLSearchParams(this.location.search || "").get("hostContextId") || "").trim();
+  }
+
+  async workspaceToolSessionContext(toolId, { hostContextId = "" } = {}) {
+    if (!this.isWorkspaceToolLaunch()) {
+      return { ok: true, skipped: true, message: "Not launched from Workspace Manager V2." };
+    }
+    const normalizedToolId = String(toolId || "").trim();
+    const tool = this.toolById(normalizedToolId);
+    if (!tool) {
+      return { ok: false, message: `Workspace Manager V2 does not recognize tool: ${normalizedToolId || "(empty)"}.` };
+    }
+    const launchHostContextId = this.workspaceToolLaunchHostContextId(hostContextId);
+    if (!launchHostContextId) {
+      return { ok: false, message: "Workspace Manager V2 launch did not include hostContextId." };
+    }
+    const contextResult = await this.restorePersistedContextById(launchHostContextId);
+    if (!contextResult.ok) {
+      return contextResult;
+    }
+    const sessionResult = this.reusableToolSession(tool, contextResult.context);
+    if (!sessionResult.ok) {
+      return sessionResult;
+    }
+    return {
+      ok: true,
+      context: contextResult.context,
+      game: contextResult.game,
+      hostContextId: launchHostContextId,
+      key: sessionResult.key,
+      session: sessionResult.session,
+      tool
+    };
+  }
+
+  async readWorkspaceToolPayload(toolId, options = {}) {
+    const sessionResult = await this.workspaceToolSessionContext(toolId, options);
+    if (!sessionResult.ok || sessionResult.skipped) {
+      return sessionResult;
+    }
+    return {
+      ok: true,
+      payload: isPlainObject(sessionResult.session.data) || Array.isArray(sessionResult.session.data)
+        ? deepClone(sessionResult.session.data)
+        : null,
+      schemaRef: sessionResult.session.schema?.schemaRef || "",
+      sourcePath: sessionResult.session.workspace?.gameManifestPath || sessionResult.key
+    };
+  }
+
+  async writeWorkspaceToolPayload(toolId, payload, { reason = "tool-payload-updated", changedKeys = ["data"] } = {}) {
+    const sessionResult = await this.workspaceToolSessionContext(toolId);
+    if (!sessionResult.ok || sessionResult.skipped) {
+      return sessionResult;
+    }
+    const schemaPath = TOOL_PAYLOAD_SCHEMA_REFS[sessionResult.tool.id];
+    if (schemaPath) {
+      const schemaResult = await this.loadToolPayloadSchema(schemaPath);
+      if (!schemaResult.ok) {
+        return schemaResult;
+      }
+      const errors = validateSchemaValue(
+        payload,
+        schemaResult.schema,
+        `workspace.tools.${sessionResult.tool.id}.data`,
+        schemaResult.rootSchema || schemaResult.schema,
+        schemaResult.schemaRegistry,
+        schemaResult.schemaPath
+      );
+      if (errors.length) {
+        return { ok: false, message: `Workspace tool payload failed schema validation: ${errors.join(" | ")}` };
+      }
+    }
+
+    const nextData = deepClone(payload);
+    const dataChanged = JSON.stringify(sessionResult.session.data) !== JSON.stringify(nextData);
+    if (!dataChanged) {
+      return { ok: true, changed: false, key: sessionResult.key, session: deepClone(sessionResult.session) };
+    }
+    const previousDirty = isPlainObject(sessionResult.session.dirty) ? sessionResult.session.dirty : {};
+    const normalizedChangedKeys = Array.from(new Set([
+      ...(Array.isArray(previousDirty.changedKeys) ? previousDirty.changedKeys : []),
+      ...(Array.isArray(changedKeys) ? changedKeys : ["data"])
+    ]
+      .map((key) => String(key || "").trim())
+      .filter(Boolean)));
+    const nextSession = {
+      ...sessionResult.session,
+      data: nextData,
+      dirty: {
+        isDirty: true,
+        reason,
+        changedAt: new Date().toISOString(),
+        changedKeys: normalizedChangedKeys
+      }
+    };
+    const nextContext = deepClone(sessionResult.context);
+    nextContext.tools = isPlainObject(nextContext.tools) ? nextContext.tools : {};
+    nextContext.tools[sessionResult.tool.id] = deepClone(nextData);
+    this.sessionStorage.setItem(sessionResult.key, JSON.stringify(nextSession));
+    this.writePersistedContext(sessionResult.hostContextId, nextContext);
+    return {
+      ok: true,
+      changed: true,
+      context: deepClone(nextContext),
+      key: sessionResult.key,
+      session: deepClone(nextSession)
+    };
+  }
+
   markEnabledToolSessionsClean({ context, tools = this.workspaceLaunchableTools() } = {}) {
     const cleanedKeys = [];
     tools

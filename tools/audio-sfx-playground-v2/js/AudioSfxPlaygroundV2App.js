@@ -46,6 +46,19 @@ function activeSoundFromToolState(toolState) {
   return toolState.payload.sounds.find((entry) => entry.id === toolState.payload.activeSoundId)?.sound || null;
 }
 
+const TOOL_ID = "audio-sfx-playground-v2";
+const TOOL_SCHEMA_PATH = "tools/schemas/tools/audio-sfx-playground-v2.schema.json";
+
+function toolStateFromPayload(payload) {
+  return {
+    $schema: TOOL_SCHEMA_PATH,
+    schema: "html-js-gaming.tool-state",
+    version: 1,
+    toolId: TOOL_ID,
+    payload
+  };
+}
+
 export class AudioSfxPlaygroundV2App {
   constructor({
     accordions,
@@ -59,7 +72,7 @@ export class AudioSfxPlaygroundV2App {
     statusLog,
     tileList,
     windowRef = window,
-    workspaceDirtyBridge = null
+    workspaceContextService = null
   }) {
     this.accordions = accordions;
     this.actionNav = actionNav;
@@ -75,7 +88,7 @@ export class AudioSfxPlaygroundV2App {
     this.statusLog = statusLog;
     this.tileList = tileList;
     this.window = windowRef;
-    this.workspaceDirtyBridge = workspaceDirtyBridge;
+    this.workspaceContextService = workspaceContextService;
   }
 
   start() {
@@ -108,33 +121,42 @@ export class AudioSfxPlaygroundV2App {
       }
     });
     this.statusLog.mount();
-    this.loadWorkspacePayload();
+    void this.finishStartup();
+  }
+
+  async finishStartup() {
+    await this.loadWorkspacePayload();
     this.renderSoundList();
     this.refreshPreview();
     this.statusLog.write("Audio / SFX Playground V2 ready.");
   }
 
-  loadWorkspacePayload() {
-    if (!this.workspaceDirtyBridge) {
+  async loadWorkspacePayload() {
+    if (!this.workspaceContextService) {
       return;
     }
-    const result = this.workspaceDirtyBridge.readPayload();
-    if (result.skipped) {
+    const result = await this.workspaceContextService.readWorkspaceToolPayload(TOOL_ID);
+    if (result.skipped || result.payload === null) {
       return;
     }
     if (!result.ok) {
       this.statusLog.error(`Workspace payload load failed: ${result.message}`);
       return;
     }
-    const nextSoundEntries = result.value.soundEntries.map((entry) => ({
+    const validation = this.serializer.readToolState(toolStateFromPayload(result.payload));
+    if (!validation.valid) {
+      this.statusLog.error(`Workspace payload load failed: ${validation.message}`);
+      return;
+    }
+    const nextSoundEntries = validation.value.soundEntries.map((entry) => ({
       id: entry.id,
       sound: cloneSound(entry.sound)
     }));
-    this.activeSoundId = result.value.activeSoundId;
+    this.activeSoundId = validation.value.activeSoundId;
     this.soundEntries = nextSoundEntries;
     this.nextSoundNumber = nextSoundNumberAfter(nextSoundEntries);
-    this.controls.loadSound(result.value.sound);
-    this.statusLog.write(`Loaded ${result.value.sound.name} from Workspace V2.`);
+    this.controls.loadSound(validation.value.sound);
+    this.statusLog.write(`Loaded ${validation.value.sound.name} from Workspace V2.`);
   }
 
   currentToolState() {
@@ -168,13 +190,13 @@ export class AudioSfxPlaygroundV2App {
     const validation = this.controls.validate({ nameOverride: this.activeSoundName() });
     if (validation.valid && this.updateActiveSound(this.soundForActiveEditorValue(validation.value))) {
       this.renderSoundList();
-      this.syncWorkspaceDirty("audio-sfx-editor-change", ["data.sounds"]);
+      void this.syncWorkspaceDirty("audio-sfx-editor-change", ["data.sounds"]);
     }
     this.refreshPreview();
   }
 
-  syncWorkspaceDirty(reason, changedKeys) {
-    if (!this.workspaceDirtyBridge) {
+  async syncWorkspaceDirty(reason, changedKeys) {
+    if (!this.workspaceContextService) {
       return;
     }
     const { toolState, validation } = this.currentToolState();
@@ -182,7 +204,7 @@ export class AudioSfxPlaygroundV2App {
       this.statusLog.error(`Workspace dirty sync skipped: ${validation.message}`);
       return;
     }
-    const result = this.workspaceDirtyBridge.syncToolState(toolState, { reason, changedKeys });
+    const result = await this.workspaceContextService.writeWorkspaceToolPayload(TOOL_ID, toolState.payload, { reason, changedKeys });
     if (result.skipped) {
       return;
     }
@@ -266,7 +288,7 @@ export class AudioSfxPlaygroundV2App {
     const entry = this.createSoundEntry(validation.value);
     this.renderSoundList();
     this.refreshPreview();
-    this.syncWorkspaceDirty("audio-sfx-sound-added", ["data.sounds", "data.activeSoundId"]);
+    void this.syncWorkspaceDirty("audio-sfx-sound-added", ["data.sounds", "data.activeSoundId"]);
     this.statusLog.write(`Added ${entry.sound.name}.`);
   }
 
@@ -291,7 +313,7 @@ export class AudioSfxPlaygroundV2App {
     entry.sound.name = nextName;
     this.renderSoundList();
     this.refreshPreview();
-    this.syncWorkspaceDirty("audio-sfx-sound-renamed", ["data.sounds"]);
+    void this.syncWorkspaceDirty("audio-sfx-sound-renamed", ["data.sounds"]);
     this.statusLog.write(`Renamed SFX to ${entry.sound.name}.`);
   }
 
@@ -355,7 +377,7 @@ export class AudioSfxPlaygroundV2App {
     }
     this.renderSoundList();
     this.refreshPreview();
-    this.syncWorkspaceDirty("audio-sfx-sound-deleted", ["data.sounds", "data.activeSoundId"]);
+    void this.syncWorkspaceDirty("audio-sfx-sound-deleted", ["data.sounds", "data.activeSoundId"]);
     this.statusLog.write(`Deleted ${entry.sound.name}.`);
   }
 
@@ -422,7 +444,7 @@ export class AudioSfxPlaygroundV2App {
       this.controls.loadSound(result.value.sound);
       this.renderSoundList();
       this.refreshPreview();
-      this.syncWorkspaceDirty("audio-sfx-json-imported", ["data.sounds", "data.activeSoundId"]);
+      await this.syncWorkspaceDirty("audio-sfx-json-imported", ["data.sounds", "data.activeSoundId"]);
       this.statusLog.write(`Imported JSON from ${file.name}.`);
     } catch (error) {
       this.statusLog.error(`Import JSON failed: ${error.message}`);
@@ -449,8 +471,12 @@ export class AudioSfxPlaygroundV2App {
 
   async writeClipboardText(text) {
     if (typeof this.window.navigator?.clipboard?.writeText === "function") {
-      await this.window.navigator.clipboard.writeText(text);
-      return;
+      try {
+        await this.window.navigator.clipboard.writeText(text);
+        return;
+      } catch {
+        // Fall back to the legacy copy command below when browser permission blocks the async Clipboard API.
+      }
     }
 
     const documentRef = this.window.document;

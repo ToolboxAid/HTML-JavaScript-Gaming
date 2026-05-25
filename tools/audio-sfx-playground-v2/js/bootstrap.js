@@ -9,7 +9,7 @@ import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
 import { AudioSfxEngine } from "./services/AudioSfxEngine.js";
 import { ToolStateSerializer } from "./services/ToolStateSerializer.js";
-import { WorkspaceDirtyBridge } from "./services/WorkspaceDirtyBridge.js";
+import { WorkspaceManagerV2ContextService } from "../../workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js";
 
 function requireElement(selector) {
   const element = document.querySelector(selector);
@@ -81,10 +81,7 @@ window.addEventListener("DOMContentLoaded", () => {
     tileList: new SfxTileListControl({
       list: requireElement("#sfxTileList")
     }),
-    workspaceDirtyBridge: new WorkspaceDirtyBridge({
-      serializer,
-      windowRef: window
-    }),
+    workspaceContextService: new WorkspaceManagerV2ContextService(),
     windowRef: window
   });
 
