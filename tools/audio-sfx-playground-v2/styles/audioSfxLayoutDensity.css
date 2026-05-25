@@ -36,7 +36,7 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__fie
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] {
   align-items: center;
   column-gap: 8px;
-  grid-template-columns: 74px minmax(0, 1fr) minmax(64px, max-content);
+  grid-template-columns: 74px minmax(48px, 1fr) minmax(118px, max-content);
   min-height: 28px;
 }
 
@@ -52,7 +52,9 @@ body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__fie
 }
 
 body[data-tool-id="audio-sfx-playground-v2"] #sfxShapeContent .tool-starter__field[data-density-control] output {
-  min-width: 64px;
+  color: var(--tool-starter-muted);
+  font-size: 0.78rem;
+  min-width: 118px;
   justify-self: end;
   text-align: right;
   white-space: nowrap;

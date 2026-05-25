@@ -22,6 +22,18 @@ const SLIDER_INPUTS = Object.freeze([
   Object.freeze({ soundKey: "volume", inputProperty: "volumeInput" })
 ]);
 
+const SLIDER_RANGE_UNITS = Object.freeze({
+  attackMs: "ms",
+  durationMs: "ms",
+  frequencyHz: "Hz",
+  noiseAmount: "",
+  noiseDecayMs: "ms",
+  noiseFilterHz: "Hz",
+  pitchSweepCents: "cents",
+  releaseMs: "ms",
+  volume: ""
+});
+
 const STYLE_CLAMPS = Object.freeze({
   "pure-tone": Object.freeze({
     attackMs: Object.freeze({ min: 0, max: 120 }),
@@ -273,6 +285,13 @@ function readRange(input, limits) {
   return { ok: true, value };
 }
 
+function formatRangeNumber(soundKey, value) {
+  if (soundKey === "noiseAmount" || soundKey === "volume") {
+    return value.toFixed(2);
+  }
+  return String(Math.round(value));
+}
+
 export class SfxControlPanel {
   constructor({
     addButton,
@@ -464,15 +483,26 @@ export class SfxControlPanel {
   }
 
   syncOutputs() {
-    this.attackValue.textContent = `${Math.round(toNumber(this.attackInput))} ms`;
-    this.durationValue.textContent = `${Math.round(toNumber(this.durationInput))} ms`;
-    this.frequencyValue.textContent = `${Math.round(toNumber(this.frequencyInput))} Hz`;
-    this.noiseAmountValue.textContent = toNumber(this.noiseAmountInput).toFixed(2);
-    this.noiseDecayValue.textContent = `${Math.round(toNumber(this.noiseDecayInput))} ms`;
-    this.noiseFilterValue.textContent = `${Math.round(toNumber(this.noiseFilterInput))} Hz`;
-    this.pitchSweepValue.textContent = `${Math.round(toNumber(this.pitchSweepInput))} cents`;
-    this.releaseValue.textContent = `${Math.round(toNumber(this.releaseInput))} ms`;
-    this.volumeValue.textContent = toNumber(this.volumeInput).toFixed(2);
+    this.attackValue.textContent = this.valueWithRange("attackMs", `${Math.round(toNumber(this.attackInput))} ms`);
+    this.durationValue.textContent = this.valueWithRange("durationMs", `${Math.round(toNumber(this.durationInput))} ms`);
+    this.frequencyValue.textContent = this.valueWithRange("frequencyHz", `${Math.round(toNumber(this.frequencyInput))} Hz`);
+    this.noiseAmountValue.textContent = this.valueWithRange("noiseAmount", toNumber(this.noiseAmountInput).toFixed(2));
+    this.noiseDecayValue.textContent = this.valueWithRange("noiseDecayMs", `${Math.round(toNumber(this.noiseDecayInput))} ms`);
+    this.noiseFilterValue.textContent = this.valueWithRange("noiseFilterHz", `${Math.round(toNumber(this.noiseFilterInput))} Hz`);
+    this.pitchSweepValue.textContent = this.valueWithRange("pitchSweepCents", `${Math.round(toNumber(this.pitchSweepInput))} cents`);
+    this.releaseValue.textContent = this.valueWithRange("releaseMs", `${Math.round(toNumber(this.releaseInput))} ms`);
+    this.volumeValue.textContent = this.valueWithRange("volume", toNumber(this.volumeInput).toFixed(2));
+  }
+
+  valueWithRange(soundKey, valueText) {
+    return `${valueText} [${this.rangeText(soundKey)}]`;
+  }
+
+  rangeText(soundKey) {
+    const limits = this.activeSliderLimits[soundKey];
+    const unit = SLIDER_RANGE_UNITS[soundKey];
+    const range = `${formatRangeNumber(soundKey, limits.min)}-${formatRangeNumber(soundKey, limits.max)}`;
+    return unit ? `${range} ${unit}` : range;
   }
 
   validate() {
