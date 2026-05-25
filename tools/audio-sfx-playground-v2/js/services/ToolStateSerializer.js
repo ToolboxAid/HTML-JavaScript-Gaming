@@ -20,6 +20,18 @@ function serializeSound(sound) {
   };
 }
 
+function soundsMatch(first, second) {
+  return first.attackMs === second.attackMs
+    && first.durationMs === second.durationMs
+    && first.frequencyHz === second.frequencyHz
+    && first.name === second.name
+    && first.noise === second.noise
+    && first.pitchSweepCents === second.pitchSweepCents
+    && first.releaseMs === second.releaseMs
+    && first.volume === second.volume
+    && first.waveform === second.waveform;
+}
+
 function readNumber(value, label, min, max) {
   if (!Number.isFinite(value) || value < min || value > max) {
     return { ok: false, message: `${label} must be a number between ${min} and ${max}.` };
@@ -151,8 +163,14 @@ export class ToolStateSerializer {
     const activeSoundId = typeof value.payload.activeSoundId === "string"
       ? value.payload.activeSoundId
       : "";
-    if (activeSoundId && !soundEntries.value.some((entry) => entry.id === activeSoundId)) {
+    const activeEntry = activeSoundId
+      ? soundEntries.value.find((entry) => entry.id === activeSoundId)
+      : null;
+    if (activeSoundId && !activeEntry) {
       return { valid: false, message: `Active sound id is missing from payload.sounds: ${activeSoundId}.` };
+    }
+    if (activeEntry && !soundsMatch(sound.value, activeEntry.sound)) {
+      return { valid: false, message: `Active sound payload does not match payload.sounds entry: ${activeSoundId}.` };
     }
     return {
       valid: true,

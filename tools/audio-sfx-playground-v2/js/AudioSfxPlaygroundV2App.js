@@ -23,6 +23,14 @@ function nextSoundNumberAfter(soundEntries) {
   return highest + 1;
 }
 
+function exportFileName(name) {
+  const baseName = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `${baseName || "audio-sfx"}-tool-state.json`;
+}
+
 export class AudioSfxPlaygroundV2App {
   constructor({ accordions, actionNav, audioEngine, controls, inspector, preview, serializer, shell, statusLog, tileList, windowRef = window }) {
     this.accordions = accordions;
@@ -180,15 +188,39 @@ export class AudioSfxPlaygroundV2App {
     this.statusLog.write(`Deleted ${entry.sound.name}.`);
   }
 
-  exportJson() {
+  exportPayload() {
     const { toolState, validation } = this.currentToolState();
     if (!validation.valid) {
-      this.statusLog.error(validation.message);
+      return { valid: false, message: validation.message, toolState: null, json: "" };
+    }
+
+    const exportValidation = this.serializer.readToolState(toolState);
+    if (!exportValidation.valid) {
+      return { valid: false, message: exportValidation.message, toolState: null, json: "" };
+    }
+    return {
+      valid: true,
+      message: "",
+      toolState,
+      json: JSON.stringify(toolState, null, 2)
+    };
+  }
+
+  exportJson() {
+    const exportResult = this.exportPayload();
+    if (!exportResult.valid) {
+      this.statusLog.error(`Export JSON failed: ${exportResult.message}`);
       this.refreshPreview();
       return;
     }
-    this.inspector.showObject(toolState);
-    this.statusLog.write("JSON preview written to Output Summary.");
+
+    try {
+      this.downloadJson(exportResult);
+      this.inspector.showObject(exportResult.toolState);
+      this.statusLog.write(`Exported JSON for ${exportResult.toolState.payload.name}.`);
+    } catch (error) {
+      this.statusLog.error(`Export JSON failed: ${error.message}`);
+    }
   }
 
   async importJson(file) {
@@ -200,12 +232,13 @@ export class AudioSfxPlaygroundV2App {
         this.statusLog.error(`Import JSON failed: ${result.message}`);
         return;
       }
-      this.activeSoundId = result.value.activeSoundId;
-      this.soundEntries = result.value.soundEntries.map((entry) => ({
+      const nextSoundEntries = result.value.soundEntries.map((entry) => ({
         id: entry.id,
         sound: cloneSound(entry.sound)
       }));
-      this.nextSoundNumber = nextSoundNumberAfter(this.soundEntries);
+      this.activeSoundId = result.value.activeSoundId;
+      this.soundEntries = nextSoundEntries;
+      this.nextSoundNumber = nextSoundNumberAfter(nextSoundEntries);
       this.controls.loadSound(result.value.sound);
       this.renderSoundList();
       this.refreshPreview();
@@ -216,25 +249,46 @@ export class AudioSfxPlaygroundV2App {
   }
 
   async copyJson() {
-    const { toolState, validation } = this.currentToolState();
-    if (!validation.valid) {
-      this.statusLog.error(validation.message);
+    const exportResult = this.exportPayload();
+    if (!exportResult.valid) {
+      this.statusLog.error(`Copy JSON failed: ${exportResult.message}`);
       this.refreshPreview();
       return;
     }
 
-    const json = JSON.stringify(toolState, null, 2);
-    this.inspector.showObject(toolState);
+    this.inspector.showObject(exportResult.toolState);
     if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
-      this.statusLog.write("toolState JSON preview written to Output Summary. Clipboard API is unavailable.");
+      this.statusLog.error("Copy JSON failed: Clipboard API is unavailable.");
       return;
     }
 
     try {
-      await this.window.navigator.clipboard.writeText(json);
-      this.statusLog.write("toolState JSON copied.");
+      await this.window.navigator.clipboard.writeText(exportResult.json);
+      this.statusLog.write("JSON copied.");
     } catch (error) {
       this.statusLog.error(`Copy JSON failed: ${error.message}`);
+    }
+  }
+
+  downloadJson(exportResult) {
+    const documentRef = this.window.document;
+    const BlobConstructor = this.window.Blob;
+    const urlApi = this.window.URL;
+    if (!documentRef?.body || typeof BlobConstructor !== "function" || typeof urlApi?.createObjectURL !== "function") {
+      throw new Error("Browser download APIs are unavailable.");
+    }
+
+    const blob = new BlobConstructor([exportResult.json], { type: "application/json" });
+    const url = urlApi.createObjectURL(blob);
+    const link = documentRef.createElement("a");
+    link.href = url;
+    link.download = exportFileName(exportResult.toolState.payload.name);
+    try {
+      documentRef.body.append(link);
+      link.click();
+    } finally {
+      link.remove();
+      urlApi.revokeObjectURL(url);
     }
   }
 }
