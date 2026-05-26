@@ -34,6 +34,17 @@ const SLIDER_RANGE_UNITS = Object.freeze({
   volume: ""
 });
 
+const SLIDER_KEYBOARD_EDIT_KEYS = Object.freeze(new Set([
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "End",
+  "Home",
+  "PageDown",
+  "PageUp"
+]));
+
 const RECOMMENDED_ZONE_SPAN = Object.freeze({
   attackMs: 0.36,
   durationMs: 0.34,
@@ -392,12 +403,22 @@ export class SfxControlPanel {
     this.waveformSelect = waveformSelect;
   }
 
-  mount({ onAdd, onChange, onDelete, onRename }) {
+  mount({
+    onAdd,
+    onChange,
+    onDelete,
+    onRename,
+    onSliderEditCommit = () => {},
+    onSliderEditStart = () => {},
+    onSliderInput = () => {}
+  }) {
     this.applySliderLimits();
     this.loadSound(DEFAULT_SOUND);
     this.addButton.addEventListener("click", onAdd);
     this.deleteButton.addEventListener("click", onDelete);
     this.renameButton.addEventListener("click", onRename);
+    this.styleProfileSelect.addEventListener("pointerdown", () => onSliderEditCommit());
+    this.styleProfileSelect.addEventListener("focus", () => onSliderEditCommit());
     this.styleProfileSelect.addEventListener("change", () => {
       if (this.applyStyleProfile()) {
         onChange();
@@ -406,19 +427,12 @@ export class SfxControlPanel {
     this.setDeleteEnabled(false);
     this.setRenameEnabled(false);
     [
-      this.attackInput,
-      this.durationInput,
-      this.frequencyInput,
       this.loopingInput,
-      this.noiseAmountInput,
-      this.noiseDecayInput,
-      this.noiseFilterInput,
       this.noiseInput,
-      this.pitchSweepInput,
-      this.releaseInput,
-      this.volumeInput,
       this.waveformSelect
     ].forEach((control) => {
+      control.addEventListener("pointerdown", () => onSliderEditCommit());
+      control.addEventListener("focus", () => onSliderEditCommit());
       control.addEventListener("input", () => {
         this.syncOutputs();
         onChange();
@@ -429,9 +443,37 @@ export class SfxControlPanel {
       });
     });
     this.sliderInputs().forEach((input) => {
-      input.addEventListener("pointerdown", () => this.focusSlider(input));
-      input.addEventListener("input", () => this.focusSlider(input));
-      input.addEventListener("change", () => this.focusSlider(input));
+      input.addEventListener("pointerdown", () => {
+        this.focusSlider(input);
+        onSliderEditStart(input.id);
+      });
+      input.addEventListener("focus", () => onSliderEditStart(input.id));
+      input.addEventListener("keydown", (event) => {
+        if (SLIDER_KEYBOARD_EDIT_KEYS.has(event.key)) {
+          onSliderEditStart(input.id);
+        }
+      });
+      input.addEventListener("input", () => {
+        this.focusSlider(input);
+        this.syncOutputs();
+        onSliderInput(input.id);
+      });
+      input.addEventListener("change", () => {
+        this.focusSlider(input);
+        this.syncOutputs();
+        onSliderEditCommit(input.id);
+      });
+      input.addEventListener("pointerup", () => {
+        this.focusSlider(input);
+        this.syncOutputs();
+        onSliderEditCommit(input.id);
+      });
+      input.addEventListener("pointercancel", () => {
+        this.focusSlider(input);
+        this.syncOutputs();
+        onSliderEditCommit(input.id);
+      });
+      input.addEventListener("blur", () => onSliderEditCommit(input.id));
     });
   }
 

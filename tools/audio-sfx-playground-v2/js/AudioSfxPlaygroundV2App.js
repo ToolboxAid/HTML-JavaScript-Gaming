@@ -101,6 +101,7 @@ export class AudioSfxPlaygroundV2App {
     this.soundEntries = [];
     this.statusLog = statusLog;
     this.tileList = tileList;
+    this.activeSliderEdit = null;
     this.redoStack = [];
     this.undoStack = [];
     this.historyBaselineSnapshot = null;
@@ -138,7 +139,10 @@ export class AudioSfxPlaygroundV2App {
       onAdd: () => this.addCurrentSound(),
       onChange: () => this.handleEditorChange(),
       onDelete: () => this.deleteCurrentSound(),
-      onRename: () => this.renameCurrentSound()
+      onRename: () => this.renameCurrentSound(),
+      onSliderEditCommit: (sliderId) => this.commitSliderEditorChange(sliderId),
+      onSliderEditStart: (sliderId) => this.beginSliderEditorChange(sliderId),
+      onSliderInput: (sliderId) => this.handleSliderEditorInput(sliderId)
     });
     this.tileList.mount({
       onSelect: (soundId) => {
@@ -217,22 +221,68 @@ export class AudioSfxPlaygroundV2App {
   }
 
   handleEditorChange() {
+    this.commitSliderEditorChange();
     const beforeSnapshot = this.historyBaselineSnapshot;
-    const validation = this.controls.validate({ nameOverride: this.activeSoundName() });
-    if (validation.valid && this.updateActiveSound(this.soundForActiveEditorValue(validation.value))) {
-      this.renderSoundList();
-      this.commitUndoableChange({
-        beforeSnapshot,
-        changedKeys: ["data.sounds"],
-        reason: "audio-sfx-editor-change"
-      });
-    }
-    if (validation.valid && !this.activeSoundId) {
+    const updateResult = this.updateEditorValueFromControls();
+    if (updateResult.shouldCommit) {
       this.commitUndoableChange({
         beforeSnapshot,
         changedKeys: ["data.sounds"],
         reason: "audio-sfx-editor-change",
-        shouldSyncDirty: false
+        shouldSyncDirty: updateResult.shouldSyncDirty
+      });
+    }
+    this.refreshPreview();
+  }
+
+  updateEditorValueFromControls() {
+    const validation = this.controls.validate({ nameOverride: this.activeSoundName() });
+    if (validation.valid && this.updateActiveSound(this.soundForActiveEditorValue(validation.value))) {
+      this.renderSoundList();
+      return { shouldCommit: true, shouldSyncDirty: true, valid: true };
+    }
+    if (validation.valid && !this.activeSoundId) {
+      return { shouldCommit: true, shouldSyncDirty: false, valid: true };
+    }
+    return { shouldCommit: false, shouldSyncDirty: false, valid: validation.valid };
+  }
+
+  beginSliderEditorChange(sliderId) {
+    if (this.activeSliderEdit?.sliderId === sliderId) {
+      return;
+    }
+    this.commitSliderEditorChange();
+    this.activeSliderEdit = {
+      beforeSnapshot: this.createHistorySnapshot() || this.historyBaselineSnapshot,
+      sliderId
+    };
+  }
+
+  handleSliderEditorInput(sliderId) {
+    if (!this.activeSliderEdit || this.activeSliderEdit.sliderId !== sliderId) {
+      this.beginSliderEditorChange(sliderId);
+    }
+    this.updateEditorValueFromControls();
+    this.refreshPreview();
+  }
+
+  commitSliderEditorChange(sliderId = "") {
+    if (!this.activeSliderEdit || (sliderId && this.activeSliderEdit.sliderId !== sliderId)) {
+      return;
+    }
+    const { beforeSnapshot } = this.activeSliderEdit;
+    this.activeSliderEdit = null;
+    const updateResult = this.updateEditorValueFromControls();
+    if (!updateResult.valid) {
+      this.refreshPreview();
+      return;
+    }
+    if (updateResult.shouldCommit) {
+      this.commitUndoableChange({
+        beforeSnapshot,
+        changedKeys: ["data.sounds"],
+        reason: "audio-sfx-slider-change",
+        shouldSyncDirty: updateResult.shouldSyncDirty
       });
     }
     this.refreshPreview();
