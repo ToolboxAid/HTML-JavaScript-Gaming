@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-05-26T19:13:32.997Z
+Generated: 2026-05-26T19:31:59.716Z
 Dry run: No
 
 ## Summary
@@ -19,7 +19,7 @@ Reason: Skipped because changed files do not modify sample JSON or shared sample
 
 Status: PASS
 Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
-Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs
+Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs/dev/reports/playwright_discovery_ownership_report.md
 Details: Lane tool-runtime grep pattern is passed as a literal Node argv value: launch guard|temporary UAT context|rejects non-Workspace
 
 ## Dependency Gate
@@ -32,8 +32,8 @@ Reason: No deterministic dependency failures before runtime.
 Status: PASS
 Scheduled lane order: tool-runtime, integration
 Reused runtime sessions: 2
-Prevented redundant browser launches: 5
-Prevented redundant lane execution: 5
+Prevented redundant browser launches: 1
+Prevented redundant lane execution: 3
 
 ## Validation Cache
 
@@ -42,16 +42,16 @@ Validation computations: 6
 
 ## Lane Deduplication
 
-Prevented duplicate lane executions: 2
-Prevented browser launches from duplicate lane requests: 4
+Prevented duplicate lane executions: 0
+Prevented browser launches from duplicate lane requests: 0
 Prevented Workspace lane reruns: 0
 
 ## Validation Sequence
 
-- PASS zero-browser preflight first: `npm run test:playwright:zero-browser`
-- PASS cached deterministic validation with duplicate lane requests: `node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only --lanes tool-runtime,tool-runtime,integration,integration`
-- PASS affected targeted runtime lanes after validation: `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lanes tool-runtime,tool-runtime,integration,integration`
-- SKIP Workspace V2 lane: no Workspace V2 contract behavior was changed, and duplicate Workspace requests were not needed for the affected runtime validation.
+- PASS discovery ownership validation first: `node ./scripts/audit-playwright-test-locations.mjs --discovery-report docs/dev/reports/playwright_discovery_ownership_report.md`
+- PASS affected targeted runtime lanes after discovery passed: `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lanes tool-runtime,integration`
+- SKIP Workspace V2 full lane: workspace-contract behavior was not changed.
+- SKIP engine/src lane: engine/src runtime behavior was not changed.
 - SKIP full samples smoke: changed files do not modify sample JSON or shared sample loader/framework behavior.
 
 ## Lanes

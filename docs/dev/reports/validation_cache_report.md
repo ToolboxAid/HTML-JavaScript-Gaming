@@ -1,6 +1,6 @@
 # Validation Cache Report
 
-Generated: 2026-05-26T19:12:03.837Z
+Generated: 2026-05-26T19:30:40.929Z
 Status: PASS
 
 ## Cache Summary
@@ -14,13 +14,13 @@ Validations computed: 6
 | --- | --- | --- | --- | --- |
 | lane registration validation | MISS | d331d34f620be161 | initial computation | lane definitions change; package.json lane scripts change |
 | runner preflight validation | MISS | 4a29a5cb869a7876 | initial computation | lane definitions change; fixture ownership changes; targeted files change |
-| structural ownership validation | MISS | bc8d35347e302d46 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+| structural ownership validation | MISS | 24b098f22be17ce1 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
 | lane compilation validation | MISS | 614ff201f755c81c | initial computation | lane definitions change; targeted files change; fixture ownership changes |
 | lane compilation validation | HIT | 614ff201f755c81c | dependency validation input | unchanged within execution cycle |
 | dependency validation | MISS | ab41de7d0ff270b0 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
 | zero-browser preflight | MISS | 6c43c915a37a0e95 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
-| structural ownership validation | HIT | bc8d35347e302d46 | static validation report | unchanged within execution cycle |
-| structural ownership validation | HIT | bc8d35347e302d46 | zero-browser preflight report | unchanged within execution cycle |
+| structural ownership validation | HIT | 24b098f22be17ce1 | static validation report | unchanged within execution cycle |
+| structural ownership validation | HIT | 24b098f22be17ce1 | zero-browser preflight report | unchanged within execution cycle |
 | lane compilation validation | HIT | 614ff201f755c81c | lane compilation report | unchanged within execution cycle |
 | lane compilation validation | HIT | 614ff201f755c81c | runtime scheduling | unchanged within execution cycle |
 | dependency validation | HIT | ab41de7d0ff270b0 | dependency report | unchanged within execution cycle |

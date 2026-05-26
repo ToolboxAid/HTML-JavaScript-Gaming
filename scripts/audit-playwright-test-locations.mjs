@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const defaultReportPath = "docs/dev/reports/playwright_structure_audit.md";
+const defaultDiscoveryReportPath = "docs/dev/reports/playwright_discovery_ownership_report.md";
 const playwrightRoot = "tests/playwright";
 const sharedHelpersDir = "tests/helpers";
 
@@ -19,6 +20,25 @@ const laneDirs = Object.freeze({
   integration: "tests/playwright/integration",
   tools: "tests/playwright/tools"
 });
+const toolOwnershipNames = Object.freeze([
+  "AssetManagerV2",
+  "AudioSfxPlaygroundV2",
+  "CollisionInspectorV2",
+  "InputMappingV2",
+  "ObjectVectorStudioV2",
+  "PaletteManagerV2",
+  "PreviewGeneratorV2",
+  "StorageInspectorV2",
+  "TextToSpeechV2",
+  "WorkspaceManagerV2",
+  "WorldVectorStudioV2"
+].map((name) => ({ name, normalized: normalizeName(name) })));
+const integrationOwnershipMarkers = Object.freeze([
+  "GameIndex",
+  "Handoff",
+  "ManifestResolution",
+  "WorkspaceIntegration"
+].map((name) => ({ name, normalized: normalizeName(name) })));
 
 const documentedToolGameFixtures = new Map([
   ["AssetManagerV2.spec.mjs", "Tool runtime validation uses repo/game manifests as explicit asset payload fixtures."],
@@ -76,6 +96,7 @@ const intentionallySharedHelpers = [
 
 function parseArgs(argv) {
   const options = {
+    discoveryReportPath: defaultDiscoveryReportPath,
     reportPath: defaultReportPath
   };
   for (let index = 0; index < argv.length; index += 1) {
@@ -85,6 +106,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--report=")) {
       options.reportPath = argument.slice("--report=".length);
+    } else if (argument === "--discovery-report") {
+      options.discoveryReportPath = argv[index + 1] || defaultDiscoveryReportPath;
+      index += 1;
+    } else if (argument.startsWith("--discovery-report=")) {
+      options.discoveryReportPath = argument.slice("--discovery-report=".length);
     } else {
       throw new Error(`Unknown argument: ${argument}`);
     }
@@ -177,6 +203,80 @@ function gameNamesInFileName(filePath, gameNames) {
     .map((game) => game.name);
 }
 
+function toolNamesInFileName(filePath) {
+  const normalizedBase = normalizeName(path.basename(filePath).replace(/\.spec\.mjs$/i, ""));
+  return toolOwnershipNames
+    .filter((tool) => normalizedBase.includes(tool.normalized))
+    .map((tool) => tool.name);
+}
+
+function integrationMarkersInFileName(filePath) {
+  const normalizedBase = normalizeName(path.basename(filePath).replace(/\.spec\.mjs$/i, ""));
+  return integrationOwnershipMarkers
+    .filter((marker) => normalizedBase.includes(marker.normalized))
+    .map((marker) => marker.name);
+}
+
+function laneFromPlaywrightPath(filePath) {
+  const normalizedPath = String(filePath || "").replace(/\\/g, "/");
+  if (normalizedPath.startsWith(`${laneDirs.tools}/`)) {
+    return "tools";
+  }
+  if (normalizedPath.startsWith(`${laneDirs.games}/`)) {
+    return "games";
+  }
+  if (normalizedPath.startsWith(`${laneDirs.integration}/`)) {
+    return "integration";
+  }
+  if (normalizedPath.startsWith(`${laneDirs.engine}/`)) {
+    return "engine";
+  }
+  return "unknown";
+}
+
+function expectedLocationForOwnership(ownership) {
+  return laneDirs[ownership] || "tests/playwright/<known-lane>";
+}
+
+function detectedSpecOwnership(filePath, gameNames) {
+  const actualLane = laneFromPlaywrightPath(filePath);
+  const gameMatches = gameNamesInFileName(filePath, gameNames);
+  const toolMatches = toolNamesInFileName(filePath);
+  const integrationMatches = integrationMarkersInFileName(filePath);
+  if (gameMatches.length > 0) {
+    return {
+      ownership: "games",
+      signals: `game-specific filename: ${gameMatches.join(", ")}`
+    };
+  }
+  if (toolMatches.length > 0) {
+    return {
+      ownership: "tools",
+      signals: `tool-specific filename: ${toolMatches.join(", ")}`
+    };
+  }
+  if (integrationMatches.length > 0) {
+    return {
+      ownership: "integration",
+      signals: `integration filename marker: ${integrationMatches.join(", ")}`
+    };
+  }
+  if (actualLane === "engine") {
+    return {
+      ownership: "engine",
+      signals: "engine lane location"
+    };
+  }
+  return {
+    ownership: actualLane,
+    signals: `${actualLane} lane location`
+  };
+}
+
+function isIntentionallySharedHelper(helperPath) {
+  return intentionallySharedHelpers.some((entry) => entry.path === helperPath);
+}
+
 function startsWithGameName(filePath, gameNames) {
   const normalizedBase = normalizeName(path.basename(filePath).replace(/\.spec\.mjs$/i, ""));
   return gameNames.some((game) => normalizedBase.startsWith(game.normalized));
@@ -258,7 +358,9 @@ async function audit() {
   const helperFiles = await listFiles(sharedHelpersDir, (file) => file.endsWith(".mjs"));
 
   const findings = [];
+  const discoveryRows = [];
   const documentedGameFixtureUses = [];
+  const helperOwnershipRows = [];
   const placementRows = [];
   const laneDirectoryRows = [];
 
@@ -304,6 +406,28 @@ async function audit() {
   }
 
   for (const toolSpec of toolSpecs) {
+    const detected = detectedSpecOwnership(toolSpec, gameNames);
+    const actualLane = laneFromPlaywrightPath(toolSpec);
+    const expectedLocation = expectedLocationForOwnership(detected.ownership);
+    const status = actualLane === detected.ownership ? "PASS" : "FAIL";
+    discoveryRows.push({
+      detectedOwnership: detected.ownership,
+      expectedLocation,
+      file: toolSpec,
+      laneBlocked: status === "FAIL" ? actualLane : "none",
+      laneRequested: actualLane,
+      reason: detected.signals,
+      status
+    });
+    if (status === "FAIL") {
+      findings.push(finding(
+        "FAIL",
+        toolSpec,
+        `Discovery ownership mismatch: detected ${detected.ownership}, but file is under ${actualLane}.`,
+        `Move the file to ${expectedLocation}/ before scheduling the ${actualLane} lane.`
+      ));
+    }
+
     const baseName = path.basename(toolSpec);
     const gameNameMatches = gameNamesInFileName(toolSpec, gameNames);
     if (gameNameMatches.length > 0) {
@@ -337,6 +461,28 @@ async function audit() {
   }
 
   for (const gameSpec of gameSpecs) {
+    const detected = detectedSpecOwnership(gameSpec, gameNames);
+    const actualLane = laneFromPlaywrightPath(gameSpec);
+    const expectedLocation = expectedLocationForOwnership(detected.ownership);
+    const status = actualLane === detected.ownership ? "PASS" : "FAIL";
+    discoveryRows.push({
+      detectedOwnership: detected.ownership,
+      expectedLocation,
+      file: gameSpec,
+      laneBlocked: status === "FAIL" ? actualLane : "none",
+      laneRequested: actualLane,
+      reason: detected.signals,
+      status
+    });
+    if (status === "FAIL") {
+      findings.push(finding(
+        "FAIL",
+        gameSpec,
+        `Discovery ownership mismatch: detected ${detected.ownership}, but file is under ${actualLane}.`,
+        `Move the file to ${expectedLocation}/ before scheduling the ${actualLane} lane.`
+      ));
+    }
+
     if (!startsWithGameName(gameSpec, gameNames)) {
       findings.push(finding(
         "FAIL",
@@ -348,6 +494,28 @@ async function audit() {
   }
 
   for (const integrationSpec of integrationSpecs) {
+    const detected = detectedSpecOwnership(integrationSpec, gameNames);
+    const actualLane = laneFromPlaywrightPath(integrationSpec);
+    const expectedLocation = expectedLocationForOwnership(detected.ownership);
+    const status = actualLane === detected.ownership ? "PASS" : "FAIL";
+    discoveryRows.push({
+      detectedOwnership: detected.ownership,
+      expectedLocation,
+      file: integrationSpec,
+      laneBlocked: status === "FAIL" ? actualLane : "none",
+      laneRequested: actualLane,
+      reason: detected.signals,
+      status
+    });
+    if (status === "FAIL") {
+      findings.push(finding(
+        "FAIL",
+        integrationSpec,
+        `Discovery ownership mismatch: detected ${detected.ownership}, but file is under ${actualLane}.`,
+        `Move the file to ${expectedLocation}/ before scheduling the ${actualLane} lane.`
+      ));
+    }
+
     const baseName = path.basename(integrationSpec);
     const gameNameMatches = gameNamesInFileName(integrationSpec, gameNames);
     if (gameNameMatches.length > 0) {
@@ -381,6 +549,28 @@ async function audit() {
   }
 
   for (const engineSpec of engineSpecs) {
+    const detected = detectedSpecOwnership(engineSpec, gameNames);
+    const actualLane = laneFromPlaywrightPath(engineSpec);
+    const expectedLocation = expectedLocationForOwnership(detected.ownership);
+    const status = actualLane === detected.ownership ? "PASS" : "FAIL";
+    discoveryRows.push({
+      detectedOwnership: detected.ownership,
+      expectedLocation,
+      file: engineSpec,
+      laneBlocked: status === "FAIL" ? actualLane : "none",
+      laneRequested: actualLane,
+      reason: detected.signals,
+      status
+    });
+    if (status === "FAIL") {
+      findings.push(finding(
+        "FAIL",
+        engineSpec,
+        `Discovery ownership mismatch: detected ${detected.ownership}, but file is under ${actualLane}.`,
+        `Move the file to ${expectedLocation}/ before scheduling the ${actualLane} lane.`
+      ));
+    }
+
     const gameNameMatches = gameNamesInFileName(engineSpec, gameNames);
     if (gameNameMatches.length > 0) {
       findings.push(finding(
@@ -397,12 +587,39 @@ async function audit() {
     const gameNameMatches = gameNames
       .filter((game) => normalizedBase.includes(game.normalized))
       .map((game) => game.name);
-    if (gameNameMatches.length > 0) {
+    const toolNameMatches = toolNamesInFileName(helperFile);
+    const intentionallyShared = isIntentionallySharedHelper(helperFile);
+    const helperSignals = [
+      gameNameMatches.length > 0 ? `game-specific helper name: ${gameNameMatches.join(", ")}` : "",
+      toolNameMatches.length > 0 ? `tool-specific helper name: ${toolNameMatches.join(", ")}` : ""
+    ].filter(Boolean);
+    const helperStatus = helperSignals.length === 0 || intentionallyShared ? "PASS" : "FAIL";
+    const expectedLocation = gameNameMatches.length > 0
+      ? laneDirs.games
+      : (toolNameMatches.length > 0 ? laneDirs.tools : sharedHelpersDir);
+    helperOwnershipRows.push({
+      detectedOwnership: helperSignals.length === 0 ? "shared" : (gameNameMatches.length > 0 ? "games" : "tools"),
+      expectedLocation,
+      file: helperFile,
+      reason: intentionallyShared
+        ? "Intentionally shared helper is documented."
+        : (helperSignals.join("; ") || "Generic shared helper name."),
+      status: helperStatus
+    });
+    if (helperStatus === "FAIL" && gameNameMatches.length > 0) {
       findings.push(finding(
         "FAIL",
         helperFile,
         `Shared helper filename contains game-specific name: ${gameNameMatches.join(", ")}.`,
         "Move game-specific helper code under the games test area, or rename reusable helpers to generic names."
+      ));
+    }
+    if (helperStatus === "FAIL" && toolNameMatches.length > 0) {
+      findings.push(finding(
+        "FAIL",
+        helperFile,
+        `Shared helper filename contains tool-specific name: ${toolNameMatches.join(", ")}.`,
+        "Move tool-specific helper code under the tools test area, or rename reusable helpers to generic names."
       ));
     }
   }
@@ -436,8 +653,10 @@ async function audit() {
   ], findings);
 
   return {
+    discoveryRows,
     documentedGameFixtureUses,
     findings,
+    helperOwnershipRows,
     importRows,
     laneDirectoryRows,
     placementRows
@@ -536,6 +755,83 @@ function makeReport(result) {
   return `${lines.join("\n").trim()}\n`;
 }
 
+function makeDiscoveryOwnershipReport(result) {
+  const blockingFindings = result.findings.filter((entry) => entry.severity === "FAIL");
+  const lines = [
+    "# Playwright Discovery Ownership Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${blockingFindings.length === 0 ? "PASS" : "FAIL"}`,
+    "",
+    "## Discovery-Time Ownership",
+    "",
+    "| File | Lane Requested | Detected Ownership | Expected Location | Lane Blocked | Status | Reason |",
+    "| --- | --- | --- | --- | --- | --- | --- |"
+  ];
+
+  result.discoveryRows.forEach((row) => {
+    lines.push([
+      `| ${row.file}`,
+      row.laneRequested,
+      row.detectedOwnership,
+      row.expectedLocation,
+      row.laneBlocked,
+      row.status,
+      `${reportCell(row.reason)} |`
+    ].join(" | "));
+  });
+
+  lines.push(
+    "",
+    "## Shared Helper Naming",
+    "",
+    "| File | Detected Ownership | Expected Location | Status | Reason |",
+    "| --- | --- | --- | --- | --- |"
+  );
+  result.helperOwnershipRows.forEach((row) => {
+    lines.push([
+      `| ${row.file}`,
+      row.detectedOwnership,
+      row.expectedLocation,
+      row.status,
+      `${reportCell(row.reason)} |`
+    ].join(" | "));
+  });
+
+  lines.push("", "## Blocking Findings", "");
+  if (blockingFindings.length === 0) {
+    lines.push("No discovery ownership blockers. Targeted Playwright lanes may be scheduled.");
+  } else {
+    lines.push("| File | Detected Ownership | Expected Location | Lane Blocked | Action |");
+    lines.push("| --- | --- | --- | --- | --- |");
+    blockingFindings.forEach((entry) => {
+      const discoveryRow = result.discoveryRows.find((row) => row.file === entry.file)
+        || result.helperOwnershipRows.find((row) => row.file === entry.file);
+      lines.push([
+        `| ${entry.file}`,
+        discoveryRow?.detectedOwnership || "unknown",
+        discoveryRow?.expectedLocation || "unknown",
+        discoveryRow?.laneBlocked || "preflight",
+        `${reportCell(entry.action)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Execution Guard",
+    "",
+    "- Discovery ownership validation runs before lane scheduling and browser startup.",
+    "- Tool lanes reject game-owned, integration-owned, and engine-owned Playwright files.",
+    "- Game lanes reject tool-owned, integration-owned, and engine-owned Playwright files.",
+    "- Integration-only files are blocked from targeted tool/game lanes.",
+    "- Engine/src Playwright files are blocked from tool/game lanes unless the lane explicitly owns them.",
+    "- Ownership failures do not trigger fallback lanes or broad reruns."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 async function writeReport(reportPath, text) {
   const absoluteReportPath = path.resolve(repoRoot, reportPath);
   await fs.mkdir(path.dirname(absoluteReportPath), { recursive: true });
@@ -546,6 +842,7 @@ async function writeReport(reportPath, text) {
 const options = parseArgs(process.argv.slice(2));
 const result = await audit();
 await writeReport(options.reportPath, makeReport(result));
+await writeReport(options.discoveryReportPath, makeDiscoveryOwnershipReport(result));
 
 const failures = result.findings.filter((entry) => entry.severity === "FAIL");
 if (failures.length > 0) {

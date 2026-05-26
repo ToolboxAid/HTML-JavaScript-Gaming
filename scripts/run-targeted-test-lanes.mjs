@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const defaultReportPath = "docs/dev/reports/testing_lane_execution_report.md";
 const defaultDependencyGatingReportPath = "docs/dev/reports/dependency_gating_report.md";
+const defaultDiscoveryOwnershipReportPath = "docs/dev/reports/playwright_discovery_ownership_report.md";
 const defaultLaneDeduplicationReportPath = "docs/dev/reports/lane_deduplication_report.md";
 const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
 const defaultLaneRuntimeOptimizationReportPath = "docs/dev/reports/lane_runtime_optimization_report.md";
@@ -167,6 +168,7 @@ const laneDefinitions = Object.freeze({
 function parseArgs(argv) {
   const options = {
     dependencyGatingReportPath: defaultDependencyGatingReportPath,
+    discoveryOwnershipReportPath: defaultDiscoveryOwnershipReportPath,
     dryRun: false,
     includeSamples: false,
     laneCompilationReportPath: defaultLaneCompilationReportPath,
@@ -194,6 +196,11 @@ function parseArgs(argv) {
     const argument = argv[index];
     if (argument === "--all") {
       addLaneRequests(Object.keys(laneDefinitions));
+    } else if (argument === "--discovery-ownership-report") {
+      options.discoveryOwnershipReportPath = argv[index + 1] || defaultDiscoveryOwnershipReportPath;
+      index += 1;
+    } else if (argument.startsWith("--discovery-ownership-report=")) {
+      options.discoveryOwnershipReportPath = argument.slice("--discovery-ownership-report=".length);
     } else if (argument === "--dry-run") {
       options.dryRun = true;
     } else if (argument === "--include-samples") {
@@ -1487,6 +1494,7 @@ let structureAudit = {
 };
 preflight.details.push(...runnerPreflight.notes);
 const structureAuditInput = {
+  discoveryOwnershipReportPath: options.discoveryOwnershipReportPath,
   helperGraph: "tests/helpers",
   laneDefinitionHash,
   lanes: options.lanes,
@@ -1499,7 +1507,11 @@ if (unknownLanes.length === 0 && needsPreflight && !options.dryRun && !options.s
     structureAuditInput,
     ["fixture ownership changes", "helper/import graph changes", "targeted files change"],
     async () => {
-      const result = await runCommand(nodeCommand(locationAuditScript));
+      const result = await runCommand(nodeCommand(
+        locationAuditScript,
+        "--discovery-report",
+        options.discoveryOwnershipReportPath
+      ));
       return {
         command: result.displayCommand,
         reason: result.exitCode === 0

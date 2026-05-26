@@ -1,13 +1,13 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-05-26T19:12:03.837Z
+Generated: 2026-05-26T19:30:40.928Z
 Status: PASS
 
 ## Runtime Cost Summary
 
 Reused runtime sessions: 2
-Prevented redundant browser launches: 5
-Prevented redundant lane execution: 5
+Prevented redundant browser launches: 1
+Prevented redundant lane execution: 3
 Baseline Playwright/browser launches: 4
 Scheduled Playwright/browser launches: 3
 

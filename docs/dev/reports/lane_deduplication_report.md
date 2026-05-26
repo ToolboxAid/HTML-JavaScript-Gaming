@@ -1,22 +1,21 @@
 # Lane Deduplication Report
 
-Generated: 2026-05-26T19:12:03.837Z
+Generated: 2026-05-26T19:30:40.928Z
 Status: PASS
 
 ## Summary
 
-Raw lane requests: tool-runtime, tool-runtime, integration, integration
+Raw lane requests: tool-runtime, integration
 Unique scheduled lanes: tool-runtime, integration
-Prevented duplicate lane executions: 2
-Prevented browser launches: 4
+Prevented duplicate lane executions: 0
+Prevented browser launches: 0
 Prevented Workspace lane reruns: 0
 
 ## Duplicate Requests
 
 | Lane | Request Count | Duplicate Executions Prevented | Browser Launches Prevented | Status |
 | --- | --- | --- | --- | --- |
-| tool-runtime | 2 | 1 | 3 | DEDUPED |
-| integration | 2 | 1 | 1 | DEDUPED |
+| none | 0 | 0 | 0 | No duplicate lane requests in this run. |
 
 ## Enforcement Notes
 
