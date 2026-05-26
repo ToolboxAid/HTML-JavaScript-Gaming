@@ -1150,6 +1150,29 @@ Template consistency is part of stabilization and maintainability.
 
 Structural divergence requires explicit PR scope authorization.
 
+### Workspace-Managed First-Class Tool Creation Rules
+
+New first-class tools must live under `tools/<tool-name>/`.
+
+New first-class tools must integrate with `tools/workspace-manager-v2`.
+
+New tools are expected to launch through Workspace Manager V2 unless explicitly exempted.
+
+Workspace lifecycle integration requirements:
+- new tools must wire into existing dirty-state handling
+- new tools must wire into existing save/cancel flows
+- new tools must participate in shared workspace lifecycle expectations
+- new tools must not create isolated custom save-state systems
+- new tools must use existing workspace/toolState patterns when applicable
+
+Dirty-state participation is required for first-class workspace-managed tools.
+
+Save/cancel behavior should remain consistent across the V2 ecosystem.
+
+Custom persistence behavior requires explicit PR authorization.
+
+New tools should integrate into existing workspace launch/navigation patterns.
+
 ## TOOL TEMPLATE V2 LOCATION
 
 The official First-Class Tool V2 starter is:
