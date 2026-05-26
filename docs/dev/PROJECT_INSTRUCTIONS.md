@@ -113,6 +113,16 @@ ChatGPT responses must:
 - not reference ZIP delivery
 - keep chat response minimal
 
+### ChatGPT Copy Control Output Rule
+
+ChatGPT must provide the Codex command in a copy-button control/code block.
+
+ChatGPT must provide the commit comment in a copy-button control/code block.
+
+This applies to every repo workflow response.
+
+Keep the existing four-part ChatGPT output format unchanged.
+
 ## COMMIT COMMENT FORMAT
 
 Format:
