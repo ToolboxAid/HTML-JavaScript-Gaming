@@ -509,15 +509,30 @@ Boundary rules:
 - games, samples, and tools must not override, hide, shadow, or reimplement behavior that already exists in `src/`
 - games, samples, and tools must not implement behavior that clearly belongs in `src/` just to avoid shared-source changes
 
+Authoritative `src/` boundary rules:
+- `src/` is the authoritative reusable implementation surface
+- reusable logic should converge into `src/` over time
+- `games/`, `samples/`, and `tools/` are consumers or extensions of `src/`, not alternate engine layers
+- `games/`, `samples/`, and `tools/` must not become parallel runtime frameworks
+
 Mandatory capability discovery rule:
 - before Codex writes new behavior into `games/`, `samples/`, or `tools/`, Codex must check whether equivalent or reusable capability already exists in `src/`
 - Codex must reuse or extend existing `src/` capability when appropriate
 - if capability belongs in `src/` but does not exist, Codex must state that and either add or update `src/` when PR scope authorizes it, or document the required `src/` follow-up instead of creating a local workaround
 
+Mandatory reuse expectations:
+- before creating new runtime behavior, Codex must check `src/`, existing shared utilities, and existing reusable services
+- if equivalent functionality exists, Codex must reuse or extend it instead of duplicating it
+- if reusable functionality is missing, Codex should prefer growing `src/` over creating local copies
+
 Local implementation rules:
 - local implementation is allowed only when behavior is truly game-specific, tool-specific, or sample-specific
+- local implementations must justify why they are intentionally local
+- temporary local implementations must identify required `src/` follow-up work
 - local implementation must not mask a missing `src/` shared capability
 - local implementation must not create shadow APIs competing with `src/`
+- hidden capability forks are prohibited
+- games, tools, and samples must not silently diverge from shared `src/` behavior
 
 Prohibited no-shadow behaviors:
 - local shared-capability fallbacks
@@ -525,6 +540,12 @@ Prohibited no-shadow behaviors:
 - wrapper code that hides missing `src/` capability
 - custom games, samples, or tools behavior that masks a `src/` gap
 - shadow APIs that compete with `src/` APIs
+
+Architectural intent:
+- `src/` is intended to evolve and grow intentionally over time
+- shared capabilities should mature upward into `src/`
+- Codex should help identify reusable patterns and promote them into `src/` when appropriate
+- stabilization and anti-monolith goals depend on strengthening shared `src/` ownership
 
 Shared infrastructure rules:
 - allowed shared infrastructure layers are engine/runtime services, shared manifest/runtime parsers, shared asset/input/audio/rendering helpers, shared validation helpers, and reusable non-tool-specific utilities
