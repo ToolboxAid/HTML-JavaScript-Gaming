@@ -1,16 +1,16 @@
 # Playwright Structure Audit
 
-Generated: 2026-05-26T22:20:10.269Z
+Generated: 2026-05-26T22:54:12.018Z
 Status: PASS
 
 ## Lane Directories
 
 | Directory | Status | Reason |
 | --- | --- | --- |
-| tests/playwright/games | PASS | Directory is an allowed Playwright lane ownership bucket. |
-| tests/playwright/integration | PASS | Directory is an allowed Playwright lane ownership bucket. |
-| tests/playwright/tools | PASS | Directory is an allowed Playwright lane ownership bucket. |
-| tests/playwright/engine | SKIP | No engine Playwright specs are currently present; engine lane may be empty. |
+| tests/playwright/engine | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+| tests/playwright/games | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+| tests/playwright/integration | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/AssetManagerV2.spec.mjs, tests/playwright/tools/CollisionInspectorV2.spec.mjs, tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs, tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs, tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs. |
 
 ## Blocking Findings
 
@@ -32,8 +32,6 @@ No blocking structural findings.
 | --- | --- | --- | --- |
 | tools | tests/playwright/tools/AssetManagerV2.spec.mjs | Asteroids, GravityWell, Pong | Tool runtime validation uses repo/game manifests as explicit asset payload fixtures. |
 | tools | tests/playwright/tools/CollisionInspectorV2.spec.mjs | Asteroids | Tool runtime validation uses game manifests as explicit collision payload fixtures. |
-| tools | tests/playwright/tools/WorkspaceManagerV2.spec.mjs | AITargetDummy, Asteroids, Bouncing-ball, Breakout, GravityWell, Pacman, Pong, SolarSystem, SpaceDuel, SpaceInvaders, vector-arcade-sample | Workspace contract validation uses game manifests as explicit launch/toolState fixtures. |
-| integration | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | Pong | Integration validation uses Pong as an explicit cross-surface manifest handoff fixture. |
 
 ## Import Targets
 
@@ -41,24 +39,12 @@ No blocking structural findings.
 | --- | --- | --- |
 | tests/playwright/tools/AssetManagerV2.spec.mjs | PASS | none |
 | tests/playwright/tools/CollisionInspectorV2.spec.mjs | PASS | none |
-| tests/playwright/tools/ObjectVectorStudioV2FirstClassToolStarter.spec.mjs | PASS | none |
 | tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs | PASS | none |
 | tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs | PASS | none |
 | tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs | PASS | none |
-| tests/playwright/tools/WorkspaceManagerV2.spec.mjs | PASS | none |
-| tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs | PASS | none |
-| tests/playwright/games/AsteroidsBeatTiming.spec.mjs | PASS | none |
-| tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs | PASS | none |
-| tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | PASS | none |
-| tests/playwright/integration/GameIndexPreviewManifestBroadScan.spec.mjs | PASS | none |
-| tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | PASS | none |
-| tests/playwright/integration/ToolsIndexFirstClassToolRegistration.spec.mjs | PASS | none |
-| tests/helpers/playwrightCtrlTapClick.mjs | PASS | none |
 | tests/helpers/playwrightRepoServer.mjs | PASS | none |
 | tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
 | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |
-| tests/helpers/runtimeSceneLoaderHotReload.helpers.mjs | PASS | none |
-| tests/helpers/testCoverageCatalog.mjs | PASS | none |
 | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | none |
 
 ## Intentionally Shared Helpers

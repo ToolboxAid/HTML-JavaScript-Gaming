@@ -1,13 +1,13 @@
 # Static Validation Report
 
-Generated: 2026-05-26T22:17:10.895Z
+Generated: 2026-05-26T22:55:37.495Z
 Status: PASS
 Static only: No
 Dry run: No
 
 ## Requested Lanes
 
-- integration
+- engine-src
 
 ## Prevented Launches
 
@@ -18,17 +18,17 @@ Reason: No deterministic static validation failure was found.
 
 | Check | Status | Details |
 | --- | --- | --- |
-| lane ownership and file placement | PASS | Playwright structure audit passed. |
-| invalid filename detection | PASS | Covered by Playwright structure audit. |
-| missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
+| lane ownership and file placement | SKIP | No selected lane requires Playwright structure audit. |
+| invalid filename detection | SKIP | Covered by Playwright structure audit. |
+| missing import detection | SKIP | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | integration:efd808f21c146e0b |
-| persistent lane manifests | PASS | integration:INVALIDATED |
-| lane warm-start reuse | PASS | integration:INVALIDATED |
-| dependency hydration reuse | PASS | integration:INVALIDATED |
+| targeted file manifests | PASS | engine-src:1b10dc27feffaf1f |
+| persistent lane manifests | PASS | engine-src:INVALIDATED |
+| lane warm-start reuse | PASS | engine-src:INVALIDATED |
+| dependency hydration reuse | PASS | engine-src:INVALIDATED |
 | lane input graph expansion | PASS | No inputs escaped manifest scope. |
-| scoped discovery targets | PASS | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs; tests/playwright/integration/ToolsIndexFirstClassToolRegistration.spec.mjs |
-| broad scan prevention | PASS | Discovery map read 6 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+| scoped discovery targets | PASS | tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FixedTicker.test.mjs; tests/core/FrameClock.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/render/Renderer.test.mjs |
+| broad scan prevention | PASS | Discovery map read 11 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
 | invalid lane target detection | PASS | No invalid lane target findings. |
 | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
 | duplicate lane registration detection | PASS | No duplicate lane registrations found. |

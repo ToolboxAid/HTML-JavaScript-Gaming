@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "4138c2ded15059b2",
-  "executionGraphHash": "8fb9d3732a82da31",
+  "executionGraphHash": "6bbacc2191acfe4d",
   "fixtureGraph": {
     "fixtureHashes": {
       "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
@@ -49,10 +49,10 @@
     ]
   },
   "helperGraphHash": "5d0248502f5b423f",
-  "inputHash": "249245e68fa72e63",
+  "inputHash": "e88d4d446e93c885",
   "lane": "tool-runtime",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "ebc7b556c8c310d3",
+  "laneDefinitionHash": "1171a3be87ecbb89",
   "manifest": {
     "fileHashes": {
       "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
@@ -87,7 +87,7 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "9b729670cf73b10f",
+    "manifestHash": "8d7fa69569c5f837",
     "manifestPath": "docs/dev/reports/lane_manifests/tool-runtime.json",
     "source": "generated",
     "tests": [
@@ -98,7 +98,7 @@
       "tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs"
     ]
   },
-  "manifestHash": "9b729670cf73b10f",
+  "manifestHash": "8d7fa69569c5f837",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "First-class tool runtime behavior",
@@ -148,8 +148,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "14c30789763fada6",
-  "snapshotHash": "d4d8711c9c8503be",
+  "snapshotHash": "e8f25f07eb8d2c57",
   "version": 1,
-  "warmStartHash": "f48fe741a476f3be",
-  "generatedAt": "2026-05-26T22:14:36.449Z"
+  "warmStartHash": "596787eb22967fb2",
+  "generatedAt": "2026-05-26T22:54:12.044Z"
 }

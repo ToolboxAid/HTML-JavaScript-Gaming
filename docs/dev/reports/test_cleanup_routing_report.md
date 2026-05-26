@@ -1,6 +1,6 @@
 # Test Cleanup Routing Report
 
-Generated: 2026-05-26T22:17:24.434Z
+Generated: 2026-05-26T22:55:38.503Z
 Status: PASS
 
 ## Representative Routing Cases
@@ -18,7 +18,7 @@ Status: PASS
 Workspace V2 explicit/on-request only: PASS
 Full samples smoke explicit/on-request only: PASS
 Misplaced test preflight fast-fail: PASS
-Scheduled runtime lanes: integration
+Scheduled runtime lanes: engine-src
 Full samples smoke decision: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
 
 ## Lane Script Routing
@@ -36,8 +36,7 @@ Full samples smoke decision: SKIP - Skipped because changed files do not modify 
 
 | Script | Status | Command |
 | --- | --- | --- |
-| test:asset-manager-v2 | INFO | playwright test tests/playwright/tools/AssetManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list |
-| test:preview-generator-v2 | INFO | playwright test tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --workers=1 --reporter=list |
+| none | INFO | No direct Playwright scripts were found outside targeted lane scripts. |
 
 ## Misplaced Test Probe
 

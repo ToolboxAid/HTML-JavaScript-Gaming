@@ -1,6 +1,6 @@
 # Incremental Validation Report
 
-Generated: 2026-05-26T22:17:10.906Z
+Generated: 2026-05-26T22:55:37.503Z
 Status: PASS
 
 ## Reuse Summary
@@ -18,7 +18,7 @@ Prevented fixture resolution passes: 0
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| integration | INVALIDATED | Persistent manifest input hash changed for integration.; Persistent manifest hash changed for integration. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+| engine-src | INVALIDATED | Persistent manifest lane definition hash changed for engine-src. | Manifest was regenerated or skipped; no reuse savings for this lane. |
 
 ## Invalidation Rules
 

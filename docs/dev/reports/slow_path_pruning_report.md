@@ -1,20 +1,20 @@
 # Slow Path Pruning Report
 
-Generated: 2026-05-26T22:17:24.434Z
+Generated: 2026-05-26T22:55:38.503Z
 Status: PASS
 Source timing evidence: docs/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 13.49s
+Current measured lane elapsed time: 974ms
 PR_26146_038 actual browser launches: 4
-Current actual browser launches: 1
+Current actual browser launches: 0
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
 Reused dependency hydration: 0
 Reused snapshots: 0
-Validation cache hits: 18
+Validation cache hits: 16
 
 ## Slow Paths Optimized
 
@@ -31,10 +31,7 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | integration | 2.20s | tests\playwright\integration\GameIndexPreviewManifestResolution.spec.mjs:62:1 > games index resolves Pong thumbnail from manifest preview role |
-| current targeted run | integration | 1.80s | tests\playwright\integration\GameIndexPreviewManifestResolution.spec.mjs:113:1 > Pong page keeps safe placeholder when preview role is absent |
-| current targeted run | integration | 1.40s | tests\playwright\integration\GameIndexPreviewManifestResolution.spec.mjs:88:1 > Pong page resolves thumbnail from manifest preview role |
-| current targeted run | integration | 1.30s | tests\playwright\integration\ToolsIndexFirstClassToolRegistration.spec.mjs:28:1 > renders Asset Manager V2 as a first-class tool in the tools index |
+| current targeted run | none | 0ms | No runtime test-duration lines were emitted. |
 
 ## Guardrails
 

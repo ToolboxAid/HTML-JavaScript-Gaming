@@ -1,6 +1,6 @@
 # Monolith Trigger Removal Report
 
-Generated: 2026-05-26T22:17:24.435Z
+Generated: 2026-05-26T22:55:38.503Z
 Status: PASS
 
 ## Removed Broad Execution Triggers
@@ -23,15 +23,14 @@ Status: PASS
 
 | Script | Risk | Status | Command | Reason |
 | --- | --- | --- | --- | --- |
-| test:asset-manager-v2 | LOW | INFO | playwright test tests/playwright/tools/AssetManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list | Script names explicit spec files and is not a Playwright-wide startup trigger. |
-| test:preview-generator-v2 | LOW | INFO | playwright test tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --workers=1 --reporter=list | Script names explicit spec files and is not a Playwright-wide startup trigger. |
+| none | none | PASS | none | No direct Playwright scripts remain outside targeted lane scripts. |
 
 ## Execution Safeguards
 
 No-argument safe mode active for this invocation: No
-Scheduled runtime lanes: integration
-Executed lanes: integration
-Skipped lanes: workspace-contract, tool-runtime, game-runtime, engine-src, samples
+Scheduled runtime lanes: engine-src
+Executed lanes: engine-src
+Skipped lanes: workspace-contract, tool-runtime, game-runtime, integration, samples
 Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
 Unaffected lane execution blocked: Yes
 

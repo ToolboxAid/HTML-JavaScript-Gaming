@@ -1,45 +1,51 @@
-# PR_26146_042 Testing Lane Execution Report
+# PR_26146_043 Testing Lane Execution Report
+
+Generated: 2026-05-26
+Status: PASS
 
 ## Summary
 
-Targeted workflow remained active. Zero-browser validation ran first, then only affected tool-runtime and integration lanes ran. Workspace, game-runtime, engine/src, and samples lanes were skipped because this PR changed test ownership/routing only.
+Zero-browser preflight ran first. Only affected targeted lanes ran afterward: `tool-runtime` for the removed direct tool Playwright wrappers, and `engine-src` for the newly explicit engine lane manifest targets. Workspace, game-runtime, integration, samples, and full samples smoke were not run.
 
-## Executed Lanes
+## Executed Validation
 
-| Lane | Reason executed | Result | Browser-backed invocations | Evidence |
+| Order | Validation | Result | Runtime scope | Evidence |
 | --- | --- | --- | --- | --- |
-| zero-browser preflight | Required before any Playwright/browser startup after lane routing and spec ownership changes. | PASS | 0 | `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only` |
-| tool-runtime | Tool-owned specs were split and tool-runtime lane targets changed. | PASS | 2 Playwright command groups | 5 Asset Manager targeted tests passed; 11 Preview/Collision/Palette/Template tests passed. |
-| integration | Integration spec ownership and routing changed. | PASS | 1 Playwright command group | 3 Pong manifest handoff tests and 1 tools index registration test passed. |
+| 1 | Zero-browser preflight | PASS | 0 browser launches | `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only` |
+| 2 | Runner syntax | PASS | 0 browser launches | `node --check ./scripts/run-targeted-test-lanes.mjs` |
+| 3 | Package parse | PASS | 0 browser launches | `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"` |
+| 4 | Playwright structure audit | PASS | 0 browser launches | `npm run test:playwright:structure` |
+| 5 | Package routing assertion | PASS | 0 browser launches | No non-lane `test:*` script contains `playwright test`. |
+| 6 | Tool-runtime lane | PASS | 2 Playwright command groups | `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime`; 16 tests passed. |
+| 7 | Engine-src lane | PASS | Node runtime only | `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lane engine-src`; 11/11 targeted node test files passed. |
+
+## Tool-Runtime Evidence
+
+| Command group | Result | Coverage |
+| --- | --- | --- |
+| Asset Manager focused grep group | PASS, 5 tests | Launch guard, temporary UAT context, missing palette context guard, and non-Workspace session rejection. |
+| Preview/Collision/Palette/Template group | PASS, 11 tests | Focused Preview Generator, Collision Inspector, Palette Manager, and Tool Template runtime coverage. |
+
+## Engine-Src Evidence
+
+| Lane | Result | Coverage |
+| --- | --- | --- |
+| engine-src | PASS, 11/11 node test files | Engine core boundary, frame clock, fixed ticker, asset loader, audio service, input services, gamepad adapters, haptics, and renderer tests. |
 
 ## Skipped Lanes
 
-| Lane | Reason skipped | Status |
+| Lane or suite | Status | Reason |
 | --- | --- | --- |
-| workspace-contract | `WorkspaceManagerV2.spec.mjs` and workspace contract routing were not modified. | SKIP |
-| game-runtime | No game-owned tests or runtime files changed. | SKIP |
-| engine-src | No `src/`, engine, or shared runtime code changed. | SKIP |
-| samples | Full samples smoke was out of scope and no sample loader or sample JSON changed. | SKIP |
-| recovery/UAT | No recovery/UAT lane scope was changed. | SKIP |
+| workspace-contract | SKIP | Workspace contract spec/routing was not touched by this cleanup. |
+| game-runtime | SKIP | No game-owned test or runtime file changed. |
+| integration | SKIP | Integration specs and integration lane routing were not changed. |
+| samples | SKIP | No sample JSON, sample loader, or shared sample framework changed. |
+| full samples smoke | SKIP | Explicitly prohibited for this cleanup; no sample JSON changed. |
+| broad all-game thumbnail scan | SKIP | Preserved as explicit/on-request only and outside targeted integration defaults. |
 
-## Static And Syntax Validation
+## Final Observations
 
-| File set | Result |
-| --- | --- |
-| Playwright structure/ownership audit | PASS via `npm run test:playwright:structure` |
-| `scripts/run-targeted-test-lanes.mjs` | PASS via `node --check` |
-| Changed tool specs | PASS via `node --check` |
-| Changed integration specs | PASS via `node --check` |
-
-## Routing Observations
-
-- Targeted integration no longer depends on `--grep "Pong"` to avoid broad execution.
-- The all-game thumbnail scan is isolated in `GameIndexPreviewManifestBroadScan.spec.mjs` and is not part of the default targeted integration lane.
-- Tool-runtime keeps focused tool specs under `tests/playwright/tools`.
-- Tools index registration coverage moved to `tests/playwright/integration`.
-- No broad samples smoke ran.
-- No Workspace lane ran.
-
-## Interim Failure Handling
-
-The first integration execution after the split exposed stale tools-index assertions in the moved registration test. The assertions were updated to match current live card and planned-grid behavior, then only the integration lane was rerun. The final integration lane passed.
+- Targeted lanes remained the only runtime validation path.
+- Deterministic preflight and manifest checks ran before any browser-backed lane.
+- Manifest and snapshot artifacts were regenerated only for affected selected lanes.
+- Direct Playwright package shortcuts were removed; compatibility wrappers route through the targeted lane runner.

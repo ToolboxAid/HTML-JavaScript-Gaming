@@ -70,7 +70,7 @@
     ]
   },
   "dependencyGraphHash": "e2570ebce03c46e3",
-  "executionGraphHash": "2ef0b65a0694c012",
+  "executionGraphHash": "390a3c57c1ad187d",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -81,10 +81,10 @@
     "helpers": []
   },
   "helperGraphHash": "9a3856cec31b7349",
-  "inputHash": "ed506a1f72c78a8a",
+  "inputHash": "eb637dd82e37ab6d",
   "lane": "engine-src",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
+  "laneDefinitionHash": "1171a3be87ecbb89",
   "manifest": {
     "fileHashes": {
       "src/engine/assets/AssetLoaderSystem.js": "1079dbc1f02d3b1a",
@@ -163,7 +163,7 @@
       "src/engine/systems/MovementSystem.js",
       "src/engine/systems/PhysicsSystem.js"
     ],
-    "manifestHash": "b08a629e4c7cb2e0",
+    "manifestHash": "1b10dc27feffaf1f",
     "manifestPath": "docs/dev/reports/lane_manifests/engine-src.json",
     "source": "generated",
     "tests": [
@@ -180,7 +180,7 @@
       "tests/render/Renderer.test.mjs"
     ]
   },
-  "manifestHash": "b08a629e4c7cb2e0",
+  "manifestHash": "1b10dc27feffaf1f",
   "ownership": "engine",
   "runtimeConfiguration": {
     "affectedSurface": "src/ engine and shared runtime capability behavior",
@@ -223,8 +223,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "bdd9bad8af92ade1",
-  "snapshotHash": "b6231833fe69e407",
+  "snapshotHash": "92a9ebc45b923c62",
   "version": 1,
-  "warmStartHash": "1d5c02f193ae21af",
-  "generatedAt": "2026-05-26T21:31:25.882Z"
+  "warmStartHash": "6b309bdb058e4269",
+  "generatedAt": "2026-05-26T22:55:37.497Z"
 }

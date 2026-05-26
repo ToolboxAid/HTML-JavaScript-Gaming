@@ -230,7 +230,19 @@ const laneDefinitions = Object.freeze({
       )
     ],
     dependencies: [],
-    discoveryTargets: [],
+    discoveryTargets: [
+      "tests/assets/AssetLoaderSystem.test.mjs",
+      "tests/audio/AudioService.test.mjs",
+      "tests/core/EngineCoreBoundaryBaseline.test.mjs",
+      "tests/core/FixedTicker.test.mjs",
+      "tests/core/FrameClock.test.mjs",
+      "tests/input/GamepadHapticsService.test.mjs",
+      "tests/input/GamepadInputAdapter.test.mjs",
+      "tests/input/InputMap.test.mjs",
+      "tests/input/KeyboardState.test.mjs",
+      "tests/input/MouseState.test.mjs",
+      "tests/render/Renderer.test.mjs"
+    ],
     fixtures: [
       "explicit node unit fixtures",
       "fresh in-memory localStorage/sessionStorage mocks per file"
@@ -249,7 +261,10 @@ const laneDefinitions = Object.freeze({
       )
     ],
     dependencies: [],
-    discoveryTargets: [],
+    discoveryTargets: [
+      "tests/samples/FullscreenRuleEnforcement.test.mjs",
+      "tests/samples/SamplesProgramCombinedPass.test.mjs"
+    ],
     fixtures: [
       "sample metadata and validation artifacts",
       "sample structure fixtures"
@@ -1342,21 +1357,11 @@ function referencedFixturePaths(content) {
 }
 
 function laneDiscoveryTargets(lane, definition) {
-  const configuredTargets = definition.discoveryTargets || [];
-  if (configuredTargets.length > 0) {
-    return configuredTargets;
-  }
-  return definition.commands
-    .filter((commandConfig) => commandConfig.type === "playwright")
-    .flatMap(commandTargetFiles);
+  return uniqueRelativePaths(definition.discoveryTargets || []);
 }
 
 function laneManifestTests(lane, definition) {
-  const discoveryTargets = laneDiscoveryTargets(lane, definition);
-  if (discoveryTargets.length > 0) {
-    return discoveryTargets;
-  }
-  return definition.commands.flatMap(commandTargetFiles);
+  return laneDiscoveryTargets(lane, definition);
 }
 
 function expectedPrefixesForOwnership(ownership) {
@@ -2667,6 +2672,7 @@ async function validateRunnerPreflight(lanes) {
   const notes = [];
   for (const lane of lanes) {
     const definition = laneDefinitions[lane];
+    const declaredTargets = new Set(laneManifestTests(lane, definition));
     for (const fixturePath of definition.fixturePaths || []) {
       if (!(await repoPathExists(fixturePath))) {
         findings.push(`Lane ${lane} is missing fixture: ${fixturePath}`);
@@ -2690,6 +2696,10 @@ async function validateRunnerPreflight(lanes) {
       }
 
       for (const target of targets) {
+        const normalizedTarget = normalizeRelativePath(target);
+        if (!declaredTargets.has(normalizedTarget)) {
+          findings.push(`Lane ${lane} command target is not declared in discoveryTargets: ${normalizedTarget}.`);
+        }
         if (!(await repoPathExists(target))) {
           findings.push(`Lane ${lane} targets a missing file: ${target}`);
         }
