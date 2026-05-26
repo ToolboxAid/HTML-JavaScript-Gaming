@@ -1,18 +1,16 @@
 # Zero-Browser Preflight Report
 
-Generated: 2026-05-26T21:52:45.139Z
-Status: FAIL
+Generated: 2026-05-26T22:00:48.033Z
+Status: PASS
 
 ## Prevented Browser Launches
 
-Count: 1
-Reason: Deterministic pre-runtime failures were found.
+Count: 0
+Reason: No deterministic pre-runtime failures were found.
 
 ## Deterministic Failures Caught Pre-Runtime
 
-- Unknown lane requested: invalid-targeted-closeout-lane
-- Unknown lane requested before dependency gating: invalid-targeted-closeout-lane
-- Lane compilation failed; dependency-gated runtime scheduling is blocked.
+No deterministic setup failures.
 
 ## Validation Coverage
 
@@ -25,18 +23,18 @@ Reason: Deterministic pre-runtime failures were found.
 | invalid imports | SKIP | Relative imports checked by Playwright structure audit. |
 | unresolved fixtures | PASS | No unresolved fixture findings. |
 | unresolved helpers | SKIP | Shared helper imports and naming ownership checked. |
-| targeted file manifests | SKIP | none |
-| persistent lane manifests | SKIP | none |
-| lane warm-start reuse | SKIP | none |
-| dependency hydration reuse | SKIP | none |
-| lane snapshots | SKIP | none |
+| targeted file manifests | PASS | none |
+| persistent lane manifests | PASS | none |
+| lane warm-start reuse | PASS | none |
+| dependency hydration reuse | PASS | none |
+| lane snapshots | PASS | none |
 | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
 | scoped discovery | PASS | Targets: none; helpers: none. |
 | invalid grep patterns | PASS | No invalid grep patterns. |
 | Windows quoting hazards | PASS | No shell quoting hazards. |
-| invalid lane references | FAIL | invalid-targeted-closeout-lane |
-| invalid lane configuration | FAIL | See docs/dev/reports/lane_compilation_report.md. |
-| deterministic dependency graph | FAIL | See docs/dev/reports/dependency_gating_report.md. |
+| invalid lane references | PASS | No invalid lane references. |
+| invalid lane configuration | PASS | See docs/dev/reports/lane_compilation_report.md. |
+| deterministic dependency graph | PASS | See docs/dev/reports/dependency_gating_report.md. |
 | conflicting reusable helper ownership | SKIP | Shared helper filenames checked against known game names. |
 
 ## Corrected Ownership Drift

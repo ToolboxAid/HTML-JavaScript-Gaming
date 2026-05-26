@@ -1,7 +1,7 @@
 # Dependency Gating Report
 
-Generated: 2026-05-26T21:52:45.136Z
-Status: FAIL
+Generated: 2026-05-26T22:00:48.031Z
+Status: PASS
 
 ## Gate Order
 
@@ -20,12 +20,10 @@ Status: FAIL
 | integration | No | SKIP | none | Workspace, tool, game index, and manifest handoff behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | engine-src | No | SKIP | none | src/ engine and shared runtime capability behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | samples | No | SKIP | none | Affected samples lane, on request only | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
-| invalid-targeted-closeout-lane | Yes | FAIL | none | unknown | Requested lane does not exist in laneDefinitions. |
 
 ## Dependency Failures Caught Pre-Runtime
 
-- Unknown lane requested before dependency gating: invalid-targeted-closeout-lane
-- Lane compilation failed; dependency-gated runtime scheduling is blocked.
+No deterministic dependency failures were found before runtime.
 
 ## Enforcement Notes
 

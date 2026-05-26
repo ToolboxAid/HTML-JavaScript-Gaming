@@ -1,65 +1,46 @@
 # Testing Lane Execution Report
 
-PR: PR_26146_040-targeted-testing-workflow-closeout
+PR: PR_26146_041-monolithic-test-code-audit
 Generated: 2026-05-26
 Dry run: No
 
 ## Summary
 
-Representative targeted workflows were validated end to end after zero-browser preflight.
+This PR is audit/report-only. No executable routing changed, so validation stayed zero-browser/static.
 
-PASS cases: docs-only, tool-only, src-only, integration-only, deterministic setup failure probe
-Scoped FAIL case: game-only, known Asteroids ship visual states assertion
-Full Workspace: SKIP, command compatibility was already verified in PR_26146_039 and no Workspace contract changed in this closeout
+Executed lanes: none
+Skipped lanes: workspace-contract, tool-runtime, game-runtime, integration, engine-src, samples
+Browser launches: 0
+Full Workspace: SKIP, no command compatibility or Workspace runtime behavior changed
 Full samples smoke: SKIP, no sample JSON or shared sample loader/framework behavior changed
-
-## Workflow Results
-
-| Case | Status | Command | Executed Lanes | Skipped Lanes | Browser Launches | Prevented Broad Execution | Prevented Reruns | Runtime Observation |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| zero-browser/docs-only | PASS | `node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only` | none | all runtime lanes | 0 | Yes | none needed | Static/zero-browser checks only; no runtime scheduling. |
-| tool-only | PASS | `node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime` | tool-runtime | workspace-contract, game-runtime, integration, engine-src, samples | 2 | Yes | none needed | 16 Playwright tests passed in 76.25s. |
-| game-only | FAIL scoped | `node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime` | game-runtime | workspace-contract, tool-runtime, integration, engine-src, samples | 1 | Yes | Yes | 5 passed, 1 known Asteroids destroyed-state failure in 23.12s; no fallback lanes. |
-| src-only | PASS | `node ./scripts/run-targeted-test-lanes.mjs --lane engine-src` | engine-src | workspace-contract, tool-runtime, game-runtime, integration, samples | 0 | Yes | none needed | 11/11 targeted Node test files passed in 1.00s. |
-| integration-only | PASS | `node ./scripts/run-targeted-test-lanes.mjs --lane integration` | integration | workspace-contract, tool-runtime, game-runtime, engine-src, samples | 1 | Yes | none needed | 3 Playwright tests passed in 11.88s. |
-| deterministic setup failure | PASS expected fail | `node ./scripts/run-targeted-test-lanes.mjs --lane invalid-targeted-closeout-lane` | none | all runtime lanes | 0 | Yes | 4 suppressed | Invalid lane failed before runtime; broad escalation was suppressed 4 times. |
-
-## Lane Reuse Evidence
-
-| Lane | Manifest Reuse | Snapshot Reuse | Warm Start Reuse | Dependency Hydration Reuse |
-| --- | --- | --- | --- | --- |
-| tool-runtime | REUSED | REUSED | REUSED | REUSED |
-| game-runtime | REUSED | REUSED | REUSED | REUSED |
-| engine-src | REUSED | REUSED | REUSED | REUSED |
-| integration | REUSED | REUSED | REUSED | REUSED |
-
-## Lane Ownership And Discovery Scope
-
-| Check | Result |
-| --- | --- |
-| Tool lane ownership | PASS, tool targets stayed under `tests/playwright/tools`. |
-| Game lane ownership | PASS, game targets stayed under `tests/playwright/games`. |
-| Integration lane ownership | PASS, integration target stayed under `tests/playwright/integration`. |
-| Src lane ownership | PASS, targeted Node tests stayed under engine/src-owned test buckets. |
-| Discovery expansion | PASS, no representative lane widened into broad Playwright discovery. |
-| Full Workspace escalation | PASS, Workspace lane stayed skipped unless explicitly requested. |
-| Full samples escalation | PASS, samples stayed skipped and full samples smoke was not run. |
-
-## Known Scoped Failure
-
-| Lane | Test | Actual | Expected | Scope |
-| --- | --- | --- | --- | --- |
-| game-runtime | `tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs:14:1` | `["idle", "move"]` | array containing `["idle", "move", "destroyed"]` | Known game-runtime failure; did not block other targeted lanes. |
 
 ## Commands Run
 
-- `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only`
-- `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime`
-- `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime`
-- `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lane engine-src`
-- `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lane integration`
-- `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lane invalid-targeted-closeout-lane`
+| Command | Status | Purpose |
+| --- | --- | --- |
+| `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only` | PASS | Required zero-browser preflight before audit validation. |
+| `node ./scripts/audit-playwright-test-locations.mjs` | PASS | Static Playwright placement, ownership, helper, fixture, and discovery audit. |
+| `node --check scripts/run-targeted-test-lanes.mjs` | PASS | Syntax validation for lane runner inspected by this audit. |
+| `node --check scripts/audit-playwright-test-locations.mjs` | PASS | Syntax validation for structural audit script inspected by this audit. |
+| `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json OK')"` | PASS | npm script JSON parse validation. |
 
-## Expected Workflow Going Forward
+## Static Audit Findings
 
-Run zero-browser/static validation first, then run only the affected lane. Do not run Workspace, samples, or all lanes unless the PR explicitly changes those surfaces or requests broad validation. Deterministic setup failures are blockers for the selected lane setup only and must stop before Playwright/browser launch.
+| Surface | Status | Observation |
+| --- | --- | --- |
+| `tests/playwright` placement | PASS | Static audit passed; no misplaced game/tool/integration files found. |
+| npm test scripts | PASS | No accidental broad Playwright startup commands found; broad/static commands are explicit. |
+| Workspace V2 entry point | WARN | `test:workspace-v2` routes through the lane runner, but the physical Workspace spec remains monolithic. |
+| shared Playwright helpers | WARN | Helpers are mostly lane-safe; coverage reporter and runtime scene loader need follow-up ownership review. |
+| lane manifests/snapshots | PASS | Persisted lane inputs are scoped and versioned. |
+| test runner code | WARN | Runner behavior is lane-safe, but `scripts/run-targeted-test-lanes.mjs` is physically monolithic. |
+
+## Resulting Reports
+
+- `docs/dev/reports/monolithic_test_code_audit.md`
+- `docs/dev/reports/monolithic_test_split_candidates.md`
+- `docs/dev/reports/testing_lane_execution_report.md`
+
+## Follow-Up Scope
+
+No split/delete work was performed. Required follow-up is documented for Workspace spec splitting, runner modularization, mixed tool-runtime spec ownership, and broad integration thumbnail scan isolation.

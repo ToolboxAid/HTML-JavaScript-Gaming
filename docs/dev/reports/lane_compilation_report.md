@@ -1,7 +1,7 @@
 # Lane Compilation Report
 
-Generated: 2026-05-26T21:52:45.136Z
-Status: FAIL
+Generated: 2026-05-26T22:00:48.031Z
+Status: PASS
 
 ## Lane Graph
 
@@ -13,11 +13,10 @@ Status: FAIL
 | integration | SKIP | Workspace, tool, game index, and manifest handoff behavior | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs --grep Pong --project=playwright --workers=1 --reporter=list | Lane was not selected. |
 | engine-src | SKIP | src/ engine and shared runtime capability behavior | tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | C:\nvm4w\nodejs\node.exe scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
 | samples | SKIP | Affected samples lane, on request only | tests/samples/SamplesProgramCombinedPass.test.mjs; tests/samples/FullscreenRuleEnforcement.test.mjs | C:\nvm4w\nodejs\node.exe scripts/run-node-test-files.mjs tests/samples/SamplesProgramCombinedPass.test.mjs tests/samples/FullscreenRuleEnforcement.test.mjs | Lane was not selected. |
-| invalid-targeted-closeout-lane | FAIL | unknown | none | none | Requested lane does not exist in laneDefinitions. |
 
 ## Compilation Failures
 
-- Unknown lane requested: invalid-targeted-closeout-lane
+No lane compilation failures.
 
 ## Deterministic Setup Rules
 

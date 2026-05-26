@@ -1,6 +1,6 @@
 # Slow Path Pruning Report
 
-Generated: 2026-05-26T21:52:45.186Z
+Generated: 2026-05-26T22:00:48.034Z
 Status: PASS
 Source timing evidence: docs/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
@@ -14,7 +14,7 @@ Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
 Reused dependency hydration: 0
 Reused snapshots: 0
-Validation cache hits: 0
+Validation cache hits: 1
 
 ## Slow Paths Optimized
 
@@ -35,9 +35,9 @@ Validation cache hits: 0
 
 ## Guardrails
 
-Full samples smoke: SKIP - Skipped because runner preflight failed before any samples lane decision could execute.
+Full samples smoke: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.
 Runtime failures observed: 0
-Runtime schedule status: SKIP
+Runtime schedule status: PASS
 
 - Only no-argument broad defaults and safe Workspace legacy routing were pruned.
 - Slow individual tests were reported but not deleted, consolidated, or fixture-rewritten.

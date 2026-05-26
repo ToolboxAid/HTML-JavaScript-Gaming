@@ -1,7 +1,7 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-05-26T21:52:45.136Z
-Status: SKIP
+Generated: 2026-05-26T22:00:48.031Z
+Status: PASS
 
 ## Runtime Cost Summary
 
@@ -12,7 +12,7 @@ Reused dependency hydration: 0
 Prevented graph rebuilds: 0
 Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
-Prevented redundant lane execution: 0
+Prevented redundant lane execution: 6
 Baseline Playwright/browser launches: 0
 Scheduled Playwright/browser launches: 0
 
@@ -22,9 +22,7 @@ No runtime lanes are eligible for scheduling.
 
 ## Scheduling Blockers
 
-- Unknown lane requested: invalid-targeted-closeout-lane
-- Unknown lane requested before dependency gating: invalid-targeted-closeout-lane
-- Lane compilation failed; dependency-gated runtime scheduling is blocked.
+No zero-browser, compilation, or dependency blockers were found.
 
 ## Lane Plans
 

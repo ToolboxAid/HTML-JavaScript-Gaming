@@ -1,6 +1,6 @@
 # Test Cleanup Performance Report
 
-Generated: 2026-05-26T21:52:45.186Z
+Generated: 2026-05-26T22:00:48.034Z
 Status: PASS
 
 ## Cost Summary
@@ -9,12 +9,12 @@ Total measured lane elapsed time: 0ms
 Actual browser launch count: 0
 Scheduled browser launch count: 0
 Baseline browser launch count: 0
-Skipped lanes: 6
+Skipped lanes: 0
 Reused manifests: 0
 Reused snapshots: 0
-Cached validations reused: 0
+Cached validations reused: 16
 Prevented broad execution: 3
-Prevented reruns: 4
+Prevented reruns: 0
 Prevented redundant browser launches: 0
 Prevented graph rebuilds: 0
 Prevented redundant dependency traversal: 0
@@ -23,12 +23,7 @@ Prevented redundant dependency traversal: 0
 
 | Lane | Status | Elapsed | Browser Launches | Reason |
 | --- | --- | --- | --- | --- |
-| workspace-contract | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-| tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-| game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-| integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-| engine-src | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-| samples | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+| none | SKIP | 0ms | 0 | Zero-browser validation only; runtime lanes were not launched. |
 
 ## Slowest Tests
 

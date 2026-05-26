@@ -1,11 +1,11 @@
 # Failure Fingerprint Report
 
-Generated: 2026-05-26T21:52:45.136Z
-Status: WARN
+Generated: 2026-05-26T22:00:48.031Z
+Status: PASS
 
 ## Summary
 
-Deterministic setup failures: 4
+Deterministic setup failures: 0
 Runtime failures: 0
 Flaky/transient failures: 0
 Infrastructure failures: 0
@@ -14,10 +14,7 @@ Infrastructure failures: 0
 
 | Fingerprint | Category | Rule | Lane | Source | Retry Allowed | Diagnostic |
 | --- | --- | --- | --- | --- | --- | --- |
-| 8a34b1f6897ef32e | deterministic setup failure | lane-compilation-failures | invalid-targeted-closeout-lane | lane compilation | No | Unknown lane requested: invalid-targeted-closeout-lane |
-| bfa111cdb8feb351 | deterministic setup failure | lane-compilation-failures | setup | lane compilation | No | Unknown lane requested: invalid-targeted-closeout-lane |
-| e9a7db048b3390cb | deterministic setup failure | lane-compilation-failures | setup | dependency validation | No | Unknown lane requested before dependency gating: invalid-targeted-closeout-lane |
-| d77953343f5cb155 | deterministic setup failure | lane-compilation-failures | setup | dependency validation | No | Lane compilation failed; dependency-gated runtime scheduling is blocked. |
+| none | none | none | none | none | No | No failures observed during deterministic classification. |
 
 ## Known Deterministic Fingerprint Rules
 
