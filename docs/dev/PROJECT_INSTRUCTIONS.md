@@ -123,6 +123,29 @@ This applies to every repo workflow response.
 
 Keep the existing four-part ChatGPT output format unchanged.
 
+### ChatGPT Repo Response Format Standard
+
+ChatGPT repo workflow responses must always use this order:
+1. PR detail summary
+2. Codex command control
+3. Commit comment control
+4. What Playwright is testing
+5. What to test manually
+
+The compact PR detail summary is limited to 1-3 short lines.
+
+The Codex command and commit comment must each be in separate copy-button controls/code blocks.
+
+Maintain the existing four-part required output contract.
+
+Repo workflow responses should remain compact and minimal.
+
+No extra optional sections are allowed unless explicitly requested.
+
+Do not reference ZIPs in normal ChatGPT repo workflow replies.
+
+Controls must remain copy-friendly and human-readable.
+
 ## COMMIT COMMENT FORMAT
 
 Format:
