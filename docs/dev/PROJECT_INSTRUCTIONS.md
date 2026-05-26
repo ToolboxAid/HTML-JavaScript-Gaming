@@ -32,11 +32,7 @@ Rules:
 
 ChatGPT no longer creates PLAN_PR, BUILD_PR, APPLY_PR docs, ZIP bundles, or implementation code.
 
-ChatGPT produces only:
-1. Codex command
-2. Commit comment
-3. What Playwright is testing
-4. What the user should test manually
+ChatGPT repo workflow response formatting is governed by `OUTPUT RULES` and the newest explicit ChatGPT workflow sections below.
 
 ChatGPT must not:
 - create ZIP files
@@ -84,6 +80,30 @@ User:
 Newer appended sections override earlier overlapping rules.
 
 When rules overlap, use the most specific current section as authoritative.
+
+Conflicting workflow instructions must resolve to the newest explicit section.
+
+Future governance additions should extend existing sections instead of duplicating overlapping guidance.
+
+## GOVERNANCE CLOSEOUT
+
+Docs-only PRs should prefer bundling with related docs/workflow cleanup when safe.
+
+Stabilization/recovery lane rules supersede older generalized workflow assumptions.
+
+Engine/tool/integration boundaries are authoritative for validation routing.
+
+Hidden validation expansion is prohibited.
+
+Workflow and testing language must not assume implicit persisted workspace, toolState, `localStorage`, `sessionStorage`, sample, or runtime state.
+
+Required validation lane names are:
+- contract
+- runtime
+- integration
+- engine
+- samples
+- recovery/UAT
 
 ## FILE SCOPE GUARD
 
@@ -160,9 +180,7 @@ ChatGPT must not add ZIP delivery language to standard repo workflow replies.
 
 Repo workflow replies must remain concise and operational.
 
-Future workflow rule additions should extend existing sections rather than duplicate them.
-
-Conflicting workflow instructions must resolve to the newest explicit section.
+ChatGPT workflow governance follows `RULE PRECEDENCE` and `GOVERNANCE CLOSEOUT`.
 
 Repo workflow output formatting is part of the enforced workflow contract.
 
@@ -280,11 +298,7 @@ or:
 
 Then ChatGPT must:
 
-1. Determine the next PR.
-2. Provide a compact Codex command.
-3. Provide commit comment.
-4. Provide what Playwright is testing.
-5. Provide what the user should test manually.
+Determine the next PR and follow `OUTPUT RULES`, `ChatGPT Repo Response Format Standard`, and `ChatGPT Workflow Governance Consistency`.
 
 Do not ask for confirmation unless ambiguity exists.
 
@@ -366,13 +380,15 @@ If ZIP delivery fails more than once:
 
 - Roadmap lives at: `docs\dev\roadmaps\MASTER_ROADMAP_ENGINE.md`
 - Only one roadmap.
-- PRs must include something testable and improve the roadmap.
+- PRs must remain testable through validation appropriate to their scope.
 - Roadmap updates must be status-only unless explicitly requested.
 - Valid roadmap status transitions:
   - `[ ]` → `[.]`
   - `[.]` → `[x]`
 
-If a PR is doc-only, bundle it with the next smallest executable/testable change when appropriate.
+Docs-only PR bundling follows `GOVERNANCE CLOSEOUT`.
+
+Do not add unrelated runtime, sample, or roadmap changes just to make a docs-only PR executable.
 
 ## PRODUCTIZATION RULES
 
@@ -458,7 +474,7 @@ Engine test matrix expectations:
 - name the fixture, manifest, or runtime input source
 - include one valid path and one failure path when applicable
 - state PASS/FAIL/WARN/SKIP criteria
-- identify dependent tool, integration, or sample lanes that are in scope
+- identify dependent runtime, integration, or samples lanes that are in scope
 
 Engine validation expands lane scope when a shared runtime API, shared parser, timing model, asset path rule, input contract, rendering contract, audio contract, or physics/runtime timing behavior changes.
 
@@ -607,14 +623,14 @@ Lane ownership:
 - runtime: tool-specific runtime behavior and user-facing tool interactions
 - integration: explicit cross-tool or workspace handoff behavior
 - engine: engine/shared runtime behavior and dependent runtime surfaces
-- samples: affected sample validation when sample scope is active
+- samples: validation for affected samples when samples scope is active
 - recovery/UAT: explicitly requested recovery or user-acceptance validation lanes
 
 Blocker classification rules:
 - targeted tool failures block the targeted lane only
 - engine failures block dependent lanes
 - integration failures block the integration lane only
-- sample failures block only when sample scope is active
+- failures in the samples lane block only when samples scope is active
 - flaky failures cannot automatically escalate to global blockers
 
 Shared-runtime blocker escalation requires identifying the root shared dependency, affected dependent lanes, and the reason the shared dependency blocks those lanes.
