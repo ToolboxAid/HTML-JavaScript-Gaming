@@ -372,6 +372,36 @@ Affected game fixtures are optional targeted validation only.
 
 Samples are never implicit validation gates.
 
+### Workspace Contract Test Boundaries
+
+Workspace V2 tests validate contract and lifecycle only.
+
+Tool runtime behavior belongs to tool-specific Playwright suites.
+
+Tests must not rely on shared hidden bootstrap assumptions.
+
+Tests must explicitly declare required manifest, toolState, and runtime inputs.
+
+Invalid payload rejection must be validated independently from tool rendering.
+
+Shared setup utilities may assist launch and logging only.
+
+Shared utilities must not inject hidden runtime state.
+
+Runtime-only workspace state starts clean every run.
+
+Automated tests must not depend on persisted workspace restoration.
+
+Game fixtures are explicit opt-in validation targets only.
+
+Cross-tool assertions are allowed only in dedicated integration tests.
+
+Integration-test-only scope is limited to:
+- workspace launch into tool
+- manifest handoff
+- palette propagation
+- toolState open/save contracts
+
 Every PR must document:
 - whether full samples test was skipped or run
 - reason for decision
