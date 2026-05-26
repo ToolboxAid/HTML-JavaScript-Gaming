@@ -502,6 +502,30 @@ Boundary rules:
 - shared runtime behavior must not leak through tool-specific abstractions
 - tool-specific adapters may wrap stable engine contracts only when the adapter does not own engine behavior
 
+Engine growth governance:
+- the engine is a living shared foundation and is expected to grow when reusable runtime behavior is needed
+- reusable runtime behavior belongs in the engine, not duplicated in games, samples, or tools
+- games, samples, and tools must not override, hide, shadow, or reimplement behavior that already exists in the engine
+- games, samples, and tools must not implement behavior that clearly belongs in the engine just to avoid engine changes
+
+Engine growth decision rule:
+- when a game, sample, or tool needs runtime behavior that appears reusable, Codex must identify whether it belongs in the engine
+- if engine work is required, Codex must state that clearly and include the engine change in the PR scope when authorized
+- if engine work is not included, Codex must document why the behavior is intentionally local
+- local implementation is allowed only when the behavior is truly game-specific, tool-specific, or sample-specific and not reusable engine behavior
+
+Prohibited no-shadow behaviors:
+- local engine-like fallbacks
+- duplicate render, input, audio, physics, asset, timing, or parser logic
+- wrapper code that hides missing engine capability
+- tool, game, or sample custom behavior that masks an engine gap
+- shadow APIs that compete with engine APIs
+
+Engine growth enforcement:
+- if the correct fix requires adding or updating the engine, Codex must do so when the PR scope allows it
+- if PR scope does not allow engine changes, Codex must report the required engine follow-up instead of creating a local workaround
+- engine growth should be deliberate, reviewed, and validated through engine-impact testing
+
 Shared infrastructure rules:
 - allowed shared infrastructure layers are engine/runtime services, shared manifest/runtime parsers, shared asset/input/audio/rendering helpers, shared validation helpers, and reusable non-tool-specific utilities
 - circular dependencies between engine/shared infrastructure and tools are prohibited
