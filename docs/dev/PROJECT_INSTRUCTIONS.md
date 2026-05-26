@@ -402,6 +402,39 @@ Integration-test-only scope is limited to:
 - palette propagation
 - toolState open/save contracts
 
+### Test Fixture Isolation And Determinism
+
+Tests must execute deterministically.
+
+No test may depend on prior `localStorage` or `sessionStorage` state.
+
+No test may depend on execution order.
+
+Tests must clean up runtime state after execution.
+
+Each tool owns its tool-specific fixtures.
+
+Shared fixtures must be explicit and versioned.
+
+Hidden auto-generated fixture data is prohibited.
+
+Runtime timestamps and random seeds must be controllable in tests.
+
+Playwright tests must validate explicit expected outcomes.
+
+Flaky retry masking is prohibited unless documented with the underlying failure mode and owner.
+
+Fixture categories:
+- minimal contract fixtures
+- tool runtime fixtures
+- integration fixtures
+- affected game fixtures
+- failure-case fixtures
+
+Affected game fixtures are opt-in only.
+
+Fixtures must declare required manifests and toolState inputs.
+
 Every PR must document:
 - whether full samples test was skipped or run
 - reason for decision
