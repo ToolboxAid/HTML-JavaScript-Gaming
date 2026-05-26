@@ -146,6 +146,26 @@ Do not reference ZIPs in normal ChatGPT repo workflow replies.
 
 Controls must remain copy-friendly and human-readable.
 
+### ChatGPT Workflow Governance Consistency
+
+ChatGPT repo workflow responses are governed by `docs/dev/PROJECT_INSTRUCTIONS.md` as the source of truth.
+
+ChatGPT must not drift from the required response ordering.
+
+ChatGPT must not omit required sections.
+
+ChatGPT must keep the Codex command and commit comment in dedicated copy-button controls/code blocks.
+
+ChatGPT must not add ZIP delivery language to standard repo workflow replies.
+
+Repo workflow replies must remain concise and operational.
+
+Future workflow rule additions should extend existing sections rather than duplicate them.
+
+Conflicting workflow instructions must resolve to the newest explicit section.
+
+Repo workflow output formatting is part of the enforced workflow contract.
+
 ## COMMIT COMMENT FORMAT
 
 Format:
