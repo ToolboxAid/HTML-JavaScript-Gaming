@@ -264,6 +264,33 @@ Before Codex returns any ZIP, Codex must:
 6. Place ZIP under `<project folder>/tmp/`.
 7. Never reuse a previous file handle or path.
 
+## TMP DIRECTORY OWNERSHIP
+
+`tmp/` is user-facing artifact output only.
+
+Codex may place only final ZIP artifacts in `tmp/` unless explicitly instructed otherwise.
+
+Codex must not use `tmp/` as:
+- scratch workspace
+- temp extraction directory
+- intermediate build output
+- report staging area
+- cache location
+
+Reports remain under `docs/dev/reports`.
+
+Runtime temp data must use proper temporary or system locations outside repo `tmp/`.
+
+Every ZIP filename must remain unique.
+
+`tmp/` should stay clean and human-readable.
+
+Nested temporary directories inside `tmp/` are prohibited.
+
+Loose files in `tmp/` are prohibited except approved final artifacts.
+
+Generated review artifacts do not belong in `tmp/`.
+
 ## FAILURE HANDLING
 
 If ZIP delivery fails more than once:
