@@ -105,6 +105,33 @@ Required validation lane names are:
 - samples
 - recovery/UAT
 
+## PROJECT INSTRUCTIONS STABILITY AND MAINTENANCE MODE
+
+`PROJECT_INSTRUCTIONS.md` is now considered architecturally stabilized.
+
+Future additions should prefer targeted amendments instead of broad workflow rewrites.
+
+New rules should extend existing authoritative sections whenever possible.
+
+Avoid introducing parallel governance systems or duplicate rule sets.
+
+Anti-drift governance:
+- avoid capability drift across `src/`, `games/`, `samples/`, and `tools/`
+- avoid workflow drift across overlapping sections
+- avoid validation drift between engine, tool, and integration lanes
+- avoid UI/UX drift from Workspace V2 ecosystem contracts
+
+Stabilization intent:
+- governance exists to reduce monolith growth, hidden coupling, and duplicated runtime behavior
+- reusable/shared capability should converge into `src/`
+- first-class tools should converge toward shared Workspace V2 lifecycle behavior
+- targeted validation is the preferred operational mode
+
+Future guidance:
+- future governance PRs should remain small and execution-backed
+- implementation, runtime, and tool work should now take priority over additional governance expansion unless a real gap is discovered
+- governance additions should solve demonstrated operational problems rather than hypothetical future issues
+
 ## FILE SCOPE GUARD
 
 Allowed change scope is PR-specific.
