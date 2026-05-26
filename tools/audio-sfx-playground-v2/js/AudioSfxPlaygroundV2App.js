@@ -66,13 +66,14 @@ export class AudioSfxPlaygroundV2App {
     audioEngine,
     controls,
     inspector,
+    manifestLoader = null,
     preview,
     serializer,
     shell,
     statusLog,
     tileList,
     windowRef = window,
-    workspaceContextService = null
+    workspaceDirtyNotifier = null
   }) {
     this.accordions = accordions;
     this.actionNav = actionNav;
@@ -80,6 +81,7 @@ export class AudioSfxPlaygroundV2App {
     this.audioEngine = audioEngine;
     this.controls = controls;
     this.inspector = inspector;
+    this.manifestLoader = manifestLoader;
     this.nextSoundNumber = 1;
     this.preview = preview;
     this.serializer = serializer;
@@ -88,7 +90,7 @@ export class AudioSfxPlaygroundV2App {
     this.statusLog = statusLog;
     this.tileList = tileList;
     this.window = windowRef;
-    this.workspaceContextService = workspaceContextService;
+    this.workspaceDirtyNotifier = workspaceDirtyNotifier;
   }
 
   start() {
@@ -132,18 +134,22 @@ export class AudioSfxPlaygroundV2App {
   }
 
   async loadWorkspacePayload() {
-    if (!this.workspaceContextService) {
+    if (!this.manifestLoader) {
       return;
     }
-    const result = await this.workspaceContextService.readWorkspaceToolPayload(TOOL_ID);
-    if (result.skipped || result.payload === null) {
+    const result = await this.manifestLoader.loadInitialManifest();
+    if (result.skipped) {
       return;
     }
     if (!result.ok) {
       this.statusLog.error(`Workspace payload load failed: ${result.message}`);
       return;
     }
-    const validation = this.serializer.readToolState(toolStateFromPayload(result.payload));
+    const payload = result.manifest?.tools?.[TOOL_ID] || null;
+    if (!payload) {
+      return;
+    }
+    const validation = this.serializer.readToolState(toolStateFromPayload(payload));
     if (!validation.valid) {
       this.statusLog.error(`Workspace payload load failed: ${validation.message}`);
       return;
@@ -196,7 +202,7 @@ export class AudioSfxPlaygroundV2App {
   }
 
   async syncWorkspaceDirty(reason, changedKeys) {
-    if (!this.workspaceContextService) {
+    if (typeof this.workspaceDirtyNotifier !== "function") {
       return;
     }
     const { toolState, validation } = this.currentToolState();
@@ -204,7 +210,7 @@ export class AudioSfxPlaygroundV2App {
       this.statusLog.error(`Workspace dirty sync skipped: ${validation.message}`);
       return;
     }
-    const result = await this.workspaceContextService.writeWorkspaceToolPayload(TOOL_ID, toolState.payload, { reason, changedKeys });
+    const result = await this.workspaceDirtyNotifier(toolState.payload, { reason, changedKeys });
     if (result.skipped) {
       return;
     }

@@ -9,7 +9,10 @@ import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
 import { AudioSfxEngine } from "./services/AudioSfxEngine.js";
 import { ToolStateSerializer } from "./services/ToolStateSerializer.js";
-import { WorkspaceManagerV2ContextService } from "../../workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js";
+import { GameManifestLoader } from "../../../src/tools/common/GameManifestLoader.js";
+import { notifyWorkspaceToolDirty } from "../../../src/tools/common/WorkspaceDirtyNotifier.js";
+
+const TOOL_ID = "audio-sfx-playground-v2";
 
 function requireElement(selector) {
   const element = document.querySelector(selector);
@@ -74,6 +77,7 @@ window.addEventListener("DOMContentLoaded", () => {
       waveformSelect: requireElement("#waveformSelect")
     }),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
+    manifestLoader: new GameManifestLoader({ windowRef: window }),
     preview: new SfxPreviewControl(requireElement("#previewOutput")),
     serializer,
     shell: new ToolShellControl(),
@@ -81,7 +85,12 @@ window.addEventListener("DOMContentLoaded", () => {
     tileList: new SfxTileListControl({
       list: requireElement("#sfxTileList")
     }),
-    workspaceContextService: new WorkspaceManagerV2ContextService(),
+    workspaceDirtyNotifier: (payload, options) => notifyWorkspaceToolDirty({
+      ...options,
+      payload,
+      toolId: TOOL_ID,
+      windowRef: window
+    }),
     windowRef: window
   });
 
