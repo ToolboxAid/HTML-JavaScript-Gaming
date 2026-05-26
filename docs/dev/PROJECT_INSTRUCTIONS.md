@@ -1088,114 +1088,54 @@ ChatGPT must not claim code review was completed unless it inspected uploaded so
 
 Pattern-based or process-based review must be labeled as such.
 
-## FIRST-CLASS TOOL REGISTRATION RULE
+## FIRST-CLASS TOOL LIFECYCLE CONTRACTS
 
-New first-class tools must include registry, index, and NAV wiring where applicable.
+First-class tools are part of the Workspace V2 ecosystem by default.
 
-New first-class tools must include Playwright launch coverage.
+New first-class tools must live under `tools/<tool-name>/`.
 
-Tool registration must not rely on hidden defaults or silent fallback.
+New first-class tools must be created by copying `tools/_templates-v2/`.
 
-When creating a new first-class tool, Codex must copy the official template from `tools/_templates-v2/` first.
+The copied template structure is the authoritative starting point.
 
-The copied template must retain the template-provided:
-- header structure
-- NAV structure
-- panel layout
-- accordion structure
-- CSS wiring
-- JavaScript module wiring
-- status/logging areas
-- accessibility hooks
-- external script/css separation
-
-Add tool-specific code only after the copied template structure is preserved.
-
-Do not recreate the tool shell from scratch.
-
-Do not remove template sections unless the PR explicitly authorizes it.
-
-Keep HTML free of inline script/style/event handlers.
-
-Register the new tool only after the copied template is adapted.
-
-### First-Class Tool Template Preservation Boundaries
-
-Copied template structure is the authoritative starting point for new first-class tools.
-
-New tool development extends the template rather than replacing it.
+Tool-specific logic extends the copied template rather than replacing it.
 
 Preserve:
 - header shell
 - NAV shell
-- panel structure
-- status/log sections
-- accordion patterns
-- layout CSS wiring
-- JS bootstrapping structure
+- panel layout
+- accordion structure
+- status/logging regions
+- CSS wiring
+- JS bootstrapping
 - accessibility structure
-- external asset wiring
-
-Prohibited behaviors:
-- do not rebuild shell structure from scratch
-- do not inline CSS or JavaScript
-- do not bypass shared layout contracts
-- do not remove logging/status regions
-- do not create alternate header/NAV systems
-- do not introduce custom one-off layout patterns unless explicitly approved
-
-First-class tools should visually and structurally resemble the V2 ecosystem.
-
-Template consistency is part of stabilization and maintainability.
-
-Structural divergence requires explicit PR scope authorization.
-
-### Workspace-Managed First-Class Tool Creation Rules
-
-New first-class tools must live under `tools/<tool-name>/`.
 
 New first-class tools must integrate with `tools/workspace-manager-v2`.
 
-New tools are expected to launch through Workspace Manager V2 unless explicitly exempted.
-
-Workspace lifecycle integration requirements:
-- new tools must wire into existing dirty-state handling
-- new tools must wire into existing save/cancel flows
-- new tools must participate in shared workspace lifecycle expectations
-- new tools must not create isolated custom save-state systems
-- new tools must use existing workspace/toolState patterns when applicable
-
-Dirty-state participation is required for first-class workspace-managed tools.
-
-Save/cancel behavior should remain consistent across the V2 ecosystem.
-
-Custom persistence behavior requires explicit PR authorization.
-
-New tools should integrate into existing workspace launch/navigation patterns.
-
-### First-Class Tool Registration And Workspace Wiring
-
-New first-class tools must be added to:
+New first-class tools must register in:
 - `tools/index.html`
 - `tools/workspace-manager-v2/index.html`
 
+New first-class tools must participate in:
+- dirty-state handling
+- save/cancel lifecycle handling
+- workspace launch/navigation patterns
+- shared status/logging expectations
+
 Registration must use existing navigation and launch patterns.
 
-New tools must participate in Workspace Manager V2 launch flows unless explicitly exempted.
+New first-class tools must include Playwright launch coverage when runtime/UI behavior is introduced.
 
-Required integration expectations:
-- tools live under `tools/<tool-name>/`
-- tools must copy and preserve the V2 template structure from `tools/_templates-v2`
-- tools must wire into existing dirty-state handling
-- tools must wire into save/cancel lifecycle handling
-- tools must wire into workspace launch/navigation patterns
-- tools must wire into shared status/logging expectations
+Tool registration must not rely on hidden defaults or silent fallback.
 
-Prohibited registration and workspace wiring behaviors:
-- do not create isolated launch surfaces
-- do not bypass Workspace Manager V2 integration
-- do not create custom disconnected navigation systems
-- do not omit registration from `tools/index.html` or `tools/workspace-manager-v2/index.html`
+Enforcement clarifications:
+- isolated launch/navigation systems are prohibited unless explicitly approved
+- custom persistence/save systems are prohibited unless explicitly approved
+- shell rebuilds and alternate layout systems are prohibited unless explicitly approved
+- do not inline CSS or JavaScript
+- do not remove template sections unless the PR explicitly authorizes it
+- keep HTML free of inline script/style/event handlers
+- register the new tool only after the copied template is adapted
 
 ## TOOL TEMPLATE V2 LOCATION
 
