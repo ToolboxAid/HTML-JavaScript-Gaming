@@ -452,6 +452,18 @@ Affected game fixtures are optional targeted validation only.
 
 Samples are never implicit validation gates.
 
+Engine test matrix expectations:
+- name the affected engine surface
+- name the targeted engine validation command or manual check
+- name the fixture, manifest, or runtime input source
+- include one valid path and one failure path when applicable
+- state PASS/FAIL/WARN/SKIP criteria
+- identify dependent tool, integration, or sample lanes that are in scope
+
+Engine validation expands lane scope when a shared runtime API, shared parser, timing model, asset path rule, input contract, rendering contract, audio contract, or physics/runtime timing behavior changes.
+
+Tool validation alone is insufficient when the changed behavior lives in engine/shared runtime code, changes a shared runtime contract, or could affect more than one tool, game, or sample through a shared dependency.
+
 ### Workspace Contract Test Boundaries
 
 Workspace V2 tests validate contract and lifecycle only.
@@ -514,6 +526,28 @@ Fixture categories:
 Affected game fixtures are opt-in only.
 
 Fixtures must declare required manifests and toolState inputs.
+
+Deterministic runtime cleanup and isolation:
+- each lane owns cleanup for runtime state it creates
+- `localStorage` and `sessionStorage` must be cleared or namespaced before and after tests that touch them
+- parallel tests must isolate browser context, storage keys, ports, output paths, and artifact names
+- tests must not share mutable runtime state across workers unless the shared state is the explicit subject under test
+
+Fixture naming and versioning:
+- fixture names must identify the owning lane or tool, scenario, and version
+- shared fixtures must declare a version and owner
+- fixture updates that change expected behavior must bump or clearly annotate the fixture version
+
+Retry and timeout governance:
+- hidden retries remain prohibited
+- retries must identify the flaky test label, owner, and failure mode
+- timeouts must be explicit, lane-appropriate, and documented when raised above the local default
+- timeout increases must not hide missing readiness, cleanup, or fixture isolation defects
+
+Validation runtime budget guidance:
+- targeted validation should prefer the narrowest command that proves the affected lane
+- long-running validation must state why the extra runtime is necessary
+- reports must identify skipped long-running lanes and the reason they were skipped
 
 ### Test Failure Reporting Contracts
 
@@ -588,6 +622,26 @@ Shared-runtime blocker escalation requires identifying the root shared dependenc
 Integration-lane escalation is allowed only when an explicit cross-tool, workspace handoff, manifest handoff, palette propagation, or toolState open/save contract is in scope.
 
 Tool tests must not validate unrelated engine behavior.
+
+Boundary ownership surfaces:
+- engine owns rendering pipeline, asset loading, input dispatch, audio runtime, physics/runtime timing, shared manifest/runtime parsers, and shared runtime services
+- tools own tool UI, tool-specific state, toolState payload interpretation, tool-specific runtime behavior, preview/export actions, and tool diagnostics
+- integration owns workspace launch into a tool, manifest handoff, palette propagation, toolState open/save contracts, and explicit cross-tool handoffs
+
+Affected-engine-surface classification rules:
+- classify a change as engine-affecting when it modifies shared runtime code, shared parsers, shared asset/input/audio/rendering/physics behavior, or engine-facing runtime contracts
+- classify a change as tool-only when it uses stable engine contracts without modifying shared runtime behavior
+- if classification is ambiguous, name the likely engine surface and run engine validation before dependent tool validation
+
+Integration escalation rules:
+- escalate from tool to integration only when the PR changes a workspace handoff, manifest handoff, palette propagation, toolState open/save contract, or explicit cross-tool workflow
+- integration escalation must name the source lane, target lane, handoff contract, and expected behavior
+- integration failures block only the integration lane unless an identified shared dependency also blocks a dependent lane
+
+Shared runtime boundary rules:
+- shared runtime changes must not be accepted solely through one affected tool test
+- shared parser changes require validation of valid and invalid payload handling before dependent tool validation
+- shared runtime failures must identify the root shared dependency and every dependent lane that is blocked
 
 Every PR must document:
 - whether full samples test was skipped or run
@@ -672,6 +726,15 @@ Every tool completion PR must include:
 - Playwright result
 - manual validation steps
 
+Tool completion exit checklist:
+- required toolState payloads validate before render
+- invalid payloads reject without partial render
+- primary tool workflow is covered by targeted validation
+- undo/reset/import/export or equivalent state actions behave as documented when applicable
+- tool diagnostics identify PASS/FAIL/WARN/SKIP outcomes for targeted fixtures
+- no dead controls, dead accordions, hidden bootstrap assumptions, or silent fallback paths remain in the completed surface
+- validation reports identify skipped samples and skipped broad lanes
+
 ## CODEX ANTI-PATTERN GUARD
 
 These rules are mandatory for every Codex BUILD execution:
@@ -717,6 +780,16 @@ Do not expand into:
 - unrelated template rewrites
 - roadmap rewrites
 - sample JSON alignment until tools are complete
+
+Recovery lane completion checklist:
+- Workspace V2 contract behavior is stable for launch, manifest handoff, palette propagation, and toolState open/save paths
+- targeted tool completion exit checklists are satisfied for the tools in scope
+- unresolved failures are classified by lane, owner, fixture, and runtime surface
+- unrelated failures are reported as WARN and do not block the recovery lane
+- UI consistency blockers are either fixed or explicitly tracked outside the recovery exit
+- reports clearly state whether samples were skipped
+
+Transition into the future sample-alignment phase is allowed only after recovery-lane scope is complete, tool completion blockers are cleared or tracked, and sample work is explicitly named as the PR scope.
 
 ## ARRAY FORMATTING RULE
 
@@ -824,6 +897,13 @@ No PR is complete with:
 - Center = primary work surface.
 - Right panel = output/status/logging/diagnostics.
 - Status/log sections belong at the bottom of the right panel unless explicitly justified otherwise.
+
+UI consistency validation expectations:
+- header, NAV, panel, accordion, status, and action patterns must be verified for affected tool surfaces
+- fullscreen or expanded modes must preserve header, status, and primary action visibility unless explicitly designed otherwise
+- status areas must report current operation state and actionable failures
+- accordion controls must open, close, preserve state when expected, and expose no dead accordion behavior
+- dead accordion enforcement is mandatory for tool completion and recovery/UAT lanes
 
 ## INPUT RESOLUTION RULES
 
