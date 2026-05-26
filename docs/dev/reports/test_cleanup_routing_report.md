@@ -1,6 +1,6 @@
 # Test Cleanup Routing Report
 
-Generated: 2026-05-26T21:18:42.200Z
+Generated: 2026-05-26T21:44:59.273Z
 Status: PASS
 
 ## Representative Routing Cases
@@ -38,7 +38,6 @@ Full samples smoke decision: SKIP - Skipped because changed files do not modify 
 | --- | --- | --- |
 | test:asset-manager-v2 | INFO | playwright test tests/playwright/tools/AssetManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list |
 | test:preview-generator-v2 | INFO | playwright test tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --workers=1 --reporter=list |
-| test:workspace-v2 | INFO | playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list |
 
 ## Misplaced Test Probe
 

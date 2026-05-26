@@ -31,15 +31,15 @@
     ]
   },
   "dependencyHydrationHash": "1e6d53ee82652bb2",
-  "inputHash": "1f19b05ab0983a84",
+  "inputHash": "62800e71c1b48b0e",
   "lane": "game-runtime",
   "laneConfigHash": "8e52a14ee195199f",
-  "laneDefinitionHash": "266a66af3454fc0f",
-  "manifestHash": "6b3ea783bd50d09f",
+  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
+  "manifestHash": "5e04fc3c8d91a8c5",
   "ownership": "games",
-  "warmStartHash": "7df2baeee535208f",
+  "warmStartHash": "8a55ecd63cffd42d",
   "version": 1,
-  "generatedAt": "2026-05-26T20:21:56.763Z",
+  "generatedAt": "2026-05-26T21:31:24.856Z",
   "manifestPath": "docs/dev/reports/lane_manifests/game-runtime.json",
-  "sourceManifest": "persistent"
+  "sourceManifest": "generated"
 }

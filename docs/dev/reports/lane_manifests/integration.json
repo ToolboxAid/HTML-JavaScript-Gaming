@@ -25,15 +25,15 @@
     "tests/helpers/playwrightV8CoverageReporter.mjs",
     "tests/helpers/workspaceV2CoverageReporter.mjs"
   ],
-  "inputHash": "5d0da6db61d73d19",
+  "inputHash": "c2f678b64e5eba43",
   "lane": "integration",
-  "laneDefinitionHash": "266a66af3454fc0f",
-  "manifestHash": "a0a414fdcda4d881",
+  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
+  "manifestHash": "892306a4a4fbec1d",
   "ownership": "integration",
   "tests": [
     "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-05-26T20:04:58.453Z",
+  "generatedAt": "2026-05-26T21:31:24.807Z",
   "source": "generated"
 }

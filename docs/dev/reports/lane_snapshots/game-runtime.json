@@ -16,7 +16,7 @@
     ]
   },
   "dependencyGraphHash": "e6ec9fe53535987b",
-  "executionGraphHash": "9bc2253407c5b3be",
+  "executionGraphHash": "a136448e2634d746",
   "fixtureGraph": {
     "fixtureHashes": {
       "games/Asteroids/game.manifest.json": "e95aa97f885f0334"
@@ -39,10 +39,10 @@
     ]
   },
   "helperGraphHash": "0f54d667e883cc0a",
-  "inputHash": "1f19b05ab0983a84",
+  "inputHash": "62800e71c1b48b0e",
   "lane": "game-runtime",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "266a66af3454fc0f",
+  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
   "manifest": {
     "fileHashes": {
       "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
@@ -67,9 +67,9 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "6b3ea783bd50d09f",
+    "manifestHash": "5e04fc3c8d91a8c5",
     "manifestPath": "docs/dev/reports/lane_manifests/game-runtime.json",
-    "source": "persistent",
+    "source": "generated",
     "tests": [
       "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
       "tests/playwright/games/AsteroidsBeatTiming.spec.mjs",
@@ -77,7 +77,7 @@
       "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
     ]
   },
-  "manifestHash": "6b3ea783bd50d09f",
+  "manifestHash": "5e04fc3c8d91a8c5",
   "ownership": "games",
   "runtimeConfiguration": {
     "affectedSurface": "Game-owned Playwright runtime behavior",
@@ -110,8 +110,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "4c01fb575076779d",
-  "snapshotHash": "17990e72f99b3584",
+  "snapshotHash": "7915086503c9249e",
   "version": 1,
-  "warmStartHash": "7df2baeee535208f",
-  "generatedAt": "2026-05-26T20:47:18.668Z"
+  "warmStartHash": "8a55ecd63cffd42d",
+  "generatedAt": "2026-05-26T21:31:25.876Z"
 }

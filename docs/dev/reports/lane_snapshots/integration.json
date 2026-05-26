@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "4138c2ded15059b2",
-  "executionGraphHash": "c6571bb72b5f91c9",
+  "executionGraphHash": "e153f8b8ef5da4c7",
   "fixtureGraph": {
     "fixtureHashes": {
       "games/Pong/game.manifest.json": "c6b124046d3dbdf0"
@@ -43,10 +43,10 @@
     ]
   },
   "helperGraphHash": "5d0248502f5b423f",
-  "inputHash": "5d0da6db61d73d19",
+  "inputHash": "c2f678b64e5eba43",
   "lane": "integration",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "266a66af3454fc0f",
+  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
   "manifest": {
     "fileHashes": {
       "games/Pong/game.manifest.json": "c6b124046d3dbdf0",
@@ -71,14 +71,14 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "a0a414fdcda4d881",
+    "manifestHash": "892306a4a4fbec1d",
     "manifestPath": "docs/dev/reports/lane_manifests/integration.json",
-    "source": "persistent",
+    "source": "generated",
     "tests": [
       "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"
     ]
   },
-  "manifestHash": "a0a414fdcda4d881",
+  "manifestHash": "892306a4a4fbec1d",
   "ownership": "integration",
   "runtimeConfiguration": {
     "affectedSurface": "Workspace, tool, game index, and manifest handoff behavior",
@@ -107,8 +107,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "60dbdcfefd3273f2",
-  "snapshotHash": "a353b05f6923ff87",
+  "snapshotHash": "a20255e58ca73fd2",
   "version": 1,
-  "warmStartHash": "d847a2b8545945e9",
-  "generatedAt": "2026-05-26T20:47:18.671Z"
+  "warmStartHash": "6838e26e1923b9f0",
+  "generatedAt": "2026-05-26T21:31:25.879Z"
 }

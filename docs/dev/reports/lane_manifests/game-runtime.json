@@ -25,10 +25,10 @@
     "tests/helpers/playwrightV8CoverageReporter.mjs",
     "tests/helpers/workspaceV2CoverageReporter.mjs"
   ],
-  "inputHash": "1f19b05ab0983a84",
+  "inputHash": "62800e71c1b48b0e",
   "lane": "game-runtime",
-  "laneDefinitionHash": "266a66af3454fc0f",
-  "manifestHash": "6b3ea783bd50d09f",
+  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
+  "manifestHash": "5e04fc3c8d91a8c5",
   "ownership": "games",
   "tests": [
     "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
@@ -37,6 +37,6 @@
     "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-05-26T20:04:58.447Z",
+  "generatedAt": "2026-05-26T21:31:24.800Z",
   "source": "generated"
 }

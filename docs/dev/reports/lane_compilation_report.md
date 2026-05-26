@@ -1,13 +1,13 @@
 # Lane Compilation Report
 
-Generated: 2026-05-26T21:15:52.422Z
+Generated: 2026-05-26T21:43:06.648Z
 Status: PASS
 
 ## Lane Graph
 
 | Lane | Status | Affected Surface | Targets | Commands | Reason |
 | --- | --- | --- | --- | --- | --- |
-| workspace-contract | SKIP | Workspace Manager V2 contract and lifecycle behavior | none | npm.cmd run test:workspace-v2 | Lane was not selected. |
+| workspace-contract | SKIP | Workspace Manager V2 contract and lifecycle behavior | tests/playwright/tools/WorkspaceManagerV2.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
 | tool-runtime | PASS | First-class tool runtime behavior | tests/playwright/tools/AssetManagerV2.spec.mjs; tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs; tests/playwright/tools/CollisionInspectorV2.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetManagerV2.spec.mjs --grep "launch guard|temporary UAT context|rejects non-Workspace" --project=playwright --workers=1 --reporter=list; C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs tests/playwright/tools/CollisionInspectorV2.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
 | game-runtime | PASS | Game-owned Playwright runtime behavior | tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs; tests/playwright/games/AsteroidsBeatTiming.spec.mjs; tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs; tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs tests/playwright/games/AsteroidsBeatTiming.spec.mjs tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
 | integration | PASS | Workspace, tool, game index, and manifest handoff behavior | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs --grep Pong --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |

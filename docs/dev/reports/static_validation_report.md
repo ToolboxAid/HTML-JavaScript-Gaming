@@ -1,6 +1,6 @@
 # Static Validation Report
 
-Generated: 2026-05-26T21:15:52.409Z
+Generated: 2026-05-26T21:43:06.638Z
 Status: PASS
 Static only: No
 Dry run: No
@@ -25,7 +25,7 @@ Reason: No deterministic static validation failure was found.
 | invalid filename detection | PASS | Covered by Playwright structure audit. |
 | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | tool-runtime:999cd821c911cac6; game-runtime:6b3ea783bd50d09f; integration:a0a414fdcda4d881; engine-src:4b09c904c7f073c7 |
+| targeted file manifests | PASS | tool-runtime:ade0c4104a98fa3b; game-runtime:5e04fc3c8d91a8c5; integration:892306a4a4fbec1d; engine-src:b08a629e4c7cb2e0 |
 | persistent lane manifests | PASS | tool-runtime:REUSED; game-runtime:REUSED; integration:REUSED; engine-src:REUSED |
 | lane warm-start reuse | PASS | tool-runtime:REUSED; game-runtime:REUSED; integration:REUSED; engine-src:REUSED |
 | dependency hydration reuse | PASS | tool-runtime:REUSED; game-runtime:REUSED; integration:REUSED; engine-src:REUSED |

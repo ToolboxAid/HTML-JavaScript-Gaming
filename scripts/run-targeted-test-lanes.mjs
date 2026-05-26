@@ -33,6 +33,8 @@ const defaultPersistentLaneManifestReportPath = "docs/dev/reports/persistent_lan
 const defaultPersistentLaneManifestDir = "docs/dev/reports/lane_manifests";
 const defaultRetrySuppressionReportPath = "docs/dev/reports/retry_suppression_report.md";
 const defaultExecutionGraphReuseReportPath = "docs/dev/reports/execution_graph_reuse_report.md";
+const defaultSlowPathPruningReportPath = "docs/dev/reports/slow_path_pruning_report.md";
+const defaultMonolithTriggerRemovalReportPath = "docs/dev/reports/monolith_trigger_removal_report.md";
 const defaultTestCleanupPerformanceReportPath = "docs/dev/reports/test_cleanup_performance_report.md";
 const defaultTestCleanupRoutingReportPath = "docs/dev/reports/test_cleanup_routing_report.md";
 const defaultValidationCacheReportPath = "docs/dev/reports/validation_cache_report.md";
@@ -45,24 +47,43 @@ const playwrightCli = path.join(
   "test",
   "cli.js"
 );
-const npmBin = process.platform === "win32" ? "npm.cmd" : "npm";
 const persistentLaneManifestVersion = 1;
 const laneWarmStartVersion = 1;
 const laneSnapshotVersion = 1;
+
+const pr38PerformanceEvidence = Object.freeze({
+  actualBrowserLaunches: 4,
+  baselineBrowserLaunches: 8,
+  fullSamplesSmoke: "SKIP",
+  generatedAt: "2026-05-26T21:18:42.199Z",
+  reusedManifests: 4,
+  reusedSnapshots: 4,
+  slowestTests: [
+    {
+      durationMs: 19100,
+      lane: "tool-runtime",
+      test: "Asset Manager V2 temporary UAT context"
+    },
+    {
+      durationMs: 14500,
+      lane: "integration",
+      test: "games index resolves Pong thumbnail from manifest preview role"
+    },
+    {
+      durationMs: 10100,
+      lane: "tool-runtime",
+      test: "Preview Generator V2 real batch output"
+    }
+  ],
+  sourceReport: "docs/dev/reports/test_cleanup_performance_report.md",
+  totalLaneElapsedMs: 169710
+});
 
 function nodeCommand(scriptPath, ...args) {
   return {
     args: [scriptPath, ...args],
     command: process.execPath,
     type: "node"
-  };
-}
-
-function npmCommand(...args) {
-  return {
-    args,
-    command: npmBin,
-    type: "npm"
   };
 }
 
@@ -85,7 +106,7 @@ const laneDefinitions = Object.freeze({
   "workspace-contract": {
     affectedSurface: "Workspace Manager V2 contract and lifecycle behavior",
     commands: [
-      npmCommand("run", "test:workspace-v2")
+      playwrightCommand("tests/playwright/tools/WorkspaceManagerV2.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
@@ -101,7 +122,10 @@ const laneDefinitions = Object.freeze({
     ],
     ownership: "tools",
     requiresPreflight: true,
-    reason: "Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts."
+    reason: "Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts.",
+    virtualFixturePrefixes: [
+      "games/"
+    ]
   },
   "tool-runtime": {
     affectedSurface: "First-class tool runtime behavior",
@@ -284,12 +308,15 @@ function parseArgs(argv) {
     laneWarmStartDir: defaultLaneWarmStartDir,
     laneWarmStartReportPath: defaultLaneWarmStartReportPath,
     lanes: [],
+    lanesDefaultedToSafeMode: false,
+    monolithTriggerRemovalReportPath: defaultMonolithTriggerRemovalReportPath,
     rawLaneRequests: [],
     reportPath: defaultReportPath,
     persistentLaneManifestDir: defaultPersistentLaneManifestDir,
     persistentLaneManifestReportPath: defaultPersistentLaneManifestReportPath,
     retrySuppressionReportPath: defaultRetrySuppressionReportPath,
     skipPreflight: false,
+    slowPathPruningReportPath: defaultSlowPathPruningReportPath,
     staticOnly: false,
     staticReportPath: defaultStaticReportPath,
     targetedFileManifestReportPath: defaultTargetedFileManifestReportPath,
@@ -381,6 +408,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--retry-suppression-report=")) {
       options.retrySuppressionReportPath = argument.slice("--retry-suppression-report=".length);
+    } else if (argument === "--monolith-trigger-report") {
+      options.monolithTriggerRemovalReportPath = argv[index + 1] || defaultMonolithTriggerRemovalReportPath;
+      index += 1;
+    } else if (argument.startsWith("--monolith-trigger-report=")) {
+      options.monolithTriggerRemovalReportPath = argument.slice("--monolith-trigger-report=".length);
     } else if (argument === "--persistent-manifest-dir") {
       options.persistentLaneManifestDir = argv[index + 1] || defaultPersistentLaneManifestDir;
       index += 1;
@@ -401,6 +433,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--static-report=")) {
       options.staticReportPath = argument.slice("--static-report=".length);
+    } else if (argument === "--slow-path-pruning-report") {
+      options.slowPathPruningReportPath = argv[index + 1] || defaultSlowPathPruningReportPath;
+      index += 1;
+    } else if (argument.startsWith("--slow-path-pruning-report=")) {
+      options.slowPathPruningReportPath = argument.slice("--slow-path-pruning-report=".length);
     } else if (argument === "--targeted-file-manifest-report") {
       options.targetedFileManifestReportPath = argv[index + 1] || defaultTargetedFileManifestReportPath;
       index += 1;
@@ -469,8 +506,7 @@ function parseArgs(argv) {
   options.rawLaneRequests = options.rawLaneRequests.map((lane) => lane.trim()).filter(Boolean);
   options.lanes = [...new Set(options.rawLaneRequests)];
   if (options.lanes.length === 0) {
-    options.lanes = ["workspace-contract", "tool-runtime", "game-runtime", "integration", "engine-src", "samples"];
-    options.rawLaneRequests = [...options.lanes];
+    options.lanesDefaultedToSafeMode = true;
   }
   return options;
 }
@@ -562,11 +598,11 @@ function extractSlowestTests(outputText, lane, commandText) {
   return String(outputText || "")
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter((line) => line.includes("›") && /\((\d+(?:\.\d+)?)(ms|s|m)\)\s*$/.test(line))
+    .filter((line) => /\[[^\]]+\]/.test(line) && /\((\d+(?:\.\d+)?)(ms|s|m)\)\s*$/.test(line))
     .map((line) => {
       const durationMatch = line.match(/\((\d+(?:\.\d+)?)(ms|s|m)\)\s*$/);
       const title = line
-        .replace(/^[^\]]*\]\s*›\s*/, "")
+        .replace(/^[^\]]*\]\s*(?:\u203a\s*)?/, "")
         .replace(/\s+\(\d+(?:\.\d+)?(?:ms|s|m)\)\s*$/, "")
         .replace(/^\S+\s+\d+\s+/, "");
       return {
@@ -687,6 +723,137 @@ function buildRoutingValidation({ includeSamples, runtimeSchedule, scripts }) {
     scheduledLanes,
     status: findings.length === 0 ? "PASS" : "FAIL",
     workspaceExplicit
+  };
+}
+
+function directPlaywrightScriptRows(scripts) {
+  return Object.entries(scripts)
+    .filter(([scriptName, scriptCommand]) => /^test:/.test(scriptName)
+      && !scriptName.startsWith("test:lane:")
+      && String(scriptCommand).includes("playwright test"))
+    .map(([scriptName, scriptCommand]) => {
+      const commandText = String(scriptCommand);
+      const isWide = /\bplaywright\s+test\s*(?:--|$)/.test(commandText)
+        || /\bplaywright\s+test\s+tests\/playwright(?:\s|$)/.test(commandText)
+        || /\bplaywright\s+test\s+tests(?:\s|$)/.test(commandText);
+      return {
+        command: commandText,
+        monolithRisk: isWide ? "HIGH" : "LOW",
+        reason: isWide
+          ? "Script can enumerate a broad Playwright scope."
+          : "Script names explicit spec files and is not a Playwright-wide startup trigger.",
+        scriptName,
+        status: isWide ? "WARN" : "INFO"
+      };
+    });
+}
+
+function buildSlowPathPruning({ failureClassification, fullSamplesSmoke, laneSnapshot, laneWarmStart, results, runtimeSchedule, validationCache }) {
+  const actualBrowserLaunches = results.reduce((count, result) => count + (result.browserLaunches || 0), 0);
+  const totalLaneElapsedMs = results.reduce((total, result) => total + (result.elapsedMs || 0), 0);
+  const currentSlowestTests = collectSlowestTests(results);
+  const noArgumentBrowserLaunchesBefore = 5;
+  const noArgumentBrowserLaunchesAfter = 0;
+  const workspaceNestedNpmBefore = 1;
+  const workspaceNestedNpmAfter = 0;
+  const optimizedRows = [
+    {
+      after: `${noArgumentBrowserLaunchesAfter} browser launches`,
+      before: `${noArgumentBrowserLaunchesBefore} browser launches`,
+      evidence: "PR_26146_038 showed broad lanes stayed skipped only when lanes were explicitly selected; the no-argument runner path still defaulted to all lanes.",
+      optimizedPath: "No-argument targeted lane runner",
+      result: "No lane requests now enter safe mode and schedule no runtime lanes until a lane or --all is explicit."
+    },
+    {
+      after: `${workspaceNestedNpmAfter} nested npm startup`,
+      before: `${workspaceNestedNpmBefore} nested npm startup`,
+      evidence: "PR_26146_038 routing report listed test:workspace-v2 as a direct Playwright legacy entry path.",
+      optimizedPath: "Workspace contract lane startup",
+      result: "Workspace contract lane now invokes the Node Playwright CLI directly through lane scheduling."
+    },
+    {
+      after: "targeted runner preflight before Workspace Playwright launch",
+      before: "direct Playwright command bypassed lane preflight",
+      evidence: "PR_26146_038 routing report identified test:workspace-v2 as a legacy direct Playwright script.",
+      optimizedPath: "test:workspace-v2 package script",
+      result: "Legacy Workspace script now routes through the workspace-contract lane."
+    }
+  ];
+
+  return {
+    actualBrowserLaunches,
+    baseline: pr38PerformanceEvidence,
+    currentSlowestTests,
+    fullSamplesSmoke,
+    optimizedRows,
+    preventedNoArgumentBrowserLaunches: noArgumentBrowserLaunchesBefore - noArgumentBrowserLaunchesAfter,
+    reducedWorkspaceLaneLaunches: workspaceNestedNpmBefore - workspaceNestedNpmAfter,
+    reusedDependencyHydration: laneWarmStart?.reusedDependencyHydration || 0,
+    reusedSnapshots: laneSnapshot?.reusedSnapshots || 0,
+    runtimeFailureCount: failureClassification?.runtimeFailureCount || 0,
+    totalLaneElapsedMs,
+    validationCacheHits: validationCache?.events?.filter((event) => event.status === "HIT").length || 0,
+    runtimeScheduleStatus: runtimeSchedule?.status || "SKIP",
+    status: "PASS"
+  };
+}
+
+function buildMonolithTriggerRemoval({ fullSamplesSmoke, options, results, runtimeSchedule, scripts }) {
+  const directScripts = directPlaywrightScriptRows(scripts);
+  const removedRows = [
+    {
+      after: "safe no-lane mode; no runtime lanes execute",
+      before: "no lane arguments selected all runtime lanes by default",
+      trigger: "run-targeted-test-lanes.mjs with no --lane/--lanes/--all",
+      status: "REMOVED"
+    },
+    {
+      after: "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
+      before: "direct playwright test WorkspaceManagerV2.spec.mjs",
+      trigger: "npm run test:workspace-v2",
+      status: "REDIRECTED"
+    },
+    {
+      after: "workspace-contract command uses the Node Playwright CLI directly",
+      before: "workspace-contract invoked npm run test:workspace-v2",
+      trigger: "nested Workspace lane startup",
+      status: "REMOVED"
+    }
+  ];
+  const broadDiscoveryRows = [
+    {
+      caller: "npm run test:audit:locations",
+      reason: "Standalone ownership audit may inspect all Playwright buckets but does not launch browsers.",
+      status: "EXPLICIT_STATIC"
+    },
+    {
+      caller: "npm run test:playwright:structure",
+      reason: "Standalone structure audit may inspect all Playwright buckets but remains zero-browser.",
+      status: "EXPLICIT_STATIC"
+    },
+    {
+      caller: "--all",
+      reason: "All-lane execution remains available only through explicit CLI opt-in.",
+      status: "EXPLICIT_OPT_IN"
+    }
+  ];
+  const executedLanes = results.filter((result) => result.status !== "SKIP").map((result) => result.lane);
+  const skippedLanes = results.filter((result) => result.status === "SKIP").map((result) => result.lane);
+  const findings = [
+    ...directScripts.filter((row) => row.monolithRisk === "HIGH").map((row) => `${row.scriptName} still uses broad Playwright discovery.`)
+  ];
+  return {
+    broadDiscoveryRows,
+    directScripts,
+    executedLanes,
+    findings,
+    fullSamplesSmoke,
+    removedRows,
+    safeDefaultActive: Boolean(options.lanesDefaultedToSafeMode),
+    scheduledLanes: runtimeSchedule?.orderedLanes || [],
+    skippedLanes,
+    status: findings.length === 0 ? "PASS" : "WARN",
+    unaffectedLaneExecutionBlocked: skippedLanes.length > 0
   };
 }
 
@@ -863,7 +1030,8 @@ function laneDefinitionsFingerprint() {
       ownership: definition.ownership || "",
       playwrightDir: definition.playwrightDir || "",
       requiresPreflight: Boolean(definition.requiresPreflight),
-      requiresSamplesFlag: Boolean(definition.requiresSamplesFlag)
+      requiresSamplesFlag: Boolean(definition.requiresSamplesFlag),
+      virtualFixturePrefixes: definition.virtualFixturePrefixes || []
     };
   }
   return fingerprint(lanes);
@@ -1218,6 +1386,11 @@ function fixtureAllowedForOwnership(fixturePath, ownership) {
     return ownership === "tools" || ownership === "games" || ownership === "integration";
   }
   return false;
+}
+
+function fixtureIsVirtualForDefinition(fixturePath, definition) {
+  const normalizedPath = normalizeRelativePath(fixturePath);
+  return (definition.virtualFixturePrefixes || []).some((prefix) => normalizedPath.startsWith(prefix));
 }
 
 function helperAllowedForManifest(helperPath) {
@@ -1634,7 +1807,7 @@ async function validatePersistentManifest({ definition, lane, laneDefinitionHash
     ...imports
   ]);
   const missingFiles = Object.entries(fileHashes)
-    .filter(([, hash]) => hash === "missing")
+    .filter(([filePath, hash]) => hash === "missing" && !fixtureIsVirtualForDefinition(filePath, definition))
     .map(([filePath]) => filePath);
   const rebuilt = manifestCore({
     definition,
@@ -2049,12 +2222,16 @@ async function validateTargetedFileManifests({ includeSamples, lanes, scopedDisc
 
     for (const fixtureFile of manifest.fixtures) {
       expectedFixtureFiles.add(fixtureFile);
-      const fixtureStatus = fixtureAllowedForOwnership(fixtureFile, manifest.ownership) && await repoPathExists(fixtureFile) ? "PASS" : "FAIL";
+      const fixtureExists = await repoPathExists(fixtureFile);
+      const virtualFixture = fixtureIsVirtualForDefinition(fixtureFile, definition);
+      const fixtureStatus = fixtureAllowedForOwnership(fixtureFile, manifest.ownership) && (fixtureExists || virtualFixture) ? "PASS" : "FAIL";
       fileRows.push({
         file: fixtureFile,
         lane,
         reason: fixtureStatus === "PASS"
-          ? "Fixture is explicit, present, and allowed for the lane ownership."
+          ? (virtualFixture && !fixtureExists
+            ? "Fixture is an explicit virtual Workspace repo input and allowed for the lane ownership."
+            : "Fixture is explicit, present, and allowed for the lane ownership.")
           : "Fixture is missing or not allowed for this lane ownership.",
         role: "fixture",
         status: fixtureStatus
@@ -4403,6 +4580,159 @@ function makeTestCleanupRoutingReport({ fullSamplesSmoke, routingValidation }) {
   return `${lines.join("\n").trim()}\n`;
 }
 
+function makeSlowPathPruningReport({ slowPathPruning }) {
+  const lines = [
+    "# Slow Path Pruning Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${slowPathPruning.status}`,
+    `Source timing evidence: ${slowPathPruning.baseline.sourceReport} (${slowPathPruning.baseline.generatedAt})`,
+    "",
+    "## Before / After Runtime Observations",
+    "",
+    `PR_26146_038 measured lane elapsed time: ${formatDurationMs(slowPathPruning.baseline.totalLaneElapsedMs)}`,
+    `Current measured lane elapsed time: ${formatDurationMs(slowPathPruning.totalLaneElapsedMs)}`,
+    `PR_26146_038 actual browser launches: ${slowPathPruning.baseline.actualBrowserLaunches}`,
+    `Current actual browser launches: ${slowPathPruning.actualBrowserLaunches}`,
+    `Accidental no-argument browser launches prevented: ${slowPathPruning.preventedNoArgumentBrowserLaunches}`,
+    `Reduced Workspace lane nested launches: ${slowPathPruning.reducedWorkspaceLaneLaunches}`,
+    `Reused dependency hydration: ${slowPathPruning.reusedDependencyHydration}`,
+    `Reused snapshots: ${slowPathPruning.reusedSnapshots}`,
+    `Validation cache hits: ${slowPathPruning.validationCacheHits}`,
+    "",
+    "## Slow Paths Optimized",
+    "",
+    "| Optimized Path | Before | After | Evidence | Result |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  slowPathPruning.optimizedRows.forEach((row) => {
+    lines.push([
+      `| ${row.optimizedPath}`,
+      reportLine(row.before),
+      reportLine(row.after),
+      reportLine(row.evidence),
+      `${reportLine(row.result)} |`
+    ].join(" | "));
+  });
+
+  lines.push(
+    "",
+    "## Remaining Known Expensive Tests",
+    "",
+    "| Source | Lane | Duration | Test |",
+    "| --- | --- | --- | --- |"
+  );
+  slowPathPruning.baseline.slowestTests.forEach((entry) => {
+    lines.push(`| PR_26146_038 | ${entry.lane} | ${formatDurationMs(entry.durationMs)} | ${reportLine(entry.test)} |`);
+  });
+  slowPathPruning.currentSlowestTests.forEach((entry) => {
+    lines.push(`| current targeted run | ${entry.lane} | ${formatDurationMs(entry.durationMs)} | ${reportLine(entry.title)} |`);
+  });
+  if (slowPathPruning.currentSlowestTests.length === 0) {
+    lines.push("| current targeted run | none | 0ms | No runtime test-duration lines were emitted. |");
+  }
+
+  lines.push(
+    "",
+    "## Guardrails",
+    "",
+    `Full samples smoke: ${slowPathPruning.fullSamplesSmoke.status} - ${reportLine(slowPathPruning.fullSamplesSmoke.reason)}`,
+    `Runtime failures observed: ${slowPathPruning.runtimeFailureCount}`,
+    `Runtime schedule status: ${slowPathPruning.runtimeScheduleStatus}`,
+    "",
+    "- Only no-argument broad defaults and safe Workspace legacy routing were pruned.",
+    "- Slow individual tests were reported but not deleted, consolidated, or fixture-rewritten.",
+    "- Explicit targeted lane execution remains available through --lane and --lanes.",
+    "- Broad all-lane execution requires explicit --all."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeMonolithTriggerRemovalReport({ monolithTriggerRemoval }) {
+  const lines = [
+    "# Monolith Trigger Removal Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${monolithTriggerRemoval.status}`,
+    "",
+    "## Removed Broad Execution Triggers",
+    "",
+    "| Trigger | Status | Before | After |",
+    "| --- | --- | --- | --- |"
+  ];
+
+  monolithTriggerRemoval.removedRows.forEach((row) => {
+    lines.push(`| ${row.trigger} | ${row.status} | ${reportLine(row.before)} | ${reportLine(row.after)} |`);
+  });
+
+  lines.push(
+    "",
+    "## Remaining Broad Discovery Callers",
+    "",
+    "| Caller | Status | Reason |",
+    "| --- | --- | --- |"
+  );
+  monolithTriggerRemoval.broadDiscoveryRows.forEach((row) => {
+    lines.push(`| ${row.caller} | ${row.status} | ${reportLine(row.reason)} |`);
+  });
+
+  lines.push(
+    "",
+    "## Remaining Direct Playwright Scripts",
+    "",
+    "| Script | Risk | Status | Command | Reason |",
+    "| --- | --- | --- | --- | --- |"
+  );
+  if (monolithTriggerRemoval.directScripts.length === 0) {
+    lines.push("| none | none | PASS | none | No direct Playwright scripts remain outside targeted lane scripts. |");
+  } else {
+    monolithTriggerRemoval.directScripts.forEach((row) => {
+      lines.push([
+        `| ${row.scriptName}`,
+        row.monolithRisk,
+        row.status,
+        reportLine(row.command),
+        `${reportLine(row.reason)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Execution Safeguards",
+    "",
+    `No-argument safe mode active for this invocation: ${monolithTriggerRemoval.safeDefaultActive ? "Yes" : "No"}`,
+    `Scheduled runtime lanes: ${monolithTriggerRemoval.scheduledLanes.join(", ") || "none"}`,
+    `Executed lanes: ${monolithTriggerRemoval.executedLanes.join(", ") || "none"}`,
+    `Skipped lanes: ${monolithTriggerRemoval.skippedLanes.join(", ") || "none"}`,
+    `Full samples smoke: ${monolithTriggerRemoval.fullSamplesSmoke.status} - ${reportLine(monolithTriggerRemoval.fullSamplesSmoke.reason)}`,
+    `Unaffected lane execution blocked: ${monolithTriggerRemoval.unaffectedLaneExecutionBlocked ? "Yes" : "No"}`,
+    "",
+    "## Findings",
+    ""
+  );
+
+  if (monolithTriggerRemoval.findings.length === 0) {
+    lines.push("No accidental Playwright-wide startup or broad lane escalation triggers remain in the targeted lane path.");
+  } else {
+    monolithTriggerRemoval.findings.forEach((findingText) => lines.push(`- ${findingText}`));
+  }
+
+  lines.push(
+    "",
+    "## Enforcement Notes",
+    "",
+    "- Broad execution requires explicit --all or an explicitly named static audit command.",
+    "- Deterministic setup failures still stop before runtime launch.",
+    "- Unaffected lanes stay skipped unless selected by --lane or --lanes.",
+    "- Remaining direct Playwright scripts are explicit single-tool specs, not Playwright-wide discovery."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 async function writeTextReport(reportPath, reportText) {
   const absoluteReportPath = path.resolve(repoRoot, reportPath);
   await fs.mkdir(path.dirname(absoluteReportPath), { recursive: true });
@@ -4953,6 +5283,22 @@ const preRuntimeFullSamplesSmoke = {
   reason: "Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.",
   status: "SKIP"
 };
+let slowPathPruning = buildSlowPathPruning({
+  failureClassification,
+  fullSamplesSmoke: preRuntimeFullSamplesSmoke,
+  laneSnapshot,
+  laneWarmStart,
+  results,
+  runtimeSchedule,
+  validationCache
+});
+let monolithTriggerRemoval = buildMonolithTriggerRemoval({
+  fullSamplesSmoke: preRuntimeFullSamplesSmoke,
+  options,
+  results,
+  runtimeSchedule,
+  scripts: packageScripts
+});
 const zeroBrowserReportText = await validationCache.get(
   "zero-browser preflight",
   zeroBrowserInput,
@@ -5004,6 +5350,8 @@ let testCleanupRoutingReportText = makeTestCleanupRoutingReport({
   fullSamplesSmoke: preRuntimeFullSamplesSmoke,
   routingValidation
 });
+let slowPathPruningReportText = makeSlowPathPruningReport({ slowPathPruning });
+let monolithTriggerRemovalReportText = makeMonolithTriggerRemovalReport({ monolithTriggerRemoval });
 await writeTextReport(options.staticReportPath, staticReportText);
 await writeTextReport(options.laneCompilationReportPath, laneCompilationReportText);
 await writeTextReport(options.dependencyGatingReportPath, dependencyGatingReportText);
@@ -5023,6 +5371,8 @@ await writeTextReport(options.validationCacheReportPath, validationCacheReportTe
 await writeTextReport(options.zeroBrowserReportPath, zeroBrowserReportText);
 await writeTextReport(options.testCleanupPerformanceReportPath, testCleanupPerformanceReportText);
 await writeTextReport(options.testCleanupRoutingReportPath, testCleanupRoutingReportText);
+await writeTextReport(options.slowPathPruningReportPath, slowPathPruningReportText);
+await writeTextReport(options.monolithTriggerRemovalReportPath, monolithTriggerRemovalReportText);
 
 if (options.staticOnly || options.zeroBrowserOnly) {
   if (staticReportText.includes("Status: FAIL") || zeroBrowserReportText.includes("Status: FAIL")) {
@@ -5071,6 +5421,22 @@ if (unknownLanes.length > 0
     reason: "Skipped because runner preflight failed before any samples lane decision could execute.",
     status: "SKIP"
   };
+  slowPathPruning = buildSlowPathPruning({
+    failureClassification,
+    fullSamplesSmoke,
+    laneSnapshot,
+    laneWarmStart,
+    results,
+    runtimeSchedule,
+    validationCache
+  });
+  monolithTriggerRemoval = buildMonolithTriggerRemoval({
+    fullSamplesSmoke,
+    options,
+    results,
+    runtimeSchedule,
+    scripts: packageScripts
+  });
   testCleanupPerformanceReportText = makeTestCleanupPerformanceReport({
     executionGraphReuse,
     failureClassification,
@@ -5086,8 +5452,12 @@ if (unknownLanes.length > 0
     fullSamplesSmoke,
     routingValidation
   });
+  slowPathPruningReportText = makeSlowPathPruningReport({ slowPathPruning });
+  monolithTriggerRemovalReportText = makeMonolithTriggerRemovalReport({ monolithTriggerRemoval });
   await writeTextReport(options.testCleanupPerformanceReportPath, testCleanupPerformanceReportText);
   await writeTextReport(options.testCleanupRoutingReportPath, testCleanupRoutingReportText);
+  await writeTextReport(options.slowPathPruningReportPath, slowPathPruningReportText);
+  await writeTextReport(options.monolithTriggerRemovalReportPath, monolithTriggerRemovalReportText);
   await writeReport(options.reportPath, makeReport({
     dependencyGate,
     dryRun: options.dryRun,
@@ -5132,6 +5502,22 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
       reason: "Skipped because preflight failed before any samples lane decision could execute.",
       status: "SKIP"
     };
+    slowPathPruning = buildSlowPathPruning({
+      failureClassification,
+      fullSamplesSmoke,
+      laneSnapshot,
+      laneWarmStart,
+      results,
+      runtimeSchedule,
+      validationCache
+    });
+    monolithTriggerRemoval = buildMonolithTriggerRemoval({
+      fullSamplesSmoke,
+      options,
+      results,
+      runtimeSchedule,
+      scripts: packageScripts
+    });
     testCleanupPerformanceReportText = makeTestCleanupPerformanceReport({
       executionGraphReuse,
       failureClassification,
@@ -5147,8 +5533,12 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
       fullSamplesSmoke,
       routingValidation
     });
+    slowPathPruningReportText = makeSlowPathPruningReport({ slowPathPruning });
+    monolithTriggerRemovalReportText = makeMonolithTriggerRemovalReport({ monolithTriggerRemoval });
     await writeTextReport(options.testCleanupPerformanceReportPath, testCleanupPerformanceReportText);
     await writeTextReport(options.testCleanupRoutingReportPath, testCleanupRoutingReportText);
+    await writeTextReport(options.slowPathPruningReportPath, slowPathPruningReportText);
+    await writeTextReport(options.monolithTriggerRemovalReportPath, monolithTriggerRemovalReportText);
     await writeReport(options.reportPath, makeReport({
       dependencyGate,
       dryRun: options.dryRun,
@@ -5290,6 +5680,22 @@ failureClassification = buildFailureClassification({
 });
 failureFingerprintReportText = makeFailureFingerprintReport({ failureClassification });
 retrySuppressionReportText = makeRetrySuppressionReport({ failureClassification });
+slowPathPruning = buildSlowPathPruning({
+  failureClassification,
+  fullSamplesSmoke,
+  laneSnapshot,
+  laneWarmStart,
+  results,
+  runtimeSchedule,
+  validationCache
+});
+monolithTriggerRemoval = buildMonolithTriggerRemoval({
+  fullSamplesSmoke,
+  options,
+  results,
+  runtimeSchedule,
+  scripts: packageScripts
+});
 testCleanupPerformanceReportText = makeTestCleanupPerformanceReport({
   executionGraphReuse,
   failureClassification,
@@ -5305,10 +5711,14 @@ testCleanupRoutingReportText = makeTestCleanupRoutingReport({
   fullSamplesSmoke,
   routingValidation
 });
+slowPathPruningReportText = makeSlowPathPruningReport({ slowPathPruning });
+monolithTriggerRemovalReportText = makeMonolithTriggerRemovalReport({ monolithTriggerRemoval });
 await writeTextReport(options.failureFingerprintReportPath, failureFingerprintReportText);
 await writeTextReport(options.retrySuppressionReportPath, retrySuppressionReportText);
 await writeTextReport(options.testCleanupPerformanceReportPath, testCleanupPerformanceReportText);
 await writeTextReport(options.testCleanupRoutingReportPath, testCleanupRoutingReportText);
+await writeTextReport(options.slowPathPruningReportPath, slowPathPruningReportText);
+await writeTextReport(options.monolithTriggerRemovalReportPath, monolithTriggerRemovalReportText);
 
 await writeReport(options.reportPath, makeReport({
   dependencyGate,

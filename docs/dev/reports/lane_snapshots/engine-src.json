@@ -70,7 +70,7 @@
     ]
   },
   "dependencyGraphHash": "e2570ebce03c46e3",
-  "executionGraphHash": "ec4e15969f9cbbcb",
+  "executionGraphHash": "2ef0b65a0694c012",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -81,10 +81,10 @@
     "helpers": []
   },
   "helperGraphHash": "9a3856cec31b7349",
-  "inputHash": "0f5dac5319ea6241",
+  "inputHash": "ed506a1f72c78a8a",
   "lane": "engine-src",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "266a66af3454fc0f",
+  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
   "manifest": {
     "fileHashes": {
       "src/engine/assets/AssetLoaderSystem.js": "1079dbc1f02d3b1a",
@@ -163,9 +163,9 @@
       "src/engine/systems/MovementSystem.js",
       "src/engine/systems/PhysicsSystem.js"
     ],
-    "manifestHash": "4b09c904c7f073c7",
+    "manifestHash": "b08a629e4c7cb2e0",
     "manifestPath": "docs/dev/reports/lane_manifests/engine-src.json",
-    "source": "persistent",
+    "source": "generated",
     "tests": [
       "tests/assets/AssetLoaderSystem.test.mjs",
       "tests/audio/AudioService.test.mjs",
@@ -180,7 +180,7 @@
       "tests/render/Renderer.test.mjs"
     ]
   },
-  "manifestHash": "4b09c904c7f073c7",
+  "manifestHash": "b08a629e4c7cb2e0",
   "ownership": "engine",
   "runtimeConfiguration": {
     "affectedSurface": "src/ engine and shared runtime capability behavior",
@@ -223,8 +223,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "bdd9bad8af92ade1",
-  "snapshotHash": "7d6eb29ee4ba4d7c",
+  "snapshotHash": "b6231833fe69e407",
   "version": 1,
-  "warmStartHash": "3e467919ebe3d492",
-  "generatedAt": "2026-05-26T20:47:18.673Z"
+  "warmStartHash": "1d5c02f193ae21af",
+  "generatedAt": "2026-05-26T21:31:25.882Z"
 }

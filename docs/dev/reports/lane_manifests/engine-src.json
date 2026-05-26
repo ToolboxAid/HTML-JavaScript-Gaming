@@ -79,10 +79,10 @@
     "src/engine/systems/MovementSystem.js",
     "src/engine/systems/PhysicsSystem.js"
   ],
-  "inputHash": "0f5dac5319ea6241",
+  "inputHash": "ed506a1f72c78a8a",
   "lane": "engine-src",
-  "laneDefinitionHash": "266a66af3454fc0f",
-  "manifestHash": "4b09c904c7f073c7",
+  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
+  "manifestHash": "b08a629e4c7cb2e0",
   "ownership": "engine",
   "tests": [
     "tests/assets/AssetLoaderSystem.test.mjs",
@@ -98,6 +98,6 @@
     "tests/render/Renderer.test.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-05-26T20:04:58.489Z",
+  "generatedAt": "2026-05-26T21:31:24.831Z",
   "source": "generated"
 }

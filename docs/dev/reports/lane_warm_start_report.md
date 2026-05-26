@@ -1,6 +1,6 @@
 # Lane Warm-Start Report
 
-Generated: 2026-05-26T21:15:52.422Z
+Generated: 2026-05-26T21:43:06.649Z
 Status: PASS
 Warm-start directory: docs/dev/reports/lane_warm_starts
 
@@ -17,10 +17,10 @@ Prevented lane graph assembly: 4
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| tool-runtime | REUSED | docs/dev/reports/lane_warm_starts/tool-runtime.json | 999cd821c911cac6 | d09c1b2843983b2b | 0fecfc07e559cf38 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
-| game-runtime | REUSED | docs/dev/reports/lane_warm_starts/game-runtime.json | 6b3ea783bd50d09f | 7df2baeee535208f | 1e6d53ee82652bb2 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
-| integration | REUSED | docs/dev/reports/lane_warm_starts/integration.json | a0a414fdcda4d881 | d847a2b8545945e9 | a26bcd0115fc4315 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
-| engine-src | REUSED | docs/dev/reports/lane_warm_starts/engine-src.json | 4b09c904c7f073c7 | 3e467919ebe3d492 | e13166ce3ced2d3e | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
+| tool-runtime | REUSED | docs/dev/reports/lane_warm_starts/tool-runtime.json | ade0c4104a98fa3b | db19ac3f04972bd7 | 0fecfc07e559cf38 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
+| game-runtime | REUSED | docs/dev/reports/lane_warm_starts/game-runtime.json | 5e04fc3c8d91a8c5 | 8a55ecd63cffd42d | 1e6d53ee82652bb2 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
+| integration | REUSED | docs/dev/reports/lane_warm_starts/integration.json | 892306a4a4fbec1d | 6838e26e1923b9f0 | a26bcd0115fc4315 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
+| engine-src | REUSED | docs/dev/reports/lane_warm_starts/engine-src.json | b08a629e4c7cb2e0 | 1d5c02f193ae21af | e13166ce3ced2d3e | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
 
 ## Fast-Fail Safeguards
 

@@ -1,18 +1,36 @@
 {
-  "commandsHash": "01ccc12413dbfbdf",
+  "commandsHash": "f2b9a48be591584a",
   "dependencyGraphHash": "4138c2ded15059b2",
   "dependencyHydration": {
-    "dependencyHydrationHash": "0fecfc07e559cf38",
+    "dependencyHydrationHash": "57d5580a00e01e26",
     "fixtureHashes": {
+      "games/AITargetDummy/game.manifest.json": "2c8db43659b7eed7",
       "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
+      "games/Bouncing-ball/game.manifest.json": "aff51c94c9677f4c",
+      "games/Breakout/game.manifest.json": "395416dbea373a08",
       "games/GravityWell/game.manifest.json": "947361edb0b9c4cf",
+      "games/InvalidWorkspace/game.manifest.json": "missing",
+      "games/Pacman/game.manifest.json": "7761f811f990e7d2",
       "games/Pong/game.manifest.json": "c6b124046d3dbdf0",
+      "games/SolarSystem/game.manifest.json": "1c1fd265d36b7e2e",
+      "games/SpaceDuel/game.manifest.json": "2e4fdbb109606b2a",
+      "games/SpaceInvaders/game.manifest.json": "31983bdeac0eac77",
+      "games/vector-arcade-sample/game.manifest.json": "2155d563446a5667",
       "tests/fixtures/workspace-v2/uat.manifest.json": "4b2d4b7e04df35e3"
     },
     "fixtures": [
+      "games/AITargetDummy/game.manifest.json",
       "games/Asteroids/game.manifest.json",
+      "games/Bouncing-ball/game.manifest.json",
+      "games/Breakout/game.manifest.json",
       "games/GravityWell/game.manifest.json",
+      "games/InvalidWorkspace/game.manifest.json",
+      "games/Pacman/game.manifest.json",
       "games/Pong/game.manifest.json",
+      "games/SolarSystem/game.manifest.json",
+      "games/SpaceDuel/game.manifest.json",
+      "games/SpaceInvaders/game.manifest.json",
+      "games/vector-arcade-sample/game.manifest.json",
       "tests/fixtures/workspace-v2/uat.manifest.json"
     ],
     "helperHashes": {
@@ -40,16 +58,16 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "dependencyHydrationHash": "0fecfc07e559cf38",
-  "inputHash": "b3f312619ab75947",
-  "lane": "tool-runtime",
-  "laneConfigHash": "3c548af4d8539aef",
+  "dependencyHydrationHash": "57d5580a00e01e26",
+  "inputHash": "262c037f816beed6",
+  "lane": "workspace-contract",
+  "laneConfigHash": "7c4e88b944af7517",
   "laneDefinitionHash": "a5d5b2e8b3ff60ce",
-  "manifestHash": "ade0c4104a98fa3b",
+  "manifestHash": "042915c1cc7d1c2e",
   "ownership": "tools",
-  "warmStartHash": "db19ac3f04972bd7",
+  "warmStartHash": "414657ab49deacb3",
   "version": 1,
-  "generatedAt": "2026-05-26T21:31:24.850Z",
-  "manifestPath": "docs/dev/reports/lane_manifests/tool-runtime.json",
+  "generatedAt": "2026-05-26T21:31:24.848Z",
+  "manifestPath": "docs/dev/reports/lane_manifests/workspace-contract.json",
   "sourceManifest": "generated"
 }
