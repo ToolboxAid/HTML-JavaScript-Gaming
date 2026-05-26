@@ -33,6 +33,8 @@ const defaultPersistentLaneManifestReportPath = "docs/dev/reports/persistent_lan
 const defaultPersistentLaneManifestDir = "docs/dev/reports/lane_manifests";
 const defaultRetrySuppressionReportPath = "docs/dev/reports/retry_suppression_report.md";
 const defaultExecutionGraphReuseReportPath = "docs/dev/reports/execution_graph_reuse_report.md";
+const defaultTestCleanupPerformanceReportPath = "docs/dev/reports/test_cleanup_performance_report.md";
+const defaultTestCleanupRoutingReportPath = "docs/dev/reports/test_cleanup_routing_report.md";
 const defaultValidationCacheReportPath = "docs/dev/reports/validation_cache_report.md";
 const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
@@ -228,6 +230,39 @@ const laneDefinitions = Object.freeze({
   }
 });
 
+const representativeRoutingCases = Object.freeze([
+  {
+    caseName: "docs-only change",
+    changedFiles: ["docs/dev/PROJECT_INSTRUCTIONS.md"],
+    expectedLanes: [],
+    reason: "Docs/workflow-only changes use static review evidence; runtime lanes, Workspace V2, and samples stay explicit/on-request."
+  },
+  {
+    caseName: "tool change",
+    changedFiles: ["tools/audio-sfx-playground-v2/index.js"],
+    expectedLanes: ["tool-runtime"],
+    reason: "Tool-owned runtime/UI changes route to the affected tool-runtime lane only."
+  },
+  {
+    caseName: "game change",
+    changedFiles: ["games/asteroids/asteroids.js"],
+    expectedLanes: ["game-runtime"],
+    reason: "Game-owned runtime changes route to game-runtime without treating tool lanes as blockers."
+  },
+  {
+    caseName: "src change",
+    changedFiles: ["src/input/InputMap.js"],
+    expectedLanes: ["engine-src"],
+    reason: "Reusable src/ capability changes route to engine-src validation first."
+  },
+  {
+    caseName: "integration change",
+    changedFiles: ["tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"],
+    expectedLanes: ["integration"],
+    reason: "Cross-surface handoff coverage routes to the integration lane only."
+  }
+]);
+
 function parseArgs(argv) {
   const options = {
     dependencyGatingReportPath: defaultDependencyGatingReportPath,
@@ -258,6 +293,8 @@ function parseArgs(argv) {
     staticOnly: false,
     staticReportPath: defaultStaticReportPath,
     targetedFileManifestReportPath: defaultTargetedFileManifestReportPath,
+    testCleanupPerformanceReportPath: defaultTestCleanupPerformanceReportPath,
+    testCleanupRoutingReportPath: defaultTestCleanupRoutingReportPath,
     validationCacheReportPath: defaultValidationCacheReportPath,
     zeroBrowserOnly: false,
     zeroBrowserReportPath: defaultZeroBrowserReportPath
@@ -369,6 +406,16 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--targeted-file-manifest-report=")) {
       options.targetedFileManifestReportPath = argument.slice("--targeted-file-manifest-report=".length);
+    } else if (argument === "--test-cleanup-performance-report") {
+      options.testCleanupPerformanceReportPath = argv[index + 1] || defaultTestCleanupPerformanceReportPath;
+      index += 1;
+    } else if (argument.startsWith("--test-cleanup-performance-report=")) {
+      options.testCleanupPerformanceReportPath = argument.slice("--test-cleanup-performance-report=".length);
+    } else if (argument === "--test-cleanup-routing-report") {
+      options.testCleanupRoutingReportPath = argv[index + 1] || defaultTestCleanupRoutingReportPath;
+      index += 1;
+    } else if (argument.startsWith("--test-cleanup-routing-report=")) {
+      options.testCleanupRoutingReportPath = argument.slice("--test-cleanup-routing-report=".length);
     } else if (argument === "--zero-browser-report") {
       options.zeroBrowserReportPath = argv[index + 1] || defaultZeroBrowserReportPath;
       index += 1;
@@ -440,26 +487,41 @@ function commandToString(commandConfig) {
 async function runCommand(commandConfig) {
   const displayCommand = commandToString(commandConfig);
   console.log(`\nRUN ${displayCommand}`);
+  const startedAt = Date.now();
   const outcome = await new Promise((resolve) => {
+    let outputText = "";
     const child = spawn(commandConfig.command, commandConfig.args, {
       cwd: repoRoot,
       env: process.env,
       shell: process.platform === "win32" && commandConfig.command.endsWith(".cmd"),
-      stdio: "inherit"
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    child.stdout?.on("data", (chunk) => {
+      outputText += chunk.toString();
+      process.stdout.write(chunk);
+    });
+    child.stderr?.on("data", (chunk) => {
+      outputText += chunk.toString();
+      process.stderr.write(chunk);
     });
     child.on("error", (error) => resolve({
       errorMessage: error?.message || String(error),
-      exitCode: 1
+      exitCode: 1,
+      outputText
     }));
     child.on("close", (code) => resolve({
       errorMessage: "",
-      exitCode: code ?? 1
+      exitCode: code ?? 1,
+      outputText
     }));
   });
+  const elapsedMs = Date.now() - startedAt;
   return {
     displayCommand,
+    elapsedMs,
     errorMessage: outcome.errorMessage,
-    exitCode: outcome.exitCode
+    exitCode: outcome.exitCode,
+    outputText: outcome.outputText || ""
   };
 }
 
@@ -471,7 +533,161 @@ function summarize(results) {
 }
 
 function reportLine(value) {
-  return String(value || "").replace(/\r?\n/g, " ");
+  return String(value || "")
+    .replace(/\r?\n/g, " ")
+    .replace(/\u203a/g, ">")
+    .replace(/\u00e2\u20ac\u00ba/g, ">");
+}
+
+function formatDurationMs(milliseconds) {
+  const value = Number(milliseconds || 0);
+  if (value < 1000) {
+    return `${Math.max(0, Math.round(value))}ms`;
+  }
+  return `${(value / 1000).toFixed(2)}s`;
+}
+
+function durationToMs(value, unit) {
+  const amount = Number(value || 0);
+  if (unit === "m") {
+    return amount * 60 * 1000;
+  }
+  if (unit === "s") {
+    return amount * 1000;
+  }
+  return amount;
+}
+
+function extractSlowestTests(outputText, lane, commandText) {
+  return String(outputText || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.includes("›") && /\((\d+(?:\.\d+)?)(ms|s|m)\)\s*$/.test(line))
+    .map((line) => {
+      const durationMatch = line.match(/\((\d+(?:\.\d+)?)(ms|s|m)\)\s*$/);
+      const title = line
+        .replace(/^[^\]]*\]\s*›\s*/, "")
+        .replace(/\s+\(\d+(?:\.\d+)?(?:ms|s|m)\)\s*$/, "")
+        .replace(/^\S+\s+\d+\s+/, "");
+      return {
+        command: commandText,
+        durationMs: durationToMs(durationMatch?.[1], durationMatch?.[2]),
+        lane,
+        title: reportLine(title || line)
+      };
+    })
+    .sort((a, b) => b.durationMs - a.durationMs);
+}
+
+function collectSlowestTests(results, limit = 10) {
+  return results
+    .flatMap((result) => (result.commands || []).flatMap((command) => command.slowestTests || []))
+    .sort((a, b) => b.durationMs - a.durationMs)
+    .slice(0, limit);
+}
+
+function routeLanesForChangedFiles(changedFiles) {
+  const routed = new Set();
+  for (const changedFile of changedFiles) {
+    const normalized = normalizeRelativePath(changedFile);
+    if (!normalized || normalized.startsWith("docs/")) {
+      continue;
+    }
+    if (normalized.startsWith("tests/playwright/integration/")) {
+      routed.add("integration");
+    } else if (normalized.startsWith("tests/playwright/games/") || normalized.startsWith("games/")) {
+      routed.add("game-runtime");
+    } else if (normalized.startsWith("tests/playwright/tools/") || normalized.startsWith("tools/")) {
+      routed.add("tool-runtime");
+    } else if (normalized.startsWith("src/")
+      || normalized.startsWith("tests/core/")
+      || normalized.startsWith("tests/assets/")
+      || normalized.startsWith("tests/audio/")
+      || normalized.startsWith("tests/input/")
+      || normalized.startsWith("tests/render/")) {
+      routed.add("engine-src");
+    } else if (normalized.startsWith("samples/") || normalized.startsWith("tests/samples/")) {
+      routed.add("samples");
+    }
+  }
+  const laneOrder = Object.keys(laneDefinitions);
+  return laneOrder.filter((lane) => routed.has(lane));
+}
+
+function sameLaneSet(left, right) {
+  const leftSorted = [...left].sort();
+  const rightSorted = [...right].sort();
+  return leftSorted.length === rightSorted.length
+    && leftSorted.every((lane, index) => lane === rightSorted[index]);
+}
+
+async function readPackageScripts() {
+  const packageJson = JSON.parse(await fs.readFile(path.join(repoRoot, "package.json"), "utf8"));
+  return packageJson.scripts || {};
+}
+
+function buildRoutingValidation({ includeSamples, runtimeSchedule, scripts }) {
+  const caseRows = representativeRoutingCases.map((routingCase) => {
+    const actualLanes = routeLanesForChangedFiles(routingCase.changedFiles);
+    return {
+      ...routingCase,
+      actualLanes,
+      status: sameLaneSet(actualLanes, routingCase.expectedLanes) ? "PASS" : "FAIL"
+    };
+  });
+  const misplacedProbe = validateScopedDiscoveryPlan({
+    includeSamples: false,
+    lanes: ["tool-runtime"],
+    scopedDiscovery: {
+      fixtureFiles: [],
+      helperFiles: [],
+      targetFiles: ["tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"]
+    }
+  });
+  const laneScriptRows = Object.entries(scripts)
+    .filter(([scriptName]) => scriptName.startsWith("test:lane:"))
+    .map(([scriptName, scriptCommand]) => ({
+      command: scriptCommand,
+      scriptName,
+      status: String(scriptCommand).includes("scripts/run-targeted-test-lanes.mjs") ? "PASS" : "FAIL"
+    }));
+  const legacyRows = Object.entries(scripts)
+    .filter(([scriptName, scriptCommand]) => /^test:/.test(scriptName)
+      && !scriptName.startsWith("test:lane:")
+      && String(scriptCommand).includes("playwright test"))
+    .map(([scriptName, scriptCommand]) => ({
+      command: scriptCommand,
+      scriptName,
+      status: "INFO"
+    }));
+  const scheduledLanes = runtimeSchedule.orderedLanes || [];
+  const findings = [
+    ...caseRows.filter((row) => row.status === "FAIL").map((row) => `${row.caseName} routed to ${row.actualLanes.join(", ") || "none"} instead of ${row.expectedLanes.join(", ") || "none"}.`),
+    ...laneScriptRows.filter((row) => row.status === "FAIL").map((row) => `${row.scriptName} does not route through scripts/run-targeted-test-lanes.mjs.`)
+  ];
+  const workspaceExplicit = !caseRows.some((row) => row.expectedLanes.includes("workspace-contract"))
+    && (!scheduledLanes.includes("workspace-contract") || scheduledLanes.length === 1);
+  const samplesExplicit = !includeSamples && !scheduledLanes.includes("samples");
+  if (!workspaceExplicit) {
+    findings.push("Workspace V2 lane appeared in routing without an explicit workspace-contract selection.");
+  }
+  if (!samplesExplicit && !includeSamples) {
+    findings.push("Samples lane appeared in routing without --include-samples.");
+  }
+  if (misplacedProbe.status !== "FAIL") {
+    findings.push("Misplaced test ownership probe did not fail before runtime.");
+  }
+  return {
+    caseRows,
+    findings,
+    laneScriptRows,
+    legacyRows,
+    misplacedProbe,
+    samplesExplicit,
+    scheduledLanes,
+    status: findings.length === 0 ? "PASS" : "FAIL",
+    workspaceExplicit
+  };
 }
 
 function stableJson(value) {
@@ -3998,6 +4214,195 @@ function makeZeroBrowserPreflightReport({
   return `${lines.join("\n").trim()}\n`;
 }
 
+function makeTestCleanupPerformanceReport({
+  executionGraphReuse,
+  failureClassification,
+  fullSamplesSmoke,
+  laneDeduplication,
+  laneSnapshot,
+  results,
+  runtimeSchedule,
+  scopedDiscovery,
+  validationCache
+}) {
+  const manifestEvents = scopedDiscovery?.persistentManifestEvents || [];
+  const reusedManifests = manifestEvents.filter((event) => event.status === "REUSED");
+  const skippedResults = results.filter((result) => result.status === "SKIP");
+  const actualBrowserLaunches = results.reduce((count, result) => count + (result.browserLaunches || 0), 0);
+  const totalLaneElapsedMs = results.reduce((total, result) => total + (result.elapsedMs || 0), 0);
+  const slowestTests = collectSlowestTests(results);
+  const cacheHits = validationCache?.events?.filter((event) => event.status === "HIT").length || 0;
+  const preventedBroadExecution = [
+    runtimeSchedule?.orderedLanes?.includes("workspace-contract") ? "" : "Workspace V2 lane was not scheduled without explicit selection.",
+    fullSamplesSmoke?.status === "SKIP" ? "Full samples smoke stayed skipped/on-request." : "",
+    "Unselected lane directories stayed outside targeted discovery."
+  ].filter(Boolean);
+  const lines = [
+    "# Test Cleanup Performance Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${results.some((result) => result.status === "FAIL") ? "WARN" : "PASS"}`,
+    "",
+    "## Cost Summary",
+    "",
+    `Total measured lane elapsed time: ${formatDurationMs(totalLaneElapsedMs)}`,
+    `Actual browser launch count: ${actualBrowserLaunches}`,
+    `Scheduled browser launch count: ${runtimeSchedule?.scheduledPlaywrightLaunches ?? 0}`,
+    `Baseline browser launch count: ${runtimeSchedule?.baselinePlaywrightLaunches ?? 0}`,
+    `Skipped lanes: ${skippedResults.length}`,
+    `Reused manifests: ${reusedManifests.length}`,
+    `Reused snapshots: ${laneSnapshot?.reusedSnapshots ?? 0}`,
+    `Cached validations reused: ${cacheHits}`,
+    `Prevented broad execution: ${preventedBroadExecution.length}`,
+    `Prevented reruns: ${(failureClassification?.preventedReruns ?? 0) + (laneDeduplication?.preventedDuplicateLaneExecutions ?? 0)}`,
+    `Prevented redundant browser launches: ${runtimeSchedule?.preventedRedundantBrowserLaunches ?? 0}`,
+    `Prevented graph rebuilds: ${runtimeSchedule?.preventedGraphRebuilds ?? 0}`,
+    `Prevented redundant dependency traversal: ${executionGraphReuse?.preventedDependencyTraversal ?? 0}`,
+    "",
+    "## Lane Elapsed Time",
+    "",
+    "| Lane | Status | Elapsed | Browser Launches | Reason |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  if (results.length === 0) {
+    lines.push("| none | SKIP | 0ms | 0 | Zero-browser validation only; runtime lanes were not launched. |");
+  } else {
+    results.forEach((result) => {
+      lines.push([
+        `| ${result.lane}`,
+        result.status,
+        formatDurationMs(result.elapsedMs || 0),
+        result.browserLaunches || 0,
+        `${reportLine(result.reason)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Slowest Tests",
+    "",
+    "| Lane | Duration | Test | Command |",
+    "| --- | --- | --- | --- |"
+  );
+  if (slowestTests.length === 0) {
+    lines.push("| none | 0ms | No Playwright test-duration lines were emitted for this run. | none |");
+  } else {
+    slowestTests.forEach((entry) => {
+      lines.push(`| ${entry.lane} | ${formatDurationMs(entry.durationMs)} | ${reportLine(entry.title)} | ${reportLine(entry.command)} |`);
+    });
+  }
+
+  lines.push(
+    "",
+    "## Prevented Broad Execution",
+    "",
+    ...preventedBroadExecution.map((entry) => `- ${entry}`),
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- Performance reporting is generated from the targeted lane runner without launching additional broad suites.",
+    "- Browser launch counts are counted from scheduled Playwright command groups, not from recursive test discovery.",
+    "- Manifest, snapshot, and validation-cache reuse are reported from deterministic pre-runtime state.",
+    "- Full samples smoke remains skipped unless an explicit samples scope is active."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeTestCleanupRoutingReport({ fullSamplesSmoke, routingValidation }) {
+  const lines = [
+    "# Test Cleanup Routing Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${routingValidation.status}`,
+    "",
+    "## Representative Routing Cases",
+    "",
+    "| Case | Changed Files | Expected Lanes | Actual Lanes | Status | Reason |",
+    "| --- | --- | --- | --- | --- | --- |"
+  ];
+
+  routingValidation.caseRows.forEach((row) => {
+    lines.push([
+      `| ${row.caseName}`,
+      reportLine(row.changedFiles.join("; ")),
+      row.expectedLanes.join(", ") || "none",
+      row.actualLanes.join(", ") || "none",
+      row.status,
+      `${reportLine(row.reason)} |`
+    ].join(" | "));
+  });
+
+  lines.push(
+    "",
+    "## Explicit Broad-Lane Guards",
+    "",
+    `Workspace V2 explicit/on-request only: ${routingValidation.workspaceExplicit ? "PASS" : "FAIL"}`,
+    `Full samples smoke explicit/on-request only: ${fullSamplesSmoke?.status === "SKIP" && routingValidation.samplesExplicit ? "PASS" : "FAIL"}`,
+    `Misplaced test preflight fast-fail: ${routingValidation.misplacedProbe.status === "FAIL" ? "PASS" : "FAIL"}`,
+    `Scheduled runtime lanes: ${routingValidation.scheduledLanes.join(", ") || "none"}`,
+    `Full samples smoke decision: ${fullSamplesSmoke?.status || "SKIP"} - ${reportLine(fullSamplesSmoke?.reason || "not evaluated")}`,
+    "",
+    "## Lane Script Routing",
+    "",
+    "| Script | Status | Command |",
+    "| --- | --- | --- |"
+  );
+
+  if (routingValidation.laneScriptRows.length === 0) {
+    lines.push("| none | FAIL | No test:lane:* scripts were found. |");
+  } else {
+    routingValidation.laneScriptRows.forEach((row) => {
+      lines.push(`| ${row.scriptName} | ${row.status} | ${reportLine(row.command)} |`);
+    });
+  }
+
+  lines.push(
+    "",
+    "## Legacy Direct Playwright Scripts",
+    "",
+    "| Script | Status | Command |",
+    "| --- | --- | --- |"
+  );
+  if (routingValidation.legacyRows.length === 0) {
+    lines.push("| none | INFO | No direct Playwright scripts were found outside targeted lane scripts. |");
+  } else {
+    routingValidation.legacyRows.forEach((row) => {
+      lines.push(`| ${row.scriptName} | ${row.status} | ${reportLine(row.command)} |`);
+    });
+  }
+
+  lines.push("", "## Misplaced Test Probe", "");
+  if (routingValidation.misplacedProbe.findings.length === 0) {
+    lines.push("- No misplaced ownership finding was produced.");
+  } else {
+    routingValidation.misplacedProbe.findings.forEach((findingText) => {
+      lines.push(`- ${findingText}`);
+    });
+  }
+
+  lines.push("", "## Routing Findings", "");
+  if (routingValidation.findings.length === 0) {
+    lines.push("No routing findings. Targeted lanes execute only expected representative lanes, and broad Workspace/samples paths remain explicit.");
+  } else {
+    routingValidation.findings.forEach((findingText) => lines.push(`- ${findingText}`));
+  }
+
+  lines.push(
+    "",
+    "## Enforcement Notes",
+    "",
+    "- Representative docs, tool, game, src, and integration cases route through deterministic lane rules.",
+    "- Old direct Playwright scripts may remain available, but test:lane:* scripts route through the targeted Node lane runner.",
+    "- Misplaced ownership probes fail in zero-browser scoped discovery before Playwright/browser launch.",
+    "- Full Workspace and full samples smoke are not used as accidental fallback lanes."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 async function writeTextReport(reportPath, reportText) {
   const absoluteReportPath = path.resolve(repoRoot, reportPath);
   await fs.mkdir(path.dirname(absoluteReportPath), { recursive: true });
@@ -4023,6 +4428,9 @@ function makeReport({
   validationCache
 }) {
   const summary = summarize(results);
+  const totalLaneElapsedMs = results.reduce((total, result) => total + (result.elapsedMs || 0), 0);
+  const actualBrowserLaunches = results.reduce((count, result) => count + (result.browserLaunches || 0), 0);
+  const slowestTests = collectSlowestTests(results, 5);
   const lines = [
     "# Testing Lane Execution Report",
     "",
@@ -4035,6 +4443,8 @@ function makeReport({
     `WARN: ${summary.WARN}`,
     `FAIL: ${summary.FAIL}`,
     `SKIP: ${summary.SKIP}`,
+    `Total lane elapsed time: ${formatDurationMs(totalLaneElapsedMs)}`,
+    `Actual browser launches: ${actualBrowserLaunches}`,
     "",
     "## Full Samples Smoke",
     "",
@@ -4127,20 +4537,37 @@ function makeReport({
     "",
     "## Lanes",
     "",
-    "| Lane | Status | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |",
-    "| --- | --- | --- | --- | --- |"
+    "| Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |",
+    "| --- | --- | --- | --- | --- | --- | --- |"
   ];
 
   results.forEach((result) => {
     const cells = [
       result.lane,
       result.status,
+      formatDurationMs(result.elapsedMs || 0),
+      result.browserLaunches || 0,
       reportLine(result.reason),
       reportLine(result.affectedSurface),
       reportLine(result.fixtures.join("; "))
     ];
     lines.push(`| ${cells.join(" | ")} |`);
   });
+
+  lines.push(
+    "",
+    "## Slowest Tests",
+    "",
+    "| Lane | Duration | Test |",
+    "| --- | --- | --- |"
+  );
+  if (slowestTests.length === 0) {
+    lines.push("| none | 0ms | No Playwright test-duration lines were emitted for this run. |");
+  } else {
+    slowestTests.forEach((entry) => {
+      lines.push(`| ${entry.lane} | ${formatDurationMs(entry.durationMs)} | ${reportLine(entry.title)} |`);
+    });
+  }
 
   lines.push("", "## Commands", "");
   results.forEach((result) => {
@@ -4149,7 +4576,7 @@ function makeReport({
       lines.push("- SKIP");
     } else {
       result.commands.forEach((command) => {
-        lines.push(`- ${command.status} ${command.command}`);
+        lines.push(`- ${command.status} ${formatDurationMs(command.elapsedMs || 0)} ${command.command}`);
       });
     }
     lines.push("");
@@ -4472,6 +4899,12 @@ const executionGraphReuse = buildExecutionGraphReuse({
   laneSnapshot,
   runtimeSchedule
 });
+const packageScripts = await readPackageScripts();
+const routingValidation = buildRoutingValidation({
+  includeSamples: options.includeSamples,
+  runtimeSchedule,
+  scripts: packageScripts
+});
 let failureClassification = buildFailureClassification({
   dependencyGate,
   laneCompilation,
@@ -4516,6 +4949,10 @@ const targetedFileManifestReportText = makeTargetedFileManifestReport({
 const persistentLaneManifestReportText = makePersistentLaneManifestReport({ scopedDiscovery });
 const incrementalValidationReportText = makeIncrementalValidationReport({ scopedDiscovery });
 const laneInputValidationReportText = makeLaneInputValidationReport({ laneInputValidation });
+const preRuntimeFullSamplesSmoke = {
+  reason: "Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.",
+  status: "SKIP"
+};
 const zeroBrowserReportText = await validationCache.get(
   "zero-browser preflight",
   zeroBrowserInput,
@@ -4552,6 +4989,21 @@ validationCache.reuse("dependency validation", dependencyGateInput, "dependency 
 validationCache.reuse("dependency validation", dependencyGateInput, "runtime scheduling");
 validationCache.reuse("zero-browser preflight", zeroBrowserInput, "zero-browser report output");
 const validationCacheReportText = makeValidationCacheReport({ validationCache });
+let testCleanupPerformanceReportText = makeTestCleanupPerformanceReport({
+  executionGraphReuse,
+  failureClassification,
+  fullSamplesSmoke: preRuntimeFullSamplesSmoke,
+  laneDeduplication,
+  laneSnapshot,
+  results,
+  runtimeSchedule,
+  scopedDiscovery,
+  validationCache
+});
+let testCleanupRoutingReportText = makeTestCleanupRoutingReport({
+  fullSamplesSmoke: preRuntimeFullSamplesSmoke,
+  routingValidation
+});
 await writeTextReport(options.staticReportPath, staticReportText);
 await writeTextReport(options.laneCompilationReportPath, laneCompilationReportText);
 await writeTextReport(options.dependencyGatingReportPath, dependencyGatingReportText);
@@ -4569,6 +5021,8 @@ await writeTextReport(options.incrementalValidationReportPath, incrementalValida
 await writeTextReport(options.laneInputValidationReportPath, laneInputValidationReportText);
 await writeTextReport(options.validationCacheReportPath, validationCacheReportText);
 await writeTextReport(options.zeroBrowserReportPath, zeroBrowserReportText);
+await writeTextReport(options.testCleanupPerformanceReportPath, testCleanupPerformanceReportText);
+await writeTextReport(options.testCleanupRoutingReportPath, testCleanupRoutingReportText);
 
 if (options.staticOnly || options.zeroBrowserOnly) {
   if (staticReportText.includes("Status: FAIL") || zeroBrowserReportText.includes("Status: FAIL")) {
@@ -4601,7 +5055,9 @@ if (unknownLanes.length > 0
   for (const [lane, definition] of Object.entries(laneDefinitions)) {
     results.push({
       affectedSurface: definition.affectedSurface,
+      browserLaunches: 0,
       commands: [],
+      elapsedMs: 0,
       fixtures: definition.fixtures,
       lane,
       reason: requestedLanes.has(lane)
@@ -4615,6 +5071,23 @@ if (unknownLanes.length > 0
     reason: "Skipped because runner preflight failed before any samples lane decision could execute.",
     status: "SKIP"
   };
+  testCleanupPerformanceReportText = makeTestCleanupPerformanceReport({
+    executionGraphReuse,
+    failureClassification,
+    fullSamplesSmoke,
+    laneDeduplication,
+    laneSnapshot,
+    results,
+    runtimeSchedule,
+    scopedDiscovery,
+    validationCache
+  });
+  testCleanupRoutingReportText = makeTestCleanupRoutingReport({
+    fullSamplesSmoke,
+    routingValidation
+  });
+  await writeTextReport(options.testCleanupPerformanceReportPath, testCleanupPerformanceReportText);
+  await writeTextReport(options.testCleanupRoutingReportPath, testCleanupRoutingReportText);
   await writeReport(options.reportPath, makeReport({
     dependencyGate,
     dryRun: options.dryRun,
@@ -4643,7 +5116,9 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
     for (const [lane, definition] of Object.entries(laneDefinitions)) {
       results.push({
         affectedSurface: definition.affectedSurface,
+        browserLaunches: 0,
         commands: [],
+        elapsedMs: 0,
         fixtures: definition.fixtures,
         lane,
         reason: requestedLanes.has(lane)
@@ -4657,6 +5132,23 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
       reason: "Skipped because preflight failed before any samples lane decision could execute.",
       status: "SKIP"
     };
+    testCleanupPerformanceReportText = makeTestCleanupPerformanceReport({
+      executionGraphReuse,
+      failureClassification,
+      fullSamplesSmoke,
+      laneDeduplication,
+      laneSnapshot,
+      results,
+      runtimeSchedule,
+      scopedDiscovery,
+      validationCache
+    });
+    testCleanupRoutingReportText = makeTestCleanupRoutingReport({
+      fullSamplesSmoke,
+      routingValidation
+    });
+    await writeTextReport(options.testCleanupPerformanceReportPath, testCleanupPerformanceReportText);
+    await writeTextReport(options.testCleanupRoutingReportPath, testCleanupRoutingReportText);
     await writeReport(options.reportPath, makeReport({
       dependencyGate,
       dryRun: options.dryRun,
@@ -4694,7 +5186,9 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
   if (!requestedLanes.has(lane)) {
     results.push({
       affectedSurface: definition.affectedSurface,
+      browserLaunches: 0,
       commands: [],
+      elapsedMs: 0,
       fixtures: definition.fixtures,
       lane,
       reason: "Lane was not selected for this targeted run.",
@@ -4706,7 +5200,9 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
   if (definition.requiresSamplesFlag && !options.includeSamples) {
     results.push({
       affectedSurface: definition.affectedSurface,
+      browserLaunches: 0,
       commands: [],
+      elapsedMs: 0,
       fixtures: definition.fixtures,
       lane,
       reason: "Samples lane is on-request only; rerun with --include-samples when affected samples are in scope.",
@@ -4720,10 +5216,14 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
   if (options.dryRun) {
     results.push({
       affectedSurface: definition.affectedSurface,
+      browserLaunches: 0,
       commands: laneCommands.map((command) => ({
         command: commandToString(command),
+        elapsedMs: 0,
+        slowestTests: [],
         status: "SKIP"
       })),
+      elapsedMs: 0,
       fixtures: definition.fixtures,
       lane,
       reason: `${definition.reason} Dry run requested.`,
@@ -4733,13 +5233,20 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
   }
 
   const commandResults = [];
+  const laneStartedAt = Date.now();
   let failed = false;
+  let browserLaunches = 0;
   for (const command of laneCommands) {
     const result = await runCommand(command);
     const status = result.exitCode === 0 ? "PASS" : "FAIL";
+    if (command.type === "playwright") {
+      browserLaunches += 1;
+    }
     commandResults.push({
       command: result.displayCommand,
+      elapsedMs: result.elapsedMs,
       errorMessage: result.errorMessage,
+      slowestTests: extractSlowestTests(result.outputText, lane, result.displayCommand),
       status
     });
     if (result.exitCode !== 0) {
@@ -4749,7 +5256,9 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
 
   results.push({
     affectedSurface: definition.affectedSurface,
+    browserLaunches,
     commands: commandResults,
+    elapsedMs: Date.now() - laneStartedAt,
     fixtures: definition.fixtures,
     lane,
     reason: definition.reason,
@@ -4781,8 +5290,25 @@ failureClassification = buildFailureClassification({
 });
 failureFingerprintReportText = makeFailureFingerprintReport({ failureClassification });
 retrySuppressionReportText = makeRetrySuppressionReport({ failureClassification });
+testCleanupPerformanceReportText = makeTestCleanupPerformanceReport({
+  executionGraphReuse,
+  failureClassification,
+  fullSamplesSmoke,
+  laneDeduplication,
+  laneSnapshot,
+  results,
+  runtimeSchedule,
+  scopedDiscovery,
+  validationCache
+});
+testCleanupRoutingReportText = makeTestCleanupRoutingReport({
+  fullSamplesSmoke,
+  routingValidation
+});
 await writeTextReport(options.failureFingerprintReportPath, failureFingerprintReportText);
 await writeTextReport(options.retrySuppressionReportPath, retrySuppressionReportText);
+await writeTextReport(options.testCleanupPerformanceReportPath, testCleanupPerformanceReportText);
+await writeTextReport(options.testCleanupRoutingReportPath, testCleanupRoutingReportText);
 
 await writeReport(options.reportPath, makeReport({
   dependencyGate,
