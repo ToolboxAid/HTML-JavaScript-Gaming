@@ -137,13 +137,17 @@ const laneDefinitions = Object.freeze({
       ),
       playwrightCommand(
         "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs",
-        "tests/playwright/tools/CollisionInspectorV2.spec.mjs"
+        "tests/playwright/tools/CollisionInspectorV2.spec.mjs",
+        "tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs",
+        "tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs"
       )
     ],
     dependencies: [],
     discoveryTargets: [
       "tests/playwright/tools/AssetManagerV2.spec.mjs",
       "tests/playwright/tools/CollisionInspectorV2.spec.mjs",
+      "tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs",
+      "tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs",
       "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs"
     ],
     fixtures: [
@@ -186,11 +190,15 @@ const laneDefinitions = Object.freeze({
   integration: {
     affectedSurface: "Workspace, tool, game index, and manifest handoff behavior",
     commands: [
-      playwrightCommand("tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs", "--grep", "Pong")
+      playwrightCommand(
+        "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs",
+        "tests/playwright/integration/ToolsIndexFirstClassToolRegistration.spec.mjs"
+      )
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"
+      "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs",
+      "tests/playwright/integration/ToolsIndexFirstClassToolRegistration.spec.mjs"
     ],
     fixtures: [
       "repo game manifests",

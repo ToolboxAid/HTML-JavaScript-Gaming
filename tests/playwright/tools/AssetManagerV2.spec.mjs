@@ -206,13 +206,6 @@ async function openAssetManagerWithSessionContext(page, context, hostContextId =
   return server;
 }
 
-async function openToolsIndex(page) {
-  const server = await startRepoServer();
-  await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
-  return server;
-}
-
 async function expectAccordionToggles(page, contentId) {
   const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
   const content = page.locator(`#${contentId}`);
@@ -1647,45 +1640,6 @@ test.describe("Asset Manager V2", () => {
       expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud"]).toEqual(storedAssetSession.data.assets["assets.color.hud.primary-hud"]);
       expect(savedManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toContain("object.asteroids.ship");
 
-      expect(pageErrors).toEqual([]);
-    } finally {
-      await workspaceV2CoverageReporter.stop(page);
-      await server.close();
-    }
-  });
-
-  test("renders Asset Manager V2 as a first-class tool in the tools index", async ({ page }) => {
-    const server = await openToolsIndex(page);
-    const pageErrors = [];
-
-    page.on("pageerror", (error) => {
-      pageErrors.push(error.message);
-    });
-
-    try {
-      const assetManagerLink = page.locator(".tools-platform-card h3 a", { hasText: "Asset Manager V2" });
-      const assetManagerCard = page.locator(".tools-platform-card").filter({
-        has: page.locator("h3 a", { hasText: "Asset Manager V2" })
-      });
-      const collisionInspectorLink = page.locator(".tools-platform-card h3 a", { hasText: "Collision Inspector V2" });
-      const collisionInspectorCard = page.locator(".tools-platform-card").filter({
-        has: page.locator("h3 a", { hasText: "Collision Inspector V2" })
-      });
-      await expect(assetManagerLink).toBeVisible();
-      await expect(assetManagerLink).toHaveAttribute("href", "/tools/asset-manager-v2/index.html");
-      await expect(assetManagerCard).toContainText("Schema Validated");
-      await expect(collisionInspectorLink).toBeVisible();
-      await expect(collisionInspectorLink).toHaveAttribute("href", "/tools/collision-inspector-v2/index.html");
-      await expect(collisionInspectorCard).toContainText("Manifest-driven collision visualization");
-      const plannedToolNames = await page.locator("[data-planned-tools-grid] h3").allTextContents();
-      for (const plannedToolName of [
-        "Asset Manager V2",
-        "Animation / Flipbook Editor",
-        "Audio / SFX Playground"
-      ]) {
-        expect(plannedToolNames).toContain(plannedToolName);
-      }
-      expect(plannedToolNames).not.toContain("Collision / Hitbox Editor");
       expect(pageErrors).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);

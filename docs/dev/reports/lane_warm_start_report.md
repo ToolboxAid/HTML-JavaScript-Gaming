@@ -1,13 +1,13 @@
 # Lane Warm-Start Report
 
-Generated: 2026-05-26T22:00:48.031Z
+Generated: 2026-05-26T22:17:10.904Z
 Status: PASS
 Warm-start directory: docs/dev/reports/lane_warm_starts
 
 ## Summary
 
 Reused warm-start lanes: 0
-Invalidated warm-start states: 0
+Invalidated warm-start states: 1
 Generated warm-start states: 0
 Skipped warm-start states: 0
 Prevented redundant initialization: 0
@@ -17,7 +17,7 @@ Prevented lane graph assembly: 0
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| none | SKIP | none | none | none | none | No selected lanes produced warm-start decisions. |
+| integration | INVALIDATED | docs/dev/reports/lane_warm_starts/integration.json | efd808f21c146e0b | eb7f00e3a3d91320 | a26bcd0115fc4315 | Warm-start inputHash changed for integration.; Warm-start manifestHash changed for integration.; Warm-start warmStartHash changed for integration. |
 
 ## Fast-Fail Safeguards
 

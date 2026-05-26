@@ -1,12 +1,12 @@
 # Lane Deduplication Report
 
-Generated: 2026-05-26T22:00:48.031Z
+Generated: 2026-05-26T22:17:10.904Z
 Status: PASS
 
 ## Summary
 
-Raw lane requests: none
-Unique scheduled lanes: none
+Raw lane requests: integration
+Unique scheduled lanes: integration
 Prevented duplicate lane executions: 0
 Prevented browser launches: 0
 Prevented Workspace lane reruns: 0

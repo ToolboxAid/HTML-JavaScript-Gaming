@@ -1,6 +1,6 @@
 # Playwright Structure Audit
 
-Generated: 2026-05-26T22:01:52.150Z
+Generated: 2026-05-26T22:20:10.269Z
 Status: PASS
 
 ## Lane Directories
@@ -42,13 +42,17 @@ No blocking structural findings.
 | tests/playwright/tools/AssetManagerV2.spec.mjs | PASS | none |
 | tests/playwright/tools/CollisionInspectorV2.spec.mjs | PASS | none |
 | tests/playwright/tools/ObjectVectorStudioV2FirstClassToolStarter.spec.mjs | PASS | none |
+| tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs | PASS | none |
 | tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs | PASS | none |
+| tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs | PASS | none |
 | tests/playwright/tools/WorkspaceManagerV2.spec.mjs | PASS | none |
 | tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs | PASS | none |
 | tests/playwright/games/AsteroidsBeatTiming.spec.mjs | PASS | none |
 | tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs | PASS | none |
 | tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | PASS | none |
+| tests/playwright/integration/GameIndexPreviewManifestBroadScan.spec.mjs | PASS | none |
 | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | PASS | none |
+| tests/playwright/integration/ToolsIndexFirstClassToolRegistration.spec.mjs | PASS | none |
 | tests/helpers/playwrightCtrlTapClick.mjs | PASS | none |
 | tests/helpers/playwrightRepoServer.mjs | PASS | none |
 | tests/helpers/playwrightStorageIsolation.mjs | PASS | none |

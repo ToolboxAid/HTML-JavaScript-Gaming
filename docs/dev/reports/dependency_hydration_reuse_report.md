@@ -1,12 +1,12 @@
 # Dependency Hydration Reuse Report
 
-Generated: 2026-05-26T22:00:48.031Z
+Generated: 2026-05-26T22:17:10.905Z
 Status: PASS
 
 ## Summary
 
 Reused dependency hydration: 0
-Invalidated dependency hydration: 0
+Invalidated dependency hydration: 1
 Generated dependency hydration: 0
 Prevented dependency graph hydration: 0
 Prevented helper resolution passes: 0
@@ -16,7 +16,7 @@ Prevented fixture ownership traversal: 0
 
 | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| none | SKIP | none | none | none | none | No selected lanes produced hydration decisions. |
+| integration | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | games/Pong/game.manifest.json | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | a26bcd0115fc4315 | Dependency hydration was refreshed after warm-start invalidation. |
 
 ## Safeguards
 
