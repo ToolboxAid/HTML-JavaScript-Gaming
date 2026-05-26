@@ -1173,6 +1173,30 @@ Custom persistence behavior requires explicit PR authorization.
 
 New tools should integrate into existing workspace launch/navigation patterns.
 
+### First-Class Tool Registration And Workspace Wiring
+
+New first-class tools must be added to:
+- `tools/index.html`
+- `tools/workspace-manager-v2/index.html`
+
+Registration must use existing navigation and launch patterns.
+
+New tools must participate in Workspace Manager V2 launch flows unless explicitly exempted.
+
+Required integration expectations:
+- tools live under `tools/<tool-name>/`
+- tools must copy and preserve the V2 template structure from `tools/_templates-v2`
+- tools must wire into existing dirty-state handling
+- tools must wire into save/cancel lifecycle handling
+- tools must wire into workspace launch/navigation patterns
+- tools must wire into shared status/logging expectations
+
+Prohibited registration and workspace wiring behaviors:
+- do not create isolated launch surfaces
+- do not bypass Workspace Manager V2 integration
+- do not create custom disconnected navigation systems
+- do not omit registration from `tools/index.html` or `tools/workspace-manager-v2/index.html`
+
 ## TOOL TEMPLATE V2 LOCATION
 
 The official First-Class Tool V2 starter is:
