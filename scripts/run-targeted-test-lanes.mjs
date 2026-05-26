@@ -63,6 +63,9 @@ const laneDefinitions = Object.freeze({
       "mocked File System Access repo handles",
       "explicit game manifest/toolState payloads"
     ],
+    fixturePaths: [
+      "tests/fixtures/workspace-v2/uat.manifest.json"
+    ],
     requiresPreflight: true,
     reason: "Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts."
   },
@@ -83,19 +86,23 @@ const laneDefinitions = Object.freeze({
       "tool-specific mocked repo/file picker inputs",
       "explicit manifest/toolState launch contexts"
     ],
+    fixturePaths: [],
+    playwrightDir: "tests/playwright/tools",
     requiresPreflight: true,
     reason: "Tool runtime lane validates focused tool behavior without treating unrelated stale product assertions as blockers."
   },
   integration: {
     affectedSurface: "Workspace, tool, game index, and manifest handoff behavior",
     commands: [
-      playwrightCommand("tests/playwright/games/GameIndexPreviewManifestResolution.spec.mjs", "--grep", "Pong")
+      playwrightCommand("tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs", "--grep", "Pong")
     ],
     fixtures: [
       "repo game manifests",
       "manifest preview asset roles",
       "repo-served browser pages"
     ],
+    fixturePaths: [],
+    playwrightDir: "tests/playwright/integration",
     requiresPreflight: true,
     reason: "Integration lane validates explicit cross-surface handoffs only; broad all-game thumbnail coverage is outside the default targeted lane."
   },
@@ -121,6 +128,7 @@ const laneDefinitions = Object.freeze({
       "explicit node unit fixtures",
       "fresh in-memory localStorage/sessionStorage mocks per file"
     ],
+    fixturePaths: [],
     reason: "Engine/src lane validates reusable runtime surfaces through targeted node tests."
   },
   samples: {
@@ -136,6 +144,7 @@ const laneDefinitions = Object.freeze({
       "sample metadata and validation artifacts",
       "sample structure fixtures"
     ],
+    fixturePaths: [],
     reason: "Samples lane is on-request or affected-sample only and is not the full samples smoke test.",
     requiresPreflight: true,
     requiresSamplesFlag: true
@@ -224,6 +233,89 @@ function reportLine(value) {
   return String(value || "").replace(/\r?\n/g, " ");
 }
 
+async function repoPathExists(relativePath) {
+  try {
+    await fs.access(path.resolve(repoRoot, relativePath));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function commandTargetFiles(commandConfig) {
+  if (commandConfig.type === "playwright") {
+    return commandConfig.args.filter((argument) => /\.spec\.mjs$/i.test(String(argument)));
+  }
+  if (commandConfig.type === "node") {
+    return commandConfig.args.filter((argument) => /\.(mjs|js|json)$/i.test(String(argument)));
+  }
+  return [];
+}
+
+function grepPatterns(commandConfig) {
+  const patterns = [];
+  commandConfig.args.forEach((argument, index) => {
+    if (argument === "--grep") {
+      patterns.push(commandConfig.args[index + 1] || "");
+    }
+  });
+  return patterns;
+}
+
+async function validateRunnerPreflight(lanes) {
+  const findings = [];
+  const notes = [];
+  for (const lane of lanes) {
+    const definition = laneDefinitions[lane];
+    for (const fixturePath of definition.fixturePaths || []) {
+      if (!(await repoPathExists(fixturePath))) {
+        findings.push(`Lane ${lane} is missing fixture: ${fixturePath}`);
+      }
+    }
+
+    for (const commandConfig of definition.commands) {
+      const displayCommand = commandToString(commandConfig);
+      if (commandConfig.type === "playwright") {
+        if (commandConfig.command !== process.execPath || commandConfig.args[0] !== playwrightCli) {
+          findings.push(`Lane ${lane} must invoke Playwright through the Node CLI entrypoint: ${displayCommand}`);
+        }
+        if (commandConfig.args[1] !== "test") {
+          findings.push(`Lane ${lane} has an invalid Playwright command shape: ${displayCommand}`);
+        }
+      }
+
+      const targets = commandTargetFiles(commandConfig);
+      if (commandConfig.type === "playwright" && targets.length === 0) {
+        findings.push(`Lane ${lane} has no explicit Playwright spec target: ${displayCommand}`);
+      }
+
+      for (const target of targets) {
+        if (!(await repoPathExists(target))) {
+          findings.push(`Lane ${lane} targets a missing file: ${target}`);
+        }
+        if (commandConfig.type === "playwright"
+          && definition.playwrightDir
+          && !String(target).replace(/\\/g, "/").startsWith(`${definition.playwrightDir}/`)) {
+          findings.push(`Lane ${lane} targets ${target}, outside ${definition.playwrightDir}/.`);
+        }
+      }
+
+      grepPatterns(commandConfig).forEach((pattern) => {
+        if (!pattern || String(pattern).startsWith("--")) {
+          findings.push(`Lane ${lane} has an invalid empty --grep value: ${displayCommand}`);
+        } else if (/[|&<>^]/.test(pattern)) {
+          if (commandConfig.command === process.execPath && commandConfig.type === "playwright") {
+            notes.push(`Lane ${lane} grep pattern is passed as a literal Node argv value: ${pattern}`);
+          } else {
+            findings.push(`Lane ${lane} has a Windows shell quoting hazard in --grep: ${pattern}`);
+          }
+        }
+      });
+    }
+  }
+  return { findings, notes };
+}
+
 function makeReport({ dryRun, fullSamplesSmoke, preflight, results }) {
   const summary = summarize(results);
   const lines = [
@@ -249,6 +341,7 @@ function makeReport({ dryRun, fullSamplesSmoke, preflight, results }) {
     `Status: ${preflight.status}`,
     `Reason: ${preflight.reason}`,
     `Command: ${preflight.command || "not run"}`,
+    `Details: ${(preflight.details || []).join("; ") || "none"}`,
     "",
     "## Lanes",
     "",
@@ -300,18 +393,51 @@ const requestedLanes = new Set(options.lanes);
 const results = [];
 const preflight = {
   command: "",
+  details: [],
   reason: "No selected lane requires Playwright test-location preflight.",
   status: "SKIP"
 };
 const selectedDefinitions = options.lanes.map((lane) => laneDefinitions[lane]);
 const needsPreflight = selectedDefinitions.some((definition) => definition.requiresPreflight);
 
+const runnerPreflight = await validateRunnerPreflight(options.lanes);
+preflight.details.push(...runnerPreflight.notes);
+if (runnerPreflight.findings.length > 0) {
+  preflight.status = "FAIL";
+  preflight.reason = "Runner preflight failed; expensive lanes were skipped before Playwright execution.";
+  preflight.details.push(...runnerPreflight.findings);
+  for (const [lane, definition] of Object.entries(laneDefinitions)) {
+    results.push({
+      affectedSurface: definition.affectedSurface,
+      commands: [],
+      fixtures: definition.fixtures,
+      lane,
+      reason: requestedLanes.has(lane)
+        ? "Skipped because runner preflight failed before lane execution."
+        : "Lane was not selected for this targeted run.",
+      status: "SKIP"
+    });
+  }
+
+  const fullSamplesSmoke = {
+    reason: "Skipped because runner preflight failed before any samples lane decision could execute.",
+    status: "SKIP"
+  };
+  await writeReport(options.reportPath, makeReport({
+    dryRun: options.dryRun,
+    fullSamplesSmoke,
+    preflight,
+    results
+  }));
+  process.exit(1);
+}
+
 if (needsPreflight && !options.dryRun && !options.skipPreflight) {
   const result = await runCommand(nodeCommand(locationAuditScript));
   preflight.command = result.displayCommand;
   if (result.exitCode !== 0) {
     preflight.status = "FAIL";
-    preflight.reason = "Test location audit failed; expensive lanes were skipped to avoid wasted reruns.";
+    preflight.reason = "Playwright structure audit failed; expensive lanes were skipped to avoid wasted reruns.";
     for (const [lane, definition] of Object.entries(laneDefinitions)) {
       results.push({
         affectedSurface: definition.affectedSurface,
@@ -338,12 +464,15 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
     process.exit(1);
   }
   preflight.status = "PASS";
-  preflight.reason = "Test location audit passed before expensive Playwright lane execution.";
+  preflight.reason = "Runner preflight and Playwright structure audit passed before expensive lane execution.";
 } else if (needsPreflight && options.skipPreflight) {
   preflight.status = "WARN";
-  preflight.reason = "Preflight was explicitly skipped by --skip-preflight.";
+  preflight.reason = "Playwright structure audit was explicitly skipped by --skip-preflight.";
 } else if (needsPreflight && options.dryRun) {
-  preflight.reason = "Dry run requested; preflight command was not executed.";
+  preflight.reason = "Dry run requested; Playwright structure audit was not executed.";
+} else if (runnerPreflight.notes.length > 0) {
+  preflight.status = "PASS";
+  preflight.reason = "Runner preflight passed.";
 }
 
 for (const [lane, definition] of Object.entries(laneDefinitions)) {
