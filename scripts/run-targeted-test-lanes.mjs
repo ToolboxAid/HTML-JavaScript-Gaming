@@ -11,6 +11,7 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const defaultReportPath = "docs/dev/reports/testing_lane_execution_report.md";
+const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
 const playwrightCli = path.join(
   repoRoot,
   "node_modules",
@@ -23,14 +24,16 @@ const npmBin = process.platform === "win32" ? "npm.cmd" : "npm";
 function nodeCommand(scriptPath, ...args) {
   return {
     args: [scriptPath, ...args],
-    command: process.execPath
+    command: process.execPath,
+    type: "node"
   };
 }
 
 function npmCommand(...args) {
   return {
     args,
-    command: npmBin
+    command: npmBin,
+    type: "npm"
   };
 }
 
@@ -44,7 +47,8 @@ function playwrightCommand(...specPaths) {
       "--workers=1",
       "--reporter=list"
     ],
-    command: process.execPath
+    command: process.execPath,
+    type: "playwright"
   };
 }
 
@@ -59,6 +63,7 @@ const laneDefinitions = Object.freeze({
       "mocked File System Access repo handles",
       "explicit game manifest/toolState payloads"
     ],
+    requiresPreflight: true,
     reason: "Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts."
   },
   "tool-runtime": {
@@ -78,6 +83,7 @@ const laneDefinitions = Object.freeze({
       "tool-specific mocked repo/file picker inputs",
       "explicit manifest/toolState launch contexts"
     ],
+    requiresPreflight: true,
     reason: "Tool runtime lane validates focused tool behavior without treating unrelated stale product assertions as blockers."
   },
   integration: {
@@ -90,6 +96,7 @@ const laneDefinitions = Object.freeze({
       "manifest preview asset roles",
       "repo-served browser pages"
     ],
+    requiresPreflight: true,
     reason: "Integration lane validates explicit cross-surface handoffs only; broad all-game thumbnail coverage is outside the default targeted lane."
   },
   "engine-src": {
@@ -130,6 +137,7 @@ const laneDefinitions = Object.freeze({
       "sample structure fixtures"
     ],
     reason: "Samples lane is on-request or affected-sample only and is not the full samples smoke test.",
+    requiresPreflight: true,
     requiresSamplesFlag: true
   }
 });
@@ -139,7 +147,8 @@ function parseArgs(argv) {
     dryRun: false,
     includeSamples: false,
     lanes: [],
-    reportPath: defaultReportPath
+    reportPath: defaultReportPath,
+    skipPreflight: false
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -150,6 +159,8 @@ function parseArgs(argv) {
       options.dryRun = true;
     } else if (argument === "--include-samples") {
       options.includeSamples = true;
+    } else if (argument === "--skip-preflight") {
+      options.skipPreflight = true;
     } else if (argument === "--lane") {
       options.lanes.push(argv[index + 1]);
       index += 1;
@@ -177,8 +188,13 @@ function parseArgs(argv) {
   return options;
 }
 
+function commandArgToString(argument) {
+  const value = String(argument);
+  return /[\s|&()]/.test(value) ? JSON.stringify(value) : value;
+}
+
 function commandToString(commandConfig) {
-  return [commandConfig.command, ...commandConfig.args].join(" ");
+  return [commandConfig.command, ...commandConfig.args].map(commandArgToString).join(" ");
 }
 
 async function runCommand(commandConfig) {
@@ -208,7 +224,7 @@ function reportLine(value) {
   return String(value || "").replace(/\r?\n/g, " ");
 }
 
-function makeReport({ dryRun, fullSamplesSmoke, results }) {
+function makeReport({ dryRun, fullSamplesSmoke, preflight, results }) {
   const summary = summarize(results);
   const lines = [
     "# Testing Lane Execution Report",
@@ -227,6 +243,12 @@ function makeReport({ dryRun, fullSamplesSmoke, results }) {
     "",
     `Status: ${fullSamplesSmoke.status}`,
     `Reason: ${fullSamplesSmoke.reason}`,
+    "",
+    "## Preflight",
+    "",
+    `Status: ${preflight.status}`,
+    `Reason: ${preflight.reason}`,
+    `Command: ${preflight.command || "not run"}`,
     "",
     "## Lanes",
     "",
@@ -276,6 +298,53 @@ if (unknownLanes.length > 0) {
 
 const requestedLanes = new Set(options.lanes);
 const results = [];
+const preflight = {
+  command: "",
+  reason: "No selected lane requires Playwright test-location preflight.",
+  status: "SKIP"
+};
+const selectedDefinitions = options.lanes.map((lane) => laneDefinitions[lane]);
+const needsPreflight = selectedDefinitions.some((definition) => definition.requiresPreflight);
+
+if (needsPreflight && !options.dryRun && !options.skipPreflight) {
+  const result = await runCommand(nodeCommand(locationAuditScript));
+  preflight.command = result.displayCommand;
+  if (result.exitCode !== 0) {
+    preflight.status = "FAIL";
+    preflight.reason = "Test location audit failed; expensive lanes were skipped to avoid wasted reruns.";
+    for (const [lane, definition] of Object.entries(laneDefinitions)) {
+      results.push({
+        affectedSurface: definition.affectedSurface,
+        commands: [],
+        fixtures: definition.fixtures,
+        lane,
+        reason: requestedLanes.has(lane)
+          ? "Skipped because test location preflight failed before lane execution."
+          : "Lane was not selected for this targeted run.",
+        status: "SKIP"
+      });
+    }
+
+    const fullSamplesSmoke = {
+      reason: "Skipped because preflight failed before any samples lane decision could execute.",
+      status: "SKIP"
+    };
+    await writeReport(options.reportPath, makeReport({
+      dryRun: options.dryRun,
+      fullSamplesSmoke,
+      preflight,
+      results
+    }));
+    process.exit(1);
+  }
+  preflight.status = "PASS";
+  preflight.reason = "Test location audit passed before expensive Playwright lane execution.";
+} else if (needsPreflight && options.skipPreflight) {
+  preflight.status = "WARN";
+  preflight.reason = "Preflight was explicitly skipped by --skip-preflight.";
+} else if (needsPreflight && options.dryRun) {
+  preflight.reason = "Dry run requested; preflight command was not executed.";
+}
 
 for (const [lane, definition] of Object.entries(laneDefinitions)) {
   if (!requestedLanes.has(lane)) {
@@ -349,6 +418,7 @@ const fullSamplesSmoke = {
 await writeReport(options.reportPath, makeReport({
   dryRun: options.dryRun,
   fullSamplesSmoke,
+  preflight,
   results
 }));
 
