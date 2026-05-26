@@ -11,8 +11,11 @@ import { fileURLToPath } from "node:url";
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const defaultReportPath = "docs/dev/reports/playwright_structure_audit.md";
 const defaultDiscoveryReportPath = "docs/dev/reports/playwright_discovery_ownership_report.md";
+const defaultDiscoveryScopeReportPath = "docs/dev/reports/playwright_discovery_scope_report.md";
+const defaultFilesystemScanReportPath = "docs/dev/reports/filesystem_scan_reduction_report.md";
 const playwrightRoot = "tests/playwright";
 const sharedHelpersDir = "tests/helpers";
+const textCache = new Map();
 
 const laneDirs = Object.freeze({
   engine: "tests/playwright/engine",
@@ -96,26 +99,99 @@ const intentionallySharedHelpers = [
 
 function parseArgs(argv) {
   const options = {
+    discoveryScopeReportPath: defaultDiscoveryScopeReportPath,
     discoveryReportPath: defaultDiscoveryReportPath,
-    reportPath: defaultReportPath
+    fixtureFiles: [],
+    helperFiles: [],
+    lanes: [],
+    reportPath: defaultReportPath,
+    filesystemScanReportPath: defaultFilesystemScanReportPath,
+    targetFiles: []
   };
+
+  function appendCsvValues(key, value) {
+    String(value || "")
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .forEach((entry) => options[key].push(entry));
+  }
+
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
-    if (argument === "--report") {
-      options.reportPath = argv[index + 1] || defaultReportPath;
-      index += 1;
-    } else if (argument.startsWith("--report=")) {
-      options.reportPath = argument.slice("--report=".length);
-    } else if (argument === "--discovery-report") {
+    if (argument === "--discovery-report") {
       options.discoveryReportPath = argv[index + 1] || defaultDiscoveryReportPath;
       index += 1;
     } else if (argument.startsWith("--discovery-report=")) {
       options.discoveryReportPath = argument.slice("--discovery-report=".length);
+    } else if (argument === "--fixture") {
+      appendCsvValues("fixtureFiles", argv[index + 1]);
+      index += 1;
+    } else if (argument.startsWith("--fixture=")) {
+      appendCsvValues("fixtureFiles", argument.slice("--fixture=".length));
+    } else if (argument === "--fixtures") {
+      appendCsvValues("fixtureFiles", argv[index + 1]);
+      index += 1;
+    } else if (argument.startsWith("--fixtures=")) {
+      appendCsvValues("fixtureFiles", argument.slice("--fixtures=".length));
+    } else if (argument === "--helper") {
+      appendCsvValues("helperFiles", argv[index + 1]);
+      index += 1;
+    } else if (argument.startsWith("--helper=")) {
+      appendCsvValues("helperFiles", argument.slice("--helper=".length));
+    } else if (argument === "--helpers") {
+      appendCsvValues("helperFiles", argv[index + 1]);
+      index += 1;
+    } else if (argument.startsWith("--helpers=")) {
+      appendCsvValues("helperFiles", argument.slice("--helpers=".length));
+    } else if (argument === "--lanes") {
+      appendCsvValues("lanes", argv[index + 1]);
+      index += 1;
+    } else if (argument.startsWith("--lanes=")) {
+      appendCsvValues("lanes", argument.slice("--lanes=".length));
+    } else if (argument === "--report") {
+      options.reportPath = argv[index + 1] || defaultReportPath;
+      index += 1;
+    } else if (argument.startsWith("--report=")) {
+      options.reportPath = argument.slice("--report=".length);
+    } else if (argument === "--scan-report") {
+      options.filesystemScanReportPath = argv[index + 1] || defaultFilesystemScanReportPath;
+      index += 1;
+    } else if (argument.startsWith("--scan-report=")) {
+      options.filesystemScanReportPath = argument.slice("--scan-report=".length);
+    } else if (argument === "--scope-report") {
+      options.discoveryScopeReportPath = argv[index + 1] || defaultDiscoveryScopeReportPath;
+      index += 1;
+    } else if (argument.startsWith("--scope-report=")) {
+      options.discoveryScopeReportPath = argument.slice("--scope-report=".length);
+    } else if (argument === "--target") {
+      appendCsvValues("targetFiles", argv[index + 1]);
+      index += 1;
+    } else if (argument.startsWith("--target=")) {
+      appendCsvValues("targetFiles", argument.slice("--target=".length));
+    } else if (argument === "--targets") {
+      appendCsvValues("targetFiles", argv[index + 1]);
+      index += 1;
+    } else if (argument.startsWith("--targets=")) {
+      appendCsvValues("targetFiles", argument.slice("--targets=".length));
     } else {
       throw new Error(`Unknown argument: ${argument}`);
     }
   }
+  options.fixtureFiles = uniqueRelativePaths(options.fixtureFiles);
+  options.helperFiles = uniqueRelativePaths(options.helperFiles);
+  options.lanes = [...new Set(options.lanes)];
+  options.scopedDiscovery = options.targetFiles.length > 0 || options.helperFiles.length > 0 || options.fixtureFiles.length > 0;
+  options.targetFiles = uniqueRelativePaths(options.targetFiles);
   return options;
+}
+
+function normalizeRelativePath(relativePath) {
+  return String(relativePath || "").replace(/\\/g, "/").replace(/^\.\/+/, "");
+}
+
+function uniqueRelativePaths(paths) {
+  return [...new Set(paths.map(normalizeRelativePath).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 }
 
 function normalizeName(value) {
@@ -187,7 +263,100 @@ async function listGameNames() {
 }
 
 async function readText(relativePath) {
-  return fs.readFile(path.join(repoRoot, relativePath), "utf8");
+  const normalizedPath = normalizeRelativePath(relativePath);
+  if (!textCache.has(normalizedPath)) {
+    textCache.set(normalizedPath, fs.readFile(path.join(repoRoot, normalizedPath), "utf8"));
+  }
+  return textCache.get(normalizedPath);
+}
+
+function gameNameHintsFromText(value) {
+  const hints = [];
+  const pattern = /(?:^|["'`(=\s])\/?games\/([A-Za-z0-9_-]+)\//g;
+  let match = pattern.exec(String(value || ""));
+  while (match) {
+    if (!match[1].startsWith("_") && match[1] !== "shared") {
+      hints.push(match[1]);
+    }
+    match = pattern.exec(String(value || ""));
+  }
+  return hints;
+}
+
+async function listScopedGameNames(scopedFiles) {
+  const names = new Set();
+  for (const scopedFile of scopedFiles) {
+    gameNameHintsFromText(scopedFile).forEach((name) => names.add(name));
+    if (await pathExists(scopedFile)) {
+      const content = await readText(scopedFile);
+      gameNameHintsFromText(content).forEach((name) => names.add(name));
+    }
+  }
+  return [...names]
+    .map((name) => ({ name, normalized: normalizeName(name) }))
+    .filter((entry) => entry.normalized.length > 0)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function splitSpecsByLane(targetFiles) {
+  const specs = {
+    engineSpecs: [],
+    gameSpecs: [],
+    integrationSpecs: [],
+    toolSpecs: []
+  };
+  targetFiles
+    .filter((file) => file.endsWith(".spec.mjs"))
+    .forEach((file) => {
+      const lane = laneFromPlaywrightPath(file);
+      if (lane === "tools") {
+        specs.toolSpecs.push(file);
+      } else if (lane === "games") {
+        specs.gameSpecs.push(file);
+      } else if (lane === "integration") {
+        specs.integrationSpecs.push(file);
+      } else if (lane === "engine") {
+        specs.engineSpecs.push(file);
+      }
+    });
+  return specs;
+}
+
+function requestedOwnershipsForLanes(lanes) {
+  const ownerships = new Set();
+  lanes.forEach((lane) => {
+    if (lane === "tool-runtime" || lane === "workspace-contract" || lane === "tools") {
+      ownerships.add("tools");
+    } else if (lane === "integration") {
+      ownerships.add("integration");
+    } else if (lane === "game-runtime" || lane === "games") {
+      ownerships.add("games");
+    } else if (lane === "engine-src" || lane === "engine") {
+      ownerships.add("engine");
+    }
+  });
+  return ownerships;
+}
+
+function makeScopedLaneDirectoryRows(targetFiles, lanes) {
+  const requestedOwnerships = requestedOwnershipsForLanes(lanes);
+  return Object.entries(laneDirs).map(([ownership, directory]) => {
+    const laneTargets = targetFiles.filter((file) => file.startsWith(`${directory}/`));
+    if (requestedOwnerships.has(ownership)) {
+      return {
+        directory,
+        reason: laneTargets.length > 0
+          ? `Scoped discovery is limited to explicit target file(s): ${laneTargets.join(", ")}.`
+          : "Scoped lane selected without Playwright spec targets; no directory enumeration was performed.",
+        status: laneTargets.length > 0 ? "PASS" : "SKIP"
+      };
+    }
+    return {
+      directory,
+      reason: "Lane was not selected, so targeted discovery did not enumerate this directory.",
+      status: "SKIP"
+    };
+  });
 }
 
 function referencedGamesForContent(content, gameNames) {
@@ -349,60 +518,170 @@ async function auditImports(files, findings) {
   return rows;
 }
 
-async function audit() {
-  const gameNames = await listGameNames();
-  const toolSpecs = await listFiles(laneDirs.tools, (file) => file.endsWith(".spec.mjs"));
-  const gameSpecs = await listFiles(laneDirs.games, (file) => file.endsWith(".spec.mjs"));
-  const integrationSpecs = await listFiles(laneDirs.integration, (file) => file.endsWith(".spec.mjs"));
-  const engineSpecs = await listFiles(laneDirs.engine, (file) => file.endsWith(".spec.mjs"));
-  const helperFiles = await listFiles(sharedHelpersDir, (file) => file.endsWith(".mjs"));
+async function audit(options = {}) {
+  const scopedDiscovery = Boolean(options.scopedDiscovery);
+  const allScopedFiles = uniqueRelativePaths([
+    ...(options.targetFiles || []),
+    ...(options.helperFiles || []),
+    ...(options.fixtureFiles || [])
+  ]);
+  const gameNames = scopedDiscovery
+    ? await listScopedGameNames(allScopedFiles)
+    : await listGameNames();
+  const scopedSpecs = splitSpecsByLane(options.targetFiles || []);
+  const toolSpecs = scopedDiscovery
+    ? scopedSpecs.toolSpecs
+    : await listFiles(laneDirs.tools, (file) => file.endsWith(".spec.mjs"));
+  const gameSpecs = scopedDiscovery
+    ? scopedSpecs.gameSpecs
+    : await listFiles(laneDirs.games, (file) => file.endsWith(".spec.mjs"));
+  const integrationSpecs = scopedDiscovery
+    ? scopedSpecs.integrationSpecs
+    : await listFiles(laneDirs.integration, (file) => file.endsWith(".spec.mjs"));
+  const engineSpecs = scopedDiscovery
+    ? scopedSpecs.engineSpecs
+    : await listFiles(laneDirs.engine, (file) => file.endsWith(".spec.mjs"));
+  const helperFiles = scopedDiscovery
+    ? uniqueRelativePaths(options.helperFiles || []).filter((file) => file.endsWith(".mjs"))
+    : await listFiles(sharedHelpersDir, (file) => file.endsWith(".mjs"));
 
   const findings = [];
   const discoveryRows = [];
   const documentedGameFixtureUses = [];
   const helperOwnershipRows = [];
+  const scopeRows = [];
+  const scanRows = [];
   const placementRows = [];
   const laneDirectoryRows = [];
 
   const allowedDirs = new Set(Object.values(laneDirs));
-  const topLevelDirs = await listTopLevelPlaywrightDirs();
-  topLevelDirs.forEach((directory) => {
-    const status = allowedDirs.has(directory) ? "PASS" : "FAIL";
-    laneDirectoryRows.push({
-      directory,
-      reason: status === "PASS"
-        ? "Directory is an allowed Playwright lane ownership bucket."
-        : "Directory is not an allowed Playwright lane ownership bucket.",
+  if (scopedDiscovery) {
+    laneDirectoryRows.push(...makeScopedLaneDirectoryRows(options.targetFiles || [], options.lanes || []));
+  } else {
+    const topLevelDirs = await listTopLevelPlaywrightDirs();
+    topLevelDirs.forEach((directory) => {
+      const status = allowedDirs.has(directory) ? "PASS" : "FAIL";
+      laneDirectoryRows.push({
+        directory,
+        reason: status === "PASS"
+          ? "Directory is an allowed Playwright lane ownership bucket."
+          : "Directory is not an allowed Playwright lane ownership bucket.",
+        status
+      });
+      if (status === "FAIL") {
+        findings.push(finding(
+          "FAIL",
+          directory,
+          "Unexpected Playwright lane directory.",
+          `Move specs under one of: ${Array.from(allowedDirs).join(", ")}.`
+        ));
+      }
+    });
+
+    for (const directory of Object.values(laneDirs)) {
+      if (!topLevelDirs.includes(directory)) {
+        laneDirectoryRows.push({
+          directory,
+          reason: directory === laneDirs.engine
+            ? "No engine Playwright specs are currently present; engine lane may be empty."
+            : "Expected Playwright lane directory is missing.",
+          status: directory === laneDirs.engine ? "SKIP" : "FAIL"
+        });
+        if (directory !== laneDirs.engine) {
+          findings.push(finding(
+            "FAIL",
+            directory,
+            "Required Playwright lane directory is missing.",
+            "Create the lane directory or restore the moved specs before running Playwright lanes."
+          ));
+        }
+      }
+    }
+  }
+
+  const requestedOwnerships = requestedOwnershipsForLanes(options.lanes || []);
+  for (const targetFile of uniqueRelativePaths(options.targetFiles || [])) {
+    const actualLane = laneFromPlaywrightPath(targetFile);
+    const isDirectoryTarget = targetFile === playwrightRoot
+      || Object.values(laneDirs).includes(targetFile)
+      || targetFile.endsWith("/");
+    const status = !isDirectoryTarget && (!scopedDiscovery || requestedOwnerships.size === 0 || requestedOwnerships.has(actualLane))
+      ? "PASS"
+      : "FAIL";
+    scopeRows.push({
+      file: targetFile,
+      reason: isDirectoryTarget
+        ? "Directory targets would force broad test enumeration."
+        : (status === "PASS" ? "Explicit target is inside the selected discovery lane scope." : `Target belongs to ${actualLane}, outside requested scoped lane ownership.`),
+      role: "target spec",
       status
     });
     if (status === "FAIL") {
       findings.push(finding(
         "FAIL",
-        directory,
-        "Unexpected Playwright lane directory.",
-        `Move specs under one of: ${Array.from(allowedDirs).join(", ")}.`
+        targetFile,
+        "Scoped discovery target would expand outside the selected lane.",
+        "Use explicit spec files owned by the selected targeted lane; do not pass lane directories or unrelated lane files."
       ));
     }
-  });
+  }
 
-  for (const directory of Object.values(laneDirs)) {
-    if (!topLevelDirs.includes(directory)) {
-      laneDirectoryRows.push({
-        directory,
-        reason: directory === laneDirs.engine
-          ? "No engine Playwright specs are currently present; engine lane may be empty."
-          : "Expected Playwright lane directory is missing.",
-        status: directory === laneDirs.engine ? "SKIP" : "FAIL"
-      });
-      if (directory !== laneDirs.engine) {
-        findings.push(finding(
-          "FAIL",
-          directory,
-          "Required Playwright lane directory is missing.",
-          "Create the lane directory or restore the moved specs before running Playwright lanes."
-        ));
-      }
+  for (const helperFile of uniqueRelativePaths(options.helperFiles || [])) {
+    const status = helperFile.startsWith(`${sharedHelpersDir}/`) && helperFile.endsWith(".mjs") ? "PASS" : "FAIL";
+    scopeRows.push({
+      file: helperFile,
+      reason: status === "PASS"
+        ? "Required shared helper was resolved from targeted spec imports."
+        : "Helper scope must stay under tests/helpers and use .mjs modules.",
+      role: "required shared helper",
+      status
+    });
+    if (status === "FAIL") {
+      findings.push(finding(
+        "FAIL",
+        helperFile,
+        "Scoped discovery helper is outside the shared helper area.",
+        `Move helper discovery under ${sharedHelpersDir}/ or make the fixture explicit.`
+      ));
     }
+  }
+
+  for (const fixtureFile of uniqueRelativePaths(options.fixtureFiles || [])) {
+    scopeRows.push({
+      file: fixtureFile,
+      reason: "Explicit fixture was resolved from lane configuration or targeted file references.",
+      role: "required fixture",
+      status: "PASS"
+    });
+  }
+
+  if (scopedDiscovery) {
+    scanRows.push(
+      {
+        path: playwrightRoot,
+        reason: "Targeted lanes supplied explicit spec files; global Playwright discovery was not used.",
+        status: "PREVENTED"
+      },
+      {
+        path: sharedHelpersDir,
+        reason: "Helper discovery used the targeted import graph instead of enumerating every helper.",
+        status: "SCOPED"
+      },
+      {
+        path: "games/",
+        reason: "Game fixture discovery used explicit manifest/path references from targeted files.",
+        status: "SCOPED"
+      }
+    );
+    Object.entries(laneDirs).forEach(([ownership, directory]) => {
+      scanRows.push({
+        path: directory,
+        reason: requestedOwnerships.has(ownership)
+          ? "Selected lane discovery was restricted to explicit target specs."
+          : "Unselected lane directory discovery was skipped.",
+        status: requestedOwnerships.has(ownership) ? "SCOPED" : "SKIP"
+      });
+    });
   }
 
   for (const toolSpec of toolSpecs) {
@@ -659,7 +938,10 @@ async function audit() {
     helperOwnershipRows,
     importRows,
     laneDirectoryRows,
-    placementRows
+    placementRows,
+    scanRows,
+    scopedDiscovery,
+    scopeRows
   };
 }
 
@@ -832,6 +1114,107 @@ function makeDiscoveryOwnershipReport(result) {
   return `${lines.join("\n").trim()}\n`;
 }
 
+function makeDiscoveryScopeReport(result) {
+  const blockingFindings = result.findings.filter((entry) => entry.severity === "FAIL");
+  const lines = [
+    "# Playwright Discovery Scope Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${blockingFindings.length === 0 ? "PASS" : "FAIL"}`,
+    `Scoped discovery: ${result.scopedDiscovery ? "Yes" : "No"}`,
+    "",
+    "## Targeted Discovery Scope",
+    "",
+    "| Role | File | Status | Reason |",
+    "| --- | --- | --- | --- |"
+  ];
+
+  if (result.scopeRows.length === 0) {
+    lines.push("| none | none | SKIP | No explicit scoped discovery inputs were provided; standalone audit used the broad structural mode. |");
+  } else {
+    result.scopeRows.forEach((row) => {
+      lines.push(`| ${row.role} | ${row.file} | ${row.status} | ${reportCell(row.reason)} |`);
+    });
+  }
+
+  lines.push(
+    "",
+    "## Scope Guard",
+    "",
+    "- Targeted lane discovery must use explicit spec files instead of lane-directory targets.",
+    "- Required shared helpers must be resolved from targeted imports.",
+    "- Required fixtures must come from lane configuration or targeted file references.",
+    "- Unaffected Workspace/global lanes must remain outside targeted discovery scope.",
+    "- Ownership failures are deterministic blockers and do not trigger fallback discovery expansion.",
+    "",
+    "## Blockers",
+    ""
+  );
+
+  if (blockingFindings.length === 0) {
+    lines.push("No scoped discovery blockers.");
+  } else {
+    lines.push("| File | Finding | Action |");
+    lines.push("| --- | --- | --- |");
+    blockingFindings.forEach((entry) => {
+      lines.push(`| ${entry.file} | ${reportCell(entry.message)} | ${reportCell(entry.action)} |`);
+    });
+  }
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeFilesystemScanReductionReport(result) {
+  const blockingFindings = result.findings.filter((entry) => entry.severity === "FAIL");
+  const lines = [
+    "# Filesystem Scan Reduction Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${blockingFindings.length === 0 ? "PASS" : "FAIL"}`,
+    "",
+    "## Scan Enforcement",
+    "",
+    "| Path | Status | Reason |",
+    "| --- | --- | --- |"
+  ];
+
+  if (result.scanRows.length === 0) {
+    lines.push("| tests/playwright | BROAD | Standalone structural audit intentionally enumerated all Playwright ownership buckets. |");
+    lines.push("| tests/helpers | BROAD | Standalone structural audit intentionally checked all shared helper ownership. |");
+  } else {
+    result.scanRows.forEach((row) => {
+      lines.push(`| ${row.path} | ${row.status} | ${reportCell(row.reason)} |`);
+    });
+  }
+
+  lines.push(
+    "",
+    "## Runtime Savings Observations",
+    "",
+    result.scopedDiscovery
+      ? "- Scoped discovery prevented broad Playwright lane-directory enumeration for targeted execution."
+      : "- Standalone ownership validation used broad mode by design; targeted lane runner supplies scoped discovery inputs.",
+    "- Helper and fixture inputs are explicit, allowing the runner to cache the discovery map within one execution cycle.",
+    "- Deterministic discovery-scope failures block Playwright launch instead of expanding into fallback lanes.",
+    "- Full samples smoke remains outside targeted discovery unless samples scope is explicitly active.",
+    "",
+    "## Blockers",
+    ""
+  );
+
+  if (blockingFindings.length === 0) {
+    lines.push("No scan-scope blockers.");
+  } else {
+    lines.push("| File | Finding | Action |");
+    lines.push("| --- | --- | --- |");
+    blockingFindings.forEach((entry) => {
+      lines.push(`| ${entry.file} | ${reportCell(entry.message)} | ${reportCell(entry.action)} |`);
+    });
+  }
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 async function writeReport(reportPath, text) {
   const absoluteReportPath = path.resolve(repoRoot, reportPath);
   await fs.mkdir(path.dirname(absoluteReportPath), { recursive: true });
@@ -840,9 +1223,11 @@ async function writeReport(reportPath, text) {
 }
 
 const options = parseArgs(process.argv.slice(2));
-const result = await audit();
+const result = await audit(options);
 await writeReport(options.reportPath, makeReport(result));
 await writeReport(options.discoveryReportPath, makeDiscoveryOwnershipReport(result));
+await writeReport(options.discoveryScopeReportPath, makeDiscoveryScopeReport(result));
+await writeReport(options.filesystemScanReportPath, makeFilesystemScanReductionReport(result));
 
 const failures = result.findings.filter((entry) => entry.severity === "FAIL");
 if (failures.length > 0) {

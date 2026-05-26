@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-05-26T19:31:59.716Z
+Generated: 2026-05-26T19:45:29.919Z
 Dry run: No
 
 ## Summary
@@ -19,7 +19,7 @@ Reason: Skipped because changed files do not modify sample JSON or shared sample
 
 Status: PASS
 Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
-Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs/dev/reports/playwright_discovery_ownership_report.md
+Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs/dev/reports/playwright_discovery_ownership_report.md --scope-report docs/dev/reports/playwright_discovery_scope_report.md --scan-report docs/dev/reports/filesystem_scan_reduction_report.md --lanes tool-runtime,integration --targets tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs,tests/playwright/tools/AssetManagerV2.spec.mjs,tests/playwright/tools/CollisionInspectorV2.spec.mjs,tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs --fixtures games/Asteroids/game.manifest.json,games/GravityWell/game.manifest.json,games/Pong/game.manifest.json,tests/fixtures/workspace-v2/uat.manifest.json
 Details: Lane tool-runtime grep pattern is passed as a literal Node argv value: launch guard|temporary UAT context|rejects non-Workspace
 
 ## Dependency Gate
@@ -37,22 +37,24 @@ Prevented redundant lane execution: 3
 
 ## Validation Cache
 
-Cached validations reused: 8
-Validation computations: 6
+Cached validations reused: 10
+Validation computations: 7
+
+## Discovery Scope
+
+Status: PASS
+Target files: tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs, tests/playwright/tools/AssetManagerV2.spec.mjs, tests/playwright/tools/CollisionInspectorV2.spec.mjs, tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs
+Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
+Required fixtures: games/Asteroids/game.manifest.json, games/GravityWell/game.manifest.json, games/Pong/game.manifest.json, tests/fixtures/workspace-v2/uat.manifest.json
+Targeted file/helper reads: 8
+Cached discovery reuse: Yes
+Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
 
 ## Lane Deduplication
 
 Prevented duplicate lane executions: 0
 Prevented browser launches from duplicate lane requests: 0
 Prevented Workspace lane reruns: 0
-
-## Validation Sequence
-
-- PASS discovery ownership validation first: `node ./scripts/audit-playwright-test-locations.mjs --discovery-report docs/dev/reports/playwright_discovery_ownership_report.md`
-- PASS affected targeted runtime lanes after discovery passed: `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lanes tool-runtime,integration`
-- SKIP Workspace V2 full lane: workspace-contract behavior was not changed.
-- SKIP engine/src lane: engine/src runtime behavior was not changed.
-- SKIP full samples smoke: changed files do not modify sample JSON or shared sample loader/framework behavior.
 
 ## Lanes
 

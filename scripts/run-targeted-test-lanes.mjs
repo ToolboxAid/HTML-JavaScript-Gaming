@@ -14,6 +14,8 @@ const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const defaultReportPath = "docs/dev/reports/testing_lane_execution_report.md";
 const defaultDependencyGatingReportPath = "docs/dev/reports/dependency_gating_report.md";
 const defaultDiscoveryOwnershipReportPath = "docs/dev/reports/playwright_discovery_ownership_report.md";
+const defaultDiscoveryScopeReportPath = "docs/dev/reports/playwright_discovery_scope_report.md";
+const defaultFilesystemScanReportPath = "docs/dev/reports/filesystem_scan_reduction_report.md";
 const defaultLaneDeduplicationReportPath = "docs/dev/reports/lane_deduplication_report.md";
 const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
 const defaultLaneRuntimeOptimizationReportPath = "docs/dev/reports/lane_runtime_optimization_report.md";
@@ -68,6 +70,9 @@ const laneDefinitions = Object.freeze({
       npmCommand("run", "test:workspace-v2")
     ],
     dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
+    ],
     fixtures: [
       "tests/fixtures/workspace-v2/uat.manifest.json",
       "mocked File System Access repo handles",
@@ -93,6 +98,11 @@ const laneDefinitions = Object.freeze({
       )
     ],
     dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/AssetManagerV2.spec.mjs",
+      "tests/playwright/tools/CollisionInspectorV2.spec.mjs",
+      "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs"
+    ],
     fixtures: [
       "tool-specific mocked repo/file picker inputs",
       "explicit manifest/toolState launch contexts"
@@ -108,6 +118,9 @@ const laneDefinitions = Object.freeze({
       playwrightCommand("tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs", "--grep", "Pong")
     ],
     dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"
+    ],
     fixtures: [
       "repo game manifests",
       "manifest preview asset roles",
@@ -137,6 +150,7 @@ const laneDefinitions = Object.freeze({
       )
     ],
     dependencies: [],
+    discoveryTargets: [],
     fixtures: [
       "explicit node unit fixtures",
       "fresh in-memory localStorage/sessionStorage mocks per file"
@@ -154,6 +168,7 @@ const laneDefinitions = Object.freeze({
       )
     ],
     dependencies: [],
+    discoveryTargets: [],
     fixtures: [
       "sample metadata and validation artifacts",
       "sample structure fixtures"
@@ -169,7 +184,9 @@ function parseArgs(argv) {
   const options = {
     dependencyGatingReportPath: defaultDependencyGatingReportPath,
     discoveryOwnershipReportPath: defaultDiscoveryOwnershipReportPath,
+    discoveryScopeReportPath: defaultDiscoveryScopeReportPath,
     dryRun: false,
+    filesystemScanReportPath: defaultFilesystemScanReportPath,
     includeSamples: false,
     laneCompilationReportPath: defaultLaneCompilationReportPath,
     laneDeduplicationReportPath: defaultLaneDeduplicationReportPath,
@@ -201,8 +218,18 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--discovery-ownership-report=")) {
       options.discoveryOwnershipReportPath = argument.slice("--discovery-ownership-report=".length);
+    } else if (argument === "--discovery-scope-report") {
+      options.discoveryScopeReportPath = argv[index + 1] || defaultDiscoveryScopeReportPath;
+      index += 1;
+    } else if (argument.startsWith("--discovery-scope-report=")) {
+      options.discoveryScopeReportPath = argument.slice("--discovery-scope-report=".length);
     } else if (argument === "--dry-run") {
       options.dryRun = true;
+    } else if (argument === "--filesystem-scan-report") {
+      options.filesystemScanReportPath = argv[index + 1] || defaultFilesystemScanReportPath;
+      index += 1;
+    } else if (argument.startsWith("--filesystem-scan-report=")) {
+      options.filesystemScanReportPath = argument.slice("--filesystem-scan-report=".length);
     } else if (argument === "--include-samples") {
       options.includeSamples = true;
     } else if (argument === "--skip-preflight") {
@@ -428,6 +455,232 @@ function commandTargetFiles(commandConfig) {
     return commandConfig.args.filter((argument) => /\.(mjs|js|json)$/i.test(String(argument)));
   }
   return [];
+}
+
+function normalizeRelativePath(relativePath) {
+  return String(relativePath || "").replace(/\\/g, "/").replace(/^\.\/+/, "");
+}
+
+function uniqueRelativePaths(paths) {
+  return [...new Set(paths.map(normalizeRelativePath).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function isUnderPath(relativePath, parentPath) {
+  const normalizedPath = normalizeRelativePath(relativePath);
+  const normalizedParent = normalizeRelativePath(parentPath).replace(/\/+$/, "");
+  return normalizedPath === normalizedParent || normalizedPath.startsWith(`${normalizedParent}/`);
+}
+
+function extractImports(content) {
+  const imports = [];
+  const staticImportPattern = /import\s+(?:[^'"]+\s+from\s+)?["']([^"']+)["']/g;
+  const dynamicImportPattern = /import\(\s*["']([^"']+)["']\s*\)/g;
+  for (const pattern of [staticImportPattern, dynamicImportPattern]) {
+    let match = pattern.exec(content);
+    while (match) {
+      imports.push(match[1]);
+      match = pattern.exec(content);
+    }
+  }
+  return imports;
+}
+
+async function readRepoText(relativePath, textCache) {
+  const normalizedPath = normalizeRelativePath(relativePath);
+  if (!textCache.has(normalizedPath)) {
+    textCache.set(normalizedPath, fs.readFile(path.resolve(repoRoot, normalizedPath), "utf8"));
+  }
+  return textCache.get(normalizedPath);
+}
+
+async function resolveRelativeImportPath(importerPath, specifier) {
+  if (!specifier.startsWith(".")) {
+    return "";
+  }
+  const importerDir = path.dirname(path.resolve(repoRoot, importerPath));
+  const absoluteTarget = path.resolve(importerDir, specifier);
+  const candidates = [
+    absoluteTarget,
+    `${absoluteTarget}.mjs`,
+    `${absoluteTarget}.js`,
+    `${absoluteTarget}.json`,
+    path.join(absoluteTarget, "index.mjs"),
+    path.join(absoluteTarget, "index.js")
+  ];
+  for (const candidate of candidates) {
+    if (await repoPathExists(path.relative(repoRoot, candidate))) {
+      return normalizeRelativePath(path.relative(repoRoot, candidate));
+    }
+  }
+  return "";
+}
+
+function referencedFixturePaths(content) {
+  const fixtures = new Set();
+  const patterns = [
+    /\btests\/fixtures\/[A-Za-z0-9_./-]+/g,
+    /\bgames\/[A-Za-z0-9_-]+\/game\.manifest\.json\b/g,
+    /\/games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g
+  ];
+  for (const pattern of patterns) {
+    let match = pattern.exec(content);
+    while (match) {
+      if (match[0].startsWith("/games/")) {
+        fixtures.add(match[0].slice(1));
+      } else {
+        fixtures.add(match[0]);
+      }
+      match = pattern.exec(content);
+    }
+  }
+  return [...fixtures];
+}
+
+function laneDiscoveryTargets(lane, definition) {
+  const configuredTargets = definition.discoveryTargets || [];
+  if (configuredTargets.length > 0) {
+    return configuredTargets;
+  }
+  return definition.commands
+    .filter((commandConfig) => commandConfig.type === "playwright")
+    .flatMap(commandTargetFiles);
+}
+
+async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
+  const textCache = new Map();
+  const helperQueue = [];
+  const helperFiles = new Set();
+  const fixtureFiles = new Set();
+  const scanRows = [];
+  const targetFiles = [];
+  const selectedLanes = lanes.filter((lane) => laneDefinitions[lane]);
+
+  for (const lane of selectedLanes) {
+    const definition = laneDefinitions[lane];
+    if (definition.requiresSamplesFlag && !includeSamples) {
+      scanRows.push({
+        lane,
+        reason: "Samples lane is on-request only and was not included, so no sample discovery scope was built.",
+        status: "SKIP"
+      });
+      continue;
+    }
+    const laneTargets = laneDiscoveryTargets(lane, definition)
+      .filter((target) => isUnderPath(target, "tests/playwright"));
+    targetFiles.push(...laneTargets);
+    if (laneTargets.length > 0) {
+      scanRows.push({
+        lane,
+        reason: `Scoped discovery uses explicit target file(s): ${laneTargets.join(", ")}.`,
+        status: "SCOPED"
+      });
+    } else if (definition.requiresPreflight) {
+      scanRows.push({
+        lane,
+        reason: "No Playwright spec targets were required for this selected lane.",
+        status: "SKIP"
+      });
+    }
+    (definition.fixturePaths || []).forEach((fixturePath) => fixtureFiles.add(normalizeRelativePath(fixturePath)));
+  }
+
+  async function collectFromFile(relativePath) {
+    const content = await readRepoText(relativePath, textCache);
+    referencedFixturePaths(content).forEach((fixturePath) => fixtureFiles.add(normalizeRelativePath(fixturePath)));
+    for (const specifier of extractImports(content)) {
+      const resolvedPath = await resolveRelativeImportPath(relativePath, specifier);
+      if (!resolvedPath) {
+        continue;
+      }
+      if (isUnderPath(resolvedPath, "tests/helpers") && !helperFiles.has(resolvedPath)) {
+        helperFiles.add(resolvedPath);
+        helperQueue.push(resolvedPath);
+      } else if (isUnderPath(resolvedPath, "tests/fixtures")) {
+        fixtureFiles.add(resolvedPath);
+      }
+    }
+  }
+
+  for (const targetFile of uniqueRelativePaths(targetFiles)) {
+    if (await repoPathExists(targetFile)) {
+      await collectFromFile(targetFile);
+    }
+  }
+  while (helperQueue.length > 0) {
+    const helperFile = helperQueue.shift();
+    if (await repoPathExists(helperFile)) {
+      await collectFromFile(helperFile);
+    }
+  }
+
+  return {
+    fixtureFiles: uniqueRelativePaths([...fixtureFiles]),
+    helperFiles: uniqueRelativePaths([...helperFiles]),
+    scanRows,
+    selectedLanes,
+    targetFiles: uniqueRelativePaths(targetFiles),
+    textReads: textCache.size
+  };
+}
+
+function validateScopedDiscoveryPlan({ includeSamples, lanes, scopedDiscovery }) {
+  const findings = [];
+  const selectedLaneSet = new Set(lanes);
+  const targetRows = [];
+  const laneOwnership = new Map([
+    ["workspace-contract", ["tests/playwright/tools/"]],
+    ["tool-runtime", ["tests/playwright/tools/"]],
+    ["integration", ["tests/playwright/integration/"]],
+    ["engine-src", ["tests/playwright/engine/"]],
+    ["samples", []]
+  ]);
+
+  for (const lane of lanes.filter((entry) => laneDefinitions[entry])) {
+    const definition = laneDefinitions[lane];
+    if (definition.requiresSamplesFlag && !includeSamples) {
+      continue;
+    }
+    const laneTargets = scopedDiscovery.targetFiles.filter((targetFile) => (
+      (laneOwnership.get(lane) || []).some((prefix) => targetFile.startsWith(prefix))
+    ));
+    if (definition.requiresPreflight && (laneOwnership.get(lane) || []).length > 0 && laneTargets.length === 0) {
+      findings.push(`Lane ${lane} has no scoped Playwright discovery target.`);
+    }
+  }
+
+  for (const targetFile of scopedDiscovery.targetFiles) {
+    const matchingLane = [...laneOwnership.entries()]
+      .find(([lane, prefixes]) => selectedLaneSet.has(lane) && prefixes.some((prefix) => targetFile.startsWith(prefix)));
+    const isDirectoryTarget = targetFile === "tests/playwright"
+      || targetFile.endsWith("/")
+      || ["tests/playwright/tools", "tests/playwright/games", "tests/playwright/integration", "tests/playwright/engine"].includes(targetFile);
+    const status = matchingLane && !isDirectoryTarget ? "PASS" : "FAIL";
+    targetRows.push({
+      file: targetFile,
+      lane: matchingLane?.[0] || "unselected",
+      reason: status === "PASS"
+        ? "Target is explicitly owned by the selected lane."
+        : "Target would require broad or unrelated Playwright discovery.",
+      status
+    });
+    if (status === "FAIL") {
+      findings.push(`Scoped discovery target is outside selected lane ownership: ${targetFile}.`);
+    }
+  }
+
+  for (const helperFile of scopedDiscovery.helperFiles) {
+    if (!helperFile.startsWith("tests/helpers/")) {
+      findings.push(`Scoped helper is outside tests/helpers: ${helperFile}.`);
+    }
+  }
+
+  return {
+    findings: [...new Set(findings)],
+    includeSamples,
+    lanes,
+    status: findings.length > 0 ? "FAIL" : "PASS",
+    targetRows
+  };
 }
 
 function grepPatterns(commandConfig) {
@@ -1190,6 +1443,8 @@ function makeStaticValidationReport({
   laneRegistration,
   lanes,
   runnerPreflight,
+  scopedDiscovery,
+  scopedDiscoveryValidation,
   staticOnly,
   structureAudit,
   unknownLanes
@@ -1198,6 +1453,7 @@ function makeStaticValidationReport({
     ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
     ...laneRegistration.findings,
     ...runnerPreflight.findings,
+    ...scopedDiscoveryValidation.findings,
     ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
   ];
   const status = findings.length > 0 ? "FAIL" : "PASS";
@@ -1229,6 +1485,8 @@ function makeStaticValidationReport({
     `| invalid filename detection | ${structureAudit.status} | Covered by Playwright structure audit. |`,
     `| missing import detection | ${structureAudit.status} | Covered by Playwright structure audit relative import checks. |`,
     `| missing fixture detection | ${runnerPreflight.findings.some((entry) => entry.includes("missing fixture")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("missing fixture")).join("; ") || "No missing fixture findings."} |`,
+    `| scoped discovery targets | ${scopedDiscoveryValidation.status} | ${scopedDiscovery.targetFiles.join("; ") || "No Playwright discovery targets selected."} |`,
+    `| broad scan prevention | ${scopedDiscoveryValidation.status} | Discovery map read ${scopedDiscovery.textReads} targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |`,
     `| invalid lane target detection | ${runnerPreflight.findings.some((entry) => entry.includes("targets")) || unknownLanes.length > 0 ? "FAIL" : "PASS"} | ${[...unknownLanes.map((lane) => `Unknown lane ${lane}`), ...runnerPreflight.findings.filter((entry) => entry.includes("targets"))].join("; ") || "No invalid lane target findings."} |`,
     `| Windows quoting hazard detection | ${runnerPreflight.findings.some((entry) => entry.includes("quoting hazard")) ? "FAIL" : "PASS"} | ${runnerPreflight.notes.filter((entry) => entry.includes("grep pattern")).join("; ") || "No shell-sensitive grep hazards found."} |`,
     `| duplicate lane registration detection | ${laneRegistration.findings.some((entry) => entry.includes("Duplicate")) ? "FAIL" : "PASS"} | ${laneRegistration.findings.filter((entry) => entry.includes("Duplicate")).join("; ") || "No duplicate lane registrations found."} |`,
@@ -1262,6 +1520,8 @@ function makeZeroBrowserPreflightReport({
   laneCompilation,
   laneRegistration,
   runnerPreflight,
+  scopedDiscovery,
+  scopedDiscoveryValidation,
   structureAudit,
   unknownLanes
 }) {
@@ -1269,6 +1529,7 @@ function makeZeroBrowserPreflightReport({
     ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
     ...laneRegistration.findings,
     ...runnerPreflight.findings,
+    ...scopedDiscoveryValidation.findings,
     ...laneCompilation.findings,
     ...dependencyGate.findings,
     ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
@@ -1311,6 +1572,7 @@ function makeZeroBrowserPreflightReport({
     `| invalid imports | ${structureAudit.status} | Relative imports checked by Playwright structure audit. |`,
     `| unresolved fixtures | ${runnerPreflight.findings.some((entry) => entry.includes("missing fixture")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("missing fixture")).join("; ") || "No unresolved fixture findings."} |`,
     `| unresolved helpers | ${structureAudit.status} | Shared helper imports and naming ownership checked. |`,
+    `| scoped discovery | ${scopedDiscoveryValidation.status} | Targets: ${scopedDiscovery.targetFiles.join(", ") || "none"}; helpers: ${scopedDiscovery.helperFiles.join(", ") || "none"}. |`,
     `| invalid grep patterns | ${runnerPreflight.findings.some((entry) => entry.includes("grep")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("grep")).join("; ") || "No invalid grep patterns."} |`,
     `| Windows quoting hazards | ${runnerPreflight.findings.some((entry) => entry.includes("quoting hazard")) ? "FAIL" : "PASS"} | ${runnerPreflight.notes.filter((entry) => entry.includes("grep pattern")).join("; ") || "No shell quoting hazards."} |`,
     `| invalid lane references | ${unknownLanes.length > 0 ? "FAIL" : "PASS"} | ${unknownLanes.join("; ") || "No invalid lane references."} |`,
@@ -1350,6 +1612,8 @@ function makeReport({
   preflight,
   results,
   runtimeSchedule,
+  scopedDiscovery,
+  scopedDiscoveryValidation,
   validationCache
 }) {
   const summary = summarize(results);
@@ -1395,6 +1659,16 @@ function makeReport({
     "",
     `Cached validations reused: ${validationCache?.events?.filter((event) => event.status === "HIT").length ?? 0}`,
     `Validation computations: ${validationCache?.events?.filter((event) => event.status === "MISS" || event.status === "MISS_UNCACHED").length ?? 0}`,
+    "",
+    "## Discovery Scope",
+    "",
+    `Status: ${scopedDiscoveryValidation?.status || "SKIP"}`,
+    `Target files: ${scopedDiscovery?.targetFiles?.join(", ") || "none"}`,
+    `Required shared helpers: ${scopedDiscovery?.helperFiles?.join(", ") || "none"}`,
+    `Required fixtures: ${scopedDiscovery?.fixtureFiles?.join(", ") || "none"}`,
+    `Targeted file/helper reads: ${scopedDiscovery?.textReads ?? 0}`,
+    `Cached discovery reuse: ${validationCache?.events?.some((event) => event.stage === "scoped discovery map" && event.status === "HIT") ? "Yes" : "No"}`,
+    `Prevented fallback expansion: ${scopedDiscoveryValidation?.status === "PASS" ? "Yes; no ownership or scope blocker widened into broad discovery." : "Blocked before runtime; no fallback lanes scheduled."}`,
     "",
     "## Lane Deduplication",
     "",
@@ -1485,6 +1759,27 @@ const runnerPreflight = unknownLanes.length > 0
     ["lane definitions change", "fixture ownership changes", "targeted files change"],
     () => validateRunnerPreflight(options.lanes)
   );
+const scopedDiscoveryInput = {
+  includeSamples: options.includeSamples,
+  laneDefinitionHash,
+  lanes: options.lanes
+};
+const scopedDiscovery = unknownLanes.length > 0
+  ? { fixtureFiles: [], helperFiles: [], scanRows: [], selectedLanes: [], targetFiles: [], textReads: 0 }
+  : await validationCache.get(
+    "scoped discovery map",
+    scopedDiscoveryInput,
+    ["lane definitions change", "fixture ownership changes", "helper/import graph changes", "targeted files change"],
+    () => buildScopedDiscoveryPlan({
+      includeSamples: options.includeSamples,
+      lanes: options.lanes
+    })
+  );
+const scopedDiscoveryValidation = validateScopedDiscoveryPlan({
+  includeSamples: options.includeSamples,
+  lanes: options.lanes,
+  scopedDiscovery
+});
 let structureAudit = {
   command: "",
   reason: needsPreflight
@@ -1495,11 +1790,14 @@ let structureAudit = {
 preflight.details.push(...runnerPreflight.notes);
 const structureAuditInput = {
   discoveryOwnershipReportPath: options.discoveryOwnershipReportPath,
+  discoveryScopeReportPath: options.discoveryScopeReportPath,
+  filesystemScanReportPath: options.filesystemScanReportPath,
   helperGraph: "tests/helpers",
   laneDefinitionHash,
   lanes: options.lanes,
   locationAuditScript,
-  playwrightRoot: "tests/playwright"
+  playwrightRoot: "tests/playwright",
+  scopedDiscovery
 };
 if (unknownLanes.length === 0 && needsPreflight && !options.dryRun && !options.skipPreflight) {
   structureAudit = await validationCache.get(
@@ -1507,11 +1805,26 @@ if (unknownLanes.length === 0 && needsPreflight && !options.dryRun && !options.s
     structureAuditInput,
     ["fixture ownership changes", "helper/import graph changes", "targeted files change"],
     async () => {
-      const result = await runCommand(nodeCommand(
-        locationAuditScript,
+      const auditArgs = [
         "--discovery-report",
-        options.discoveryOwnershipReportPath
-      ));
+        options.discoveryOwnershipReportPath,
+        "--scope-report",
+        options.discoveryScopeReportPath,
+        "--scan-report",
+        options.filesystemScanReportPath,
+        "--lanes",
+        options.lanes.join(",")
+      ];
+      if (scopedDiscovery.targetFiles.length > 0) {
+        auditArgs.push("--targets", scopedDiscovery.targetFiles.join(","));
+      }
+      if (scopedDiscovery.helperFiles.length > 0) {
+        auditArgs.push("--helpers", scopedDiscovery.helperFiles.join(","));
+      }
+      if (scopedDiscovery.fixtureFiles.length > 0) {
+        auditArgs.push("--fixtures", scopedDiscovery.fixtureFiles.join(","));
+      }
+      const result = await runCommand(nodeCommand(locationAuditScript, ...auditArgs));
       return {
         command: result.displayCommand,
         reason: result.exitCode === 0
@@ -1528,6 +1841,8 @@ const staticReportText = makeStaticValidationReport({
   laneRegistration,
   lanes: options.lanes,
   runnerPreflight,
+  scopedDiscovery,
+  scopedDiscoveryValidation,
   staticOnly: options.staticOnly,
   structureAudit,
   unknownLanes
@@ -1573,6 +1888,7 @@ const runtimeSchedulingBlockers = [...new Set([
   ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
   ...laneRegistration.findings,
   ...runnerPreflight.findings,
+  ...scopedDiscoveryValidation.findings,
   ...laneCompilation.findings,
   ...dependencyGate.findings,
   ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
@@ -1591,6 +1907,7 @@ const zeroBrowserInput = {
   laneDefinitionHash,
   laneRegistrationStatus: laneRegistration.findings.length === 0 ? "PASS" : "FAIL",
   runnerPreflightStatus: runnerPreflight.findings.length === 0 ? "PASS" : "FAIL",
+  scopedDiscoveryStatus: scopedDiscoveryValidation.status,
   structureAuditStatus: structureAudit.status,
   unknownLanes
 };
@@ -1607,12 +1924,16 @@ const zeroBrowserReportText = await validationCache.get(
     laneCompilation,
     laneRegistration,
     runnerPreflight,
+    scopedDiscovery,
+    scopedDiscoveryValidation,
     structureAudit,
     unknownLanes
   })
 );
 validationCache.reuse("structural ownership validation", structureAuditInput, "static validation report");
 validationCache.reuse("structural ownership validation", structureAuditInput, "zero-browser preflight report");
+validationCache.reuse("scoped discovery map", scopedDiscoveryInput, "structural ownership validation input");
+validationCache.reuse("scoped discovery map", scopedDiscoveryInput, "discovery scope reporting");
 validationCache.reuse("lane compilation validation", laneCompilationInput, "lane compilation report");
 validationCache.reuse("lane compilation validation", laneCompilationInput, "runtime scheduling");
 validationCache.reuse("dependency validation", dependencyGateInput, "dependency report");
@@ -1634,13 +1955,19 @@ if (options.staticOnly || options.zeroBrowserOnly) {
   process.exit(0);
 }
 
-if (unknownLanes.length > 0 || laneRegistration.findings.length > 0 || runnerPreflight.findings.length > 0 || laneCompilation.status === "FAIL" || dependencyGate.status === "FAIL") {
+if (unknownLanes.length > 0
+  || laneRegistration.findings.length > 0
+  || runnerPreflight.findings.length > 0
+  || scopedDiscoveryValidation.status === "FAIL"
+  || laneCompilation.status === "FAIL"
+  || dependencyGate.status === "FAIL") {
   preflight.status = "FAIL";
   preflight.reason = "Runner preflight, lane compilation, or dependency gating failed; expensive lanes were skipped before Playwright execution.";
   preflight.details.push(
     ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
     ...laneRegistration.findings,
     ...runnerPreflight.findings,
+    ...scopedDiscoveryValidation.findings,
     ...dependencyGate.findings
   );
   for (const [lane, definition] of Object.entries(laneDefinitions)) {
@@ -1668,6 +1995,8 @@ if (unknownLanes.length > 0 || laneRegistration.findings.length > 0 || runnerPre
     preflight,
     results,
     runtimeSchedule,
+    scopedDiscovery,
+    scopedDiscoveryValidation,
     validationCache
   }));
   process.exit(1);
@@ -1703,6 +2032,8 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
       preflight,
       results,
       runtimeSchedule,
+      scopedDiscovery,
+      scopedDiscoveryValidation,
       validationCache
     }));
     process.exit(1);
@@ -1800,6 +2131,8 @@ await writeReport(options.reportPath, makeReport({
   preflight,
   results,
   runtimeSchedule,
+  scopedDiscovery,
+  scopedDiscoveryValidation,
   validationCache
 }));
 
