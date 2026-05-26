@@ -344,6 +344,34 @@ Prefer targeted validation:
 
 Tool tests may use games that exercise the refined tool as targeted fixtures only; do not expand those checks into broad game validation unless the PR changes game/runtime behavior.
 
+### Engine Test Lane
+
+The engine test lane validates engine/shared runtime behavior independently from tool validation.
+
+Engine runtime changes require engine validation before tool validation.
+
+Shared runtime/framework changes may trigger broader validation when they affect multiple engine surfaces, tools, games, or samples.
+
+PRs that change engine/shared runtime or framework code must name the affected engine surface in the validation plan.
+
+Affected engine surfaces include:
+- rendering pipeline
+- asset loading
+- input systems
+- audio runtime
+- physics/runtime timing
+- shared manifest/runtime parsers
+
+Tool tests must not validate unrelated engine behavior.
+
+Workspace V2 tests validate contract behavior only; they are not engine-runtime acceptance tests.
+
+Targeted tool tests remain the primary default for tool-only PRs.
+
+Affected game fixtures are optional targeted validation only.
+
+Samples are never implicit validation gates.
+
 Every PR must document:
 - whether full samples test was skipped or run
 - reason for decision
