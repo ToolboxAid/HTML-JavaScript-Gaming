@@ -470,35 +470,14 @@ export class AudioSfxPlaygroundV2App {
   }
 
   async writeClipboardText(text) {
-    if (typeof this.window.navigator?.clipboard?.writeText === "function") {
-      try {
-        await this.window.navigator.clipboard.writeText(text);
-        return;
-      } catch {
-        // Fall back to the legacy copy command below when browser permission blocks the async Clipboard API.
-      }
+    if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
+      throw new Error("Clipboard API is unavailable. Use Export JSON instead.");
     }
 
-    const documentRef = this.window.document;
-    if (!documentRef?.body || typeof documentRef.execCommand !== "function") {
-      throw new Error("Clipboard API is unavailable.");
-    }
-
-    const textArea = documentRef.createElement("textarea");
-    textArea.value = text;
-    textArea.setAttribute("readonly", "");
-    textArea.style.position = "fixed";
-    textArea.style.left = "-9999px";
-    textArea.style.top = "0";
     try {
-      documentRef.body.append(textArea);
-      textArea.focus();
-      textArea.select();
-      if (!documentRef.execCommand("copy")) {
-        throw new Error("Browser copy command returned false.");
-      }
-    } finally {
-      textArea.remove();
+      await this.window.navigator.clipboard.writeText(text);
+    } catch (error) {
+      throw new Error(`Clipboard API copy was blocked. Allow clipboard access or use Export JSON instead. ${error.message}`);
     }
   }
 
