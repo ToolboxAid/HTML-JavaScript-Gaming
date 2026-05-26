@@ -1096,11 +1096,34 @@ New first-class tools must include Playwright launch coverage.
 
 Tool registration must not rely on hidden defaults or silent fallback.
 
+When creating a new first-class tool, Codex must copy the official template from `tools/_templates-v2/` first.
+
+The copied template must retain the template-provided:
+- header structure
+- NAV structure
+- panel layout
+- accordion structure
+- CSS wiring
+- JavaScript module wiring
+- status/logging areas
+- accessibility hooks
+- external script/css separation
+
+Add tool-specific code only after the copied template structure is preserved.
+
+Do not recreate the tool shell from scratch.
+
+Do not remove template sections unless the PR explicitly authorizes it.
+
+Keep HTML free of inline script/style/event handlers.
+
+Register the new tool only after the copied template is adapted.
+
 ## TOOL TEMPLATE V2 LOCATION
 
 The official First-Class Tool V2 starter is:
 
-`tools/templates-v2/`
+`tools/_templates-v2/`
 
 Use the V2 naming consistently:
 - Tool Template V2
