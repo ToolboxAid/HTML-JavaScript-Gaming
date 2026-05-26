@@ -16,12 +16,15 @@ const defaultDependencyGatingReportPath = "docs/dev/reports/dependency_gating_re
 const defaultDiscoveryOwnershipReportPath = "docs/dev/reports/playwright_discovery_ownership_report.md";
 const defaultDiscoveryScopeReportPath = "docs/dev/reports/playwright_discovery_scope_report.md";
 const defaultFilesystemScanReportPath = "docs/dev/reports/filesystem_scan_reduction_report.md";
+const defaultIncrementalValidationReportPath = "docs/dev/reports/incremental_validation_report.md";
 const defaultLaneInputValidationReportPath = "docs/dev/reports/lane_input_validation_report.md";
 const defaultLaneDeduplicationReportPath = "docs/dev/reports/lane_deduplication_report.md";
 const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
 const defaultLaneRuntimeOptimizationReportPath = "docs/dev/reports/lane_runtime_optimization_report.md";
 const defaultStaticReportPath = "docs/dev/reports/static_validation_report.md";
 const defaultTargetedFileManifestReportPath = "docs/dev/reports/targeted_file_manifest_report.md";
+const defaultPersistentLaneManifestReportPath = "docs/dev/reports/persistent_lane_manifest_report.md";
+const defaultPersistentLaneManifestDir = "docs/dev/reports/lane_manifests";
 const defaultValidationCacheReportPath = "docs/dev/reports/validation_cache_report.md";
 const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
@@ -33,6 +36,7 @@ const playwrightCli = path.join(
   "cli.js"
 );
 const npmBin = process.platform === "win32" ? "npm.cmd" : "npm";
+const persistentLaneManifestVersion = 1;
 
 function nodeCommand(scriptPath, ...args) {
   return {
@@ -222,6 +226,7 @@ function parseArgs(argv) {
     dryRun: false,
     filesystemScanReportPath: defaultFilesystemScanReportPath,
     includeSamples: false,
+    incrementalValidationReportPath: defaultIncrementalValidationReportPath,
     laneInputValidationReportPath: defaultLaneInputValidationReportPath,
     laneCompilationReportPath: defaultLaneCompilationReportPath,
     laneDeduplicationReportPath: defaultLaneDeduplicationReportPath,
@@ -229,6 +234,8 @@ function parseArgs(argv) {
     lanes: [],
     rawLaneRequests: [],
     reportPath: defaultReportPath,
+    persistentLaneManifestDir: defaultPersistentLaneManifestDir,
+    persistentLaneManifestReportPath: defaultPersistentLaneManifestReportPath,
     skipPreflight: false,
     staticOnly: false,
     staticReportPath: defaultStaticReportPath,
@@ -268,6 +275,11 @@ function parseArgs(argv) {
       options.filesystemScanReportPath = argument.slice("--filesystem-scan-report=".length);
     } else if (argument === "--include-samples") {
       options.includeSamples = true;
+    } else if (argument === "--incremental-validation-report") {
+      options.incrementalValidationReportPath = argv[index + 1] || defaultIncrementalValidationReportPath;
+      index += 1;
+    } else if (argument.startsWith("--incremental-validation-report=")) {
+      options.incrementalValidationReportPath = argument.slice("--incremental-validation-report=".length);
     } else if (argument === "--lane-input-report") {
       options.laneInputValidationReportPath = argv[index + 1] || defaultLaneInputValidationReportPath;
       index += 1;
@@ -294,6 +306,16 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--report=")) {
       options.reportPath = argument.slice("--report=".length);
+    } else if (argument === "--persistent-manifest-dir") {
+      options.persistentLaneManifestDir = argv[index + 1] || defaultPersistentLaneManifestDir;
+      index += 1;
+    } else if (argument.startsWith("--persistent-manifest-dir=")) {
+      options.persistentLaneManifestDir = argument.slice("--persistent-manifest-dir=".length);
+    } else if (argument === "--persistent-manifest-report") {
+      options.persistentLaneManifestReportPath = argv[index + 1] || defaultPersistentLaneManifestReportPath;
+      index += 1;
+    } else if (argument.startsWith("--persistent-manifest-report=")) {
+      options.persistentLaneManifestReportPath = argument.slice("--persistent-manifest-report=".length);
     } else if (argument === "--dependency-report") {
       options.dependencyGatingReportPath = argv[index + 1] || defaultDependencyGatingReportPath;
       index += 1;
@@ -495,6 +517,64 @@ async function repoPathExists(relativePath) {
   }
 }
 
+async function hashRepoFile(relativePath) {
+  const normalizedPath = normalizeRelativePath(relativePath);
+  const contents = await fs.readFile(path.resolve(repoRoot, normalizedPath));
+  return createHash("sha256").update(contents).digest("hex").slice(0, 16);
+}
+
+async function hashRepoFiles(relativePaths) {
+  const hashes = {};
+  for (const relativePath of uniqueRelativePaths(relativePaths)) {
+    const normalizedPath = normalizeRelativePath(relativePath);
+    try {
+      hashes[normalizedPath] = await hashRepoFile(normalizedPath);
+    } catch {
+      hashes[normalizedPath] = "missing";
+    }
+  }
+  return hashes;
+}
+
+function manifestPathForLane(manifestDir, lane) {
+  const safeLane = String(lane || "unknown").replace(/[^A-Za-z0-9_-]/g, "-");
+  return normalizeRelativePath(path.posix.join(normalizeRelativePath(manifestDir), `${safeLane}.json`));
+}
+
+async function readPersistentManifest(manifestDir, lane) {
+  const manifestPath = manifestPathForLane(manifestDir, lane);
+  try {
+    const manifestText = await fs.readFile(path.resolve(repoRoot, manifestPath), "utf8");
+    return {
+      manifest: JSON.parse(manifestText),
+      manifestPath,
+      status: "FOUND"
+    };
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      return {
+        manifest: null,
+        manifestPath,
+        status: "MISSING"
+      };
+    }
+    return {
+      error: error?.message || String(error),
+      manifest: null,
+      manifestPath,
+      status: "INVALID"
+    };
+  }
+}
+
+async function writePersistentManifest(manifestDir, manifest) {
+  const manifestPath = manifestPathForLane(manifestDir, manifest.lane);
+  const absoluteManifestPath = path.resolve(repoRoot, manifestPath);
+  await fs.mkdir(path.dirname(absoluteManifestPath), { recursive: true });
+  await fs.writeFile(absoluteManifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  return manifestPath;
+}
+
 function commandTargetFiles(commandConfig) {
   if (commandConfig.type === "playwright") {
     return commandConfig.args.filter((argument) => /\.spec\.mjs$/i.test(String(argument)));
@@ -643,12 +723,152 @@ function helperAllowedForManifest(helperPath) {
   return normalizeRelativePath(helperPath).startsWith("tests/helpers/");
 }
 
-async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
+function manifestCore({ definition, fileHashes, fixtures, helpers, imports, lane, laneDefinitionHash, tests }) {
+  const dependencies = definition.dependencies || [];
+  const ownership = definition.ownership || "unknown";
+  const commandsHash = fingerprint(definition.commands.map(commandFingerprint));
+  const dependencyGraphHash = fingerprint({
+    dependencies,
+    importHashes: Object.fromEntries(imports.map((importPath) => [importPath, fileHashes[importPath] || "missing"])),
+    imports
+  });
+  const inputHash = fingerprint({
+    commandsHash,
+    dependencies,
+    dependencyGraphHash,
+    fileHashes,
+    fixtures,
+    helpers,
+    imports,
+    lane,
+    laneDefinitionHash,
+    ownership,
+    tests
+  });
+  const manifestHash = fingerprint({
+    dependencyGraphHash,
+    inputHash,
+    lane,
+    ownership,
+    version: persistentLaneManifestVersion
+  });
+  return {
+    commandsHash,
+    dependencies,
+    dependencyGraphHash,
+    fileHashes,
+    fixtures,
+    helpers,
+    imports,
+    inputHash,
+    lane,
+    laneDefinitionHash,
+    manifestHash,
+    ownership,
+    tests,
+    version: persistentLaneManifestVersion
+  };
+}
+
+function persistedManifestSchemaFindings(manifest, lane, definition, laneDefinitionHash) {
+  const findings = [];
+  if (!manifest || typeof manifest !== "object") {
+    return [`Persistent manifest for ${lane} is not a JSON object.`];
+  }
+  if (manifest.version !== persistentLaneManifestVersion) {
+    findings.push(`Persistent manifest version changed for ${lane}.`);
+  }
+  if (manifest.lane !== lane) {
+    findings.push(`Persistent manifest lane metadata is stale for ${lane}.`);
+  }
+  if (manifest.ownership !== definition.ownership) {
+    findings.push(`Persistent manifest ownership metadata is stale for ${lane}: ${manifest.ownership || "missing"} -> ${definition.ownership}.`);
+  }
+  if (manifest.laneDefinitionHash !== laneDefinitionHash) {
+    findings.push(`Persistent manifest lane definition hash changed for ${lane}.`);
+  }
+  ["tests", "helpers", "fixtures", "imports", "dependencies"].forEach((key) => {
+    if (!Array.isArray(manifest[key])) {
+      findings.push(`Persistent manifest ${key} list is missing for ${lane}.`);
+    }
+  });
+  if (!manifest.fileHashes || typeof manifest.fileHashes !== "object") {
+    findings.push(`Persistent manifest file hash map is missing for ${lane}.`);
+  }
+  if (!manifest.inputHash || !manifest.dependencyGraphHash || !manifest.manifestHash) {
+    findings.push(`Persistent manifest hash metadata is incomplete for ${lane}.`);
+  }
+  return findings;
+}
+
+async function validatePersistentManifest({ definition, lane, laneDefinitionHash, manifest }) {
+  const schemaFindings = persistedManifestSchemaFindings(manifest, lane, definition, laneDefinitionHash);
+  if (schemaFindings.length > 0) {
+    return {
+      findings: schemaFindings,
+      manifest: null,
+      status: "INVALID"
+    };
+  }
+
+  const tests = uniqueRelativePaths(manifest.tests);
+  const helpers = uniqueRelativePaths(manifest.helpers);
+  const fixtures = uniqueRelativePaths(manifest.fixtures);
+  const imports = uniqueRelativePaths(manifest.imports);
+  const fileHashes = await hashRepoFiles([
+    ...tests,
+    ...helpers,
+    ...fixtures,
+    ...imports
+  ]);
+  const missingFiles = Object.entries(fileHashes)
+    .filter(([, hash]) => hash === "missing")
+    .map(([filePath]) => filePath);
+  const rebuilt = manifestCore({
+    definition,
+    fileHashes,
+    fixtures,
+    helpers,
+    imports,
+    lane,
+    laneDefinitionHash,
+    tests
+  });
+  const hashFindings = [];
+  if (manifest.commandsHash !== rebuilt.commandsHash) {
+    hashFindings.push(`Persistent manifest command hash changed for ${lane}.`);
+  }
+  if (manifest.dependencyGraphHash !== rebuilt.dependencyGraphHash) {
+    hashFindings.push(`Persistent manifest dependency graph hash changed for ${lane}.`);
+  }
+  if (manifest.inputHash !== rebuilt.inputHash) {
+    hashFindings.push(`Persistent manifest input hash changed for ${lane}.`);
+  }
+  if (manifest.manifestHash !== rebuilt.manifestHash) {
+    hashFindings.push(`Persistent manifest hash changed for ${lane}.`);
+  }
+  missingFiles.forEach((filePath) => {
+    hashFindings.push(`Persistent manifest file is missing for ${lane}: ${filePath}.`);
+  });
+
+  return {
+    findings: hashFindings,
+    manifest: {
+      ...rebuilt,
+      generatedAt: manifest.generatedAt,
+      manifestPath: manifest.manifestPath || ""
+    },
+    status: hashFindings.length === 0 ? "REUSED" : "INVALIDATED"
+  };
+}
+
+async function buildScopedDiscoveryPlan({ includeSamples, laneDefinitionHash, lanes, persistentManifestDir }) {
   const textCache = new Map();
   const helperFiles = new Set();
   const fixtureFiles = new Set();
   const importFiles = new Set();
   const laneManifests = [];
+  const persistentManifestEvents = [];
   const scanRows = [];
   const targetFiles = [];
   const selectedLanes = lanes.filter((lane) => laneDefinitions[lane]);
@@ -698,6 +918,7 @@ async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
 
   for (const lane of selectedLanes) {
     const definition = laneDefinitions[lane];
+    const persisted = await readPersistentManifest(persistentManifestDir, lane);
     if (definition.requiresSamplesFlag && !includeSamples) {
       laneManifests.push({
         commandsHash: fingerprint(definition.commands.map(commandFingerprint)),
@@ -712,6 +933,12 @@ async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
         status: "SKIP",
         tests: []
       });
+      persistentManifestEvents.push({
+        invalidationReason: "Samples lane is on-request only and was not included.",
+        lane,
+        manifestPath: persisted.manifestPath,
+        status: "SKIP"
+      });
       scanRows.push({
         lane,
         reason: "Samples lane is on-request only and was not included, so no sample discovery scope was built.",
@@ -719,36 +946,110 @@ async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
       });
       continue;
     }
+
+    if (persisted.status === "FOUND") {
+      const persistedValidation = await validatePersistentManifest({
+        definition,
+        lane,
+        laneDefinitionHash,
+        manifest: persisted.manifest
+      });
+      if (persistedValidation.status === "REUSED") {
+        const manifest = {
+          ...persistedValidation.manifest,
+          manifestPath: persisted.manifestPath,
+          source: "persistent"
+        };
+        laneManifests.push(manifest);
+        manifest.tests.forEach((testFile) => targetFiles.push(testFile));
+        manifest.helpers.forEach((helperPath) => helperFiles.add(helperPath));
+        manifest.fixtures.forEach((fixturePath) => fixtureFiles.add(fixturePath));
+        manifest.imports.forEach((importPath) => importFiles.add(importPath));
+        persistentManifestEvents.push({
+          inputHash: manifest.inputHash,
+          invalidationReason: "Inputs unchanged; persisted lane manifest reused.",
+          lane,
+          manifestHash: manifest.manifestHash,
+          manifestPath: persisted.manifestPath,
+          status: "REUSED"
+        });
+        scanRows.push({
+          lane,
+          reason: `Persisted lane manifest reused from ${persisted.manifestPath}; helper/fixture discovery was skipped.`,
+          status: "REUSED"
+        });
+        continue;
+      }
+      persistentManifestEvents.push({
+        previousInputHash: persisted.manifest?.inputHash || "unknown",
+        invalidationReason: persistedValidation.findings.join("; "),
+        lane,
+        manifestPath: persisted.manifestPath,
+        status: "INVALIDATED"
+      });
+    } else if (persisted.status === "INVALID") {
+      persistentManifestEvents.push({
+        invalidationReason: `Persistent manifest could not be parsed: ${persisted.error}`,
+        lane,
+        manifestPath: persisted.manifestPath,
+        status: "INVALIDATED"
+      });
+    } else {
+      persistentManifestEvents.push({
+        invalidationReason: "No persisted manifest existed for this lane.",
+        lane,
+        manifestPath: persisted.manifestPath,
+        status: "GENERATED"
+      });
+    }
+
     const laneTargets = uniqueRelativePaths(laneManifestTests(lane, definition));
     const graph = await collectGraphForFiles(laneTargets);
     const laneFixtureFiles = uniqueRelativePaths([
       ...(definition.fixturePaths || []),
       ...graph.fixtures
     ]);
-    targetFiles.push(...laneTargets);
-    graph.helpers.forEach((helperPath) => helperFiles.add(helperPath));
-    laneFixtureFiles.forEach((fixturePath) => fixtureFiles.add(fixturePath));
-    graph.imports.forEach((importPath) => importFiles.add(importPath));
-    laneManifests.push({
-      commandsHash: fingerprint(definition.commands.map(commandFingerprint)),
-      dependencies: definition.dependencies || [],
-      fixtures: laneFixtureFiles,
-      helpers: graph.helpers,
-      imports: graph.imports,
-      lane,
-      manifestHash: fingerprint({
-        dependencies: definition.dependencies || [],
+    const laneHelpers = graph.helpers;
+    const laneImports = graph.imports;
+    const fileHashes = await hashRepoFiles([
+      ...laneTargets,
+      ...laneHelpers,
+      ...laneFixtureFiles,
+      ...laneImports
+    ]);
+    const manifest = {
+      ...manifestCore({
+        definition,
+        fileHashes,
         fixtures: laneFixtureFiles,
-        helpers: graph.helpers,
-        imports: graph.imports,
+        helpers: laneHelpers,
+        imports: laneImports,
         lane,
-        ownership: definition.ownership || "unknown",
+        laneDefinitionHash,
         tests: laneTargets
       }),
-      ownership: definition.ownership || "unknown",
+      generatedAt: new Date().toISOString(),
+      source: "generated"
+    };
+    manifest.manifestPath = await writePersistentManifest(persistentManifestDir, manifest);
+    const eventIndex = persistentManifestEvents.findIndex((event) => event.lane === lane && (event.status === "GENERATED" || event.status === "INVALIDATED"));
+    if (eventIndex >= 0) {
+      persistentManifestEvents[eventIndex] = {
+        ...persistentManifestEvents[eventIndex],
+        inputHash: manifest.inputHash,
+        manifestHash: manifest.manifestHash,
+        manifestPath: manifest.manifestPath,
+        status: persistentManifestEvents[eventIndex].status === "INVALIDATED" ? "INVALIDATED" : "GENERATED"
+      };
+    }
+    targetFiles.push(...laneTargets);
+    laneHelpers.forEach((helperPath) => helperFiles.add(helperPath));
+    laneFixtureFiles.forEach((fixturePath) => fixtureFiles.add(fixturePath));
+    laneImports.forEach((importPath) => importFiles.add(importPath));
+    laneManifests.push({
+      ...manifest,
       selected: true,
-      status: laneTargets.length > 0 || definition.commands.length > 0 ? "PASS" : "SKIP",
-      tests: laneTargets
+      status: laneTargets.length > 0 || definition.commands.length > 0 ? "PASS" : "SKIP"
     });
     if (laneTargets.length > 0) {
       scanRows.push({
@@ -770,6 +1071,8 @@ async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
     helperFiles: uniqueRelativePaths([...helperFiles]),
     importFiles: uniqueRelativePaths([...importFiles]),
     laneManifests,
+    persistentManifestDir: normalizeRelativePath(persistentManifestDir),
+    persistentManifestEvents,
     scanRows,
     selectedLanes,
     targetFiles: uniqueRelativePaths(targetFiles),
@@ -965,16 +1268,23 @@ async function validateTargetedFileManifests({ includeSamples, lanes, scopedDisc
       }
     }
 
-    const expectedHash = fingerprint({
-      dependencies: manifest.dependencies,
+    const rebuiltManifest = manifestCore({
+      definition,
+      fileHashes: manifest.fileHashes || {},
       fixtures: manifest.fixtures,
       helpers: manifest.helpers,
       imports: manifest.imports,
       lane: manifest.lane,
-      ownership: manifest.ownership,
+      laneDefinitionHash: manifest.laneDefinitionHash,
       tests: manifest.tests
     });
-    if (expectedHash !== manifest.manifestHash) {
+    if (rebuiltManifest.dependencyGraphHash !== manifest.dependencyGraphHash) {
+      laneFindings.push(`Manifest dependency graph hash changed during validation for lane ${lane}.`);
+    }
+    if (rebuiltManifest.inputHash !== manifest.inputHash) {
+      laneFindings.push(`Manifest input hash changed during validation for lane ${lane}.`);
+    }
+    if (rebuiltManifest.manifestHash !== manifest.manifestHash) {
       laneFindings.push(`Manifest hash changed during validation for lane ${lane}.`);
     }
 
@@ -1714,14 +2024,15 @@ function makeValidationCacheReport({ validationCache }) {
     "## Deterministic Invalidation Rules",
     "",
     "- Lane definitions change: lane registration, runner preflight, lane compilation, dependency validation, and scheduling caches invalidate.",
-    "- Fixture ownership changes: structural ownership and runner preflight caches invalidate.",
-    "- Helper/import graph changes: structural ownership validation cache invalidates.",
-    "- Targeted files change: runner preflight and lane compilation caches invalidate.",
+    "- Fixture ownership changes: structural ownership, runner preflight, and affected persisted lane manifests invalidate.",
+    "- Helper/import graph changes: structural ownership validation and affected persisted lane manifests invalidate.",
+    "- Targeted files change: runner preflight, lane compilation, and owning persisted lane manifests invalidate.",
     "- Dependency graph changes: dependency validation and runtime scheduling caches invalidate.",
     "",
     "## Runtime Savings Observations",
     "",
     "- Structural ownership validation is computed once per runner invocation and reused by static and zero-browser reporting.",
+    "- Fresh persistent lane manifests reuse prior helper, fixture, import, and ownership resolution.",
     "- Lane compilation is computed once and reused by dependency gating, runtime scheduling, and reports.",
     "- Dependency validation is computed once and reused by zero-browser preflight, runtime scheduling, and reports.",
     "- No persistent validation cache is written to project JSON, toolState, localStorage, or sessionStorage."
@@ -1781,22 +2092,24 @@ function makeTargetedFileManifestReport({ scopedDiscovery, laneInputValidation }
     "",
     "## Manifest-Generated Lane Inputs",
     "",
-    "| Lane | Ownership | Status | Tests | Helpers | Fixtures | Imports / Dependencies | Manifest Hash | Reason |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"
+    "| Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
   ];
 
   if (laneInputValidation.manifestRows.length === 0) {
-    lines.push("| none | none | SKIP | none | none | none | none | none | No selected lanes produced manifests. |");
+    lines.push("| none | none | SKIP | none | none | none | none | none | none | none | No selected lanes produced manifests. |");
   } else {
     laneInputValidation.manifestRows.forEach((row) => {
       lines.push([
         `| ${row.lane}`,
         row.ownership,
         row.status,
+        row.source || "generated",
         reportLine(row.tests.join("; ") || "none"),
         reportLine(row.helpers.join("; ") || "none"),
         reportLine(row.fixtures.join("; ") || "none"),
         reportLine(row.imports.join("; ") || "none"),
+        row.dependencyGraphHash || "none",
         row.manifestHash,
         `${reportLine(row.reason)} |`
       ].join(" | "));
@@ -1817,6 +2130,161 @@ function makeTargetedFileManifestReport({ scopedDiscovery, laneInputValidation }
     "- Manifest inputs replace repeated recursive test, helper, and fixture discovery during targeted execution.",
     "- Runtime command targets must be declared by the lane manifest before browser launch.",
     "- Manifest hashes lock lane inputs so runtime lane mutation is detected before execution."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makePersistentLaneManifestReport({ scopedDiscovery }) {
+  const events = scopedDiscovery.persistentManifestEvents || [];
+  const reused = events.filter((event) => event.status === "REUSED");
+  const invalidated = events.filter((event) => event.status === "INVALIDATED");
+  const generated = events.filter((event) => event.status === "GENERATED");
+  const lines = [
+    "# Persistent Lane Manifest Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    "Status: PASS",
+    `Manifest directory: ${scopedDiscovery.persistentManifestDir || defaultPersistentLaneManifestDir}`,
+    "",
+    "## Summary",
+    "",
+    `Reused manifests: ${reused.length}`,
+    `Invalidated manifests: ${invalidated.length}`,
+    `Generated manifests: ${generated.length}`,
+    `Prevented discovery scans: ${reused.length}`,
+    "",
+    "## Manifest Events",
+    "",
+    "| Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |",
+    "| --- | --- | --- | --- | --- | --- |"
+  ];
+
+  if (events.length === 0) {
+    lines.push("| none | SKIP | none | none | none | No persistent manifest events were recorded. |");
+  } else {
+    events.forEach((event) => {
+      lines.push([
+        `| ${event.lane}`,
+        event.status,
+        event.manifestPath || "none",
+        event.inputHash || event.previousInputHash || "none",
+        event.manifestHash || "none",
+        `${reportLine(event.invalidationReason)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Persisted Manifest Files",
+    "",
+    "| Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |"
+  );
+  if (!scopedDiscovery.laneManifests || scopedDiscovery.laneManifests.length === 0) {
+    lines.push("| none | none | none | none | none | none | none | none |");
+  } else {
+    scopedDiscovery.laneManifests.forEach((manifest) => {
+      lines.push([
+        `| ${manifest.lane}`,
+        manifest.ownership,
+        manifest.source || "generated",
+        reportLine(manifest.tests.join("; ") || "none"),
+        reportLine(manifest.helpers.join("; ") || "none"),
+        reportLine(manifest.fixtures.join("; ") || "none"),
+        manifest.dependencyGraphHash || "none",
+        `${manifest.manifestHash || "none"} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Fast-Fail Enforcement",
+    "",
+    "- Persisted manifest metadata must match current lane ownership before reuse.",
+    "- Lane definition, dependency graph, helper, fixture, import, and targeted-file hashes invalidate stale manifests.",
+    "- Invalidated manifests are regenerated deterministically before Playwright/browser launch.",
+    "- Persisted manifests never trigger fallback broad discovery."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeIncrementalValidationReport({ scopedDiscovery }) {
+  const events = scopedDiscovery.persistentManifestEvents || [];
+  const reused = events.filter((event) => event.status === "REUSED");
+  const invalidated = events.filter((event) => event.status === "INVALIDATED");
+  const generated = events.filter((event) => event.status === "GENERATED");
+  const skipped = events.filter((event) => event.status === "SKIP");
+  const preventedLaneRegeneration = reused.length;
+  const preventedDiscoveryScans = reused.length;
+  const preventedHelperResolution = reused.reduce((count, event) => {
+    const manifest = (scopedDiscovery.laneManifests || []).find((entry) => entry.lane === event.lane);
+    return count + (manifest?.helpers?.length || 0);
+  }, 0);
+  const preventedFixtureResolution = reused.reduce((count, event) => {
+    const manifest = (scopedDiscovery.laneManifests || []).find((entry) => entry.lane === event.lane);
+    return count + (manifest?.fixtures?.length || 0);
+  }, 0);
+
+  const lines = [
+    "# Incremental Validation Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    "Status: PASS",
+    "",
+    "## Reuse Summary",
+    "",
+    `Reused manifests: ${reused.length}`,
+    `Invalidated manifests: ${invalidated.length}`,
+    `Generated manifests: ${generated.length}`,
+    `Skipped manifests: ${skipped.length}`,
+    `Prevented lane regeneration: ${preventedLaneRegeneration}`,
+    `Prevented discovery scans: ${preventedDiscoveryScans}`,
+    `Prevented helper resolution passes: ${preventedHelperResolution}`,
+    `Prevented fixture resolution passes: ${preventedFixtureResolution}`,
+    "",
+    "## Incremental Decisions",
+    "",
+    "| Lane | Decision | Invalidated By | Runtime Savings Observation |",
+    "| --- | --- | --- | --- |"
+  ];
+
+  if (events.length === 0) {
+    lines.push("| none | SKIP | none | No incremental validation decisions were recorded. |");
+  } else {
+    events.forEach((event) => {
+      const manifest = (scopedDiscovery.laneManifests || []).find((entry) => entry.lane === event.lane);
+      const savings = event.status === "REUSED"
+        ? `Reused ${manifest?.tests?.length || 0} test input(s), ${manifest?.helpers?.length || 0} helper(s), and ${manifest?.fixtures?.length || 0} fixture(s).`
+        : "Manifest was regenerated or skipped; no reuse savings for this lane.";
+      lines.push([
+        `| ${event.lane}`,
+        event.status,
+        reportLine(event.status === "REUSED" ? "unchanged inputs" : event.invalidationReason),
+        `${reportLine(savings)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Invalidation Rules",
+    "",
+    "- Helper ownership or file hash changes invalidate only manifests that list the helper.",
+    "- Fixture ownership or file hash changes invalidate only manifests that list the fixture.",
+    "- Dependency graph hash changes invalidate the owning lane manifest.",
+    "- Lane definition hash changes invalidate persisted lane manifests before runtime.",
+    "- Targeted test file hash changes invalidate the owning lane manifest.",
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- Fresh persisted manifests avoid repeated lane graph generation.",
+    "- Fresh persisted manifests avoid repeated helper and fixture resolution.",
+    "- Fresh persisted manifests avoid repeated ownership scans outside explicit manifest inputs.",
+    "- Incremental validation remains deterministic and does not use project JSON, toolState, localStorage, sessionStorage, or repo tmp/."
   );
 
   return `${lines.join("\n").trim()}\n`;
@@ -1914,6 +2382,7 @@ function makeStaticValidationReport({
     `| missing import detection | ${structureAudit.status} | Covered by Playwright structure audit relative import checks. |`,
     `| missing fixture detection | ${runnerPreflight.findings.some((entry) => entry.includes("missing fixture")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("missing fixture")).join("; ") || "No missing fixture findings."} |`,
     `| targeted file manifests | ${laneInputValidation.status} | ${laneInputValidation.manifestRows.map((row) => `${row.lane}:${row.manifestHash}`).join("; ") || "No lane manifests generated."} |`,
+    `| persistent lane manifests | ${laneInputValidation.status} | ${(scopedDiscovery.persistentManifestEvents || []).map((event) => `${event.lane}:${event.status}`).join("; ") || "No persistent manifest events."} |`,
     `| lane input graph expansion | ${laneInputValidation.preventedDiscoveryExpansion ? "PASS" : "FAIL"} | ${laneInputValidation.preventedDiscoveryExpansion ? "No inputs escaped manifest scope." : "Unexpected input expansion escaped manifest scope."} |`,
     `| scoped discovery targets | ${scopedDiscoveryValidation.status} | ${scopedDiscovery.targetFiles.join("; ") || "No Playwright discovery targets selected."} |`,
     `| broad scan prevention | ${scopedDiscoveryValidation.status} | Discovery map read ${scopedDiscovery.textReads} targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |`,
@@ -2005,6 +2474,7 @@ function makeZeroBrowserPreflightReport({
     `| unresolved fixtures | ${runnerPreflight.findings.some((entry) => entry.includes("missing fixture")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("missing fixture")).join("; ") || "No unresolved fixture findings."} |`,
     `| unresolved helpers | ${structureAudit.status} | Shared helper imports and naming ownership checked. |`,
     `| targeted file manifests | ${laneInputValidation.status} | ${laneInputValidation.manifestRows.map((row) => `${row.lane}:${row.status}`).join(", ") || "none"} |`,
+    `| persistent lane manifests | ${laneInputValidation.status} | ${(scopedDiscovery.persistentManifestEvents || []).map((event) => `${event.lane}:${event.status}`).join(", ") || "none"} |`,
     `| manifest input graph expansion | ${laneInputValidation.preventedDiscoveryExpansion ? "PASS" : "FAIL"} | ${laneInputValidation.preventedDiscoveryExpansion ? "No scoped discovery inputs escaped manifest ownership." : "Unexpected manifest input expansion detected."} |`,
     `| scoped discovery | ${scopedDiscoveryValidation.status} | Targets: ${scopedDiscovery.targetFiles.join(", ") || "none"}; helpers: ${scopedDiscovery.helperFiles.join(", ") || "none"}. |`,
     `| invalid grep patterns | ${runnerPreflight.findings.some((entry) => entry.includes("grep")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("grep")).join("; ") || "No invalid grep patterns."} |`,
@@ -2111,6 +2581,7 @@ function makeReport({
     `Generated manifests: ${laneInputValidation?.manifestRows?.map((row) => `${row.lane}:${row.status}`).join(", ") || "none"}`,
     `Prevented discovery expansion: ${laneInputValidation?.preventedDiscoveryExpansion ? "Yes" : "No"}`,
     `Prevented redundant scans: ${laneInputValidation?.preventedRedundantScans ?? 0}`,
+    `Persistent manifest events: ${scopedDiscovery?.persistentManifestEvents?.map((event) => `${event.lane}:${event.status}`).join(", ") || "none"}`,
     "",
     "## Lane Deduplication",
     "",
@@ -2204,16 +2675,30 @@ const runnerPreflight = unknownLanes.length > 0
 const scopedDiscoveryInput = {
   includeSamples: options.includeSamples,
   laneDefinitionHash,
-  lanes: options.lanes
+  lanes: options.lanes,
+  persistentLaneManifestDir: options.persistentLaneManifestDir
 };
 const scopedDiscovery = unknownLanes.length > 0
-  ? { fixtureFiles: [], helperFiles: [], scanRows: [], selectedLanes: [], targetFiles: [], textReads: 0 }
+  ? {
+    fixtureFiles: [],
+    helperFiles: [],
+    importFiles: [],
+    laneManifests: [],
+    persistentManifestDir: options.persistentLaneManifestDir,
+    persistentManifestEvents: [],
+    scanRows: [],
+    selectedLanes: [],
+    targetFiles: [],
+    textReads: 0
+  }
   : await validationCache.get(
     "scoped discovery map",
     scopedDiscoveryInput,
     ["lane definitions change", "fixture ownership changes", "helper/import graph changes", "targeted files change"],
     () => buildScopedDiscoveryPlan({
       includeSamples: options.includeSamples,
+      laneDefinitionHash,
+      persistentManifestDir: options.persistentLaneManifestDir,
       lanes: options.lanes
     })
   );
@@ -2263,6 +2748,7 @@ const structureAuditInput = {
   laneDefinitionHash,
   lanes: options.lanes,
   locationAuditScript,
+  persistentManifestEvents: scopedDiscovery.persistentManifestEvents,
   playwrightRoot: "tests/playwright",
   scopedDiscovery
 };
@@ -2390,6 +2876,8 @@ const targetedFileManifestReportText = makeTargetedFileManifestReport({
   laneInputValidation,
   scopedDiscovery
 });
+const persistentLaneManifestReportText = makePersistentLaneManifestReport({ scopedDiscovery });
+const incrementalValidationReportText = makeIncrementalValidationReport({ scopedDiscovery });
 const laneInputValidationReportText = makeLaneInputValidationReport({ laneInputValidation });
 const zeroBrowserReportText = await validationCache.get(
   "zero-browser preflight",
@@ -2425,6 +2913,8 @@ await writeTextReport(options.dependencyGatingReportPath, dependencyGatingReport
 await writeTextReport(options.laneDeduplicationReportPath, laneDeduplicationReportText);
 await writeTextReport(options.laneRuntimeOptimizationReportPath, laneRuntimeOptimizationReportText);
 await writeTextReport(options.targetedFileManifestReportPath, targetedFileManifestReportText);
+await writeTextReport(options.persistentLaneManifestReportPath, persistentLaneManifestReportText);
+await writeTextReport(options.incrementalValidationReportPath, incrementalValidationReportText);
 await writeTextReport(options.laneInputValidationReportPath, laneInputValidationReportText);
 await writeTextReport(options.validationCacheReportPath, validationCacheReportText);
 await writeTextReport(options.zeroBrowserReportPath, zeroBrowserReportText);
