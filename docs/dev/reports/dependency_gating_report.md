@@ -1,7 +1,7 @@
 # Dependency Gating Report
 
-Generated: 2026-05-26T21:43:06.648Z
-Status: PASS
+Generated: 2026-05-26T21:52:45.136Z
+Status: FAIL
 
 ## Gate Order
 
@@ -15,15 +15,17 @@ Status: PASS
 | Lane | Selected | Status | Dependencies | Affected Surface | Reason |
 | --- | --- | --- | --- | --- | --- |
 | workspace-contract | No | SKIP | none | Workspace Manager V2 contract and lifecycle behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
-| tool-runtime | Yes | PASS | none | First-class tool runtime behavior | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
-| game-runtime | Yes | PASS | none | Game-owned Playwright runtime behavior | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
-| integration | Yes | PASS | none | Workspace, tool, game index, and manifest handoff behavior | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
-| engine-src | Yes | PASS | none | src/ engine and shared runtime capability behavior | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
+| tool-runtime | No | SKIP | none | First-class tool runtime behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| game-runtime | No | SKIP | none | Game-owned Playwright runtime behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| integration | No | SKIP | none | Workspace, tool, game index, and manifest handoff behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| engine-src | No | SKIP | none | src/ engine and shared runtime capability behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | samples | No | SKIP | none | Affected samples lane, on request only | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| invalid-targeted-closeout-lane | Yes | FAIL | none | unknown | Requested lane does not exist in laneDefinitions. |
 
 ## Dependency Failures Caught Pre-Runtime
 
-No deterministic dependency failures were found before runtime.
+- Unknown lane requested before dependency gating: invalid-targeted-closeout-lane
+- Lane compilation failed; dependency-gated runtime scheduling is blocked.
 
 ## Enforcement Notes
 

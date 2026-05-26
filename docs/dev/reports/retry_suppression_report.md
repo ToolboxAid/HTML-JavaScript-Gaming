@@ -1,21 +1,24 @@
 # Retry Suppression Report
 
-Generated: 2026-05-26T21:44:59.272Z
+Generated: 2026-05-26T21:52:45.137Z
 Status: WARN
 
 ## Summary
 
-Deterministic failures suppressed: 0
-Prevented reruns: 0
+Deterministic failures suppressed: 4
+Prevented reruns: 4
 Prevented browser launches: 0
-Prevented broad lane escalation: 0
+Prevented broad lane escalation: 4
 Prevented repeated lane hydration: 0
 
 ## Retry Decisions
 
 | Fingerprint | Lane | Category | Retry Decision | Reason |
 | --- | --- | --- | --- | --- |
-| be91dab881d6a076 | game-runtime | runtime failure | Allowed only on explicit targeted retry | Retry is allowed only when explicitly requested and must preserve the same targeted lane scope. |
+| 8a34b1f6897ef32e | invalid-targeted-closeout-lane | deterministic setup failure | Suppressed | Automatic retry is suppressed because deterministic setup failures must be fixed before runtime. |
+| bfa111cdb8feb351 | setup | deterministic setup failure | Suppressed | Automatic retry is suppressed because deterministic setup failures must be fixed before runtime. |
+| e9a7db048b3390cb | setup | deterministic setup failure | Suppressed | Automatic retry is suppressed because deterministic setup failures must be fixed before runtime. |
+| d77953343f5cb155 | setup | deterministic setup failure | Suppressed | Automatic retry is suppressed because deterministic setup failures must be fixed before runtime. |
 
 ## Enforcement Rules
 
