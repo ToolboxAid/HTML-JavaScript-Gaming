@@ -1,0 +1,147 @@
+{
+  "commandsHash": "01ccc12413dbfbdf",
+  "dependencyGateStatus": "PASS",
+  "dependencyGraph": {
+    "dependencies": [],
+    "dependencyGraphHash": "4138c2ded15059b2",
+    "importHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ]
+  },
+  "dependencyGraphHash": "4138c2ded15059b2",
+  "executionGraphHash": "efa4203683589f08",
+  "fixtureGraph": {
+    "fixtureHashes": {
+      "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
+      "games/GravityWell/game.manifest.json": "947361edb0b9c4cf",
+      "games/Pong/game.manifest.json": "c6b124046d3dbdf0",
+      "tests/fixtures/workspace-v2/uat.manifest.json": "4b2d4b7e04df35e3"
+    },
+    "fixtures": [
+      "games/Asteroids/game.manifest.json",
+      "games/GravityWell/game.manifest.json",
+      "games/Pong/game.manifest.json",
+      "tests/fixtures/workspace-v2/uat.manifest.json"
+    ]
+  },
+  "fixtureGraphHash": "f63ae1a798603720",
+  "helperGraph": {
+    "helperHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ]
+  },
+  "helperGraphHash": "5d0248502f5b423f",
+  "inputHash": "294a571cec509e5f",
+  "lane": "tool-runtime",
+  "laneCompilationStatus": "PASS",
+  "laneDefinitionHash": "266a66af3454fc0f",
+  "manifest": {
+    "fileHashes": {
+      "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
+      "games/GravityWell/game.manifest.json": "947361edb0b9c4cf",
+      "games/Pong/game.manifest.json": "c6b124046d3dbdf0",
+      "tests/fixtures/workspace-v2/uat.manifest.json": "4b2d4b7e04df35e3",
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+      "tests/playwright/tools/AssetManagerV2.spec.mjs": "3113b992e8ae83c5",
+      "tests/playwright/tools/CollisionInspectorV2.spec.mjs": "627ce1254a402b1b",
+      "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs": "4c067a294e6fd465"
+    },
+    "fixtures": [
+      "games/Asteroids/game.manifest.json",
+      "games/GravityWell/game.manifest.json",
+      "games/Pong/game.manifest.json",
+      "tests/fixtures/workspace-v2/uat.manifest.json"
+    ],
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ],
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ],
+    "manifestHash": "999cd821c911cac6",
+    "manifestPath": "docs/dev/reports/lane_manifests/tool-runtime.json",
+    "source": "persistent",
+    "tests": [
+      "tests/playwright/tools/AssetManagerV2.spec.mjs",
+      "tests/playwright/tools/CollisionInspectorV2.spec.mjs",
+      "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs"
+    ]
+  },
+  "manifestHash": "999cd821c911cac6",
+  "ownership": "tools",
+  "runtimeConfiguration": {
+    "affectedSurface": "First-class tool runtime behavior",
+    "commands": [
+      {
+        "args": [
+          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
+          "test",
+          "tests/playwright/tools/AssetManagerV2.spec.mjs",
+          "--grep",
+          "launch guard|temporary UAT context|rejects non-Workspace",
+          "--project=playwright",
+          "--workers=1",
+          "--reporter=list"
+        ],
+        "command": "C:\\nvm4w\\nodejs\\node.exe",
+        "targets": [
+          "tests/playwright/tools/AssetManagerV2.spec.mjs"
+        ],
+        "type": "playwright"
+      },
+      {
+        "args": [
+          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
+          "test",
+          "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs",
+          "tests/playwright/tools/CollisionInspectorV2.spec.mjs",
+          "--project=playwright",
+          "--workers=1",
+          "--reporter=list"
+        ],
+        "command": "C:\\nvm4w\\nodejs\\node.exe",
+        "targets": [
+          "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs",
+          "tests/playwright/tools/CollisionInspectorV2.spec.mjs"
+        ],
+        "type": "playwright"
+      }
+    ],
+    "commandsHash": "01ccc12413dbfbdf",
+    "laneConfigHash": "3c548af4d8539aef",
+    "requiresPreflight": true,
+    "requiresSamplesFlag": false
+  },
+  "runtimeConfigurationHash": "7a0a9a302518f369",
+  "snapshotHash": "9728d55b200c23d2",
+  "version": 1,
+  "warmStartHash": "d09c1b2843983b2b",
+  "generatedAt": "2026-05-26T20:47:18.663Z"
+}

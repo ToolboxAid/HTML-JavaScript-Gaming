@@ -1,0 +1,117 @@
+{
+  "commandsHash": "7e3fd8e8e97765ac",
+  "dependencyGateStatus": "PASS",
+  "dependencyGraph": {
+    "dependencies": [],
+    "dependencyGraphHash": "e6ec9fe53535987b",
+    "importHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ]
+  },
+  "dependencyGraphHash": "e6ec9fe53535987b",
+  "executionGraphHash": "9bc2253407c5b3be",
+  "fixtureGraph": {
+    "fixtureHashes": {
+      "games/Asteroids/game.manifest.json": "e95aa97f885f0334"
+    },
+    "fixtures": [
+      "games/Asteroids/game.manifest.json"
+    ]
+  },
+  "fixtureGraphHash": "bb607c38074f2cdd",
+  "helperGraph": {
+    "helperHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ]
+  },
+  "helperGraphHash": "0f54d667e883cc0a",
+  "inputHash": "1f19b05ab0983a84",
+  "lane": "game-runtime",
+  "laneCompilationStatus": "PASS",
+  "laneDefinitionHash": "266a66af3454fc0f",
+  "manifest": {
+    "fileHashes": {
+      "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+      "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs": "2f4d9b83847ef74e",
+      "tests/playwright/games/AsteroidsBeatTiming.spec.mjs": "e5b47ba87e6bea91",
+      "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs": "e976a8f1418dcd5b",
+      "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs": "b1a401c5b2f2a5fe"
+    },
+    "fixtures": [
+      "games/Asteroids/game.manifest.json"
+    ],
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ],
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ],
+    "manifestHash": "6b3ea783bd50d09f",
+    "manifestPath": "docs/dev/reports/lane_manifests/game-runtime.json",
+    "source": "persistent",
+    "tests": [
+      "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
+      "tests/playwright/games/AsteroidsBeatTiming.spec.mjs",
+      "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs",
+      "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
+    ]
+  },
+  "manifestHash": "6b3ea783bd50d09f",
+  "ownership": "games",
+  "runtimeConfiguration": {
+    "affectedSurface": "Game-owned Playwright runtime behavior",
+    "commands": [
+      {
+        "args": [
+          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
+          "test",
+          "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
+          "tests/playwright/games/AsteroidsBeatTiming.spec.mjs",
+          "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs",
+          "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs",
+          "--project=playwright",
+          "--workers=1",
+          "--reporter=list"
+        ],
+        "command": "C:\\nvm4w\\nodejs\\node.exe",
+        "targets": [
+          "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
+          "tests/playwright/games/AsteroidsBeatTiming.spec.mjs",
+          "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs",
+          "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
+        ],
+        "type": "playwright"
+      }
+    ],
+    "commandsHash": "7e3fd8e8e97765ac",
+    "laneConfigHash": "8e52a14ee195199f",
+    "requiresPreflight": true,
+    "requiresSamplesFlag": false
+  },
+  "runtimeConfigurationHash": "4c01fb575076779d",
+  "snapshotHash": "17990e72f99b3584",
+  "version": 1,
+  "warmStartHash": "7df2baeee535208f",
+  "generatedAt": "2026-05-26T20:47:18.668Z"
+}

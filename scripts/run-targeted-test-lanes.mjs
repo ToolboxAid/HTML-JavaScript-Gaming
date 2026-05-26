@@ -23,6 +23,8 @@ const defaultLaneInputValidationReportPath = "docs/dev/reports/lane_input_valida
 const defaultLaneDeduplicationReportPath = "docs/dev/reports/lane_deduplication_report.md";
 const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
 const defaultLaneRuntimeOptimizationReportPath = "docs/dev/reports/lane_runtime_optimization_report.md";
+const defaultLaneSnapshotReportPath = "docs/dev/reports/lane_snapshot_report.md";
+const defaultLaneSnapshotDir = "docs/dev/reports/lane_snapshots";
 const defaultLaneWarmStartReportPath = "docs/dev/reports/lane_warm_start_report.md";
 const defaultLaneWarmStartDir = "docs/dev/reports/lane_warm_starts";
 const defaultStaticReportPath = "docs/dev/reports/static_validation_report.md";
@@ -30,6 +32,7 @@ const defaultTargetedFileManifestReportPath = "docs/dev/reports/targeted_file_ma
 const defaultPersistentLaneManifestReportPath = "docs/dev/reports/persistent_lane_manifest_report.md";
 const defaultPersistentLaneManifestDir = "docs/dev/reports/lane_manifests";
 const defaultRetrySuppressionReportPath = "docs/dev/reports/retry_suppression_report.md";
+const defaultExecutionGraphReuseReportPath = "docs/dev/reports/execution_graph_reuse_report.md";
 const defaultValidationCacheReportPath = "docs/dev/reports/validation_cache_report.md";
 const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
@@ -43,6 +46,7 @@ const playwrightCli = path.join(
 const npmBin = process.platform === "win32" ? "npm.cmd" : "npm";
 const persistentLaneManifestVersion = 1;
 const laneWarmStartVersion = 1;
+const laneSnapshotVersion = 1;
 
 function nodeCommand(scriptPath, ...args) {
   return {
@@ -231,6 +235,7 @@ function parseArgs(argv) {
     discoveryOwnershipReportPath: defaultDiscoveryOwnershipReportPath,
     discoveryScopeReportPath: defaultDiscoveryScopeReportPath,
     dryRun: false,
+    executionGraphReuseReportPath: defaultExecutionGraphReuseReportPath,
     failureFingerprintReportPath: defaultFailureFingerprintReportPath,
     filesystemScanReportPath: defaultFilesystemScanReportPath,
     includeSamples: false,
@@ -239,6 +244,8 @@ function parseArgs(argv) {
     laneCompilationReportPath: defaultLaneCompilationReportPath,
     laneDeduplicationReportPath: defaultLaneDeduplicationReportPath,
     laneRuntimeOptimizationReportPath: defaultLaneRuntimeOptimizationReportPath,
+    laneSnapshotDir: defaultLaneSnapshotDir,
+    laneSnapshotReportPath: defaultLaneSnapshotReportPath,
     laneWarmStartDir: defaultLaneWarmStartDir,
     laneWarmStartReportPath: defaultLaneWarmStartReportPath,
     lanes: [],
@@ -289,6 +296,11 @@ function parseArgs(argv) {
       options.discoveryScopeReportPath = argument.slice("--discovery-scope-report=".length);
     } else if (argument === "--dry-run") {
       options.dryRun = true;
+    } else if (argument === "--execution-graph-report") {
+      options.executionGraphReuseReportPath = argv[index + 1] || defaultExecutionGraphReuseReportPath;
+      index += 1;
+    } else if (argument.startsWith("--execution-graph-report=")) {
+      options.executionGraphReuseReportPath = argument.slice("--execution-graph-report=".length);
     } else if (argument === "--filesystem-scan-report") {
       options.filesystemScanReportPath = argv[index + 1] || defaultFilesystemScanReportPath;
       index += 1;
@@ -377,6 +389,16 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--lane-runtime-report=")) {
       options.laneRuntimeOptimizationReportPath = argument.slice("--lane-runtime-report=".length);
+    } else if (argument === "--lane-snapshot-dir") {
+      options.laneSnapshotDir = argv[index + 1] || defaultLaneSnapshotDir;
+      index += 1;
+    } else if (argument.startsWith("--lane-snapshot-dir=")) {
+      options.laneSnapshotDir = argument.slice("--lane-snapshot-dir=".length);
+    } else if (argument === "--lane-snapshot-report") {
+      options.laneSnapshotReportPath = argv[index + 1] || defaultLaneSnapshotReportPath;
+      index += 1;
+    } else if (argument.startsWith("--lane-snapshot-report=")) {
+      options.laneSnapshotReportPath = argument.slice("--lane-snapshot-report=".length);
     } else if (argument === "--lane-warm-start-dir") {
       options.laneWarmStartDir = argv[index + 1] || defaultLaneWarmStartDir;
       index += 1;
@@ -499,7 +521,7 @@ const deterministicFailureRules = Object.freeze([
   },
   {
     key: "invalid-manifest-lane-metadata",
-    pattern: /manifest.*(metadata|hash|input|command|dependency)|persistent manifest|warm-start/i,
+    pattern: /manifest.*(metadata|hash|input|command|dependency)|persistent manifest|warm-start|lane snapshot|execution graph/i,
     source: "manifest validation",
     summary: "Invalid manifest/lane metadata"
   },
@@ -797,6 +819,45 @@ async function writeWarmStartState(warmStartDir, state) {
   await fs.mkdir(path.dirname(absoluteWarmStartPath), { recursive: true });
   await fs.writeFile(absoluteWarmStartPath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
   return warmStartPath;
+}
+
+function laneSnapshotPathForLane(snapshotDir, lane) {
+  const safeLane = String(lane || "unknown").replace(/[^A-Za-z0-9_-]/g, "-");
+  return normalizeRelativePath(path.posix.join(normalizeRelativePath(snapshotDir), `${safeLane}.json`));
+}
+
+async function readLaneSnapshot(snapshotDir, lane) {
+  const snapshotPath = laneSnapshotPathForLane(snapshotDir, lane);
+  try {
+    const snapshotText = await fs.readFile(path.resolve(repoRoot, snapshotPath), "utf8");
+    return {
+      snapshot: JSON.parse(snapshotText),
+      snapshotPath,
+      status: "FOUND"
+    };
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      return {
+        snapshot: null,
+        snapshotPath,
+        status: "MISSING"
+      };
+    }
+    return {
+      error: error?.message || String(error),
+      snapshot: null,
+      snapshotPath,
+      status: "INVALID"
+    };
+  }
+}
+
+async function writeLaneSnapshot(snapshotDir, snapshot) {
+  const snapshotPath = laneSnapshotPathForLane(snapshotDir, snapshot.lane);
+  const absoluteSnapshotPath = path.resolve(repoRoot, snapshotPath);
+  await fs.mkdir(path.dirname(absoluteSnapshotPath), { recursive: true });
+  await fs.writeFile(absoluteSnapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+  return snapshotPath;
 }
 
 function commandTargetFiles(commandConfig) {
@@ -1139,6 +1200,168 @@ function validateWarmStartState({ definition, lane, laneDefinitionHash, manifest
   return {
     findings,
     state: rebuilt,
+    status: findings.length === 0 ? "REUSED" : "INVALIDATED"
+  };
+}
+
+function runtimeConfigurationCore(definition) {
+  return {
+    affectedSurface: definition.affectedSurface,
+    commands: definition.commands.map(commandFingerprint),
+    commandsHash: fingerprint(definition.commands.map(commandFingerprint)),
+    laneConfigHash: laneConfigurationHash(definition),
+    requiresPreflight: Boolean(definition.requiresPreflight),
+    requiresSamplesFlag: Boolean(definition.requiresSamplesFlag)
+  };
+}
+
+function laneSnapshotCore({
+  dependencyRow,
+  definition,
+  laneCompilationRow,
+  laneDefinitionHash,
+  manifest,
+  warmStartRow
+}) {
+  const runtimeConfiguration = runtimeConfigurationCore(definition);
+  const helperGraph = {
+    helperHashes: fileHashSubset(manifest.fileHashes, manifest.helpers),
+    helpers: manifest.helpers
+  };
+  const fixtureGraph = {
+    fixtureHashes: fileHashSubset(manifest.fileHashes, manifest.fixtures),
+    fixtures: manifest.fixtures
+  };
+  const dependencyGraph = {
+    dependencies: definition.dependencies || [],
+    dependencyGraphHash: manifest.dependencyGraphHash,
+    importHashes: fileHashSubset(manifest.fileHashes, manifest.imports),
+    imports: manifest.imports
+  };
+  const helperGraphHash = fingerprint(helperGraph);
+  const fixtureGraphHash = fingerprint(fixtureGraph);
+  const runtimeConfigurationHash = fingerprint(runtimeConfiguration);
+  const executionGraphHash = fingerprint({
+    dependencyGateStatus: dependencyRow?.status || "SKIP",
+    dependencyGraphHash: manifest.dependencyGraphHash,
+    fixtureGraphHash,
+    helperGraphHash,
+    lane: manifest.lane,
+    laneCompilationStatus: laneCompilationRow?.status || "SKIP",
+    manifestHash: manifest.manifestHash,
+    runtimeConfigurationHash,
+    warmStartHash: warmStartRow?.warmStartHash || "none"
+  });
+  const snapshotHash = fingerprint({
+    executionGraphHash,
+    inputHash: manifest.inputHash,
+    lane: manifest.lane,
+    laneDefinitionHash,
+    ownership: manifest.ownership,
+    version: laneSnapshotVersion
+  });
+  return {
+    commandsHash: manifest.commandsHash,
+    dependencyGateStatus: dependencyRow?.status || "SKIP",
+    dependencyGraph,
+    dependencyGraphHash: manifest.dependencyGraphHash,
+    executionGraphHash,
+    fixtureGraph,
+    fixtureGraphHash,
+    helperGraph,
+    helperGraphHash,
+    inputHash: manifest.inputHash,
+    lane: manifest.lane,
+    laneCompilationStatus: laneCompilationRow?.status || "SKIP",
+    laneDefinitionHash,
+    manifest: {
+      fileHashes: manifest.fileHashes || {},
+      fixtures: manifest.fixtures,
+      helpers: manifest.helpers,
+      imports: manifest.imports,
+      manifestHash: manifest.manifestHash,
+      manifestPath: manifest.manifestPath || "",
+      source: manifest.source || "generated",
+      tests: manifest.tests
+    },
+    manifestHash: manifest.manifestHash,
+    ownership: manifest.ownership,
+    runtimeConfiguration,
+    runtimeConfigurationHash,
+    snapshotHash,
+    version: laneSnapshotVersion,
+    warmStartHash: warmStartRow?.warmStartHash || "none"
+  };
+}
+
+function laneSnapshotSchemaFindings(snapshot, lane, definition) {
+  const findings = [];
+  if (!snapshot || typeof snapshot !== "object") {
+    return [`Lane snapshot for ${lane} is not a JSON object.`];
+  }
+  if (snapshot.version !== laneSnapshotVersion) {
+    findings.push(`Lane snapshot version changed for ${lane}.`);
+  }
+  if (snapshot.lane !== lane) {
+    findings.push(`Lane snapshot lane metadata is stale for ${lane}.`);
+  }
+  if (snapshot.ownership !== definition.ownership) {
+    findings.push(`Lane snapshot ownership metadata is stale for ${lane}: ${snapshot.ownership || "missing"} -> ${definition.ownership}.`);
+  }
+  [
+    "dependencyGraphHash",
+    "executionGraphHash",
+    "fixtureGraphHash",
+    "helperGraphHash",
+    "inputHash",
+    "laneDefinitionHash",
+    "manifestHash",
+    "runtimeConfigurationHash",
+    "snapshotHash"
+  ].forEach((key) => {
+    if (!snapshot[key]) {
+      findings.push(`Lane snapshot ${key} is missing for ${lane}.`);
+    }
+  });
+  ["dependencyGraph", "fixtureGraph", "helperGraph", "manifest", "runtimeConfiguration"].forEach((key) => {
+    if (!snapshot[key] || typeof snapshot[key] !== "object") {
+      findings.push(`Lane snapshot ${key} is missing for ${lane}.`);
+    }
+  });
+  return findings;
+}
+
+function validateLaneSnapshot({ currentSnapshot, definition, lane, snapshot }) {
+  const schemaFindings = laneSnapshotSchemaFindings(snapshot, lane, definition);
+  if (schemaFindings.length > 0) {
+    return {
+      findings: schemaFindings,
+      status: "INVALIDATED"
+    };
+  }
+  const findings = [];
+  [
+    "commandsHash",
+    "dependencyGateStatus",
+    "dependencyGraphHash",
+    "executionGraphHash",
+    "fixtureGraphHash",
+    "helperGraphHash",
+    "inputHash",
+    "laneCompilationStatus",
+    "laneDefinitionHash",
+    "manifestHash",
+    "ownership",
+    "runtimeConfigurationHash",
+    "snapshotHash",
+    "warmStartHash"
+  ].forEach((key) => {
+    if (snapshot[key] !== currentSnapshot[key]) {
+      findings.push(`Lane snapshot ${key} changed for ${lane}.`);
+    }
+  });
+  return {
+    findings,
     status: findings.length === 0 ? "REUSED" : "INVALIDATED"
   };
 }
@@ -1871,6 +2094,163 @@ async function buildLaneWarmStartPlan({ laneDefinitionHash, laneInputValidation,
   };
 }
 
+async function buildLaneSnapshotPlan({
+  dependencyGate,
+  laneCompilation,
+  laneDefinitionHash,
+  laneInputValidation,
+  laneSnapshotDir,
+  laneWarmStart,
+  scopedDiscovery
+}) {
+  const dependencyRows = new Map((dependencyGate.rows || []).map((row) => [row.lane, row]));
+  const compilationRows = new Map((laneCompilation.rows || []).map((row) => [row.lane, row]));
+  const manifestRows = new Map((laneInputValidation.manifestRows || []).map((row) => [row.lane, row]));
+  const warmStartRows = new Map((laneWarmStart.rows || []).map((row) => [row.lane, row]));
+  const rows = [];
+  const findings = [];
+
+  for (const manifest of scopedDiscovery.laneManifests || []) {
+    const lane = manifest.lane;
+    const definition = laneDefinitions[lane];
+    const persistedSnapshot = await readLaneSnapshot(laneSnapshotDir, lane);
+    const dependencyRow = dependencyRows.get(lane);
+    const compilationRow = compilationRows.get(lane);
+    const manifestRow = manifestRows.get(lane);
+    const warmStartRow = warmStartRows.get(lane);
+    const validationStatus = [
+      dependencyRow?.status || "SKIP",
+      compilationRow?.status || "SKIP",
+      manifestRow?.status || manifest.status || "SKIP",
+      warmStartRow?.status || "SKIP"
+    ];
+
+    if (!definition || manifest.status === "SKIP" || validationStatus.includes("SKIP")) {
+      rows.push({
+        dependencyGraphHash: manifest.dependencyGraphHash || "none",
+        executionGraphHash: "none",
+        fixtureGraphHash: "none",
+        helperGraphHash: "none",
+        invalidationReason: "Lane was skipped before deterministic snapshot validation.",
+        lane,
+        manifestHash: manifest.manifestHash || "none",
+        runtimeConfigurationHash: "none",
+        snapshotHash: "none",
+        snapshotPath: persistedSnapshot.snapshotPath,
+        status: "SKIP"
+      });
+      continue;
+    }
+
+    if (validationStatus.some((status) => status !== "PASS" && status !== "REUSED" && status !== "GENERATED" && status !== "INVALIDATED")) {
+      const reason = `Lane snapshot is blocked by prior validation status: ${validationStatus.join(", ")}.`;
+      findings.push(`${lane}: ${reason}`);
+      rows.push({
+        dependencyGraphHash: manifest.dependencyGraphHash || "blocked",
+        executionGraphHash: "blocked",
+        fixtureGraphHash: "blocked",
+        helperGraphHash: "blocked",
+        invalidationReason: reason,
+        lane,
+        manifestHash: manifest.manifestHash || "blocked",
+        runtimeConfigurationHash: "blocked",
+        snapshotHash: "blocked",
+        snapshotPath: persistedSnapshot.snapshotPath,
+        status: "BLOCKED"
+      });
+      continue;
+    }
+
+    const currentSnapshot = {
+      ...laneSnapshotCore({
+        dependencyRow,
+        definition,
+        laneCompilationRow: compilationRow,
+        laneDefinitionHash,
+        manifest,
+        warmStartRow
+      }),
+      generatedAt: new Date().toISOString()
+    };
+
+    if (persistedSnapshot.status === "FOUND") {
+      const validation = validateLaneSnapshot({
+        currentSnapshot,
+        definition,
+        lane,
+        snapshot: persistedSnapshot.snapshot
+      });
+      if (validation.status === "REUSED") {
+        rows.push({
+          dependencyGraphHash: currentSnapshot.dependencyGraphHash,
+          executionGraphHash: currentSnapshot.executionGraphHash,
+          fixtureGraphHash: currentSnapshot.fixtureGraphHash,
+          helperGraphHash: currentSnapshot.helperGraphHash,
+          invalidationReason: "Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged.",
+          lane,
+          manifestHash: currentSnapshot.manifestHash,
+          runtimeConfigurationHash: currentSnapshot.runtimeConfigurationHash,
+          snapshotHash: currentSnapshot.snapshotHash,
+          snapshotPath: persistedSnapshot.snapshotPath,
+          status: "REUSED"
+        });
+        continue;
+      }
+      currentSnapshot.snapshotPath = await writeLaneSnapshot(laneSnapshotDir, currentSnapshot);
+      rows.push({
+        dependencyGraphHash: currentSnapshot.dependencyGraphHash,
+        executionGraphHash: currentSnapshot.executionGraphHash,
+        fixtureGraphHash: currentSnapshot.fixtureGraphHash,
+        helperGraphHash: currentSnapshot.helperGraphHash,
+        invalidationReason: validation.findings.join("; "),
+        lane,
+        manifestHash: currentSnapshot.manifestHash,
+        runtimeConfigurationHash: currentSnapshot.runtimeConfigurationHash,
+        snapshotHash: currentSnapshot.snapshotHash,
+        snapshotPath: currentSnapshot.snapshotPath,
+        status: "INVALIDATED"
+      });
+      continue;
+    }
+
+    currentSnapshot.snapshotPath = await writeLaneSnapshot(laneSnapshotDir, currentSnapshot);
+    rows.push({
+      dependencyGraphHash: currentSnapshot.dependencyGraphHash,
+      executionGraphHash: currentSnapshot.executionGraphHash,
+      fixtureGraphHash: currentSnapshot.fixtureGraphHash,
+      helperGraphHash: currentSnapshot.helperGraphHash,
+      invalidationReason: persistedSnapshot.status === "INVALID"
+        ? `Lane snapshot could not be parsed: ${persistedSnapshot.error}`
+        : "No prior lane snapshot existed for this lane.",
+      lane,
+      manifestHash: currentSnapshot.manifestHash,
+      runtimeConfigurationHash: currentSnapshot.runtimeConfigurationHash,
+      snapshotHash: currentSnapshot.snapshotHash,
+      snapshotPath: currentSnapshot.snapshotPath,
+      status: persistedSnapshot.status === "INVALID" ? "INVALIDATED" : "GENERATED"
+    });
+  }
+
+  const reusedRows = rows.filter((row) => row.status === "REUSED");
+  const invalidatedRows = rows.filter((row) => row.status === "INVALIDATED");
+  return {
+    findings: [...new Set(findings)],
+    invalidatedSnapshots: invalidatedRows.length,
+    laneSnapshotDir: normalizeRelativePath(laneSnapshotDir),
+    preventedDependencyTraversal: reusedRows.length,
+    preventedFixtureHelperGraphAssembly: reusedRows.reduce((count, row) => {
+      const manifest = (scopedDiscovery.laneManifests || []).find((entry) => entry.lane === row.lane);
+      return count + (manifest?.fixtures?.length || 0) + (manifest?.helpers?.length || 0);
+    }, 0),
+    preventedGraphRebuilds: reusedRows.length,
+    preventedManifestTraversal: reusedRows.length,
+    preventedTargetedSchedulingWork: reusedRows.length,
+    reusedSnapshots: reusedRows.length,
+    rows,
+    status: findings.length === 0 ? "PASS" : "FAIL"
+  };
+}
+
 function grepPatterns(commandConfig) {
   const patterns = [];
   commandConfig.args.forEach((argument, index) => {
@@ -2295,7 +2675,7 @@ function buildLaneDeduplication({ includeSamples, rawLaneRequests }) {
   };
 }
 
-function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation, laneDeduplication, laneWarmStart, lanes, preRuntimeFindings }) {
+function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation, laneDeduplication, laneSnapshot, laneWarmStart, lanes, preRuntimeFindings }) {
   const requestedLaneSet = new Set(lanes);
   const executableLanes = [];
   const lanePlans = [];
@@ -2308,11 +2688,13 @@ function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation,
       lanePlans,
       orderedLanes: [],
       preventedRedundantBrowserLaunches: laneDeduplication.preventedDuplicateBrowserLaunches,
+      preventedGraphRebuilds: 0,
       preventedRedundantInitialization: 0,
       preventedRedundantLaneExecutions: laneDeduplication.preventedDuplicateLaneExecutions,
       preRuntimeFindings,
       reusedDependencyHydration: 0,
       reusedRuntimeSessions: 0,
+      reusedLaneSnapshots: 0,
       reusedWarmStartLanes: 0,
       scheduledPlaywrightLaunches,
       status: "SKIP"
@@ -2355,6 +2737,7 @@ function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation,
       lane,
       reason: definition.reason,
       scheduledPlaywrightLaunches: laneScheduledPlaywrightLaunches,
+      snapshotStatus: laneSnapshot?.rows?.find((row) => row.lane === lane)?.status || "SKIP",
       warmStartStatus: laneWarmStart?.rows?.find((row) => row.lane === lane)?.status || "SKIP"
     });
   }
@@ -2375,11 +2758,13 @@ function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation,
     lanePlans,
     orderedLanes,
     preventedRedundantBrowserLaunches: Math.max(0, baselinePlaywrightLaunches - scheduledPlaywrightLaunches) + laneDeduplication.preventedDuplicateBrowserLaunches,
+    preventedGraphRebuilds: laneSnapshot?.preventedGraphRebuilds || 0,
     preventedRedundantInitialization: laneWarmStart?.preventedRedundantInitialization || 0,
     preventedRedundantLaneExecutions: skippedLaneCount + laneDeduplication.preventedDuplicateLaneExecutions,
     preRuntimeFindings,
     reusedDependencyHydration: laneWarmStart?.reusedDependencyHydration || 0,
     reusedRuntimeSessions: groupedPlaywrightSessions + (orderedLanes.length > 1 ? 1 : 0),
+    reusedLaneSnapshots: laneSnapshot?.reusedSnapshots || 0,
     reusedWarmStartLanes: laneWarmStart?.reusedWarmStarts || 0,
     scheduledPlaywrightLaunches,
     status: dependencyGate.status === "PASS" && laneCompilation.status === "PASS" ? "PASS" : "SKIP"
@@ -2391,6 +2776,7 @@ function collectSetupFailureRecords({
   laneCompilation,
   laneInputValidation,
   laneRegistration,
+  laneSnapshot,
   laneWarmStart,
   runnerPreflight,
   scopedDiscoveryValidation,
@@ -2428,6 +2814,7 @@ function collectSetupFailureRecords({
   scopedDiscoveryValidation.findings.forEach((findingText) => addSetupFinding("scoped discovery validation", findingText));
   laneInputValidation.findings.forEach((findingText) => addSetupFinding("manifest input validation", findingText));
   laneWarmStart.findings.forEach((findingText) => addSetupFinding("warm-start validation", findingText));
+  laneSnapshot.findings.forEach((findingText) => addSetupFinding("lane snapshot validation", findingText));
   laneCompilation.findings.forEach((findingText) => addSetupFinding("lane compilation", findingText));
   dependencyGate.findings.forEach((findingText) => addSetupFinding("dependency validation", findingText));
   if (structureAudit.status === "FAIL") {
@@ -2464,6 +2851,7 @@ function buildFailureClassification({
   laneCompilation,
   laneInputValidation,
   laneRegistration,
+  laneSnapshot,
   laneWarmStart,
   results,
   runnerPreflight,
@@ -2477,6 +2865,7 @@ function buildFailureClassification({
     laneCompilation,
     laneInputValidation,
     laneRegistration,
+    laneSnapshot,
     laneWarmStart,
     runnerPreflight,
     scopedDiscoveryValidation,
@@ -2504,6 +2893,29 @@ function buildFailureClassification({
     runtimeFailureCount: runtimeFailureRecords.length,
     status: records.length === 0 ? "PASS" : "WARN",
     transientFailureCount: transientRecords.length
+  };
+}
+
+function buildExecutionGraphReuse({ laneSnapshot, runtimeSchedule }) {
+  const runtimeLaneSet = new Set(runtimeSchedule.orderedLanes || []);
+  const rows = (laneSnapshot.rows || []).map((row) => ({
+    executionGraphHash: row.executionGraphHash,
+    lane: row.lane,
+    reason: runtimeLaneSet.has(row.lane)
+      ? "Lane snapshot is part of the selected targeted execution graph."
+      : "Lane snapshot is outside the scheduled runtime graph or was skipped.",
+    snapshotStatus: row.status,
+    status: runtimeLaneSet.has(row.lane) ? row.status : "SKIP"
+  }));
+  return {
+    preventedDependencyTraversal: laneSnapshot.preventedDependencyTraversal || 0,
+    preventedFixtureHelperGraphAssembly: laneSnapshot.preventedFixtureHelperGraphAssembly || 0,
+    preventedGraphRebuilds: laneSnapshot.preventedGraphRebuilds || 0,
+    preventedManifestTraversal: laneSnapshot.preventedManifestTraversal || 0,
+    preventedTargetedSchedulingWork: laneSnapshot.preventedTargetedSchedulingWork || 0,
+    reusedExecutionGraphs: rows.filter((row) => row.status === "REUSED").length,
+    rows,
+    status: laneSnapshot.status
   };
 }
 
@@ -2613,8 +3025,10 @@ function makeLaneRuntimeOptimizationReport({ runtimeSchedule }) {
     "## Runtime Cost Summary",
     "",
     `Reused runtime sessions: ${runtimeSchedule.reusedRuntimeSessions}`,
+    `Reused lane snapshots: ${runtimeSchedule.reusedLaneSnapshots || 0}`,
     `Reused warm-start lanes: ${runtimeSchedule.reusedWarmStartLanes || 0}`,
     `Reused dependency hydration: ${runtimeSchedule.reusedDependencyHydration || 0}`,
+    `Prevented graph rebuilds: ${runtimeSchedule.preventedGraphRebuilds || 0}`,
     `Prevented redundant initialization: ${runtimeSchedule.preventedRedundantInitialization || 0}`,
     `Prevented redundant browser launches: ${runtimeSchedule.preventedRedundantBrowserLaunches}`,
     `Prevented redundant lane execution: ${runtimeSchedule.preventedRedundantLaneExecutions}`,
@@ -2635,13 +3049,14 @@ function makeLaneRuntimeOptimizationReport({ runtimeSchedule }) {
     "",
     "## Lane Plans",
     "",
-    "| Lane | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |",
-    "| --- | --- | --- | --- | --- | --- | --- |"
+    "| Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |"
   ];
 
   runtimeSchedule.lanePlans.forEach((plan) => {
     lines.push([
       `| ${plan.lane}`,
+      plan.snapshotStatus || "SKIP",
       plan.warmStartStatus || "SKIP",
       plan.dependencyHydrationStatus || "SKIP",
       plan.baselinePlaywrightLaunches,
@@ -2652,7 +3067,7 @@ function makeLaneRuntimeOptimizationReport({ runtimeSchedule }) {
   });
 
   if (runtimeSchedule.lanePlans.length === 0) {
-    lines.push("| none | SKIP | SKIP | 0 | 0 | none | No dependency-eligible targeted lanes were scheduled. |");
+    lines.push("| none | SKIP | SKIP | SKIP | 0 | 0 | none | No dependency-eligible targeted lanes were scheduled. |");
   }
 
   lines.push(
@@ -2660,6 +3075,7 @@ function makeLaneRuntimeOptimizationReport({ runtimeSchedule }) {
     "## Runtime Savings Observations",
     "",
     "- Zero-browser preflight, lane compilation, and dependency validation run once per targeted runner invocation.",
+    "- Reused lane snapshots avoid rebuilding identical targeted execution graphs.",
     "- Validated warm-start lanes reuse deterministic initialization state when manifest and dependency hashes are unchanged.",
     "- Reused dependency hydration avoids repeated helper resolution and fixture ownership traversal for compatible targeted runs.",
     "- Compatible Playwright specs with matching options are kept in shared CLI invocations to avoid redundant browser startup.",
@@ -3096,6 +3512,136 @@ function makeDependencyHydrationReuseReport({ laneWarmStart }) {
   return `${lines.join("\n").trim()}\n`;
 }
 
+function makeLaneSnapshotReport({ laneSnapshot }) {
+  const reused = laneSnapshot.rows.filter((row) => row.status === "REUSED");
+  const invalidated = laneSnapshot.rows.filter((row) => row.status === "INVALIDATED");
+  const generated = laneSnapshot.rows.filter((row) => row.status === "GENERATED");
+  const skipped = laneSnapshot.rows.filter((row) => row.status === "SKIP");
+  const lines = [
+    "# Lane Snapshot Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${laneSnapshot.status}`,
+    `Snapshot directory: ${laneSnapshot.laneSnapshotDir || defaultLaneSnapshotDir}`,
+    "",
+    "## Summary",
+    "",
+    `Reused lane snapshots: ${reused.length}`,
+    `Invalidated snapshots: ${invalidated.length}`,
+    `Generated snapshots: ${generated.length}`,
+    `Skipped snapshots: ${skipped.length}`,
+    `Prevented graph rebuilds: ${laneSnapshot.preventedGraphRebuilds}`,
+    `Prevented manifest traversal: ${laneSnapshot.preventedManifestTraversal}`,
+    "",
+    "## Snapshot Decisions",
+    "",
+    "| Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
+  ];
+
+  if (laneSnapshot.rows.length === 0) {
+    lines.push("| none | SKIP | none | none | none | none | none | none | none | none | No selected lanes produced snapshots. |");
+  } else {
+    laneSnapshot.rows.forEach((row) => {
+      lines.push([
+        `| ${row.lane}`,
+        row.status,
+        row.snapshotPath || "none",
+        row.manifestHash || "none",
+        row.dependencyGraphHash || "none",
+        row.helperGraphHash || "none",
+        row.fixtureGraphHash || "none",
+        row.runtimeConfigurationHash || "none",
+        row.executionGraphHash || "none",
+        row.snapshotHash || "none",
+        `${reportLine(row.invalidationReason)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push("", "## Snapshot Validation Findings", "");
+  if (laneSnapshot.findings.length === 0) {
+    lines.push("No stale graph reuse or snapshot validation blockers were found.");
+  } else {
+    laneSnapshot.findings.forEach((findingText) => lines.push(`- ${findingText}`));
+  }
+
+  lines.push(
+    "",
+    "## Invalidation Rules",
+    "",
+    "- Targeted file changes invalidate the owning lane snapshot through manifest input hashes.",
+    "- Dependency graph changes invalidate the owning lane snapshot.",
+    "- Helper or fixture ownership changes invalidate snapshots that include those graph inputs.",
+    "- Lane configuration changes invalidate runtime configuration hashes.",
+    "- Runtime configuration changes invalidate execution graph hashes.",
+    "- Snapshot invalidation never triggers fallback broad lane regeneration.",
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- Reused snapshots avoid rebuilding identical targeted lane graphs.",
+    "- Snapshot reuse carries lane ownership, manifest, dependency, fixture, helper, and runtime configuration hashes into scheduling.",
+    "- Stale snapshots are regenerated deterministically before Playwright/browser launch."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeExecutionGraphReuseReport({ executionGraphReuse }) {
+  const lines = [
+    "# Execution Graph Reuse Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${executionGraphReuse.status}`,
+    "",
+    "## Summary",
+    "",
+    `Reused execution graphs: ${executionGraphReuse.reusedExecutionGraphs}`,
+    `Prevented graph rebuilds: ${executionGraphReuse.preventedGraphRebuilds}`,
+    `Prevented redundant dependency traversal: ${executionGraphReuse.preventedDependencyTraversal}`,
+    `Prevented fixture/helper graph assembly: ${executionGraphReuse.preventedFixtureHelperGraphAssembly}`,
+    `Prevented manifest traversal: ${executionGraphReuse.preventedManifestTraversal}`,
+    `Prevented targeted scheduling work: ${executionGraphReuse.preventedTargetedSchedulingWork}`,
+    "",
+    "## Execution Graph Decisions",
+    "",
+    "| Lane | Status | Snapshot Status | Execution Graph Hash | Reason |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  if (executionGraphReuse.rows.length === 0) {
+    lines.push("| none | SKIP | none | none | No targeted execution graph rows were produced. |");
+  } else {
+    executionGraphReuse.rows.forEach((row) => {
+      lines.push([
+        `| ${row.lane}`,
+        row.status,
+        row.snapshotStatus,
+        row.executionGraphHash || "none",
+        `${reportLine(row.reason)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Safeguards",
+    "",
+    "- Execution graph reuse is allowed only when the lane snapshot hash remains valid.",
+    "- Stale graph snapshots are invalidated before runtime scheduling.",
+    "- Deterministic invalidation does not fall back to broad lane regeneration.",
+    "- Reused execution graphs keep targeted lane scope and do not start Workspace/global lanes unless selected.",
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- Reused snapshots reduce repeated lane graph construction.",
+    "- Reused snapshots reduce repeated manifest, helper, fixture, and dependency traversal.",
+    "- Reused snapshots reduce repeated targeted scheduling work before Playwright/browser startup."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 function makeFailureFingerprintReport({ failureClassification }) {
   const lines = [
     "# Failure Fingerprint Report",
@@ -3360,6 +3906,7 @@ function makeStaticValidationReport({
 
 function makeZeroBrowserPreflightReport({
   dependencyGate,
+  laneSnapshot,
   laneWarmStart,
   laneInputValidation,
   laneCompilation,
@@ -3377,6 +3924,7 @@ function makeZeroBrowserPreflightReport({
     ...scopedDiscoveryValidation.findings,
     ...laneInputValidation.findings,
     ...laneWarmStart.findings,
+    ...laneSnapshot.findings,
     ...laneCompilation.findings,
     ...dependencyGate.findings,
     ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
@@ -3423,6 +3971,7 @@ function makeZeroBrowserPreflightReport({
     `| persistent lane manifests | ${laneInputValidation.status} | ${(scopedDiscovery.persistentManifestEvents || []).map((event) => `${event.lane}:${event.status}`).join(", ") || "none"} |`,
     `| lane warm-start reuse | ${laneWarmStart.status} | ${laneWarmStart.rows.map((row) => `${row.lane}:${row.status}`).join(", ") || "none"} |`,
     `| dependency hydration reuse | ${laneWarmStart.status} | ${laneWarmStart.hydrationRows.map((row) => `${row.lane}:${row.status}`).join(", ") || "none"} |`,
+    `| lane snapshots | ${laneSnapshot.status} | ${laneSnapshot.rows.map((row) => `${row.lane}:${row.status}`).join(", ") || "none"} |`,
     `| manifest input graph expansion | ${laneInputValidation.preventedDiscoveryExpansion ? "PASS" : "FAIL"} | ${laneInputValidation.preventedDiscoveryExpansion ? "No scoped discovery inputs escaped manifest ownership." : "Unexpected manifest input expansion detected."} |`,
     `| scoped discovery | ${scopedDiscoveryValidation.status} | Targets: ${scopedDiscovery.targetFiles.join(", ") || "none"}; helpers: ${scopedDiscovery.helperFiles.join(", ") || "none"}. |`,
     `| invalid grep patterns | ${runnerPreflight.findings.some((entry) => entry.includes("grep")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("grep")).join("; ") || "No invalid grep patterns."} |`,
@@ -3459,8 +4008,10 @@ async function writeTextReport(reportPath, reportText) {
 function makeReport({
   dependencyGate,
   dryRun,
+  executionGraphReuse,
   failureClassification,
   fullSamplesSmoke,
+  laneSnapshot,
   laneWarmStart,
   laneInputValidation,
   laneDeduplication,
@@ -3507,8 +4058,10 @@ function makeReport({
     `Status: ${runtimeSchedule?.status || "SKIP"}`,
     `Scheduled lane order: ${runtimeSchedule?.orderedLanes?.join(", ") || "none"}`,
     `Reused runtime sessions: ${runtimeSchedule?.reusedRuntimeSessions ?? 0}`,
+    `Reused lane snapshots: ${runtimeSchedule?.reusedLaneSnapshots ?? 0}`,
     `Reused warm-start lanes: ${runtimeSchedule?.reusedWarmStartLanes ?? 0}`,
     `Reused dependency hydration: ${runtimeSchedule?.reusedDependencyHydration ?? 0}`,
+    `Prevented graph rebuilds: ${runtimeSchedule?.preventedGraphRebuilds ?? 0}`,
     `Prevented redundant initialization: ${runtimeSchedule?.preventedRedundantInitialization ?? 0}`,
     `Prevented redundant browser launches: ${runtimeSchedule?.preventedRedundantBrowserLaunches ?? 0}`,
     `Prevented redundant lane execution: ${runtimeSchedule?.preventedRedundantLaneExecutions ?? 0}`,
@@ -3555,6 +4108,16 @@ function makeReport({
     `Prevented redundant initialization: ${laneWarmStart?.preventedRedundantInitialization ?? 0}`,
     `Prevented helper resolution passes: ${laneWarmStart?.preventedHelperResolution ?? 0}`,
     `Prevented fixture ownership traversal: ${laneWarmStart?.preventedFixtureOwnershipTraversal ?? 0}`,
+    "",
+    "## Lane Snapshots",
+    "",
+    `Status: ${laneSnapshot?.status || "SKIP"}`,
+    `Snapshot events: ${laneSnapshot?.rows?.map((row) => `${row.lane}:${row.status}`).join(", ") || "none"}`,
+    `Reused snapshots: ${laneSnapshot?.reusedSnapshots ?? 0}`,
+    `Invalidated snapshots: ${laneSnapshot?.invalidatedSnapshots ?? 0}`,
+    `Prevented graph rebuilds: ${laneSnapshot?.preventedGraphRebuilds ?? 0}`,
+    `Prevented redundant dependency traversal: ${executionGraphReuse?.preventedDependencyTraversal ?? 0}`,
+    `Prevented fixture/helper graph assembly: ${executionGraphReuse?.preventedFixtureHelperGraphAssembly ?? 0}`,
     "",
     "## Lane Deduplication",
     "",
@@ -3846,6 +4409,43 @@ const dependencyGate = await validationCache.get(
     unknownLanes
   })
 );
+const laneSnapshotInput = {
+  dependencyGateStatus: dependencyGate.status,
+  laneCompilationStatus: laneCompilation.status,
+  laneDefinitionHash,
+  laneInputValidationStatus: laneInputValidation.status,
+  laneSnapshotDir: options.laneSnapshotDir,
+  laneWarmStartStatus: laneWarmStart.status,
+  scopedDiscoveryHash: fingerprint(scopedDiscovery)
+};
+const laneSnapshot = unknownLanes.length > 0
+  ? {
+    findings: [],
+    invalidatedSnapshots: 0,
+    laneSnapshotDir: options.laneSnapshotDir,
+    preventedDependencyTraversal: 0,
+    preventedFixtureHelperGraphAssembly: 0,
+    preventedGraphRebuilds: 0,
+    preventedManifestTraversal: 0,
+    preventedTargetedSchedulingWork: 0,
+    reusedSnapshots: 0,
+    rows: [],
+    status: "SKIP"
+  }
+  : await validationCache.get(
+    "lane snapshot validation",
+    laneSnapshotInput,
+    ["targeted files change", "dependency graph changes", "helper/fixture ownership changes", "lane configuration changes", "runtime configuration changes"],
+    () => buildLaneSnapshotPlan({
+      dependencyGate,
+      laneCompilation,
+      laneDefinitionHash,
+      laneInputValidation,
+      laneSnapshotDir: options.laneSnapshotDir,
+      laneWarmStart,
+      scopedDiscovery
+    })
+  );
 const runtimeSchedulingBlockers = [...new Set([
   ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
   ...laneRegistration.findings,
@@ -3853,6 +4453,7 @@ const runtimeSchedulingBlockers = [...new Set([
   ...scopedDiscoveryValidation.findings,
   ...laneInputValidation.findings,
   ...laneWarmStart.findings,
+  ...laneSnapshot.findings,
   ...laneCompilation.findings,
   ...dependencyGate.findings,
   ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
@@ -3862,15 +4463,21 @@ const runtimeSchedule = buildRuntimeSchedule({
   includeSamples: options.includeSamples,
   laneCompilation,
   laneDeduplication,
+  laneSnapshot,
   laneWarmStart,
   lanes: options.lanes,
   preRuntimeFindings: runtimeSchedulingBlockers
+});
+const executionGraphReuse = buildExecutionGraphReuse({
+  laneSnapshot,
+  runtimeSchedule
 });
 let failureClassification = buildFailureClassification({
   dependencyGate,
   laneCompilation,
   laneInputValidation,
   laneRegistration,
+  laneSnapshot,
   laneWarmStart,
   results,
   runnerPreflight,
@@ -3884,6 +4491,7 @@ const zeroBrowserInput = {
   laneCompilationStatus: laneCompilation.status,
   laneDefinitionHash,
   laneInputValidationStatus: laneInputValidation.status,
+  laneSnapshotStatus: laneSnapshot.status,
   laneWarmStartStatus: laneWarmStart.status,
   laneRegistrationStatus: laneRegistration.findings.length === 0 ? "PASS" : "FAIL",
   runnerPreflightStatus: runnerPreflight.findings.length === 0 ? "PASS" : "FAIL",
@@ -3897,6 +4505,8 @@ const laneDeduplicationReportText = makeLaneDeduplicationReport({ laneDeduplicat
 const laneRuntimeOptimizationReportText = makeLaneRuntimeOptimizationReport({ runtimeSchedule });
 const laneWarmStartReportText = makeLaneWarmStartReport({ laneWarmStart });
 const dependencyHydrationReuseReportText = makeDependencyHydrationReuseReport({ laneWarmStart });
+const laneSnapshotReportText = makeLaneSnapshotReport({ laneSnapshot });
+const executionGraphReuseReportText = makeExecutionGraphReuseReport({ executionGraphReuse });
 let failureFingerprintReportText = makeFailureFingerprintReport({ failureClassification });
 let retrySuppressionReportText = makeRetrySuppressionReport({ failureClassification });
 const targetedFileManifestReportText = makeTargetedFileManifestReport({
@@ -3912,6 +4522,7 @@ const zeroBrowserReportText = await validationCache.get(
   ["lane definitions change", "fixture ownership changes", "helper/import graph changes", "targeted files change", "dependency graph changes"],
   () => makeZeroBrowserPreflightReport({
     dependencyGate,
+    laneSnapshot,
     laneWarmStart,
     laneInputValidation,
     laneCompilation,
@@ -3932,6 +4543,9 @@ validationCache.reuse("targeted file manifest validation", laneInputValidationIn
 validationCache.reuse("lane warm-start validation", laneWarmStartInput, "warm-start report");
 validationCache.reuse("lane warm-start validation", laneWarmStartInput, "dependency hydration reuse report");
 validationCache.reuse("lane warm-start validation", laneWarmStartInput, "runtime scheduling");
+validationCache.reuse("lane snapshot validation", laneSnapshotInput, "lane snapshot report");
+validationCache.reuse("lane snapshot validation", laneSnapshotInput, "execution graph reuse report");
+validationCache.reuse("lane snapshot validation", laneSnapshotInput, "runtime scheduling");
 validationCache.reuse("lane compilation validation", laneCompilationInput, "lane compilation report");
 validationCache.reuse("lane compilation validation", laneCompilationInput, "runtime scheduling");
 validationCache.reuse("dependency validation", dependencyGateInput, "dependency report");
@@ -3945,6 +4559,8 @@ await writeTextReport(options.laneDeduplicationReportPath, laneDeduplicationRepo
 await writeTextReport(options.laneRuntimeOptimizationReportPath, laneRuntimeOptimizationReportText);
 await writeTextReport(options.laneWarmStartReportPath, laneWarmStartReportText);
 await writeTextReport(options.dependencyHydrationReuseReportPath, dependencyHydrationReuseReportText);
+await writeTextReport(options.laneSnapshotReportPath, laneSnapshotReportText);
+await writeTextReport(options.executionGraphReuseReportPath, executionGraphReuseReportText);
 await writeTextReport(options.failureFingerprintReportPath, failureFingerprintReportText);
 await writeTextReport(options.retrySuppressionReportPath, retrySuppressionReportText);
 await writeTextReport(options.targetedFileManifestReportPath, targetedFileManifestReportText);
@@ -3967,6 +4583,7 @@ if (unknownLanes.length > 0
   || scopedDiscoveryValidation.status === "FAIL"
   || laneInputValidation.status === "FAIL"
   || laneWarmStart.status === "FAIL"
+  || laneSnapshot.status === "FAIL"
   || laneCompilation.status === "FAIL"
   || dependencyGate.status === "FAIL") {
   preflight.status = "FAIL";
@@ -3978,6 +4595,7 @@ if (unknownLanes.length > 0
     ...scopedDiscoveryValidation.findings,
     ...laneInputValidation.findings,
     ...laneWarmStart.findings,
+    ...laneSnapshot.findings,
     ...dependencyGate.findings
   );
   for (const [lane, definition] of Object.entries(laneDefinitions)) {
@@ -4000,8 +4618,10 @@ if (unknownLanes.length > 0
   await writeReport(options.reportPath, makeReport({
     dependencyGate,
     dryRun: options.dryRun,
+    executionGraphReuse,
     failureClassification,
     fullSamplesSmoke,
+    laneSnapshot,
     laneWarmStart,
     laneInputValidation,
     laneDeduplication,
@@ -4040,8 +4660,10 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
     await writeReport(options.reportPath, makeReport({
       dependencyGate,
       dryRun: options.dryRun,
+      executionGraphReuse,
       failureClassification,
       fullSamplesSmoke,
+      laneSnapshot,
       laneWarmStart,
       laneInputValidation,
       laneDeduplication,
@@ -4148,6 +4770,7 @@ failureClassification = buildFailureClassification({
   laneCompilation,
   laneInputValidation,
   laneRegistration,
+  laneSnapshot,
   laneWarmStart,
   results,
   runnerPreflight,
@@ -4164,8 +4787,10 @@ await writeTextReport(options.retrySuppressionReportPath, retrySuppressionReport
 await writeReport(options.reportPath, makeReport({
   dependencyGate,
   dryRun: options.dryRun,
+  executionGraphReuse,
   failureClassification,
   fullSamplesSmoke,
+  laneSnapshot,
   laneWarmStart,
   laneInputValidation,
   laneDeduplication,

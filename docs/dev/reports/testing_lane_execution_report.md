@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-05-26T20:38:01.110Z
+Generated: 2026-05-26T20:49:40.119Z
 Dry run: No
 
 ## Summary
@@ -32,16 +32,18 @@ Reason: No deterministic dependency failures before runtime.
 Status: PASS
 Scheduled lane order: tool-runtime, game-runtime, integration, engine-src
 Reused runtime sessions: 3
+Reused lane snapshots: 4
 Reused warm-start lanes: 4
 Reused dependency hydration: 4
+Prevented graph rebuilds: 4
 Prevented redundant initialization: 4
 Prevented redundant browser launches: 4
 Prevented redundant lane execution: 2
 
 ## Validation Cache
 
-Cached validations reused: 15
-Validation computations: 9
+Cached validations reused: 18
+Validation computations: 10
 
 ## Failure Fingerprints
 
@@ -80,6 +82,16 @@ Dependency hydration events: tool-runtime:REUSED, game-runtime:REUSED, integrati
 Prevented redundant initialization: 4
 Prevented helper resolution passes: 11
 Prevented fixture ownership traversal: 6
+
+## Lane Snapshots
+
+Status: PASS
+Snapshot events: tool-runtime:REUSED, game-runtime:REUSED, integration:REUSED, engine-src:REUSED
+Reused snapshots: 4
+Invalidated snapshots: 0
+Prevented graph rebuilds: 4
+Prevented redundant dependency traversal: 4
+Prevented fixture/helper graph assembly: 17
 
 ## Lane Deduplication
 
@@ -123,4 +135,4 @@ Prevented Workspace lane reruns: 0
 
 - `tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs:14:1` - `validates Asteroids ship visual states from manifest runtime rendering`; expected ship visual states to include `destroyed`, received `idle` and `move`.
 
-Failure fingerprint `be91dab881d6a076` classified the failing `game-runtime` command as a targeted runtime failure. No deterministic setup failures were found, no automatic retry was attempted, and no broad lane escalation or full samples smoke was run.
+Lane snapshot validation and execution-graph reuse passed before runtime execution. Failure fingerprint `be91dab881d6a076` classified the failing `game-runtime` command as a targeted runtime failure; no automatic retry, broad lane escalation, Workspace/global lane startup, or full samples smoke was run.

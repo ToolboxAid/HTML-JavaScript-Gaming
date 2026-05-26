@@ -1,6 +1,6 @@
 # Zero-Browser Preflight Report
 
-Generated: 2026-05-26T20:35:58.941Z
+Generated: 2026-05-26T20:47:41.395Z
 Status: PASS
 
 ## Prevented Browser Launches
@@ -27,6 +27,7 @@ No deterministic setup failures.
 | persistent lane manifests | PASS | tool-runtime:REUSED, game-runtime:REUSED, integration:REUSED, engine-src:REUSED |
 | lane warm-start reuse | PASS | tool-runtime:REUSED, game-runtime:REUSED, integration:REUSED, engine-src:REUSED |
 | dependency hydration reuse | PASS | tool-runtime:REUSED, game-runtime:REUSED, integration:REUSED, engine-src:REUSED |
+| lane snapshots | PASS | tool-runtime:REUSED, game-runtime:REUSED, integration:REUSED, engine-src:REUSED |
 | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
 | scoped discovery | PASS | Targets: tests/assets/AssetLoaderSystem.test.mjs, tests/audio/AudioService.test.mjs, tests/core/EngineCoreBoundaryBaseline.test.mjs, tests/core/FixedTicker.test.mjs, tests/core/FrameClock.test.mjs, tests/input/GamepadHapticsService.test.mjs, tests/input/GamepadInputAdapter.test.mjs, tests/input/InputMap.test.mjs, tests/input/KeyboardState.test.mjs, tests/input/MouseState.test.mjs, tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs, tests/playwright/games/AsteroidsBeatTiming.spec.mjs, tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs, tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs, tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs, tests/playwright/tools/AssetManagerV2.spec.mjs, tests/playwright/tools/CollisionInspectorV2.spec.mjs, tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs, tests/render/Renderer.test.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
 | invalid grep patterns | PASS | No invalid grep patterns. |

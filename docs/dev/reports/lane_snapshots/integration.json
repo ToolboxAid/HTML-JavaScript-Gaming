@@ -1,0 +1,114 @@
+{
+  "commandsHash": "3718bca8be4cb17f",
+  "dependencyGateStatus": "PASS",
+  "dependencyGraph": {
+    "dependencies": [],
+    "dependencyGraphHash": "4138c2ded15059b2",
+    "importHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ]
+  },
+  "dependencyGraphHash": "4138c2ded15059b2",
+  "executionGraphHash": "c6571bb72b5f91c9",
+  "fixtureGraph": {
+    "fixtureHashes": {
+      "games/Pong/game.manifest.json": "c6b124046d3dbdf0"
+    },
+    "fixtures": [
+      "games/Pong/game.manifest.json"
+    ]
+  },
+  "fixtureGraphHash": "91e2dabe792e4939",
+  "helperGraph": {
+    "helperHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ]
+  },
+  "helperGraphHash": "5d0248502f5b423f",
+  "inputHash": "5d0da6db61d73d19",
+  "lane": "integration",
+  "laneCompilationStatus": "PASS",
+  "laneDefinitionHash": "266a66af3454fc0f",
+  "manifest": {
+    "fileHashes": {
+      "games/Pong/game.manifest.json": "c6b124046d3dbdf0",
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+      "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs": "091c2b8dde819bfc"
+    },
+    "fixtures": [
+      "games/Pong/game.manifest.json"
+    ],
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ],
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ],
+    "manifestHash": "a0a414fdcda4d881",
+    "manifestPath": "docs/dev/reports/lane_manifests/integration.json",
+    "source": "persistent",
+    "tests": [
+      "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"
+    ]
+  },
+  "manifestHash": "a0a414fdcda4d881",
+  "ownership": "integration",
+  "runtimeConfiguration": {
+    "affectedSurface": "Workspace, tool, game index, and manifest handoff behavior",
+    "commands": [
+      {
+        "args": [
+          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
+          "test",
+          "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs",
+          "--grep",
+          "Pong",
+          "--project=playwright",
+          "--workers=1",
+          "--reporter=list"
+        ],
+        "command": "C:\\nvm4w\\nodejs\\node.exe",
+        "targets": [
+          "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"
+        ],
+        "type": "playwright"
+      }
+    ],
+    "commandsHash": "3718bca8be4cb17f",
+    "laneConfigHash": "5b59f638a2577cc2",
+    "requiresPreflight": true,
+    "requiresSamplesFlag": false
+  },
+  "runtimeConfigurationHash": "60dbdcfefd3273f2",
+  "snapshotHash": "a353b05f6923ff87",
+  "version": 1,
+  "warmStartHash": "d847a2b8545945e9",
+  "generatedAt": "2026-05-26T20:47:18.671Z"
+}
