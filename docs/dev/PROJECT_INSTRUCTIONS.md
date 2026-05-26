@@ -659,6 +659,91 @@ Shared runtime boundary rules:
 - shared parser changes require validation of valid and invalid payload handling before dependent tool validation
 - shared runtime failures must identify the root shared dependency and every dependent lane that is blocked
 
+### Targeted Validation Execution Templates
+
+Targeted execution is the default operating mode.
+
+Validation scope should remain intentionally narrow unless lane expansion is justified in the report.
+
+Broad validation requires explicit reasoning tied to changed files, changed runtime surfaces, or changed handoff contracts.
+
+Future workflow additions should extend these templates instead of introducing parallel rule systems.
+
+Required PR evidence expectations:
+- why a lane executed
+- why a lane was skipped
+- why samples validation was skipped or included
+- expected blocker scope
+- expected PASS/WARN behavior
+
+Targeted validation report template:
+- lanes executed: `<lane> - <reason>`
+- lanes skipped: `<lane> - <reason>`
+- samples decision: `RUN` or `SKIP` with reason
+- blocker scope: targeted lane, dependent lanes, integration lane, samples lane when active, or recovery/UAT lane
+- expected PASS behavior: exact behavior or document state that must pass
+- expected WARN behavior: unrelated, advisory, skipped, or pre-existing behavior that must not block the targeted lane
+
+Docs-only validation example:
+- lanes executed: contract documentation/static validation because only workflow docs changed
+- lanes skipped: runtime, integration, engine, samples, recovery/UAT because no runtime, handoff, engine, samples, or recovery behavior changed
+- commands: `git diff --check`; required text or anchor checks; `npm run codex:review-artifacts`
+- samples decision: `SKIP` because docs/workflow changes do not affect samples
+- blocker scope: docs/static validation only
+- expected PASS/WARN behavior: PASS when docs diff and required anchors validate; WARN only for unrelated line-ending or pre-existing repository state
+
+Targeted tool PR reporting example:
+- lanes executed: runtime for the affected tool; contract only when manifest or toolState behavior changed
+- lanes skipped: engine, integration, samples, recovery/UAT unless the PR changes those surfaces
+- commands: changed-file syntax checks; affected tool-specific Playwright or validation command named by the PR
+- samples decision: `SKIP` unless affected samples are explicitly in scope
+- blocker scope: affected tool runtime lane only unless shared dependencies are identified
+- expected PASS/WARN behavior: PASS when affected tool behavior matches expected outcomes; WARN for unrelated tool failures outside scope
+
+Affected-tool validation example:
+- use the smallest fixture set that exercises the changed tool behavior
+- include valid payload behavior and failure behavior when applicable
+- preserve fixture ownership and version expectations
+- report selected fixture names and manifest/toolState sources
+
+Engine/runtime PR reporting example:
+- lanes executed: engine first, then dependent runtime or integration lanes only when named
+- lanes skipped: unrelated tool and samples lanes unless affected by the changed engine surface
+- commands: engine-specific tests or checks named by the PR, followed by dependent targeted validation when justified
+- samples decision: `SKIP` unless the engine change broadly affects samples or affected samples are named
+- blocker scope: engine lane plus dependent lanes identified in the report
+- expected PASS/WARN behavior: PASS when engine surface validation and named dependent lanes pass; WARN for unrelated tool failures outside dependent scope
+
+Engine-impact validation examples:
+- rendering pipeline: validate render setup, visible output, and render failure handling for the affected surface
+- asset loading: validate resolved asset paths, missing asset handling, and no silent fallback
+- input systems: validate expected input dispatch, invalid input rejection, and focus or routing behavior
+- audio runtime: validate playback/runtime path, failure handling, and no unrelated UI assertions
+- physics/runtime timing: validate deterministic timing, pause/step behavior, and failure reporting
+- shared manifest/runtime parsers: validate valid payload acceptance and invalid payload rejection before dependent tool validation
+
+Integration PR reporting example:
+- lanes executed: integration for explicit handoff contract; contract or runtime lanes only when changed
+- lanes skipped: engine and samples unless the integration change depends on those surfaces
+- commands: targeted integration check for workspace launch, manifest handoff, palette propagation, or toolState open/save contract
+- samples decision: `SKIP` unless samples are explicitly named as integration fixtures
+- blocker scope: integration lane only unless a root shared dependency is identified
+- expected PASS/WARN behavior: PASS when the handoff contract succeeds and invalid handoff cases fail visibly; WARN for unrelated tool runtime failures
+
+Integration-lane validation examples:
+- workspace launch into tool: validate selected tool opens with declared manifest/toolState inputs
+- manifest handoff: validate exact manifest fields consumed and invalid payload rejection
+- palette propagation: validate active palette source and no hidden persisted workspace state
+- toolState open/save contracts: validate saved payload shape, open behavior, and invalid payload rejection
+
+Recovery-lane stabilization reporting example:
+- lanes executed: recovery/UAT plus targeted contract/runtime/integration lanes named by the stabilization scope
+- lanes skipped: engine or samples unless the recovery scope names affected engine surfaces or samples
+- commands: targeted recovery validation commands named by the PR, plus required static checks for changed files
+- samples decision: `SKIP` until sample-alignment scope is active or affected samples are named
+- blocker scope: recovery/UAT lane and explicitly named dependent lanes
+- expected PASS/WARN behavior: PASS when recovery checklist items pass; WARN for unrelated failures that are classified outside recovery scope
+
 Every PR must document:
 - whether full samples test was skipped or run
 - reason for decision
