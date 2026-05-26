@@ -1119,6 +1119,37 @@ Keep HTML free of inline script/style/event handlers.
 
 Register the new tool only after the copied template is adapted.
 
+### First-Class Tool Template Preservation Boundaries
+
+Copied template structure is the authoritative starting point for new first-class tools.
+
+New tool development extends the template rather than replacing it.
+
+Preserve:
+- header shell
+- NAV shell
+- panel structure
+- status/log sections
+- accordion patterns
+- layout CSS wiring
+- JS bootstrapping structure
+- accessibility structure
+- external asset wiring
+
+Prohibited behaviors:
+- do not rebuild shell structure from scratch
+- do not inline CSS or JavaScript
+- do not bypass shared layout contracts
+- do not remove logging/status regions
+- do not create alternate header/NAV systems
+- do not introduce custom one-off layout patterns unless explicitly approved
+
+First-class tools should visually and structurally resemble the V2 ecosystem.
+
+Template consistency is part of stabilization and maintainability.
+
+Structural divergence requires explicit PR scope authorization.
+
 ## TOOL TEMPLATE V2 LOCATION
 
 The official First-Class Tool V2 starter is:
