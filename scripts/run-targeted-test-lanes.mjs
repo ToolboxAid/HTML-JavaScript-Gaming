@@ -11,7 +11,9 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const defaultReportPath = "docs/dev/reports/testing_lane_execution_report.md";
+const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
 const defaultStaticReportPath = "docs/dev/reports/static_validation_report.md";
+const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
 const playwrightCli = path.join(
   repoRoot,
@@ -156,11 +158,14 @@ function parseArgs(argv) {
   const options = {
     dryRun: false,
     includeSamples: false,
+    laneCompilationReportPath: defaultLaneCompilationReportPath,
     lanes: [],
     reportPath: defaultReportPath,
     skipPreflight: false,
     staticOnly: false,
-    staticReportPath: defaultStaticReportPath
+    staticReportPath: defaultStaticReportPath,
+    zeroBrowserOnly: false,
+    zeroBrowserReportPath: defaultZeroBrowserReportPath
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -175,6 +180,8 @@ function parseArgs(argv) {
       options.skipPreflight = true;
     } else if (argument === "--static-only") {
       options.staticOnly = true;
+    } else if (argument === "--zero-browser-only") {
+      options.zeroBrowserOnly = true;
     } else if (argument === "--lane") {
       options.lanes.push(argv[index + 1]);
       index += 1;
@@ -195,6 +202,16 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--static-report=")) {
       options.staticReportPath = argument.slice("--static-report=".length);
+    } else if (argument === "--zero-browser-report") {
+      options.zeroBrowserReportPath = argv[index + 1] || defaultZeroBrowserReportPath;
+      index += 1;
+    } else if (argument.startsWith("--zero-browser-report=")) {
+      options.zeroBrowserReportPath = argument.slice("--zero-browser-report=".length);
+    } else if (argument === "--lane-compilation-report") {
+      options.laneCompilationReportPath = argv[index + 1] || defaultLaneCompilationReportPath;
+      index += 1;
+    } else if (argument.startsWith("--lane-compilation-report=")) {
+      options.laneCompilationReportPath = argument.slice("--lane-compilation-report=".length);
     } else {
       throw new Error(`Unknown argument: ${argument}`);
     }
@@ -380,6 +397,109 @@ async function validateLaneRegistrations() {
   return { findings, notes };
 }
 
+function compileLanePlan({ includeSamples, lanes, runnerPreflight, unknownLanes }) {
+  const findings = [
+    ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
+    ...runnerPreflight.findings
+  ];
+  const rows = [];
+  const allLanes = Object.keys(laneDefinitions);
+  const requestedLaneSet = new Set(lanes);
+
+  for (const lane of allLanes) {
+    const definition = laneDefinitions[lane];
+    const selected = requestedLaneSet.has(lane);
+    const commandTexts = definition.commands.map(commandToString);
+    const targetFiles = definition.commands.flatMap(commandTargetFiles);
+    const laneFindings = runnerPreflight.findings.filter((entry) => entry.startsWith(`Lane ${lane} `));
+    let status = "SKIP";
+    let reason = "Lane was not selected.";
+
+    if (selected) {
+      if (definition.requiresSamplesFlag && !includeSamples) {
+        reason = "Samples lane is on-request only; compilation succeeds but runtime execution is skipped.";
+      } else if (laneFindings.length > 0) {
+        status = "FAIL";
+        reason = laneFindings.join("; ");
+      } else {
+        status = "PASS";
+        reason = "Lane graph, command shape, targets, fixtures, and ownership compile before runtime.";
+      }
+    }
+
+    rows.push({
+      affectedSurface: definition.affectedSurface,
+      commands: commandTexts,
+      lane,
+      reason,
+      status,
+      targets: targetFiles
+    });
+  }
+
+  unknownLanes.forEach((lane) => {
+    rows.push({
+      affectedSurface: "unknown",
+      commands: [],
+      lane,
+      reason: "Requested lane does not exist in laneDefinitions.",
+      status: "FAIL",
+      targets: []
+    });
+  });
+
+  return {
+    findings,
+    rows,
+    status: findings.length > 0 ? "FAIL" : "PASS"
+  };
+}
+
+function makeLaneCompilationReport({ laneCompilation }) {
+  const lines = [
+    "# Lane Compilation Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${laneCompilation.status}`,
+    "",
+    "## Lane Graph",
+    "",
+    "| Lane | Status | Affected Surface | Targets | Commands | Reason |",
+    "| --- | --- | --- | --- | --- | --- |"
+  ];
+
+  laneCompilation.rows.forEach((row) => {
+    lines.push([
+      `| ${row.lane}`,
+      row.status,
+      reportLine(row.affectedSurface),
+      reportLine(row.targets.join("; ") || "none"),
+      reportLine(row.commands.join("; ") || "none"),
+      `${reportLine(row.reason)} |`
+    ].join(" | "));
+  });
+
+  lines.push("", "## Compilation Failures", "");
+  if (laneCompilation.findings.length === 0) {
+    lines.push("No lane compilation failures.");
+  } else {
+    laneCompilation.findings.forEach((findingText) => lines.push(`- ${findingText}`));
+  }
+
+  lines.push(
+    "",
+    "## Deterministic Setup Rules",
+    "",
+    "- Unknown lanes fail before runtime.",
+    "- Missing targets or fixtures fail before runtime.",
+    "- Playwright targets must stay inside the owning lane directory.",
+    "- Shell-sensitive grep values must be passed through the Node CLI argv path.",
+    "- Deterministic lane-definition failures do not trigger fallback reruns or full lane escalation."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 function makeStaticValidationReport({
   dryRun,
   laneRegistration,
@@ -452,7 +572,82 @@ function makeStaticValidationReport({
   return `${lines.join("\n").trim()}\n`;
 }
 
-async function writeStaticReport(reportPath, reportText) {
+function makeZeroBrowserPreflightReport({
+  laneCompilation,
+  laneRegistration,
+  runnerPreflight,
+  structureAudit,
+  unknownLanes
+}) {
+  const findings = [...new Set([
+    ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
+    ...laneRegistration.findings,
+    ...runnerPreflight.findings,
+    ...laneCompilation.findings,
+    ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
+  ])];
+  const status = findings.length > 0 ? "FAIL" : "PASS";
+  const preventedLaunches = status === "FAIL"
+    ? laneCompilation.rows.filter((row) => row.status === "FAIL" || row.status === "PASS").length
+    : 0;
+  const lines = [
+    "# Zero-Browser Preflight Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${status}`,
+    "",
+    "## Prevented Browser Launches",
+    "",
+    `Count: ${preventedLaunches}`,
+    `Reason: ${preventedLaunches > 0 ? "Deterministic pre-runtime failures were found." : "No deterministic pre-runtime failures were found."}`,
+    "",
+    "## Deterministic Failures Caught Pre-Runtime",
+    ""
+  ];
+
+  if (findings.length === 0) {
+    lines.push("No deterministic setup failures.");
+  } else {
+    findings.forEach((findingText) => lines.push(`- ${findingText}`));
+  }
+
+  lines.push(
+    "",
+    "## Validation Coverage",
+    "",
+    "| Check | Status | Details |",
+    "| --- | --- | --- |",
+    `| lane ownership | ${structureAudit.status} | ${reportLine(structureAudit.reason)} |`,
+    `| directory placement | ${structureAudit.status} | tools/games/integration/engine ownership checked. |`,
+    `| invalid file naming | ${structureAudit.status} | Game-specific filenames are blocked from generic reusable lanes. |`,
+    `| duplicate registrations | ${laneRegistration.findings.some((entry) => entry.includes("Duplicate")) ? "FAIL" : "PASS"} | ${laneRegistration.findings.filter((entry) => entry.includes("Duplicate")).join("; ") || "No duplicate lane registrations."} |`,
+    `| invalid imports | ${structureAudit.status} | Relative imports checked by Playwright structure audit. |`,
+    `| unresolved fixtures | ${runnerPreflight.findings.some((entry) => entry.includes("missing fixture")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("missing fixture")).join("; ") || "No unresolved fixture findings."} |`,
+    `| unresolved helpers | ${structureAudit.status} | Shared helper imports and naming ownership checked. |`,
+    `| invalid grep patterns | ${runnerPreflight.findings.some((entry) => entry.includes("grep")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("grep")).join("; ") || "No invalid grep patterns."} |`,
+    `| Windows quoting hazards | ${runnerPreflight.findings.some((entry) => entry.includes("quoting hazard")) ? "FAIL" : "PASS"} | ${runnerPreflight.notes.filter((entry) => entry.includes("grep pattern")).join("; ") || "No shell quoting hazards."} |`,
+    `| invalid lane references | ${unknownLanes.length > 0 ? "FAIL" : "PASS"} | ${unknownLanes.join("; ") || "No invalid lane references."} |`,
+    `| invalid lane configuration | ${laneCompilation.status} | See docs/dev/reports/lane_compilation_report.md. |`,
+    `| conflicting reusable helper ownership | ${structureAudit.status} | Shared helper filenames checked against known game names. |`,
+    "",
+    "## Corrected Ownership Drift",
+    "",
+    "- Asteroids Playwright runtime specs are enforced under `tests/playwright/games`.",
+    "- Game index preview manifest handoff is enforced under `tests/playwright/integration`.",
+    "- Tool-owned specs may reference games only as documented explicit fixtures.",
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- This preflight runs through Node-only validation before Playwright CLI startup.",
+    "- Browser launch is blocked on deterministic setup failure.",
+    "- Workspace V2, broad lane scheduling, and samples smoke are not started by preflight.",
+    "- Invalid targeted lane setup cannot escalate into full-lane reruns."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+async function writeTextReport(reportPath, reportText) {
   const absoluteReportPath = path.resolve(repoRoot, reportPath);
   await fs.mkdir(path.dirname(absoluteReportPath), { recursive: true });
   await fs.writeFile(absoluteReportPath, reportText, "utf8");
@@ -573,16 +768,32 @@ const staticReportText = makeStaticValidationReport({
   structureAudit,
   unknownLanes
 });
-await writeStaticReport(options.staticReportPath, staticReportText);
+const laneCompilation = compileLanePlan({
+  includeSamples: options.includeSamples,
+  lanes: options.lanes,
+  runnerPreflight,
+  unknownLanes
+});
+const laneCompilationReportText = makeLaneCompilationReport({ laneCompilation });
+const zeroBrowserReportText = makeZeroBrowserPreflightReport({
+  laneCompilation,
+  laneRegistration,
+  runnerPreflight,
+  structureAudit,
+  unknownLanes
+});
+await writeTextReport(options.staticReportPath, staticReportText);
+await writeTextReport(options.laneCompilationReportPath, laneCompilationReportText);
+await writeTextReport(options.zeroBrowserReportPath, zeroBrowserReportText);
 
-if (options.staticOnly) {
-  if (staticReportText.includes("Status: FAIL")) {
+if (options.staticOnly || options.zeroBrowserOnly) {
+  if (staticReportText.includes("Status: FAIL") || zeroBrowserReportText.includes("Status: FAIL")) {
     process.exit(1);
   }
   process.exit(0);
 }
 
-if (unknownLanes.length > 0 || laneRegistration.findings.length > 0 || runnerPreflight.findings.length > 0) {
+if (unknownLanes.length > 0 || laneRegistration.findings.length > 0 || runnerPreflight.findings.length > 0 || laneCompilation.status === "FAIL") {
   preflight.status = "FAIL";
   preflight.reason = "Runner preflight failed; expensive lanes were skipped before Playwright execution.";
   preflight.details.push(

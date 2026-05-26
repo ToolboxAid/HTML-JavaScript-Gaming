@@ -1,45 +1,40 @@
 # Static Validation Report
 
-Generated: 2026-05-26
-PR: PR_26146_027-static-validation-before-playwright-launch
-
-## Summary
-
+Generated: 2026-05-26T18:25:51.151Z
 Status: PASS
-Prevented launches: 0
-Fast-fail reasons: none
+Static only: No
+Dry run: No
 
-## Static Validation Runs
+## Requested Lanes
 
-| Command | Status | Browser Launch | Reason |
-| --- | --- | --- | --- |
-| `npm run test:playwright:static` | PASS | No | Required first validation pass. Ran structure audit and lane runner static checks without starting Playwright. |
-| `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lanes integration,tool-runtime` | PASS | Yes, after static pass | Re-ran the same static gate inside the lane runner before affected Playwright lanes started. |
+- integration
+- tool-runtime
+
+## Prevented Launches
+
+Count: 0
+Reason: No deterministic static validation failure was found.
 
 ## Checks
 
 | Check | Status | Details |
 | --- | --- | --- |
-| test placement validation | PASS | Covered by `docs/dev/reports/playwright_structure_audit.md`. |
-| lane ownership validation | PASS | Playwright specs are separated under tools, games, integration, and optional engine ownership buckets. |
-| invalid filename detection | PASS | No game-specific spec/helper filenames remain in generic reusable tool/helper locations. |
-| invalid lane target detection | PASS | Selected lanes target existing files under their expected lane directories. |
-| missing fixture detection | PASS | Workspace contract fixture path exists; selected affected lanes use explicit repo/game fixtures. |
-| missing import detection | PASS | Relative imports in Playwright specs and shared helpers resolve. |
-| Windows quoting hazard detection | PASS | Tool-runtime grep pipe is passed as a literal Node argv value. |
-| duplicate lane registration detection | PASS | No duplicate npm `test:lane:*` registrations were found. |
-| invalid grep pattern detection | PASS | No empty or malformed grep patterns were found. |
+| lane ownership and file placement | PASS | Playwright structure audit passed. |
+| invalid filename detection | PASS | Covered by Playwright structure audit. |
+| missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
+| missing fixture detection | PASS | No missing fixture findings. |
+| invalid lane target detection | PASS | No invalid lane target findings. |
+| Windows quoting hazard detection | PASS | Lane tool-runtime grep pattern is passed as a literal Node argv value: launch guard|temporary UAT context|rejects non-Workspace |
+| duplicate lane registration detection | PASS | No duplicate lane registrations found. |
+| invalid grep pattern detection | PASS | No invalid grep pattern findings. |
 
-## Fast-Fail Behavior
+## Fast-Fail Reasons
 
-- Deterministic structural failures would stop before Playwright CLI invocation.
-- Browser startup is blocked when lane targets, imports, fixtures, placement, registration, or quoting checks fail.
-- Workspace V2 is not launched by static validation.
-- No automatic retries are performed for deterministic setup failures.
+No fast-fail reasons. Playwright lanes may proceed when selected.
 
 ## Runtime Savings Observations
 
-- Static validation ran before any browser work.
-- Affected lanes were run together through one Node lane-runner process.
-- Tool-runtime now combines Preview Generator V2 and Collision Inspector V2 in one Playwright CLI invocation.
-- Workspace contract, engine/src, samples, and full samples smoke were skipped because they were outside the affected surface.
+- Static validation runs before browser launch.
+- Structural failures stop Workspace V2, tool-runtime, integration, and sample Playwright lanes before browser startup.
+- Combined lane execution can validate multiple selected lanes through one Node runner process.
+- Playwright is invoked through the Node CLI entrypoint to avoid shell quoting discovery failures.
