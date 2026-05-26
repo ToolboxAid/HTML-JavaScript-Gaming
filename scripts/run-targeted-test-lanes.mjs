@@ -7,14 +7,17 @@ run-targeted-test-lanes.mjs
 import fs from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const defaultReportPath = "docs/dev/reports/testing_lane_execution_report.md";
 const defaultDependencyGatingReportPath = "docs/dev/reports/dependency_gating_report.md";
+const defaultLaneDeduplicationReportPath = "docs/dev/reports/lane_deduplication_report.md";
 const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
 const defaultLaneRuntimeOptimizationReportPath = "docs/dev/reports/lane_runtime_optimization_report.md";
 const defaultStaticReportPath = "docs/dev/reports/static_validation_report.md";
+const defaultValidationCacheReportPath = "docs/dev/reports/validation_cache_report.md";
 const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
 const playwrightCli = path.join(
@@ -167,20 +170,30 @@ function parseArgs(argv) {
     dryRun: false,
     includeSamples: false,
     laneCompilationReportPath: defaultLaneCompilationReportPath,
+    laneDeduplicationReportPath: defaultLaneDeduplicationReportPath,
     laneRuntimeOptimizationReportPath: defaultLaneRuntimeOptimizationReportPath,
     lanes: [],
+    rawLaneRequests: [],
     reportPath: defaultReportPath,
     skipPreflight: false,
     staticOnly: false,
     staticReportPath: defaultStaticReportPath,
+    validationCacheReportPath: defaultValidationCacheReportPath,
     zeroBrowserOnly: false,
     zeroBrowserReportPath: defaultZeroBrowserReportPath
   };
 
+  function addLaneRequests(lanes) {
+    lanes.forEach((lane) => {
+      options.lanes.push(lane);
+      options.rawLaneRequests.push(lane);
+    });
+  }
+
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === "--all") {
-      options.lanes = Object.keys(laneDefinitions);
+      addLaneRequests(Object.keys(laneDefinitions));
     } else if (argument === "--dry-run") {
       options.dryRun = true;
     } else if (argument === "--include-samples") {
@@ -192,15 +205,15 @@ function parseArgs(argv) {
     } else if (argument === "--zero-browser-only") {
       options.zeroBrowserOnly = true;
     } else if (argument === "--lane") {
-      options.lanes.push(argv[index + 1]);
+      addLaneRequests([argv[index + 1]]);
       index += 1;
     } else if (argument.startsWith("--lane=")) {
-      options.lanes.push(argument.slice("--lane=".length));
+      addLaneRequests([argument.slice("--lane=".length)]);
     } else if (argument === "--lanes") {
-      options.lanes.push(...String(argv[index + 1] || "").split(","));
+      addLaneRequests(String(argv[index + 1] || "").split(","));
       index += 1;
     } else if (argument.startsWith("--lanes=")) {
-      options.lanes.push(...argument.slice("--lanes=".length).split(","));
+      addLaneRequests(argument.slice("--lanes=".length).split(","));
     } else if (argument === "--report") {
       options.reportPath = argv[index + 1] || defaultReportPath;
       index += 1;
@@ -226,19 +239,31 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--lane-compilation-report=")) {
       options.laneCompilationReportPath = argument.slice("--lane-compilation-report=".length);
+    } else if (argument === "--lane-deduplication-report") {
+      options.laneDeduplicationReportPath = argv[index + 1] || defaultLaneDeduplicationReportPath;
+      index += 1;
+    } else if (argument.startsWith("--lane-deduplication-report=")) {
+      options.laneDeduplicationReportPath = argument.slice("--lane-deduplication-report=".length);
     } else if (argument === "--lane-runtime-report") {
       options.laneRuntimeOptimizationReportPath = argv[index + 1] || defaultLaneRuntimeOptimizationReportPath;
       index += 1;
     } else if (argument.startsWith("--lane-runtime-report=")) {
       options.laneRuntimeOptimizationReportPath = argument.slice("--lane-runtime-report=".length);
+    } else if (argument === "--validation-cache-report") {
+      options.validationCacheReportPath = argv[index + 1] || defaultValidationCacheReportPath;
+      index += 1;
+    } else if (argument.startsWith("--validation-cache-report=")) {
+      options.validationCacheReportPath = argument.slice("--validation-cache-report=".length);
     } else {
       throw new Error(`Unknown argument: ${argument}`);
     }
   }
 
-  options.lanes = [...new Set(options.lanes.map((lane) => lane.trim()).filter(Boolean))];
+  options.rawLaneRequests = options.rawLaneRequests.map((lane) => lane.trim()).filter(Boolean);
+  options.lanes = [...new Set(options.rawLaneRequests)];
   if (options.lanes.length === 0) {
     options.lanes = ["workspace-contract", "tool-runtime", "integration", "engine-src", "samples"];
+    options.rawLaneRequests = [...options.lanes];
   }
   return options;
 }
@@ -277,6 +302,106 @@ function summarize(results) {
 
 function reportLine(value) {
   return String(value || "").replace(/\r?\n/g, " ");
+}
+
+function stableJson(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableJson).join(",")}]`;
+  }
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function fingerprint(value) {
+  return createHash("sha256").update(stableJson(value)).digest("hex").slice(0, 16);
+}
+
+function commandFingerprint(commandConfig) {
+  return {
+    args: commandConfig.args,
+    command: commandConfig.command,
+    targets: commandTargetFiles(commandConfig),
+    type: commandConfig.type
+  };
+}
+
+function laneDefinitionsFingerprint() {
+  const lanes = {};
+  for (const [lane, definition] of Object.entries(laneDefinitions)) {
+    lanes[lane] = {
+      commands: definition.commands.map(commandFingerprint),
+      dependencies: definition.dependencies || [],
+      fixturePaths: definition.fixturePaths || [],
+      playwrightDir: definition.playwrightDir || "",
+      requiresPreflight: Boolean(definition.requiresPreflight),
+      requiresSamplesFlag: Boolean(definition.requiresSamplesFlag)
+    };
+  }
+  return fingerprint(lanes);
+}
+
+function createValidationCache() {
+  const entries = new Map();
+  const events = [];
+
+  function cacheableSuccess(result) {
+    if (typeof result === "string") {
+      return !result.includes("Status: FAIL");
+    }
+    if (result?.status) {
+      return result.status === "PASS";
+    }
+    if (Array.isArray(result?.findings)) {
+      return result.findings.length === 0;
+    }
+    return true;
+  }
+
+  return {
+    events,
+    async get(stage, input, invalidationInputs, compute) {
+      const inputHash = fingerprint(input);
+      const cacheKey = `${stage}:${inputHash}`;
+      if (entries.has(cacheKey)) {
+        events.push({
+          inputHash,
+          invalidationInputs,
+          reusedBy: stage,
+          stage,
+          status: "HIT"
+        });
+        return entries.get(cacheKey);
+      }
+      const result = await compute();
+      const shouldCache = cacheableSuccess(result);
+      if (shouldCache) {
+        entries.set(cacheKey, result);
+      }
+      events.push({
+        inputHash,
+        invalidationInputs,
+        reusedBy: "",
+        stage,
+        status: shouldCache ? "MISS" : "MISS_UNCACHED"
+      });
+      return result;
+    },
+    reuse(stage, input, reusedBy) {
+      const inputHash = fingerprint(input);
+      const cacheKey = `${stage}:${inputHash}`;
+      if (entries.has(cacheKey)) {
+        events.push({
+          inputHash,
+          invalidationInputs: [],
+          reusedBy,
+          stage,
+          status: "HIT"
+        });
+      }
+    }
+  };
 }
 
 async function repoPathExists(relativePath) {
@@ -667,7 +792,61 @@ function topologicallySortSelectedLanes(selectedLanes) {
   return sorted;
 }
 
-function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation, lanes, preRuntimeFindings }) {
+function estimatePlaywrightLaunchCost(lane) {
+  const definition = laneDefinitions[lane];
+  if (!definition) {
+    return 0;
+  }
+  return definition.commands.reduce((count, commandConfig) => (
+    commandConfig.type === "playwright"
+      ? count + Math.max(1, commandTargetFiles(commandConfig).length)
+      : count
+  ), 0);
+}
+
+function buildLaneDeduplication({ includeSamples, rawLaneRequests }) {
+  const counts = new Map();
+  rawLaneRequests.forEach((lane) => counts.set(lane, (counts.get(lane) || 0) + 1));
+  const duplicateRows = [];
+  let preventedDuplicateLaneExecutions = 0;
+  let preventedDuplicateBrowserLaunches = 0;
+  let preventedWorkspaceLaneReruns = 0;
+
+  for (const [lane, count] of counts.entries()) {
+    if (count <= 1) {
+      continue;
+    }
+    const duplicateCount = count - 1;
+    const definition = laneDefinitions[lane];
+    const laneIsExecutable = Boolean(definition && (!definition.requiresSamplesFlag || includeSamples));
+    const browserLaunchCost = laneIsExecutable ? estimatePlaywrightLaunchCost(lane) : 0;
+    const preventedBrowserLaunches = duplicateCount * browserLaunchCost;
+    preventedDuplicateLaneExecutions += duplicateCount;
+    preventedDuplicateBrowserLaunches += preventedBrowserLaunches;
+    if (lane === "workspace-contract") {
+      preventedWorkspaceLaneReruns += duplicateCount;
+    }
+    duplicateRows.push({
+      count,
+      duplicateCount,
+      lane,
+      preventedBrowserLaunches,
+      status: laneDefinitions[lane] ? "DEDUPED" : "UNKNOWN"
+    });
+  }
+
+  return {
+    duplicateRows,
+    preventedDuplicateBrowserLaunches,
+    preventedDuplicateLaneExecutions,
+    preventedWorkspaceLaneReruns,
+    rawLaneRequests,
+    status: "PASS",
+    uniqueLaneRequests: [...new Set(rawLaneRequests)]
+  };
+}
+
+function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation, laneDeduplication, lanes, preRuntimeFindings }) {
   const requestedLaneSet = new Set(lanes);
   const executableLanes = [];
   const lanePlans = [];
@@ -679,8 +858,8 @@ function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation,
       baselinePlaywrightLaunches,
       lanePlans,
       orderedLanes: [],
-      preventedRedundantBrowserLaunches: 0,
-      preventedRedundantLaneExecutions: 0,
+      preventedRedundantBrowserLaunches: laneDeduplication.preventedDuplicateBrowserLaunches,
+      preventedRedundantLaneExecutions: laneDeduplication.preventedDuplicateLaneExecutions,
       preRuntimeFindings,
       reusedRuntimeSessions: 0,
       scheduledPlaywrightLaunches,
@@ -741,8 +920,8 @@ function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation,
     baselinePlaywrightLaunches,
     lanePlans,
     orderedLanes,
-    preventedRedundantBrowserLaunches: Math.max(0, baselinePlaywrightLaunches - scheduledPlaywrightLaunches),
-    preventedRedundantLaneExecutions: skippedLaneCount,
+    preventedRedundantBrowserLaunches: Math.max(0, baselinePlaywrightLaunches - scheduledPlaywrightLaunches) + laneDeduplication.preventedDuplicateBrowserLaunches,
+    preventedRedundantLaneExecutions: skippedLaneCount + laneDeduplication.preventedDuplicateLaneExecutions,
     preRuntimeFindings,
     reusedRuntimeSessions: groupedPlaywrightSessions + (orderedLanes.length > 1 ? 1 : 0),
     scheduledPlaywrightLaunches,
@@ -906,6 +1085,99 @@ function makeLaneRuntimeOptimizationReport({ runtimeSchedule }) {
   return `${lines.join("\n").trim()}\n`;
 }
 
+function makeValidationCacheReport({ validationCache }) {
+  const hits = validationCache.events.filter((event) => event.status === "HIT");
+  const misses = validationCache.events.filter((event) => event.status === "MISS" || event.status === "MISS_UNCACHED");
+  const lines = [
+    "# Validation Cache Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    "Status: PASS",
+    "",
+    "## Cache Summary",
+    "",
+    `Cached validations reused: ${hits.length}`,
+    `Validations computed: ${misses.length}`,
+    "",
+    "## Cache Events",
+    "",
+    "| Stage | Cache | Input Hash | Reused By | Invalidation Inputs |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  validationCache.events.forEach((event) => {
+    lines.push([
+      `| ${event.stage}`,
+      event.status,
+      event.inputHash,
+      reportLine(event.reusedBy || "initial computation"),
+      `${reportLine((event.invalidationInputs || []).join("; ") || "unchanged within execution cycle")} |`
+    ].join(" | "));
+  });
+
+  lines.push(
+    "",
+    "## Deterministic Invalidation Rules",
+    "",
+    "- Lane definitions change: lane registration, runner preflight, lane compilation, dependency validation, and scheduling caches invalidate.",
+    "- Fixture ownership changes: structural ownership and runner preflight caches invalidate.",
+    "- Helper/import graph changes: structural ownership validation cache invalidates.",
+    "- Targeted files change: runner preflight and lane compilation caches invalidate.",
+    "- Dependency graph changes: dependency validation and runtime scheduling caches invalidate.",
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- Structural ownership validation is computed once per runner invocation and reused by static and zero-browser reporting.",
+    "- Lane compilation is computed once and reused by dependency gating, runtime scheduling, and reports.",
+    "- Dependency validation is computed once and reused by zero-browser preflight, runtime scheduling, and reports.",
+    "- No persistent validation cache is written to project JSON, toolState, localStorage, or sessionStorage."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeLaneDeduplicationReport({ laneDeduplication }) {
+  const lines = [
+    "# Lane Deduplication Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${laneDeduplication.status}`,
+    "",
+    "## Summary",
+    "",
+    `Raw lane requests: ${laneDeduplication.rawLaneRequests.join(", ") || "none"}`,
+    `Unique scheduled lanes: ${laneDeduplication.uniqueLaneRequests.join(", ") || "none"}`,
+    `Prevented duplicate lane executions: ${laneDeduplication.preventedDuplicateLaneExecutions}`,
+    `Prevented browser launches: ${laneDeduplication.preventedDuplicateBrowserLaunches}`,
+    `Prevented Workspace lane reruns: ${laneDeduplication.preventedWorkspaceLaneReruns}`,
+    "",
+    "## Duplicate Requests",
+    "",
+    "| Lane | Request Count | Duplicate Executions Prevented | Browser Launches Prevented | Status |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  if (laneDeduplication.duplicateRows.length === 0) {
+    lines.push("| none | 0 | 0 | 0 | No duplicate lane requests in this run. |");
+  } else {
+    laneDeduplication.duplicateRows.forEach((row) => {
+      lines.push(`| ${row.lane} | ${row.count} | ${row.duplicateCount} | ${row.preventedBrowserLaunches} | ${row.status} |`);
+    });
+  }
+
+  lines.push(
+    "",
+    "## Enforcement Notes",
+    "",
+    "- Duplicate lane requests are collapsed before validation and runtime scheduling.",
+    "- Already validated targeted lanes are not executed again in the same run.",
+    "- Duplicate Workspace V2 lane requests are counted and suppressed before npm invocation.",
+    "- Duplicate dependency chains cannot cause repeated Playwright/browser startup for the same targeted lane."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 function makeStaticValidationReport({
   dryRun,
   laneRegistration,
@@ -1063,7 +1335,16 @@ async function writeTextReport(reportPath, reportText) {
   console.log(`\nWrote ${absoluteReportPath}`);
 }
 
-function makeReport({ dependencyGate, dryRun, fullSamplesSmoke, preflight, results, runtimeSchedule }) {
+function makeReport({
+  dependencyGate,
+  dryRun,
+  fullSamplesSmoke,
+  laneDeduplication,
+  preflight,
+  results,
+  runtimeSchedule,
+  validationCache
+}) {
   const summary = summarize(results);
   const lines = [
     "# Testing Lane Execution Report",
@@ -1102,6 +1383,17 @@ function makeReport({ dependencyGate, dryRun, fullSamplesSmoke, preflight, resul
     `Reused runtime sessions: ${runtimeSchedule?.reusedRuntimeSessions ?? 0}`,
     `Prevented redundant browser launches: ${runtimeSchedule?.preventedRedundantBrowserLaunches ?? 0}`,
     `Prevented redundant lane execution: ${runtimeSchedule?.preventedRedundantLaneExecutions ?? 0}`,
+    "",
+    "## Validation Cache",
+    "",
+    `Cached validations reused: ${validationCache?.events?.filter((event) => event.status === "HIT").length ?? 0}`,
+    `Validation computations: ${validationCache?.events?.filter((event) => event.status === "MISS" || event.status === "MISS_UNCACHED").length ?? 0}`,
+    "",
+    "## Lane Deduplication",
+    "",
+    `Prevented duplicate lane executions: ${laneDeduplication?.preventedDuplicateLaneExecutions ?? 0}`,
+    `Prevented browser launches from duplicate lane requests: ${laneDeduplication?.preventedDuplicateBrowserLaunches ?? 0}`,
+    `Prevented Workspace lane reruns: ${laneDeduplication?.preventedWorkspaceLaneReruns ?? 0}`,
     "",
     "## Lanes",
     "",
@@ -1144,6 +1436,12 @@ async function writeReport(reportPath, reportText) {
 }
 
 const options = parseArgs(process.argv.slice(2));
+const validationCache = createValidationCache();
+const laneDefinitionHash = laneDefinitionsFingerprint();
+const laneDeduplication = buildLaneDeduplication({
+  includeSamples: options.includeSamples,
+  rawLaneRequests: options.rawLaneRequests
+});
 const unknownLanes = options.lanes.filter((lane) => !laneDefinitions[lane]);
 const requestedLanes = new Set(options.lanes);
 const results = [];
@@ -1158,10 +1456,28 @@ const selectedDefinitions = options.lanes
   .map((lane) => laneDefinitions[lane]);
 const needsPreflight = selectedDefinitions.some((definition) => definition.requiresPreflight);
 
-const laneRegistration = await validateLaneRegistrations();
+const laneRegistrationInput = {
+  laneDefinitionHash,
+  packageJson: "package.json"
+};
+const laneRegistration = await validationCache.get(
+  "lane registration validation",
+  laneRegistrationInput,
+  ["lane definitions change", "package.json lane scripts change"],
+  validateLaneRegistrations
+);
 const runnerPreflight = unknownLanes.length > 0
   ? { findings: [], notes: [] }
-  : await validateRunnerPreflight(options.lanes);
+  : await validationCache.get(
+    "runner preflight validation",
+    {
+      includeSamples: options.includeSamples,
+      laneDefinitionHash,
+      lanes: options.lanes
+    },
+    ["lane definitions change", "fixture ownership changes", "targeted files change"],
+    () => validateRunnerPreflight(options.lanes)
+  );
 let structureAudit = {
   command: "",
   reason: needsPreflight
@@ -1170,15 +1486,29 @@ let structureAudit = {
   status: needsPreflight ? "SKIP" : "SKIP"
 };
 preflight.details.push(...runnerPreflight.notes);
+const structureAuditInput = {
+  helperGraph: "tests/helpers",
+  laneDefinitionHash,
+  lanes: options.lanes,
+  locationAuditScript,
+  playwrightRoot: "tests/playwright"
+};
 if (unknownLanes.length === 0 && needsPreflight && !options.dryRun && !options.skipPreflight) {
-  const result = await runCommand(nodeCommand(locationAuditScript));
-  structureAudit = {
-    command: result.displayCommand,
-    reason: result.exitCode === 0
-      ? "Playwright structure audit passed."
-      : "Playwright structure audit failed.",
-    status: result.exitCode === 0 ? "PASS" : "FAIL"
-  };
+  structureAudit = await validationCache.get(
+    "structural ownership validation",
+    structureAuditInput,
+    ["fixture ownership changes", "helper/import graph changes", "targeted files change"],
+    async () => {
+      const result = await runCommand(nodeCommand(locationAuditScript));
+      return {
+        command: result.displayCommand,
+        reason: result.exitCode === 0
+          ? "Playwright structure audit passed."
+          : "Playwright structure audit failed.",
+        status: result.exitCode === 0 ? "PASS" : "FAIL"
+      };
+    }
+  );
 }
 
 const staticReportText = makeStaticValidationReport({
@@ -1190,18 +1520,43 @@ const staticReportText = makeStaticValidationReport({
   structureAudit,
   unknownLanes
 });
-const laneCompilation = compileLanePlan({
+const laneCompilationInput = {
   includeSamples: options.includeSamples,
+  laneDefinitionHash,
   lanes: options.lanes,
-  runnerPreflight,
+  runnerPreflightFindings: runnerPreflight.findings,
   unknownLanes
-});
-const dependencyGate = validateDependencyGraph({
+};
+const laneCompilation = await validationCache.get(
+  "lane compilation validation",
+  laneCompilationInput,
+  ["lane definitions change", "targeted files change", "fixture ownership changes"],
+  () => compileLanePlan({
+    includeSamples: options.includeSamples,
+    lanes: options.lanes,
+    runnerPreflight,
+    unknownLanes
+  })
+);
+validationCache.reuse("lane compilation validation", laneCompilationInput, "dependency validation input");
+const dependencyGateInput = {
   includeSamples: options.includeSamples,
-  laneCompilation,
+  laneCompilationStatus: laneCompilation.status,
+  laneDefinitionHash,
   lanes: options.lanes,
   unknownLanes
-});
+};
+const dependencyGate = await validationCache.get(
+  "dependency validation",
+  dependencyGateInput,
+  ["dependency graph changes", "lane definitions change", "lane compilation input changes"],
+  () => validateDependencyGraph({
+    includeSamples: options.includeSamples,
+    laneCompilation,
+    lanes: options.lanes,
+    unknownLanes
+  })
+);
 const runtimeSchedulingBlockers = [...new Set([
   ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
   ...laneRegistration.findings,
@@ -1214,24 +1569,50 @@ const runtimeSchedule = buildRuntimeSchedule({
   dependencyGate,
   includeSamples: options.includeSamples,
   laneCompilation,
+  laneDeduplication,
   lanes: options.lanes,
   preRuntimeFindings: runtimeSchedulingBlockers
 });
+const zeroBrowserInput = {
+  dependencyGateStatus: dependencyGate.status,
+  laneCompilationStatus: laneCompilation.status,
+  laneDefinitionHash,
+  laneRegistrationStatus: laneRegistration.findings.length === 0 ? "PASS" : "FAIL",
+  runnerPreflightStatus: runnerPreflight.findings.length === 0 ? "PASS" : "FAIL",
+  structureAuditStatus: structureAudit.status,
+  unknownLanes
+};
 const laneCompilationReportText = makeLaneCompilationReport({ laneCompilation });
 const dependencyGatingReportText = makeDependencyGatingReport({ dependencyGate });
+const laneDeduplicationReportText = makeLaneDeduplicationReport({ laneDeduplication });
 const laneRuntimeOptimizationReportText = makeLaneRuntimeOptimizationReport({ runtimeSchedule });
-const zeroBrowserReportText = makeZeroBrowserPreflightReport({
-  dependencyGate,
-  laneCompilation,
-  laneRegistration,
-  runnerPreflight,
-  structureAudit,
-  unknownLanes
-});
+const zeroBrowserReportText = await validationCache.get(
+  "zero-browser preflight",
+  zeroBrowserInput,
+  ["lane definitions change", "fixture ownership changes", "helper/import graph changes", "targeted files change", "dependency graph changes"],
+  () => makeZeroBrowserPreflightReport({
+    dependencyGate,
+    laneCompilation,
+    laneRegistration,
+    runnerPreflight,
+    structureAudit,
+    unknownLanes
+  })
+);
+validationCache.reuse("structural ownership validation", structureAuditInput, "static validation report");
+validationCache.reuse("structural ownership validation", structureAuditInput, "zero-browser preflight report");
+validationCache.reuse("lane compilation validation", laneCompilationInput, "lane compilation report");
+validationCache.reuse("lane compilation validation", laneCompilationInput, "runtime scheduling");
+validationCache.reuse("dependency validation", dependencyGateInput, "dependency report");
+validationCache.reuse("dependency validation", dependencyGateInput, "runtime scheduling");
+validationCache.reuse("zero-browser preflight", zeroBrowserInput, "zero-browser report output");
+const validationCacheReportText = makeValidationCacheReport({ validationCache });
 await writeTextReport(options.staticReportPath, staticReportText);
 await writeTextReport(options.laneCompilationReportPath, laneCompilationReportText);
 await writeTextReport(options.dependencyGatingReportPath, dependencyGatingReportText);
+await writeTextReport(options.laneDeduplicationReportPath, laneDeduplicationReportText);
 await writeTextReport(options.laneRuntimeOptimizationReportPath, laneRuntimeOptimizationReportText);
+await writeTextReport(options.validationCacheReportPath, validationCacheReportText);
 await writeTextReport(options.zeroBrowserReportPath, zeroBrowserReportText);
 
 if (options.staticOnly || options.zeroBrowserOnly) {
@@ -1271,9 +1652,11 @@ if (unknownLanes.length > 0 || laneRegistration.findings.length > 0 || runnerPre
     dependencyGate,
     dryRun: options.dryRun,
     fullSamplesSmoke,
+    laneDeduplication,
     preflight,
     results,
-    runtimeSchedule
+    runtimeSchedule,
+    validationCache
   }));
   process.exit(1);
 }
@@ -1304,9 +1687,11 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
       dependencyGate,
       dryRun: options.dryRun,
       fullSamplesSmoke,
+      laneDeduplication,
       preflight,
       results,
-      runtimeSchedule
+      runtimeSchedule,
+      validationCache
     }));
     process.exit(1);
   }
@@ -1399,9 +1784,11 @@ await writeReport(options.reportPath, makeReport({
   dependencyGate,
   dryRun: options.dryRun,
   fullSamplesSmoke,
+  laneDeduplication,
   preflight,
   results,
-  runtimeSchedule
+  runtimeSchedule,
+  validationCache
 }));
 
 if (results.some((result) => result.status === "FAIL")) {

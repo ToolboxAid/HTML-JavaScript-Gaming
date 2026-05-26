@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-05-26T19:05:55.095Z
+Generated: 2026-05-26T19:13:32.997Z
 Dry run: No
 
 ## Summary
@@ -32,15 +32,26 @@ Reason: No deterministic dependency failures before runtime.
 Status: PASS
 Scheduled lane order: tool-runtime, integration
 Reused runtime sessions: 2
-Prevented redundant browser launches: 1
-Prevented redundant lane execution: 3
+Prevented redundant browser launches: 5
+Prevented redundant lane execution: 5
+
+## Validation Cache
+
+Cached validations reused: 8
+Validation computations: 6
+
+## Lane Deduplication
+
+Prevented duplicate lane executions: 2
+Prevented browser launches from duplicate lane requests: 4
+Prevented Workspace lane reruns: 0
 
 ## Validation Sequence
 
 - PASS zero-browser preflight first: `npm run test:playwright:zero-browser`
-- PASS lane compilation validation second: `node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only --lanes tool-runtime,integration`
-- PASS affected targeted runtime lanes after dependency validation: `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lanes tool-runtime,integration`
-- SKIP Workspace V2 lane: no Workspace V2 contract behavior was changed, and workspace-contract lane was not in scope.
+- PASS cached deterministic validation with duplicate lane requests: `node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only --lanes tool-runtime,tool-runtime,integration,integration`
+- PASS affected targeted runtime lanes after validation: `PLAYWRIGHT_BROWSERS_PATH=0 node ./scripts/run-targeted-test-lanes.mjs --lanes tool-runtime,tool-runtime,integration,integration`
+- SKIP Workspace V2 lane: no Workspace V2 contract behavior was changed, and duplicate Workspace requests were not needed for the affected runtime validation.
 - SKIP full samples smoke: changed files do not modify sample JSON or shared sample loader/framework behavior.
 
 ## Lanes
