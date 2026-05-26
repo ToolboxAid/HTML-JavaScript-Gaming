@@ -45,6 +45,9 @@
     "launch": {
       "$ref": "#/$defs/gameLaunch"
     },
+    "music": {
+      "$ref": "tools/midi-studio-v2.schema.json#/$defs/musicPayload"
+    },
     "tools": {
       "$ref": "#/$defs/gameTools"
     }
@@ -100,6 +103,9 @@
         },
         "input-mapping-v2": {
           "$ref": "tools/input-mapping-v2.schema.json"
+        },
+        "midi-studio-v2": {
+          "$ref": "tools/midi-studio-v2.schema.json#/$defs/toolPreferences"
         },
         "object-vector-studio-v2": {
           "$ref": "#/$defs/objectVectorStudioV2Payload"

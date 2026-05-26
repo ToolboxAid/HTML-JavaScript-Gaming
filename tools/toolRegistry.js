@@ -268,6 +268,29 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "midi-studio-v2",
+    name: "MIDI Studio V2",
+    displayName: "MIDI Studio V2",
+    shortDescription: "Inspect manifest-owned MIDI songs, rendered targets, and Game Music Director metadata.",
+    shortLabel: "MIDI",
+    path: "midi-studio-v2",
+    folderName: "midi-studio-v2",
+    entryPoint: "midi-studio-v2/index.html",
+    description: "First-Class Tool V2 for multi-song MIDI metadata, source preview, rendered WAV/MP3/OGG targets, and non-composer music direction.",
+    showcaseTag: "Audio",
+    showcaseStatus: "MIDI Baseline",
+    active: true,
+    legacy: false,
+    order: 7.66,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "midi-studio-v2/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "collision-inspector-v2",
     name: "Collision Inspector V2",
     displayName: "Collision Inspector V2",

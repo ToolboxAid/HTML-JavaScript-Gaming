@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MIDI Studio V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="../_templates-v2/styles/toolStarter.css">
+    <link rel="stylesheet" href="./styles/midiStudioV2.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="midi-studio-v2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-midi-studio-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <div class="tool-starter__header" data-midi-studio-header>
+          <section class="tools-platform-frame tool-starter__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="midi-studio-v2">MIDI Studio V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface V2</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Manifest-owned game music review, preview, and director planning.</div>
+                </div>
+              </div>
+              <div class="tools-platform-frame__topline">
+                <p class="tools-platform-frame__description">Inspect multi-song MIDI metadata, preview source files when the browser can play them, and verify rendered gameplay targets.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </details>
+
+    <nav class="tool-starter__menu tool-starter__tool__menu midi-studio-v2__tool-menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <button id="toolImportManifestButton" type="button">Import Manifest</button>
+      <button id="toolCopyJsonButton" type="button" disabled>Copy JSON</button>
+      <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
+      <input id="toolImportManifestInput" type="file" accept="application/json,.json" hidden>
+    </nav>
+
+    <nav class="tool-starter__menu tool-starter__workspace__menu midi-studio-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <button id="workspaceImportManifestButton" type="button">Import manifest</button>
+      <button id="workspaceCopyManifestButton" type="button">Copy manifest</button>
+      <button id="workspaceExportManifestButton" type="button">Export manifest</button>
+      <button id="returnToWorkspaceButton" type="button" hidden>Return to Workspace</button>
+    </nav>
+
+    <main class="tool-starter midi-studio-v2 app-shell" data-tool-id="midi-studio-v2">
+      <aside class="tool-starter__panel tool-starter__panel--left" aria-label="MIDI song setup">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songListContent">
+            <span>Songs</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="songListContent" class="accordion-v2__content">
+            <div id="songList" class="midi-studio-v2__song-list" role="listbox" aria-label="MIDI songs"></div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSourceContent">
+            <span>Source</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="songSourceContent" class="accordion-v2__content midi-studio-v2__stack">
+            <div class="tool-starter__field tool-starter__field--not-editable">
+              <span>.mid source</span>
+              <input id="songSourceField" type="text" readonly value="No song selected">
+            </div>
+            <div class="tool-starter__field tool-starter__field--not-editable">
+              <span>Instrument set</span>
+              <input id="instrumentSetField" type="text" readonly value="No song selected">
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="tool-starter__panel tool-starter__panel--center" aria-label="MIDI preview">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="playbackContent">
+            <span>Playback Preview</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="playbackContent" class="accordion-v2__content">
+            <div class="midi-studio-v2__playback-controls">
+              <button id="playButton" type="button" disabled>Play</button>
+              <button id="stopButton" type="button" disabled>Stop</button>
+              <label class="tool-starter__toggle" for="loopToggle">
+                <input id="loopToggle" type="checkbox">
+                <span>Loop</span>
+              </label>
+            </div>
+            <p id="playbackState" class="tool-starter__hint">No song selected.</p>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songDetailsContent">
+            <span>Selected Song Details</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="songDetailsContent" class="accordion-v2__content">
+            <dl id="songDetails" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+      </section>
+
+      <aside class="tool-starter__panel tool-starter__panel--right" aria-label="MIDI output">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="directorContent">
+            <span>Game Music Director</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="directorContent" class="accordion-v2__content">
+            <div id="directorPanel" class="midi-studio-v2__director"></div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderedTargetsContent">
+            <span>Rendered Export Targets</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="renderedTargetsContent" class="accordion-v2__content">
+            <dl id="renderedTargets" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
+            <span>JSON Details</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="inspectorContent" class="accordion-v2__content">
+            <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header tool-starter__status-accordion-header" type="button" aria-expanded="true" aria-controls="statusLogContent">
+            <span>Status</span>
+            <div class="tool-starter__status-header-actions">
+              <button id="clearStatusButton" class="tool-starter__status-clear-button" type="button">Clear</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </button>
+          <div id="statusLogContent" class="accordion-v2__content">
+            <textarea id="statusLog" readonly rows="10" aria-label="MIDI Studio V2 status log"></textarea>
+          </div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>

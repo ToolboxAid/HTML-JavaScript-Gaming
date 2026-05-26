@@ -14,6 +14,7 @@ const AUDIO_SFX_PLAYGROUND_V2_TOOL_KEY = "audio-sfx-playground-v2";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const COLLISION_INSPECTOR_V2_TOOL_KEY = "collision-inspector-v2";
 const INPUT_MAPPING_V2_TOOL_KEY = "input-mapping-v2";
+const MIDI_STUDIO_V2_TOOL_KEY = "midi-studio-v2";
 const OBJECT_VECTOR_STUDIO_V2_TOOL_KEY = "object-vector-studio-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
@@ -24,6 +25,7 @@ const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
   [COLLISION_INSPECTOR_V2_TOOL_KEY]: "tools/schemas/tools/collision-inspector-v2.schema.json",
   [INPUT_MAPPING_V2_TOOL_KEY]: "tools/schemas/tools/input-mapping-v2.schema.json",
+  [MIDI_STUDIO_V2_TOOL_KEY]: "tools/schemas/tools/midi-studio-v2.schema.json#/$defs/toolPreferences",
   [OBJECT_VECTOR_STUDIO_V2_TOOL_KEY]: "tools/schemas/tools/object-vector-studio-v2.schema.json",
   [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json",
   [TEXT2SPEECH_V2_TOOL_KEY]: "tools/schemas/tools/text2speech-V2.schema.json"
@@ -35,6 +37,7 @@ const WORKSPACE_CONTEXT_ALLOWED_ROOT_KEYS = Object.freeze(new Set([
   "name",
   "gameId",
   "gameRoot",
+  "music",
   "assetsPath",
   "screen",
   "repoRoot",
@@ -58,6 +61,7 @@ const WORKSPACE_CONTEXT_REQUIRED_TOOL_IDS = Object.freeze([
 const WORKSPACE_CONTEXT_ALLOWED_TOOL_IDS = Object.freeze(new Set(Object.keys(TOOL_PAYLOAD_SCHEMA_REFS)));
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   INPUT_MAPPING_V2_TOOL_KEY,
+  MIDI_STUDIO_V2_TOOL_KEY,
   "preview-generator-v2",
   "storage-inspector-v2",
   TEXT2SPEECH_V2_TOOL_KEY,
@@ -134,6 +138,13 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     id: AUDIO_SFX_PLAYGROUND_V2_TOOL_KEY,
     name: "Audio / SFX Playground V2",
     path: "../audio-sfx-playground-v2/index.html"
+  }),
+  Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Utilities",
+    id: MIDI_STUDIO_V2_TOOL_KEY,
+    name: "MIDI Studio V2",
+    path: "../midi-studio-v2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
@@ -436,6 +447,13 @@ function validateWorkspaceContextContract(context) {
           errors.push(`root.screen.${key}: must be greater than or equal to 1`);
         }
       });
+    }
+  }
+  if (Object.prototype.hasOwnProperty.call(context, "music")) {
+    if (!isPlainObject(context.music)) {
+      errors.push("root.music: expected object");
+    } else if (Object.prototype.hasOwnProperty.call(context.music, "songs") && !Array.isArray(context.music.songs)) {
+      errors.push("root.music.songs: expected array");
     }
   }
   if (!isPlainObject(context.tools)) {
@@ -2132,6 +2150,9 @@ export class WorkspaceManagerV2ContextService {
       assetsPath: `${gameRoot}assets`,
       tools: workspaceToolsWithObjectVectorPayload(game.manifest?.tools || game?.tools || {})
     };
+    if (isPlainObject(game.manifest?.music)) {
+      workspaceManifest.music = deepClone(game.manifest.music);
+    }
     const screen = game.manifest?.screen || game.screen || null;
     if (isPlainObject(screen)) {
       workspaceManifest.screen = deepClone(screen);

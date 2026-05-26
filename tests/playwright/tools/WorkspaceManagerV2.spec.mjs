@@ -1306,6 +1306,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(audioSfxCard).toBeVisible();
       await expect(audioSfxCard.locator("a", { hasText: "Audio / SFX Playground V2" })).toHaveAttribute("href", "/tools/audio-sfx-playground-v2/index.html");
       await expect(audioSfxCard).toContainText("oscillator and noise-based game sound effects");
+      const midiStudioCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "MIDI Studio V2" }) });
+      await expect(midiStudioCard).toBeVisible();
+      await expect(midiStudioCard.locator("a", { hasText: "MIDI Studio V2" })).toHaveAttribute("href", "/tools/midi-studio-v2/index.html");
+      await expect(midiStudioCard).toContainText("multi-song MIDI metadata");
       const toolsIndexState = await page.evaluate(async () => {
         const registryModule = await import("/tools/toolRegistry.js");
         const launchModule = await import("/tools/shared/toolLaunchSSoTData.js");
@@ -1338,7 +1342,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             world: launchModule.getSampleToolLaunchDefinition("world-vector-studio-v2"),
             object: launchModule.getSampleToolLaunchDefinition("object-vector-studio-v2"),
             inputMapping: launchModule.getSampleToolLaunchDefinition("input-mapping-v2"),
-            audioSfx: launchModule.getSampleToolLaunchDefinition("audio-sfx-playground-v2")
+            audioSfx: launchModule.getSampleToolLaunchDefinition("audio-sfx-playground-v2"),
+            midiStudio: launchModule.getSampleToolLaunchDefinition("midi-studio-v2")
           },
           removedLaunchDefinitions: {
             assetBrowser: launchModule.getSampleToolLaunchDefinition("asset-browser"),
@@ -1382,14 +1387,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.viewersCards).toContain("Collision Inspector V2");
       expect(toolsIndexState.utilitiesCards).toContain("Audio / SFX Playground V2");
       expect(toolsIndexState.utilitiesCards).toContain("Input Mapping V2");
+      expect(toolsIndexState.utilitiesCards).toContain("MIDI Studio V2");
       expect(toolsIndexState.utilitiesCards).toContain("Text to Speech V2");
-      expect(toolsIndexState.allCards).toEqual(expect.arrayContaining(["World Vector Studio V2", "Object Vector Studio V2", "Collision Inspector V2", "Input Mapping V2", "Audio / SFX Playground V2"]));
-      expect(toolsIndexState.registryIds).toEqual(expect.arrayContaining(["world-vector-studio-v2", "object-vector-studio-v2", "collision-inspector-v2", "input-mapping-v2", "audio-sfx-playground-v2"]));
-      expect(toolsIndexState.launchIds).toEqual(expect.arrayContaining(["tool.world-vector-studio-v2", "tool.object-vector-studio-v2", "tool.collision-inspector-v2", "tool.input-mapping-v2", "tool.audio-sfx-playground-v2"]));
+      expect(toolsIndexState.allCards).toEqual(expect.arrayContaining(["World Vector Studio V2", "Object Vector Studio V2", "Collision Inspector V2", "Input Mapping V2", "Audio / SFX Playground V2", "MIDI Studio V2"]));
+      expect(toolsIndexState.registryIds).toEqual(expect.arrayContaining(["world-vector-studio-v2", "object-vector-studio-v2", "collision-inspector-v2", "input-mapping-v2", "audio-sfx-playground-v2", "midi-studio-v2"]));
+      expect(toolsIndexState.launchIds).toEqual(expect.arrayContaining(["tool.world-vector-studio-v2", "tool.object-vector-studio-v2", "tool.collision-inspector-v2", "tool.input-mapping-v2", "tool.audio-sfx-playground-v2", "tool.midi-studio-v2"]));
       expect(toolsIndexState.studioLaunchDefinitions.world.launchDefinition.targetPath).toBe("/tools/world-vector-studio-v2/index.html");
       expect(toolsIndexState.studioLaunchDefinitions.object.launchDefinition.targetPath).toBe("/tools/object-vector-studio-v2/index.html");
       expect(toolsIndexState.studioLaunchDefinitions.inputMapping.launchDefinition.targetPath).toBe("/tools/input-mapping-v2/index.html");
       expect(toolsIndexState.studioLaunchDefinitions.audioSfx.launchDefinition.targetPath).toBe("/tools/audio-sfx-playground-v2/index.html");
+      expect(toolsIndexState.studioLaunchDefinitions.midiStudio.launchDefinition.targetPath).toBe("/tools/midi-studio-v2/index.html");
       expect(toolsIndexState.allCards).not.toContain("Asset Browser / Import Hub");
       expect(toolsIndexState.allCards).not.toContain("Tile Model Converter");
       expect(toolsIndexState.registryIds).not.toContain("asset-browser");
@@ -1418,6 +1425,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.plannedCards).not.toContain("Character Voice Presets");
       expect(toolsIndexState.plannedCards).not.toContain("Game Character Voice / Event Integration");
       expect(toolsIndexState.plannedCards).not.toContain("Input Mapper / Controller Tester");
+      expect(toolsIndexState.plannedCards).not.toContain("MIDI / Music Playground V2");
       expect(toolsIndexState.plannedCards).not.toEqual(expect.arrayContaining([
         "Raspberry Pi Speech Deployment",
         "Queue-Based Speech Playback",

@@ -88,6 +88,7 @@ function classifyToolGroup(toolId) {
     "asset-pipeline",
     "audio-sfx-playground-v2",
     "input-mapping-v2",
+    "midi-studio-v2",
     "physics-sandbox",
     "text2speech-V2",
     "3d-json-payload"

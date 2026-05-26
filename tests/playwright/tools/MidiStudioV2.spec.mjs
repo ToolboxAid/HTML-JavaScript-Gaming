@@ -1,0 +1,199 @@
+import { expect, test } from "@playwright/test";
+import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
+const validManifest = {
+  schema: "html-js-gaming.game-manifest",
+  version: 1,
+  game: { id: "MidiFixture", name: "MIDI Fixture", folder: "MidiFixture" },
+  launch: { directPath: "games/MidiFixture/index.html" },
+  tools: {
+    "asset-manager-v2": { version: 1, assets: {} },
+    "midi-studio-v2": {
+      activeSongId: "theme-main",
+      directorMode: { enabled: true, defaultIntensity: "medium" }
+    }
+  },
+  music: {
+    version: 1,
+    runtimePreference: "rendered",
+    songs: [
+      {
+        id: "theme-main",
+        name: "Main Theme",
+        sourceMidi: "assets/music/midi/theme-main.mid",
+        instrumentSet: "General MIDI",
+        rendered: {
+          wav: "assets/music/rendered/theme-main.wav",
+          mp3: "assets/music/rendered/theme-main.mp3",
+          ogg: "assets/music/rendered/theme-main.ogg"
+        },
+        defaultRuntimeFormat: "ogg",
+        loop: { enabled: true, startSeconds: 1, endSeconds: 64 },
+        director: {
+          mood: "heroic",
+          intensity: "medium",
+          usage: ["title", "menu"],
+          notes: "Opening cue."
+        },
+        tags: ["theme", "menu"]
+      },
+      {
+        id: "combat-light",
+        name: "Light Combat",
+        sourceMidi: "",
+        instrumentSet: { id: "gm-combat", name: "Combat GM" },
+        rendered: {
+          wav: "assets/music/rendered/combat-light.wav",
+          mp3: "assets/music/rendered/combat-light.mp3",
+          ogg: "assets/music/rendered/combat-light.ogg"
+        },
+        defaultRuntimeFormat: "ogg",
+        loop: { enabled: true },
+        director: {
+          mood: "tense",
+          intensity: "high",
+          usage: ["combat"],
+          notes: "Short encounter loop."
+        },
+        tags: ["combat"]
+      }
+    ]
+  }
+};
+
+function installMockAudio(page) {
+  return page.addInitScript(() => {
+    window.__midiStudioAudioEvents = [];
+    window.Audio = class MockAudio {
+      constructor(src) {
+        this.currentTime = 0;
+        this.duration = 12;
+        this.loop = false;
+        this.paused = true;
+        this.preload = "";
+        this.src = src;
+        this.volume = 1;
+      }
+
+      play() {
+        this.paused = false;
+        window.__midiStudioAudioEvents.push({ action: "play", loop: this.loop, src: this.src });
+        return Promise.resolve();
+      }
+
+      pause() {
+        this.paused = true;
+        window.__midiStudioAudioEvents.push({ action: "pause", src: this.src });
+      }
+    };
+  });
+}
+
+async function openMidiStudio(page, routePayload = validManifest) {
+  const server = await startRepoServer();
+  await installMockAudio(page);
+  await page.route("**/midi-fixture.game.manifest.json", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(routePayload)
+    });
+  });
+  await workspaceV2CoverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html?manifestPath=/midi-fixture.game.manifest.json`, { waitUntil: "networkidle" });
+  return server;
+}
+
+test.describe("MIDI Studio V2", () => {
+  test.afterAll(async () => {
+    await workspaceV2CoverageReporter.writeReport();
+  });
+
+  test("launches and renders a valid multi-song manifest payload", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await expect(page.locator("body[data-tool-id='midi-studio-v2']")).toBeVisible();
+      await expect(page.locator("[data-midi-studio-header]")).toContainText("MIDI Studio V2");
+      await expect(page.locator("#songList [data-song-id]")).toHaveCount(2);
+      await expect(page.locator('[data-song-id="theme-main"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#songSourceField")).toHaveValue("assets/music/midi/theme-main.mid");
+      await expect(page.locator("#instrumentSetField")).toHaveValue("General MIDI");
+      await expect(page.locator("#renderedTargets")).toContainText("theme-main.ogg");
+      await expect(page.locator("#directorPanel")).toContainText("heroic");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 2 MIDI songs/);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("selects multiple songs and updates source, director, and rendered targets", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await page.locator('[data-song-id="combat-light"]').click();
+      await expect(page.locator('[data-song-id="combat-light"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#songSourceField")).toHaveValue("missing sourceMidi");
+      await expect(page.locator("#instrumentSetField")).toHaveValue("Combat GM");
+      await expect(page.locator("#renderedTargets")).toContainText("combat-light.mp3");
+      await expect(page.locator("#directorPanel")).toContainText("Short encounter loop.");
+      await page.locator('[data-song-id="theme-main"]').click();
+      await expect(page.locator("#songSourceField")).toHaveValue("assets/music/midi/theme-main.mid");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("shows actionable failure for a selected song with missing MIDI source", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await page.locator('[data-song-id="combat-light"]').click();
+      await page.locator("#playButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI source for Light Combat\. Add music\.songs\[\]\.sourceMidi in game\.manifest\.json\./);
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("updates play and stop control state without requiring real audio output", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await page.locator("#loopToggle").check();
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await expect(page.locator("#playbackState")).toContainText("Playing preview: Main Theme");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview play started for Main Theme/);
+      expect(await page.evaluate(() => window.__midiStudioAudioEvents)).toEqual([
+        { action: "play", loop: true, src: "assets/music/midi/theme-main.mid" }
+      ]);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#playbackState")).toContainText("Stopped: Main Theme");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("rejects invalid payloads before render", async ({ page }) => {
+    const server = await openMidiStudio(page, {
+      music: {
+        version: 1,
+        songs: [{ name: "Broken Song" }]
+      }
+    });
+    try {
+      await expect(page.locator("#songList")).toContainText("No MIDI songs loaded.");
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL MIDI Studio V2 payload rejected before render .* music\.songs\[0\]\.id is required\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+});
