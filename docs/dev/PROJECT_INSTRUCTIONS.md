@@ -480,6 +480,57 @@ Engine validation expands lane scope when a shared runtime API, shared parser, t
 
 Tool validation alone is insufficient when the changed behavior lives in engine/shared runtime code, changes a shared runtime contract, or could affect more than one tool, game, or sample through a shared dependency.
 
+### Engine Runtime And Shared Infrastructure Governance
+
+This section is authoritative for engine/runtime/shared infrastructure ownership, boundaries, escalation, and validation routing.
+
+Engine ownership:
+- renderer: owns rendering pipeline setup, frame output, render lifecycle behavior, and render failure handling
+- audio runtime: owns playback/runtime paths, audio graph behavior, runtime audio state, and audio failure handling
+- input system: owns input dispatch, normalized input state, focus routing, and invalid input rejection
+- timing/frame scheduler: owns frame cadence, pause/step behavior, deterministic timing, and runtime tick boundaries
+- collision/runtime math: owns collision helpers, spatial/runtime math, deterministic math utilities, and edge-case math behavior
+- asset loading: owns asset path resolution, loading behavior, missing asset handling, and no-silent-fallback behavior
+- manifest/shared parser: owns shared manifest/runtime parser contracts, valid payload acceptance, and invalid payload rejection
+- shared runtime utility: owns reusable runtime helpers consumed by multiple tools, games, samples, or engine surfaces
+
+Boundary rules:
+- engine/runtime services flow from engine/shared infrastructure to tools
+- tools consume engine/runtime services but do not reimplement them
+- tools must not duplicate engine logic locally
+- tools must not create hidden runtime coupling with other tools
+- shared runtime behavior must not leak through tool-specific abstractions
+- tool-specific adapters may wrap stable engine contracts only when the adapter does not own engine behavior
+
+Shared infrastructure rules:
+- allowed shared infrastructure layers are engine/runtime services, shared manifest/runtime parsers, shared asset/input/audio/rendering helpers, shared validation helpers, and reusable non-tool-specific utilities
+- circular dependencies between engine/shared infrastructure and tools are prohibited
+- tool-to-tool runtime dependencies are prohibited unless an explicit integration contract names the handoff
+- shared infrastructure must not depend on tool-specific UI, toolState payload shape, or tool-local diagnostics
+- engine/runtime escalation is required when a change modifies shared infrastructure behavior or changes a shared runtime contract
+- validation expands into engine lanes when changed shared infrastructure can affect more than one runtime, tool, game, sample, or parser consumer
+
+Engine-impact classification expectations:
+- classify a PR as engine-impacting when it changes renderer, audio runtime, input system, timing/frame scheduler, collision/runtime math, asset loading, manifest/shared parser, or shared runtime utility behavior
+- name the affected engine surface and dependent lanes in the validation report
+- run engine validation before dependent tool, integration, or samples validation when an engine surface changes
+
+Required engine validation examples:
+- renderer: render setup, visible output, render lifecycle behavior, and render failure handling
+- audio runtime: playback/runtime path, audio graph behavior, runtime audio state, and failure handling
+- input system: input dispatch, focus routing, normalized input state, and invalid input rejection
+- timing/frame scheduler: deterministic timing, pause/step behavior, frame cadence, and tick boundary behavior
+- collision/runtime math: deterministic collision/math output, spatial helper behavior, and edge-case handling
+- asset loading: resolved asset paths, loading behavior, missing asset handling, and no silent fallback
+- manifest/shared parser: valid payload acceptance, invalid payload rejection, and shared parser contract behavior
+- shared runtime utility: utility behavior, failure handling, and dependent consumer expectations
+
+Engine vs integration escalation rules:
+- engine escalation is required when the changed behavior belongs to engine/shared runtime ownership
+- integration escalation is required when the changed behavior is an explicit handoff between workspace, tools, manifest, palette, or toolState flows
+- when both apply, run engine validation first, then targeted integration validation for affected handoffs
+- targeted tool validation is insufficient when the changed behavior is shared, reused by multiple consumers, or changes engine/runtime contracts
+
 ### Workspace Contract Test Boundaries
 
 Workspace V2 tests validate contract and lifecycle only.
