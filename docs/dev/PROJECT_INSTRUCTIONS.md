@@ -1088,35 +1088,40 @@ ChatGPT must not claim code review was completed unless it inspected uploaded so
 
 Pattern-based or process-based review must be labeled as such.
 
-## FIRST-CLASS TOOL LIFECYCLE CONTRACTS
+## First-Class Tool Lifecycle Contract
 
-First-class tools are part of the Workspace V2 ecosystem by default.
+This is the single authoritative contract for first-class tool creation, template preservation, registration, and Workspace Manager V2 wiring.
 
-New first-class tools must live under `tools/<tool-name>/`.
+First-class tools are Workspace V2 ecosystem members by default.
 
-New first-class tools must be created by copying `tools/_templates-v2/`.
+Required tool location:
+- `tools/<tool-name>/`
+
+Required template source:
+- `tools/_templates-v2`
 
 The copied template structure is the authoritative starting point.
 
-Tool-specific logic extends the copied template rather than replacing it.
+Tool-specific implementation extends the copied template rather than replacing it.
 
-Preserve:
-- header shell
-- NAV shell
-- panel layout
-- accordion structure
-- status/logging regions
+Required preserved template structure:
+- headers
+- NAV
+- panels
+- accordions
+- status/logging
 - CSS wiring
 - JS bootstrapping
 - accessibility structure
 
-New first-class tools must integrate with `tools/workspace-manager-v2`.
+Required Workspace Manager V2 integration:
+- `tools/workspace-manager-v2`
 
-New first-class tools must register in:
+Required registration:
 - `tools/index.html`
 - `tools/workspace-manager-v2/index.html`
 
-New first-class tools must participate in:
+Required workspace lifecycle participation:
 - dirty-state handling
 - save/cancel lifecycle handling
 - workspace launch/navigation patterns
@@ -1129,19 +1134,15 @@ New first-class tools must include Playwright launch coverage when runtime/UI be
 Tool registration must not rely on hidden defaults or silent fallback.
 
 Enforcement clarifications:
+- isolated/disconnected tool systems require explicit authorization
 - isolated launch/navigation systems are prohibited unless explicitly approved
 - custom persistence/save systems are prohibited unless explicitly approved
-- shell rebuilds and alternate layout systems are prohibited unless explicitly approved
+- shell rebuilds are prohibited unless explicitly authorized
+- alternate layout systems are prohibited unless explicitly approved
 - do not inline CSS or JavaScript
 - do not remove template sections unless the PR explicitly authorizes it
 - keep HTML free of inline script/style/event handlers
 - register the new tool only after the copied template is adapted
-
-## TOOL TEMPLATE V2 LOCATION
-
-The official First-Class Tool V2 starter is:
-
-`tools/_templates-v2/`
 
 Use the V2 naming consistently:
 - Tool Template V2
