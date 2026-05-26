@@ -1,6 +1,6 @@
 # Playwright Structure Audit
 
-Generated: 2026-05-26T20:22:17.944Z
+Generated: 2026-05-26T20:35:58.891Z
 Status: PASS
 
 ## Lane Directories

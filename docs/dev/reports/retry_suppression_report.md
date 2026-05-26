@@ -1,0 +1,33 @@
+# Retry Suppression Report
+
+Generated: 2026-05-26T20:38:01.099Z
+Status: WARN
+
+## Summary
+
+Deterministic failures suppressed: 0
+Prevented reruns: 0
+Prevented browser launches: 0
+Prevented broad lane escalation: 0
+Prevented repeated lane hydration: 0
+
+## Retry Decisions
+
+| Fingerprint | Lane | Category | Retry Decision | Reason |
+| --- | --- | --- | --- | --- |
+| be91dab881d6a076 | game-runtime | runtime failure | Allowed only on explicit targeted retry | Retry is allowed only when explicitly requested and must preserve the same targeted lane scope. |
+
+## Enforcement Rules
+
+- Deterministic setup failures never trigger automatic reruns.
+- Deterministic targeted-lane failures never escalate into broad lanes.
+- Deterministic preflight failures prevent repeated browser startup.
+- Targeted retries may run only for explicitly classified runtime or flaky/transient failures.
+- Targeted retries must preserve the affected lane scope and must not rerun unaffected lanes.
+
+## Runtime Savings Observations
+
+- Suppressed setup failures avoid repeated Playwright/browser initialization.
+- Suppressed setup failures avoid repeated Workspace/global lane startup.
+- Suppressed setup failures avoid repeated lane hydration after deterministic validation failure.
+- Runtime failures are reported without broad fallback execution.

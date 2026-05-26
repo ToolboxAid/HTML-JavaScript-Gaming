@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-05-26T20:24:06.715Z
+Generated: 2026-05-26T20:38:01.110Z
 Dry run: No
 
 ## Summary
@@ -42,6 +42,17 @@ Prevented redundant lane execution: 2
 
 Cached validations reused: 15
 Validation computations: 9
+
+## Failure Fingerprints
+
+Status: WARN
+Deterministic setup failures: 0
+Runtime failures: 1
+Flaky/transient failures: 0
+Infrastructure failures: 0
+Prevented reruns: 0
+Prevented browser launches: 0
+Prevented broad lane escalation: 0
 
 ## Discovery Scope
 
@@ -112,4 +123,4 @@ Prevented Workspace lane reruns: 0
 
 - `tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs:14:1` - `validates Asteroids ship visual states from manifest runtime rendering`; expected ship visual states to include `destroyed`, received `idle` and `move`.
 
-Discovery ownership validation, manifest validation, warm-start validation, dependency hydration reuse, tool-runtime validation, integration validation, and engine/src node validation passed before this game-runtime assertion failed.
+Failure fingerprint `be91dab881d6a076` classified the failing `game-runtime` command as a targeted runtime failure. No deterministic setup failures were found, no automatic retry was attempted, and no broad lane escalation or full samples smoke was run.

@@ -16,6 +16,7 @@ const defaultDependencyGatingReportPath = "docs/dev/reports/dependency_gating_re
 const defaultDiscoveryOwnershipReportPath = "docs/dev/reports/playwright_discovery_ownership_report.md";
 const defaultDiscoveryScopeReportPath = "docs/dev/reports/playwright_discovery_scope_report.md";
 const defaultDependencyHydrationReuseReportPath = "docs/dev/reports/dependency_hydration_reuse_report.md";
+const defaultFailureFingerprintReportPath = "docs/dev/reports/failure_fingerprint_report.md";
 const defaultFilesystemScanReportPath = "docs/dev/reports/filesystem_scan_reduction_report.md";
 const defaultIncrementalValidationReportPath = "docs/dev/reports/incremental_validation_report.md";
 const defaultLaneInputValidationReportPath = "docs/dev/reports/lane_input_validation_report.md";
@@ -28,6 +29,7 @@ const defaultStaticReportPath = "docs/dev/reports/static_validation_report.md";
 const defaultTargetedFileManifestReportPath = "docs/dev/reports/targeted_file_manifest_report.md";
 const defaultPersistentLaneManifestReportPath = "docs/dev/reports/persistent_lane_manifest_report.md";
 const defaultPersistentLaneManifestDir = "docs/dev/reports/lane_manifests";
+const defaultRetrySuppressionReportPath = "docs/dev/reports/retry_suppression_report.md";
 const defaultValidationCacheReportPath = "docs/dev/reports/validation_cache_report.md";
 const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
@@ -229,6 +231,7 @@ function parseArgs(argv) {
     discoveryOwnershipReportPath: defaultDiscoveryOwnershipReportPath,
     discoveryScopeReportPath: defaultDiscoveryScopeReportPath,
     dryRun: false,
+    failureFingerprintReportPath: defaultFailureFingerprintReportPath,
     filesystemScanReportPath: defaultFilesystemScanReportPath,
     includeSamples: false,
     incrementalValidationReportPath: defaultIncrementalValidationReportPath,
@@ -243,6 +246,7 @@ function parseArgs(argv) {
     reportPath: defaultReportPath,
     persistentLaneManifestDir: defaultPersistentLaneManifestDir,
     persistentLaneManifestReportPath: defaultPersistentLaneManifestReportPath,
+    retrySuppressionReportPath: defaultRetrySuppressionReportPath,
     skipPreflight: false,
     staticOnly: false,
     staticReportPath: defaultStaticReportPath,
@@ -273,6 +277,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--dependency-hydration-report=")) {
       options.dependencyHydrationReuseReportPath = argument.slice("--dependency-hydration-report=".length);
+    } else if (argument === "--failure-fingerprint-report") {
+      options.failureFingerprintReportPath = argv[index + 1] || defaultFailureFingerprintReportPath;
+      index += 1;
+    } else if (argument.startsWith("--failure-fingerprint-report=")) {
+      options.failureFingerprintReportPath = argument.slice("--failure-fingerprint-report=".length);
     } else if (argument === "--discovery-scope-report") {
       options.discoveryScopeReportPath = argv[index + 1] || defaultDiscoveryScopeReportPath;
       index += 1;
@@ -318,6 +327,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--report=")) {
       options.reportPath = argument.slice("--report=".length);
+    } else if (argument === "--retry-suppression-report") {
+      options.retrySuppressionReportPath = argv[index + 1] || defaultRetrySuppressionReportPath;
+      index += 1;
+    } else if (argument.startsWith("--retry-suppression-report=")) {
+      options.retrySuppressionReportPath = argument.slice("--retry-suppression-report=".length);
     } else if (argument === "--persistent-manifest-dir") {
       options.persistentLaneManifestDir = argv[index + 1] || defaultPersistentLaneManifestDir;
       index += 1;
@@ -404,17 +418,27 @@ function commandToString(commandConfig) {
 async function runCommand(commandConfig) {
   const displayCommand = commandToString(commandConfig);
   console.log(`\nRUN ${displayCommand}`);
-  const exitCode = await new Promise((resolve, reject) => {
+  const outcome = await new Promise((resolve) => {
     const child = spawn(commandConfig.command, commandConfig.args, {
       cwd: repoRoot,
       env: process.env,
       shell: process.platform === "win32" && commandConfig.command.endsWith(".cmd"),
       stdio: "inherit"
     });
-    child.on("error", reject);
-    child.on("close", (code) => resolve(code ?? 1));
+    child.on("error", (error) => resolve({
+      errorMessage: error?.message || String(error),
+      exitCode: 1
+    }));
+    child.on("close", (code) => resolve({
+      errorMessage: "",
+      exitCode: code ?? 1
+    }));
   });
-  return { displayCommand, exitCode };
+  return {
+    displayCommand,
+    errorMessage: outcome.errorMessage,
+    exitCode: outcome.exitCode
+  };
 }
 
 function summarize(results) {
@@ -440,6 +464,145 @@ function stableJson(value) {
 
 function fingerprint(value) {
   return createHash("sha256").update(stableJson(value)).digest("hex").slice(0, 16);
+}
+
+const deterministicFailureRules = Object.freeze([
+  {
+    key: "windows-quoting-issues",
+    pattern: /quoting hazard|shell-sensitive|literal Node argv|grep pattern/i,
+    source: "runner preflight",
+    summary: "Windows quoting issues"
+  },
+  {
+    key: "invalid-grep-patterns",
+    pattern: /invalid.*grep|empty --grep|grep value/i,
+    source: "runner preflight",
+    summary: "Invalid grep patterns"
+  },
+  {
+    key: "ownership-violations",
+    pattern: /ownership|outside selected lane|outside lane ownership|not allowed for this lane/i,
+    source: "ownership validation",
+    summary: "Ownership violations"
+  },
+  {
+    key: "lane-compilation-failures",
+    pattern: /compilation|unknown lane|invalid lane|targets a missing file|outside tests\/playwright/i,
+    source: "lane compilation",
+    summary: "Lane compilation failures"
+  },
+  {
+    key: "unresolved-fixtures-imports",
+    pattern: /missing fixture|unresolved|import dependency is missing|file is missing/i,
+    source: "fixture/import validation",
+    summary: "Unresolved fixtures/imports"
+  },
+  {
+    key: "invalid-manifest-lane-metadata",
+    pattern: /manifest.*(metadata|hash|input|command|dependency)|persistent manifest|warm-start/i,
+    source: "manifest validation",
+    summary: "Invalid manifest/lane metadata"
+  },
+  {
+    key: "invalid-dependency-graph",
+    pattern: /dependency graph|dependency cycle|requires unselected dependency|dependency-gated/i,
+    source: "dependency validation",
+    summary: "Invalid dependency graph"
+  },
+  {
+    key: "misplaced-test-helper-ownership",
+    pattern: /misplaced|game-specific|tool-specific|helper.*ownership|shared helper/i,
+    source: "structure audit",
+    summary: "Misplaced test/helper ownership"
+  }
+]);
+
+function deterministicRuleFingerprint(rule) {
+  return fingerprint({
+    category: "deterministic setup failure",
+    key: rule.key,
+    source: rule.source,
+    summary: rule.summary
+  });
+}
+
+function laneFromFailureMessage(message, fallbackLane = "setup") {
+  const laneMatch = String(message || "").match(/\b(?:Lane|lane)\s+([A-Za-z0-9_-]+)/);
+  if (laneMatch?.[1] && laneDefinitions[laneMatch[1]]) {
+    return laneMatch[1];
+  }
+  const forLaneMatch = String(message || "").match(/\bfor\s+(?:lane\s+)?([A-Za-z0-9_-]+)/i);
+  if (forLaneMatch?.[1] && laneDefinitions[forLaneMatch[1]]) {
+    return forLaneMatch[1];
+  }
+  return fallbackLane;
+}
+
+function classifySetupFailure(message, source, lane) {
+  const rule = deterministicFailureRules.find((entry) => entry.pattern.test(message));
+  return {
+    allowedRetry: false,
+    category: "deterministic setup failure",
+    fingerprint: fingerprint({
+      category: "deterministic setup failure",
+      lane,
+      message,
+      rule: rule?.key || "deterministic-setup",
+      source
+    }),
+    retryReason: "Automatic retry is suppressed because deterministic setup failures must be fixed before runtime.",
+    rule: rule?.key || "deterministic-setup",
+    summary: rule?.summary || "Deterministic setup failure"
+  };
+}
+
+function classifyRuntimeCommandFailure({ command, errorMessage, lane }) {
+  const message = errorMessage
+    ? `${lane} command failed to start: ${errorMessage}`
+    : `${lane} command failed: ${command}`;
+  const infrastructurePattern = /ENOENT|EACCES|spawn|browser executable|Cannot find module|ECONNREFUSED/i;
+  const transientPattern = /timeout|timed out|ECONNRESET|browser has disconnected|Target page.*closed|net::/i;
+  let category = "runtime failure";
+  let allowedRetry = true;
+  let retryReason = "Retry is allowed only when explicitly requested and must preserve the same targeted lane scope.";
+  if (infrastructurePattern.test(message)) {
+    category = "infrastructure failure";
+    allowedRetry = false;
+    retryReason = "Automatic retry is suppressed until infrastructure setup is corrected.";
+  } else if (transientPattern.test(message)) {
+    category = "flaky/transient failure";
+    allowedRetry = true;
+    retryReason = "Retry may be allowed only for this explicitly classified transient targeted failure.";
+  }
+  return {
+    allowedRetry,
+    category,
+    fingerprint: fingerprint({
+      category,
+      command,
+      lane,
+      message
+    }),
+    message,
+    retryReason,
+    rule: category.replace(/\s+/g, "-"),
+    source: "runtime command",
+    summary: category
+  };
+}
+
+function failureRecord({ classification, lane, message, source }) {
+  return {
+    allowedRetry: classification.allowedRetry,
+    category: classification.category,
+    fingerprint: classification.fingerprint,
+    lane,
+    message,
+    retryReason: classification.retryReason,
+    rule: classification.rule,
+    source,
+    summary: classification.summary
+  };
 }
 
 function commandFingerprint(commandConfig) {
@@ -2223,6 +2386,127 @@ function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation,
   };
 }
 
+function collectSetupFailureRecords({
+  dependencyGate,
+  laneCompilation,
+  laneInputValidation,
+  laneRegistration,
+  laneWarmStart,
+  runnerPreflight,
+  scopedDiscoveryValidation,
+  structureAudit,
+  unknownLanes
+}) {
+  const records = [];
+  const seen = new Set();
+
+  function addSetupFinding(source, message, fallbackLane = "setup") {
+    const normalizedMessage = reportLine(message);
+    if (!normalizedMessage) {
+      return;
+    }
+    const lane = laneFromFailureMessage(normalizedMessage, fallbackLane);
+    const classification = classifySetupFailure(normalizedMessage, source, lane);
+    const key = `${classification.fingerprint}:${source}:${normalizedMessage}`;
+    if (seen.has(key)) {
+      return;
+    }
+    seen.add(key);
+    records.push(failureRecord({
+      classification,
+      lane,
+      message: normalizedMessage,
+      source
+    }));
+  }
+
+  unknownLanes.forEach((lane) => {
+    addSetupFinding("lane compilation", `Unknown lane requested: ${lane}`, lane);
+  });
+  laneRegistration.findings.forEach((findingText) => addSetupFinding("lane registration", findingText));
+  runnerPreflight.findings.forEach((findingText) => addSetupFinding("runner preflight", findingText));
+  scopedDiscoveryValidation.findings.forEach((findingText) => addSetupFinding("scoped discovery validation", findingText));
+  laneInputValidation.findings.forEach((findingText) => addSetupFinding("manifest input validation", findingText));
+  laneWarmStart.findings.forEach((findingText) => addSetupFinding("warm-start validation", findingText));
+  laneCompilation.findings.forEach((findingText) => addSetupFinding("lane compilation", findingText));
+  dependencyGate.findings.forEach((findingText) => addSetupFinding("dependency validation", findingText));
+  if (structureAudit.status === "FAIL") {
+    addSetupFinding("structure audit", structureAudit.reason || "Playwright structure audit failed.");
+  }
+  return records;
+}
+
+function collectRuntimeFailureRecords(results) {
+  const records = [];
+  for (const result of results) {
+    for (const command of result.commands || []) {
+      if (command.status !== "FAIL") {
+        continue;
+      }
+      const classification = classifyRuntimeCommandFailure({
+        command: command.command,
+        errorMessage: command.errorMessage || "",
+        lane: result.lane
+      });
+      records.push(failureRecord({
+        classification,
+        lane: result.lane,
+        message: classification.message,
+        source: classification.source
+      }));
+    }
+  }
+  return records;
+}
+
+function buildFailureClassification({
+  dependencyGate,
+  laneCompilation,
+  laneInputValidation,
+  laneRegistration,
+  laneWarmStart,
+  results,
+  runnerPreflight,
+  runtimeSchedule,
+  scopedDiscoveryValidation,
+  structureAudit,
+  unknownLanes
+}) {
+  const setupRecords = collectSetupFailureRecords({
+    dependencyGate,
+    laneCompilation,
+    laneInputValidation,
+    laneRegistration,
+    laneWarmStart,
+    runnerPreflight,
+    scopedDiscoveryValidation,
+    structureAudit,
+    unknownLanes
+  });
+  const runtimeRecords = collectRuntimeFailureRecords(results || []);
+  const records = [...setupRecords, ...runtimeRecords];
+  const deterministicRecords = records.filter((record) => record.category === "deterministic setup failure");
+  const runtimeFailureRecords = records.filter((record) => record.category === "runtime failure");
+  const transientRecords = records.filter((record) => record.category === "flaky/transient failure");
+  const infrastructureRecords = records.filter((record) => record.category === "infrastructure failure");
+  const deterministicFailureCount = deterministicRecords.length;
+  const preventedBrowserLaunches = deterministicFailureCount > 0
+    ? runtimeSchedule.baselinePlaywrightLaunches || runtimeSchedule.scheduledPlaywrightLaunches || 0
+    : 0;
+  return {
+    deterministicFailureCount,
+    infrastructureFailureCount: infrastructureRecords.length,
+    preventedBroadLaneEscalations: deterministicFailureCount,
+    preventedBrowserLaunches,
+    preventedLaneHydration: deterministicFailureCount > 0 ? laneWarmStart.preventedRedundantInitialization || 0 : 0,
+    preventedReruns: deterministicFailureCount,
+    records,
+    runtimeFailureCount: runtimeFailureRecords.length,
+    status: records.length === 0 ? "PASS" : "WARN",
+    transientFailureCount: transientRecords.length
+  };
+}
+
 function makeLaneCompilationReport({ laneCompilation }) {
   const lines = [
     "# Lane Compilation Report",
@@ -2812,6 +3096,140 @@ function makeDependencyHydrationReuseReport({ laneWarmStart }) {
   return `${lines.join("\n").trim()}\n`;
 }
 
+function makeFailureFingerprintReport({ failureClassification }) {
+  const lines = [
+    "# Failure Fingerprint Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${failureClassification.status}`,
+    "",
+    "## Summary",
+    "",
+    `Deterministic setup failures: ${failureClassification.deterministicFailureCount}`,
+    `Runtime failures: ${failureClassification.runtimeFailureCount}`,
+    `Flaky/transient failures: ${failureClassification.transientFailureCount}`,
+    `Infrastructure failures: ${failureClassification.infrastructureFailureCount}`,
+    "",
+    "## Observed Failure Fingerprints",
+    "",
+    "| Fingerprint | Category | Rule | Lane | Source | Retry Allowed | Diagnostic |",
+    "| --- | --- | --- | --- | --- | --- | --- |"
+  ];
+
+  if (failureClassification.records.length === 0) {
+    lines.push("| none | none | none | none | none | No | No failures observed during deterministic classification. |");
+  } else {
+    failureClassification.records.forEach((record) => {
+      lines.push([
+        `| ${record.fingerprint}`,
+        record.category,
+        record.rule,
+        record.lane,
+        record.source,
+        record.allowedRetry ? "Yes" : "No",
+        `${reportLine(record.message)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Known Deterministic Fingerprint Rules",
+    "",
+    "| Rule | Fingerprint | Source | Classification | Matches |",
+    "| --- | --- | --- | --- | --- |"
+  );
+  deterministicFailureRules.forEach((rule) => {
+    lines.push([
+      `| ${rule.key}`,
+      deterministicRuleFingerprint(rule),
+      rule.source,
+      "deterministic setup failure",
+      `${reportLine(rule.summary)} |`
+    ].join(" | "));
+  });
+
+  lines.push(
+    "",
+    "## Classification Contract",
+    "",
+    "- Deterministic setup failures block runtime before Playwright/browser startup.",
+    "- Runtime failures belong to the targeted lane that executed the failing command.",
+    "- Flaky/transient failures require explicit classification before any targeted retry is allowed.",
+    "- Infrastructure failures are not retried automatically until the infrastructure issue is corrected.",
+    "- Failure fingerprints are based on lane, source, rule, category, command, and diagnostic text."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeRetrySuppressionReport({ failureClassification }) {
+  const retryAllowed = failureClassification.records.filter((record) => record.allowedRetry);
+  const retrySuppressed = failureClassification.records.filter((record) => !record.allowedRetry);
+  const lines = [
+    "# Retry Suppression Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${failureClassification.status}`,
+    "",
+    "## Summary",
+    "",
+    `Deterministic failures suppressed: ${failureClassification.deterministicFailureCount}`,
+    `Prevented reruns: ${failureClassification.preventedReruns}`,
+    `Prevented browser launches: ${failureClassification.preventedBrowserLaunches}`,
+    `Prevented broad lane escalation: ${failureClassification.preventedBroadLaneEscalations}`,
+    `Prevented repeated lane hydration: ${failureClassification.preventedLaneHydration}`,
+    "",
+    "## Retry Decisions",
+    "",
+    "| Fingerprint | Lane | Category | Retry Decision | Reason |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  if (failureClassification.records.length === 0) {
+    lines.push("| none | none | none | No retry needed | No failures were observed. |");
+  } else {
+    retrySuppressed.forEach((record) => {
+      lines.push([
+        `| ${record.fingerprint}`,
+        record.lane,
+        record.category,
+        "Suppressed",
+        `${reportLine(record.retryReason)} |`
+      ].join(" | "));
+    });
+    retryAllowed.forEach((record) => {
+      lines.push([
+        `| ${record.fingerprint}`,
+        record.lane,
+        record.category,
+        "Allowed only on explicit targeted retry",
+        `${reportLine(record.retryReason)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Enforcement Rules",
+    "",
+    "- Deterministic setup failures never trigger automatic reruns.",
+    "- Deterministic targeted-lane failures never escalate into broad lanes.",
+    "- Deterministic preflight failures prevent repeated browser startup.",
+    "- Targeted retries may run only for explicitly classified runtime or flaky/transient failures.",
+    "- Targeted retries must preserve the affected lane scope and must not rerun unaffected lanes.",
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- Suppressed setup failures avoid repeated Playwright/browser initialization.",
+    "- Suppressed setup failures avoid repeated Workspace/global lane startup.",
+    "- Suppressed setup failures avoid repeated lane hydration after deterministic validation failure.",
+    "- Runtime failures are reported without broad fallback execution."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 function makeLaneInputValidationReport({ laneInputValidation }) {
   const lines = [
     "# Lane Input Validation Report",
@@ -3041,6 +3459,7 @@ async function writeTextReport(reportPath, reportText) {
 function makeReport({
   dependencyGate,
   dryRun,
+  failureClassification,
   fullSamplesSmoke,
   laneWarmStart,
   laneInputValidation,
@@ -3098,6 +3517,17 @@ function makeReport({
     "",
     `Cached validations reused: ${validationCache?.events?.filter((event) => event.status === "HIT").length ?? 0}`,
     `Validation computations: ${validationCache?.events?.filter((event) => event.status === "MISS" || event.status === "MISS_UNCACHED").length ?? 0}`,
+    "",
+    "## Failure Fingerprints",
+    "",
+    `Status: ${failureClassification?.status || "PASS"}`,
+    `Deterministic setup failures: ${failureClassification?.deterministicFailureCount ?? 0}`,
+    `Runtime failures: ${failureClassification?.runtimeFailureCount ?? 0}`,
+    `Flaky/transient failures: ${failureClassification?.transientFailureCount ?? 0}`,
+    `Infrastructure failures: ${failureClassification?.infrastructureFailureCount ?? 0}`,
+    `Prevented reruns: ${failureClassification?.preventedReruns ?? 0}`,
+    `Prevented browser launches: ${failureClassification?.preventedBrowserLaunches ?? 0}`,
+    `Prevented broad lane escalation: ${failureClassification?.preventedBroadLaneEscalations ?? 0}`,
     "",
     "## Discovery Scope",
     "",
@@ -3436,6 +3866,19 @@ const runtimeSchedule = buildRuntimeSchedule({
   lanes: options.lanes,
   preRuntimeFindings: runtimeSchedulingBlockers
 });
+let failureClassification = buildFailureClassification({
+  dependencyGate,
+  laneCompilation,
+  laneInputValidation,
+  laneRegistration,
+  laneWarmStart,
+  results,
+  runnerPreflight,
+  runtimeSchedule,
+  scopedDiscoveryValidation,
+  structureAudit,
+  unknownLanes
+});
 const zeroBrowserInput = {
   dependencyGateStatus: dependencyGate.status,
   laneCompilationStatus: laneCompilation.status,
@@ -3454,6 +3897,8 @@ const laneDeduplicationReportText = makeLaneDeduplicationReport({ laneDeduplicat
 const laneRuntimeOptimizationReportText = makeLaneRuntimeOptimizationReport({ runtimeSchedule });
 const laneWarmStartReportText = makeLaneWarmStartReport({ laneWarmStart });
 const dependencyHydrationReuseReportText = makeDependencyHydrationReuseReport({ laneWarmStart });
+let failureFingerprintReportText = makeFailureFingerprintReport({ failureClassification });
+let retrySuppressionReportText = makeRetrySuppressionReport({ failureClassification });
 const targetedFileManifestReportText = makeTargetedFileManifestReport({
   laneInputValidation,
   scopedDiscovery
@@ -3500,6 +3945,8 @@ await writeTextReport(options.laneDeduplicationReportPath, laneDeduplicationRepo
 await writeTextReport(options.laneRuntimeOptimizationReportPath, laneRuntimeOptimizationReportText);
 await writeTextReport(options.laneWarmStartReportPath, laneWarmStartReportText);
 await writeTextReport(options.dependencyHydrationReuseReportPath, dependencyHydrationReuseReportText);
+await writeTextReport(options.failureFingerprintReportPath, failureFingerprintReportText);
+await writeTextReport(options.retrySuppressionReportPath, retrySuppressionReportText);
 await writeTextReport(options.targetedFileManifestReportPath, targetedFileManifestReportText);
 await writeTextReport(options.persistentLaneManifestReportPath, persistentLaneManifestReportText);
 await writeTextReport(options.incrementalValidationReportPath, incrementalValidationReportText);
@@ -3553,6 +4000,7 @@ if (unknownLanes.length > 0
   await writeReport(options.reportPath, makeReport({
     dependencyGate,
     dryRun: options.dryRun,
+    failureClassification,
     fullSamplesSmoke,
     laneWarmStart,
     laneInputValidation,
@@ -3592,6 +4040,7 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
     await writeReport(options.reportPath, makeReport({
       dependencyGate,
       dryRun: options.dryRun,
+      failureClassification,
       fullSamplesSmoke,
       laneWarmStart,
       laneInputValidation,
@@ -3666,7 +4115,11 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
   for (const command of laneCommands) {
     const result = await runCommand(command);
     const status = result.exitCode === 0 ? "PASS" : "FAIL";
-    commandResults.push({ command: result.displayCommand, status });
+    commandResults.push({
+      command: result.displayCommand,
+      errorMessage: result.errorMessage,
+      status
+    });
     if (result.exitCode !== 0) {
       failed = true;
     }
@@ -3690,9 +4143,28 @@ const fullSamplesSmoke = {
   status: "SKIP"
 };
 
+failureClassification = buildFailureClassification({
+  dependencyGate,
+  laneCompilation,
+  laneInputValidation,
+  laneRegistration,
+  laneWarmStart,
+  results,
+  runnerPreflight,
+  runtimeSchedule,
+  scopedDiscoveryValidation,
+  structureAudit,
+  unknownLanes
+});
+failureFingerprintReportText = makeFailureFingerprintReport({ failureClassification });
+retrySuppressionReportText = makeRetrySuppressionReport({ failureClassification });
+await writeTextReport(options.failureFingerprintReportPath, failureFingerprintReportText);
+await writeTextReport(options.retrySuppressionReportPath, retrySuppressionReportText);
+
 await writeReport(options.reportPath, makeReport({
   dependencyGate,
   dryRun: options.dryRun,
+  failureClassification,
   fullSamplesSmoke,
   laneWarmStart,
   laneInputValidation,
