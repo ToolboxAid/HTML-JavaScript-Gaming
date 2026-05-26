@@ -435,6 +435,43 @@ Affected game fixtures are opt-in only.
 
 Fixtures must declare required manifests and toolState inputs.
 
+### Test Failure Reporting Contracts
+
+Failure reports must identify the exact tool, fixture, and runtime surface for every `FAIL` or `WARN`.
+
+Shared failures must identify the root shared dependency.
+
+Playwright output must separate:
+- contract failures
+- runtime failures
+- integration failures
+- fixture failures
+
+Screenshots, traces, and logs are owned by the tool or lane that produced them.
+
+Test artifacts must be grouped by tool or lane.
+
+Hidden retries and silent reruns are prohibited.
+
+Flaky tests must be explicitly labeled.
+
+Required reporting fields:
+- tool name
+- fixture name
+- manifest/toolState source
+- runtime surface
+- expected behavior
+- actual behavior
+- PASS/FAIL/WARN/SKIP
+
+Batch runs continue on isolated failures when possible.
+
+Unrelated tool failures must not block targeted validation lanes.
+
+Integration lanes are the only allowed cross-tool blockers.
+
+Reports must clearly identify whether samples were skipped.
+
 Every PR must document:
 - whether full samples test was skipped or run
 - reason for decision
