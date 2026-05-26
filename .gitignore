@@ -17,6 +17,7 @@ NEXT_COMMAND.txt
 node_modules/
 tests/results/
 tmp/
+scripts/untracked/
 
 # Codex files
 docs/dev/codex_commands.md
@@ -33,3 +34,5 @@ docs/dev/reports/playwright_v8_coverage_report.txt
 
 *.mp4
 *.mkv
+
+

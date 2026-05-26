@@ -1,35 +1,26 @@
 # Lane Compilation Report
 
-Generated: 2026-05-26
-PR: PR_26146_028-zero-browser-preflight-and-lane-compilation
-
-## Summary
-
+Generated: 2026-05-26T19:04:26.917Z
 Status: PASS
-Lane compilation failures: none
-Runtime discovery failures prevented: none needed
 
-## Compiled Lane Graph
+## Lane Graph
 
-| Lane | Status | Runtime Execution | Targets | Reason |
-| --- | --- | --- | --- | --- |
-| workspace-contract | PASS | Skipped | `npm run test:workspace-v2` | Lane definition compiles and fixture path resolves; not selected for affected runtime validation. |
-| tool-runtime | PASS | Executed | `tests/playwright/tools/AssetManagerV2.spec.mjs`; `tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs`; `tests/playwright/tools/CollisionInspectorV2.spec.mjs` | Selected affected lane. Targets are inside `tests/playwright/tools`; grep pipe is Node-argv safe. |
-| integration | PASS | Executed | `tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs` | Selected affected lane. Target is inside `tests/playwright/integration`. |
-| engine-src | PASS | Skipped | node engine/src test files | Lane definition compiles; not affected by this PR. |
-| samples | PASS | Skipped | node samples test files | Lane definition compiles; samples lane remains on-request and sample scope was not active. |
+| Lane | Status | Affected Surface | Targets | Commands | Reason |
+| --- | --- | --- | --- | --- | --- |
+| workspace-contract | SKIP | Workspace Manager V2 contract and lifecycle behavior | none | npm.cmd run test:workspace-v2 | Lane was not selected. |
+| tool-runtime | PASS | First-class tool runtime behavior | tests/playwright/tools/AssetManagerV2.spec.mjs; tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs; tests/playwright/tools/CollisionInspectorV2.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetManagerV2.spec.mjs --grep "launch guard|temporary UAT context|rejects non-Workspace" --project=playwright --workers=1 --reporter=list; C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs tests/playwright/tools/CollisionInspectorV2.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
+| integration | PASS | Workspace, tool, game index, and manifest handoff behavior | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs --grep Pong --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
+| engine-src | SKIP | src/ engine and shared runtime capability behavior | scripts/run-node-test-files.mjs; tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | C:\nvm4w\nodejs\node.exe scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
+| samples | SKIP | Affected samples lane, on request only | scripts/run-node-test-files.mjs; tests/samples/SamplesProgramCombinedPass.test.mjs; tests/samples/FullscreenRuleEnforcement.test.mjs | C:\nvm4w\nodejs\node.exe scripts/run-node-test-files.mjs tests/samples/SamplesProgramCombinedPass.test.mjs tests/samples/FullscreenRuleEnforcement.test.mjs | Lane was not selected. |
 
-## Compilation Rules
+## Compilation Failures
+
+No lane compilation failures.
+
+## Deterministic Setup Rules
 
 - Unknown lanes fail before runtime.
-- Missing targets, fixtures, or helper imports fail before runtime.
+- Missing targets or fixtures fail before runtime.
 - Playwright targets must stay inside the owning lane directory.
-- Shell-sensitive grep values must use the Node CLI argv path.
+- Shell-sensitive grep values must be passed through the Node CLI argv path.
 - Deterministic lane-definition failures do not trigger fallback reruns or full lane escalation.
-
-## Runtime Savings Observations
-
-- Lane graph resolution happens before browser startup.
-- Invalid targeted lane setup cannot fall through into runtime discovery.
-- Tool-runtime combines Preview Generator V2 and Collision Inspector V2 into one Playwright CLI invocation.
-- Workspace V2 was not scheduled for this PR.

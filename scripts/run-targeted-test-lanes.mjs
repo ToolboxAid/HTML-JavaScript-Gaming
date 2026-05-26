@@ -11,7 +11,9 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const defaultReportPath = "docs/dev/reports/testing_lane_execution_report.md";
+const defaultDependencyGatingReportPath = "docs/dev/reports/dependency_gating_report.md";
 const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
+const defaultLaneRuntimeOptimizationReportPath = "docs/dev/reports/lane_runtime_optimization_report.md";
 const defaultStaticReportPath = "docs/dev/reports/static_validation_report.md";
 const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
@@ -61,6 +63,7 @@ const laneDefinitions = Object.freeze({
     commands: [
       npmCommand("run", "test:workspace-v2")
     ],
+    dependencies: [],
     fixtures: [
       "tests/fixtures/workspace-v2/uat.manifest.json",
       "mocked File System Access repo handles",
@@ -85,6 +88,7 @@ const laneDefinitions = Object.freeze({
         "tests/playwright/tools/CollisionInspectorV2.spec.mjs"
       )
     ],
+    dependencies: [],
     fixtures: [
       "tool-specific mocked repo/file picker inputs",
       "explicit manifest/toolState launch contexts"
@@ -99,6 +103,7 @@ const laneDefinitions = Object.freeze({
     commands: [
       playwrightCommand("tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs", "--grep", "Pong")
     ],
+    dependencies: [],
     fixtures: [
       "repo game manifests",
       "manifest preview asset roles",
@@ -127,6 +132,7 @@ const laneDefinitions = Object.freeze({
         "tests/render/Renderer.test.mjs"
       )
     ],
+    dependencies: [],
     fixtures: [
       "explicit node unit fixtures",
       "fresh in-memory localStorage/sessionStorage mocks per file"
@@ -143,6 +149,7 @@ const laneDefinitions = Object.freeze({
         "tests/samples/FullscreenRuleEnforcement.test.mjs"
       )
     ],
+    dependencies: [],
     fixtures: [
       "sample metadata and validation artifacts",
       "sample structure fixtures"
@@ -156,9 +163,11 @@ const laneDefinitions = Object.freeze({
 
 function parseArgs(argv) {
   const options = {
+    dependencyGatingReportPath: defaultDependencyGatingReportPath,
     dryRun: false,
     includeSamples: false,
     laneCompilationReportPath: defaultLaneCompilationReportPath,
+    laneRuntimeOptimizationReportPath: defaultLaneRuntimeOptimizationReportPath,
     lanes: [],
     reportPath: defaultReportPath,
     skipPreflight: false,
@@ -197,6 +206,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--report=")) {
       options.reportPath = argument.slice("--report=".length);
+    } else if (argument === "--dependency-report") {
+      options.dependencyGatingReportPath = argv[index + 1] || defaultDependencyGatingReportPath;
+      index += 1;
+    } else if (argument.startsWith("--dependency-report=")) {
+      options.dependencyGatingReportPath = argument.slice("--dependency-report=".length);
     } else if (argument === "--static-report") {
       options.staticReportPath = argv[index + 1] || defaultStaticReportPath;
       index += 1;
@@ -212,6 +226,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--lane-compilation-report=")) {
       options.laneCompilationReportPath = argument.slice("--lane-compilation-report=".length);
+    } else if (argument === "--lane-runtime-report") {
+      options.laneRuntimeOptimizationReportPath = argv[index + 1] || defaultLaneRuntimeOptimizationReportPath;
+      index += 1;
+    } else if (argument.startsWith("--lane-runtime-report=")) {
+      options.laneRuntimeOptimizationReportPath = argument.slice("--lane-runtime-report=".length);
     } else {
       throw new Error(`Unknown argument: ${argument}`);
     }
@@ -455,6 +474,282 @@ function compileLanePlan({ includeSamples, lanes, runnerPreflight, unknownLanes 
   };
 }
 
+function collectDependencyCycles() {
+  const cycles = [];
+  const stack = [];
+  const visiting = new Set();
+  const visited = new Set();
+
+  function visit(lane) {
+    if (visiting.has(lane)) {
+      const startIndex = stack.indexOf(lane);
+      cycles.push([...stack.slice(startIndex), lane].join(" -> "));
+      return;
+    }
+    if (visited.has(lane)) {
+      return;
+    }
+    visiting.add(lane);
+    stack.push(lane);
+    const definition = laneDefinitions[lane];
+    (definition?.dependencies || [])
+      .filter((dependency) => laneDefinitions[dependency])
+      .forEach(visit);
+    stack.pop();
+    visiting.delete(lane);
+    visited.add(lane);
+  }
+
+  Object.keys(laneDefinitions).forEach(visit);
+  return [...new Set(cycles)];
+}
+
+function validateDependencyGraph({ includeSamples, laneCompilation, lanes, unknownLanes }) {
+  const requestedLaneSet = new Set(lanes);
+  const findings = [
+    ...unknownLanes.map((lane) => `Unknown lane requested before dependency gating: ${lane}`)
+  ];
+  const rows = [];
+
+  for (const [lane, definition] of Object.entries(laneDefinitions)) {
+    for (const dependency of definition.dependencies || []) {
+      if (!laneDefinitions[dependency]) {
+        findings.push(`Lane ${lane} declares unknown dependency lane: ${dependency}.`);
+      }
+    }
+  }
+
+  collectDependencyCycles().forEach((cycle) => {
+    findings.push(`Lane dependency cycle detected: ${cycle}.`);
+  });
+
+  if (laneCompilation.status === "FAIL") {
+    findings.push("Lane compilation failed; dependency-gated runtime scheduling is blocked.");
+  }
+
+  for (const [lane, definition] of Object.entries(laneDefinitions)) {
+    const dependencies = definition.dependencies || [];
+    const selected = requestedLaneSet.has(lane);
+    const compilationRow = laneCompilation.rows.find((row) => row.lane === lane);
+    let reason = "Lane was not selected, so dependency-gated runtime scheduling skipped it.";
+    let status = "SKIP";
+
+    if (selected) {
+      if (definition.requiresSamplesFlag && !includeSamples) {
+        reason = "Samples lane is on-request only and is not added to the runtime schedule without --include-samples.";
+      } else if (compilationRow?.status === "FAIL") {
+        status = "FAIL";
+        reason = "Lane compilation failed before deterministic dependency validation could schedule runtime.";
+      } else {
+        const missingSelectedDependencies = dependencies.filter((dependency) => !requestedLaneSet.has(dependency));
+        if (missingSelectedDependencies.length > 0) {
+          status = "FAIL";
+          reason = `Required dependency lane(s) were not selected: ${missingSelectedDependencies.join(", ")}.`;
+          findings.push(`Lane ${lane} requires unselected dependency lane(s): ${missingSelectedDependencies.join(", ")}.`);
+        } else {
+          status = "PASS";
+          reason = dependencies.length > 0
+            ? "Dependency graph resolved before runtime scheduling."
+            : "Lane has no lane dependencies and is eligible after preflight and compilation pass.";
+        }
+      }
+    }
+
+    rows.push({
+      affectedSurface: definition.affectedSurface,
+      dependencies,
+      lane,
+      reason,
+      selected,
+      status
+    });
+  }
+
+  unknownLanes.forEach((lane) => {
+    rows.push({
+      affectedSurface: "unknown",
+      dependencies: [],
+      lane,
+      reason: "Requested lane does not exist in laneDefinitions.",
+      selected: true,
+      status: "FAIL"
+    });
+  });
+
+  return {
+    findings: [...new Set(findings)],
+    rows,
+    status: findings.length > 0 ? "FAIL" : "PASS"
+  };
+}
+
+function playwrightCommandOptions(commandConfig) {
+  const targets = new Set(commandTargetFiles(commandConfig));
+  return commandConfig.args
+    .slice(2)
+    .filter((argument) => !targets.has(argument));
+}
+
+function compatiblePlaywrightSignature(commandConfig) {
+  if (commandConfig.type !== "playwright") {
+    return "";
+  }
+  return JSON.stringify({
+    command: commandConfig.command,
+    options: playwrightCommandOptions(commandConfig)
+  });
+}
+
+function mergeCompatibleCommands(commands) {
+  const scheduled = [];
+  const groupIndexes = new Map();
+
+  for (const commandConfig of commands) {
+    if (commandConfig.type !== "playwright") {
+      scheduled.push(commandConfig);
+      continue;
+    }
+
+    const targets = commandTargetFiles(commandConfig);
+    const signature = compatiblePlaywrightSignature(commandConfig);
+    if (targets.length === 0 || !signature) {
+      scheduled.push(commandConfig);
+      continue;
+    }
+
+    if (!groupIndexes.has(signature)) {
+      groupIndexes.set(signature, scheduled.length);
+      scheduled.push(commandConfig);
+      continue;
+    }
+
+    const groupIndex = groupIndexes.get(signature);
+    const existing = scheduled[groupIndex];
+    const mergedTargets = [
+      ...new Set([
+        ...commandTargetFiles(existing),
+        ...targets
+      ])
+    ];
+    scheduled[groupIndex] = {
+      args: [
+        playwrightCli,
+        "test",
+        ...mergedTargets,
+        ...playwrightCommandOptions(existing)
+      ],
+      command: existing.command,
+      type: "playwright"
+    };
+  }
+
+  return scheduled;
+}
+
+function topologicallySortSelectedLanes(selectedLanes) {
+  const selectedLaneSet = new Set(selectedLanes);
+  const sorted = [];
+  const visited = new Set();
+
+  function visit(lane) {
+    if (visited.has(lane)) {
+      return;
+    }
+    visited.add(lane);
+    const definition = laneDefinitions[lane];
+    (definition.dependencies || [])
+      .filter((dependency) => selectedLaneSet.has(dependency))
+      .forEach(visit);
+    sorted.push(lane);
+  }
+
+  selectedLanes.forEach(visit);
+  return sorted;
+}
+
+function buildRuntimeSchedule({ dependencyGate, includeSamples, laneCompilation, lanes, preRuntimeFindings }) {
+  const requestedLaneSet = new Set(lanes);
+  const executableLanes = [];
+  const lanePlans = [];
+  let baselinePlaywrightLaunches = 0;
+  let scheduledPlaywrightLaunches = 0;
+
+  if (preRuntimeFindings.length > 0) {
+    return {
+      baselinePlaywrightLaunches,
+      lanePlans,
+      orderedLanes: [],
+      preventedRedundantBrowserLaunches: 0,
+      preventedRedundantLaneExecutions: 0,
+      preRuntimeFindings,
+      reusedRuntimeSessions: 0,
+      scheduledPlaywrightLaunches,
+      status: "SKIP"
+    };
+  }
+
+  for (const lane of Object.keys(laneDefinitions)) {
+    const definition = laneDefinitions[lane];
+    const compilationRow = laneCompilation.rows.find((row) => row.lane === lane);
+    const dependencyRow = dependencyGate.rows.find((row) => row.lane === lane);
+    if (!requestedLaneSet.has(lane)) {
+      continue;
+    }
+    if (definition.requiresSamplesFlag && !includeSamples) {
+      continue;
+    }
+    if (compilationRow?.status !== "PASS" || dependencyRow?.status !== "PASS") {
+      continue;
+    }
+    executableLanes.push(lane);
+  }
+
+  const orderedLanes = topologicallySortSelectedLanes(executableLanes);
+  for (const lane of orderedLanes) {
+    const definition = laneDefinitions[lane];
+    const scheduledCommands = mergeCompatibleCommands(definition.commands);
+    const laneBaselinePlaywrightLaunches = definition.commands.reduce((count, commandConfig) => (
+      commandConfig.type === "playwright"
+        ? count + Math.max(1, commandTargetFiles(commandConfig).length)
+        : count
+    ), 0);
+    const laneScheduledPlaywrightLaunches = scheduledCommands.filter((commandConfig) => commandConfig.type === "playwright").length;
+    baselinePlaywrightLaunches += laneBaselinePlaywrightLaunches;
+    scheduledPlaywrightLaunches += laneScheduledPlaywrightLaunches;
+    lanePlans.push({
+      affectedSurface: definition.affectedSurface,
+      baselinePlaywrightLaunches: laneBaselinePlaywrightLaunches,
+      commands: scheduledCommands,
+      lane,
+      reason: definition.reason,
+      scheduledPlaywrightLaunches: laneScheduledPlaywrightLaunches
+    });
+  }
+
+  const groupedPlaywrightSessions = lanePlans.flatMap((plan) => plan.commands)
+    .filter((commandConfig) => commandConfig.type === "playwright" && commandTargetFiles(commandConfig).length > 1)
+    .length;
+  const skippedLaneCount = Object.keys(laneDefinitions).filter((lane) => {
+    if (!requestedLaneSet.has(lane)) {
+      return true;
+    }
+    const definition = laneDefinitions[lane];
+    return Boolean(definition.requiresSamplesFlag && !includeSamples);
+  }).length;
+
+  return {
+    baselinePlaywrightLaunches,
+    lanePlans,
+    orderedLanes,
+    preventedRedundantBrowserLaunches: Math.max(0, baselinePlaywrightLaunches - scheduledPlaywrightLaunches),
+    preventedRedundantLaneExecutions: skippedLaneCount,
+    preRuntimeFindings,
+    reusedRuntimeSessions: groupedPlaywrightSessions + (orderedLanes.length > 1 ? 1 : 0),
+    scheduledPlaywrightLaunches,
+    status: dependencyGate.status === "PASS" && laneCompilation.status === "PASS" ? "PASS" : "SKIP"
+  };
+}
+
 function makeLaneCompilationReport({ laneCompilation }) {
   const lines = [
     "# Lane Compilation Report",
@@ -495,6 +790,117 @@ function makeLaneCompilationReport({ laneCompilation }) {
     "- Playwright targets must stay inside the owning lane directory.",
     "- Shell-sensitive grep values must be passed through the Node CLI argv path.",
     "- Deterministic lane-definition failures do not trigger fallback reruns or full lane escalation."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeDependencyGatingReport({ dependencyGate }) {
+  const lines = [
+    "# Dependency Gating Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${dependencyGate.status}`,
+    "",
+    "## Gate Order",
+    "",
+    "1. Zero-browser preflight must pass.",
+    "2. Lane compilation must pass.",
+    "3. Deterministic lane dependency validation must pass.",
+    "4. Only dependency-eligible targeted lanes may be scheduled.",
+    "",
+    "## Lane Dependency Graph",
+    "",
+    "| Lane | Selected | Status | Dependencies | Affected Surface | Reason |",
+    "| --- | --- | --- | --- | --- | --- |"
+  ];
+
+  dependencyGate.rows.forEach((row) => {
+    lines.push([
+      `| ${row.lane}`,
+      row.selected ? "Yes" : "No",
+      row.status,
+      reportLine(row.dependencies.join(", ") || "none"),
+      reportLine(row.affectedSurface),
+      `${reportLine(row.reason)} |`
+    ].join(" | "));
+  });
+
+  lines.push("", "## Dependency Failures Caught Pre-Runtime", "");
+  if (dependencyGate.findings.length === 0) {
+    lines.push("No deterministic dependency failures were found before runtime.");
+  } else {
+    dependencyGate.findings.forEach((findingText) => lines.push(`- ${findingText}`));
+  }
+
+  lines.push(
+    "",
+    "## Enforcement Notes",
+    "",
+    "- Invalid dependency graphs block runtime before Playwright startup.",
+    "- Dependency failures do not trigger fallback reruns or unrelated lane execution.",
+    "- Workspace V2 is scheduled only when the workspace-contract lane is explicitly selected.",
+    "- Samples remain on-request only and are not implicit dependency gates."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeLaneRuntimeOptimizationReport({ runtimeSchedule }) {
+  const lines = [
+    "# Lane Runtime Optimization Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${runtimeSchedule.status}`,
+    "",
+    "## Runtime Cost Summary",
+    "",
+    `Reused runtime sessions: ${runtimeSchedule.reusedRuntimeSessions}`,
+    `Prevented redundant browser launches: ${runtimeSchedule.preventedRedundantBrowserLaunches}`,
+    `Prevented redundant lane execution: ${runtimeSchedule.preventedRedundantLaneExecutions}`,
+    `Baseline Playwright/browser launches: ${runtimeSchedule.baselinePlaywrightLaunches}`,
+    `Scheduled Playwright/browser launches: ${runtimeSchedule.scheduledPlaywrightLaunches}`,
+    "",
+    "## Scheduled Lane Order",
+    "",
+    runtimeSchedule.orderedLanes.length > 0
+      ? runtimeSchedule.orderedLanes.map((lane, index) => `${index + 1}. ${lane}`).join("\n")
+      : "No runtime lanes are eligible for scheduling.",
+    "",
+    "## Scheduling Blockers",
+    "",
+    runtimeSchedule.preRuntimeFindings.length > 0
+      ? runtimeSchedule.preRuntimeFindings.map((findingText) => `- ${findingText}`).join("\n")
+      : "No zero-browser, compilation, or dependency blockers were found.",
+    "",
+    "## Lane Plans",
+    "",
+    "| Lane | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  runtimeSchedule.lanePlans.forEach((plan) => {
+    lines.push([
+      `| ${plan.lane}`,
+      plan.baselinePlaywrightLaunches,
+      plan.scheduledPlaywrightLaunches,
+      reportLine(plan.commands.map(commandToString).join("; ") || "none"),
+      `${reportLine(plan.reason)} |`
+    ].join(" | "));
+  });
+
+  if (runtimeSchedule.lanePlans.length === 0) {
+    lines.push("| none | 0 | 0 | none | No dependency-eligible targeted lanes were scheduled. |");
+  }
+
+  lines.push(
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- Zero-browser preflight, lane compilation, and dependency validation run once per targeted runner invocation.",
+    "- Compatible Playwright specs with matching options are kept in shared CLI invocations to avoid redundant browser startup.",
+    "- Unselected lanes are not scheduled after isolated targeted lane failures.",
+    "- Workspace V2 and samples lanes are not escalated unless explicitly selected."
   );
 
   return `${lines.join("\n").trim()}\n`;
@@ -573,6 +979,7 @@ function makeStaticValidationReport({
 }
 
 function makeZeroBrowserPreflightReport({
+  dependencyGate,
   laneCompilation,
   laneRegistration,
   runnerPreflight,
@@ -584,6 +991,7 @@ function makeZeroBrowserPreflightReport({
     ...laneRegistration.findings,
     ...runnerPreflight.findings,
     ...laneCompilation.findings,
+    ...dependencyGate.findings,
     ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
   ])];
   const status = findings.length > 0 ? "FAIL" : "PASS";
@@ -628,6 +1036,7 @@ function makeZeroBrowserPreflightReport({
     `| Windows quoting hazards | ${runnerPreflight.findings.some((entry) => entry.includes("quoting hazard")) ? "FAIL" : "PASS"} | ${runnerPreflight.notes.filter((entry) => entry.includes("grep pattern")).join("; ") || "No shell quoting hazards."} |`,
     `| invalid lane references | ${unknownLanes.length > 0 ? "FAIL" : "PASS"} | ${unknownLanes.join("; ") || "No invalid lane references."} |`,
     `| invalid lane configuration | ${laneCompilation.status} | See docs/dev/reports/lane_compilation_report.md. |`,
+    `| deterministic dependency graph | ${dependencyGate.status} | See docs/dev/reports/dependency_gating_report.md. |`,
     `| conflicting reusable helper ownership | ${structureAudit.status} | Shared helper filenames checked against known game names. |`,
     "",
     "## Corrected Ownership Drift",
@@ -654,7 +1063,7 @@ async function writeTextReport(reportPath, reportText) {
   console.log(`\nWrote ${absoluteReportPath}`);
 }
 
-function makeReport({ dryRun, fullSamplesSmoke, preflight, results }) {
+function makeReport({ dependencyGate, dryRun, fullSamplesSmoke, preflight, results, runtimeSchedule }) {
   const summary = summarize(results);
   const lines = [
     "# Testing Lane Execution Report",
@@ -680,6 +1089,19 @@ function makeReport({ dryRun, fullSamplesSmoke, preflight, results }) {
     `Reason: ${preflight.reason}`,
     `Command: ${preflight.command || "not run"}`,
     `Details: ${(preflight.details || []).join("; ") || "none"}`,
+    "",
+    "## Dependency Gate",
+    "",
+    `Status: ${dependencyGate?.status || "SKIP"}`,
+    `Reason: ${dependencyGate?.findings?.length > 0 ? dependencyGate.findings.join("; ") : "No deterministic dependency failures before runtime."}`,
+    "",
+    "## Runtime Scheduling",
+    "",
+    `Status: ${runtimeSchedule?.status || "SKIP"}`,
+    `Scheduled lane order: ${runtimeSchedule?.orderedLanes?.join(", ") || "none"}`,
+    `Reused runtime sessions: ${runtimeSchedule?.reusedRuntimeSessions ?? 0}`,
+    `Prevented redundant browser launches: ${runtimeSchedule?.preventedRedundantBrowserLaunches ?? 0}`,
+    `Prevented redundant lane execution: ${runtimeSchedule?.preventedRedundantLaneExecutions ?? 0}`,
     "",
     "## Lanes",
     "",
@@ -774,8 +1196,32 @@ const laneCompilation = compileLanePlan({
   runnerPreflight,
   unknownLanes
 });
+const dependencyGate = validateDependencyGraph({
+  includeSamples: options.includeSamples,
+  laneCompilation,
+  lanes: options.lanes,
+  unknownLanes
+});
+const runtimeSchedulingBlockers = [...new Set([
+  ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
+  ...laneRegistration.findings,
+  ...runnerPreflight.findings,
+  ...laneCompilation.findings,
+  ...dependencyGate.findings,
+  ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
+])];
+const runtimeSchedule = buildRuntimeSchedule({
+  dependencyGate,
+  includeSamples: options.includeSamples,
+  laneCompilation,
+  lanes: options.lanes,
+  preRuntimeFindings: runtimeSchedulingBlockers
+});
 const laneCompilationReportText = makeLaneCompilationReport({ laneCompilation });
+const dependencyGatingReportText = makeDependencyGatingReport({ dependencyGate });
+const laneRuntimeOptimizationReportText = makeLaneRuntimeOptimizationReport({ runtimeSchedule });
 const zeroBrowserReportText = makeZeroBrowserPreflightReport({
+  dependencyGate,
   laneCompilation,
   laneRegistration,
   runnerPreflight,
@@ -784,6 +1230,8 @@ const zeroBrowserReportText = makeZeroBrowserPreflightReport({
 });
 await writeTextReport(options.staticReportPath, staticReportText);
 await writeTextReport(options.laneCompilationReportPath, laneCompilationReportText);
+await writeTextReport(options.dependencyGatingReportPath, dependencyGatingReportText);
+await writeTextReport(options.laneRuntimeOptimizationReportPath, laneRuntimeOptimizationReportText);
 await writeTextReport(options.zeroBrowserReportPath, zeroBrowserReportText);
 
 if (options.staticOnly || options.zeroBrowserOnly) {
@@ -793,13 +1241,14 @@ if (options.staticOnly || options.zeroBrowserOnly) {
   process.exit(0);
 }
 
-if (unknownLanes.length > 0 || laneRegistration.findings.length > 0 || runnerPreflight.findings.length > 0 || laneCompilation.status === "FAIL") {
+if (unknownLanes.length > 0 || laneRegistration.findings.length > 0 || runnerPreflight.findings.length > 0 || laneCompilation.status === "FAIL" || dependencyGate.status === "FAIL") {
   preflight.status = "FAIL";
-  preflight.reason = "Runner preflight failed; expensive lanes were skipped before Playwright execution.";
+  preflight.reason = "Runner preflight, lane compilation, or dependency gating failed; expensive lanes were skipped before Playwright execution.";
   preflight.details.push(
     ...unknownLanes.map((lane) => `Unknown lane requested: ${lane}`),
     ...laneRegistration.findings,
-    ...runnerPreflight.findings
+    ...runnerPreflight.findings,
+    ...dependencyGate.findings
   );
   for (const [lane, definition] of Object.entries(laneDefinitions)) {
     results.push({
@@ -819,10 +1268,12 @@ if (unknownLanes.length > 0 || laneRegistration.findings.length > 0 || runnerPre
     status: "SKIP"
   };
   await writeReport(options.reportPath, makeReport({
+    dependencyGate,
     dryRun: options.dryRun,
     fullSamplesSmoke,
     preflight,
-    results
+    results,
+    runtimeSchedule
   }));
   process.exit(1);
 }
@@ -850,10 +1301,12 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
       status: "SKIP"
     };
     await writeReport(options.reportPath, makeReport({
+      dependencyGate,
       dryRun: options.dryRun,
       fullSamplesSmoke,
       preflight,
-      results
+      results,
+      runtimeSchedule
     }));
     process.exit(1);
   }
@@ -868,6 +1321,8 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
   preflight.status = "PASS";
   preflight.reason = "Runner preflight passed.";
 }
+
+const scheduledCommandsByLane = new Map(runtimeSchedule.lanePlans.map((plan) => [plan.lane, plan.commands]));
 
 for (const [lane, definition] of Object.entries(laneDefinitions)) {
   if (!requestedLanes.has(lane)) {
@@ -894,10 +1349,12 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
     continue;
   }
 
+  const laneCommands = scheduledCommandsByLane.get(lane) || definition.commands;
+
   if (options.dryRun) {
     results.push({
       affectedSurface: definition.affectedSurface,
-      commands: definition.commands.map((command) => ({
+      commands: laneCommands.map((command) => ({
         command: commandToString(command),
         status: "SKIP"
       })),
@@ -911,7 +1368,7 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
 
   const commandResults = [];
   let failed = false;
-  for (const command of definition.commands) {
+  for (const command of laneCommands) {
     const result = await runCommand(command);
     const status = result.exitCode === 0 ? "PASS" : "FAIL";
     commandResults.push({ command: result.displayCommand, status });
@@ -939,10 +1396,12 @@ const fullSamplesSmoke = {
 };
 
 await writeReport(options.reportPath, makeReport({
+  dependencyGate,
   dryRun: options.dryRun,
   fullSamplesSmoke,
   preflight,
-  results
+  results,
+  runtimeSchedule
 }));
 
 if (results.some((result) => result.status === "FAIL")) {
