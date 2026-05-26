@@ -57,8 +57,63 @@ function startPrimaryNoise(context, sound, now, durationSeconds, attackSeconds) 
   return noise;
 }
 
+function stopSource(source) {
+  try {
+    source.stop();
+  } catch {
+    // Source nodes throw if they already ended; Stop should remain idempotent.
+  }
+}
+
+function startSoundCycle(context, sound) {
+  const now = context.currentTime;
+  const durationSeconds = sound.durationMs / 1000;
+  const attackSeconds = sound.attackMs / 1000;
+  const releaseSeconds = sound.releaseMs / 1000;
+  const stopAt = now + durationSeconds;
+  const sustainStart = now + attackSeconds;
+  const releaseStart = Math.max(sustainStart, stopAt - releaseSeconds);
+  const sources = [];
+  let primarySource;
+
+  if (sound.waveform === "noise") {
+    primarySource = startPrimaryNoise(context, sound, now, durationSeconds, attackSeconds);
+  } else {
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    oscillator.type = sound.waveform;
+    oscillator.frequency.setValueAtTime(sound.frequencyHz, now);
+    oscillator.detune.setValueAtTime(0, now);
+    oscillator.detune.linearRampToValueAtTime(sound.pitchSweepCents, stopAt);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(sound.volume, sustainStart);
+    gain.gain.setValueAtTime(sound.volume, releaseStart);
+    gain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(stopAt);
+    primarySource = oscillator;
+
+    if (sound.noise) {
+      sources.push(startNoiseLayer(context, sound, now, durationSeconds));
+    }
+  }
+
+  sources.unshift(primarySource);
+  return {
+    sources,
+    ended: new Promise((resolve) => {
+      primarySource.addEventListener("ended", resolve, { once: true });
+    })
+  };
+}
+
 export class AudioSfxEngine {
   constructor({ windowRef = window } = {}) {
+    this.activePlaybacks = new Map();
     this.context = null;
     this.window = windowRef;
   }
@@ -81,42 +136,54 @@ export class AudioSfxEngine {
       await context.resume();
     }
 
-    const now = context.currentTime;
-    const durationSeconds = sound.durationMs / 1000;
-    const attackSeconds = sound.attackMs / 1000;
-    const releaseSeconds = sound.releaseMs / 1000;
-    const stopAt = now + durationSeconds;
-    const sustainStart = now + attackSeconds;
-    const releaseStart = Math.max(sustainStart, stopAt - releaseSeconds);
-    let primarySource;
-    if (sound.waveform === "noise") {
-      primarySource = startPrimaryNoise(context, sound, now, durationSeconds, attackSeconds);
-    } else {
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-
-      oscillator.type = sound.waveform;
-      oscillator.frequency.setValueAtTime(sound.frequencyHz, now);
-      oscillator.detune.setValueAtTime(0, now);
-      oscillator.detune.linearRampToValueAtTime(sound.pitchSweepCents, stopAt);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(sound.volume, sustainStart);
-      gain.gain.setValueAtTime(sound.volume, releaseStart);
-      gain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
-
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start(now);
-      oscillator.stop(stopAt);
-      primarySource = oscillator;
-
-      if (sound.noise) {
-        startNoiseLayer(context, sound, now, durationSeconds);
-      }
+    this.stop(sound.name);
+    if (sound.playbackMode === "loop") {
+      this.startLoopPlayback(context, sound);
+      return { mode: "loop", stopped: false };
     }
 
-    await new Promise((resolve) => {
-      primarySource.addEventListener("ended", resolve, { once: true });
-    });
+    const playback = { sources: [], timerId: null, stopped: false };
+    this.activePlaybacks.set(sound.name, playback);
+    const cycle = startSoundCycle(context, sound);
+    playback.sources = cycle.sources;
+    await cycle.ended;
+    const wasStopped = playback.stopped;
+    if (this.activePlaybacks.get(sound.name) === playback) {
+      this.activePlaybacks.delete(sound.name);
+    }
+    return { mode: "oneShot", stopped: wasStopped };
+  }
+
+  startLoopPlayback(context, sound) {
+    const playback = { sources: [], timerId: null, stopped: false };
+    this.activePlaybacks.set(sound.name, playback);
+    const playCycle = () => {
+      if (playback.stopped) {
+        return;
+      }
+      const cycle = startSoundCycle(context, sound);
+      playback.sources = cycle.sources;
+      cycle.ended.then(() => {
+        if (playback.stopped) {
+          return;
+        }
+        playback.timerId = this.window.setTimeout(playCycle, 0);
+      });
+    };
+    playCycle();
+  }
+
+  stop(soundName) {
+    const playback = this.activePlaybacks.get(soundName);
+    if (!playback) {
+      return false;
+    }
+    playback.stopped = true;
+    if (playback.timerId !== null) {
+      this.window.clearTimeout(playback.timerId);
+    }
+    playback.sources.forEach((source) => stopSource(source));
+    this.activePlaybacks.delete(soundName);
+    return true;
   }
 }

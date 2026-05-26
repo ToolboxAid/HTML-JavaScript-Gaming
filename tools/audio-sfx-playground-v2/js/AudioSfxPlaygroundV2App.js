@@ -8,6 +8,7 @@ function cloneSound(sound) {
     noiseAmount: sound.noiseAmount,
     noiseDecayMs: sound.noiseDecayMs,
     noiseFilterHz: sound.noiseFilterHz,
+    playbackMode: sound.playbackMode,
     pitchSweepCents: sound.pitchSweepCents,
     releaseMs: sound.releaseMs,
     volume: sound.volume,
@@ -107,6 +108,7 @@ export class AudioSfxPlaygroundV2App {
       onToolPlay: () => {
         void this.play();
       },
+      onToolStop: () => this.stop(),
       onWorkspaceCopyManifest: () => this.statusLog.write("Copy manifest action ready for workspace wiring."),
       onWorkspaceExportManifest: () => this.statusLog.write("Export manifest action ready for workspace wiring."),
       onWorkspaceImportManifest: () => this.statusLog.write("Import manifest action ready for workspace wiring.")
@@ -316,6 +318,7 @@ export class AudioSfxPlaygroundV2App {
       this.controls.showMessage("Name must be unique.", true);
       return;
     }
+    this.audioEngine.stop(entry.sound.name);
     entry.sound.name = nextName;
     this.renderSoundList();
     this.refreshPreview();
@@ -335,8 +338,8 @@ export class AudioSfxPlaygroundV2App {
     this.refreshPreview();
     this.statusLog.write(`Loaded ${entry.sound.name}.`);
     try {
-      await this.audioEngine.play(entry.sound);
-      this.statusLog.write(`Played ${entry.sound.name}.`);
+      const playbackResult = await this.audioEngine.play(entry.sound);
+      this.writePlaybackStatus(entry.sound, playbackResult);
     } catch (error) {
       this.statusLog.error(`Audio playback failed: ${error.message}`);
     }
@@ -360,12 +363,37 @@ export class AudioSfxPlaygroundV2App {
     }
     try {
       const sound = this.soundForActiveEditorValue(validation.value);
-      await this.audioEngine.play(sound);
-      this.statusLog.write(`Played ${sound.name}.`);
+      const playbackResult = await this.audioEngine.play(sound);
+      this.writePlaybackStatus(sound, playbackResult);
     } catch (error) {
       this.statusLog.error(`Audio playback failed: ${error.message}`);
     }
     this.refreshPreview();
+  }
+
+  writePlaybackStatus(sound, playbackResult) {
+    if (playbackResult?.stopped) {
+      return;
+    }
+    if (sound.playbackMode === "loop") {
+      this.statusLog.write(`Looping ${sound.name}. Press Stop to end playback.`);
+      return;
+    }
+    this.statusLog.write(`Played ${sound.name}.`);
+  }
+
+  stop() {
+    const activeName = this.activeSoundName();
+    if (!activeName) {
+      this.statusLog.error("Select a saved SFX tile before stopping playback.");
+      return;
+    }
+    const stopped = this.audioEngine.stop(activeName);
+    if (!stopped) {
+      this.statusLog.write(`No active playback found for ${activeName}.`);
+      return;
+    }
+    this.statusLog.write(`Stopped ${activeName}.`);
   }
 
   deleteCurrentSound() {
@@ -376,6 +404,7 @@ export class AudioSfxPlaygroundV2App {
       return;
     }
     const [entry] = this.soundEntries.splice(entryIndex, 1);
+    this.audioEngine.stop(entry.sound.name);
     const nextEntry = this.soundEntries[Math.min(entryIndex, this.soundEntries.length - 1)] || null;
     this.activeSoundId = nextEntry?.id || "";
     if (nextEntry) {

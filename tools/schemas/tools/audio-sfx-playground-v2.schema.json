@@ -74,7 +74,7 @@
     },
     "sound": {
       "type": "object",
-      "required": ["attackMs", "durationMs", "frequencyHz", "name", "noise", "noiseAmount", "noiseDecayMs", "noiseFilterHz", "pitchSweepCents", "releaseMs", "volume", "waveform"],
+      "required": ["attackMs", "durationMs", "frequencyHz", "name", "noise", "noiseAmount", "noiseDecayMs", "noiseFilterHz", "playbackMode", "pitchSweepCents", "releaseMs", "volume", "waveform"],
       "additionalProperties": false,
       "properties": {
         "attackMs": {
@@ -116,6 +116,10 @@
           "minimum": 400,
           "maximum": 9000,
           "multipleOf": 50
+        },
+        "playbackMode": {
+          "type": "string",
+          "enum": ["oneShot", "loop"]
         },
         "pitchSweepCents": {
           "type": "integer",

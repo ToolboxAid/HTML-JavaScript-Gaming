@@ -2,6 +2,7 @@ const TOOL_ID = "audio-sfx-playground-v2";
 const PAYLOAD_SCHEMA = "html-js-gaming.audio-sfx-playground-v2";
 const TOOL_SCHEMA_PATH = "tools/schemas/tools/audio-sfx-playground-v2.schema.json";
 const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth", "noise"]));
+const ALLOWED_PLAYBACK_MODES = Object.freeze(new Set(["oneShot", "loop"]));
 const ROOT_KEYS = Object.freeze(new Set(["$schema", "schema", "version", "toolId", "payload"]));
 const PAYLOAD_KEYS = Object.freeze(new Set(["schema", "version", "toolId", "activeSoundId", "sounds"]));
 const SOUND_ENTRY_KEYS = Object.freeze(new Set(["id", "sound"]));
@@ -14,6 +15,7 @@ const SOUND_KEYS = Object.freeze(new Set([
   "noiseAmount",
   "noiseDecayMs",
   "noiseFilterHz",
+  "playbackMode",
   "pitchSweepCents",
   "releaseMs",
   "volume",
@@ -38,6 +40,7 @@ function serializeSound(sound) {
     noiseAmount: sound.noiseAmount,
     noiseDecayMs: sound.noiseDecayMs,
     noiseFilterHz: sound.noiseFilterHz,
+    playbackMode: sound.playbackMode,
     pitchSweepCents: sound.pitchSweepCents,
     releaseMs: sound.releaseMs,
     volume: sound.volume,
@@ -77,6 +80,9 @@ function readSound(value, label) {
   if (!ALLOWED_WAVEFORMS.has(value.waveform)) {
     return { ok: false, message: `${label}.waveform is unsupported.` };
   }
+  if (!ALLOWED_PLAYBACK_MODES.has(value.playbackMode)) {
+    return { ok: false, message: `${label}.playbackMode is unsupported.` };
+  }
   if (typeof value.noise !== "boolean") {
     return { ok: false, message: `${label}.noise must be boolean.` };
   }
@@ -109,6 +115,7 @@ function readSound(value, label) {
       noiseAmount: Number(noiseAmount.value.toFixed(2)),
       noiseDecayMs: Math.round(noiseDecay.value),
       noiseFilterHz: Math.round(noiseFilter.value),
+      playbackMode: value.playbackMode,
       pitchSweepCents: Math.round(pitchSweep.value),
       releaseMs: Math.round(release.value),
       volume: Number(volume.value.toFixed(2)),

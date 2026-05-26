@@ -16,7 +16,7 @@ First-Class Tool V2 surface for browser-generated game sound effects.
 - No inline event handlers.
 - No `tools/shared` runtime dependency.
 - Persisted JSON uses structured fields only; no `imageDataUrl`.
-- Browser audio starts only after the user presses Play.
+- Browser audio plays only after the user presses Play.
 - The tool folder contains only the runtime files needed by Audio / SFX Playground V2.
 
 ## Validation

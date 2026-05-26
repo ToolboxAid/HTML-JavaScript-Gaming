@@ -9,6 +9,7 @@ export class ActionNavControl {
     toolImportJsonInput,
     toolNav,
     toolPlayButton,
+    toolStopButton,
     workspaceCopyManifestButton,
     workspaceExportManifestButton,
     workspaceImportManifestButton,
@@ -22,6 +23,7 @@ export class ActionNavControl {
     this.toolImportJsonInput = toolImportJsonInput;
     this.toolNav = toolNav;
     this.toolPlayButton = toolPlayButton;
+    this.toolStopButton = toolStopButton;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
     this.workspaceExportManifestButton = workspaceExportManifestButton;
     this.workspaceImportManifestButton = workspaceImportManifestButton;
@@ -34,12 +36,14 @@ export class ActionNavControl {
     onToolExportToolState,
     onToolImportJson,
     onToolPlay,
+    onToolStop,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
     onWorkspaceImportManifest
   }) {
     this.applyLaunchMode();
     this.toolPlayButton.addEventListener("click", onToolPlay);
+    this.toolStopButton.addEventListener("click", onToolStop);
     this.toolImportJsonButton.addEventListener("click", () => {
       this.toolImportJsonInput.value = "";
       this.toolImportJsonInput.click();
@@ -76,6 +80,7 @@ export class ActionNavControl {
 
   setToolActionsEnabled(isEnabled) {
     this.toolPlayButton.disabled = !isEnabled;
+    this.toolStopButton.disabled = !isEnabled;
     this.toolCopyJsonButton.disabled = !isEnabled;
     this.toolExportToolStateButton.disabled = !isEnabled;
   }

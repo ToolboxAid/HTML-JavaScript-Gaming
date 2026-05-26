@@ -86,12 +86,20 @@
                 <option value="vector-arcade">Vector Arcade</option>
               </select>
             </label>
+            <label class="tool-starter__field" for="playbackModeSelect">
+              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="One Shot plays once; Loop repeats until Stop is clicked.">Playback</span>
+              <select id="playbackModeSelect">
+                <option value="oneShot">One Shot</option>
+                <option value="loop">Loop</option>
+              </select>
+            </label>
             <p id="styleDescription" class="tool-starter__hint audio-sfx__style-description" aria-live="polite"></p>
             <ul id="styleExamples" class="audio-sfx__style-examples" aria-label="Example sound ideas"></ul>
             <p id="settingsHelper" class="tool-starter__hint audio-sfx__settings-helper" aria-live="polite"></p>
             <p id="sfxValidationMessage" class="tool-starter__hint">Ready to audition.</p>
             <div class="audio-sfx__shape-actions">
               <button id="toolPlayButton" type="button">Play</button>
+              <button id="toolStopButton" type="button">Stop</button>
             </div>
           </div>
         </section>

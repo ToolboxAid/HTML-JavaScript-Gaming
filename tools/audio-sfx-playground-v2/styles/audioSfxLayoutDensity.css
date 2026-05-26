@@ -213,6 +213,7 @@ body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__control-group h3 {
 
 body[data-tool-id="audio-sfx-playground-v2"] .audio-sfx__shape-actions {
   display: flex;
+  gap: 10px;
   justify-content: center;
   border-top: 1px solid var(--tool-starter-line);
   margin-top: auto;

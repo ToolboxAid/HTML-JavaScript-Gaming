@@ -288,6 +288,31 @@
           ]
         }
       ]
+    },
+    "audio-sfx-playground-v2": {
+      "schema": "html-js-gaming.audio-sfx-playground-v2",
+      "version": 1,
+      "toolId": "audio-sfx-playground-v2",
+      "activeSoundId": "sfx-1",
+      "sounds": [
+        {
+          "id": "sfx-1",
+          "sound": {
+            "attackMs": 5,
+            "durationMs": 180,
+            "frequencyHz": 880,
+            "name": "Coin",
+            "noise": false,
+            "noiseAmount": 0.65,
+            "noiseDecayMs": 95,
+            "noiseFilterHz": 5200,
+            "pitchSweepCents": 700,
+            "releaseMs": 90,
+            "volume": 0.42,
+            "waveform": "square"
+          }
+        }
+      ]
     }
   }
 }

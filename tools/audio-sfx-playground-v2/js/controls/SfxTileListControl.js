@@ -1,5 +1,6 @@
 function soundSummary(sound) {
-  return `${sound.waveform}, ${sound.frequencyHz} Hz, ${sound.durationMs} ms`;
+  const playback = sound.playbackMode === "loop" ? "loop" : "one shot";
+  return `${sound.waveform}, ${playback}, ${sound.frequencyHz} Hz, ${sound.durationMs} ms`;
 }
 
 export class SfxTileListControl {
