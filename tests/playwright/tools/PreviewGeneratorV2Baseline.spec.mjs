@@ -1,13 +1,16 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function installFakeRepoPicker(page, {
+  repoRootPath = "",
   validSampleIds = ["0102"],
   invalidSampleIds = [],
   existingPreviewBySampleId = {}
 } = {}) {
   await page.addInitScript(({
+    repoRootPath: rootPath,
     validSampleIds: validIds,
     invalidSampleIds: invalidIds,
     existingPreviewBySampleId: existingPreviews
@@ -42,15 +45,18 @@ async function installFakeRepoPicker(page, {
     }
 
     class FakeDirectoryHandle {
-      constructor(name, path = name) {
+      constructor(name, path = name, absolutePath = "") {
         this.kind = "directory";
         this.name = name;
         this.path = path;
+        this.absolutePath = absolutePath;
+        this.repoRootPath = absolutePath;
         this.children = new Map();
       }
 
       addDirectory(name) {
-        const directory = new FakeDirectoryHandle(name, `${this.path}/${name}`);
+        const childAbsolutePath = this.absolutePath ? `${this.absolutePath}/${name}` : "";
+        const directory = new FakeDirectoryHandle(name, `${this.path}/${name}`, childAbsolutePath);
         this.children.set(name, directory);
         return directory;
       }
@@ -90,7 +96,7 @@ async function installFakeRepoPicker(page, {
       }
     }
 
-    const repo = new FakeDirectoryHandle("HTML-JavaScript-Gaming");
+    const repo = new FakeDirectoryHandle("HTML-JavaScript-Gaming", "HTML-JavaScript-Gaming", rootPath);
     const samples = repo.addDirectory("samples");
     const phase01 = samples.addDirectory("phase-01");
     repo.addDirectory("games");
@@ -112,7 +118,7 @@ async function installFakeRepoPicker(page, {
 
     window.__previewGeneratorV2Writes = [];
     window.showDirectoryPicker = async () => repo;
-  }, { validSampleIds, invalidSampleIds, existingPreviewBySampleId });
+  }, { repoRootPath, validSampleIds, invalidSampleIds, existingPreviewBySampleId });
 }
 
 async function openPreviewGenerator(page, {
@@ -124,6 +130,7 @@ async function openPreviewGenerator(page, {
   const server = await startRepoServer();
   if (withFakeRepo) {
     await installFakeRepoPicker(page, {
+      repoRootPath: server.repoRoot,
       validSampleIds,
       invalidSampleIds,
       existingPreviewBySampleId
@@ -250,6 +257,17 @@ async function expectPathsOrIdsAccordionToggles(page) {
 }
 
 test.describe("Preview Generator V2 baseline", () => {
+  test.beforeEach(async ({ page }) => {
+    await installPlaywrightStorageIsolation(page, {
+      lane: "tool-runtime",
+      surface: "Preview Generator V2"
+    });
+  });
+
+  test.afterEach(async ({ page }) => {
+    await clearPlaywrightStorage(page);
+  });
+
   test.afterAll(async () => {
     await workspaceV2CoverageReporter.writeReport();
   });

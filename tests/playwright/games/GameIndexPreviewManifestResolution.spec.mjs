@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import path from "node:path";
 import { readdir, readFile } from "node:fs/promises";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const GAMES_DIR = "games";
@@ -11,6 +12,17 @@ const PONG_OLD_PREVIEW_PATH = "/games/Pong/assets/images/preview.svg";
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
+});
+
+test.beforeEach(async ({ page }) => {
+  await installPlaywrightStorageIsolation(page, {
+    lane: "integration",
+    surface: "Game index preview manifest handoff"
+  });
+});
+
+test.afterEach(async ({ page }) => {
+  await clearPlaywrightStorage(page);
 });
 
 async function readPongManifest() {

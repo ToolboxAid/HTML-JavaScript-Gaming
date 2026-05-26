@@ -3,6 +3,12 @@
   "scripts": {
     "pretest": "node tools/dev/checkSharedExtractionGuard.mjs",
     "test": "node ./scripts/run-node-tests.mjs",
+    "test:lanes": "node ./scripts/run-targeted-test-lanes.mjs",
+    "test:lane:workspace-contract": "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
+    "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
+    "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
+    "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
+    "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
     "build:manifest": "node ./scripts/generate-sample-manifest.mjs",
     "build:curriculum-validation-artifact": "node ./scripts/generate-curriculum-validation-artifact.mjs",
     "sync:tool-hints": "node ./scripts/sync-tool-hints-from-workspace-manager.mjs",

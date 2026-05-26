@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function installFakeAssetFilePicker(page, files = []) {
@@ -258,6 +259,17 @@ async function expectAccordionToggles(page, contentId) {
 }
 
 test.describe("Asset Manager V2", () => {
+  test.beforeEach(async ({ page }) => {
+    await installPlaywrightStorageIsolation(page, {
+      lane: "tool-runtime",
+      surface: "Asset Manager V2"
+    });
+  });
+
+  test.afterEach(async ({ page }) => {
+    await clearPlaywrightStorage(page);
+  });
+
   test.afterAll(async () => {
     await workspaceV2CoverageReporter.writeReport();
   });

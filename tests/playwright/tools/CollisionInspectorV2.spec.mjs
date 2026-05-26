@@ -2,10 +2,22 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
+});
+
+test.beforeEach(async ({ page }) => {
+  await installPlaywrightStorageIsolation(page, {
+    lane: "tool-runtime",
+    surface: "Collision Inspector V2"
+  });
+});
+
+test.afterEach(async ({ page }) => {
+  await clearPlaywrightStorage(page);
 });
 
 async function dragCanvasPoint(page, from, to) {

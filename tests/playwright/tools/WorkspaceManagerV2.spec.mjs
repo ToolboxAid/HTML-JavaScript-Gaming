@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFile, writeFile } from "node:fs/promises";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function openWorkspaceManagerV2(page, query = "") {
@@ -1256,6 +1257,17 @@ async function expectTextToSpeechV2FullscreenShell(page) {
 }
 
 test.describe("Workspace Manager V2 bootstrap", () => {
+  test.beforeEach(async ({ page }) => {
+    await installPlaywrightStorageIsolation(page, {
+      lane: "workspace-contract",
+      surface: "Workspace Manager V2"
+    });
+  });
+
+  test.afterEach(async ({ page }) => {
+    await clearPlaywrightStorage(page);
+  });
+
   test.afterAll(async () => {
     await workspaceV2CoverageReporter.writeReport();
   });
