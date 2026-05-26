@@ -502,29 +502,29 @@ Boundary rules:
 - shared runtime behavior must not leak through tool-specific abstractions
 - tool-specific adapters may wrap stable engine contracts only when the adapter does not own engine behavior
 
-Engine growth governance:
-- the engine is a living shared foundation and is expected to grow when reusable runtime behavior is needed
-- reusable runtime behavior belongs in the engine, not duplicated in games, samples, or tools
-- games, samples, and tools must not override, hide, shadow, or reimplement behavior that already exists in the engine
-- games, samples, and tools must not implement behavior that clearly belongs in the engine just to avoid engine changes
+`src/` shared capability growth governance:
+- the authoritative term for reusable shared behavior is `src/` shared capability
+- `src/` is the living shared foundation for reusable runtime, engine, utility, parsing, rendering, audio, input, timing, asset, and validation capabilities
+- reusable behavior belongs in `src/` unless it is intentionally local and documented
+- games, samples, and tools must not override, hide, shadow, or reimplement behavior that already exists in `src/`
+- games, samples, and tools must not implement behavior that clearly belongs in `src/` just to avoid shared-source changes
 
-Engine growth decision rule:
-- when a game, sample, or tool needs runtime behavior that appears reusable, Codex must identify whether it belongs in the engine
-- if engine work is required, Codex must state that clearly and include the engine change in the PR scope when authorized
-- if engine work is not included, Codex must document why the behavior is intentionally local
-- local implementation is allowed only when the behavior is truly game-specific, tool-specific, or sample-specific and not reusable engine behavior
+Mandatory capability discovery rule:
+- before Codex writes new behavior into `games/`, `samples/`, or `tools/`, Codex must check whether equivalent or reusable capability already exists in `src/`
+- Codex must reuse or extend existing `src/` capability when appropriate
+- if capability belongs in `src/` but does not exist, Codex must state that and either add or update `src/` when PR scope authorizes it, or document the required `src/` follow-up instead of creating a local workaround
+
+Local implementation rules:
+- local implementation is allowed only when behavior is truly game-specific, tool-specific, or sample-specific
+- local implementation must not mask a missing `src/` shared capability
+- local implementation must not create shadow APIs competing with `src/`
 
 Prohibited no-shadow behaviors:
-- local engine-like fallbacks
-- duplicate render, input, audio, physics, asset, timing, or parser logic
-- wrapper code that hides missing engine capability
-- tool, game, or sample custom behavior that masks an engine gap
-- shadow APIs that compete with engine APIs
-
-Engine growth enforcement:
-- if the correct fix requires adding or updating the engine, Codex must do so when the PR scope allows it
-- if PR scope does not allow engine changes, Codex must report the required engine follow-up instead of creating a local workaround
-- engine growth should be deliberate, reviewed, and validated through engine-impact testing
+- local shared-capability fallbacks
+- duplicate render, input, audio, physics, asset, timing, parser, or validation logic
+- wrapper code that hides missing `src/` capability
+- custom games, samples, or tools behavior that masks a `src/` gap
+- shadow APIs that compete with `src/` APIs
 
 Shared infrastructure rules:
 - allowed shared infrastructure layers are engine/runtime services, shared manifest/runtime parsers, shared asset/input/audio/rendering helpers, shared validation helpers, and reusable non-tool-specific utilities
