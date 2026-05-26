@@ -326,16 +326,23 @@ Full samples smoke test takes about 20 minutes.
 
 Do NOT run full samples test by default.
 
+Samples validation is on-request or affected-sample only.
+
 Run full samples test ONLY when:
 - shared sample loader/framework is modified
 - change impacts multiple samples broadly
 - correctness cannot be verified with targeted tests
 
+Full samples smoke remains manual/on-request unless the PR broadly impacts sample loading, shared sample framework behavior, or multiple sample runtimes.
+
 Prefer targeted validation:
 - syntax checks for changed files
 - `npm run test:workspace-v2`
+- engine-specific tests when engine/shared runtime code changes
 - affected tool-specific tests
 - affected sample-specific tests only when sample JSON is in scope
+
+Tool tests may use games that exercise the refined tool as targeted fixtures only; do not expand those checks into broad game validation unless the PR changes game/runtime behavior.
 
 Every PR must document:
 - whether full samples test was skipped or run
@@ -348,6 +355,7 @@ Every PR must document:
 Workspace manifest/toolState context is the runtime contract.
 
 Rules:
+- workspace state is runtime-only coordination data and must not persist to JSON, toolState payloads, game manifests, or workspace tool contracts
 - game manifest root.tools is SSoT for persisted tool payloads
 - no `workspaceSession`
 - no `games[]`
