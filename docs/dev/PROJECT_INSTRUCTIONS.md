@@ -472,6 +472,43 @@ Integration lanes are the only allowed cross-tool blockers.
 
 Reports must clearly identify whether samples were skipped.
 
+### Validation Lane Routing And Blockers
+
+Targeted PRs execute only affected validation lanes by default.
+
+Full Workspace V2 suite validation is not the default for every PR.
+
+Validation reports must state why each lane was executed.
+
+Lane expansion must be justified in reports.
+
+Hidden validation expansion is prohibited.
+
+Engine or runtime changes may expand validation scope when they affect dependent lanes.
+
+Unrelated failures are `WARN` unless they are explicitly in scope.
+
+Lane ownership:
+- contract: manifest, toolState, workspace lifecycle, and validation contract behavior
+- runtime: tool-specific runtime behavior and user-facing tool interactions
+- integration: explicit cross-tool or workspace handoff behavior
+- engine: engine/shared runtime behavior and dependent runtime surfaces
+- samples: affected sample validation when sample scope is active
+- recovery/UAT: explicitly requested recovery or user-acceptance validation lanes
+
+Blocker classification rules:
+- targeted tool failures block the targeted lane only
+- engine failures block dependent lanes
+- integration failures block the integration lane only
+- sample failures block only when sample scope is active
+- flaky failures cannot automatically escalate to global blockers
+
+Shared-runtime blocker escalation requires identifying the root shared dependency, affected dependent lanes, and the reason the shared dependency blocks those lanes.
+
+Integration-lane escalation is allowed only when an explicit cross-tool, workspace handoff, manifest handoff, palette propagation, or toolState open/save contract is in scope.
+
+Tool tests must not validate unrelated engine behavior.
+
 Every PR must document:
 - whether full samples test was skipped or run
 - reason for decision
