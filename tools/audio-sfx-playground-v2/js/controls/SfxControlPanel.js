@@ -480,9 +480,9 @@ export class SfxControlPanel {
     }
   }
 
-  loadSound(sound) {
-    this.styleProfileSelect.value = "custom";
-    this.applySliderLimits("custom");
+  loadSound(sound, styleProfile = "custom") {
+    this.styleProfileSelect.value = this.hasStyleProfile(styleProfile) ? styleProfile : "custom";
+    this.applySliderLimits(this.styleProfileSelect.value);
     this.attackInput.value = String(sound.attackMs);
     this.durationInput.value = String(sound.durationMs);
     this.frequencyInput.value = String(sound.frequencyHz);
@@ -498,6 +498,14 @@ export class SfxControlPanel {
     this.waveformSelect.value = sound.waveform;
     this.syncStyleDescription();
     this.syncOutputs();
+  }
+
+  hasStyleProfile(styleProfile) {
+    return Array.from(this.styleProfileSelect.options).some((option) => option.value === styleProfile && !option.disabled);
+  }
+
+  currentStyleProfile() {
+    return this.styleProfileSelect.value || "custom";
   }
 
   applyStyleProfile() {

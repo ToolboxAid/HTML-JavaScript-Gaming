@@ -9,8 +9,10 @@ export class ActionNavControl {
     toolImportJsonInput,
     toolNav,
     toolPlayButton,
+    toolRedoButton,
     toolStopAllButton,
     toolStopButton,
+    toolUndoButton,
     workspaceCopyManifestButton,
     workspaceExportManifestButton,
     workspaceImportManifestButton,
@@ -24,8 +26,10 @@ export class ActionNavControl {
     this.toolImportJsonInput = toolImportJsonInput;
     this.toolNav = toolNav;
     this.toolPlayButton = toolPlayButton;
+    this.toolRedoButton = toolRedoButton;
     this.toolStopAllButton = toolStopAllButton;
     this.toolStopButton = toolStopButton;
+    this.toolUndoButton = toolUndoButton;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
     this.workspaceExportManifestButton = workspaceExportManifestButton;
     this.workspaceImportManifestButton = workspaceImportManifestButton;
@@ -38,16 +42,20 @@ export class ActionNavControl {
     onToolExportToolState,
     onToolImportJson,
     onToolPlay,
+    onToolRedo,
     onToolStopAll,
     onToolStop,
+    onToolUndo,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
     onWorkspaceImportManifest
   }) {
     this.applyLaunchMode();
     this.toolPlayButton.addEventListener("click", onToolPlay);
+    this.toolRedoButton.addEventListener("click", onToolRedo);
     this.toolStopAllButton.addEventListener("click", onToolStopAll);
     this.toolStopButton.addEventListener("click", onToolStop);
+    this.toolUndoButton.addEventListener("click", onToolUndo);
     this.toolImportJsonButton.addEventListener("click", () => {
       this.toolImportJsonInput.value = "";
       this.toolImportJsonInput.click();
@@ -91,6 +99,11 @@ export class ActionNavControl {
     this.toolPlayButton.disabled = !isEnabled;
     this.toolStopAllButton.disabled = !isEnabled;
     this.toolStopButton.disabled = !isEnabled;
+  }
+
+  setUndoRedoActionsEnabled({ canRedo, canUndo }) {
+    this.toolRedoButton.disabled = !canRedo;
+    this.toolUndoButton.disabled = !canUndo;
   }
 
   workspaceManagerUrl() {

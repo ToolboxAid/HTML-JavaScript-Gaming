@@ -43,6 +43,17 @@ function normalizeSoundName(name) {
   return name.trim().toLowerCase();
 }
 
+function cloneSoundEntries(soundEntries) {
+  return soundEntries.map((entry) => ({
+    id: entry.id,
+    sound: cloneSound(entry.sound)
+  }));
+}
+
+function snapshotsMatch(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
 function activeSoundFromToolState(toolState) {
   return toolState.payload.sounds.find((entry) => entry.id === toolState.payload.activeSoundId)?.sound || null;
 }
@@ -90,6 +101,9 @@ export class AudioSfxPlaygroundV2App {
     this.soundEntries = [];
     this.statusLog = statusLog;
     this.tileList = tileList;
+    this.redoStack = [];
+    this.undoStack = [];
+    this.historyBaselineSnapshot = null;
     this.window = windowRef;
     this.workspaceDirtyNotifier = workspaceDirtyNotifier;
   }
@@ -108,8 +122,14 @@ export class AudioSfxPlaygroundV2App {
       onToolPlay: () => {
         void this.play();
       },
+      onToolRedo: () => {
+        void this.redo();
+      },
       onToolStopAll: () => this.stopAll(),
       onToolStop: () => this.stop(),
+      onToolUndo: () => {
+        void this.undo();
+      },
       onWorkspaceCopyManifest: () => this.statusLog.write("Copy manifest action ready for workspace wiring."),
       onWorkspaceExportManifest: () => this.statusLog.write("Export manifest action ready for workspace wiring."),
       onWorkspaceImportManifest: () => this.statusLog.write("Import manifest action ready for workspace wiring.")
@@ -126,6 +146,7 @@ export class AudioSfxPlaygroundV2App {
       }
     });
     this.statusLog.mount();
+    this.refreshHistoryActions();
     void this.finishStartup();
   }
 
@@ -133,6 +154,7 @@ export class AudioSfxPlaygroundV2App {
     await this.loadWorkspacePayload();
     this.renderSoundList();
     this.refreshPreview();
+    this.resetHistoryBaseline();
     this.statusLog.write("Audio / SFX Playground V2 ready.");
   }
 
@@ -157,10 +179,7 @@ export class AudioSfxPlaygroundV2App {
       this.statusLog.error(`Workspace payload load failed: ${validation.message}`);
       return;
     }
-    const nextSoundEntries = validation.value.soundEntries.map((entry) => ({
-      id: entry.id,
-      sound: cloneSound(entry.sound)
-    }));
+    const nextSoundEntries = cloneSoundEntries(validation.value.soundEntries);
     this.activeSoundId = validation.value.activeSoundId;
     this.soundEntries = nextSoundEntries;
     this.nextSoundNumber = nextSoundNumberAfter(nextSoundEntries);
@@ -198,12 +217,111 @@ export class AudioSfxPlaygroundV2App {
   }
 
   handleEditorChange() {
+    const beforeSnapshot = this.historyBaselineSnapshot;
     const validation = this.controls.validate({ nameOverride: this.activeSoundName() });
     if (validation.valid && this.updateActiveSound(this.soundForActiveEditorValue(validation.value))) {
       this.renderSoundList();
-      void this.syncWorkspaceDirty("audio-sfx-editor-change", ["data.sounds"]);
+      this.commitUndoableChange({
+        beforeSnapshot,
+        changedKeys: ["data.sounds"],
+        reason: "audio-sfx-editor-change"
+      });
+    }
+    if (validation.valid && !this.activeSoundId) {
+      this.commitUndoableChange({
+        beforeSnapshot,
+        changedKeys: ["data.sounds"],
+        reason: "audio-sfx-editor-change",
+        shouldSyncDirty: false
+      });
     }
     this.refreshPreview();
+  }
+
+  createHistorySnapshot(editorSound = null) {
+    const validation = editorSound
+      ? { valid: true, value: editorSound }
+      : this.controls.validate();
+    if (!validation.valid) {
+      return null;
+    }
+    return {
+      activeSoundId: this.activeSoundId,
+      editorSound: cloneSound(validation.value),
+      editorStyleProfile: this.controls.currentStyleProfile(),
+      nextSoundNumber: this.nextSoundNumber,
+      soundEntries: cloneSoundEntries(this.soundEntries)
+    };
+  }
+
+  resetHistoryBaseline() {
+    this.historyBaselineSnapshot = this.createHistorySnapshot();
+    this.refreshHistoryActions();
+  }
+
+  commitUndoableChange({ beforeSnapshot, changedKeys, reason, shouldSyncDirty = true }) {
+    const afterSnapshot = this.createHistorySnapshot();
+    if (!beforeSnapshot || !afterSnapshot || snapshotsMatch(beforeSnapshot, afterSnapshot)) {
+      this.historyBaselineSnapshot = afterSnapshot;
+      this.refreshHistoryActions();
+      return false;
+    }
+    this.undoStack.push(beforeSnapshot);
+    this.redoStack = [];
+    this.historyBaselineSnapshot = afterSnapshot;
+    this.refreshHistoryActions();
+    if (shouldSyncDirty) {
+      void this.syncWorkspaceDirty(reason, changedKeys);
+    }
+    return true;
+  }
+
+  restoreHistorySnapshot(snapshot) {
+    this.activeSoundId = snapshot.activeSoundId;
+    this.soundEntries = cloneSoundEntries(snapshot.soundEntries);
+    this.nextSoundNumber = snapshot.nextSoundNumber;
+    this.controls.loadSound(snapshot.editorSound, snapshot.editorStyleProfile);
+    this.renderSoundList();
+    this.refreshPreview();
+    this.historyBaselineSnapshot = this.createHistorySnapshot();
+    this.refreshHistoryActions();
+  }
+
+  refreshHistoryActions() {
+    this.actionNav.setUndoRedoActionsEnabled({
+      canRedo: this.redoStack.length > 0,
+      canUndo: this.undoStack.length > 0
+    });
+  }
+
+  async undo() {
+    if (!this.undoStack.length) {
+      this.refreshHistoryActions();
+      return;
+    }
+    const currentSnapshot = this.createHistorySnapshot();
+    const previousSnapshot = this.undoStack.pop();
+    if (currentSnapshot) {
+      this.redoStack.push(currentSnapshot);
+    }
+    this.restoreHistorySnapshot(previousSnapshot);
+    await this.syncWorkspaceDirty("audio-sfx-undo", ["data.sounds", "data.activeSoundId"]);
+    this.statusLog.write("Undid last Audio / SFX edit.");
+  }
+
+  async redo() {
+    if (!this.redoStack.length) {
+      this.refreshHistoryActions();
+      return;
+    }
+    const currentSnapshot = this.createHistorySnapshot();
+    const nextSnapshot = this.redoStack.pop();
+    if (currentSnapshot) {
+      this.undoStack.push(currentSnapshot);
+    }
+    this.restoreHistorySnapshot(nextSnapshot);
+    await this.syncWorkspaceDirty("audio-sfx-redo", ["data.sounds", "data.activeSoundId"]);
+    this.statusLog.write("Redid last Audio / SFX edit.");
   }
 
   async syncWorkspaceDirty(reason, changedKeys) {
@@ -296,10 +414,15 @@ export class AudioSfxPlaygroundV2App {
       return;
     }
 
+    const beforeSnapshot = this.createHistorySnapshot();
     const entry = this.createSoundEntry(validation.value);
     this.renderSoundList();
     this.refreshPreview();
-    void this.syncWorkspaceDirty("audio-sfx-sound-added", ["data.sounds", "data.activeSoundId"]);
+    this.commitUndoableChange({
+      beforeSnapshot,
+      changedKeys: ["data.sounds", "data.activeSoundId"],
+      reason: "audio-sfx-sound-added"
+    });
     this.statusLog.write(`Added ${entry.sound.name}.`);
   }
 
@@ -321,11 +444,16 @@ export class AudioSfxPlaygroundV2App {
       this.controls.showMessage("Name must be unique.", true);
       return;
     }
+    const beforeSnapshot = this.createHistorySnapshot(entry.sound);
     this.audioEngine.stop(entry.sound.name);
     entry.sound.name = nextName;
     this.renderSoundList();
     this.refreshPreview();
-    void this.syncWorkspaceDirty("audio-sfx-sound-renamed", ["data.sounds"]);
+    this.commitUndoableChange({
+      beforeSnapshot,
+      changedKeys: ["data.sounds"],
+      reason: "audio-sfx-sound-renamed"
+    });
     this.statusLog.write(`Renamed SFX to ${entry.sound.name}.`);
   }
 
@@ -339,6 +467,7 @@ export class AudioSfxPlaygroundV2App {
     this.controls.loadSound(entry.sound);
     this.renderSoundList();
     this.refreshPreview();
+    this.resetHistoryBaseline();
     this.statusLog.write(`Loaded ${entry.sound.name}.`);
     try {
       const playbackResult = await this.audioEngine.play(entry.sound);
@@ -420,6 +549,7 @@ export class AudioSfxPlaygroundV2App {
       this.controls.setDeleteEnabled(false);
       return;
     }
+    const beforeSnapshot = this.createHistorySnapshot();
     const [entry] = this.soundEntries.splice(entryIndex, 1);
     this.audioEngine.stop(entry.sound.name);
     const nextEntry = this.soundEntries[Math.min(entryIndex, this.soundEntries.length - 1)] || null;
@@ -429,7 +559,11 @@ export class AudioSfxPlaygroundV2App {
     }
     this.renderSoundList();
     this.refreshPreview();
-    void this.syncWorkspaceDirty("audio-sfx-sound-deleted", ["data.sounds", "data.activeSoundId"]);
+    this.commitUndoableChange({
+      beforeSnapshot,
+      changedKeys: ["data.sounds", "data.activeSoundId"],
+      reason: "audio-sfx-sound-deleted"
+    });
     this.statusLog.write(`Deleted ${entry.sound.name}.`);
   }
 
@@ -443,6 +577,7 @@ export class AudioSfxPlaygroundV2App {
       return { valid: false, message: activeSoundEntry.message, toolState: null, json: "" };
     }
     this.renderSoundList();
+    this.resetHistoryBaseline();
     const toolState = this.serializer.createToolState({
       activeSoundId: this.activeSoundId,
       soundEntries: this.soundEntries
@@ -486,17 +621,19 @@ export class AudioSfxPlaygroundV2App {
         this.statusLog.error(`Import JSON failed: ${result.message}`);
         return;
       }
-      const nextSoundEntries = result.value.soundEntries.map((entry) => ({
-        id: entry.id,
-        sound: cloneSound(entry.sound)
-      }));
+      const beforeSnapshot = this.createHistorySnapshot();
+      const nextSoundEntries = cloneSoundEntries(result.value.soundEntries);
       this.activeSoundId = result.value.activeSoundId;
       this.soundEntries = nextSoundEntries;
       this.nextSoundNumber = nextSoundNumberAfter(nextSoundEntries);
       this.controls.loadSound(result.value.sound);
       this.renderSoundList();
       this.refreshPreview();
-      await this.syncWorkspaceDirty("audio-sfx-json-imported", ["data.sounds", "data.activeSoundId"]);
+      this.commitUndoableChange({
+        beforeSnapshot,
+        changedKeys: ["data.sounds", "data.activeSoundId"],
+        reason: "audio-sfx-json-imported"
+      });
       this.statusLog.write(`Imported JSON from ${file.name}.`);
     } catch (error) {
       this.statusLog.error(`Import JSON failed: ${error.message}`);
