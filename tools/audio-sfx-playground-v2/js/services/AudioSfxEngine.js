@@ -186,4 +186,10 @@ export class AudioSfxEngine {
     this.activePlaybacks.delete(soundName);
     return true;
   }
+
+  stopAll() {
+    const soundNames = Array.from(this.activePlaybacks.keys());
+    soundNames.forEach((soundName) => this.stop(soundName));
+    return soundNames.length;
+  }
 }

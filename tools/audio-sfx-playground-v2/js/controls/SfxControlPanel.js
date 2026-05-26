@@ -191,7 +191,6 @@ const DEFAULT_SOUND = Object.freeze({
 });
 
 const ALLOWED_WAVEFORMS = Object.freeze(new Set(["sine", "square", "triangle", "sawtooth", "noise"]));
-const ALLOWED_PLAYBACK_MODES = Object.freeze(new Set(["oneShot", "loop"]));
 const STYLE_PROFILES = Object.freeze({
   "pure-tone": {
     durationMs: 240,
@@ -338,6 +337,7 @@ export class SfxControlPanel {
     frequencyInput,
     frequencyValue,
     nameInput,
+    loopingInput,
     noiseAmountInput,
     noiseAmountValue,
     noiseDecayInput,
@@ -345,7 +345,6 @@ export class SfxControlPanel {
     noiseFilterInput,
     noiseFilterValue,
     noiseInput,
-    playbackModeSelect,
     pitchSweepInput,
     pitchSweepValue,
     releaseInput,
@@ -369,6 +368,7 @@ export class SfxControlPanel {
     this.durationValue = durationValue;
     this.frequencyInput = frequencyInput;
     this.frequencyValue = frequencyValue;
+    this.loopingInput = loopingInput;
     this.nameInput = nameInput;
     this.noiseAmountInput = noiseAmountInput;
     this.noiseAmountValue = noiseAmountValue;
@@ -377,7 +377,6 @@ export class SfxControlPanel {
     this.noiseFilterInput = noiseFilterInput;
     this.noiseFilterValue = noiseFilterValue;
     this.noiseInput = noiseInput;
-    this.playbackModeSelect = playbackModeSelect;
     this.pitchSweepInput = pitchSweepInput;
     this.pitchSweepValue = pitchSweepValue;
     this.releaseInput = releaseInput;
@@ -410,11 +409,11 @@ export class SfxControlPanel {
       this.attackInput,
       this.durationInput,
       this.frequencyInput,
+      this.loopingInput,
       this.noiseAmountInput,
       this.noiseDecayInput,
       this.noiseFilterInput,
       this.noiseInput,
-      this.playbackModeSelect,
       this.pitchSweepInput,
       this.releaseInput,
       this.volumeInput,
@@ -488,11 +487,11 @@ export class SfxControlPanel {
     this.durationInput.value = String(sound.durationMs);
     this.frequencyInput.value = String(sound.frequencyHz);
     this.nameInput.value = sound.name;
+    this.loopingInput.checked = sound.playbackMode === "loop";
     this.noiseInput.checked = sound.noise;
     this.noiseAmountInput.value = String(sound.noiseAmount);
     this.noiseDecayInput.value = String(sound.noiseDecayMs);
     this.noiseFilterInput.value = String(sound.noiseFilterHz);
-    this.playbackModeSelect.value = sound.playbackMode;
     this.pitchSweepInput.value = String(sound.pitchSweepCents);
     this.releaseInput.value = String(sound.releaseMs);
     this.volumeInput.value = String(sound.volume);
@@ -682,9 +681,6 @@ export class SfxControlPanel {
     if (!ALLOWED_WAVEFORMS.has(this.waveformSelect.value)) {
       return { valid: false, message: `Unsupported waveform: ${this.waveformSelect.value}.` };
     }
-    if (!ALLOWED_PLAYBACK_MODES.has(this.playbackModeSelect.value)) {
-      return { valid: false, message: `Unsupported playback mode: ${this.playbackModeSelect.value}.` };
-    }
     const frequency = readRange(this.frequencyInput, this.activeSliderLimits.frequencyHz);
     const duration = readRange(this.durationInput, this.activeSliderLimits.durationMs);
     const attack = readRange(this.attackInput, this.activeSliderLimits.attackMs);
@@ -712,7 +708,7 @@ export class SfxControlPanel {
         noiseAmount: Number(noiseAmount.value.toFixed(2)),
         noiseDecayMs: Math.round(noiseDecay.value),
         noiseFilterHz: Math.round(noiseFilter.value),
-        playbackMode: this.playbackModeSelect.value,
+        playbackMode: this.loopingInput.checked ? "loop" : "oneShot",
         pitchSweepCents: Math.round(pitchSweep.value),
         releaseMs: Math.round(release.value),
         volume: Number(volume.value.toFixed(2)),

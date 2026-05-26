@@ -9,6 +9,7 @@ export class ActionNavControl {
     toolImportJsonInput,
     toolNav,
     toolPlayButton,
+    toolStopAllButton,
     toolStopButton,
     workspaceCopyManifestButton,
     workspaceExportManifestButton,
@@ -23,6 +24,7 @@ export class ActionNavControl {
     this.toolImportJsonInput = toolImportJsonInput;
     this.toolNav = toolNav;
     this.toolPlayButton = toolPlayButton;
+    this.toolStopAllButton = toolStopAllButton;
     this.toolStopButton = toolStopButton;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
     this.workspaceExportManifestButton = workspaceExportManifestButton;
@@ -36,6 +38,7 @@ export class ActionNavControl {
     onToolExportToolState,
     onToolImportJson,
     onToolPlay,
+    onToolStopAll,
     onToolStop,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
@@ -43,6 +46,7 @@ export class ActionNavControl {
   }) {
     this.applyLaunchMode();
     this.toolPlayButton.addEventListener("click", onToolPlay);
+    this.toolStopAllButton.addEventListener("click", onToolStopAll);
     this.toolStopButton.addEventListener("click", onToolStop);
     this.toolImportJsonButton.addEventListener("click", () => {
       this.toolImportJsonInput.value = "";
@@ -79,10 +83,14 @@ export class ActionNavControl {
   }
 
   setToolActionsEnabled(isEnabled) {
-    this.toolPlayButton.disabled = !isEnabled;
-    this.toolStopButton.disabled = !isEnabled;
     this.toolCopyJsonButton.disabled = !isEnabled;
     this.toolExportToolStateButton.disabled = !isEnabled;
+  }
+
+  setPlaybackActionsEnabled(isEnabled) {
+    this.toolPlayButton.disabled = !isEnabled;
+    this.toolStopAllButton.disabled = !isEnabled;
+    this.toolStopButton.disabled = !isEnabled;
   }
 
   workspaceManagerUrl() {

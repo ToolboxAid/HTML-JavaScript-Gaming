@@ -86,21 +86,10 @@
                 <option value="vector-arcade">Vector Arcade</option>
               </select>
             </label>
-            <label class="tool-starter__field" for="playbackModeSelect">
-              <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="One Shot plays once; Loop repeats until Stop is clicked.">Playback</span>
-              <select id="playbackModeSelect">
-                <option value="oneShot">One Shot</option>
-                <option value="loop">Loop</option>
-              </select>
-            </label>
             <p id="styleDescription" class="tool-starter__hint audio-sfx__style-description" aria-live="polite"></p>
             <ul id="styleExamples" class="audio-sfx__style-examples" aria-label="Example sound ideas"></ul>
             <p id="settingsHelper" class="tool-starter__hint audio-sfx__settings-helper" aria-live="polite"></p>
             <p id="sfxValidationMessage" class="tool-starter__hint">Ready to audition.</p>
-            <div class="audio-sfx__shape-actions">
-              <button id="toolPlayButton" type="button">Play</button>
-              <button id="toolStopButton" type="button">Stop</button>
-            </div>
           </div>
         </section>
       </aside>
@@ -111,6 +100,11 @@
             <span>Sound Design</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
+          <div class="audio-sfx__accordion-actions audio-sfx__design-actions" aria-label="Sound Design playback actions">
+            <button id="toolPlayButton" type="button">Play</button>
+            <button id="toolStopButton" type="button">Stop</button>
+            <button id="toolStopAllButton" type="button">Stop All</button>
+          </div>
           <div id="soundDesignContent" class="accordion-v2__content">
             <div class="audio-sfx__control-grid">
               <section class="audio-sfx__control-group" aria-labelledby="waveControlsHeading">
@@ -156,7 +150,7 @@
                   <output id="pitchSweepValue" for="pitchSweepInput"></output>
                 </label>
               </section>
-              <section class="audio-sfx__control-group" aria-labelledby="noiseControlsHeading">
+              <section class="audio-sfx__control-group audio-sfx__control-group--noise" aria-labelledby="noiseControlsHeading">
                 <h3 id="noiseControlsHeading">Noise Controls</h3>
                 <label class="tool-starter__toggle" for="noiseInput">
                   <input id="noiseInput" type="checkbox">
@@ -176,6 +170,10 @@
                   <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Raises or lowers the transient brightness filter.">Brightness</span>
                   <input id="noiseFilterInput" type="range">
                   <output id="noiseFilterValue" for="noiseFilterInput"></output>
+                </label>
+                <label class="tool-starter__toggle audio-sfx__looping-toggle" for="loopingInput">
+                  <input id="loopingInput" type="checkbox">
+                  <span class="audio-sfx__label-tip" tabindex="0" data-tooltip="Repeats the selected SFX until Stop is clicked.">Looping</span>
                 </label>
               </section>
             </div>
@@ -215,15 +213,15 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion audio-sfx__status-accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header tool-starter__status-accordion-header" type="button" aria-expanded="true" aria-controls="statusLogContent">
             <span>Status</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
+          <div class="audio-sfx__accordion-actions audio-sfx__status-actions" aria-label="Status actions">
+            <button id="clearStatusButton" class="tool-starter__status-clear-button" type="button">Clear</button>
+          </div>
           <div id="statusLogContent" class="accordion-v2__content">
-            <div class="tool-starter__status-header-actions">
-              <button id="clearStatusButton" class="tool-starter__status-clear-button" type="button">Clear</button>
-            </div>
             <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
           </div>
         </section>

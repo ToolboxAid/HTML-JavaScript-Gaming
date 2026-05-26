@@ -108,6 +108,7 @@ export class AudioSfxPlaygroundV2App {
       onToolPlay: () => {
         void this.play();
       },
+      onToolStopAll: () => this.stopAll(),
       onToolStop: () => this.stop(),
       onWorkspaceCopyManifest: () => this.statusLog.write("Copy manifest action ready for workspace wiring."),
       onWorkspaceExportManifest: () => this.statusLog.write("Export manifest action ready for workspace wiring."),
@@ -187,11 +188,13 @@ export class AudioSfxPlaygroundV2App {
       this.preview.clear(validation.message);
       this.inspector.showObject({ error: validation.message });
       this.actionNav.setToolActionsEnabled(false);
+      this.actionNav.setPlaybackActionsEnabled(false);
       return;
     }
     this.preview.render(validation.value);
     this.inspector.showObject(toolState);
     this.actionNav.setToolActionsEnabled(true);
+    this.actionNav.setPlaybackActionsEnabled(Boolean(this.activeSoundId));
   }
 
   handleEditorChange() {
@@ -352,9 +355,14 @@ export class AudioSfxPlaygroundV2App {
     });
     this.controls.setDeleteEnabled(Boolean(this.activeSoundId));
     this.controls.setRenameEnabled(Boolean(this.activeSoundId));
+    this.actionNav.setPlaybackActionsEnabled(Boolean(this.activeSoundId));
   }
 
   async play() {
+    if (!this.activeSoundId) {
+      this.statusLog.error("Select a saved SFX tile before playback.");
+      return;
+    }
     const { validation } = this.currentToolState();
     if (!validation.valid) {
       this.statusLog.error(validation.message);
@@ -394,6 +402,15 @@ export class AudioSfxPlaygroundV2App {
       return;
     }
     this.statusLog.write(`Stopped ${activeName}.`);
+  }
+
+  stopAll() {
+    const stoppedCount = this.audioEngine.stopAll();
+    if (!stoppedCount) {
+      this.statusLog.write("No active playback found.");
+      return;
+    }
+    this.statusLog.write(`Stopped ${stoppedCount} active SFX playback${stoppedCount === 1 ? "" : "s"}.`);
   }
 
   deleteCurrentSound() {
