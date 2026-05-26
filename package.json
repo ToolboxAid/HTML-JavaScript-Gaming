@@ -11,6 +11,7 @@
     "test:lanes:preflight": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
     "test:lane:workspace-contract": "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
+    "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",

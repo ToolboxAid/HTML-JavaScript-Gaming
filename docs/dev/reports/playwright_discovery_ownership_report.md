@@ -1,6 +1,6 @@
 # Playwright Discovery Ownership Report
 
-Generated: 2026-05-26T19:43:53.654Z
+Generated: 2026-05-26T19:54:13.450Z
 Status: PASS
 
 ## Discovery-Time Ownership
@@ -10,6 +10,10 @@ Status: PASS
 | tests/playwright/tools/AssetManagerV2.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: AssetManagerV2 |
 | tests/playwright/tools/CollisionInspectorV2.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: CollisionInspectorV2 |
 | tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: PreviewGeneratorV2 |
+| tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs | games | games | tests/playwright/games | none | PASS | game-specific filename: Asteroids |
+| tests/playwright/games/AsteroidsBeatTiming.spec.mjs | games | games | tests/playwright/games | none | PASS | game-specific filename: Asteroids |
+| tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs | games | games | tests/playwright/games | none | PASS | game-specific filename: Asteroids |
+| tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | games | games | tests/playwright/games | none | PASS | game-specific filename: Asteroids |
 | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | integration | integration | tests/playwright/integration | none | PASS | integration filename marker: GameIndex, ManifestResolution |
 
 ## Shared Helper Naming

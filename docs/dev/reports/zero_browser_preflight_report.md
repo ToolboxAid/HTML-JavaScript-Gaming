@@ -1,6 +1,6 @@
 # Zero-Browser Preflight Report
 
-Generated: 2026-05-26T19:43:53.674Z
+Generated: 2026-05-26T19:54:13.477Z
 Status: PASS
 
 ## Prevented Browser Launches
@@ -23,7 +23,9 @@ No deterministic setup failures.
 | invalid imports | PASS | Relative imports checked by Playwright structure audit. |
 | unresolved fixtures | PASS | No unresolved fixture findings. |
 | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
-| scoped discovery | PASS | Targets: tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs, tests/playwright/tools/AssetManagerV2.spec.mjs, tests/playwright/tools/CollisionInspectorV2.spec.mjs, tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
+| targeted file manifests | PASS | tool-runtime:PASS, game-runtime:PASS, integration:PASS, engine-src:PASS |
+| manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
+| scoped discovery | PASS | Targets: tests/assets/AssetLoaderSystem.test.mjs, tests/audio/AudioService.test.mjs, tests/core/EngineCoreBoundaryBaseline.test.mjs, tests/core/FixedTicker.test.mjs, tests/core/FrameClock.test.mjs, tests/input/GamepadHapticsService.test.mjs, tests/input/GamepadInputAdapter.test.mjs, tests/input/InputMap.test.mjs, tests/input/KeyboardState.test.mjs, tests/input/MouseState.test.mjs, tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs, tests/playwright/games/AsteroidsBeatTiming.spec.mjs, tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs, tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs, tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs, tests/playwright/tools/AssetManagerV2.spec.mjs, tests/playwright/tools/CollisionInspectorV2.spec.mjs, tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs, tests/render/Renderer.test.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
 | invalid grep patterns | PASS | No invalid grep patterns. |
 | Windows quoting hazards | PASS | Lane tool-runtime grep pattern is passed as a literal Node argv value: launch guard|temporary UAT context|rejects non-Workspace |
 | invalid lane references | PASS | No invalid lane references. |

@@ -1,6 +1,6 @@
 # Playwright Discovery Scope Report
 
-Generated: 2026-05-26T19:43:53.656Z
+Generated: 2026-05-26T19:54:13.453Z
 Status: PASS
 Scoped discovery: Yes
 
@@ -8,6 +8,10 @@ Scoped discovery: Yes
 
 | Role | File | Status | Reason |
 | --- | --- | --- | --- |
+| target spec | tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
+| target spec | tests/playwright/games/AsteroidsBeatTiming.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
+| target spec | tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
+| target spec | tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
 | target spec | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
 | target spec | tests/playwright/tools/AssetManagerV2.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
 | target spec | tests/playwright/tools/CollisionInspectorV2.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |

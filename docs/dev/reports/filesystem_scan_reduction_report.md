@@ -1,6 +1,6 @@
 # Filesystem Scan Reduction Report
 
-Generated: 2026-05-26T19:43:53.658Z
+Generated: 2026-05-26T19:54:13.454Z
 Status: PASS
 
 ## Scan Enforcement
@@ -10,8 +10,8 @@ Status: PASS
 | tests/playwright | PREVENTED | Targeted lanes supplied explicit spec files; global Playwright discovery was not used. |
 | tests/helpers | SCOPED | Helper discovery used the targeted import graph instead of enumerating every helper. |
 | games/ | SCOPED | Game fixture discovery used explicit manifest/path references from targeted files. |
-| tests/playwright/engine | SKIP | Unselected lane directory discovery was skipped. |
-| tests/playwright/games | SKIP | Unselected lane directory discovery was skipped. |
+| tests/playwright/engine | SCOPED | Selected lane discovery was restricted to explicit target specs. |
+| tests/playwright/games | SCOPED | Selected lane discovery was restricted to explicit target specs. |
 | tests/playwright/integration | SCOPED | Selected lane discovery was restricted to explicit target specs. |
 | tests/playwright/tools | SCOPED | Selected lane discovery was restricted to explicit target specs. |
 

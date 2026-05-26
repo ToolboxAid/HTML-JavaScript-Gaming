@@ -16,10 +16,12 @@ const defaultDependencyGatingReportPath = "docs/dev/reports/dependency_gating_re
 const defaultDiscoveryOwnershipReportPath = "docs/dev/reports/playwright_discovery_ownership_report.md";
 const defaultDiscoveryScopeReportPath = "docs/dev/reports/playwright_discovery_scope_report.md";
 const defaultFilesystemScanReportPath = "docs/dev/reports/filesystem_scan_reduction_report.md";
+const defaultLaneInputValidationReportPath = "docs/dev/reports/lane_input_validation_report.md";
 const defaultLaneDeduplicationReportPath = "docs/dev/reports/lane_deduplication_report.md";
 const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
 const defaultLaneRuntimeOptimizationReportPath = "docs/dev/reports/lane_runtime_optimization_report.md";
 const defaultStaticReportPath = "docs/dev/reports/static_validation_report.md";
+const defaultTargetedFileManifestReportPath = "docs/dev/reports/targeted_file_manifest_report.md";
 const defaultValidationCacheReportPath = "docs/dev/reports/validation_cache_report.md";
 const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
@@ -81,6 +83,7 @@ const laneDefinitions = Object.freeze({
     fixturePaths: [
       "tests/fixtures/workspace-v2/uat.manifest.json"
     ],
+    ownership: "tools",
     requiresPreflight: true,
     reason: "Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts."
   },
@@ -108,9 +111,37 @@ const laneDefinitions = Object.freeze({
       "explicit manifest/toolState launch contexts"
     ],
     fixturePaths: [],
+    ownership: "tools",
     playwrightDir: "tests/playwright/tools",
     requiresPreflight: true,
     reason: "Tool runtime lane validates focused tool behavior without treating unrelated stale product assertions as blockers."
+  },
+  "game-runtime": {
+    affectedSurface: "Game-owned Playwright runtime behavior",
+    commands: [
+      playwrightCommand(
+        "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
+        "tests/playwright/games/AsteroidsBeatTiming.spec.mjs",
+        "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs",
+        "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
+      )
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
+      "tests/playwright/games/AsteroidsBeatTiming.spec.mjs",
+      "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs",
+      "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
+    ],
+    fixtures: [
+      "explicit Asteroids manifest/page fixtures",
+      "repo-served browser pages"
+    ],
+    fixturePaths: [],
+    ownership: "games",
+    playwrightDir: "tests/playwright/games",
+    requiresPreflight: true,
+    reason: "Game runtime lane validates explicit game-owned Playwright behavior only."
   },
   integration: {
     affectedSurface: "Workspace, tool, game index, and manifest handoff behavior",
@@ -127,6 +158,7 @@ const laneDefinitions = Object.freeze({
       "repo-served browser pages"
     ],
     fixturePaths: [],
+    ownership: "integration",
     playwrightDir: "tests/playwright/integration",
     requiresPreflight: true,
     reason: "Integration lane validates explicit cross-surface handoffs only; broad all-game thumbnail coverage is outside the default targeted lane."
@@ -156,6 +188,7 @@ const laneDefinitions = Object.freeze({
       "fresh in-memory localStorage/sessionStorage mocks per file"
     ],
     fixturePaths: [],
+    ownership: "engine",
     reason: "Engine/src lane validates reusable runtime surfaces through targeted node tests."
   },
   samples: {
@@ -174,6 +207,7 @@ const laneDefinitions = Object.freeze({
       "sample structure fixtures"
     ],
     fixturePaths: [],
+    ownership: "samples",
     reason: "Samples lane is on-request or affected-sample only and is not the full samples smoke test.",
     requiresPreflight: true,
     requiresSamplesFlag: true
@@ -188,6 +222,7 @@ function parseArgs(argv) {
     dryRun: false,
     filesystemScanReportPath: defaultFilesystemScanReportPath,
     includeSamples: false,
+    laneInputValidationReportPath: defaultLaneInputValidationReportPath,
     laneCompilationReportPath: defaultLaneCompilationReportPath,
     laneDeduplicationReportPath: defaultLaneDeduplicationReportPath,
     laneRuntimeOptimizationReportPath: defaultLaneRuntimeOptimizationReportPath,
@@ -197,6 +232,7 @@ function parseArgs(argv) {
     skipPreflight: false,
     staticOnly: false,
     staticReportPath: defaultStaticReportPath,
+    targetedFileManifestReportPath: defaultTargetedFileManifestReportPath,
     validationCacheReportPath: defaultValidationCacheReportPath,
     zeroBrowserOnly: false,
     zeroBrowserReportPath: defaultZeroBrowserReportPath
@@ -232,6 +268,11 @@ function parseArgs(argv) {
       options.filesystemScanReportPath = argument.slice("--filesystem-scan-report=".length);
     } else if (argument === "--include-samples") {
       options.includeSamples = true;
+    } else if (argument === "--lane-input-report") {
+      options.laneInputValidationReportPath = argv[index + 1] || defaultLaneInputValidationReportPath;
+      index += 1;
+    } else if (argument.startsWith("--lane-input-report=")) {
+      options.laneInputValidationReportPath = argument.slice("--lane-input-report=".length);
     } else if (argument === "--skip-preflight") {
       options.skipPreflight = true;
     } else if (argument === "--static-only") {
@@ -263,6 +304,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--static-report=")) {
       options.staticReportPath = argument.slice("--static-report=".length);
+    } else if (argument === "--targeted-file-manifest-report") {
+      options.targetedFileManifestReportPath = argv[index + 1] || defaultTargetedFileManifestReportPath;
+      index += 1;
+    } else if (argument.startsWith("--targeted-file-manifest-report=")) {
+      options.targetedFileManifestReportPath = argument.slice("--targeted-file-manifest-report=".length);
     } else if (argument === "--zero-browser-report") {
       options.zeroBrowserReportPath = argv[index + 1] || defaultZeroBrowserReportPath;
       index += 1;
@@ -296,7 +342,7 @@ function parseArgs(argv) {
   options.rawLaneRequests = options.rawLaneRequests.map((lane) => lane.trim()).filter(Boolean);
   options.lanes = [...new Set(options.rawLaneRequests)];
   if (options.lanes.length === 0) {
-    options.lanes = ["workspace-contract", "tool-runtime", "integration", "engine-src", "samples"];
+    options.lanes = ["workspace-contract", "tool-runtime", "game-runtime", "integration", "engine-src", "samples"];
     options.rawLaneRequests = [...options.lanes];
   }
   return options;
@@ -367,7 +413,9 @@ function laneDefinitionsFingerprint() {
     lanes[lane] = {
       commands: definition.commands.map(commandFingerprint),
       dependencies: definition.dependencies || [],
+      discoveryTargets: definition.discoveryTargets || [],
       fixturePaths: definition.fixturePaths || [],
+      ownership: definition.ownership || "",
       playwrightDir: definition.playwrightDir || "",
       requiresPreflight: Boolean(definition.requiresPreflight),
       requiresSamplesFlag: Boolean(definition.requiresSamplesFlag)
@@ -452,7 +500,7 @@ function commandTargetFiles(commandConfig) {
     return commandConfig.args.filter((argument) => /\.spec\.mjs$/i.test(String(argument)));
   }
   if (commandConfig.type === "node") {
-    return commandConfig.args.filter((argument) => /\.(mjs|js|json)$/i.test(String(argument)));
+    return commandConfig.args.slice(1).filter((argument) => /\.(mjs|js|json)$/i.test(String(argument)));
   }
   return [];
 }
@@ -546,18 +594,124 @@ function laneDiscoveryTargets(lane, definition) {
     .flatMap(commandTargetFiles);
 }
 
+function laneManifestTests(lane, definition) {
+  const discoveryTargets = laneDiscoveryTargets(lane, definition);
+  if (discoveryTargets.length > 0) {
+    return discoveryTargets;
+  }
+  return definition.commands.flatMap(commandTargetFiles);
+}
+
+function expectedPrefixesForOwnership(ownership) {
+  const prefixes = {
+    engine: [
+      "tests/assets/",
+      "tests/audio/",
+      "tests/core/",
+      "tests/input/",
+      "tests/render/",
+      "tests/playwright/engine/"
+    ],
+    games: [
+      "tests/playwright/games/"
+    ],
+    integration: [
+      "tests/playwright/integration/"
+    ],
+    samples: [
+      "tests/samples/"
+    ],
+    tools: [
+      "tests/playwright/tools/"
+    ]
+  };
+  return prefixes[ownership] || [];
+}
+
+function fixtureAllowedForOwnership(fixturePath, ownership) {
+  const normalizedPath = normalizeRelativePath(fixturePath);
+  if (normalizedPath.startsWith("tests/fixtures/")) {
+    return true;
+  }
+  if (/^games\/[^/]+\/game\.manifest\.json$/.test(normalizedPath)) {
+    return ownership === "tools" || ownership === "games" || ownership === "integration";
+  }
+  return false;
+}
+
+function helperAllowedForManifest(helperPath) {
+  return normalizeRelativePath(helperPath).startsWith("tests/helpers/");
+}
+
 async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
   const textCache = new Map();
-  const helperQueue = [];
   const helperFiles = new Set();
   const fixtureFiles = new Set();
+  const importFiles = new Set();
+  const laneManifests = [];
   const scanRows = [];
   const targetFiles = [];
   const selectedLanes = lanes.filter((lane) => laneDefinitions[lane]);
 
+  async function collectGraphForFiles(seedFiles) {
+    const laneHelperFiles = new Set();
+    const laneFixtureFiles = new Set();
+    const laneImportFiles = new Set();
+    const helperQueue = [];
+
+    async function collectFromFile(relativePath) {
+      const content = await readRepoText(relativePath, textCache);
+      referencedFixturePaths(content).forEach((fixturePath) => laneFixtureFiles.add(normalizeRelativePath(fixturePath)));
+      for (const specifier of extractImports(content)) {
+        const resolvedPath = await resolveRelativeImportPath(relativePath, specifier);
+        if (!resolvedPath) {
+          continue;
+        }
+        laneImportFiles.add(resolvedPath);
+        if (isUnderPath(resolvedPath, "tests/helpers") && !laneHelperFiles.has(resolvedPath)) {
+          laneHelperFiles.add(resolvedPath);
+          helperQueue.push(resolvedPath);
+        } else if (isUnderPath(resolvedPath, "tests/fixtures")) {
+          laneFixtureFiles.add(resolvedPath);
+        }
+      }
+    }
+
+    for (const seedFile of seedFiles) {
+      if (await repoPathExists(seedFile)) {
+        await collectFromFile(seedFile);
+      }
+    }
+    while (helperQueue.length > 0) {
+      const helperFile = helperQueue.shift();
+      if (await repoPathExists(helperFile)) {
+        await collectFromFile(helperFile);
+      }
+    }
+
+    return {
+      fixtures: uniqueRelativePaths([...laneFixtureFiles]),
+      helpers: uniqueRelativePaths([...laneHelperFiles]),
+      imports: uniqueRelativePaths([...laneImportFiles])
+    };
+  }
+
   for (const lane of selectedLanes) {
     const definition = laneDefinitions[lane];
     if (definition.requiresSamplesFlag && !includeSamples) {
+      laneManifests.push({
+        commandsHash: fingerprint(definition.commands.map(commandFingerprint)),
+        dependencies: definition.dependencies || [],
+        fixtures: [],
+        helpers: [],
+        imports: [],
+        lane,
+        manifestHash: fingerprint({ lane, skipped: true }),
+        ownership: definition.ownership || "unknown",
+        selected: true,
+        status: "SKIP",
+        tests: []
+      });
       scanRows.push({
         lane,
         reason: "Samples lane is on-request only and was not included, so no sample discovery scope was built.",
@@ -565,13 +719,41 @@ async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
       });
       continue;
     }
-    const laneTargets = laneDiscoveryTargets(lane, definition)
-      .filter((target) => isUnderPath(target, "tests/playwright"));
+    const laneTargets = uniqueRelativePaths(laneManifestTests(lane, definition));
+    const graph = await collectGraphForFiles(laneTargets);
+    const laneFixtureFiles = uniqueRelativePaths([
+      ...(definition.fixturePaths || []),
+      ...graph.fixtures
+    ]);
     targetFiles.push(...laneTargets);
+    graph.helpers.forEach((helperPath) => helperFiles.add(helperPath));
+    laneFixtureFiles.forEach((fixturePath) => fixtureFiles.add(fixturePath));
+    graph.imports.forEach((importPath) => importFiles.add(importPath));
+    laneManifests.push({
+      commandsHash: fingerprint(definition.commands.map(commandFingerprint)),
+      dependencies: definition.dependencies || [],
+      fixtures: laneFixtureFiles,
+      helpers: graph.helpers,
+      imports: graph.imports,
+      lane,
+      manifestHash: fingerprint({
+        dependencies: definition.dependencies || [],
+        fixtures: laneFixtureFiles,
+        helpers: graph.helpers,
+        imports: graph.imports,
+        lane,
+        ownership: definition.ownership || "unknown",
+        tests: laneTargets
+      }),
+      ownership: definition.ownership || "unknown",
+      selected: true,
+      status: laneTargets.length > 0 || definition.commands.length > 0 ? "PASS" : "SKIP",
+      tests: laneTargets
+    });
     if (laneTargets.length > 0) {
       scanRows.push({
         lane,
-        reason: `Scoped discovery uses explicit target file(s): ${laneTargets.join(", ")}.`,
+        reason: `Targeted file manifest uses explicit input file(s): ${laneTargets.join(", ")}.`,
         status: "SCOPED"
       });
     } else if (definition.requiresPreflight) {
@@ -581,41 +763,13 @@ async function buildScopedDiscoveryPlan({ includeSamples, lanes }) {
         status: "SKIP"
       });
     }
-    (definition.fixturePaths || []).forEach((fixturePath) => fixtureFiles.add(normalizeRelativePath(fixturePath)));
-  }
-
-  async function collectFromFile(relativePath) {
-    const content = await readRepoText(relativePath, textCache);
-    referencedFixturePaths(content).forEach((fixturePath) => fixtureFiles.add(normalizeRelativePath(fixturePath)));
-    for (const specifier of extractImports(content)) {
-      const resolvedPath = await resolveRelativeImportPath(relativePath, specifier);
-      if (!resolvedPath) {
-        continue;
-      }
-      if (isUnderPath(resolvedPath, "tests/helpers") && !helperFiles.has(resolvedPath)) {
-        helperFiles.add(resolvedPath);
-        helperQueue.push(resolvedPath);
-      } else if (isUnderPath(resolvedPath, "tests/fixtures")) {
-        fixtureFiles.add(resolvedPath);
-      }
-    }
-  }
-
-  for (const targetFile of uniqueRelativePaths(targetFiles)) {
-    if (await repoPathExists(targetFile)) {
-      await collectFromFile(targetFile);
-    }
-  }
-  while (helperQueue.length > 0) {
-    const helperFile = helperQueue.shift();
-    if (await repoPathExists(helperFile)) {
-      await collectFromFile(helperFile);
-    }
   }
 
   return {
     fixtureFiles: uniqueRelativePaths([...fixtureFiles]),
     helperFiles: uniqueRelativePaths([...helperFiles]),
+    importFiles: uniqueRelativePaths([...importFiles]),
+    laneManifests,
     scanRows,
     selectedLanes,
     targetFiles: uniqueRelativePaths(targetFiles),
@@ -627,13 +781,10 @@ function validateScopedDiscoveryPlan({ includeSamples, lanes, scopedDiscovery })
   const findings = [];
   const selectedLaneSet = new Set(lanes);
   const targetRows = [];
-  const laneOwnership = new Map([
-    ["workspace-contract", ["tests/playwright/tools/"]],
-    ["tool-runtime", ["tests/playwright/tools/"]],
-    ["integration", ["tests/playwright/integration/"]],
-    ["engine-src", ["tests/playwright/engine/"]],
-    ["samples", []]
-  ]);
+  const laneOwnership = new Map(Object.entries(laneDefinitions).map(([lane, definition]) => [
+    lane,
+    expectedPrefixesForOwnership(definition.ownership)
+  ]));
 
   for (const lane of lanes.filter((entry) => laneDefinitions[entry])) {
     const definition = laneDefinitions[lane];
@@ -644,7 +795,7 @@ function validateScopedDiscoveryPlan({ includeSamples, lanes, scopedDiscovery })
       (laneOwnership.get(lane) || []).some((prefix) => targetFile.startsWith(prefix))
     ));
     if (definition.requiresPreflight && (laneOwnership.get(lane) || []).length > 0 && laneTargets.length === 0) {
-      findings.push(`Lane ${lane} has no scoped Playwright discovery target.`);
+      findings.push(`Lane ${lane} has no scoped manifest target.`);
     }
   }
 
@@ -653,7 +804,18 @@ function validateScopedDiscoveryPlan({ includeSamples, lanes, scopedDiscovery })
       .find(([lane, prefixes]) => selectedLaneSet.has(lane) && prefixes.some((prefix) => targetFile.startsWith(prefix)));
     const isDirectoryTarget = targetFile === "tests/playwright"
       || targetFile.endsWith("/")
-      || ["tests/playwright/tools", "tests/playwright/games", "tests/playwright/integration", "tests/playwright/engine"].includes(targetFile);
+      || [
+        "tests/playwright/tools",
+        "tests/playwright/games",
+        "tests/playwright/integration",
+        "tests/playwright/engine",
+        "tests/core",
+        "tests/assets",
+        "tests/audio",
+        "tests/input",
+        "tests/render",
+        "tests/samples"
+      ].includes(targetFile);
     const status = matchingLane && !isDirectoryTarget ? "PASS" : "FAIL";
     targetRows.push({
       file: targetFile,
@@ -680,6 +842,177 @@ function validateScopedDiscoveryPlan({ includeSamples, lanes, scopedDiscovery })
     lanes,
     status: findings.length > 0 ? "FAIL" : "PASS",
     targetRows
+  };
+}
+
+async function validateTargetedFileManifests({ includeSamples, lanes, scopedDiscovery }) {
+  const findings = [];
+  const fileRows = [];
+  const manifestRows = [];
+  const manifestByLane = new Map(scopedDiscovery.laneManifests.map((manifest) => [manifest.lane, manifest]));
+  const expectedTargetFiles = new Set();
+  const expectedHelperFiles = new Set();
+  const expectedFixtureFiles = new Set();
+
+  for (const lane of lanes.filter((entry) => laneDefinitions[entry])) {
+    const definition = laneDefinitions[lane];
+    const manifest = manifestByLane.get(lane);
+    if (!manifest) {
+      findings.push(`Lane ${lane} did not produce a targeted-file manifest.`);
+      manifestRows.push({
+        fixtures: [],
+        helpers: [],
+        imports: [],
+        lane,
+        manifestHash: "missing",
+        ownership: definition.ownership || "unknown",
+        reason: "No manifest was generated for the selected lane.",
+        status: "FAIL",
+        tests: []
+      });
+      continue;
+    }
+
+    if (definition.requiresSamplesFlag && !includeSamples) {
+      manifestRows.push({
+        ...manifest,
+        reason: "Samples lane is on-request only and was not included.",
+        status: "SKIP"
+      });
+      continue;
+    }
+
+    const expectedPrefixes = expectedPrefixesForOwnership(manifest.ownership);
+    const commandTargets = uniqueRelativePaths(definition.commands.flatMap(commandTargetFiles));
+    const manifestTests = new Set(manifest.tests);
+    const laneFindings = [];
+
+    for (const testFile of manifest.tests) {
+      expectedTargetFiles.add(testFile);
+      const ownedByLane = expectedPrefixes.some((prefix) => testFile.startsWith(prefix));
+      const exists = await repoPathExists(testFile);
+      const status = ownedByLane && exists ? "PASS" : "FAIL";
+      fileRows.push({
+        file: testFile,
+        lane,
+        reason: status === "PASS"
+          ? "Manifest test input is explicit, present, and owned by the lane."
+          : "Manifest test input is missing or outside lane ownership.",
+        role: "test",
+        status
+      });
+      if (!ownedByLane) {
+        laneFindings.push(`Manifest test outside ${manifest.ownership} ownership: ${testFile}.`);
+      }
+      if (!exists) {
+        laneFindings.push(`Manifest test file is missing: ${testFile}.`);
+      }
+    }
+
+    for (const commandTarget of commandTargets) {
+      if (!manifestTests.has(commandTarget)) {
+        laneFindings.push(`Runtime command target is not declared in the lane manifest: ${commandTarget}.`);
+      }
+    }
+
+    for (const helperFile of manifest.helpers) {
+      expectedHelperFiles.add(helperFile);
+      const helperStatus = helperAllowedForManifest(helperFile) && await repoPathExists(helperFile) ? "PASS" : "FAIL";
+      fileRows.push({
+        file: helperFile,
+        lane,
+        reason: helperStatus === "PASS"
+          ? "Reusable helper is explicit, present, and shared-helper owned."
+          : "Helper is missing or outside tests/helpers.",
+        role: "helper",
+        status: helperStatus
+      });
+      if (helperStatus === "FAIL") {
+        laneFindings.push(`Invalid manifest helper for ${lane}: ${helperFile}.`);
+      }
+    }
+
+    for (const fixtureFile of manifest.fixtures) {
+      expectedFixtureFiles.add(fixtureFile);
+      const fixtureStatus = fixtureAllowedForOwnership(fixtureFile, manifest.ownership) && await repoPathExists(fixtureFile) ? "PASS" : "FAIL";
+      fileRows.push({
+        file: fixtureFile,
+        lane,
+        reason: fixtureStatus === "PASS"
+          ? "Fixture is explicit, present, and allowed for the lane ownership."
+          : "Fixture is missing or not allowed for this lane ownership.",
+        role: "fixture",
+        status: fixtureStatus
+      });
+      if (fixtureStatus === "FAIL") {
+        laneFindings.push(`Invalid manifest fixture for ${lane}: ${fixtureFile}.`);
+      }
+    }
+
+    for (const importFile of manifest.imports) {
+      const importExists = await repoPathExists(importFile);
+      fileRows.push({
+        file: importFile,
+        lane,
+        reason: importExists
+          ? "Relative import dependency is resolved and recorded in the manifest."
+          : "Relative import dependency is missing.",
+        role: "import",
+        status: importExists ? "PASS" : "FAIL"
+      });
+      if (!importExists) {
+        laneFindings.push(`Manifest import dependency is missing: ${importFile}.`);
+      }
+    }
+
+    const expectedHash = fingerprint({
+      dependencies: manifest.dependencies,
+      fixtures: manifest.fixtures,
+      helpers: manifest.helpers,
+      imports: manifest.imports,
+      lane: manifest.lane,
+      ownership: manifest.ownership,
+      tests: manifest.tests
+    });
+    if (expectedHash !== manifest.manifestHash) {
+      laneFindings.push(`Manifest hash changed during validation for lane ${lane}.`);
+    }
+
+    laneFindings.forEach((entry) => findings.push(entry));
+    manifestRows.push({
+      ...manifest,
+      reason: laneFindings.length === 0
+        ? "Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime."
+        : laneFindings.join("; "),
+      status: laneFindings.length === 0 ? "PASS" : "FAIL"
+    });
+  }
+
+  const expansionFindings = [];
+  for (const targetFile of scopedDiscovery.targetFiles) {
+    if (!expectedTargetFiles.has(targetFile)) {
+      expansionFindings.push(`Scoped discovery target was not declared by any lane manifest: ${targetFile}.`);
+    }
+  }
+  for (const helperFile of scopedDiscovery.helperFiles) {
+    if (!expectedHelperFiles.has(helperFile)) {
+      expansionFindings.push(`Scoped discovery helper was not declared by any lane manifest: ${helperFile}.`);
+    }
+  }
+  for (const fixtureFile of scopedDiscovery.fixtureFiles) {
+    if (!expectedFixtureFiles.has(fixtureFile)) {
+      expansionFindings.push(`Scoped discovery fixture was not declared by any lane manifest: ${fixtureFile}.`);
+    }
+  }
+  findings.push(...expansionFindings);
+
+  return {
+    fileRows,
+    findings: [...new Set(findings)],
+    manifestRows,
+    preventedDiscoveryExpansion: expansionFindings.length === 0,
+    preventedRedundantScans: Math.max(0, scopedDiscovery.textReads - scopedDiscovery.laneManifests.length),
+    status: findings.length === 0 ? "PASS" : "FAIL"
   };
 }
 
@@ -756,6 +1089,7 @@ async function validateLaneRegistrations() {
   const expectedScripts = new Map([
     ["workspace-contract", "test:lane:workspace-contract"],
     ["tool-runtime", "test:lane:tool-runtime"],
+    ["game-runtime", "test:lane:game-runtime"],
     ["integration", "test:lane:integration"],
     ["engine-src", "test:lane:engine-src"],
     ["samples", "test:lane:samples"]
@@ -1438,8 +1772,101 @@ function makeLaneDeduplicationReport({ laneDeduplication }) {
   return `${lines.join("\n").trim()}\n`;
 }
 
+function makeTargetedFileManifestReport({ scopedDiscovery, laneInputValidation }) {
+  const lines = [
+    "# Targeted File Manifest Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${laneInputValidation.status}`,
+    "",
+    "## Manifest-Generated Lane Inputs",
+    "",
+    "| Lane | Ownership | Status | Tests | Helpers | Fixtures | Imports / Dependencies | Manifest Hash | Reason |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"
+  ];
+
+  if (laneInputValidation.manifestRows.length === 0) {
+    lines.push("| none | none | SKIP | none | none | none | none | none | No selected lanes produced manifests. |");
+  } else {
+    laneInputValidation.manifestRows.forEach((row) => {
+      lines.push([
+        `| ${row.lane}`,
+        row.ownership,
+        row.status,
+        reportLine(row.tests.join("; ") || "none"),
+        reportLine(row.helpers.join("; ") || "none"),
+        reportLine(row.fixtures.join("; ") || "none"),
+        reportLine(row.imports.join("; ") || "none"),
+        row.manifestHash,
+        `${reportLine(row.reason)} |`
+      ].join(" | "));
+    });
+  }
+
+  lines.push(
+    "",
+    "## Discovery Expansion Control",
+    "",
+    `Prevented discovery expansion: ${laneInputValidation.preventedDiscoveryExpansion ? "Yes" : "No"}`,
+    `Prevented redundant scans: ${laneInputValidation.preventedRedundantScans}`,
+    `Targeted file/helper reads: ${scopedDiscovery.textReads}`,
+    "",
+    "## Runtime Savings Observations",
+    "",
+    "- Each selected lane receives one deterministic manifest before runtime scheduling.",
+    "- Manifest inputs replace repeated recursive test, helper, and fixture discovery during targeted execution.",
+    "- Runtime command targets must be declared by the lane manifest before browser launch.",
+    "- Manifest hashes lock lane inputs so runtime lane mutation is detected before execution."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function makeLaneInputValidationReport({ laneInputValidation }) {
+  const lines = [
+    "# Lane Input Validation Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    `Status: ${laneInputValidation.status}`,
+    "",
+    "## Input Files",
+    "",
+    "| Lane | Role | File | Status | Reason |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  if (laneInputValidation.fileRows.length === 0) {
+    lines.push("| none | none | none | SKIP | No selected lane inputs were validated. |");
+  } else {
+    laneInputValidation.fileRows.forEach((row) => {
+      lines.push(`| ${row.lane} | ${row.role} | ${row.file} | ${row.status} | ${reportLine(row.reason)} |`);
+    });
+  }
+
+  lines.push("", "## Ownership Validation Failures", "");
+  if (laneInputValidation.findings.length === 0) {
+    lines.push("No manifest ownership, helper, fixture, import, or runtime command target failures.");
+  } else {
+    laneInputValidation.findings.forEach((findingText) => lines.push(`- ${findingText}`));
+  }
+
+  lines.push(
+    "",
+    "## Fast-Fail Enforcement",
+    "",
+    "- Manifest ownership is validated before Playwright/browser launch.",
+    "- Helper ownership is validated before execution.",
+    "- Fixture ownership is validated before execution.",
+    "- Unexpected discovery expansion outside manifest scope blocks runtime scheduling.",
+    "- Deterministic manifest failures do not trigger fallback broad discovery."
+  );
+
+  return `${lines.join("\n").trim()}\n`;
+}
+
 function makeStaticValidationReport({
   dryRun,
+  laneInputValidation,
   laneRegistration,
   lanes,
   runnerPreflight,
@@ -1454,6 +1881,7 @@ function makeStaticValidationReport({
     ...laneRegistration.findings,
     ...runnerPreflight.findings,
     ...scopedDiscoveryValidation.findings,
+    ...laneInputValidation.findings,
     ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
   ];
   const status = findings.length > 0 ? "FAIL" : "PASS";
@@ -1485,6 +1913,8 @@ function makeStaticValidationReport({
     `| invalid filename detection | ${structureAudit.status} | Covered by Playwright structure audit. |`,
     `| missing import detection | ${structureAudit.status} | Covered by Playwright structure audit relative import checks. |`,
     `| missing fixture detection | ${runnerPreflight.findings.some((entry) => entry.includes("missing fixture")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("missing fixture")).join("; ") || "No missing fixture findings."} |`,
+    `| targeted file manifests | ${laneInputValidation.status} | ${laneInputValidation.manifestRows.map((row) => `${row.lane}:${row.manifestHash}`).join("; ") || "No lane manifests generated."} |`,
+    `| lane input graph expansion | ${laneInputValidation.preventedDiscoveryExpansion ? "PASS" : "FAIL"} | ${laneInputValidation.preventedDiscoveryExpansion ? "No inputs escaped manifest scope." : "Unexpected input expansion escaped manifest scope."} |`,
     `| scoped discovery targets | ${scopedDiscoveryValidation.status} | ${scopedDiscovery.targetFiles.join("; ") || "No Playwright discovery targets selected."} |`,
     `| broad scan prevention | ${scopedDiscoveryValidation.status} | Discovery map read ${scopedDiscovery.textReads} targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |`,
     `| invalid lane target detection | ${runnerPreflight.findings.some((entry) => entry.includes("targets")) || unknownLanes.length > 0 ? "FAIL" : "PASS"} | ${[...unknownLanes.map((lane) => `Unknown lane ${lane}`), ...runnerPreflight.findings.filter((entry) => entry.includes("targets"))].join("; ") || "No invalid lane target findings."} |`,
@@ -1517,6 +1947,7 @@ function makeStaticValidationReport({
 
 function makeZeroBrowserPreflightReport({
   dependencyGate,
+  laneInputValidation,
   laneCompilation,
   laneRegistration,
   runnerPreflight,
@@ -1530,6 +1961,7 @@ function makeZeroBrowserPreflightReport({
     ...laneRegistration.findings,
     ...runnerPreflight.findings,
     ...scopedDiscoveryValidation.findings,
+    ...laneInputValidation.findings,
     ...laneCompilation.findings,
     ...dependencyGate.findings,
     ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
@@ -1572,6 +2004,8 @@ function makeZeroBrowserPreflightReport({
     `| invalid imports | ${structureAudit.status} | Relative imports checked by Playwright structure audit. |`,
     `| unresolved fixtures | ${runnerPreflight.findings.some((entry) => entry.includes("missing fixture")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("missing fixture")).join("; ") || "No unresolved fixture findings."} |`,
     `| unresolved helpers | ${structureAudit.status} | Shared helper imports and naming ownership checked. |`,
+    `| targeted file manifests | ${laneInputValidation.status} | ${laneInputValidation.manifestRows.map((row) => `${row.lane}:${row.status}`).join(", ") || "none"} |`,
+    `| manifest input graph expansion | ${laneInputValidation.preventedDiscoveryExpansion ? "PASS" : "FAIL"} | ${laneInputValidation.preventedDiscoveryExpansion ? "No scoped discovery inputs escaped manifest ownership." : "Unexpected manifest input expansion detected."} |`,
     `| scoped discovery | ${scopedDiscoveryValidation.status} | Targets: ${scopedDiscovery.targetFiles.join(", ") || "none"}; helpers: ${scopedDiscovery.helperFiles.join(", ") || "none"}. |`,
     `| invalid grep patterns | ${runnerPreflight.findings.some((entry) => entry.includes("grep")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("grep")).join("; ") || "No invalid grep patterns."} |`,
     `| Windows quoting hazards | ${runnerPreflight.findings.some((entry) => entry.includes("quoting hazard")) ? "FAIL" : "PASS"} | ${runnerPreflight.notes.filter((entry) => entry.includes("grep pattern")).join("; ") || "No shell quoting hazards."} |`,
@@ -1608,6 +2042,7 @@ function makeReport({
   dependencyGate,
   dryRun,
   fullSamplesSmoke,
+  laneInputValidation,
   laneDeduplication,
   preflight,
   results,
@@ -1669,6 +2104,13 @@ function makeReport({
     `Targeted file/helper reads: ${scopedDiscovery?.textReads ?? 0}`,
     `Cached discovery reuse: ${validationCache?.events?.some((event) => event.stage === "scoped discovery map" && event.status === "HIT") ? "Yes" : "No"}`,
     `Prevented fallback expansion: ${scopedDiscoveryValidation?.status === "PASS" ? "Yes; no ownership or scope blocker widened into broad discovery." : "Blocked before runtime; no fallback lanes scheduled."}`,
+    "",
+    "## Targeted File Manifests",
+    "",
+    `Status: ${laneInputValidation?.status || "SKIP"}`,
+    `Generated manifests: ${laneInputValidation?.manifestRows?.map((row) => `${row.lane}:${row.status}`).join(", ") || "none"}`,
+    `Prevented discovery expansion: ${laneInputValidation?.preventedDiscoveryExpansion ? "Yes" : "No"}`,
+    `Prevented redundant scans: ${laneInputValidation?.preventedRedundantScans ?? 0}`,
     "",
     "## Lane Deduplication",
     "",
@@ -1780,6 +2222,31 @@ const scopedDiscoveryValidation = validateScopedDiscoveryPlan({
   lanes: options.lanes,
   scopedDiscovery
 });
+const laneInputValidationInput = {
+  includeSamples: options.includeSamples,
+  laneDefinitionHash,
+  lanes: options.lanes,
+  scopedDiscoveryHash: fingerprint(scopedDiscovery)
+};
+const laneInputValidation = unknownLanes.length > 0
+  ? {
+    fileRows: [],
+    findings: [],
+    manifestRows: [],
+    preventedDiscoveryExpansion: true,
+    preventedRedundantScans: 0,
+    status: "SKIP"
+  }
+  : await validationCache.get(
+    "targeted file manifest validation",
+    laneInputValidationInput,
+    ["lane definitions change", "fixture ownership changes", "helper/import graph changes", "targeted files change"],
+    () => validateTargetedFileManifests({
+      includeSamples: options.includeSamples,
+      lanes: options.lanes,
+      scopedDiscovery
+    })
+  );
 let structureAudit = {
   command: "",
   reason: needsPreflight
@@ -1815,8 +2282,9 @@ if (unknownLanes.length === 0 && needsPreflight && !options.dryRun && !options.s
         "--lanes",
         options.lanes.join(",")
       ];
-      if (scopedDiscovery.targetFiles.length > 0) {
-        auditArgs.push("--targets", scopedDiscovery.targetFiles.join(","));
+      const playwrightAuditTargets = scopedDiscovery.targetFiles.filter((targetFile) => isUnderPath(targetFile, "tests/playwright"));
+      if (playwrightAuditTargets.length > 0) {
+        auditArgs.push("--targets", playwrightAuditTargets.join(","));
       }
       if (scopedDiscovery.helperFiles.length > 0) {
         auditArgs.push("--helpers", scopedDiscovery.helperFiles.join(","));
@@ -1838,6 +2306,7 @@ if (unknownLanes.length === 0 && needsPreflight && !options.dryRun && !options.s
 
 const staticReportText = makeStaticValidationReport({
   dryRun: options.dryRun,
+  laneInputValidation,
   laneRegistration,
   lanes: options.lanes,
   runnerPreflight,
@@ -1889,6 +2358,7 @@ const runtimeSchedulingBlockers = [...new Set([
   ...laneRegistration.findings,
   ...runnerPreflight.findings,
   ...scopedDiscoveryValidation.findings,
+  ...laneInputValidation.findings,
   ...laneCompilation.findings,
   ...dependencyGate.findings,
   ...(structureAudit.status === "FAIL" ? [structureAudit.reason] : [])
@@ -1905,6 +2375,7 @@ const zeroBrowserInput = {
   dependencyGateStatus: dependencyGate.status,
   laneCompilationStatus: laneCompilation.status,
   laneDefinitionHash,
+  laneInputValidationStatus: laneInputValidation.status,
   laneRegistrationStatus: laneRegistration.findings.length === 0 ? "PASS" : "FAIL",
   runnerPreflightStatus: runnerPreflight.findings.length === 0 ? "PASS" : "FAIL",
   scopedDiscoveryStatus: scopedDiscoveryValidation.status,
@@ -1915,12 +2386,18 @@ const laneCompilationReportText = makeLaneCompilationReport({ laneCompilation })
 const dependencyGatingReportText = makeDependencyGatingReport({ dependencyGate });
 const laneDeduplicationReportText = makeLaneDeduplicationReport({ laneDeduplication });
 const laneRuntimeOptimizationReportText = makeLaneRuntimeOptimizationReport({ runtimeSchedule });
+const targetedFileManifestReportText = makeTargetedFileManifestReport({
+  laneInputValidation,
+  scopedDiscovery
+});
+const laneInputValidationReportText = makeLaneInputValidationReport({ laneInputValidation });
 const zeroBrowserReportText = await validationCache.get(
   "zero-browser preflight",
   zeroBrowserInput,
   ["lane definitions change", "fixture ownership changes", "helper/import graph changes", "targeted files change", "dependency graph changes"],
   () => makeZeroBrowserPreflightReport({
     dependencyGate,
+    laneInputValidation,
     laneCompilation,
     laneRegistration,
     runnerPreflight,
@@ -1934,6 +2411,8 @@ validationCache.reuse("structural ownership validation", structureAuditInput, "s
 validationCache.reuse("structural ownership validation", structureAuditInput, "zero-browser preflight report");
 validationCache.reuse("scoped discovery map", scopedDiscoveryInput, "structural ownership validation input");
 validationCache.reuse("scoped discovery map", scopedDiscoveryInput, "discovery scope reporting");
+validationCache.reuse("targeted file manifest validation", laneInputValidationInput, "lane input validation report");
+validationCache.reuse("targeted file manifest validation", laneInputValidationInput, "runtime scheduling blockers");
 validationCache.reuse("lane compilation validation", laneCompilationInput, "lane compilation report");
 validationCache.reuse("lane compilation validation", laneCompilationInput, "runtime scheduling");
 validationCache.reuse("dependency validation", dependencyGateInput, "dependency report");
@@ -1945,6 +2424,8 @@ await writeTextReport(options.laneCompilationReportPath, laneCompilationReportTe
 await writeTextReport(options.dependencyGatingReportPath, dependencyGatingReportText);
 await writeTextReport(options.laneDeduplicationReportPath, laneDeduplicationReportText);
 await writeTextReport(options.laneRuntimeOptimizationReportPath, laneRuntimeOptimizationReportText);
+await writeTextReport(options.targetedFileManifestReportPath, targetedFileManifestReportText);
+await writeTextReport(options.laneInputValidationReportPath, laneInputValidationReportText);
 await writeTextReport(options.validationCacheReportPath, validationCacheReportText);
 await writeTextReport(options.zeroBrowserReportPath, zeroBrowserReportText);
 
@@ -1959,6 +2440,7 @@ if (unknownLanes.length > 0
   || laneRegistration.findings.length > 0
   || runnerPreflight.findings.length > 0
   || scopedDiscoveryValidation.status === "FAIL"
+  || laneInputValidation.status === "FAIL"
   || laneCompilation.status === "FAIL"
   || dependencyGate.status === "FAIL") {
   preflight.status = "FAIL";
@@ -1968,6 +2450,7 @@ if (unknownLanes.length > 0
     ...laneRegistration.findings,
     ...runnerPreflight.findings,
     ...scopedDiscoveryValidation.findings,
+    ...laneInputValidation.findings,
     ...dependencyGate.findings
   );
   for (const [lane, definition] of Object.entries(laneDefinitions)) {
@@ -1991,6 +2474,7 @@ if (unknownLanes.length > 0
     dependencyGate,
     dryRun: options.dryRun,
     fullSamplesSmoke,
+    laneInputValidation,
     laneDeduplication,
     preflight,
     results,
@@ -2028,6 +2512,7 @@ if (needsPreflight && !options.dryRun && !options.skipPreflight) {
       dependencyGate,
       dryRun: options.dryRun,
       fullSamplesSmoke,
+      laneInputValidation,
       laneDeduplication,
       preflight,
       results,
@@ -2127,6 +2612,7 @@ await writeReport(options.reportPath, makeReport({
   dependencyGate,
   dryRun: options.dryRun,
   fullSamplesSmoke,
+  laneInputValidation,
   laneDeduplication,
   preflight,
   results,

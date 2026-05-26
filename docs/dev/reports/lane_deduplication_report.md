@@ -1,12 +1,12 @@
 # Lane Deduplication Report
 
-Generated: 2026-05-26T19:43:53.674Z
+Generated: 2026-05-26T19:54:13.477Z
 Status: PASS
 
 ## Summary
 
-Raw lane requests: tool-runtime, integration
-Unique scheduled lanes: tool-runtime, integration
+Raw lane requests: tool-runtime, game-runtime, integration, engine-src
+Unique scheduled lanes: tool-runtime, game-runtime, integration, engine-src
 Prevented duplicate lane executions: 0
 Prevented browser launches: 0
 Prevented Workspace lane reruns: 0

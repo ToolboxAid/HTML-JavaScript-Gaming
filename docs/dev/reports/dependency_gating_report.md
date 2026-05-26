@@ -1,6 +1,6 @@
 # Dependency Gating Report
 
-Generated: 2026-05-26T19:43:53.674Z
+Generated: 2026-05-26T19:54:13.476Z
 Status: PASS
 
 ## Gate Order
@@ -16,8 +16,9 @@ Status: PASS
 | --- | --- | --- | --- | --- | --- |
 | workspace-contract | No | SKIP | none | Workspace Manager V2 contract and lifecycle behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | tool-runtime | Yes | PASS | none | First-class tool runtime behavior | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
+| game-runtime | Yes | PASS | none | Game-owned Playwright runtime behavior | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
 | integration | Yes | PASS | none | Workspace, tool, game index, and manifest handoff behavior | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
-| engine-src | No | SKIP | none | src/ engine and shared runtime capability behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| engine-src | Yes | PASS | none | src/ engine and shared runtime capability behavior | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
 | samples | No | SKIP | none | Affected samples lane, on request only | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 
 ## Dependency Failures Caught Pre-Runtime
