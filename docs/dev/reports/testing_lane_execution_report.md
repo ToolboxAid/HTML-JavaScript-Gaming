@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-05-26T20:07:09.318Z
+Generated: 2026-05-26T20:24:06.715Z
 Dry run: No
 
 ## Summary
@@ -32,13 +32,16 @@ Reason: No deterministic dependency failures before runtime.
 Status: PASS
 Scheduled lane order: tool-runtime, game-runtime, integration, engine-src
 Reused runtime sessions: 3
+Reused warm-start lanes: 4
+Reused dependency hydration: 4
+Prevented redundant initialization: 4
 Prevented redundant browser launches: 4
 Prevented redundant lane execution: 2
 
 ## Validation Cache
 
-Cached validations reused: 12
-Validation computations: 8
+Cached validations reused: 15
+Validation computations: 9
 
 ## Discovery Scope
 
@@ -57,6 +60,15 @@ Generated manifests: tool-runtime:PASS, game-runtime:PASS, integration:PASS, eng
 Prevented discovery expansion: Yes
 Prevented redundant scans: 0
 Persistent manifest events: tool-runtime:REUSED, game-runtime:REUSED, integration:REUSED, engine-src:REUSED
+
+## Warm-Start Reuse
+
+Status: PASS
+Warm-start events: tool-runtime:REUSED, game-runtime:REUSED, integration:REUSED, engine-src:REUSED
+Dependency hydration events: tool-runtime:REUSED, game-runtime:REUSED, integration:REUSED, engine-src:REUSED
+Prevented redundant initialization: 4
+Prevented helper resolution passes: 11
+Prevented fixture ownership traversal: 6
 
 ## Lane Deduplication
 
@@ -100,4 +112,4 @@ Prevented Workspace lane reruns: 0
 
 - `tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs:14:1` - `validates Asteroids ship visual states from manifest runtime rendering`; expected ship visual states to include `destroyed`, received `idle` and `move`.
 
-Persistent manifest reuse, incremental validation, lane input validation, ownership validation, dependency gating, tool-runtime validation, integration validation, and engine/src node validation passed before this game-runtime assertion failed.
+Discovery ownership validation, manifest validation, warm-start validation, dependency hydration reuse, tool-runtime validation, integration validation, and engine/src node validation passed before this game-runtime assertion failed.
