@@ -5,6 +5,7 @@
 
 .midi-studio-v2__song-list {
   display: grid;
+  flex: 0 0 auto;
   gap: 0.5rem;
   min-height: 8rem;
 }
@@ -92,7 +93,7 @@
 }
 
 .midi-studio-v2.app-shell {
-  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr) minmax(14rem, 18rem);
+  grid-template-columns: minmax(calc(14rem + 350px), calc(18rem + 350px)) minmax(0, 1fr) minmax(14rem, 18rem);
 }
 
 .midi-studio-v2__timeline-title h2 {
@@ -424,17 +425,89 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 
 .midi-studio-v2__instrument-control-row {
   flex-wrap: nowrap;
-  justify-content: space-between;
+  gap: 0.28rem;
+  justify-content: flex-start;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .midi-studio-v2__lane-toggle {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  color: #cbd5e1;
+  cursor: pointer;
+  flex: 0 0 auto;
+  gap: 0;
+  justify-content: center;
   min-height: 1.18rem;
+  min-width: 1.4rem;
+  padding: 0;
+  position: relative;
+  width: 1.4rem;
+}
+
+.midi-studio-v2__lane-toggle input {
+  cursor: pointer;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.midi-studio-v2__lane-toggle-icon {
+  display: inline-block;
+  height: 0.82rem;
+  pointer-events: none;
+  position: relative;
+  width: 0.82rem;
+}
+
+.midi-studio-v2__lane-toggle--mute .midi-studio-v2__lane-toggle-icon::before {
+  border-bottom: 0.22rem solid transparent;
+  border-right: 0.42rem solid currentColor;
+  border-top: 0.22rem solid transparent;
+  content: "";
+  height: 0;
+  left: 0.1rem;
+  position: absolute;
+  top: 0.19rem;
+  width: 0;
+}
+
+.midi-studio-v2__lane-toggle--mute .midi-studio-v2__lane-toggle-icon::after {
+  background: currentColor;
+  content: "";
+  height: 0.78rem;
+  left: 0.52rem;
+  position: absolute;
+  top: 0.02rem;
+  transform: rotate(-34deg);
+  width: 0.1rem;
+}
+
+.midi-studio-v2__lane-toggle--solo .midi-studio-v2__lane-toggle-icon::before {
+  background: currentColor;
+  clip-path: polygon(50% 0%, 62% 34%, 98% 35%, 69% 56%, 79% 91%, 50% 70%, 21% 91%, 31% 56%, 2% 35%, 38% 34%);
+  content: "";
+  height: 0.78rem;
+  left: 0.02rem;
+  position: absolute;
+  top: 0.02rem;
+  width: 0.78rem;
+}
+
+.midi-studio-v2__lane-toggle.is-active {
+  background: rgba(14, 165, 233, 0.28);
+  border-color: #7dd3fc;
+  color: #ffffff;
 }
 
 .midi-studio-v2__lane-icon-button,
 .midi-studio-v2__lane-add-button {
   align-items: center;
   display: inline-flex;
+  flex: 0 0 auto;
   font-size: 0.76rem;
   justify-content: center;
   min-height: 1.32rem;
@@ -602,6 +675,20 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   background: rgba(221, 214, 254, 0.16);
   color: #ffffff;
   font-weight: 700;
+}
+
+.midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--lane-dimmed {
+  background: rgba(71, 85, 105, 0.46);
+  color: #94a3b8;
+  position: relative;
+  z-index: 1;
+}
+
+.midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--lane-selected {
+  background: rgba(14, 165, 233, 0.28);
+  color: #ffffff;
+  position: relative;
+  z-index: 2;
 }
 
 .midi-studio-v2__grid-cell--generated {

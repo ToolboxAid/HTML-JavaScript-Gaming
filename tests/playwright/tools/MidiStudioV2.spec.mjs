@@ -372,6 +372,51 @@ function instrumentSelect(page, lane) {
   return instrumentRow(page, lane).locator("[data-lane-instrument-select]");
 }
 
+function instrumentToggle(page, lane, kind) {
+  return instrumentRow(page, lane).locator(`.midi-studio-v2__lane-toggle--${kind}`);
+}
+
+async function instrumentScrollSnapshot(page) {
+  return page.evaluate(() => {
+    const leftPanel = document.querySelector(".tool-starter__panel--left");
+    const instrumentPanel = document.querySelector(".midi-studio-v2__instrument-list-panel");
+    return {
+      instrumentLeft: instrumentPanel?.scrollLeft || 0,
+      instrumentTop: instrumentPanel?.scrollTop || 0,
+      leftLeft: leftPanel?.scrollLeft || 0,
+      leftTop: leftPanel?.scrollTop || 0,
+      windowX: window.scrollX,
+      windowY: window.scrollY
+    };
+  });
+}
+
+async function prepareInstrumentScrollSentinel(page) {
+  await page.evaluate(() => {
+    const leftPanel = document.querySelector(".tool-starter__panel--left");
+    const instrumentPanel = document.querySelector(".midi-studio-v2__instrument-list-panel");
+    if (leftPanel) {
+      leftPanel.style.maxHeight = "260px";
+      leftPanel.style.overflow = "auto";
+      leftPanel.scrollLeft = 0;
+    }
+    if (instrumentPanel) {
+      instrumentPanel.style.maxHeight = "170px";
+      instrumentPanel.style.overflow = "auto";
+      instrumentPanel.scrollLeft = 0;
+    }
+  });
+}
+
+async function expectInstrumentClickKeepsScroll(page, locator) {
+  await prepareInstrumentScrollSentinel(page);
+  await locator.evaluate((element) => element.scrollIntoView({ block: "center", inline: "nearest" }));
+  const before = await instrumentScrollSnapshot(page);
+  await locator.click();
+  await page.waitForTimeout(50);
+  await expect.poll(() => instrumentScrollSnapshot(page)).toEqual(before);
+}
+
 function laneHeader(page, lane) {
   return page.locator(`.midi-studio-v2__lane-header-cell[data-lane="${lane}"]`);
 }
@@ -535,6 +580,15 @@ test.describe("MIDI Studio V2", () => {
       await expect(leadVisibility).toHaveText("");
       await expect(leadVisibility).toHaveAttribute("aria-pressed", "true");
       await expect(leadVisibility).toHaveAttribute("aria-label", /Hide Lead/);
+      await expect(instrumentToggle(page, "lead", "mute")).toHaveText("");
+      await expect(instrumentToggle(page, "lead", "solo")).toHaveText("");
+      await expect(instrumentToggle(page, "lead", "mute").locator(".midi-studio-v2__lane-toggle-icon")).toHaveCount(1);
+      await expect(instrumentToggle(page, "lead", "solo").locator(".midi-studio-v2__lane-toggle-icon")).toHaveCount(1);
+      await expect(instrumentRow(page, "lead").locator('[aria-label="Mute Lead"]')).not.toBeChecked();
+      await instrumentToggle(page, "lead", "mute").click();
+      await expect(instrumentRow(page, "lead").locator('[aria-label="Mute Lead"]')).toBeChecked();
+      await instrumentToggle(page, "lead", "mute").click();
+      await expect(instrumentRow(page, "lead").locator('[aria-label="Mute Lead"]')).not.toBeChecked();
       const controlAlignment = await instrumentRow(page, "lead").locator(".midi-studio-v2__instrument-control-row").evaluate((row) => {
         const controls = [
           row.querySelector('[aria-label="Mute Lead"]')?.closest("label"),
@@ -556,6 +610,20 @@ test.describe("MIDI Studio V2", () => {
       });
       expect(controlAlignment.missing).toBe(false);
       expect(controlAlignment.maxCenterDelta).toBeLessThanOrEqual(4);
+      const leftColumnFit = await instrumentRow(page, "lead").locator(".midi-studio-v2__instrument-control-row").evaluate((row) => {
+        const leftPanel = document.querySelector(".tool-starter__panel--left").getBoundingClientRect();
+        const rowRect = row.getBoundingClientRect();
+        const controls = Array.from(row.children).map((control) => control.getBoundingClientRect());
+        return {
+          controlsFit: controls.every((rect) => rect.left >= rowRect.left - 1 && rect.right <= rowRect.right + 1 && rect.right <= leftPanel.right + 1),
+          leftWidth: leftPanel.width,
+          rowClientWidth: row.clientWidth,
+          rowScrollWidth: row.scrollWidth
+        };
+      });
+      expect(leftColumnFit.leftWidth).toBeGreaterThanOrEqual(560);
+      expect(leftColumnFit.controlsFit).toBe(true);
+      expect(leftColumnFit.rowScrollWidth).toBeLessThanOrEqual(leftColumnFit.rowClientWidth + 1);
 
       const octaveCellHeight = await octaveCell(page, "C5", 0).evaluate((cell) => cell.getBoundingClientRect().height);
       expect(octaveCellHeight).toBeLessThanOrEqual(32);
@@ -590,6 +658,33 @@ test.describe("MIDI Studio V2", () => {
       expect(leadChordValues).toEqual(expect.arrayContaining(initialLeadValues));
       await expect(octaveCell(page, "C5", chordStep)).toHaveClass(/midi-studio-v2__grid-cell--lane-selected/);
       await expect(octaveNoteBlock(page, "chords").first()).toHaveClass(/midi-studio-v2__grid-cell--lane-dimmed/);
+      const noteLayering = await page.evaluate(() => {
+        const selected = document.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="C5"].midi-studio-v2__grid-cell--lane-selected');
+        const dimmed = document.querySelector(".midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--lane-dimmed");
+        const selectedStyles = getComputedStyle(selected);
+        const dimmedStyles = getComputedStyle(dimmed);
+        return {
+          dimmedBackground: dimmedStyles.backgroundColor,
+          dimmedColor: dimmedStyles.color,
+          dimmedZ: Number(dimmedStyles.zIndex),
+          selectedZ: Number(selectedStyles.zIndex)
+        };
+      });
+      expect(noteLayering.dimmedColor).toBe("rgb(148, 163, 184)");
+      expect(noteLayering.dimmedBackground).toMatch(/rgba?\(71,\s*85,\s*105/);
+      expect(noteLayering.selectedZ).toBeGreaterThan(noteLayering.dimmedZ);
+
+      await expectInstrumentClickKeepsScroll(page, instrumentToggle(page, "lead", "mute"));
+      await expectInstrumentClickKeepsScroll(page, instrumentToggle(page, "lead", "mute"));
+      await expectInstrumentClickKeepsScroll(page, instrumentToggle(page, "lead", "solo"));
+      await expectInstrumentClickKeepsScroll(page, instrumentToggle(page, "lead", "solo"));
+      await expectInstrumentClickKeepsScroll(page, leadVisibility);
+      await expectInstrumentClickKeepsScroll(page, leadVisibility);
+      await page.locator("#addInstrumentRowButton").click();
+      await expect(instrumentRow(page, "instrument-1")).toBeVisible();
+      await expectInstrumentClickKeepsScroll(page, instrumentRow(page, "instrument-1").locator("[data-delete-instrument-row='instrument-1']"));
+      await expect(instrumentRow(page, "instrument-1")).toHaveCount(0);
+      await selectInstrumentRow(page, "lead");
 
       await leadVisibility.click();
       await expect(octaveNoteBlock(page, "lead")).toHaveCount(0);
@@ -648,6 +743,11 @@ test.describe("MIDI Studio V2", () => {
       const activeStep = await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.playheadStep);
       await expect(page.locator(`.midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active[data-step-index="${activeStep}"]`)).toHaveCount(1);
       await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await page.locator("#playButton").click();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopAllAudioButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#playButton")).toBeEnabled();
     } finally {
       await workspaceV2CoverageReporter.stop(page);
