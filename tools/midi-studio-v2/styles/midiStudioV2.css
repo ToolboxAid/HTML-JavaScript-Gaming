@@ -90,13 +90,26 @@
 
 .midi-studio-v2__grid-settings,
 .midi-studio-v2__grid-lane-inputs,
-.midi-studio-v2__grid-actions {
+.midi-studio-v2__grid-actions,
+.midi-studio-v2__transport-panel,
+.midi-studio-v2__transport-fields,
+.midi-studio-v2__transport-actions,
+.midi-studio-v2__section-presets {
   display: grid;
   gap: 0.65rem;
 }
 
-.midi-studio-v2__grid-actions {
+.midi-studio-v2__grid-actions,
+.midi-studio-v2__transport-fields,
+.midi-studio-v2__transport-actions,
+.midi-studio-v2__section-presets {
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.midi-studio-v2__transport-panel {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  padding: 0.75rem;
 }
 
 .midi-studio-v2__grid-lane-inputs textarea {
@@ -136,9 +149,37 @@
   text-transform: capitalize;
 }
 
+.midi-studio-v2__grid-cell--bar,
+.midi-studio-v2__grid-cell--ruler,
 .midi-studio-v2__grid-cell--beat {
   color: var(--tool-starter-muted);
   font-size: 0.78rem;
+}
+
+.midi-studio-v2__grid-cell--bar {
+  background: color-mix(in srgb, var(--tool-starter-surface) 74%, #0ea5e9 26%);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.midi-studio-v2__grid-cell--ruler {
+  background: color-mix(in srgb, var(--tool-starter-panel-strong) 82%, #22c55e 18%);
+}
+
+.midi-studio-v2__grid-cell--playhead {
+  background: color-mix(in srgb, var(--tool-starter-panel-strong) 86%, #f97316 14%);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.midi-studio-v2__grid-cell--playhead-active {
+  background: #f97316;
+  color: #101827;
+}
+
+.midi-studio-v2__grid-cell--loop-region {
+  outline: 2px solid rgba(56, 189, 248, 0.72);
+  outline-offset: -2px;
 }
 
 .midi-studio-v2__grid-cell--event {
@@ -161,6 +202,26 @@
   font-weight: 600;
   margin-left: auto;
   text-transform: none;
+}
+
+.midi-studio-v2__section-tone-0 {
+  background: color-mix(in srgb, var(--tool-starter-surface) 76%, #0ea5e9 24%);
+}
+
+.midi-studio-v2__section-tone-1 {
+  background: color-mix(in srgb, var(--tool-starter-surface) 76%, #22c55e 24%);
+}
+
+.midi-studio-v2__section-tone-2 {
+  background: color-mix(in srgb, var(--tool-starter-surface) 76%, #eab308 24%);
+}
+
+.midi-studio-v2__section-tone-3 {
+  background: color-mix(in srgb, var(--tool-starter-surface) 76%, #f97316 24%);
+}
+
+.midi-studio-v2__section-tone-4 {
+  background: color-mix(in srgb, var(--tool-starter-surface) 76%, #ec4899 24%);
 }
 
 .midi-studio-v2__director {

@@ -620,6 +620,88 @@ Am F`);
     }
   });
 
+  test("renders timing ruler, section navigation, and loop region visualization", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, {
+        bass: "",
+        chords: "Am F C G | Dm G C Am | F G Am C | C G F Am | G F C Am",
+        drums: "",
+        lead: "",
+        pad: "",
+        sections: "intro:1, loop:1, bridge:1, boss:1, victory:1"
+      });
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#instrumentGridOutput")).toContainText("Bar 1");
+      await expect(page.locator("#instrumentGridOutput")).toContainText("Bar 5");
+      await expect(page.locator(".midi-studio-v2__grid-cell--bar")).toHaveCount(5);
+      await expect(page.locator(".midi-studio-v2__grid-cell--ruler").first()).toContainText("1");
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "intro");
+      await expect(page.locator("#instrumentGridSectionSelect")).toContainText("bridge");
+      await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
+      await page.locator("#instrumentGridLoopEndSelect").selectOption("boss");
+      expect(await page.locator(".midi-studio-v2__grid-cell--loop-region").count()).toBeGreaterThan(0);
+      await page.locator('[data-section-preset="boss"]').click();
+      await expect(page.locator("#instrumentGridSectionSelect")).toHaveValue("boss");
+      await page.locator("#jumpToSectionButton").click();
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "boss");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Timing playhead jumped to section boss\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("animates timing-only playhead by subdivision and preserves generated manual cells", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, {
+        bass: "",
+        beats: "2",
+        chords: "Am - F - | C - G -",
+        drums: "",
+        lead: "",
+        pad: "",
+        subdivision: "2"
+      });
+      await page.locator("#generateBassFromChordsButton").click();
+      await page.locator("#instrumentGridBassInput").fill("A2 E2 F2 - | C2 - G2 -");
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator('[data-lane="bass"][data-source="generated"]')).toHaveCount(4);
+      await expect(page.locator('[data-lane="bass"][data-source="manual"]')).toHaveCount(1);
+      await page.locator("#instrumentGridSectionSelect").selectOption("intro");
+      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Live playback synthesis not implemented\. Playing timing-preview playhead only; no audio playback was started\./);
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", beforeStep || "");
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-beat", /1|2/);
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-subdivision-step", /1|2/);
+      await page.locator("#stopTimingPreviewButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Timing preview stopped.");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Timing preview stopped\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("reports invalid section and invalid loop handling", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page);
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await page.locator('[data-section-preset="bridge"]').click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid section not found: Bridge\. Normalize a section map containing that label or choose a listed custom section\./);
+      await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
+      await page.locator("#instrumentGridLoopEndSelect").selectOption("intro");
+      await page.locator("#playLoopButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid loop rejected: Invalid loop region: loop starts after intro\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("generates bass pad arpeggio and drum lanes from chord grid", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {

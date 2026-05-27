@@ -225,6 +225,36 @@
               <button id="generateBasicDrumsButton" type="button">Generate Basic Drums</button>
               <button id="normalizeInstrumentGridButton" type="button">Normalize Grid</button>
             </div>
+            <div class="midi-studio-v2__transport-panel" aria-label="Instrument grid timing preview">
+              <div class="midi-studio-v2__section-presets" aria-label="Section shortcuts">
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="intro">Intro</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="loop">Loop</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="bridge">Bridge</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="boss">Boss</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="victory">Victory</button>
+              </div>
+              <div class="midi-studio-v2__transport-fields">
+                <label class="tool-starter__field" for="instrumentGridSectionSelect">
+                  <span>Custom section</span>
+                  <select id="instrumentGridSectionSelect"></select>
+                </label>
+                <label class="tool-starter__field" for="instrumentGridLoopStartSelect">
+                  <span>Loop start</span>
+                  <select id="instrumentGridLoopStartSelect"></select>
+                </label>
+                <label class="tool-starter__field" for="instrumentGridLoopEndSelect">
+                  <span>Loop end</span>
+                  <select id="instrumentGridLoopEndSelect"></select>
+                </label>
+              </div>
+              <div class="midi-studio-v2__transport-actions" aria-label="Grid transport actions">
+                <button id="jumpToSectionButton" type="button">Jump To Section</button>
+                <button id="playSectionButton" type="button">Play Section</button>
+                <button id="playLoopButton" type="button">Play Loop</button>
+                <button id="stopTimingPreviewButton" type="button">Stop</button>
+              </div>
+              <p id="instrumentGridTransportState" class="tool-starter__hint">Timing preview stopped.</p>
+            </div>
             <dl id="instrumentGridSummary" class="midi-studio-v2__details"></dl>
             <div id="instrumentGridOutput" class="midi-studio-v2__instrument-grid-output" aria-label="Aligned multi-instrument grid"></div>
           </div>

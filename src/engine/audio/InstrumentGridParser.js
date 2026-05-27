@@ -65,12 +65,21 @@ export class InstrumentGridParser {
       timeline.push(...parsedLane.events);
       warnings.push(...parsedLane.warnings);
     }
-    const normalizedSections = sections.value.map((section) => ({
-      ...section,
-      beatsPerBar: beatsPerBar.value,
-      subdivision: subdivision.value,
-      steps: section.bars * stepsPerBar
-    }));
+    let sectionStepCursor = 0;
+    const normalizedSections = sections.value.map((section, index) => {
+      const steps = section.bars * stepsPerBar;
+      const normalized = {
+        ...section,
+        beatsPerBar: beatsPerBar.value,
+        colorIndex: index % 5,
+        endStep: sectionStepCursor + steps - 1,
+        startStep: sectionStepCursor,
+        subdivision: subdivision.value,
+        steps
+      };
+      sectionStepCursor += steps;
+      return normalized;
+    });
     return {
       barCount,
       beatCount: barCount * beatsPerBar.value,

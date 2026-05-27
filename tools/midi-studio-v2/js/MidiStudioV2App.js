@@ -56,7 +56,8 @@ export class MidiStudioV2App {
     this.songSheet.mount({ onParse: (sourceText) => this.parseSongSheet(sourceText) });
     this.instrumentGrid.mount({
       onGenerate: (lane, input) => this.generateInstrumentLane(lane, input),
-      onNormalize: (input) => this.normalizeInstrumentGrid(input)
+      onNormalize: (input) => this.normalizeInstrumentGrid(input),
+      onTransport: (action, detail) => this.handleInstrumentGridTransport(action, detail)
     });
     this.midiSourceDetails.mount({ onInspect: () => this.inspectSelectedSource() });
     this.playbackControl.mount({
@@ -219,6 +220,38 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Instrument grid normalized with warnings: ${normalized.warningSummary}`);
     }
     this.statusLog.ok(generated.message);
+  }
+
+  handleInstrumentGridTransport(action, detail = {}) {
+    if (action === "invalid-section") {
+      this.statusLog.fail(`Instrument grid section not found: ${detail.label}. Normalize a section map containing that label or choose a listed custom section.`);
+      return;
+    }
+    if (action === "invalid-loop") {
+      this.statusLog.fail(`Instrument grid loop rejected: ${detail.message}`);
+      return;
+    }
+    if (action === "play-section") {
+      this.statusLog.warn("Live playback synthesis not implemented. Playing timing-preview playhead only; no audio playback was started.");
+      this.statusLog.ok(`Timing preview started for section ${detail.section.label}.`);
+      return;
+    }
+    if (action === "play-loop") {
+      this.statusLog.warn("Live playback synthesis not implemented. Playing timing-preview playhead only; no audio playback was started.");
+      this.statusLog.ok(`Timing preview loop started from ${detail.startSection.label} to ${detail.endSection.label}.`);
+      return;
+    }
+    if (action === "jump-section") {
+      this.statusLog.ok(`Timing playhead jumped to section ${detail.section.label}.`);
+      return;
+    }
+    if (action === "select-section") {
+      this.statusLog.info(`Timing section selected: ${detail.section.label}.`);
+      return;
+    }
+    if (action === "stop-preview") {
+      this.statusLog.ok("Timing preview stopped.");
+    }
   }
 
   exportRenderedTarget(format) {
