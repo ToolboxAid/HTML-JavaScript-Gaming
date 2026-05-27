@@ -386,6 +386,13 @@ test.describe("MIDI Studio V2", () => {
     const server = await openMidiStudio(page);
     try {
       await page.locator("#useExampleButton").click();
+      await expect(page.locator(".midi-studio-v2__now-playing-label")).toHaveText("Now playing");
+      await expect(page.locator(".midi-studio-v2__track-list-panel")).toContainText("Tracks");
+      await expect(page.locator(".midi-studio-v2__track-list li")).toContainText(["Chords", "Bass", "Pad", "Lead", "Drums"]);
+      await expect(page.locator(".midi-studio-v2__timeline-title")).toContainText("Timeline");
+      await expect(page.locator(".midi-studio-v2__timeline-title")).toContainText("Edit notes here");
+      await expect(page.locator("#instrumentGridContent")).toBeVisible();
+      await expect(page.locator('.accordion-v2__header[aria-controls="instrumentGridContent"]')).toBeHidden();
       await expect(page.locator("#songList")).toContainText("Twinkle Twinkle Little Star");
       await expect(page.locator("#songList")).toContainText("Demo Missing Target");
       await expect(page.locator("#songSheetKeyInput")).toHaveValue("C major");
@@ -642,6 +649,11 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText("intro: 2 bars, 2 chords");
       await expect(page.locator("#songSheetSummary")).toContainText("loop: 4 bars, 4 chords, loop");
+      await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("intro:2, loop:4");
+      await expect(page.locator("#instrumentGridChordsInput")).toHaveValue("Am Am Am Am | F F F F | Am Am Am Am | F F F F | C C C C | G G G G");
+      await expect(spreadsheetCell(page, "chords", 0)).toHaveText("Am");
+      await expect(spreadsheetCell(page, "chords", 8)).toHaveText("Am");
+      await expect(spreadsheetCell(page, "bass", 0)).toContainText("A2");
       expect(await page.locator("#songSheetSummary div").evaluateAll((rows) => Object.fromEntries(rows.map((row) => [
         row.querySelector("dt")?.textContent || "",
         row.querySelector("dd")?.textContent || ""
@@ -656,6 +668,7 @@ test.describe("MIDI Studio V2", () => {
         "Warnings": "none"
       });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet parsed: 2 sections, 6 bars, 6 chords\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet updated the editable note grid\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

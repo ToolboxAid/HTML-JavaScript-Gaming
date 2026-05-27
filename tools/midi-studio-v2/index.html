@@ -39,6 +39,7 @@
 
     <nav class="tool-starter__menu tool-starter__tool__menu midi-studio-v2__tool-menu" aria-label="Tool actions" data-launch-mode-nav="tool">
       <button id="toolImportManifestButton" type="button">Import Manifest</button>
+      <span class="midi-studio-v2__now-playing-label">Now playing</span>
       <button id="loadExampleAndPlayButton" class="midi-studio-v2__primary-action" type="button">Load Example And Play</button>
       <button id="useExampleButton" type="button">Use Example Test Song</button>
       <button id="stopAllAudioButton" type="button">Stop All Audio</button>
@@ -67,6 +68,17 @@
 
     <main class="tool-starter midi-studio-v2 app-shell" data-tool-id="midi-studio-v2">
       <aside class="tool-starter__panel tool-starter__panel--left" aria-label="MIDI song setup">
+        <section class="midi-studio-v2__uat-card midi-studio-v2__track-list-panel" aria-label="Tracks">
+          <h2>Tracks</h2>
+          <ul class="midi-studio-v2__track-list">
+            <li>Chords</li>
+            <li>Bass</li>
+            <li>Pad</li>
+            <li>Lead</li>
+            <li>Drums</li>
+          </ul>
+        </section>
+
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songListContent">
             <span>Songs</span>
@@ -204,6 +216,10 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="instrumentGridContent" class="accordion-v2__content midi-studio-v2__stack">
+            <div class="midi-studio-v2__timeline-title">
+              <h2>Timeline</h2>
+              <p>Edit notes here</p>
+            </div>
             <div class="midi-studio-v2__grid-settings">
               <label class="tool-starter__field" for="instrumentGridSectionsInput">
                 <span>Sections</span>

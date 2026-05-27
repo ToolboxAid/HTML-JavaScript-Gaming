@@ -65,6 +65,71 @@
   gap: 0.75rem;
 }
 
+.midi-studio-v2__tool-menu {
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.midi-studio-v2__now-playing-label {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.38rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.midi-studio-v2.app-shell {
+  grid-template-columns: minmax(13rem, 16rem) minmax(0, 1fr) minmax(18rem, 22rem);
+}
+
+.midi-studio-v2__uat-card {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.75rem;
+}
+
+.midi-studio-v2__uat-card h2,
+.midi-studio-v2__timeline-title h2 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.midi-studio-v2__track-list {
+  display: grid;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.midi-studio-v2__track-list li {
+  background: var(--tool-starter-panel-strong);
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  font-weight: 700;
+  padding: 0.45rem 0.55rem;
+}
+
+.midi-studio-v2__timeline-title {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.midi-studio-v2__timeline-title p {
+  color: var(--tool-starter-muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin: 0;
+  text-transform: uppercase;
+}
+
 .midi-studio-v2__test-steps {
   display: grid;
   gap: 0.35rem;
@@ -154,6 +219,19 @@
 .midi-studio-v2__instrument-grid-output {
   max-width: 100%;
   overflow: auto;
+}
+
+body[data-tool-id="midi-studio-v2"] .tool-starter__panel--center > .accordion-v2:not(:has(#instrumentGridContent)),
+body[data-tool-id="midi-studio-v2"] .tool-starter__panel--right > .accordion-v2:not(:has(#audioDiagnosticsContent)):not(:has(#statusLogContent)):not(:has(#renderedTargetsContent)) {
+  display: none;
+}
+
+body[data-tool-id="midi-studio-v2"] .tool-starter__panel--center .accordion-v2:has(#instrumentGridContent) > .accordion-v2__header {
+  display: none;
+}
+
+body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
+  display: grid;
 }
 
 .midi-studio-v2__instrument-grid {

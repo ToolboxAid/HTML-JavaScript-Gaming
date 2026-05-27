@@ -269,7 +269,7 @@ export class MidiStudioV2App {
     this.statusLog.ok(`MIDI source inspected for ${song.name}: format ${result.format}, ${result.trackCount} track${result.trackCount === 1 ? "" : "s"}, ${result.ticksPerQuarterNote} TPQN.`);
   }
 
-  parseSongSheet(request) {
+  parseSongSheet(request, { updateGrid = true } = {}) {
     const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
     this.songSheet.render(result);
     if (!result.ok) {
@@ -283,7 +283,42 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Song Sheet parsed with warnings: ${result.warningSummary}`);
     }
     this.statusLog.ok(`Song Sheet parsed: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.bars} bars, ${result.chordCount} chords.`);
+    if (updateGrid) {
+      this.applySongSheetToGrid(result);
+    }
     this.updateAudioDiagnostics();
+  }
+
+  applySongSheetToGrid(result) {
+    const playableSections = result.sections.filter((section) => section.bars > 0);
+    if (!playableSections.length || !result.chordCount) {
+      this.statusLog.warn("Song Sheet did not update the note grid because no playable chord sections were found.");
+      return;
+    }
+    const beatsPerBar = "4";
+    const sections = playableSections.map((section) => `${section.label}:${section.bars}`).join(", ");
+    const chords = playableSections
+      .flatMap((section) => section.chords.map((chord) => Array.from({ length: Number(beatsPerBar) }, () => chord).join(" ")))
+      .join(" | ");
+    this.instrumentGrid.applyGridDefaults({
+      bass: "",
+      beatsPerBar,
+      chords,
+      drums: "",
+      lead: "",
+      pad: "",
+      previewInstruments: this.instrumentGrid.previewLaneSettings().instruments,
+      sections,
+      subdivision: "1"
+    });
+    ["bass", "pad", "lead", "drums"].forEach((lane) => {
+      const generated = this.instrumentGridParser.generateLane(this.instrumentGrid.readInput(), lane);
+      if (generated.ok) {
+        this.instrumentGrid.applyGeneratedLane(generated);
+      }
+    });
+    this.normalizeInstrumentGrid(this.instrumentGrid.readInput());
+    this.statusLog.ok("Song Sheet updated the editable note grid.");
   }
 
   normalizeInstrumentGrid(input) {
@@ -500,7 +535,7 @@ export class MidiStudioV2App {
     this.songSheet.applyGuidedDefaults(EXAMPLE_GUIDED_SHEET);
     this.instrumentGrid.applyGridDefaults(EXAMPLE_GRID);
     this.statusLog.ok("Loaded explicit Twinkle Twinkle Little Star test song data. Demo paths are declared for UAT only; they are not hidden fallback assets.");
-    this.parseSongSheet(this.songSheet.composeGuidedSheet());
+    this.parseSongSheet(this.songSheet.composeGuidedSheet(), { updateGrid: false });
     ["bass", "pad", "lead", "drums"].forEach((lane) => {
       const input = this.instrumentGrid.readInput();
       const laneText = String(input.lanes?.[lane] || "").trim();
