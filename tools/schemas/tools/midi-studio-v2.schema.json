@@ -120,6 +120,54 @@
         },
         "tags": {
           "$ref": "#/$defs/stringList"
+        },
+        "studioArrangement": {
+          "oneOf": [
+            { "$ref": "#/$defs/studioArrangement" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "studioArrangement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tempo": { "type": "string" },
+        "key": { "type": "string" },
+        "style": { "type": "string" },
+        "sections": { "type": "string" },
+        "beatsPerBar": { "type": "string" },
+        "subdivision": { "type": "string" },
+        "songSheet": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "intro": { "type": "string" },
+            "loop": { "type": "string" }
+          }
+        },
+        "lanes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "chords": { "type": "string" },
+            "bass": { "type": "string" },
+            "pad": { "type": "string" },
+            "lead": { "type": "string" },
+            "drums": { "type": "string" }
+          }
+        },
+        "previewInstruments": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "chords": { "type": "string" },
+            "bass": { "type": "string" },
+            "pad": { "type": "string" },
+            "lead": { "type": "string" },
+            "drums": { "type": "string" }
+          }
         }
       }
     },

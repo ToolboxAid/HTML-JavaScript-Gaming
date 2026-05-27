@@ -49,6 +49,41 @@ function normalizeLoop(value) {
   };
 }
 
+function normalizeStudioArrangement(value) {
+  if (!isPlainObject(value)) {
+    return null;
+  }
+  const lanes = isPlainObject(value.lanes) ? value.lanes : {};
+  const previewInstruments = isPlainObject(value.previewInstruments) ? value.previewInstruments : {};
+  const songSheet = isPlainObject(value.songSheet) ? value.songSheet : {};
+  return {
+    beatsPerBar: text(value.beatsPerBar || "4"),
+    key: text(value.key),
+    lanes: {
+      bass: text(lanes.bass),
+      chords: text(lanes.chords),
+      drums: text(lanes.drums),
+      lead: text(lanes.lead),
+      pad: text(lanes.pad)
+    },
+    previewInstruments: {
+      bass: text(previewInstruments.bass),
+      chords: text(previewInstruments.chords),
+      drums: text(previewInstruments.drums),
+      lead: text(previewInstruments.lead),
+      pad: text(previewInstruments.pad)
+    },
+    sections: text(value.sections),
+    songSheet: {
+      intro: text(songSheet.intro),
+      loop: text(songSheet.loop)
+    },
+    style: text(value.style),
+    subdivision: text(value.subdivision || "1"),
+    tempo: text(value.tempo)
+  };
+}
+
 function normalizeSong(song, index) {
   if (!isPlainObject(song)) {
     return { ok: false, message: `music.songs[${index}] must be an object.` };
@@ -68,6 +103,7 @@ function normalizeSong(song, index) {
       name: text(song.name) || id,
       rendered: normalizeRendered(song.rendered),
       sourceMidi: text(song.sourceMidi),
+      studioArrangement: normalizeStudioArrangement(song.studioArrangement),
       tags: Array.isArray(song.tags) ? song.tags.map(text).filter(Boolean) : []
     }
   };

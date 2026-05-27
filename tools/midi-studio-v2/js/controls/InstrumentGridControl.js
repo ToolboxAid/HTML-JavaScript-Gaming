@@ -279,7 +279,7 @@ export class InstrumentGridControl {
       this.setTransportEnabled(false);
       const empty = document.createElement("p");
       empty.className = "midi-studio-v2__empty";
-      empty.textContent = result?.message || "No grid data normalized. Enter sections/chords or use the example test song, then choose Normalize Grid.";
+      empty.textContent = result?.message || "No grid data normalized. Import a manifest arrangement or enter sections/chords, then choose Normalize Grid.";
       this.gridOutput.append(empty);
       return;
     }

@@ -2,79 +2,6 @@ import { readFileText } from "../../../src/engine/persistence/FilePersistenceSer
 
 const TOOL_ID = "midi-studio-v2";
 
-const EXAMPLE_TOOL_STATE = {
-  schema: "html-js-gaming.midi-studio-v2",
-  toolId: TOOL_ID,
-  version: 1,
-  runtimePreference: "rendered",
-  activeSongId: "twinkle-twinkle-little-star",
-  directorMode: { enabled: true, defaultIntensity: "medium" },
-  songs: [
-    {
-      id: "twinkle-twinkle-little-star",
-      name: "Twinkle Twinkle Little Star",
-      sourceMidi: "assets/music/demo/twinkle-twinkle-little-star.mid",
-      instrumentSet: "Preview Synth demo",
-      rendered: {
-        wav: "assets/music/demo/twinkle-twinkle-little-star.wav",
-        mp3: "assets/music/demo/twinkle-twinkle-little-star.mp3",
-        ogg: "assets/music/demo/twinkle-twinkle-little-star.ogg"
-      },
-      defaultRuntimeFormat: "ogg",
-      loop: { enabled: true, startSeconds: 0, endSeconds: 16 },
-      director: {
-        mood: "bright",
-        intensity: "medium",
-        usage: ["uat", "timing-preview"],
-        notes: "Explicit Twinkle Twinkle Little Star demo data for manual MIDI Studio V2 testing."
-      },
-      tags: ["demo", "test", "twinkle"]
-    },
-    {
-      id: "demo-missing-target",
-      name: "Demo Missing Target",
-      sourceMidi: "",
-      instrumentSet: "General MIDI demo",
-      rendered: {},
-      defaultRuntimeFormat: "ogg",
-      loop: { enabled: false },
-      director: {
-        mood: "debug",
-        intensity: "low",
-        usage: ["export-status"],
-        notes: "Demo song for missing source and missing rendered target status."
-      },
-      tags: ["demo", "missing-target"]
-    }
-  ]
-};
-
-const EXAMPLE_GUIDED_SHEET = {
-  intro: "C C G G",
-  key: "C major",
-  loop: "F F C C",
-  style: "chip",
-  tempo: "100"
-};
-
-const EXAMPLE_GRID = {
-  bass: "C2 C2 G2 G2 | A2 A2 G2 - | F2 F2 E2 E2 | D2 D2 C2 -",
-  beatsPerBar: "4",
-  chords: "C C G G | F F C C | F F C C | G G C C",
-  drums: "kick hat snare hat | kick hat snare hat | kick hat snare hat | kick hat snare hat",
-  lead: "C4 C4 G4 G4 | A4 A4 G4 - | F4 F4 E4 E4 | D4 D4 C4 -",
-  pad: "C - G - | F - C - | F - C - | G - C -",
-  previewInstruments: {
-    bass: "synth-bass",
-    chords: "warm-pad",
-    drums: "basic-drums",
-    lead: "retro-pulse-lead",
-    pad: "ambient-pad"
-  },
-  sections: "intro:2, loop:2",
-  subdivision: "1"
-};
-
 export class MidiStudioV2App {
   constructor({
     accordions,
@@ -97,6 +24,7 @@ export class MidiStudioV2App {
     songSheet,
     songSheetParser,
     statusLog,
+    studioTabs,
     windowRef = window
   }) {
     this.accordions = accordions;
@@ -123,11 +51,13 @@ export class MidiStudioV2App {
     this.songSheet = songSheet;
     this.songSheetParser = songSheetParser;
     this.statusLog = statusLog;
+    this.studioTabs = studioTabs;
     this.window = windowRef;
   }
 
   async start() {
     this.shell.mount({ onExpandedChange: (isExpanded) => this.handleExpandedModeChange(isExpanded) });
+    this.studioTabs?.mount();
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
@@ -145,14 +75,10 @@ export class MidiStudioV2App {
     });
     this.renderedExportActions.mount({ onExport: (format) => this.exportRenderedTarget(format) });
     this.actionNav.mount({
-      onLoadExampleAndPlay: () => {
-        void this.loadExampleAndPlay();
-      },
       onStopAllAudio: () => this.stopAllAudio(),
       onToolCopyJson: () => this.copyJson(),
       onToolExportToolState: () => this.exportToolState(),
       onToolImportManifest: (file) => this.importManifestFile(file),
-      onUseExample: () => this.useExampleToolState(),
       onWorkspaceCopyManifest: () => this.statusLog.info("Workspace copy is owned by Workspace Manager V2."),
       onWorkspaceExportManifest: () => this.statusLog.info("Workspace export is owned by Workspace Manager V2."),
       onWorkspaceImportManifest: () => this.statusLog.info("Workspace import is owned by Workspace Manager V2.")
@@ -163,7 +89,7 @@ export class MidiStudioV2App {
       this.applyPayload(loadResult.manifest, loadResult.sourceLabel || "initial manifest");
     } else if (loadResult.skipped) {
       this.statusLog.info("No manifest or workspace toolState payload loaded. Import a manifest or launch from Workspace Manager V2.");
-      this.statusLog.info("First-run guide: choose Use Example Test Song, or choose style/key/tempo and enter intro/loop chords.");
+      this.statusLog.info("First-run guide: choose Import JSON Manifest, select a song, then press Play.");
     } else {
       this.statusLog.fail(loadResult.message);
     }
@@ -182,6 +108,7 @@ export class MidiStudioV2App {
     this.lastInstrumentGridResult = null;
     this.lastSongSheetResult = null;
     this.playbackControl.setSelected(null);
+    this.actionNav.setNowPlaying(null);
     this.actionNav.setToolActionsEnabled(false);
     this.updateAudioDiagnostics();
   }
@@ -204,9 +131,9 @@ export class MidiStudioV2App {
     this.payload = normalized.payload;
     this.selectedSongId = this.payload.activeSongId;
     this.render();
+    this.applySelectedSongArrangement("active manifest song");
     this.statusLog.ok(`Loaded ${this.payload.songs.length} MIDI song${this.payload.songs.length === 1 ? "" : "s"} from ${sourceLabel} via ${normalized.sourceKind}.`);
-    this.statusLog.warn("Live MIDI synthesis not implemented. sourceMidi is musical instruction data; rendered OGG/MP3/WAV targets are used for preview and gameplay audio.");
-    this.statusLog.info("Next: parse guided Song Sheet fields, generate lanes, normalize the grid, then test Preview Synth timing preview or export status.");
+    this.statusLog.info("Next: select a MIDI Studio song, review the Studio tab timeline, then press Play to audition the imported arrangement.");
     return true;
   }
 
@@ -218,6 +145,7 @@ export class MidiStudioV2App {
     this.midiSourceDetails.render(null);
     this.midiSourceDetails.setEnabled(Boolean(song));
     this.playbackControl.setSelected(song);
+    this.actionNav.setNowPlaying(song);
     this.actionNav.setToolActionsEnabled(Boolean(this.payload));
     this.updateAudioDiagnostics();
   }
@@ -231,16 +159,20 @@ export class MidiStudioV2App {
       this.statusLog.fail(`Song selection failed: ${songId || "(missing song id)"} is not in the active MIDI payload.`);
       return;
     }
-    this.stopPlayback();
+    this.stopPlayback({ log: false });
     this.selectedSongId = songId;
     this.payload.activeSongId = songId;
     this.render();
+    this.applySelectedSongArrangement("selected song");
     this.statusLog.ok(`Selected MIDI song: ${this.selectedSong()?.name || songId}.`);
     this.updateAudioDiagnostics();
   }
 
   async playSelectedSong() {
     const song = this.selectedSong();
+    if (song?.studioArrangement) {
+      return this.playSelectedArrangement(song);
+    }
     const result = await this.playback.playRenderedPreview(song, { loop: this.playbackControl.loopEnabled() });
     if (!result.ok) {
       this.playbackControl.setStopped(song);
@@ -252,7 +184,49 @@ export class MidiStudioV2App {
       return;
     }
     this.playbackControl.setPlaying(song);
+    this.actionNav.setNowPlaying(song, { playing: true });
     this.statusLog.ok(`Rendered preview started for ${song.name}: ${result.path}.`);
+    this.updateAudioDiagnostics();
+  }
+
+  async playSelectedArrangement(song) {
+    this.playback.stop();
+    if (!this.lastInstrumentGridResult?.ok) {
+      const arranged = this.applySelectedSongArrangement("play request");
+      if (!arranged) {
+        this.playbackControl.setStopped(song);
+        this.updateAudioDiagnostics();
+        return;
+      }
+    }
+    const section = this.instrumentGrid.selectedSection() || this.lastInstrumentGridResult?.sections?.[0] || null;
+    if (!section) {
+      this.playbackControl.setStopped(song);
+      this.statusLog.fail(`Playable arrangement section not found for ${song.name}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    const started = await this.startPreviewSynth({
+      endStep: section.endStep,
+      label: section.label,
+      loop: this.playbackControl.loopEnabled(),
+      mode: "section",
+      startStep: section.startStep
+    });
+    if (!started) {
+      this.playbackControl.setStopped(song);
+      this.actionNav.setNowPlaying(song);
+      return;
+    }
+    this.instrumentGrid.startTimingPreview({
+      endStep: section.endStep,
+      label: section.label,
+      mode: "section",
+      startStep: section.startStep
+    });
+    this.playbackControl.setPlaying(song);
+    this.actionNav.setNowPlaying(song, { playing: true });
+    this.statusLog.ok(`Audible preview playback started for ${song.name}.`);
     this.updateAudioDiagnostics();
   }
 
@@ -483,95 +457,62 @@ export class MidiStudioV2App {
     this.statusLog.warn(`Export rendering not implemented for ${label}. Planned target: ${target}.`);
   }
 
-  useExampleToolState() {
-    if (!this.prepareExampleToolState()) {
-      return;
-    }
-    this.statusLog.info("Twinkle next step: click Play Section or Play Loop to hear Preview Synth audition audio, or use Load Example And Play for the one-click UAT path.");
-  }
-
-  async loadExampleAndPlay() {
-    this.statusLog.ok("Load Example And Play started.");
-    if (!this.prepareExampleToolState()) {
-      this.statusLog.fail("Load Example And Play stopped because explicit demo data could not be loaded.");
-      this.updateAudioDiagnostics();
-      return;
-    }
-    this.statusLog.ok("Load Example And Play loaded explicit Twinkle Twinkle Little Star data.");
-    this.statusLog.ok("Load Example And Play assigned Preview Synth instruments.");
-    const section = this.instrumentGrid.selectedSection() || this.lastInstrumentGridResult?.sections?.[0] || null;
-    if (!section) {
-      this.statusLog.fail("Load Example And Play could not find a normalized section to preview.");
-      this.updateAudioDiagnostics();
-      return;
-    }
-    this.statusLog.ok(`Load Example And Play selected section: ${section.label}.`);
-    const started = await this.startPreviewSynth({
-      endStep: section.endStep,
-      label: section.label,
-      loop: false,
-      mode: "section",
-      startStep: section.startStep
-    });
-    if (!started) {
-      this.statusLog.fail("Load Example And Play could not start audible Preview Synth playback.");
-      this.updateAudioDiagnostics();
-      return;
-    }
-    this.instrumentGrid.startTimingPreview({
-      endStep: section.endStep,
-      label: section.label,
-      mode: "section",
-      startStep: section.startStep
-    });
-    this.statusLog.ok("Load Example And Play started audible Preview Synth playback and moved the playhead.");
-    this.updateAudioDiagnostics();
-  }
-
-  prepareExampleToolState() {
-    if (!this.applyPayload(EXAMPLE_TOOL_STATE, "explicit demo toolState")) {
+  applySelectedSongArrangement(sourceLabel) {
+    const song = this.selectedSong();
+    const arrangement = song?.studioArrangement || null;
+    if (!song) {
+      this.instrumentGrid.render(null);
+      this.lastInstrumentGridResult = null;
+      this.lastSongSheetResult = null;
       return false;
     }
-    this.songSheet.applyGuidedDefaults(EXAMPLE_GUIDED_SHEET);
-    this.instrumentGrid.applyGridDefaults(EXAMPLE_GRID);
-    this.statusLog.ok("Loaded explicit Twinkle Twinkle Little Star test song data. Demo paths are declared for UAT only; they are not hidden fallback assets.");
-    this.parseSongSheet(this.songSheet.composeGuidedSheet(), { updateGrid: false });
-    ["bass", "pad", "lead", "drums"].forEach((lane) => {
-      const input = this.instrumentGrid.readInput();
-      const laneText = String(input.lanes?.[lane] || "").trim();
-      if (laneText) {
-        return;
-      }
-      const generated = this.instrumentGridParser.generateLane(input, lane);
-      if (!generated.ok) {
-        this.statusLog.fail(`Twinkle lane generation rejected for ${lane}: ${generated.message}`);
-        return;
-      }
-      this.instrumentGrid.applyGeneratedLane(generated);
-      if (generated.warnings.length) {
-        this.statusLog.warn(`Twinkle lane generation warnings for ${lane}: ${generated.warningSummary}`);
-      }
-      if (generated.skippedEmptyBars) {
-        this.statusLog.warn(`Twinkle lane generation skipped ${generated.skippedEmptyBars} empty bar${generated.skippedEmptyBars === 1 ? "" : "s"} for ${lane}.`);
-      }
-      this.statusLog.ok(generated.message);
+    if (!arrangement) {
+      this.instrumentGrid.render(null);
+      this.lastInstrumentGridResult = null;
+      this.lastSongSheetResult = null;
+      this.statusLog.warn(`No editable studio arrangement is declared for ${song.name}. Import a manifest song with music.songs[].studioArrangement before using Play as an audible Preview Synth workflow.`);
+      this.updateAudioDiagnostics();
+      return false;
+    }
+    this.songSheet.applyGuidedDefaults({
+      intro: arrangement.songSheet?.intro || arrangement.lanes.chords,
+      key: arrangement.key,
+      loop: arrangement.songSheet?.loop || arrangement.lanes.chords,
+      style: arrangement.style,
+      tempo: arrangement.tempo
     });
+    this.instrumentGrid.applyGridDefaults({
+      bass: arrangement.lanes.bass,
+      beatsPerBar: arrangement.beatsPerBar,
+      chords: arrangement.lanes.chords,
+      drums: arrangement.lanes.drums,
+      lead: arrangement.lanes.lead,
+      pad: arrangement.lanes.pad,
+      previewInstruments: arrangement.previewInstruments,
+      sections: arrangement.sections,
+      subdivision: arrangement.subdivision
+    });
+    this.parseSongSheet(this.songSheet.composeGuidedSheet(), { updateGrid: false });
     this.normalizeInstrumentGrid(this.instrumentGrid.readInput());
     const playable = this.playableEventSummary();
     if (playable.count > 0) {
-      this.statusLog.ok(`Twinkle grid has ${playable.count} playable Preview Synth note${playable.count === 1 ? "" : "s"} after lane generation.`);
-    } else {
-      this.statusLog.fail("Twinkle grid has no playable Preview Synth notes after lane generation.");
+      this.statusLog.ok(`Loaded editable studio arrangement for ${song.name} from ${sourceLabel}: ${playable.count} playable Preview Synth event${playable.count === 1 ? "" : "s"}.`);
+      return true;
     }
+    this.statusLog.fail(`Imported arrangement for ${song.name} has no playable Preview Synth events.`);
     this.updateAudioDiagnostics();
-    return true;
+    return false;
   }
 
-  stopPlayback() {
+  stopPlayback({ log = true } = {}) {
     this.playback.stop();
-    this.previewSynth.stop();
-    this.instrumentGrid.clearPreviewPlaybackLanes();
+    const stoppedCount = this.previewSynth.stop();
+    this.instrumentGrid.stopPreviewUi();
     this.playbackControl.setStopped(this.selectedSong());
+    this.actionNav.setNowPlaying(this.selectedSong());
+    if (log) {
+      this.statusLog.ok(`Stop completed. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"} and stopped all MIDI Studio preview audio.`);
+    }
     this.updateAudioDiagnostics();
   }
 
@@ -580,6 +521,7 @@ export class MidiStudioV2App {
     const stoppedCount = this.previewSynth.stop();
     this.instrumentGrid.stopPreviewUi();
     this.playbackControl.setStopped(this.selectedSong());
+    this.actionNav.setNowPlaying(this.selectedSong());
     this.statusLog.ok(`Stop All Audio completed. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"} and reset Preview Synth state.`);
     this.updateAudioDiagnostics();
   }
@@ -630,8 +572,19 @@ export class MidiStudioV2App {
     if (!file) {
       return;
     }
+    const loaded = typeof this.manifestLoader.loadFromFile === "function"
+      ? await this.manifestLoader.loadFromFile(file)
+      : null;
+    if (loaded?.ok) {
+      this.applyPayload(loaded.manifest, `Import JSON Manifest:${loaded.sourceLabel || file.name || "manifest.json"}`);
+      return;
+    }
+    if (loaded && !loaded.skipped) {
+      this.statusLog.fail(`Manifest import failed: ${loaded.message}`);
+      return;
+    }
     try {
-      this.applyPayload(JSON.parse(await readFileText(file)), `import:${file.name || "manifest.json"}`);
+      this.applyPayload(JSON.parse(await readFileText(file)), `Import JSON Manifest:${file.name || "manifest.json"}`);
     } catch (error) {
       this.statusLog.fail(`Manifest import failed: ${error.message}`);
     }

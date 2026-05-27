@@ -12,6 +12,7 @@ import { SongDetailsControl } from "./controls/SongDetailsControl.js";
 import { SongListControl } from "./controls/SongListControl.js";
 import { SongSheetControl } from "./controls/SongSheetControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
+import { StudioTabsControl } from "./controls/StudioTabsControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
 import { InstrumentGridParser } from "../../../src/engine/audio/InstrumentGridParser.js";
 import { PreviewSynthEngine } from "../../../src/engine/audio/PreviewSynthEngine.js";
@@ -36,7 +37,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const app = new MidiStudioV2App({
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     actionNav: new ActionNavControl({
-      loadExampleAndPlayButton: requireElement("#loadExampleAndPlayButton"),
+      nowPlayingLabel: requireElement("#nowPlayingLabel"),
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
       stopAllAudioButton: requireElement("#stopAllAudioButton"),
       toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
@@ -44,7 +45,6 @@ window.addEventListener("DOMContentLoaded", () => {
       toolImportManifestButton: requireElement("#toolImportManifestButton"),
       toolImportManifestInput: requireElement("#toolImportManifestInput"),
       toolNav: requireElement(".tool-starter__tool__menu"),
-      useExampleButton: requireElement("#useExampleButton"),
       workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
       workspaceExportManifestButton: requireElement("#workspaceExportManifestButton"),
       workspaceImportManifestButton: requireElement("#workspaceImportManifestButton"),
@@ -152,6 +152,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     songSheetParser: new SongSheetParser(),
     statusLog,
+    studioTabs: new StudioTabsControl({
+      buttons: Array.from(document.querySelectorAll("[data-midi-studio-tab]")),
+      panels: Array.from(document.querySelectorAll("[data-midi-studio-tab-panel]"))
+    }),
     windowRef: window
   });
 

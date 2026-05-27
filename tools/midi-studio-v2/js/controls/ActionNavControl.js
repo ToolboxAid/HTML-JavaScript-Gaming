@@ -1,7 +1,7 @@
 export class ActionNavControl {
   constructor({
     locationRef = window.location,
-    loadExampleAndPlayButton,
+    nowPlayingLabel,
     returnToWorkspaceButton,
     stopAllAudioButton,
     toolCopyJsonButton,
@@ -9,7 +9,6 @@ export class ActionNavControl {
     toolImportManifestButton,
     toolImportManifestInput,
     toolNav,
-    useExampleButton,
     windowRef = window,
     workspaceCopyManifestButton,
     workspaceExportManifestButton,
@@ -17,7 +16,7 @@ export class ActionNavControl {
     workspaceNav
   }) {
     this.location = locationRef;
-    this.loadExampleAndPlayButton = loadExampleAndPlayButton;
+    this.nowPlayingLabel = nowPlayingLabel;
     this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.stopAllAudioButton = stopAllAudioButton;
     this.toolCopyJsonButton = toolCopyJsonButton;
@@ -25,7 +24,6 @@ export class ActionNavControl {
     this.toolImportManifestButton = toolImportManifestButton;
     this.toolImportManifestInput = toolImportManifestInput;
     this.toolNav = toolNav;
-    this.useExampleButton = useExampleButton;
     this.window = windowRef;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
     this.workspaceExportManifestButton = workspaceExportManifestButton;
@@ -37,9 +35,7 @@ export class ActionNavControl {
     onToolCopyJson,
     onToolExportToolState,
     onToolImportManifest,
-    onLoadExampleAndPlay,
     onStopAllAudio,
-    onUseExample,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
     onWorkspaceImportManifest
@@ -47,9 +43,7 @@ export class ActionNavControl {
     this.applyLaunchMode();
     this.toolImportManifestButton.addEventListener("click", () => this.toolImportManifestInput.click());
     this.toolImportManifestInput.addEventListener("change", () => onToolImportManifest(this.toolImportManifestInput.files?.[0] || null));
-    this.loadExampleAndPlayButton.addEventListener("click", onLoadExampleAndPlay);
     this.stopAllAudioButton.addEventListener("click", onStopAllAudio);
-    this.useExampleButton.addEventListener("click", onUseExample);
     this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
     this.toolExportToolStateButton.addEventListener("click", onToolExportToolState);
     this.workspaceImportManifestButton.addEventListener("click", onWorkspaceImportManifest);
@@ -75,6 +69,17 @@ export class ActionNavControl {
   setToolActionsEnabled(isEnabled) {
     this.toolCopyJsonButton.disabled = !isEnabled;
     this.toolExportToolStateButton.disabled = !isEnabled;
+  }
+
+  setNowPlaying(song, { playing = false } = {}) {
+    if (!this.nowPlayingLabel) {
+      return;
+    }
+    if (!song) {
+      this.nowPlayingLabel.textContent = "No song selected";
+      return;
+    }
+    this.nowPlayingLabel.textContent = `${playing ? "Playing" : "Selected"}: ${song.name || song.id}`;
   }
 
   workspaceManagerUrl() {

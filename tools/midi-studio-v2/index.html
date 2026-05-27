@@ -38,10 +38,10 @@
     </details>
 
     <nav class="tool-starter__menu tool-starter__tool__menu midi-studio-v2__tool-menu" aria-label="Tool actions" data-launch-mode-nav="tool">
-      <button id="toolImportManifestButton" type="button">Import Manifest</button>
-      <span class="midi-studio-v2__now-playing-label">Now playing</span>
-      <button id="loadExampleAndPlayButton" class="midi-studio-v2__primary-action" type="button">Load Example And Play</button>
-      <button id="useExampleButton" type="button">Use Example Test Song</button>
+      <button id="toolImportManifestButton" class="midi-studio-v2__primary-action" type="button">Import JSON Manifest</button>
+      <span id="nowPlayingLabel" class="midi-studio-v2__now-playing-label">No song selected</span>
+      <button id="playButton" type="button" disabled>Play</button>
+      <button id="stopButton" type="button" disabled>Stop</button>
       <button id="stopAllAudioButton" type="button">Stop All Audio</button>
       <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
         <span>Export target type</span>
@@ -60,26 +60,35 @@
     </nav>
 
     <nav class="tool-starter__menu tool-starter__workspace__menu midi-studio-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
-      <button id="workspaceImportManifestButton" type="button">Import manifest</button>
+      <button id="workspaceImportManifestButton" type="button">Import JSON Manifest</button>
       <button id="workspaceCopyManifestButton" type="button">Copy manifest</button>
       <button id="workspaceExportManifestButton" type="button">Export manifest</button>
       <button id="returnToWorkspaceButton" type="button" hidden>Return to Workspace</button>
     </nav>
 
+    <nav class="midi-studio-v2__tabs" aria-label="MIDI Studio sections" role="tablist">
+      <button class="is-active" type="button" role="tab" aria-selected="true" data-midi-studio-tab="studio">Studio</button>
+      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="song-setup">Song Setup</button>
+      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="instruments">Instruments</button>
+      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="auto-create-parts">Auto-Create Parts</button>
+      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="midi-import">MIDI Import</button>
+      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="export">Export</button>
+      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="diagnostics">Diagnostics</button>
+    </nav>
+
     <main class="tool-starter midi-studio-v2 app-shell" data-tool-id="midi-studio-v2">
       <aside class="tool-starter__panel tool-starter__panel--left" aria-label="MIDI song setup">
-        <section class="midi-studio-v2__uat-card midi-studio-v2__track-list-panel" aria-label="Tracks">
+        <section class="midi-studio-v2__uat-card midi-studio-v2__track-list-panel" aria-label="Tracks" data-midi-studio-tab-panel="studio instruments">
           <h2>Tracks</h2>
           <ul class="midi-studio-v2__track-list">
-            <li>Chords</li>
-            <li>Bass</li>
-            <li>Pad</li>
             <li>Lead</li>
+            <li>Bass</li>
+            <li>Chords/Pad</li>
             <li>Drums</li>
           </ul>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio song-setup midi-import">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songListContent">
             <span>Songs</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -89,7 +98,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="midi-import diagnostics">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSourceContent">
             <span>Source</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -107,7 +116,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSheetContent">
             <span>Song Sheet</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -134,6 +143,7 @@
                 <option value="">Choose style</option>
                 <option value="retro-arcade">retro-arcade</option>
                 <option value="chip">chip</option>
+                <option value="public-domain-reel">public-domain-reel</option>
                 <option value="orchestral-boss">orchestral-boss</option>
                 <option value="ambient-loop">ambient-loop</option>
                 <option value="victory-fanfare">victory-fanfare</option>
@@ -161,15 +171,13 @@
       </aside>
 
       <section class="tool-starter__panel tool-starter__panel--center" aria-label="MIDI preview">
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="playbackContent">
             <span>Rendered Preview</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="playbackContent" class="accordion-v2__content">
             <div class="midi-studio-v2__playback-controls">
-              <button id="playButton" type="button" disabled>Play Rendered Preview</button>
-              <button id="stopButton" type="button" disabled>Stop</button>
               <label class="tool-starter__toggle" for="loopToggle">
                 <input id="loopToggle" type="checkbox">
                 <span>Loop</span>
@@ -179,7 +187,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup diagnostics">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songDetailsContent">
             <span>Selected Song Details</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -189,7 +197,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="midi-import diagnostics">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="midiSourceDetailsContent">
             <span>MIDI Source Details</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -199,7 +207,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSheetSummaryContent">
             <span>Song Sheet Summary</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -209,7 +217,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio instruments auto-create-parts">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="instrumentGridContent">
             <span>Signal-Style Note Table</span>
             <span id="instrumentGridSnapIndicator" class="midi-studio-v2__snap-indicator">Snap: not set</span>
@@ -431,7 +439,7 @@
       </section>
 
       <aside class="tool-starter__panel tool-starter__panel--right" aria-label="MIDI output">
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="howToTestContent">
             <span>How To Test This Tool</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -448,7 +456,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup diagnostics">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="directorContent">
             <span>Game Music Director</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -458,7 +466,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="export">
           <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="renderedTargetsContent">
             <span>Rendered Export Targets</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -468,7 +476,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics export">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
             <span>JSON Details</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -478,7 +486,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio diagnostics">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="audioDiagnosticsContent">
             <span>Audio Diagnostics</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -488,7 +496,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio diagnostics">
           <div class="accordion-v2__header tool-starter__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
             <span>Status</span>
             <div class="tool-starter__status-header-actions">

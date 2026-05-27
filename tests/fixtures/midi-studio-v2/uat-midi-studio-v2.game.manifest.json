@@ -1,0 +1,115 @@
+{
+  "schema": "html-js-gaming.game-manifest",
+  "version": 1,
+  "game": {
+    "id": "midi-studio-v2-uat",
+    "name": "MIDI Studio V2 UAT",
+    "folder": "midi-studio-v2-uat"
+  },
+  "launch": {
+    "directPath": "games/midi-studio-v2-uat/index.html"
+  },
+  "tools": {
+    "midi-studio-v2": {
+      "version": 1,
+      "activeSongId": "camptown-races-uat-reel",
+      "directorMode": {
+        "enabled": true,
+        "defaultIntensity": "bright"
+      }
+    }
+  },
+  "music": {
+    "version": 1,
+    "runtimePreference": "live-midi",
+    "activeSongId": "camptown-races-uat-reel",
+    "directorMode": {
+      "enabled": true,
+      "defaultIntensity": "bright"
+    },
+    "songs": [
+      {
+        "id": "camptown-races-uat-reel",
+        "name": "Camptown Races UAT Reel",
+        "sourceMidi": "assets/music/midi/camptown-races-uat-reel.mid",
+        "instrumentSet": "Preview Synth public-domain UAT band",
+        "rendered": {},
+        "defaultRuntimeFormat": "ogg",
+        "loop": {
+          "enabled": true,
+          "startSeconds": 0,
+          "endSeconds": 14
+        },
+        "director": {
+          "mood": "upbeat",
+          "intensity": "bright",
+          "usage": ["uat", "public-domain", "preview-synth"],
+          "notes": "Traditional Camptown Races style public-domain test arrangement with lead, bass, chords/pad, and drums."
+        },
+        "tags": ["uat", "upbeat", "traditional", "public-domain"],
+        "studioArrangement": {
+          "tempo": "144",
+          "key": "G major",
+          "style": "public-domain-reel",
+          "sections": "verse:2, chorus:2",
+          "beatsPerBar": "4",
+          "subdivision": "1",
+          "songSheet": {
+            "intro": "G C G D",
+            "loop": "G C G D"
+          },
+          "lanes": {
+            "chords": "G G C G | D D G G | G G C G | D C G G",
+            "bass": "G2 G2 C2 G2 | D2 D2 G2 G2 | G2 G2 C2 G2 | D2 C2 G2 G2",
+            "pad": "G - C - | D - G - | G - C - | D C G -",
+            "lead": "G4 G4 E4 G4 | A4 G4 E4 - | B4 B4 A4 B4 | D5 B4 G4 -",
+            "drums": "kick hat snare hat | kick hat snare hat | kick hat snare hat | kick hat snare hat"
+          },
+          "previewInstruments": {
+            "chords": "warm-pad",
+            "bass": "synth-bass",
+            "pad": "ambient-pad",
+            "lead": "retro-pulse-lead",
+            "drums": "basic-drums"
+          }
+        }
+      },
+      {
+        "id": "menu-march-sketch",
+        "name": "Menu March Sketch",
+        "sourceMidi": "assets/music/midi/menu-march-sketch.mid",
+        "instrumentSet": "Preview Synth sketch",
+        "rendered": {},
+        "defaultRuntimeFormat": "ogg",
+        "loop": {
+          "enabled": true
+        },
+        "director": {
+          "mood": "confident",
+          "intensity": "medium",
+          "usage": ["menu"],
+          "notes": "Secondary song to prove multi-song manifest selection."
+        },
+        "tags": ["uat", "menu"]
+      },
+      {
+        "id": "quiet-village-pad",
+        "name": "Quiet Village Pad",
+        "sourceMidi": "assets/music/midi/quiet-village-pad.mid",
+        "instrumentSet": "Preview Synth sketch",
+        "rendered": {},
+        "defaultRuntimeFormat": "ogg",
+        "loop": {
+          "enabled": false
+        },
+        "director": {
+          "mood": "calm",
+          "intensity": "low",
+          "usage": ["ambient"],
+          "notes": "Low-intensity contrast song for the imported song list."
+        },
+        "tags": ["uat", "ambient"]
+      }
+    ]
+  }
+}

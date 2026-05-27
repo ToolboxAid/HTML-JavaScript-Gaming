@@ -24,18 +24,18 @@ export class PlaybackControl {
   setSelected(song) {
     this.playButton.disabled = !song;
     this.stopButton.disabled = true;
-    this.stateOutput.textContent = song ? `Rendered preview ready: ${song.name}. Live MIDI synthesis: NOT IMPLEMENTED.` : "No song selected.";
+    this.stateOutput.textContent = song ? `Audible preview ready: ${song.name}.` : "No song selected.";
   }
 
   setPlaying(song) {
     this.playButton.disabled = true;
     this.stopButton.disabled = false;
-    this.stateOutput.textContent = `Playing rendered preview: ${song.name}`;
+    this.stateOutput.textContent = `Playing audible preview: ${song.name}`;
   }
 
   setStopped(song) {
     this.playButton.disabled = !song;
     this.stopButton.disabled = true;
-    this.stateOutput.textContent = song ? `Stopped rendered preview: ${song.name}. Live MIDI synthesis: NOT IMPLEMENTED.` : "No song selected.";
+    this.stateOutput.textContent = song ? `Stopped audible preview: ${song.name}.` : "No song selected.";
   }
 }

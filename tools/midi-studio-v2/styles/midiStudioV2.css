@@ -72,6 +72,28 @@
   z-index: 5;
 }
 
+.midi-studio-v2__tabs {
+  align-items: center;
+  border-bottom: 1px solid var(--tool-starter-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem 0.65rem;
+}
+
+.midi-studio-v2__tabs button {
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  min-height: 2.25rem;
+}
+
+.midi-studio-v2__tabs button.is-active {
+  background: #0ea5e9;
+  border-color: #7dd3fc;
+  color: #08111f;
+}
+
 .midi-studio-v2__now-playing-label {
   border: 1px solid var(--tool-starter-line);
   border-radius: 6px;
@@ -221,8 +243,7 @@
   overflow: auto;
 }
 
-body[data-tool-id="midi-studio-v2"] .tool-starter__panel--center > .accordion-v2:not(:has(#instrumentGridContent)),
-body[data-tool-id="midi-studio-v2"] .tool-starter__panel--right > .accordion-v2:not(:has(#audioDiagnosticsContent)):not(:has(#statusLogContent)):not(:has(#renderedTargetsContent)) {
+body[data-tool-id="midi-studio-v2"] [data-midi-studio-tab-panel][hidden] {
   display: none;
 }
 
