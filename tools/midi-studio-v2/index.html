@@ -44,17 +44,17 @@
       <button id="playButton" type="button" disabled>Play</button>
       <button id="stopButton" type="button" disabled>Stop</button>
       <button id="stopAllAudioButton" type="button">Stop All Audio</button>
-      <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
-        <span>Export target type</span>
-        <select id="renderedExportTargetTypeSelect">
-          <option value="wav">WAV</option>
-          <option value="mp3">MP3</option>
-          <option value="ogg">OGG</option>
-        </select>
-      </label>
-      <button id="exportWavButton" type="button">Export WAV</button>
-      <button id="exportMp3Button" type="button">Export MP3</button>
-      <button id="exportOggButton" type="button">Export OGG</button>
+      <div class="midi-studio-v2__export-save-controls">
+        <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
+          <span>Type</span>
+          <select id="renderedExportTargetTypeSelect">
+            <option value="wav">WAV</option>
+            <option value="mp3">MP3</option>
+            <option value="ogg">OGG</option>
+          </select>
+        </label>
+        <button id="renderedExportSaveButton" type="button">Save</button>
+      </div>
       <button id="toolCopyJsonButton" type="button" disabled>Copy JSON</button>
       <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
       <input id="toolImportManifestInput" type="file" accept="application/json,.json" hidden>

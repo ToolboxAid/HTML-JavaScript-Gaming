@@ -109,9 +109,7 @@ window.addEventListener("DOMContentLoaded", () => {
     previewSynth: new PreviewSynthEngine({ windowRef: window }),
     renderedExportActions: new RenderedExportActionsControl({
       exportTargetTypeSelect: requireElement("#renderedExportTargetTypeSelect"),
-      mp3Button: requireElement("#exportMp3Button"),
-      oggButton: requireElement("#exportOggButton"),
-      wavButton: requireElement("#exportWavButton")
+      saveButton: requireElement("#renderedExportSaveButton")
     }),
     serializer: new MidiStudioStateSerializer(),
     shell: new ToolShellControl(),

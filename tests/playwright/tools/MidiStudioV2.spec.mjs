@@ -1226,12 +1226,15 @@ test.describe("MIDI Studio V2", () => {
       const renderedHeader = page.locator('.accordion-v2__header[aria-controls="renderedTargetsContent"]');
       await expect(renderedHeader).toContainText("Rendered Export Targets");
       await expect(renderedHeader.locator("#exportWavButton")).toHaveCount(0);
+      await expect(page.locator("#exportWavButton")).toHaveCount(0);
+      await expect(page.locator("#exportMp3Button")).toHaveCount(0);
+      await expect(page.locator("#exportOggButton")).toHaveCount(0);
       await expect(page.locator(".midi-studio-v2__tool-menu #toolImportManifestButton")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #loadExampleAndPlayButton")).toHaveCount(0);
       await expect(page.locator(".midi-studio-v2__tool-menu #stopAllAudioButton")).toBeVisible();
-      await expect(page.locator(".midi-studio-v2__tool-menu #exportWavButton")).toBeVisible();
-      await expect(page.locator(".midi-studio-v2__tool-menu #exportMp3Button")).toBeVisible();
-      await expect(page.locator(".midi-studio-v2__tool-menu #exportOggButton")).toBeVisible();
+      await expect(page.locator('.midi-studio-v2__tool-menu label[for="renderedExportTargetTypeSelect"]')).toContainText("Type");
+      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportTargetTypeSelect")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toBeVisible();
       await expect(page.locator("#midiSourceDetails")).toContainText("No MIDI source inspected.");
       await expect(page.locator("#audioDiagnosticsContent")).toBeHidden();
       await expect(page.locator("#playbackState")).toContainText("Audible preview ready: Main Theme.");
@@ -1297,19 +1300,39 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("reports rendered export nav action status without claiming files were written", async ({ page }) => {
+  test("exports through Type dropdown and Save without claiming files were written", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
-      await expect(page.locator('.accordion-v2__header[aria-controls="renderedTargetsContent"] #exportWavButton')).toHaveCount(0);
-      await expect(page.locator(".midi-studio-v2__tool-menu #exportWavButton")).toBeVisible();
-      await page.locator("#exportWavButton").click();
-      await page.locator("#exportMp3Button").click();
-      await page.locator("#exportOggButton").click();
+      await expect(page.locator("#exportWavButton")).toHaveCount(0);
+      await expect(page.locator("#exportMp3Button")).toHaveCount(0);
+      await expect(page.locator("#exportOggButton")).toHaveCount(0);
+      await expect(page.locator("#renderedExportTargetTypeSelect")).toBeVisible();
+      await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
+      await expect(page.locator("#renderedExportSaveButton")).toBeVisible();
+      const exportControlsFit = await page.locator(".midi-studio-v2__tool-menu").evaluate((menu) => {
+        const label = menu.querySelector('label[for="renderedExportTargetTypeSelect"]').getBoundingClientRect();
+        const typeSelect = menu.querySelector("#renderedExportTargetTypeSelect").getBoundingClientRect();
+        const saveButton = menu.querySelector("#renderedExportSaveButton").getBoundingClientRect();
+        const menuRect = menu.getBoundingClientRect();
+        return {
+          fit: typeSelect.left >= menuRect.left - 1 && saveButton.right <= menuRect.right + 1,
+          sameRow: label.right <= saveButton.left && label.bottom >= saveButton.top && saveButton.bottom >= label.top
+        };
+      });
+      expect(exportControlsFit.fit).toBe(true);
+      expect(exportControlsFit.sameRow).toBe(true);
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await page.locator("#renderedExportSaveButton").click();
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await page.locator("#renderedExportSaveButton").click();
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for WAV\. Planned target: assets\/music\/rendered\/theme-main\.wav\./);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for MP3\. Planned target: assets\/music\/rendered\/theme-main\.mp3\./);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for OGG\. Planned target: assets\/music\/rendered\/theme-main\.ogg\./);
       await page.locator('[data-song-id="source-only"]').click();
-      await page.locator("#exportWavButton").click();
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered WAV export target for Source Only\. Add music\.songs\[\]\.rendered\.wav before exporting\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -2230,7 +2253,8 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSourceField")).toHaveValue("No song selected");
       await expect(page.locator("#renderedTargets")).toContainText("No rendered WAV target selected.");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL MIDI Studio V2 payload rejected before render .* music\.songs\[0\]\.id is required\./);
-      await page.locator("#exportWavButton").click();
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI song for WAV export\. Load or select a song before exporting\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);

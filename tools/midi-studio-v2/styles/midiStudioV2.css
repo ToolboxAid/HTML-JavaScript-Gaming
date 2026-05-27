@@ -775,14 +775,28 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 .midi-studio-v2__compact-field {
   align-items: center;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.35rem;
+  min-width: 0;
 }
 
 .midi-studio-v2__compact-field span {
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.midi-studio-v2__compact-field select {
+  min-width: 4.75rem;
+}
+
+.midi-studio-v2__export-save-controls {
+  align-items: center;
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  min-width: 0;
 }
 
 .midi-studio-v2__primary-action {
