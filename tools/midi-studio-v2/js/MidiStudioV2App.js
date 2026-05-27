@@ -115,7 +115,7 @@ export class MidiStudioV2App {
   }
 
   async start() {
-    this.shell.mount();
+    this.shell.mount({ onExpandedChange: (isExpanded) => this.handleExpandedModeChange(isExpanded) });
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
@@ -165,6 +165,14 @@ export class MidiStudioV2App {
     this.lastInstrumentGridResult = null;
     this.playbackControl.setSelected(null);
     this.actionNav.setToolActionsEnabled(false);
+  }
+
+  handleExpandedModeChange(isExpanded) {
+    if (isExpanded) {
+      this.statusLog.info("Entered expanded MIDI Studio workspace view. Header details are hidden; NAV, Status, and recovery actions remain available.");
+      return;
+    }
+    this.statusLog.info("Exited expanded MIDI Studio workspace view. Header and details are visible.");
   }
 
   applyPayload(rawValue, sourceLabel) {

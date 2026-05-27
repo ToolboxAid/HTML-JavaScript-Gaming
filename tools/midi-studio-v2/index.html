@@ -40,6 +40,17 @@
     <nav class="tool-starter__menu tool-starter__tool__menu midi-studio-v2__tool-menu" aria-label="Tool actions" data-launch-mode-nav="tool">
       <button id="toolImportManifestButton" type="button">Import Manifest</button>
       <button id="useExampleButton" type="button">Use Example Test Song</button>
+      <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
+        <span>Export target type</span>
+        <select id="renderedExportTargetTypeSelect">
+          <option value="wav">WAV</option>
+          <option value="mp3">MP3</option>
+          <option value="ogg">OGG</option>
+        </select>
+      </label>
+      <button id="exportWavButton" type="button">Export WAV</button>
+      <button id="exportMp3Button" type="button">Export MP3</button>
+      <button id="exportOggButton" type="button">Export OGG</button>
       <button id="toolCopyJsonButton" type="button" disabled>Copy JSON</button>
       <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
       <input id="toolImportManifestInput" type="file" accept="application/json,.json" hidden>
@@ -315,23 +326,10 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <div class="accordion-v2__header midi-studio-v2__rendered-targets-header" aria-expanded="true" aria-controls="renderedTargetsContent">
+          <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="renderedTargetsContent">
             <span>Rendered Export Targets</span>
-            <div class="midi-studio-v2__header-actions" aria-label="Rendered export actions">
-              <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
-                <span>Export target type</span>
-                <select id="renderedExportTargetTypeSelect">
-                  <option value="wav">WAV</option>
-                  <option value="mp3">MP3</option>
-                  <option value="ogg">OGG</option>
-                </select>
-              </label>
-              <button id="exportWavButton" type="button">Export WAV</button>
-              <button id="exportMp3Button" type="button">Export MP3</button>
-              <button id="exportOggButton" type="button">Export OGG</button>
-              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-            </div>
-          </div>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
           <div id="renderedTargetsContent" class="accordion-v2__content">
             <dl id="renderedTargets" class="midi-studio-v2__details"></dl>
           </div>

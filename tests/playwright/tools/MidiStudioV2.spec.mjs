@@ -232,9 +232,10 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#inspectMidiSourceButton")).toBeEnabled();
       const renderedHeader = page.locator('.accordion-v2__header[aria-controls="renderedTargetsContent"]');
       await expect(renderedHeader).toContainText("Rendered Export Targets");
-      await expect(renderedHeader.locator("#exportWavButton")).toBeVisible();
-      await expect(renderedHeader.locator("#exportMp3Button")).toBeVisible();
-      await expect(renderedHeader.locator("#exportOggButton")).toBeVisible();
+      await expect(renderedHeader.locator("#exportWavButton")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__tool-menu #exportWavButton")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__tool-menu #exportMp3Button")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__tool-menu #exportOggButton")).toBeVisible();
       await expect(page.locator("#midiSourceDetails")).toContainText("No MIDI source inspected.");
       await expect(page.locator("#playbackState")).toContainText("Live MIDI synthesis: NOT IMPLEMENTED");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 3 MIDI songs/);
@@ -321,9 +322,11 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("reports rendered export header action status without claiming files were written", async ({ page }) => {
+  test("reports rendered export nav action status without claiming files were written", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
+      await expect(page.locator('.accordion-v2__header[aria-controls="renderedTargetsContent"] #exportWavButton')).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__tool-menu #exportWavButton")).toBeVisible();
       await page.locator("#exportWavButton").click();
       await page.locator("#exportMp3Button").click();
       await page.locator("#exportOggButton").click();
@@ -843,6 +846,70 @@ Am F`);
       const gridModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
       expect(gridModel.timeline.some((event) => event.lane === "bass" && event.value === "A2" && event.source === "generated")).toBe(true);
       expect(gridModel.timeline.some((event) => event.lane === "bass" && event.value === "Bb")).toBe(false);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("opens and closes every MIDI Studio accordion with matching icon state", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      const headerCount = await page.locator(".accordion-v2__header").count();
+      for (let index = 0; index < headerCount; index += 1) {
+        const header = page.locator(".accordion-v2__header").nth(index);
+        const controls = await header.getAttribute("aria-controls");
+        expect(controls).toBeTruthy();
+        const content = page.locator(`#${controls}`);
+        await expect(content).toHaveCount(1);
+        await expect(header).toHaveAttribute("aria-expanded", "true");
+        await expect(header.locator(".accordion-v2__icon")).toHaveText("-");
+        await header.click({ position: { x: 8, y: 8 } });
+        await expect(header).toHaveAttribute("aria-expanded", "false");
+        await expect(header.locator(".accordion-v2__icon")).toHaveText("+");
+        await expect(content).toBeHidden();
+        await header.click({ position: { x: 8, y: 8 } });
+        await expect(header).toHaveAttribute("aria-expanded", "true");
+        await expect(header.locator(".accordion-v2__icon")).toHaveText("-");
+        await expect(content).toBeVisible();
+      }
+      expect(await page.locator("[id]").evaluateAll((elements) => {
+        const ids = elements.map((element) => element.id).filter(Boolean);
+        return ids.length === new Set(ids).size;
+      })).toBe(true);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("expands and restores the MIDI Studio workspace from the header details toggle", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      const centerPanel = page.locator(".tool-starter__panel--center");
+      const normalWidth = (await centerPanel.boundingBox())?.width || 0;
+      await page.locator("[data-midi-studio-summary]").click();
+      await expect(page.locator("body")).toHaveClass(/midi-studio-v2--expanded/);
+      await expect(page.locator("[data-midi-studio-summary]")).toContainText("Show Header and Details");
+      await expect(page.locator("#shared-theme-header")).toBeHidden();
+      await expect(page.locator(".tool-starter__panel--left")).toBeHidden();
+      await expect(page.locator("#songDetailsContent")).toBeHidden();
+      await expect(page.locator("#instrumentGridContent")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__tool-menu")).toBeVisible();
+      await expect(page.locator("#useExampleButton")).toBeVisible();
+      await expect(page.locator("#statusLogContent")).toBeVisible();
+      await expect(page.locator("#clearStatusButton")).toBeVisible();
+      const expandedWidth = (await centerPanel.boundingBox())?.width || 0;
+      expect(expandedWidth).toBeGreaterThan(normalWidth);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Entered expanded MIDI Studio workspace view/);
+
+      await page.locator("[data-midi-studio-summary]").click();
+      await expect(page.locator("body")).not.toHaveClass(/midi-studio-v2--expanded/);
+      await expect(page.locator("[data-midi-studio-summary]")).toContainText("Hide Header and Details");
+      await expect(page.locator("#shared-theme-header")).toBeVisible();
+      await expect(page.locator(".tool-starter__panel--left")).toBeVisible();
+      await expect(page.locator("#songDetailsContent")).toBeVisible();
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Exited expanded MIDI Studio workspace view/);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

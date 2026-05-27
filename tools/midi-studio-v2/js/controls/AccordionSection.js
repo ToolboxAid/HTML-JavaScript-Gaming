@@ -11,8 +11,24 @@ export class AccordionSection {
       return;
     }
     this.header.dataset.accordionV2Bound = "true";
+    if (this.header.tagName !== "BUTTON") {
+      this.header.setAttribute("role", "button");
+      this.header.tabIndex = 0;
+    }
     this.setOpen(this.section.dataset.accordionV2Open !== "false");
-    this.header.addEventListener("click", () => {
+    this.header.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      const interactiveTarget = target?.closest("button, input, select, textarea, a");
+      if (interactiveTarget && interactiveTarget !== this.header) {
+        return;
+      }
+      this.setOpen(!this.section.classList.contains("is-open"));
+    });
+    this.header.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      event.preventDefault();
       this.setOpen(!this.section.classList.contains("is-open"));
     });
   }
@@ -24,6 +40,7 @@ export class AccordionSection {
     this.content.hidden = !isOpen;
     if (this.icon) {
       this.icon.dataset.accordionV2IconState = isOpen ? "open" : "closed";
+      this.icon.textContent = isOpen ? "-" : "+";
     }
   }
 }

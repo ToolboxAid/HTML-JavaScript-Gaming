@@ -275,3 +275,36 @@
   padding-left: 0;
   padding-right: 0;
 }
+
+body[data-tool-id="midi-studio-v2"] .accordion-v2.is-open .accordion-v2__icon {
+  transform: none;
+}
+
+body.midi-studio-v2--expanded .tool-starter__menu {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+body.midi-studio-v2--expanded .tool-starter.app-shell {
+  height: calc(100vh - 86px);
+  width: calc(100% - 32px);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+}
+
+body.midi-studio-v2--expanded .tool-starter__panel--left {
+  display: none;
+}
+
+body.midi-studio-v2--expanded .tool-starter__panel--center {
+  grid-column: 1;
+}
+
+body.midi-studio-v2--expanded .tool-starter__panel--right {
+  grid-column: 2;
+}
+
+body.midi-studio-v2--expanded .tool-starter__panel--center .accordion-v2:not(:has(#playbackContent)):not(:has(#instrumentGridContent)),
+body.midi-studio-v2--expanded .tool-starter__panel--right .accordion-v2:not(:has(#statusLogContent)) {
+  display: none;
+}
