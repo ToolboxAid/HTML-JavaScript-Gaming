@@ -16,6 +16,8 @@ export class MidiStudioV2App {
     serializer,
     shell,
     songList,
+    songSheet,
+    songSheetParser,
     statusLog,
     windowRef = window
   }) {
@@ -33,6 +35,8 @@ export class MidiStudioV2App {
     this.serializer = serializer;
     this.shell = shell;
     this.songList = songList;
+    this.songSheet = songSheet;
+    this.songSheetParser = songSheetParser;
     this.statusLog = statusLog;
     this.window = windowRef;
   }
@@ -42,6 +46,7 @@ export class MidiStudioV2App {
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
+    this.songSheet.mount({ onParse: (sourceText) => this.parseSongSheet(sourceText) });
     this.midiSourceDetails.mount({ onInspect: () => this.inspectSelectedSource() });
     this.playbackControl.mount({
       onPlay: () => this.playSelectedSong(),
@@ -74,6 +79,7 @@ export class MidiStudioV2App {
     this.directorPanel.render(null, {});
     this.midiSourceDetails.render(null);
     this.midiSourceDetails.setEnabled(false);
+    this.songSheet.render(null);
     this.playbackControl.setSelected(null);
     this.actionNav.setToolActionsEnabled(false);
   }
@@ -146,6 +152,19 @@ export class MidiStudioV2App {
     }
     this.midiSourceDetails.render(result);
     this.statusLog.ok(`MIDI source inspected for ${song.name}: format ${result.format}, ${result.trackCount} track${result.trackCount === 1 ? "" : "s"}, ${result.ticksPerQuarterNote} TPQN.`);
+  }
+
+  parseSongSheet(sourceText) {
+    const result = this.songSheetParser.parse(sourceText);
+    this.songSheet.render(result);
+    if (!result.ok) {
+      this.statusLog.fail(`Song Sheet rejected: ${result.message}`);
+      return;
+    }
+    if (result.warnings.length) {
+      this.statusLog.warn(`Song Sheet parsed with warnings: ${result.warningSummary}`);
+    }
+    this.statusLog.ok(`Song Sheet parsed: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.bars} bars, ${result.chordCount} chords.`);
   }
 
   stopPlayback() {

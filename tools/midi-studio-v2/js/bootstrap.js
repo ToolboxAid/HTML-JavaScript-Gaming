@@ -7,8 +7,10 @@ import { MidiSourceDetailsControl } from "./controls/MidiSourceDetailsControl.js
 import { PlaybackControl } from "./controls/PlaybackControl.js";
 import { SongDetailsControl } from "./controls/SongDetailsControl.js";
 import { SongListControl } from "./controls/SongListControl.js";
+import { SongSheetControl } from "./controls/SongSheetControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
+import { SongSheetParser } from "../../../src/engine/audio/SongSheetParser.js";
 import { MidiPlaybackService } from "./services/MidiPlaybackService.js";
 import { MidiSourceInspectionService } from "./services/MidiSourceInspectionService.js";
 import { MidiStudioStateSerializer } from "./services/MidiStudioStateSerializer.js";
@@ -64,6 +66,12 @@ window.addEventListener("DOMContentLoaded", () => {
     serializer: new MidiStudioStateSerializer(),
     shell: new ToolShellControl(),
     songList: new SongListControl({ list: requireElement("#songList") }),
+    songSheet: new SongSheetControl({
+      input: requireElement("#songSheetInput"),
+      parseButton: requireElement("#parseSongSheetButton"),
+      summary: requireElement("#songSheetSummary")
+    }),
+    songSheetParser: new SongSheetParser(),
     statusLog,
     windowRef: window
   });

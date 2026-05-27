@@ -80,6 +80,20 @@
             <button id="inspectMidiSourceButton" type="button" disabled>Inspect MIDI Source</button>
           </div>
         </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSheetContent">
+            <span>Song Sheet</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="songSheetContent" class="accordion-v2__content midi-studio-v2__stack">
+            <label class="tool-starter__field" for="songSheetInput">
+              <span>Structured song sheet</span>
+              <textarea id="songSheetInput" class="midi-studio-v2__song-sheet-input" rows="9" placeholder="tempo=132&#10;key=A minor&#10;style=retro-arcade&#10;&#10;[intro]&#10;Am F&#10;&#10;[loop]&#10;Am F C G"></textarea>
+            </label>
+            <button id="parseSongSheetButton" type="button">Parse Song Sheet</button>
+          </div>
+        </section>
       </aside>
 
       <section class="tool-starter__panel tool-starter__panel--center" aria-label="MIDI preview">
@@ -118,6 +132,16 @@
           </button>
           <div id="midiSourceDetailsContent" class="accordion-v2__content">
             <dl id="midiSourceDetails" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSheetSummaryContent">
+            <span>Song Sheet Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="songSheetSummaryContent" class="accordion-v2__content">
+            <dl id="songSheetSummary" class="midi-studio-v2__details"></dl>
           </div>
         </section>
       </section>

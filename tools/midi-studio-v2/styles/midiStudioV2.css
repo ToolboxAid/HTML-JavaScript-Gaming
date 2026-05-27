@@ -32,6 +32,11 @@
   opacity: 0.78;
 }
 
+.midi-studio-v2__song-sheet-input {
+  min-height: 12rem;
+  resize: vertical;
+}
+
 .midi-studio-v2__empty {
   margin: 0;
   opacity: 0.8;
