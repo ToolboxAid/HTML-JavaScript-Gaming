@@ -548,10 +548,11 @@ export class InstrumentGridControl {
     grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table midi-studio-v2__octave-timeline";
     grid.setAttribute("role", "table");
     grid.setAttribute("aria-label", "Octave timeline editor");
-    grid.style.gridTemplateColumns = `minmax(5.5rem, 7rem) repeat(${result.totalSteps}, minmax(2.55rem, 1fr))`;
+    grid.style.gridTemplateColumns = `4.25rem 2.25rem repeat(${result.totalSteps}, 1.8rem)`;
     this.renderNoteTableHeader(grid, result);
     octaveRows.forEach((row) => {
       grid.append(this.createOctaveRowHeader(row));
+      grid.append(this.createOctaveRowAxisSpacer(row));
       this.referenceCells(result).forEach((cell, stepIndex) => {
         const outputCell = this.createOctaveTimelineCell({ result, row, stepIndex });
         this.applyTimingDataset(outputCell, cell, stepIndex);
@@ -563,17 +564,19 @@ export class InstrumentGridControl {
   }
 
   renderNoteTableHeader(grid, result) {
-    const instrumentHeader = this.appendCell(grid, "", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__note-table-instrument-header");
-    instrumentHeader.setAttribute("role", "columnheader");
-    instrumentHeader.textContent = "Octave";
+    const octaveHeader = this.appendCell(grid, "Octave", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__note-table-instrument-header midi-studio-v2__timing-header-row-1");
+    octaveHeader.setAttribute("role", "columnheader");
+    const barHeader = this.appendCell(grid, "Bar", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--timeline-axis midi-studio-v2__timing-axis-header midi-studio-v2__timing-header-row-1");
+    barHeader.setAttribute("role", "columnheader");
     const rulerCells = this.referenceCells(result);
     rulerCells.forEach((cell, stepIndex) => {
       const classes = [
         "midi-studio-v2__grid-cell",
-        "midi-studio-v2__grid-cell--beat",
+        "midi-studio-v2__grid-cell--bar-header",
         "midi-studio-v2__grid-cell--ruler",
         "midi-studio-v2__grid-cell--timing-header",
-        "midi-studio-v2__note-table-column-header"
+        "midi-studio-v2__note-table-column-header",
+        "midi-studio-v2__timing-header-row-1"
       ];
       if (cell.beat === 1 && cell.subdivisionStep === 1) {
         classes.push("midi-studio-v2__grid-cell--bar");
@@ -584,22 +587,28 @@ export class InstrumentGridControl {
       }
       const outputCell = this.appendCell(grid, "", classes.join(" "));
       outputCell.setAttribute("role", "columnheader");
-      outputCell.setAttribute("aria-label", `Bar ${cell.bar}, beat ${cell.beat}${result.subdivision > 1 ? `, subdivision ${cell.subdivisionStep}` : ""}, section ${cell.section}`);
-      outputCell.append(
-        this.timingHeaderLine("Bar", cell.bar),
-        this.timingHeaderLine("Beat", cell.beat)
-      );
-      if (result.subdivision > 1) {
-        outputCell.append(this.timingHeaderLine("Subdivision", cell.subdivisionStep));
-      }
+      outputCell.setAttribute("aria-label", `Bar ${cell.bar}, section ${cell.section}`);
+      outputCell.textContent = String(cell.bar);
       this.applyTimingDataset(outputCell, cell, stepIndex);
     });
-  }
-
-  timingHeaderLine(label, value) {
-    const line = document.createElement("span");
-    line.textContent = `${label} ${value}`;
-    return line;
+    const beatSpacer = this.appendCell(grid, "", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__note-table-instrument-header midi-studio-v2__timing-header-row-2");
+    beatSpacer.setAttribute("role", "columnheader");
+    const beatHeader = this.appendCell(grid, "Beat", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--timeline-axis midi-studio-v2__timing-axis-header midi-studio-v2__timing-header-row-2");
+    beatHeader.setAttribute("role", "columnheader");
+    rulerCells.forEach((cell, stepIndex) => {
+      const outputCell = this.appendCell(grid, String(cell.beat), [
+        "midi-studio-v2__grid-cell",
+        "midi-studio-v2__grid-cell--beat",
+        "midi-studio-v2__grid-cell--ruler",
+        "midi-studio-v2__grid-cell--timing-header",
+        "midi-studio-v2__grid-cell--beat-header",
+        "midi-studio-v2__note-table-column-header",
+        "midi-studio-v2__timing-header-row-2"
+      ].join(" "));
+      outputCell.setAttribute("role", "columnheader");
+      outputCell.setAttribute("aria-label", `Beat ${cell.beat}${result.subdivision > 1 ? `, subdivision ${cell.subdivisionStep}` : ""}, section ${cell.section}`);
+      this.applyTimingDataset(outputCell, cell, stepIndex);
+    });
   }
 
   referenceCells(result) {
@@ -748,6 +757,15 @@ export class InstrumentGridControl {
     return header;
   }
 
+  createOctaveRowAxisSpacer(row) {
+    const spacer = document.createElement("div");
+    spacer.className = "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--timeline-axis midi-studio-v2__octave-row-axis-spacer";
+    spacer.setAttribute("role", "presentation");
+    spacer.dataset.octaveRow = row.value;
+    spacer.dataset.octave = row.octave;
+    return spacer;
+  }
+
   createOctaveTimelineCell({ result, row, stepIndex }) {
     const events = this.orderedEventsForCell(this.visibleEventsForCell({ result, row, stepIndex }));
     const cell = document.createElement("div");
@@ -762,7 +780,6 @@ export class InstrumentGridControl {
     if (events.length) {
       cell.dataset.noteLanes = Array.from(new Set(events.map((event) => event.lane))).join(" ");
       cell.dataset.noteValues = events.map((event) => event.value).join(" ");
-      cell.textContent = this.noteTextForOctaveCell(events, row.value);
     }
     cell.role = "button";
     cell.tabIndex = 0;
@@ -799,18 +816,6 @@ export class InstrumentGridControl {
       classes.push("midi-studio-v2__grid-cell--lane-dimmed");
     }
     return classes;
-  }
-
-  noteTextForOctaveCell(events, rowToken) {
-    return Array.from(new Set(events.map((event) => {
-      if (event.kind === "drum") {
-        return String(event.value || rowToken).toLowerCase();
-      }
-      if (event.kind === "chord") {
-        return rowToken;
-      }
-      return this.normalizeNoteName(event.value);
-    }))).join(" ");
   }
 
   orderedEventsForCell(events) {
@@ -1972,7 +1977,7 @@ export class InstrumentGridControl {
       cell.classList.remove("midi-studio-v2__grid-cell--lane-active");
     });
     this.gridOutput.querySelectorAll(`[data-step-index="${this.playheadStep}"]`).forEach((cell) => {
-      if (cell.classList.contains("midi-studio-v2__grid-cell--timing-header") || cell.classList.contains("midi-studio-v2__note-table-cell")) {
+      if (cell.classList.contains("midi-studio-v2__grid-cell--beat-header") || cell.classList.contains("midi-studio-v2__note-table-cell")) {
         cell.classList.add("midi-studio-v2__grid-cell--playhead-active");
       }
       const cellLanes = String(cell.dataset.noteLanes || "").split(/\s+/).filter(Boolean);

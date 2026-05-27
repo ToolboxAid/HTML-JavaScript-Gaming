@@ -518,10 +518,10 @@ test.describe("MIDI Studio V2", () => {
       await expect(octaveNoteBlock(page, "lead").first()).toHaveClass(/midi-studio-v2__grid-cell--lane-selected/);
       await expect(octaveNoteBlock(page, "chords").first()).toHaveClass(/midi-studio-v2__grid-cell--lane-dimmed/);
       await expect(page.locator(".midi-studio-v2__octave-row-label[data-octave='5']")).not.toHaveCount(0);
-      await expect(octaveCell(page, "G4", 0)).toContainText("G4");
+      await expect(octaveCell(page, "G4", 0)).toHaveText("");
       await expect(octaveCell(page, "G4", 0)).toHaveAttribute("data-note-lanes", /lead/);
       await selectInstrumentRow(page, "bass");
-      await expect(octaveCell(page, "G2", 0)).toContainText("G2");
+      await expect(octaveCell(page, "G2", 0)).toHaveText("");
       await expect(octaveCell(page, "G2", 0)).toHaveAttribute("data-note-lanes", /bass/);
       await instrumentRow(page, "bass").locator("[data-toggle-instrument-visibility='bass']").click();
       await expect(octaveNoteBlock(page, "bass")).toHaveCount(0);
@@ -530,7 +530,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(octaveNoteBlock(page, "bass").first()).toBeVisible();
       await selectInstrumentRow(page, "lead");
       await octaveCell(page, "C5", 1).click();
-      await expect(octaveCell(page, "C5", 1)).toHaveText("C5");
+      await expect(octaveCell(page, "C5", 1)).toHaveText("");
       await expect(octaveCell(page, "C5", 1)).toHaveAttribute("data-note-lanes", /lead/);
       expect(await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult.timeline.some((event) => event.lane === "lead" && event.value === "C5" && event.stepIndex === 1))).toBe(true);
 
@@ -550,10 +550,10 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#playButton")).toBeEnabled();
 
       await page.locator('[data-song-id="frog-hop-nursery-rhyme"]').click();
-      await expect(octaveCell(page, "C5", 0)).toContainText("C5");
+      await expect(octaveCell(page, "C5", 0)).toHaveText("");
       await expect(octaveCell(page, "C5", 0)).toHaveAttribute("data-note-lanes", /lead/);
       await page.locator('[data-song-id="quiet-village-pad"]').click();
-      await expect(octaveCell(page, "D5", 0)).toContainText("D5");
+      await expect(octaveCell(page, "D5", 0)).toHaveText("");
       await expect(octaveCell(page, "D5", 0)).toHaveAttribute("data-note-lanes", /lead/);
 
       await selectMidiStudioTab(page, "midi-import");
@@ -566,10 +566,10 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songList")).toContainText("Local Import");
       await selectMidiStudioTab(page, "studio");
       await expect(instrumentRow(page, "track-2-ch-1")).toBeVisible();
-      await expect(octaveCell(page, "C4", 0)).toContainText("C4");
+      await expect(octaveCell(page, "C4", 0)).toHaveText("");
       await expect(octaveCell(page, "C4", 0)).toHaveAttribute("data-note-lanes", /track-2-ch-1/);
       await octaveCell(page, "D4", 1).click();
-      await expect(octaveCell(page, "D4", 1)).toHaveText("D4");
+      await expect(octaveCell(page, "D4", 1)).toHaveText("");
       await expect(octaveCell(page, "D4", 1)).toHaveAttribute("data-note-lanes", /track-2-ch-1/);
       expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes["track-2-ch-1"])).toContain("D4");
       await page.evaluate(() => {
@@ -726,8 +726,8 @@ test.describe("MIDI Studio V2", () => {
         .map((event) => event.value), chordStep);
       await octaveCell(page, "C5", chordStep).click();
       await octaveCell(page, "E5", chordStep).click();
-      await expect(octaveCell(page, "C5", chordStep)).toHaveText("C5");
-      await expect(octaveCell(page, "E5", chordStep)).toHaveText("E5");
+      await expect(octaveCell(page, "C5", chordStep)).toHaveText("");
+      await expect(octaveCell(page, "E5", chordStep)).toHaveText("");
       await octaveCell(page, "G5", chordStep).click();
       const leadChordValues = await page.evaluate((stepIndex) => window.__midiStudioV2App.lastInstrumentGridResult.timeline
         .filter((event) => event.lane === "lead" && event.kind === "note" && event.stepIndex === stepIndex)
@@ -819,8 +819,8 @@ test.describe("MIDI Studio V2", () => {
       expect(playbackEvidence.oscillatorStartsAtSameTime).toBeGreaterThanOrEqual(3);
       expect(playbackEvidence.bufferStartsAtSameTime).toBeGreaterThanOrEqual(2);
       await page.waitForFunction(() => window.__midiStudioV2App.instrumentGrid.playheadStep > 0);
-      const activeStep = await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.playheadStep);
-      await expect(page.locator(`.midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active[data-step-index="${activeStep}"]`)).toHaveCount(1);
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(1);
+      expect(Number(await page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index"))).toBeGreaterThan(0);
       await page.locator("#stopButton").click();
       await expect(page.locator("#playButton")).toBeEnabled();
       await page.locator("#playButton").click();
@@ -842,7 +842,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(octaveCell(page, "C6", 2)).not.toHaveAttribute("data-note-lanes", /lead/);
 
       await octaveCell(page, "C6", 2).click();
-      await expect(octaveCell(page, "C6", 2)).toHaveText("C6");
+      await expect(octaveCell(page, "C6", 2)).toHaveText("");
       await expect(octaveCell(page, "C6", 2)).toHaveAttribute("data-note-lanes", /lead/);
       await expect(octaveCell(page, "C6", 2)).toHaveClass(/midi-studio-v2__grid-cell--note-selected/);
       await octaveCell(page, "C6", 2).click();
@@ -851,7 +851,7 @@ test.describe("MIDI Studio V2", () => {
 
       await octaveCell(page, "C6", 3).dragTo(octaveCell(page, "C6", 5));
       for (const stepIndex of [3, 4, 5]) {
-        await expect(octaveCell(page, "C6", stepIndex)).toHaveText("C6");
+        await expect(octaveCell(page, "C6", stepIndex)).toHaveText("");
         await expect(octaveCell(page, "C6", stepIndex)).toHaveAttribute("data-note-lanes", /lead/);
       }
       await octaveCell(page, "C6", 5).dragTo(octaveCell(page, "C6", 7));
@@ -918,6 +918,93 @@ test.describe("MIDI Studio V2", () => {
       await page.keyboard.press("Space");
       await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("octave timeline freezes compact headers and note labels while active cells stay textless", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectInstrumentRow(page, "lead");
+
+      await expect(page.locator(".midi-studio-v2__timing-header-row-1.midi-studio-v2__note-table-instrument-header")).toHaveText("Octave");
+      await expect(page.locator(".midi-studio-v2__timing-header-row-1.midi-studio-v2__timing-axis-header")).toHaveText("Bar");
+      await expect(page.locator(".midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-instrument-header")).toHaveText("");
+      await expect(page.locator(".midi-studio-v2__timing-header-row-2.midi-studio-v2__timing-axis-header")).toHaveText("Beat");
+      await expect(page.locator('.midi-studio-v2__timing-header-row-1.midi-studio-v2__note-table-column-header[data-step-index="0"]')).toHaveText("1");
+      await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="0"]')).toHaveText("1");
+      await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="1"]')).toHaveText("2");
+      await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="2"]')).toHaveText("3");
+      await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="3"]')).toHaveText("4");
+
+      const output = page.locator("#instrumentGridOutput");
+      const gridLayout = await output.evaluate((element) => {
+        const firstNote = element.querySelector('.midi-studio-v2__octave-note-cell[data-step-index="0"]');
+        return {
+          columnWidth: firstNote.getBoundingClientRect().width,
+          columnTemplate: getComputedStyle(element.querySelector(".midi-studio-v2__octave-timeline")).gridTemplateColumns
+        };
+      });
+      expect(gridLayout.columnWidth).toBeLessThanOrEqual(32);
+      expect(gridLayout.columnTemplate).toContain("28.8px");
+
+      await output.evaluate((element) => {
+        element.style.maxHeight = "150px";
+        element.scrollTop = 140;
+        element.dispatchEvent(new Event("scroll"));
+      });
+      const verticalFreeze = await output.evaluate((element) => {
+        const outputRect = element.getBoundingClientRect();
+        const row1 = element.querySelector(".midi-studio-v2__timing-header-row-1.midi-studio-v2__note-table-column-header").getBoundingClientRect();
+        const row2 = element.querySelector(".midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header").getBoundingClientRect();
+        return {
+          row1TopDelta: Math.abs(row1.top - outputRect.top),
+          row2BelowRow1: row2.top >= row1.bottom - 1,
+          scrollTop: Math.round(element.scrollTop)
+        };
+      });
+      expect(verticalFreeze.scrollTop).toBeGreaterThan(0);
+      expect(verticalFreeze.row1TopDelta).toBeLessThanOrEqual(2);
+      expect(verticalFreeze.row2BelowRow1).toBe(true);
+
+      await output.evaluate((element) => {
+        element.scrollLeft = 220;
+        element.dispatchEvent(new Event("scroll"));
+      });
+      const horizontalFreeze = await output.evaluate((element) => {
+        const outputRect = element.getBoundingClientRect();
+        const header = element.querySelector('.midi-studio-v2__grid-cell--beat-header[data-step-index="6"]').getBoundingClientRect();
+        const bodyCell = element.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="C5"][data-step-index="6"]').getBoundingClientRect();
+        const label = element.querySelector('.midi-studio-v2__octave-row-label[data-octave-row="C5"]').getBoundingClientRect();
+        return {
+          headerBodyDelta: Math.abs(header.left - bodyCell.left),
+          labelLeftDelta: Math.abs(label.left - outputRect.left),
+          labelRowDelta: Math.abs(label.top - bodyCell.top),
+          scrollLeft: Math.round(element.scrollLeft)
+        };
+      });
+      expect(horizontalFreeze.scrollLeft).toBeGreaterThan(0);
+      expect(horizontalFreeze.headerBodyDelta).toBeLessThanOrEqual(1);
+      expect(horizontalFreeze.labelLeftDelta).toBeLessThanOrEqual(2);
+      expect(horizontalFreeze.labelRowDelta).toBeLessThanOrEqual(1);
+
+      await octaveCell(page, "C6", 10).click();
+      await expect(octaveCell(page, "C6", 10)).toHaveText("");
+      await expect(octaveCell(page, "C6", 10)).toHaveAttribute("data-note-lanes", /lead/);
+      await expect(octaveCell(page, "C6", 10)).toHaveAttribute("data-note-values", /C6/);
+      await expect(octaveCell(page, "C6", 10)).toHaveClass(/midi-studio-v2__grid-cell--lane-selected/);
+      const activeHighlight = await octaveCell(page, "C6", 10).evaluate((cell) => {
+        const marker = getComputedStyle(cell, "::before");
+        return {
+          content: marker.content,
+          width: marker.width
+        };
+      });
+      expect(activeHighlight.content).not.toBe("none");
+      expect(Number.parseFloat(activeHighlight.width)).toBeGreaterThan(8);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

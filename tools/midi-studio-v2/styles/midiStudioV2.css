@@ -299,6 +299,7 @@
 .midi-studio-v2__instrument-grid-output {
   max-width: 100%;
   overflow: auto;
+  scrollbar-gutter: stable;
 }
 
 body[data-tool-id="midi-studio-v2"] [data-midi-studio-tab-panel][hidden] {
@@ -314,7 +315,7 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   min-width: max-content;
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .midi-studio-v2__octave-timeline {
@@ -333,7 +334,7 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   border-right: 1px solid var(--tool-starter-line);
   background: var(--tool-starter-panel-strong);
   min-height: 1.55rem;
-  padding: 0.1rem 0.22rem;
+  padding: 0.08rem 0.12rem;
   text-align: center;
   white-space: nowrap;
 }
@@ -342,7 +343,14 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   background: var(--tool-starter-surface);
   left: 0;
   position: sticky;
-  z-index: 3;
+  z-index: 4;
+}
+
+.midi-studio-v2__grid-cell--timeline-axis {
+  background: var(--tool-starter-surface);
+  left: 4.25rem;
+  position: sticky;
+  z-index: 4;
 }
 
 .midi-studio-v2__grid-cell--timing-header {
@@ -350,12 +358,23 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   gap: 0.1rem;
   line-height: 1.2;
   position: sticky;
+  z-index: 3;
+}
+
+.midi-studio-v2__timing-header-row-1 {
+  min-height: 1.35rem;
   top: 0;
-  z-index: 2;
+}
+
+.midi-studio-v2__timing-header-row-2 {
+  min-height: 1.35rem;
+  top: 1.78rem;
 }
 
 .midi-studio-v2__note-table-column-header {
-  min-height: 2.25rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  min-height: 1.35rem;
 }
 
 .midi-studio-v2__note-table-column-header span {
@@ -367,7 +386,14 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   display: flex;
   justify-content: space-between;
   text-align: left;
-  z-index: 5;
+  z-index: 7;
+}
+
+.midi-studio-v2__timing-axis-header {
+  font-size: 0.7rem;
+  justify-items: center;
+  text-transform: uppercase;
+  z-index: 7;
 }
 
 .midi-studio-v2__octave-row-label {
@@ -376,6 +402,10 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   justify-items: start;
   min-height: 1.55rem;
   text-align: left;
+}
+
+.midi-studio-v2__octave-row-axis-spacer {
+  z-index: 4;
 }
 
 .midi-studio-v2__lane-header-cell {
@@ -583,12 +613,14 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   align-content: center;
   box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.18);
   cursor: pointer;
-  font-size: 0.72rem;
+  font-size: 0;
   font-weight: 800;
   gap: 0;
   line-height: 1;
   min-height: 1.55rem;
-  min-width: 2.55rem;
+  min-width: 1.8rem;
+  padding: 0.08rem;
+  position: relative;
   white-space: normal;
   word-break: break-word;
 }
@@ -611,6 +643,16 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   font-weight: 800;
   margin-top: 0;
   text-transform: uppercase;
+}
+
+.midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--event::before {
+  background: rgba(221, 214, 254, 0.78);
+  border-radius: 0.25rem;
+  content: "";
+  display: block;
+  height: 0.72rem;
+  justify-self: stretch;
+  margin: 0 0.1rem;
 }
 
 .midi-studio-v2__note-block {
@@ -644,7 +686,7 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 .midi-studio-v2__grid-cell--ruler,
 .midi-studio-v2__grid-cell--beat {
   color: var(--tool-starter-muted);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
 }
 
 .midi-studio-v2__grid-cell--bar {
@@ -678,6 +720,11 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   outline-offset: -4px;
 }
 
+.midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--lane-selected::before {
+  background: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(186, 230, 253, 0.82), 0 0 0.6rem rgba(56, 189, 248, 0.35);
+}
+
 .midi-studio-v2__grid-cell--note-selected {
   box-shadow: inset 0 0 0 3px #facc15, 0 0 0 1px rgba(250, 204, 21, 0.48);
   position: relative;
@@ -704,6 +751,10 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   color: #94a3b8;
   position: relative;
   z-index: 1;
+}
+
+.midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--lane-dimmed::before {
+  background: rgba(148, 163, 184, 0.46);
 }
 
 .midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--lane-selected {
