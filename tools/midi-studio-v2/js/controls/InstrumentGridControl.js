@@ -283,6 +283,8 @@ export class InstrumentGridControl {
     this.removedFixedLanes = new Set();
     this.selectedCell = null;
     this.selectedLane = "lead";
+    this.suppressNextCellClick = false;
+    this.timelinePointerEdit = null;
   }
 
   mount({ onGenerate, onLaneSettingChange, onNormalize, onNoteEdit = () => {}, onTransport }) {
@@ -311,6 +313,7 @@ export class InstrumentGridControl {
       input.addEventListener("input", () => this.updateSnapIndicator());
       input.addEventListener("change", () => this.updateSnapIndicator());
     });
+    this.gridOutput.addEventListener("scroll", () => this.syncTimelineScrollState());
     this.setTransportEnabled(false);
     this.populateSectionControls([]);
     this.updateSnapIndicator();
@@ -463,6 +466,7 @@ export class InstrumentGridControl {
   }
 
   render(result = null) {
+    const timelineScrollState = this.captureTimelineScrollState();
     this.stopTimer({ clearPreviewLanes: true });
     this.currentResult = result?.ok ? result : null;
     this.renderDefinitionList(summaryRows(result));
@@ -486,6 +490,7 @@ export class InstrumentGridControl {
     this.setPlayheadStep(this.playheadStep);
     this.updateLoopRegion();
     this.applySelectedLaneHighlight();
+    this.restoreTimelineScrollState(timelineScrollState);
     this.renderSelectionDetails();
   }
 
@@ -746,10 +751,14 @@ export class InstrumentGridControl {
   createOctaveTimelineCell({ result, row, stepIndex }) {
     const events = this.orderedEventsForCell(this.visibleEventsForCell({ result, row, stepIndex }));
     const cell = document.createElement("div");
-    cell.className = this.octaveCellClass(events).join(" ");
+    cell.className = this.octaveCellClass(events, row.value, stepIndex).join(" ");
     cell.dataset.octaveRow = row.value;
     cell.dataset.rowToken = row.value;
     cell.dataset.stepIndex = String(stepIndex);
+    if (this.isSelectedTimelineCell(row.value, stepIndex)) {
+      cell.dataset.selectedNoteCell = "true";
+      cell.setAttribute("aria-selected", "true");
+    }
     if (events.length) {
       cell.dataset.noteLanes = Array.from(new Set(events.map((event) => event.lane))).join(" ");
       cell.dataset.noteValues = events.map((event) => event.value).join(" ");
@@ -758,9 +767,16 @@ export class InstrumentGridControl {
     cell.role = "button";
     cell.tabIndex = 0;
     cell.setAttribute("aria-label", `${row.label} at step ${stepIndex + 1}`);
-    cell.addEventListener("click", () => this.toggleTimelineCell(row.value, stepIndex));
+    cell.addEventListener("pointerdown", (event) => this.beginTimelinePointerEdit(event, row.value, stepIndex));
+    cell.addEventListener("click", () => {
+      if (this.suppressNextCellClick) {
+        this.suppressNextCellClick = false;
+        return;
+      }
+      this.toggleTimelineCell(row.value, stepIndex);
+    });
     cell.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") {
+      if (event.key !== "Enter") {
         return;
       }
       event.preventDefault();
@@ -769,10 +785,13 @@ export class InstrumentGridControl {
     return cell;
   }
 
-  octaveCellClass(events) {
+  octaveCellClass(events, rowToken, stepIndex) {
     const classes = ["midi-studio-v2__grid-cell", "midi-studio-v2__spreadsheet-note-cell", "midi-studio-v2__note-table-cell", "midi-studio-v2__octave-note-cell"];
     if (events.length) {
       classes.push("midi-studio-v2__grid-cell--event");
+    }
+    if (this.isSelectedTimelineCell(rowToken, stepIndex)) {
+      classes.push("midi-studio-v2__grid-cell--note-selected");
     }
     if (events.some((event) => event.lane === this.selectedLane)) {
       classes.push("midi-studio-v2__grid-cell--lane-selected");
@@ -875,20 +894,161 @@ export class InstrumentGridControl {
     return this.selectedLane === "drums" || state.instrumentType === "Percussive";
   }
 
+  beginTimelinePointerEdit(event, rowToken, stepIndex) {
+    if (event.button !== 0 || !this.currentResult?.ok) {
+      return;
+    }
+    event.preventDefault();
+    this.selectTimelineCell(rowToken, stepIndex, { focusCell: true });
+    this.timelinePointerEdit = {
+      changed: false,
+      lastKey: this.cellKey(rowToken, stepIndex),
+      lastRowToken: rowToken,
+      lastStepIndex: stepIndex,
+      paintedKeys: new Set(),
+      pointerId: event.pointerId,
+      startRowToken: rowToken,
+      startStepIndex: stepIndex
+    };
+    const onPointerMove = (moveEvent) => this.handleTimelinePointerMove(moveEvent);
+    const onPointerUp = () => {
+      this.window.removeEventListener("pointermove", onPointerMove);
+      this.window.removeEventListener("pointerup", onPointerUp);
+      this.finishTimelinePointerEdit();
+    };
+    this.timelinePointerEdit.onPointerMove = onPointerMove;
+    this.timelinePointerEdit.onPointerUp = onPointerUp;
+    this.window.addEventListener("pointermove", onPointerMove);
+    this.window.addEventListener("pointerup", onPointerUp, { once: true });
+  }
+
+  handleTimelinePointerMove(event) {
+    const edit = this.timelinePointerEdit;
+    if (!edit || (event.pointerId !== undefined && event.pointerId !== edit.pointerId)) {
+      return;
+    }
+    const target = this.timelineCellFromPoint(event);
+    if (!target) {
+      return;
+    }
+    const rowToken = target.dataset.rowToken;
+    const stepIndex = Number(target.dataset.stepIndex);
+    if (!rowToken || !Number.isInteger(stepIndex)) {
+      return;
+    }
+    const key = this.cellKey(rowToken, stepIndex);
+    if (key === edit.lastKey) {
+      return;
+    }
+    this.paintTimelineRange(edit.lastRowToken, edit.lastStepIndex, rowToken, stepIndex);
+    edit.changed = true;
+    edit.lastKey = key;
+    edit.lastRowToken = rowToken;
+    edit.lastStepIndex = stepIndex;
+    this.selectTimelineCell(rowToken, stepIndex);
+  }
+
+  timelineCellFromPoint(event) {
+    const element = this.window.document.elementFromPoint(event.clientX, event.clientY);
+    return element?.closest?.(".midi-studio-v2__octave-note-cell") || null;
+  }
+
+  paintTimelineRange(previousRowToken, previousStepIndex, rowToken, stepIndex) {
+    const edit = this.timelinePointerEdit;
+    if (!edit) {
+      return;
+    }
+    this.paintTimelineCell(edit.startRowToken, edit.startStepIndex);
+    if (previousRowToken === rowToken) {
+      const start = Math.min(previousStepIndex, stepIndex);
+      const end = Math.max(previousStepIndex, stepIndex);
+      for (let nextStep = start; nextStep <= end; nextStep += 1) {
+        this.paintTimelineCell(rowToken, nextStep);
+      }
+      return;
+    }
+    this.paintTimelineCell(rowToken, stepIndex);
+  }
+
+  paintTimelineCell(rowToken, stepIndex) {
+    const edit = this.timelinePointerEdit;
+    const key = this.cellKey(rowToken, stepIndex);
+    if (edit?.paintedKeys.has(key)) {
+      return;
+    }
+    if (this.setTimelineCellActive(rowToken, stepIndex, true)) {
+      edit?.paintedKeys.add(key);
+      this.gridOutput.querySelector(`.midi-studio-v2__octave-note-cell[data-row-token="${CSS.escape(rowToken)}"][data-step-index="${stepIndex}"]`)?.classList.add("midi-studio-v2__grid-cell--paint-preview");
+    }
+  }
+
+  finishTimelinePointerEdit() {
+    const edit = this.timelinePointerEdit;
+    if (!edit) {
+      return;
+    }
+    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--paint-preview").forEach((cell) => {
+      cell.classList.remove("midi-studio-v2__grid-cell--paint-preview");
+    });
+    this.timelinePointerEdit = null;
+    if (!edit.changed) {
+      return;
+    }
+    this.suppressNextCellClick = true;
+    this.onNoteEdit?.(this.readInput(), {
+      action: "paint-notes",
+      lane: this.selectedLane,
+      laneLabel: laneLabel(this.selectedLane),
+      rowToken: edit.startRowToken,
+      stepIndex: edit.startStepIndex
+    });
+  }
+
+  cellKey(rowToken, stepIndex) {
+    return `${rowToken}:${stepIndex}`;
+  }
+
+  isSelectedTimelineCell(rowToken, stepIndex) {
+    return this.selectedCell?.rowToken === rowToken && this.selectedCell?.stepIndex === stepIndex;
+  }
+
+  selectTimelineCell(rowToken, stepIndex, { focusCell = false } = {}) {
+    this.selectedCell = { rowToken, stepIndex };
+    this.applySelectedCellHighlight();
+    if (focusCell) {
+      this.selectedTimelineCellElement()?.focus({ preventScroll: true });
+    }
+    this.renderSelectionDetails();
+  }
+
+  selectedTimelineCellElement() {
+    if (!this.selectedCell) {
+      return null;
+    }
+    return this.gridOutput.querySelector(`.midi-studio-v2__octave-note-cell[data-row-token="${CSS.escape(this.selectedCell.rowToken)}"][data-step-index="${this.selectedCell.stepIndex}"]`);
+  }
+
+  applySelectedCellHighlight() {
+    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--note-selected").forEach((cell) => {
+      cell.classList.remove("midi-studio-v2__grid-cell--note-selected");
+      cell.removeAttribute("data-selected-note-cell");
+      cell.removeAttribute("aria-selected");
+    });
+    const selected = this.selectedTimelineCellElement();
+    if (!selected) {
+      return;
+    }
+    selected.classList.add("midi-studio-v2__grid-cell--note-selected");
+    selected.dataset.selectedNoteCell = "true";
+    selected.setAttribute("aria-selected", "true");
+  }
+
   toggleTimelineCell(rowToken, stepIndex) {
     if (!this.currentResult?.ok || !this.selectedLane) {
       return;
     }
-    this.selectedCell = { rowToken, stepIndex };
-    const existingToken = this.tokenForLaneStep(this.selectedLane, stepIndex);
-    const activeRows = this.rowsForSelectedToken(existingToken);
-    const existingParts = this.tokenPartsForSelectedToken(existingToken);
-    const rowPart = this.tokenForRow(rowToken);
-    const nextParts = activeRows.includes(rowToken)
-      ? existingParts.filter((part) => this.rowForTokenPart(part) !== rowToken)
-      : [...existingParts, rowPart];
-    const nextToken = nextParts.length ? this.joinTokenParts(nextParts) : "-";
-    this.setLaneStepToken(this.selectedLane, stepIndex, nextToken);
+    this.selectTimelineCell(rowToken, stepIndex, { focusCell: true });
+    const nextToken = this.toggleTimelineCellValue(rowToken, stepIndex);
     this.onNoteEdit?.(this.readInput(), {
       action: "toggle-note",
       lane: this.selectedLane,
@@ -897,6 +1057,35 @@ export class InstrumentGridControl {
       rowToken,
       stepIndex
     });
+  }
+
+  toggleTimelineCellValue(rowToken, stepIndex) {
+    const existingToken = this.tokenForLaneStep(this.selectedLane, stepIndex);
+    const activeRows = this.rowsForSelectedToken(existingToken);
+    const nextActive = !activeRows.includes(rowToken);
+    this.setTimelineCellActive(rowToken, stepIndex, nextActive);
+    return this.tokenForLaneStep(this.selectedLane, stepIndex);
+  }
+
+  setTimelineCellActive(rowToken, stepIndex, active) {
+    if (!this.currentResult?.ok || !this.selectedLane) {
+      return false;
+    }
+    const existingToken = this.tokenForLaneStep(this.selectedLane, stepIndex);
+    const existingParts = this.tokenPartsForSelectedToken(existingToken);
+    const hasRow = this.rowsForSelectedToken(existingToken).includes(rowToken);
+    if (active && hasRow) {
+      return false;
+    }
+    if (!active && !hasRow) {
+      return false;
+    }
+    const rowPart = this.tokenForRow(rowToken);
+    const nextParts = active
+      ? [...existingParts, rowPart]
+      : existingParts.filter((part) => this.rowForTokenPart(part) !== rowToken);
+    this.setLaneStepToken(this.selectedLane, stepIndex, nextParts.length ? this.joinTokenParts(nextParts) : "-");
+    return true;
   }
 
   tokenForRow(rowToken) {
@@ -986,6 +1175,98 @@ export class InstrumentGridControl {
     } else {
       this.extraLaneSources[lane] = laneText;
     }
+  }
+
+  deleteSelectedNotes() {
+    if (!this.selectedCell || !this.currentResult?.ok) {
+      return false;
+    }
+    const changed = this.setTimelineCellActive(this.selectedCell.rowToken, this.selectedCell.stepIndex, false);
+    if (!changed) {
+      return false;
+    }
+    this.onNoteEdit?.(this.readInput(), {
+      action: "delete-selected-note",
+      lane: this.selectedLane,
+      laneLabel: laneLabel(this.selectedLane),
+      rowToken: this.selectedCell.rowToken,
+      stepIndex: this.selectedCell.stepIndex
+    });
+    return true;
+  }
+
+  duplicateSelectedNotes() {
+    if (!this.selectedCell || !this.currentResult?.ok) {
+      return false;
+    }
+    const rowToken = this.selectedCell.rowToken;
+    const nextStepIndex = this.selectedCell.stepIndex + 1;
+    if (nextStepIndex >= this.currentResult.totalSteps) {
+      return false;
+    }
+    const changed = this.setTimelineCellActive(rowToken, nextStepIndex, true);
+    this.selectTimelineCell(rowToken, nextStepIndex);
+    if (!changed) {
+      return false;
+    }
+    this.onNoteEdit?.(this.readInput(), {
+      action: "duplicate-selected-note",
+      lane: this.selectedLane,
+      laneLabel: laneLabel(this.selectedLane),
+      rowToken,
+      stepIndex: nextStepIndex
+    });
+    return true;
+  }
+
+  moveSelectionByKey(key) {
+    const movement = {
+      ArrowDown: { row: 1, step: 0 },
+      ArrowLeft: { row: 0, step: -1 },
+      ArrowRight: { row: 0, step: 1 },
+      ArrowUp: { row: -1, step: 0 }
+    }[key];
+    if (!movement || !this.currentResult?.ok) {
+      return false;
+    }
+    const rows = this.octaveRowsFor(this.currentResult);
+    if (!rows.length) {
+      return false;
+    }
+    const currentRowIndex = Math.max(0, rows.findIndex((row) => row.value === this.selectedCell?.rowToken));
+    const currentStepIndex = Number.isInteger(this.selectedCell?.stepIndex) ? this.selectedCell.stepIndex : 0;
+    const nextRowIndex = Math.max(0, Math.min(rows.length - 1, currentRowIndex + movement.row));
+    const nextStepIndex = Math.max(0, Math.min(this.currentResult.totalSteps - 1, currentStepIndex + movement.step));
+    this.selectTimelineCell(rows[nextRowIndex].value, nextStepIndex, { focusCell: true });
+    return true;
+  }
+
+  captureTimelineScrollState() {
+    return {
+      scrollLeft: this.gridOutput?.scrollLeft || 0,
+      scrollTop: this.gridOutput?.scrollTop || 0
+    };
+  }
+
+  restoreTimelineScrollState(scrollState) {
+    this.applyTimelineScrollState(scrollState);
+    this.window.requestAnimationFrame?.(() => this.applyTimelineScrollState(scrollState));
+  }
+
+  applyTimelineScrollState(scrollState) {
+    if (!scrollState || !this.gridOutput) {
+      return;
+    }
+    this.gridOutput.scrollLeft = scrollState.scrollLeft;
+    this.gridOutput.scrollTop = scrollState.scrollTop;
+    this.syncTimelineScrollState();
+  }
+
+  syncTimelineScrollState() {
+    if (!this.gridOutput) {
+      return;
+    }
+    this.gridOutput.dataset.timelineScrollLeft = String(Math.round(this.gridOutput.scrollLeft));
   }
 
   createLaneHeaderCell(lane) {

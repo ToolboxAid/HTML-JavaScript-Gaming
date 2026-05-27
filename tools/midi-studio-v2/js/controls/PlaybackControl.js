@@ -21,6 +21,10 @@ export class PlaybackControl {
     return this.loopToggle.checked;
   }
 
+  isPlaying() {
+    return !this.stopButton.disabled;
+  }
+
   setSelected(song) {
     this.playButton.disabled = !song;
     this.stopButton.disabled = true;

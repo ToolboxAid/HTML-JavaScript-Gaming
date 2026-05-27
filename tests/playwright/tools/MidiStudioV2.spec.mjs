@@ -417,6 +417,20 @@ async function expectInstrumentClickKeepsScroll(page, locator) {
   await expect.poll(() => instrumentScrollSnapshot(page)).toEqual(before);
 }
 
+async function timelineScrollSnapshot(page) {
+  return page.locator("#instrumentGridOutput").evaluate((output) => {
+    const firstHeader = output.querySelector(".midi-studio-v2__grid-cell--timing-header");
+    const firstNoteCell = output.querySelector(".midi-studio-v2__octave-note-cell");
+    return {
+      headerLeft: Math.round(firstHeader?.getBoundingClientRect().left || 0),
+      noteLeft: Math.round(firstNoteCell?.getBoundingClientRect().left || 0),
+      scrollDataset: output.dataset.timelineScrollLeft || "",
+      scrollLeft: Math.round(output.scrollLeft),
+      scrollTop: Math.round(output.scrollTop)
+    };
+  });
+}
+
 function laneHeader(page, lane) {
   return page.locator(`.midi-studio-v2__lane-header-cell[data-lane="${lane}"]`);
 }
@@ -793,6 +807,82 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#playButton").click();
       await expect(page.locator("#stopButton")).toBeEnabled();
       await page.locator("#stopAllAudioButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectInstrumentRow(page, "lead");
+      await expect(octaveCell(page, "C6", 2)).not.toHaveAttribute("data-note-lanes", /lead/);
+
+      await octaveCell(page, "C6", 2).click();
+      await expect(octaveCell(page, "C6", 2)).toHaveText("C6");
+      await expect(octaveCell(page, "C6", 2)).toHaveAttribute("data-note-lanes", /lead/);
+      await expect(octaveCell(page, "C6", 2)).toHaveClass(/midi-studio-v2__grid-cell--note-selected/);
+      await octaveCell(page, "C6", 2).click();
+      await expect(octaveCell(page, "C6", 2)).not.toHaveAttribute("data-note-lanes", /lead/);
+      await octaveCell(page, "C6", 2).click();
+
+      await octaveCell(page, "C6", 3).dragTo(octaveCell(page, "C6", 5));
+      for (const stepIndex of [3, 4, 5]) {
+        await expect(octaveCell(page, "C6", stepIndex)).toHaveText("C6");
+        await expect(octaveCell(page, "C6", stepIndex)).toHaveAttribute("data-note-lanes", /lead/);
+      }
+      await octaveCell(page, "C6", 5).dragTo(octaveCell(page, "C6", 7));
+      for (const stepIndex of [5, 6, 7]) {
+        await expect(octaveCell(page, "C6", stepIndex)).toHaveAttribute("data-note-lanes", /lead/);
+      }
+
+      await octaveCell(page, "C5", 10).click();
+      await octaveCell(page, "E5", 10).click();
+      const chordValues = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult.timeline
+        .filter((event) => event.lane === "lead" && event.stepIndex === 10)
+        .map((event) => event.value)
+        .sort());
+      expect(chordValues).toEqual(expect.arrayContaining(["C5", "E5"]));
+      expect(chordValues.length).toBeGreaterThanOrEqual(2);
+
+      await octaveCell(page, "C6", 7).click();
+      await page.keyboard.press("ArrowRight");
+      await expect(octaveCell(page, "C6", 8)).toHaveClass(/midi-studio-v2__grid-cell--note-selected/);
+      await page.keyboard.press("Control+D");
+      await expect(octaveCell(page, "C6", 9)).toHaveAttribute("data-note-lanes", /lead/);
+      await expect(octaveCell(page, "C6", 9)).toHaveClass(/midi-studio-v2__grid-cell--note-selected/);
+      await page.keyboard.press("Delete");
+      await expect(octaveCell(page, "C6", 9)).not.toHaveAttribute("data-note-lanes", /lead/);
+      await expect(octaveCell(page, "C6", 9)).toHaveClass(/midi-studio-v2__grid-cell--note-selected/);
+      await page.keyboard.press("ArrowLeft");
+      await page.keyboard.press("Backspace");
+      await expect(octaveCell(page, "C6", 8)).not.toHaveAttribute("data-note-lanes", /lead/);
+
+      const output = page.locator("#instrumentGridOutput");
+      await output.evaluate((element) => {
+        element.scrollLeft = 180;
+        element.scrollTop = 90;
+        element.dispatchEvent(new Event("scroll"));
+      });
+      const beforeScroll = await timelineScrollSnapshot(page);
+      expect(beforeScroll.scrollDataset).toBe(String(beforeScroll.scrollLeft));
+      await octaveCell(page, "D6", 11).click();
+      await expect.poll(() => timelineScrollSnapshot(page)).toEqual(expect.objectContaining({
+        scrollLeft: beforeScroll.scrollLeft,
+        scrollTop: beforeScroll.scrollTop
+      }));
+      const afterScroll = await timelineScrollSnapshot(page);
+      expect(afterScroll.headerLeft).toBe(afterScroll.noteLeft);
+      expect(afterScroll.scrollDataset).toBe(String(afterScroll.scrollLeft));
+
+      await page.keyboard.press("Space");
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await page.keyboard.press("Space");
       await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#playButton")).toBeEnabled();
     } finally {

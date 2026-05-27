@@ -89,6 +89,7 @@ export class MidiStudioV2App {
       onWorkspaceExportManifest: () => this.statusLog.info("Workspace export is owned by Workspace Manager V2."),
       onWorkspaceImportManifest: () => this.statusLog.info("Workspace import is owned by Workspace Manager V2.")
     });
+    this.mountKeyboardShortcuts();
     this.renderEmpty();
     const loadResult = await this.manifestLoader.loadInitialManifest();
     if (loadResult.ok) {
@@ -99,6 +100,43 @@ export class MidiStudioV2App {
     } else {
       this.statusLog.fail(loadResult.message);
     }
+  }
+
+  mountKeyboardShortcuts() {
+    this.window.document.addEventListener("keydown", (event) => this.handleKeyboardShortcut(event));
+  }
+
+  handleKeyboardShortcut(event) {
+    if (event.defaultPrevented) {
+      return;
+    }
+    if (this.isEditableKeyboardTarget(event.target)) {
+      return;
+    }
+    if (event.key === " " && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      event.preventDefault();
+      if (this.playbackControl.isPlaying()) {
+        this.stopPlayback();
+        return;
+      }
+      void this.playSelectedSong();
+      return;
+    }
+    if ((event.key === "Delete" || event.key === "Backspace") && this.instrumentGrid.deleteSelectedNotes()) {
+      event.preventDefault();
+      return;
+    }
+    if (event.key.startsWith("Arrow") && this.instrumentGrid.moveSelectionByKey(event.key)) {
+      event.preventDefault();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "d" && this.instrumentGrid.duplicateSelectedNotes()) {
+      event.preventDefault();
+    }
+  }
+
+  isEditableKeyboardTarget(target) {
+    return Boolean(target?.closest?.("input, textarea, select, option, button, [contenteditable='true']"));
   }
 
   renderEmpty() {
@@ -554,7 +592,7 @@ export class MidiStudioV2App {
       return;
     }
     this.lastInstrumentGridResult = result;
-    if (detail.action === "add-lane" || detail.action === "delete-lane" || detail.action === "toggle-note") {
+    if (["add-lane", "delete-lane", "delete-selected-note", "duplicate-selected-note", "paint-notes", "toggle-note"].includes(detail.action)) {
       this.instrumentGrid.render(result);
     } else {
       this.instrumentGrid.syncEditedGridResult(result);
@@ -564,6 +602,12 @@ export class MidiStudioV2App {
       this.statusLog.ok(`Added instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
     } else if (detail.action === "delete-lane") {
       this.statusLog.ok(`Deleted instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
+    } else if (detail.action === "delete-selected-note") {
+      this.statusLog.ok(`Deleted selected ${detail.rowToken || "note"} for ${detail.laneLabel || "instrument"}; playback data updated.`);
+    } else if (detail.action === "duplicate-selected-note") {
+      this.statusLog.ok(`Duplicated selected ${detail.rowToken || "note"} for ${detail.laneLabel || "instrument"}; playback data updated.`);
+    } else if (detail.action === "paint-notes") {
+      this.statusLog.ok(`Painted ${detail.rowToken || "notes"} for ${detail.laneLabel || "instrument"} across the timeline; playback data updated.`);
     } else if (detail.action === "toggle-note") {
       this.statusLog.ok(`Toggled ${detail.rowToken || detail.note || "note"} for ${detail.laneLabel || "instrument"}; visible timeline playback data updated.`);
     } else {

@@ -347,6 +347,9 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   align-content: center;
   gap: 0.1rem;
   line-height: 1.2;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .midi-studio-v2__note-table-column-header {
@@ -362,6 +365,7 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   display: flex;
   justify-content: space-between;
   text-align: left;
+  z-index: 5;
 }
 
 .midi-studio-v2__octave-row-label {
@@ -591,6 +595,11 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   outline-offset: -3px;
 }
 
+.midi-studio-v2__octave-note-cell:hover {
+  background: color-mix(in srgb, var(--tool-starter-panel-strong) 72%, #38bdf8 28%);
+  cursor: crosshair;
+}
+
 .midi-studio-v2__note-table-cell::after {
   color: rgba(255, 255, 255, 0.44);
   content: "";
@@ -664,6 +673,16 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 .midi-studio-v2__grid-cell--lane-selected {
   outline: 3px solid rgba(125, 211, 252, 0.82);
   outline-offset: -4px;
+}
+
+.midi-studio-v2__grid-cell--note-selected {
+  box-shadow: inset 0 0 0 3px #facc15, 0 0 0 1px rgba(250, 204, 21, 0.48);
+  position: relative;
+  z-index: 4;
+}
+
+.midi-studio-v2__grid-cell--paint-preview {
+  background: rgba(34, 197, 94, 0.22);
 }
 
 .midi-studio-v2__grid-cell--loop-region {
