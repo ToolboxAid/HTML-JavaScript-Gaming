@@ -116,7 +116,7 @@ export class MidiStudioV2App {
 
   handleExpandedModeChange(isExpanded) {
     if (isExpanded) {
-      this.statusLog.info("Entered expanded MIDI Studio view. Header, top transport, and Instruments column remain visible; secondary diagnostics are minimized.");
+      this.statusLog.info("Entered expanded MIDI Studio view. Header, top transport, setup panel, and timeline instrument rows remain visible; secondary diagnostics are minimized.");
       return;
     }
     this.statusLog.info("Exited expanded MIDI Studio view. Full Studio, setup, and diagnostics layout restored.");
@@ -254,6 +254,7 @@ export class MidiStudioV2App {
       return;
     }
     this.lastSongSheetResult = result;
+    this.instrumentGrid.setPreviewTempoBpm(result.tempo);
     if (result.warnings.length) {
       this.statusLog.warn(`Song Sheet parsed with warnings: ${result.warningSummary}`);
     }

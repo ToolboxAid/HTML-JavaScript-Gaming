@@ -78,48 +78,6 @@ window.addEventListener("DOMContentLoaded", () => {
       padInput: requireElement("#instrumentGridPadInput"),
       playLoopButton: requireElement("#playLoopButton"),
       playSectionButton: requireElement("#playSectionButton"),
-      previewLaneControls: {
-        bass: {
-          instrument: requireElement("#previewInstrumentBassSelect"),
-          mute: requireElement("#previewMuteBassToggle"),
-          pan: requireElement("#previewPanBassInput"),
-          row: requireElement('.midi-studio-v2__instrument-row[data-preview-lane="bass"]'),
-          solo: requireElement("#previewSoloBassToggle"),
-          volume: requireElement("#previewVolumeBassInput")
-        },
-        chords: {
-          instrument: requireElement("#previewInstrumentChordsSelect"),
-          mute: requireElement("#previewMuteChordsToggle"),
-          pan: requireElement("#previewPanChordsInput"),
-          row: requireElement('.midi-studio-v2__instrument-row[data-preview-lane="chords"]'),
-          solo: requireElement("#previewSoloChordsToggle"),
-          volume: requireElement("#previewVolumeChordsInput")
-        },
-        drums: {
-          instrument: requireElement("#previewInstrumentDrumsSelect"),
-          mute: requireElement("#previewMuteDrumsToggle"),
-          pan: requireElement("#previewPanDrumsInput"),
-          row: requireElement('.midi-studio-v2__instrument-row[data-preview-lane="drums"]'),
-          solo: requireElement("#previewSoloDrumsToggle"),
-          volume: requireElement("#previewVolumeDrumsInput")
-        },
-        lead: {
-          instrument: requireElement("#previewInstrumentLeadSelect"),
-          mute: requireElement("#previewMuteLeadToggle"),
-          pan: requireElement("#previewPanLeadInput"),
-          row: requireElement('.midi-studio-v2__instrument-row[data-preview-lane="lead"]'),
-          solo: requireElement("#previewSoloLeadToggle"),
-          volume: requireElement("#previewVolumeLeadInput")
-        },
-        pad: {
-          instrument: requireElement("#previewInstrumentPadSelect"),
-          mute: requireElement("#previewMutePadToggle"),
-          pan: requireElement("#previewPanPadInput"),
-          row: requireElement('.midi-studio-v2__instrument-row[data-preview-lane="pad"]'),
-          solo: requireElement("#previewSoloPadToggle"),
-          volume: requireElement("#previewVolumePadInput")
-        }
-      },
       sectionPresetButtons: Array.from(document.querySelectorAll(".midi-studio-v2__section-preset")),
       sectionSelect: requireElement("#instrumentGridSectionSelect"),
       sectionsInput: requireElement("#instrumentGridSectionsInput"),

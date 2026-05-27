@@ -75,40 +75,96 @@
         }
       },
       {
-        "id": "menu-march-sketch",
-        "name": "Menu March Sketch",
-        "sourceMidi": "assets/music/midi/menu-march-sketch.mid",
-        "instrumentSet": "Preview Synth sketch",
+        "id": "frog-hop-nursery-rhyme",
+        "name": "Frog Hop Nursery Rhyme UAT",
+        "sourceMidi": "assets/music/midi/frog-hop-nursery-rhyme.mid",
+        "instrumentSet": "Preview Synth frog-hop UAT band",
         "rendered": {},
         "defaultRuntimeFormat": "ogg",
         "loop": {
-          "enabled": true
+          "enabled": true,
+          "startSeconds": 0,
+          "endSeconds": 13
         },
         "director": {
-          "mood": "confident",
+          "mood": "playful",
           "intensity": "medium",
-          "usage": ["menu"],
-          "notes": "Secondary song to prove multi-song manifest selection."
+          "usage": ["uat", "frog-hop", "nursery-rhyme"],
+          "notes": "Original Frogger-style nursery-rhyme UAT fixture with simple public-domain/traditional contour, no copied game melody or lyrics."
         },
-        "tags": ["uat", "menu"]
+        "tags": ["uat", "frog-hop", "nursery-rhyme", "traditional-style"],
+        "studioArrangement": {
+          "tempo": "132",
+          "key": "C major",
+          "style": "chip",
+          "sections": "hop:2, home:2",
+          "beatsPerBar": "4",
+          "subdivision": "1",
+          "songSheet": {
+            "intro": "C G F C",
+            "loop": "C G C F"
+          },
+          "lanes": {
+            "chords": "C C G C | F F C G | C G C F | G F C C",
+            "bass": "C2 C2 G2 C2 | F2 F2 C2 G2 | C2 G2 C2 F2 | G2 F2 C2 C2",
+            "pad": "C - G - | F - C - | C G C F | G - C -",
+            "lead": "C5 D5 E5 C5 | G4 A4 G4 - | E5 G5 E5 C5 | D5 B4 C5 -",
+            "drums": "kick hat snare hat | kick hat snare hat | kick hat snare hat | kick hat snare hat"
+          },
+          "previewInstruments": {
+            "chords": "warm-pad",
+            "bass": "synth-bass",
+            "pad": "ambient-pad",
+            "lead": "retro-square-lead",
+            "drums": "basic-drums"
+          }
+        }
       },
       {
         "id": "quiet-village-pad",
-        "name": "Quiet Village Pad",
-        "sourceMidi": "assets/music/midi/quiet-village-pad.mid",
-        "instrumentSet": "Preview Synth sketch",
+        "name": "Coal Mine Descent",
+        "sourceMidi": "assets/music/midi/coal-mine-descent.mid",
+        "instrumentSet": "Preview Synth coal-mine UAT band",
         "rendered": {},
         "defaultRuntimeFormat": "ogg",
         "loop": {
-          "enabled": false
+          "enabled": true,
+          "startSeconds": 0,
+          "endSeconds": 15
         },
         "director": {
-          "mood": "calm",
-          "intensity": "low",
-          "usage": ["ambient"],
-          "notes": "Low-intensity contrast song for the imported song list."
+          "mood": "tense",
+          "intensity": "medium",
+          "usage": ["uat", "coal-mine", "descent"],
+          "notes": "Original descending groove that replaces the old Quiet Village Pad placeholder while preserving its selection slot for regression coverage."
         },
-        "tags": ["uat", "ambient"]
+        "tags": ["uat", "coal-mine", "descending-groove", "quiet-village-pad"],
+        "studioArrangement": {
+          "tempo": "108",
+          "key": "D minor",
+          "style": "ambient-loop",
+          "sections": "shaft:2, descent:2",
+          "beatsPerBar": "4",
+          "subdivision": "1",
+          "songSheet": {
+            "intro": "Dm C F Am",
+            "loop": "Dm C Gm Dm"
+          },
+          "lanes": {
+            "chords": "Dm Dm C Am | F Am Gm Dm | Dm C F Am | Gm F Dm Dm",
+            "bass": "D2 D2 C2 A1 | F2 E2 D2 D2 | D2 C2 A1 G1 | G1 F1 D2 D2",
+            "pad": "Dm - C - | F - Dm - | Dm C F Am | Gm - Dm -",
+            "lead": "D5 C5 A4 G4 | F4 E4 D4 - | C5 A4 G4 F4 | E4 D4 C4 -",
+            "drums": "kick hat snare hat | kick hat snare hat | kick hat snare hat | kick hat snare hat"
+          },
+          "previewInstruments": {
+            "chords": "warm-pad",
+            "bass": "synth-bass",
+            "pad": "ambient-pad",
+            "lead": "retro-pulse-lead",
+            "drums": "basic-drums"
+          }
+        }
       }
     ]
   }
