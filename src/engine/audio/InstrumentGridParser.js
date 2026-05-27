@@ -1,6 +1,6 @@
 const CHORD_PATTERN = /^[A-G](?:#|b)?(?:m|min|maj|dim|aug|sus2|sus4|7|maj7|m7|min7|dim7|add9)?$/;
 const DRUM_TOKENS = new Set(["kick", "snare", "hat", "ride", "clap", "tom", "crash", "perc"]);
-const LANE_NAMES = ["chords", "bass", "pad", "lead", "drums"];
+const DEFAULT_LANE_NAMES = ["chords", "bass", "pad", "lead", "drums"];
 const NOTE_PATTERN = /^[A-G](?:#|b)?[0-8]$/;
 const REST_TOKENS = new Set(["", "-", ".", "rest"]);
 const SUPPORTED_SUBDIVISIONS = new Set([1, 2, 4, 8, 16]);
@@ -47,7 +47,8 @@ export class InstrumentGridParser {
     const timeline = [];
     const warnings = [];
     const laneCells = {};
-    for (const lane of LANE_NAMES) {
+    const laneNames = this.laneNamesFor(input.lanes);
+    for (const lane of laneNames) {
       const parsedLane = this.parseLane({
         barCount,
         beatsPerBar: beatsPerBar.value,
@@ -88,7 +89,7 @@ export class InstrumentGridParser {
       chordCount: timeline.filter((event) => event.kind === "chord").length,
       drumCount: timeline.filter((event) => event.kind === "drum").length,
       eventCount: timeline.length,
-      lanes: LANE_NAMES,
+      lanes: laneNames,
       noteCount: timeline.filter((event) => event.kind === "note").length,
       ok: true,
       sectionSummary: normalizedSections.map((section) => `${section.label}: ${section.bars} bar${section.bars === 1 ? "" : "s"}`).join("; "),
@@ -171,6 +172,17 @@ export class InstrumentGridParser {
     return { ok: true, value: number };
   }
 
+  laneNamesFor(lanes = {}) {
+    const names = DEFAULT_LANE_NAMES.slice();
+    Object.keys(lanes || {}).forEach((lane) => {
+      const normalized = String(lane || "").trim();
+      if (normalized && !names.includes(normalized)) {
+        names.push(normalized);
+      }
+    });
+    return names;
+  }
+
   parseLane({ barCount, beatsPerBar, generatedSource, lane, sections, source, stepsPerBar, subdivision }) {
     const text = String(source || "").trim();
     const bars = text ? text.split("|").map((bar) => bar.trim()) : [];
@@ -225,7 +237,7 @@ export class InstrumentGridParser {
     if (REST_TOKENS.has(value.toLowerCase())) {
       return { cell, events: [], ok: true, warnings: [] };
     }
-    if (lane === "drums") {
+    if (lane === "drums" || this.isDrumToken(value)) {
       return this.normalizeDrums({ cell, timing, value });
     }
     if (lane === "chords") {
@@ -260,6 +272,11 @@ export class InstrumentGridParser {
       ok: true,
       warnings: []
     };
+  }
+
+  isDrumToken(value) {
+    const parts = String(value || "").toLowerCase().split("+").map((part) => part.trim()).filter(Boolean);
+    return parts.length > 0 && parts.every((part) => DRUM_TOKENS.has(part));
   }
 
   eventForCell({ cell, kind, value }) {

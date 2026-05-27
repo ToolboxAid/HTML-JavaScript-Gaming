@@ -56,23 +56,25 @@ function normalizeStudioArrangement(value) {
   const lanes = isPlainObject(value.lanes) ? value.lanes : {};
   const previewInstruments = isPlainObject(value.previewInstruments) ? value.previewInstruments : {};
   const songSheet = isPlainObject(value.songSheet) ? value.songSheet : {};
+  const normalizedLanes = {};
+  Object.entries(lanes).forEach(([lane, laneSource]) => {
+    const laneName = text(lane);
+    if (laneName) {
+      normalizedLanes[laneName] = text(laneSource);
+    }
+  });
+  const normalizedPreviewInstruments = {};
+  Object.entries(previewInstruments).forEach(([lane, instrument]) => {
+    const laneName = text(lane);
+    if (laneName) {
+      normalizedPreviewInstruments[laneName] = text(instrument);
+    }
+  });
   return {
     beatsPerBar: text(value.beatsPerBar || "4"),
     key: text(value.key),
-    lanes: {
-      bass: text(lanes.bass),
-      chords: text(lanes.chords),
-      drums: text(lanes.drums),
-      lead: text(lanes.lead),
-      pad: text(lanes.pad)
-    },
-    previewInstruments: {
-      bass: text(previewInstruments.bass),
-      chords: text(previewInstruments.chords),
-      drums: text(previewInstruments.drums),
-      lead: text(previewInstruments.lead),
-      pad: text(previewInstruments.pad)
-    },
+    lanes: normalizedLanes,
+    previewInstruments: normalizedPreviewInstruments,
     sections: text(value.sections),
     songSheet: {
       intro: text(songSheet.intro),

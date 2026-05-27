@@ -184,6 +184,23 @@ function installMockAudio(page, { webAudio = true, webAudioResumeError = "" } = 
 
       disconnect() {}
     }
+    class MockBufferSource {
+      constructor() {
+        this.buffer = null;
+      }
+
+      connect() {}
+
+      disconnect() {}
+
+      start(time) {
+        window.__midiStudioPreviewSynthEvents.push({ action: "buffer-start", time });
+      }
+
+      stop(time) {
+        window.__midiStudioPreviewSynthEvents.push({ action: "buffer-stop", time });
+      }
+    }
     class MockOscillator {
       constructor() {
         this.frequency = new MockAudioParam();
@@ -206,7 +223,20 @@ function installMockAudio(page, { webAudio = true, webAudioResumeError = "" } = 
       constructor() {
         this.currentTime = 0;
         this.destination = {};
+        this.sampleRate = 8000;
         this.state = "suspended";
+      }
+
+      createBuffer(channels, frameCount) {
+        return {
+          channels,
+          frameCount,
+          getChannelData: () => new Float32Array(frameCount)
+        };
+      }
+
+      createBufferSource() {
+        return new MockBufferSource();
       }
 
       createGain() {
@@ -265,7 +295,17 @@ async function openMidiStudioForImport(page, audioOptions = {}) {
   return server;
 }
 
+async function selectMidiStudioTab(page, tabId) {
+  const tab = page.locator(`[data-midi-studio-tab="${tabId}"]`);
+  if (await tab.getAttribute("aria-selected") === "true") {
+    return;
+  }
+  await tab.click();
+  await expect(tab).toHaveAttribute("aria-selected", "true");
+}
+
 async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop = "Am F C G", style = "retro-arcade", tempo = "132" } = {}) {
+  await selectMidiStudioTab(page, "song-setup");
   await page.locator("#songSheetTempoInput").fill(tempo);
   await page.locator("#songSheetKeyInput").selectOption(key);
   await page.locator("#songSheetStyleInput").selectOption(style);
@@ -283,6 +323,7 @@ async function fillInstrumentGrid(page, {
   sections = "intro:1, loop:1",
   subdivision = "1"
 } = {}) {
+  await selectMidiStudioTab(page, "studio");
   await page.locator("#instrumentGridSectionsInput").fill(sections);
   await page.locator("#instrumentGridBeatsInput").fill(beats);
   await page.locator("#instrumentGridSubdivisionInput").selectOption(subdivision);
@@ -366,7 +407,7 @@ test.describe("MIDI Studio V2", () => {
       await page.locator('[data-song-id="camptown-races-uat-reel"]').click();
 
       await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Camptown Races UAT Reel");
-      await expect(page.locator("#songDetails")).toContainText("Camptown Races UAT Reel");
+      await expect(page.locator("#songDetails input[data-song-detail-field='name']")).toHaveValue("Camptown Races UAT Reel");
       await expect(page.locator("#directorPanel")).toContainText("upbeat");
       await expect(page.locator("#songSheetKeyInput")).toHaveValue("G major");
       await expect(page.locator("#songSheetStyleInput")).toHaveValue("public-domain-reel");
@@ -385,11 +426,16 @@ test.describe("MIDI Studio V2", () => {
       await expect(laneHeader(page, "chords")).toBeVisible();
       await expect(laneHeader(page, "pad")).toBeVisible();
       await expect(laneHeader(page, "drums")).toBeVisible();
+      await expect(laneHeader(page, "mallets")).toBeVisible();
+      const manifestLaneCount = await page.evaluate(() => Object.keys(window.__midiStudioV2App.selectedSong().studioArrangement.lanes).length);
+      await expect(page.locator(".midi-studio-v2__lane-header-cell")).toHaveCount(manifestLaneCount);
       await expect(laneInstrumentSelect(page, "lead")).toHaveValue("retro-pulse-lead");
       await expect(laneInstrumentSelect(page, "bass")).toHaveValue("synth-bass");
       await expect(laneInstrumentSelect(page, "chords")).toHaveValue("warm-pad");
       await expect(laneInstrumentSelect(page, "pad")).toHaveValue("ambient-pad");
       await expect(laneInstrumentSelect(page, "drums")).toHaveValue("basic-drums");
+      await expect(laneInstrumentSelect(page, "mallets")).toHaveValue("retro-square-lead");
+      await expect(page.locator(".midi-studio-v2__lane-role")).toHaveCount(0);
       await expect(laneHeader(page, "lead")).not.toContainText("Volume");
       await expect(laneHeader(page, "lead")).not.toContainText("Pan");
       await expect(laneHeader(page, "lead").locator('[aria-label="Mute Lead"]')).toHaveCount(1);
@@ -410,7 +456,8 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="chords"] .midi-studio-v2__note-block').first()).toHaveText("G");
       await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="pad"] .midi-studio-v2__note-block').first()).toHaveText("G");
       await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="drums"] .midi-studio-v2__note-block').first()).toHaveText("kick");
-      await laneHeader(page, "lead").locator(".midi-studio-v2__lane-role").click();
+      await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="mallets"] .midi-studio-v2__note-block').first()).toHaveText("B4");
+      await laneHeader(page, "lead").evaluate((cell) => cell.click());
       await expect(laneHeader(page, "lead")).toHaveClass(/is-selected/);
       await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="lead"].midi-studio-v2__grid-cell--lane-selected')).not.toHaveCount(0);
       await expect(page.locator("#audioDiagnosticsContent")).toBeHidden();
@@ -428,6 +475,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#nowPlayingLabel")).toHaveText("Playing: Camptown Races UAT Reel");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Audible preview playback started for Camptown Races UAT Reel\./);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "buffer-start"))).toBe(true);
       expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot().playing)).toBe(true);
       expect(await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult.timeline.some((event) => (
         event.lane === "lead" && event.stepIndex === 0 && event.value === "C5"
@@ -444,6 +492,65 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Camptown Races UAT Reel");
       expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot().playing)).toBe(false);
       expect(await page.locator(".midi-studio-v2__grid-cell--lane-active").count()).toBe(0);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps selected song details editable and nests Song Sheet under the details panel", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await page.locator('[data-midi-studio-tab="song-setup"]').click();
+      await expect(page.locator('[data-midi-studio-tab="song-setup"]')).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#songDetailsContent")).toBeVisible();
+      await expect(page.locator("#songDetailsContent #songSheetContent")).toHaveCount(1);
+      await expect(page.locator("#songDetailsContent #songSheetSummary")).toHaveCount(1);
+      await expect(page.locator("#songSheetSummaryContent")).toHaveCount(0);
+      await expect(page.locator("#songDetails input[data-song-detail-field='name']")).toHaveValue("Camptown Races UAT Reel");
+      await expect(page.locator("#songDetails input[data-song-detail-field='tempo']")).toHaveValue("144");
+      await expect(page.locator("#songDetails input[data-song-detail-field='key']")).toHaveValue("G major");
+      await expect(page.locator("#songDetails input[data-song-detail-field='style']")).toHaveValue("public-domain-reel");
+      await expect(page.locator("#songDetails input[data-song-detail-field='loopEnabled']")).toBeChecked();
+      await expect(page.locator("#songDetails input[data-song-detail-field='loopStartSeconds']")).toHaveValue("0");
+      await expect(page.locator("#songDetails input[data-song-detail-field='loopEndSeconds']")).toHaveValue("14");
+      await expect(page.locator("#songDetails input[data-song-detail-field='sourceMidi']")).toHaveValue("assets/music/midi/camptown-races-uat-reel.mid");
+      await expect(page.locator("#songDetails input[data-song-detail-field='tags']")).toHaveValue("uat, upbeat, traditional, public-domain");
+
+      await page.locator("#songDetails input[data-song-detail-field='name']").fill("Edited UAT Reel");
+      await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Edited UAT Reel");
+      await expect(page.locator("#songList [data-song-id='camptown-races-uat-reel']")).toContainText("Edited UAT Reel");
+      await page.locator("#songDetails input[data-song-detail-field='tempo']").fill("156");
+      await expect(page.locator("#songSheetTempoInput")).toHaveValue("156");
+      await page.locator("#songDetails input[data-song-detail-field='key']").fill("C major");
+      await expect(page.locator("#songSheetKeyInput")).toHaveValue("C major");
+      await page.locator("#songDetails input[data-song-detail-field='style']").fill("chip");
+      await expect(page.locator("#songSheetStyleInput")).toHaveValue("chip");
+      await page.locator("#songDetails input[data-song-detail-field='loopEnabled']").setChecked(false);
+      await page.locator("#songDetails input[data-song-detail-field='loopStartSeconds']").fill("1.5");
+      await page.locator("#songDetails input[data-song-detail-field='loopEndSeconds']").fill("12.5");
+      await expect(page.locator("#songDetails input[data-song-detail-field='loopEnabled']")).not.toBeChecked();
+      expect(await page.evaluate(() => {
+        const song = window.__midiStudioV2App.selectedSong();
+        return {
+          key: song.studioArrangement.key,
+          loopEnabled: song.loop.enabled,
+          loopEndSeconds: song.loop.endSeconds,
+          loopStartSeconds: song.loop.startSeconds,
+          name: song.name,
+          style: song.studioArrangement.style,
+          tempo: song.studioArrangement.tempo
+        };
+      })).toEqual({
+        key: "C major",
+        loopEnabled: false,
+        loopEndSeconds: 12.5,
+        loopStartSeconds: 1.5,
+        name: "Edited UAT Reel",
+        style: "chip",
+        tempo: "156"
+      });
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -759,6 +866,7 @@ test.describe("MIDI Studio V2", () => {
   test("rejects malformed raw Song Sheet syntax without partial section summary", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
+      await selectMidiStudioTab(page, "song-setup");
       await page.locator(".midi-studio-v2__advanced-song-sheet summary").click();
       await page.locator("#songSheetInput").fill(`tempo:132
 key=A minor
@@ -783,6 +891,7 @@ Am F`);
       await fillGuidedSongSheet(page, { intro: "", loop: "Am F C G" });
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText("loop: 4 bars, 4 chords, loop");
+      await selectMidiStudioTab(page, "midi-import");
       await page.locator("#inspectMidiSourceButton").click();
       await expect(page.locator("#midiSourceDetails")).toContainText("Tempo summary");
       await page.locator("#playButton").click();
@@ -1100,6 +1209,18 @@ Am F`);
       await page.locator("#stopTimingPreviewButton").click();
 
       await setSpreadsheetRowToggle(page, "Lead", "solo", false);
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await setSpreadsheetRowToggle(page, "Drums", "solo", true);
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
+      expect((await audioDiagnosticsRows(page))["Active lanes"]).toBe("drums");
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "buffer-start"))).toBe(true);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(false);
+      await page.locator("#stopTimingPreviewButton").click();
+      await setSpreadsheetRowToggle(page, "Drums", "solo", false);
+
       await page.locator("#previewInstrumentLeadSelect").selectOption("");
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Missing preview instrument selection for Lead\. Choose a Preview Synth instrument before playback\./);
       await page.locator("#playSectionButton").click();
@@ -1251,37 +1372,99 @@ Am F`);
   test("expands and restores the MIDI Studio workspace from the header details toggle", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
+      await page.setViewportSize({ height: 900, width: 1920 });
       await fillInstrumentGrid(page);
       await page.locator("#normalizeInstrumentGridButton").click();
-      const centerPanel = page.locator(".tool-starter__panel--center");
+      const summary = page.locator("[data-midi-studio-summary]");
+      const centerPanel = page.locator(".tool-shell-common__fullscreen-center-panel");
       const normalWidth = (await centerPanel.boundingBox())?.width || 0;
-      await page.locator("[data-midi-studio-summary]").click();
-      await expect(page.locator("body")).toHaveClass(/midi-studio-v2--expanded/);
-      await expect(page.locator("[data-midi-studio-summary]")).toContainText("Exit Expanded View");
-      await expect(page.locator("#shared-theme-header")).toBeVisible();
-      await expect(page.locator("[data-midi-studio-header]")).toBeVisible();
+      await summary.click();
+      const enteredFullscreen = await page.waitForFunction(() => document.body.classList.contains("tools-platform-fullscreen-active"), null, { timeout: 2500 })
+        .then(() => true)
+        .catch(() => false);
+      if (!enteredFullscreen) {
+        await page.evaluate(() => {
+          document.querySelector(".is-collapsible").open = false;
+          window.__midiStudioV2App.shell.applyFullscreenState(true);
+          window.__midiStudioV2App.shell.updateSummary();
+          window.__midiStudioV2App.handleExpandedModeChange(true);
+        });
+      }
+
+      await expect(page.locator("body")).toHaveClass(/tools-platform-fullscreen-active/);
+      await expect(page.locator("body")).toHaveAttribute("data-tools-platform-fullscreen", "1");
+      await expect(summary).toHaveAttribute("data-tools-platform-summary-mode", "fullscreen");
+      await expect(summary).toHaveAttribute("data-tools-platform-summary-state", "collapsed");
+      await expect(summary).toContainText("MIDI Studio V2 - First-Class Tools Surface V2");
+      const fullscreenState = await page.evaluate(() => ({
+        elementIsDocumentElement: document.fullscreenElement === document.documentElement,
+        supported: document.fullscreenEnabled === true
+      }));
+      if (fullscreenState.supported && enteredFullscreen) {
+        expect(fullscreenState.elementIsDocumentElement).toBe(true);
+      }
       await expect(page.locator(".midi-studio-v2__tool-menu")).toBeVisible();
       await expect(page.locator("#playButton")).toBeVisible();
-      await expect(page.locator(".tool-starter__panel--left")).toBeVisible();
+      await expect(page.locator("#stopAllAudioButton")).toBeVisible();
+      await expect(page.locator(".tool-shell-common__fullscreen-panel-left")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__instrument-list-panel")).toHaveCount(0);
       await expect(laneHeader(page, "lead")).toBeVisible();
+      await expect(laneHeader(page, "bass")).toBeVisible();
+      await expect(laneHeader(page, "drums")).toBeVisible();
       await expect(page.locator("#instrumentGridContent")).toBeVisible();
       await expect(page.locator("#toolImportManifestButton")).toBeVisible();
       await expect(page.locator("#statusLogContent")).toBeVisible();
       await expect(page.locator("#clearStatusButton")).toBeVisible();
+      const fullscreenLayout = await page.evaluate(() => {
+        const root = document.querySelector(".tool-shell-common__fullscreen-root").getBoundingClientRect();
+        const left = document.querySelector(".tool-shell-common__fullscreen-panel-left").getBoundingClientRect();
+        const center = document.querySelector(".tool-shell-common__fullscreen-center-panel").getBoundingClientRect();
+        const right = document.querySelector(".tool-shell-common__fullscreen-panel-right").getBoundingClientRect();
+        const layout = document.querySelector(".tool-shell-common__fullscreen-layout");
+        return {
+          centerAfterLeft: center.left >= left.right - 1,
+          centerWidth: Math.round(center.width),
+          layoutDisplay: getComputedStyle(layout).display,
+          leftAtSide: left.left < center.left,
+          leftWidth: Math.round(left.width),
+          rightAtSide: right.left >= center.right - 1,
+          rightWithinRoot: right.right <= root.right + 1,
+          rightWidth: Math.round(right.width),
+          rootWidth: Math.round(root.width),
+          viewportWidth: window.innerWidth
+        };
+      });
+      expect(fullscreenLayout.layoutDisplay).toBe("grid");
+      expect(fullscreenLayout.rootWidth).toBeGreaterThanOrEqual(fullscreenLayout.viewportWidth - 24);
+      expect(fullscreenLayout.leftWidth).toBe(340);
+      expect(fullscreenLayout.rightWidth).toBe(360);
+      expect(fullscreenLayout.leftAtSide).toBe(true);
+      expect(fullscreenLayout.centerAfterLeft).toBe(true);
+      expect(fullscreenLayout.rightAtSide).toBe(true);
+      expect(fullscreenLayout.rightWithinRoot).toBe(true);
       const expandedWidth = (await centerPanel.boundingBox())?.width || 0;
       expect(expandedWidth).toBeGreaterThan(normalWidth);
-      await expect(page.locator("#audioDiagnosticsContent")).toBeHidden();
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Entered expanded MIDI Studio view\. Header, top transport, setup panel, and timeline instrument rows remain visible; secondary diagnostics are minimized\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Entered MIDI Studio fullscreen view\. Tool transport, Stop All Audio, recovery controls, and timeline instrument rows remain visible\./);
 
-      await page.locator("[data-midi-studio-summary]").click();
-      await expect(page.locator("body")).not.toHaveClass(/midi-studio-v2--expanded/);
-      await expect(page.locator("[data-midi-studio-summary]")).toContainText("Enter Expanded View");
+      if (await page.evaluate(() => Boolean(document.fullscreenElement))) {
+        await summary.click();
+        await page.waitForFunction(() => !document.body.classList.contains("tools-platform-fullscreen-active"));
+      } else {
+        await page.evaluate(() => {
+          window.__midiStudioV2App.shell.applyFullscreenState(false);
+          document.querySelector(".is-collapsible").open = true;
+          window.__midiStudioV2App.shell.updateSummary();
+          window.__midiStudioV2App.handleExpandedModeChange(false);
+        });
+      }
+      await expect(page.locator("body")).not.toHaveClass(/tools-platform-fullscreen-active/);
+      await expect(summary).toHaveAttribute("data-tools-platform-summary-mode", "normal");
+      await expect(summary).toContainText("Hide Header and Details");
       await expect(page.locator("#shared-theme-header")).toBeVisible();
-      await expect(page.locator(".tool-starter__panel--left")).toBeVisible();
+      await expect(page.locator(".tool-shell-common__fullscreen-panel-left")).toBeVisible();
       await expect(page.locator('[data-midi-studio-tab="studio"]')).toHaveAttribute("aria-selected", "true");
       await expect(page.locator("#instrumentGridContent")).toBeVisible();
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Exited expanded MIDI Studio view\. Full Studio, setup, and diagnostics layout restored\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Exited MIDI Studio fullscreen view\. Header, setup, and diagnostics layout restored\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

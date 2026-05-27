@@ -140,6 +140,57 @@
   margin: 0;
 }
 
+.midi-studio-v2__selected-song-details {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.midi-studio-v2__editable-details {
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+
+.midi-studio-v2__editable-detail {
+  align-content: start;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.45rem;
+}
+
+.midi-studio-v2__editable-detail input {
+  width: 100%;
+}
+
+.midi-studio-v2__editable-detail input[type="checkbox"] {
+  min-height: 1.4rem;
+  width: auto;
+}
+
+.midi-studio-v2__details-divider {
+  border: 0;
+  border-top: 1px solid var(--tool-starter-line);
+  margin: 0.2rem 0;
+  width: 100%;
+}
+
+.midi-studio-v2__song-sheet-panel h3 {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.midi-studio-v2__song-sheet-grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+
+.midi-studio-v2__song-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .midi-studio-v2__details div,
 .midi-studio-v2__director-row {
   display: grid;
@@ -295,13 +346,6 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   font-weight: 800;
   min-height: 2rem;
   width: 100%;
-}
-
-.midi-studio-v2__lane-role {
-  color: var(--tool-starter-muted);
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .midi-studio-v2__lane-control-row {
@@ -521,27 +565,40 @@ body[data-tool-id="midi-studio-v2"] .accordion-v2.is-open .accordion-v2__icon {
   transform: none;
 }
 
-body.midi-studio-v2--expanded .tool-starter__menu {
+body.tools-platform-fullscreen-active .tool-starter__menu,
+html:fullscreen body[data-tool-id="midi-studio-v2"] .tool-starter__menu {
   position: sticky;
   top: 0;
   z-index: 4;
 }
 
-body.midi-studio-v2--expanded .tool-starter.app-shell {
-  min-height: calc(100vh - 14rem);
-  width: calc(100% - 32px);
-  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr) minmax(12rem, 14rem);
+body.tools-platform-fullscreen-active .midi-studio-v2.app-shell,
+html:fullscreen body[data-tool-id="midi-studio-v2"] .midi-studio-v2.app-shell {
+  display: grid;
+  min-height: calc(100vh - 7rem);
+  width: calc(100vw - 24px);
+  grid-template-columns: 340px minmax(0, 1fr) 360px;
+  margin: 0 auto;
 }
 
-body.midi-studio-v2--expanded .tool-starter__panel--center {
+body.tools-platform-fullscreen-active .tool-starter__panel--center,
+html:fullscreen body[data-tool-id="midi-studio-v2"] .tool-starter__panel--center {
   grid-column: 2;
 }
 
-body.midi-studio-v2--expanded .tool-starter__panel--right {
+body.tools-platform-fullscreen-active .tool-starter__panel--right,
+html:fullscreen body[data-tool-id="midi-studio-v2"] .tool-starter__panel--right {
   grid-column: 3;
 }
 
-body.midi-studio-v2--expanded .tool-starter__panel--center .accordion-v2:not(:has(#playbackContent)),
-body.midi-studio-v2--expanded .tool-starter__panel--right .accordion-v2:not(:has(#statusLogContent)) {
-  display: none;
+body.tools-platform-fullscreen-active .tool-shell-common__fullscreen-panel-left,
+body.tools-platform-fullscreen-active .tool-shell-common__fullscreen-panel-right,
+html:fullscreen body[data-tool-id="midi-studio-v2"] .tool-shell-common__fullscreen-panel-left,
+html:fullscreen body[data-tool-id="midi-studio-v2"] .tool-shell-common__fullscreen-panel-right {
+  width: 100%;
+}
+
+body.tools-platform-fullscreen-active .midi-studio-v2__instrument-grid-output,
+html:fullscreen body[data-tool-id="midi-studio-v2"] .midi-studio-v2__instrument-grid-output {
+  max-height: calc(100vh - 22rem);
 }

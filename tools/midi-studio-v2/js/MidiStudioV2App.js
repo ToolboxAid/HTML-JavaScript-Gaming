@@ -61,6 +61,7 @@ export class MidiStudioV2App {
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
+    this.details.mount({ onChange: (field, value) => this.handleSongDetailsChange(field, value) });
     this.songSheet.mount({ onParse: (sourceText) => this.parseSongSheet(sourceText) });
     this.instrumentGrid.mount({
       onGenerate: (lane, input) => this.generateInstrumentLane(lane, input),
@@ -116,10 +117,10 @@ export class MidiStudioV2App {
 
   handleExpandedModeChange(isExpanded) {
     if (isExpanded) {
-      this.statusLog.info("Entered expanded MIDI Studio view. Header, top transport, setup panel, and timeline instrument rows remain visible; secondary diagnostics are minimized.");
+      this.statusLog.info("Entered MIDI Studio fullscreen view. Tool transport, Stop All Audio, recovery controls, and timeline instrument rows remain visible.");
       return;
     }
-    this.statusLog.info("Exited expanded MIDI Studio view. Full Studio, setup, and diagnostics layout restored.");
+    this.statusLog.info("Exited MIDI Studio fullscreen view. Header, setup, and diagnostics layout restored.");
   }
 
   applyPayload(rawValue, sourceLabel) {
@@ -149,6 +150,59 @@ export class MidiStudioV2App {
     this.actionNav.setNowPlaying(song);
     this.actionNav.setToolActionsEnabled(Boolean(this.payload));
     this.updateAudioDiagnostics();
+  }
+
+  handleSongDetailsChange(field, value) {
+    const song = this.selectedSong();
+    if (!song) {
+      return;
+    }
+    const arrangement = song.studioArrangement || null;
+    if (field === "name") {
+      song.name = String(value || "").trim() || song.id;
+      this.songList.render(this.payload?.songs || [], this.selectedSongId);
+      this.playbackControl.setSelected(song);
+      this.actionNav.setNowPlaying(song);
+    } else if (field === "tempo" && arrangement) {
+      arrangement.tempo = String(value || "").trim();
+      this.syncSongSheetFields(arrangement);
+      this.parseSongSheet(this.songSheet.composeGuidedSheet(), { updateGrid: false });
+    } else if (field === "key" && arrangement) {
+      arrangement.key = String(value || "").trim();
+      this.syncSongSheetFields(arrangement);
+    } else if (field === "style" && arrangement) {
+      arrangement.style = String(value || "").trim();
+      this.syncSongSheetFields(arrangement);
+    } else if (field === "loopEnabled") {
+      song.loop.enabled = value === true;
+    } else if (field === "loopStartSeconds") {
+      song.loop.startSeconds = Number.isFinite(Number(value)) ? Number(value) : "";
+    } else if (field === "loopEndSeconds") {
+      song.loop.endSeconds = Number.isFinite(Number(value)) ? Number(value) : "";
+    } else if (field === "defaultRuntimeFormat") {
+      song.defaultRuntimeFormat = String(value || "").trim();
+    } else if (field === "sourceMidi") {
+      song.sourceMidi = String(value || "").trim();
+      this.details.syncSourceFields(song);
+    } else if (field === "instrumentSet") {
+      song.instrumentSet = String(value || "").trim();
+      this.details.syncSourceFields(song);
+    } else if (field === "tags") {
+      song.tags = String(value || "").split(",").map((tag) => tag.trim()).filter(Boolean);
+    }
+    this.details.showJson(song);
+    this.statusLog.info(`Edited selected song detail: ${field}.`);
+    this.updateAudioDiagnostics();
+  }
+
+  syncSongSheetFields(arrangement) {
+    this.songSheet.applyGuidedDefaults({
+      intro: this.songSheet.introInput.value,
+      key: arrangement.key,
+      loop: this.songSheet.loopInput.value,
+      style: arrangement.style,
+      tempo: arrangement.tempo
+    });
   }
 
   selectedSong() {
@@ -425,7 +479,7 @@ export class MidiStudioV2App {
     }
     this.instrumentGrid.setPreviewPlaybackLanes(result.activeLanes);
     this.statusLog.ok(`Preview Synth started for ${mode} ${label} with ${result.eventCount} playable event${result.eventCount === 1 ? "" : "s"}.`);
-    this.statusLog.info("Preview Synth uses temporary oscillator instruments for grid audition only; SoundFont playback is not implemented.");
+    this.statusLog.warn("Preview Synth is an approximate Web Audio audition; SoundFont and real instrument playback are not implemented.");
     this.updateAudioDiagnostics();
     return true;
   }
@@ -516,6 +570,7 @@ export class MidiStudioV2App {
       beatsPerBar: arrangement.beatsPerBar,
       chords: arrangement.lanes.chords,
       drums: arrangement.lanes.drums,
+      lanes: arrangement.lanes,
       lead: arrangement.lanes.lead,
       pad: arrangement.lanes.pad,
       previewInstruments: arrangement.previewInstruments,

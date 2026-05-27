@@ -28,6 +28,17 @@ const DRUM_FREQUENCIES = {
   tom: 150
 };
 
+const DRUM_DURATIONS = {
+  clap: 0.1,
+  crash: 0.32,
+  hat: 0.055,
+  kick: 0.14,
+  perc: 0.09,
+  ride: 0.22,
+  snare: 0.12,
+  tom: 0.16
+};
+
 function audioContextCtor(windowRef) {
   return windowRef?.AudioContext || windowRef?.webkitAudioContext || null;
 }
@@ -155,7 +166,14 @@ export class PreviewSynthEngine {
         }
         return;
       }
-      if (this.frequenciesForEvent(event, instrument).length > 0) {
+      if (event.kind === "drum" && instrument.synthRole !== "percussion") {
+        const key = `drum-pack:${event.lane}`;
+        if (!warningKeys.has(key)) {
+          warnings.push(`Preview instrument "${instrument.label}" is not a percussion pack for ${event.lane}; Preview Synth will use a noise-based percussion approximation.`);
+          warningKeys.add(key);
+        }
+      }
+      if (this.canScheduleEvent(event, instrument)) {
         events.push({ ...event, previewInstrument: instrument });
       }
     });
@@ -171,6 +189,14 @@ export class PreviewSynthEngine {
     events.forEach((event) => {
       const offsetSeconds = Math.max(0, (event.stepIndex - startStep) * secondsPerStep);
       const instrument = event.previewInstrument;
+      if (event.kind === "drum") {
+        this.scheduleDrumHit({
+          context,
+          event,
+          startTime: now + offsetSeconds
+        });
+        return;
+      }
       const durationScale = Number(instrument?.durationScale || 1);
       const durationSeconds = Math.max(0.06, Number(event.durationBeats || 1) * secondsPerBeat * 0.82 * durationScale);
       this.frequenciesForEvent(event, instrument).forEach((frequency, index) => {
@@ -201,7 +227,46 @@ export class PreviewSynthEngine {
     gainNode.connect(context.destination);
     oscillator.start(startTime);
     oscillator.stop(endTime);
-    this.nodes.push({ gainNode, oscillator });
+    this.nodes.push({ gainNode, source: oscillator });
+  }
+
+  scheduleDrumHit({ context, event, startTime }) {
+    if (typeof context.createBuffer !== "function" || typeof context.createBufferSource !== "function") {
+      const frequency = DRUM_FREQUENCIES[String(event.value || "").toLowerCase()];
+      if (frequency) {
+        this.scheduleTone({ context, durationSeconds: 0.08, event, frequency, startTime });
+      }
+      return;
+    }
+    const drumName = String(event.value || "").toLowerCase();
+    const durationSeconds = DRUM_DURATIONS[drumName] || 0.1;
+    const sampleRate = Number(context.sampleRate || 44100);
+    const frameCount = Math.max(1, Math.floor(sampleRate * durationSeconds));
+    const buffer = context.createBuffer(1, frameCount, sampleRate);
+    const samples = buffer.getChannelData(0);
+    for (let index = 0; index < frameCount; index += 1) {
+      const decay = 1 - (index / frameCount);
+      samples[index] = (Math.random() * 2 - 1) * decay * decay;
+    }
+    const source = context.createBufferSource();
+    const gainNode = context.createGain();
+    const volume = this.volumeForEvent(event, event.previewInstrument);
+    source.buffer = buffer;
+    gainNode.gain.setValueAtTime(0.0001, startTime);
+    gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.004);
+    gainNode.gain.linearRampToValueAtTime(0.0001, startTime + durationSeconds);
+    source.connect(gainNode);
+    gainNode.connect(context.destination);
+    source.start(startTime);
+    source.stop(startTime + durationSeconds);
+    this.nodes.push({ gainNode, source });
+  }
+
+  canScheduleEvent(event, instrument = null) {
+    if (event.kind === "drum") {
+      return Boolean(DRUM_FREQUENCIES[String(event.value || "").toLowerCase()]);
+    }
+    return this.frequenciesForEvent(event, instrument).length > 0;
   }
 
   frequenciesForEvent(event, instrument = null) {
@@ -236,14 +301,14 @@ export class PreviewSynthEngine {
       this.window.clearInterval(this.loopTimer);
       this.loopTimer = null;
     }
-    this.nodes.forEach(({ oscillator, gainNode }) => {
+    this.nodes.forEach(({ source, gainNode }) => {
       try {
-        oscillator.stop();
+        source.stop();
       } catch {
         // Already stopped or never started.
       }
       try {
-        oscillator.disconnect();
+        source.disconnect();
         gainNode.disconnect();
       } catch {
         // Some test doubles do not implement disconnect.

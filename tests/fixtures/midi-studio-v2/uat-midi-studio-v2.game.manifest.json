@@ -63,6 +63,7 @@
             "bass": "G2 G2 C2 G2 | D2 D2 G2 G2 | G2 G2 C2 G2 | D2 C2 G2 G2",
             "pad": "G - C - | D - G - | G - C - | D C G -",
             "lead": "G4 G4 E4 G4 | A4 G4 E4 - | B4 B4 A4 B4 | D5 B4 G4 -",
+            "mallets": "B4 - C5 - | A4 - G4 - | B4 C5 D5 - | G4 - B4 -",
             "drums": "kick hat snare hat | kick hat snare hat | kick hat snare hat | kick hat snare hat"
           },
           "previewInstruments": {
@@ -70,6 +71,7 @@
             "bass": "synth-bass",
             "pad": "ambient-pad",
             "lead": "retro-pulse-lead",
+            "mallets": "retro-square-lead",
             "drums": "basic-drums"
           }
         }
