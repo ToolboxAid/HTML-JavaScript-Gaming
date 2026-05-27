@@ -12,8 +12,12 @@ export class ToolShellControl {
       element.setAttribute("data-tool-id", this.toolId);
     });
     this.applyExpandedState(false);
-    this.details?.addEventListener("toggle", () => {
-      const isExpanded = !this.details.open;
+    this.summary?.addEventListener("click", (event) => {
+      event.preventDefault();
+      const isExpanded = !this.document.body.classList.contains("midi-studio-v2--expanded");
+      if (this.details) {
+        this.details.open = true;
+      }
       this.applyExpandedState(isExpanded);
       onExpandedChange(isExpanded);
     });
@@ -22,8 +26,11 @@ export class ToolShellControl {
   applyExpandedState(isExpanded) {
     this.document.body.classList.toggle("midi-studio-v2--expanded", isExpanded);
     this.document.body.dataset.midiStudioExpanded = String(isExpanded);
+    if (this.details) {
+      this.details.open = true;
+    }
     if (this.summary) {
-      this.summary.textContent = isExpanded ? "Show Header and Details" : "Hide Header and Details";
+      this.summary.textContent = isExpanded ? "Exit Expanded View" : "Enter Expanded View";
     }
   }
 }

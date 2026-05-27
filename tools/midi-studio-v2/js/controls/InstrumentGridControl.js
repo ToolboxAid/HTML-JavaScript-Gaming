@@ -29,10 +29,10 @@ function optionForSection(section) {
 
 const LANE_LABELS = {
   bass: "Bass",
-  chords: "Chords",
+  chords: "Pad/Chords",
   drums: "Drums",
   lead: "Lead",
-  pad: "Pad"
+  pad: "Pad Layer"
 };
 
 const REST_TOKENS = new Set(["", "-", ".", "rest"]);
@@ -102,9 +102,11 @@ export class InstrumentGridControl {
     this.loopBounds = null;
     this.playTimer = null;
     this.playheadStep = 0;
+    this.selectedLane = "lead";
   }
 
-  mount({ onGenerate, onLaneSettingChange, onNormalize, onTransport }) {
+  mount({ onGenerate, onLaneSettingChange, onNormalize, onNoteEdit = () => {}, onTransport }) {
+    this.onNoteEdit = onNoteEdit;
     this.generateBassButton.addEventListener("click", () => onGenerate("bass", this.readInput()));
     this.generatePadButton.addEventListener("click", () => onGenerate("pad", this.readInput()));
     this.generateArpeggioButton.addEventListener("click", () => onGenerate("lead", this.readInput()));
@@ -135,6 +137,31 @@ export class InstrumentGridControl {
         lane,
         laneLabel: LANE_LABELS[lane] || lane
       }));
+      controls.volume?.addEventListener("change", () => onLaneSettingChange("volume", {
+        lane,
+        laneLabel: LANE_LABELS[lane] || lane,
+        value: controls.volume.value
+      }));
+      controls.pan?.addEventListener("change", () => onLaneSettingChange("pan", {
+        lane,
+        laneLabel: LANE_LABELS[lane] || lane,
+        value: controls.pan.value
+      }));
+      controls.row?.addEventListener("click", (event) => {
+        if (event.target.closest("input, select, option")) {
+          return;
+        }
+        this.selectLane(lane);
+        onLaneSettingChange("select", { lane, laneLabel: LANE_LABELS[lane] || lane });
+      });
+      controls.row?.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+        event.preventDefault();
+        this.selectLane(lane);
+        onLaneSettingChange("select", { lane, laneLabel: LANE_LABELS[lane] || lane });
+      });
     });
     this.sectionPresetButtons.forEach((button) => {
       button.addEventListener("click", () => this.selectPresetSection(button.dataset.sectionPreset, onTransport));
@@ -149,6 +176,7 @@ export class InstrumentGridControl {
     this.setTransportEnabled(false);
     this.populateSectionControls([]);
     this.updateSnapIndicator();
+    this.selectLane(this.selectedLane);
   }
 
   readInput() {
@@ -209,15 +237,23 @@ export class InstrumentGridControl {
       if (controls.solo) {
         controls.solo.checked = false;
       }
+      if (controls.volume) {
+        controls.volume.value = "1";
+      }
+      if (controls.pan) {
+        controls.pan.value = "0";
+      }
     });
   }
 
   previewLaneSettings() {
-    const settings = { instruments: {}, muted: {}, soloed: {} };
+    const settings = { instruments: {}, muted: {}, pans: {}, soloed: {}, volumes: {} };
     this.previewLaneEntries().forEach(([lane, controls]) => {
       settings.instruments[lane] = controls.instrument?.value || "";
       settings.muted[lane] = Boolean(controls.mute?.checked);
+      settings.pans[lane] = Number(controls.pan?.value || 0);
       settings.soloed[lane] = Boolean(controls.solo?.checked);
+      settings.volumes[lane] = Number(controls.volume?.value || 1);
     });
     return settings;
   }
@@ -233,7 +269,9 @@ export class InstrumentGridControl {
       instrumentLabels,
       instruments: settings.instruments,
       mutedLanes: Object.entries(settings.muted).filter((entry) => entry[1]).map(([lane]) => lane),
-      soloedLanes: Object.entries(settings.soloed).filter((entry) => entry[1]).map(([lane]) => lane)
+      panSummary: Object.entries(settings.pans).map(([lane, value]) => `${lane}:${value}`).join(", "),
+      soloedLanes: Object.entries(settings.soloed).filter((entry) => entry[1]).map(([lane]) => lane),
+      volumeSummary: Object.entries(settings.volumes).map(([lane, value]) => `${lane}:${value}`).join(", ")
     };
   }
 
@@ -288,6 +326,15 @@ export class InstrumentGridControl {
     this.renderGrid(result);
     this.setPlayheadStep(this.playheadStep);
     this.updateLoopRegion();
+    this.applySelectedLaneHighlight();
+  }
+
+  syncEditedGridResult(result) {
+    if (!result?.ok) {
+      return;
+    }
+    this.currentResult = result;
+    this.renderDefinitionList(summaryRows(result));
   }
 
   populateSectionControls(sections) {
@@ -346,6 +393,7 @@ export class InstrumentGridControl {
       });
     });
     this.gridOutput.append(grid);
+    this.applySelectedLaneHighlight();
   }
 
   renderNoteTableHeader(grid, result) {
@@ -390,48 +438,11 @@ export class InstrumentGridControl {
     const cell = document.createElement("div");
     cell.className = "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__lane-header-cell";
     cell.setAttribute("role", "rowheader");
+    cell.dataset.lane = lane;
     const title = document.createElement("strong");
     title.textContent = LANE_LABELS[lane] || lane;
-    cell.append(title, this.createLaneInstrumentControl(lane), this.createLaneToggleControl(lane, "mute"), this.createLaneToggleControl(lane, "solo"));
+    cell.append(title);
     return cell;
-  }
-
-  createLaneInstrumentControl(lane) {
-    const sourceSelect = this.previewLaneControls[lane]?.instrument;
-    const select = document.createElement("select");
-    select.className = "midi-studio-v2__lane-instrument-select";
-    select.setAttribute("aria-label", `${LANE_LABELS[lane] || lane} preview instrument`);
-    Array.from(sourceSelect?.options || []).forEach((option) => {
-      select.append(option.cloneNode(true));
-    });
-    select.value = sourceSelect?.value || "";
-    select.addEventListener("change", () => {
-      if (!sourceSelect) {
-        return;
-      }
-      sourceSelect.value = select.value;
-      sourceSelect.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-    return select;
-  }
-
-  createLaneToggleControl(lane, kind) {
-    const sourceToggle = this.previewLaneControls[lane]?.[kind];
-    const label = document.createElement("label");
-    label.className = "midi-studio-v2__lane-toggle";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = Boolean(sourceToggle?.checked);
-    checkbox.setAttribute("aria-label", `${kind} ${LANE_LABELS[lane] || lane}`);
-    checkbox.addEventListener("change", () => {
-      if (!sourceToggle) {
-        return;
-      }
-      sourceToggle.checked = checkbox.checked;
-      sourceToggle.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-    label.append(checkbox, ` ${kind === "mute" ? "Mute" : "Solo"}`);
-    return label;
   }
 
   createNoteTableCell(cell, stepIndex) {
@@ -445,6 +456,8 @@ export class InstrumentGridControl {
     outputCell.dataset.lane = cell.lane;
     outputCell.dataset.source = cell.source;
     outputCell.addEventListener("input", () => this.updateLaneFromNoteTableCell(outputCell, stepIndex));
+    outputCell.addEventListener("focus", () => this.selectLane(cell.lane));
+    outputCell.addEventListener("click", () => this.selectLane(cell.lane));
     outputCell.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
@@ -483,6 +496,7 @@ export class InstrumentGridControl {
     }
     this.syncNoteTableCellState(cell);
     laneInput.value = this.noteTableLaneText(lane);
+    this.onNoteEdit?.(this.readInput(), { lane, laneLabel: LANE_LABELS[lane] || lane });
   }
 
   syncNoteTableCellState(cell) {
@@ -525,6 +539,30 @@ export class InstrumentGridControl {
     cell.textContent = text;
     grid.append(cell);
     return cell;
+  }
+
+  selectLane(lane) {
+    if (!lane) {
+      return;
+    }
+    this.selectedLane = lane;
+    this.previewLaneEntries().forEach(([entryLane, controls]) => {
+      controls.row?.classList.toggle("is-selected", entryLane === lane);
+      controls.row?.setAttribute("aria-selected", String(entryLane === lane));
+    });
+    this.applySelectedLaneHighlight();
+  }
+
+  applySelectedLaneHighlight() {
+    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-selected").forEach((cell) => {
+      cell.classList.remove("midi-studio-v2__grid-cell--lane-selected");
+    });
+    if (!this.selectedLane) {
+      return;
+    }
+    this.gridOutput.querySelectorAll(`[data-lane="${this.selectedLane}"]`).forEach((cell) => {
+      cell.classList.add("midi-studio-v2__grid-cell--lane-selected");
+    });
   }
 
   renderDefinitionList(rows) {

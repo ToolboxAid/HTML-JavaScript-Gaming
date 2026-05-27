@@ -66,6 +66,7 @@ export class MidiStudioV2App {
       onGenerate: (lane, input) => this.generateInstrumentLane(lane, input),
       onLaneSettingChange: (kind, detail) => this.handlePreviewLaneSettingChange(kind, detail),
       onNormalize: (input) => this.normalizeInstrumentGrid(input),
+      onNoteEdit: (input, detail) => this.syncEditedInstrumentGrid(input, detail),
       onTransport: (action, detail) => this.handleInstrumentGridTransport(action, detail)
     });
     this.midiSourceDetails.mount({ onInspect: () => this.inspectSelectedSource() });
@@ -115,10 +116,10 @@ export class MidiStudioV2App {
 
   handleExpandedModeChange(isExpanded) {
     if (isExpanded) {
-      this.statusLog.info("Entered expanded MIDI Studio workspace view. Header details are hidden; NAV, Status, and recovery actions remain available.");
+      this.statusLog.info("Entered expanded MIDI Studio view. Header, top transport, and Instruments column remain visible; secondary diagnostics are minimized.");
       return;
     }
-    this.statusLog.info("Exited expanded MIDI Studio workspace view. Header and details are visible.");
+    this.statusLog.info("Exited expanded MIDI Studio view. Full Studio, setup, and diagnostics layout restored.");
   }
 
   applyPayload(rawValue, sourceLabel) {
@@ -340,6 +341,19 @@ export class MidiStudioV2App {
     this.updateAudioDiagnostics();
   }
 
+  syncEditedInstrumentGrid(input, detail = {}) {
+    const result = this.instrumentGridParser.parse(input);
+    if (!result.ok) {
+      this.statusLog.fail(`Instrument note edit rejected: ${result.message}`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    this.lastInstrumentGridResult = result;
+    this.instrumentGrid.syncEditedGridResult(result);
+    this.statusLog.ok(`Edited ${detail.laneLabel || "instrument"} note cell; playback data updated.`);
+    this.updateAudioDiagnostics();
+  }
+
   async handleInstrumentGridTransport(action, detail = {}) {
     if (action === "invalid-section") {
       this.statusLog.fail(`Instrument grid section not found: ${detail.label}. Normalize a section map containing that label or choose a listed custom section.`);
@@ -433,6 +447,21 @@ export class MidiStudioV2App {
     }
     if (kind === "solo") {
       this.statusLog[detail.enabled ? "ok" : "info"](`Lane ${detail.enabled ? "soloed" : "solo cleared"}: ${detail.laneLabel}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "volume") {
+      this.statusLog.info(`Lane volume set for ${detail.laneLabel}: ${detail.value}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "pan") {
+      this.statusLog.info(`Lane pan set for ${detail.laneLabel}: ${detail.value}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "select") {
+      this.statusLog.info(`Selected instrument lane: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
     }
   }
@@ -563,6 +592,8 @@ export class MidiStudioV2App {
       ["Active lanes", laneDiagnostics.activeLanes.length ? laneDiagnostics.activeLanes.join(", ") : "none"],
       ["Muted lanes", laneDiagnostics.mutedLanes.length ? laneDiagnostics.mutedLanes.join(", ") : "none"],
       ["Soloed lanes", laneDiagnostics.soloedLanes.length ? laneDiagnostics.soloedLanes.join(", ") : "none"],
+      ["Lane volumes", laneDiagnostics.volumeSummary || "none"],
+      ["Lane pans", laneDiagnostics.panSummary || "none"],
       ["Current preview instrument pack", packSummary || "none"],
       ["Last playback error", snapshot.lastError || "none"]
     ]);
