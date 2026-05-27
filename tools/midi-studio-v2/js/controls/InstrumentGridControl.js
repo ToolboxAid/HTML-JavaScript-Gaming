@@ -76,6 +76,23 @@ const FLAT_TO_SHARP = {
   Gb: "F#"
 };
 const CHORD_ROOT_ROW = /^([A-G](?:#|b)?)/;
+const SIMPLE_CHORD_PATTERN = /^([A-G](?:#|b)?)(m|min)?$/;
+const CHORD_TONES = {
+  A: ["A", "C#", "E"],
+  Am: ["A", "C", "E"],
+  B: ["B", "D#", "F#"],
+  Bm: ["B", "D", "F#"],
+  C: ["C", "E", "G"],
+  Cm: ["C", "D#", "G"],
+  D: ["D", "F#", "A"],
+  Dm: ["D", "F", "A"],
+  E: ["E", "G#", "B"],
+  Em: ["E", "G", "B"],
+  F: ["F", "A", "C"],
+  Fm: ["F", "G#", "C"],
+  G: ["G", "B", "D"],
+  Gm: ["G", "A#", "D"]
+};
 
 const NOTE_RANGE_BY_TYPE = {
   Bass: [1, 3],
@@ -510,7 +527,7 @@ export class InstrumentGridControl {
     grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table midi-studio-v2__octave-timeline";
     grid.setAttribute("role", "table");
     grid.setAttribute("aria-label", "Octave timeline editor");
-    grid.style.gridTemplateColumns = `minmax(5.5rem, 7rem) repeat(${result.totalSteps}, minmax(3.5rem, 1fr))`;
+    grid.style.gridTemplateColumns = `minmax(5.5rem, 7rem) repeat(${result.totalSteps}, minmax(2.55rem, 1fr))`;
     this.renderNoteTableHeader(grid, result);
     octaveRows.forEach((row) => {
       grid.append(this.createOctaveRowHeader(row));
@@ -625,18 +642,18 @@ export class InstrumentGridControl {
 
     const titleRow = document.createElement("div");
     titleRow.className = "midi-studio-v2__instrument-title-row";
-    titleRow.append(visibilityButton, title, deleteButton);
+    titleRow.append(title);
 
     const selectors = document.createElement("div");
     selectors.className = "midi-studio-v2__instrument-selectors";
     selectors.append(typeSelect, instrumentSelect);
 
-    const toggles = document.createElement("div");
-    toggles.className = "midi-studio-v2__lane-control-row";
-    toggles.append(mute.label, solo.label);
+    const controls = document.createElement("div");
+    controls.className = "midi-studio-v2__lane-control-row midi-studio-v2__instrument-control-row";
+    controls.append(mute.label, solo.label, visibilityButton, deleteButton);
 
     row.addEventListener("click", (event) => {
-      if (event.target.closest("input, select, option, button")) {
+      if (event.target.closest("input, select, option, button, label")) {
         return;
       }
       this.handleLaneSelection(lane);
@@ -661,7 +678,7 @@ export class InstrumentGridControl {
       solo: solo.input,
       visibilityButton
     };
-    row.append(titleRow, selectors, toggles);
+    row.append(titleRow, selectors, controls);
     return row;
   }
 
@@ -680,7 +697,8 @@ export class InstrumentGridControl {
     button.setAttribute("aria-pressed", String(visible));
     button.setAttribute("aria-label", `${visible ? "Hide" : "Show"} ${laneLabel(lane)}`);
     button.title = visible ? "Hide instrument" : "Show instrument";
-    button.textContent = visible ? "eye" : "off";
+    button.dataset.visibilityState = visible ? "visible" : "hidden";
+    button.textContent = "";
   }
 
   toggleInstrumentVisibility(lane) {
@@ -713,12 +731,14 @@ export class InstrumentGridControl {
     cell.dataset.octaveRow = row.value;
     cell.dataset.rowToken = row.value;
     cell.dataset.stepIndex = String(stepIndex);
+    if (events.length) {
+      cell.dataset.noteLanes = Array.from(new Set(events.map((event) => event.lane))).join(" ");
+      cell.dataset.noteValues = events.map((event) => event.value).join(" ");
+      cell.textContent = this.noteTextForOctaveCell(events, row.value);
+    }
     cell.role = "button";
     cell.tabIndex = 0;
     cell.setAttribute("aria-label", `${row.label} at step ${stepIndex + 1}`);
-    events.forEach((event) => {
-      cell.append(this.createTimelineNoteBlock(event));
-    });
     cell.addEventListener("click", () => this.toggleTimelineCell(row.value, stepIndex));
     cell.addEventListener("keydown", (event) => {
       if (event.key !== "Enter" && event.key !== " ") {
@@ -743,17 +763,16 @@ export class InstrumentGridControl {
     return classes;
   }
 
-  createTimelineNoteBlock(event) {
-    const block = document.createElement("span");
-    block.className = "midi-studio-v2__note-block";
-    block.dataset.lane = event.lane;
-    block.textContent = event.value;
-    if (event.lane === this.selectedLane) {
-      block.classList.add("midi-studio-v2__note-block--selected");
-    } else {
-      block.classList.add("midi-studio-v2__note-block--dimmed");
-    }
-    return block;
+  noteTextForOctaveCell(events, rowToken) {
+    return Array.from(new Set(events.map((event) => {
+      if (event.kind === "drum") {
+        return String(event.value || rowToken).toLowerCase();
+      }
+      if (event.kind === "chord") {
+        return rowToken;
+      }
+      return this.normalizeNoteName(event.value);
+    }))).join(" ");
   }
 
   visibleEventsForCell({ result, row, stepIndex }) {
@@ -770,7 +789,7 @@ export class InstrumentGridControl {
       return [String(event.value || "").toLowerCase()];
     }
     if (event.kind === "chord") {
-      return [this.chordRootRow(event.value)];
+      return this.chordRows(event.value);
     }
     return [this.normalizeNoteName(event.value)];
   }
@@ -778,6 +797,16 @@ export class InstrumentGridControl {
   chordRootRow(value) {
     const match = String(value || "").match(CHORD_ROOT_ROW);
     return `${this.normalizePitchName(match?.[1] || "C")}4`;
+  }
+
+  chordRows(value) {
+    const simple = String(value || "").trim().match(SIMPLE_CHORD_PATTERN);
+    if (!simple) {
+      return [this.chordRootRow(value)];
+    }
+    const chordName = `${this.normalizePitchName(simple[1])}${simple[2] ? "m" : ""}`;
+    const tones = CHORD_TONES[chordName];
+    return tones ? tones.map((tone) => `${this.normalizePitchName(tone)}4`) : [this.chordRootRow(value)];
   }
 
   normalizeNoteName(value) {
@@ -825,9 +854,13 @@ export class InstrumentGridControl {
     }
     this.selectedCell = { rowToken, stepIndex };
     const existingToken = this.tokenForLaneStep(this.selectedLane, stepIndex);
-    const nextToken = this.rowsForSelectedToken(existingToken).includes(rowToken)
-      ? "-"
-      : this.tokenForRow(rowToken);
+    const activeRows = this.rowsForSelectedToken(existingToken);
+    const existingParts = this.tokenPartsForSelectedToken(existingToken);
+    const rowPart = this.tokenForRow(rowToken);
+    const nextParts = activeRows.includes(rowToken)
+      ? existingParts.filter((part) => this.rowForTokenPart(part) !== rowToken)
+      : [...existingParts, rowPart];
+    const nextToken = nextParts.length ? this.joinTokenParts(nextParts) : "-";
     this.setLaneStepToken(this.selectedLane, stepIndex, nextToken);
     this.onNoteEdit?.(this.readInput(), {
       action: "toggle-note",
@@ -841,26 +874,56 @@ export class InstrumentGridControl {
 
   tokenForRow(rowToken) {
     if (this.selectedInstrumentIsPercussion()) {
-      return rowToken;
+      return String(rowToken || "").toLowerCase();
     }
-    if (this.selectedLane === "chords") {
-      return String(rowToken || "C4").replace(/[0-8]$/, "");
-    }
-    return rowToken;
+    return this.normalizeNoteName(rowToken);
   }
 
   rowsForSelectedToken(token) {
+    return this.tokenPartsForSelectedToken(token).map((part) => this.rowForTokenPart(part));
+  }
+
+  tokenPartsForSelectedToken(token) {
     const value = String(token || "").trim();
     if (REST_TOKENS.has(value.toLowerCase())) {
       return [];
     }
     if (this.selectedInstrumentIsPercussion()) {
-      return [value.toLowerCase()];
+      return this.splitTokenParts(value).map((part) => part.toLowerCase());
+    }
+    const parts = this.splitTokenParts(value);
+    if (parts.length > 1) {
+      return parts.map((part) => this.normalizeNoteName(part));
     }
     if (this.selectedLane === "chords" || (this.selectedLane === "pad" && /^[A-G](?:#|b)?/.test(value) && !/[0-8]$/.test(value))) {
-      return [this.chordRootRow(value)];
+      return this.chordRows(value);
     }
     return [this.normalizeNoteName(value)];
+  }
+
+  splitTokenParts(token) {
+    return String(token || "").split("+").map((part) => part.trim()).filter(Boolean);
+  }
+
+  rowForTokenPart(part) {
+    if (this.selectedInstrumentIsPercussion()) {
+      return String(part || "").toLowerCase();
+    }
+    return this.normalizeNoteName(part);
+  }
+
+  joinTokenParts(parts) {
+    const seen = new Set();
+    const unique = [];
+    parts.forEach((part) => {
+      const normalized = this.selectedInstrumentIsPercussion() ? String(part || "").toLowerCase() : this.normalizeNoteName(part);
+      if (!normalized || seen.has(normalized)) {
+        return;
+      }
+      seen.add(normalized);
+      unique.push(normalized);
+    });
+    return unique.join("+");
   }
 
   tokenForLaneStep(lane, stepIndex) {
@@ -1523,19 +1586,14 @@ export class InstrumentGridControl {
     this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-active").forEach((cell) => {
       cell.classList.remove("midi-studio-v2__grid-cell--lane-active");
     });
-    this.gridOutput.querySelectorAll(".midi-studio-v2__note-block--active").forEach((block) => {
-      block.classList.remove("midi-studio-v2__note-block--active");
-    });
     this.gridOutput.querySelectorAll(`[data-step-index="${this.playheadStep}"]`).forEach((cell) => {
       if (cell.classList.contains("midi-studio-v2__grid-cell--timing-header") || cell.classList.contains("midi-studio-v2__note-table-cell")) {
         cell.classList.add("midi-studio-v2__grid-cell--playhead-active");
       }
-      cell.querySelectorAll(".midi-studio-v2__note-block").forEach((block) => {
-        if (this.activePreviewLanes.includes(block.dataset.lane)) {
-          block.classList.add("midi-studio-v2__note-block--active");
-          cell.classList.add("midi-studio-v2__grid-cell--lane-active");
-        }
-      });
+      const cellLanes = String(cell.dataset.noteLanes || "").split(/\s+/).filter(Boolean);
+      if (cellLanes.some((lane) => this.activePreviewLanes.includes(lane))) {
+        cell.classList.add("midi-studio-v2__grid-cell--lane-active");
+      }
     });
   }
 

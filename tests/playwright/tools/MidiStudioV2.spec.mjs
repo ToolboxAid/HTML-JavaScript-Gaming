@@ -353,11 +353,15 @@ function octaveCell(page, rowToken, stepIndex) {
 }
 
 function octaveNoteBlock(page, lane) {
-  return page.locator(`.midi-studio-v2__note-block[data-lane="${lane}"]`);
+  return page.locator(`.midi-studio-v2__octave-note-cell[data-note-lanes~="${lane}"]`);
 }
 
 function instrumentRow(page, lane) {
   return page.locator(`.midi-studio-v2__instrument-row[data-lane="${lane}"]`);
+}
+
+async function selectInstrumentRow(page, lane) {
+  await instrumentRow(page, lane).locator(`[data-lane-label="${lane}"]`).click();
 }
 
 function instrumentTypeSelect(page, lane) {
@@ -449,21 +453,24 @@ test.describe("MIDI Studio V2", () => {
       ]);
       await instrumentTypeSelect(page, "lead").selectOption("Synth Lead");
       await instrumentSelect(page, "lead").selectOption("retro-pulse-lead");
-      await instrumentRow(page, "lead").click();
-      await expect(octaveNoteBlock(page, "lead").first()).toHaveClass(/midi-studio-v2__note-block--selected/);
-      await expect(octaveNoteBlock(page, "chords").first()).toHaveClass(/midi-studio-v2__note-block--dimmed/);
+      await selectInstrumentRow(page, "lead");
+      await expect(octaveNoteBlock(page, "lead").first()).toHaveClass(/midi-studio-v2__grid-cell--lane-selected/);
+      await expect(octaveNoteBlock(page, "chords").first()).toHaveClass(/midi-studio-v2__grid-cell--lane-dimmed/);
       await expect(page.locator(".midi-studio-v2__octave-row-label[data-octave='5']")).not.toHaveCount(0);
-      await expect(octaveCell(page, "G4", 0).locator('[data-lane="lead"]')).toContainText("G4");
-      await instrumentRow(page, "bass").click();
-      await expect(octaveCell(page, "G2", 0).locator('[data-lane="bass"]')).toContainText("G2");
+      await expect(octaveCell(page, "G4", 0)).toContainText("G4");
+      await expect(octaveCell(page, "G4", 0)).toHaveAttribute("data-note-lanes", /lead/);
+      await selectInstrumentRow(page, "bass");
+      await expect(octaveCell(page, "G2", 0)).toContainText("G2");
+      await expect(octaveCell(page, "G2", 0)).toHaveAttribute("data-note-lanes", /bass/);
       await instrumentRow(page, "bass").locator("[data-toggle-instrument-visibility='bass']").click();
       await expect(octaveNoteBlock(page, "bass")).toHaveCount(0);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Lane hidden: Bass\./);
       await instrumentRow(page, "bass").locator("[data-toggle-instrument-visibility='bass']").click();
       await expect(octaveNoteBlock(page, "bass").first()).toBeVisible();
-      await instrumentRow(page, "lead").click();
+      await selectInstrumentRow(page, "lead");
       await octaveCell(page, "C5", 1).click();
-      await expect(octaveCell(page, "C5", 1).locator('[data-lane="lead"]')).toHaveText("C5");
+      await expect(octaveCell(page, "C5", 1)).toHaveText("C5");
+      await expect(octaveCell(page, "C5", 1)).toHaveAttribute("data-note-lanes", /lead/);
       expect(await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult.timeline.some((event) => event.lane === "lead" && event.value === "C5" && event.stepIndex === 1))).toBe(true);
 
       await page.locator("#playButton").click();
@@ -482,9 +489,11 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#playButton")).toBeEnabled();
 
       await page.locator('[data-song-id="frog-hop-nursery-rhyme"]').click();
-      await expect(octaveCell(page, "C5", 0).locator('[data-lane="lead"]')).toContainText("C5");
+      await expect(octaveCell(page, "C5", 0)).toContainText("C5");
+      await expect(octaveCell(page, "C5", 0)).toHaveAttribute("data-note-lanes", /lead/);
       await page.locator('[data-song-id="quiet-village-pad"]').click();
-      await expect(octaveCell(page, "D5", 0).locator('[data-lane="lead"]')).toContainText("D5");
+      await expect(octaveCell(page, "D5", 0)).toContainText("D5");
+      await expect(octaveCell(page, "D5", 0)).toHaveAttribute("data-note-lanes", /lead/);
 
       await selectMidiStudioTab(page, "midi-import");
       await page.locator("#midiSourceFileInput").setInputFiles({
@@ -496,9 +505,11 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songList")).toContainText("Local Import");
       await selectMidiStudioTab(page, "studio");
       await expect(instrumentRow(page, "track-2-ch-1")).toBeVisible();
-      await expect(octaveCell(page, "C4", 0).locator('[data-lane="track-2-ch-1"]')).toContainText("C4");
+      await expect(octaveCell(page, "C4", 0)).toContainText("C4");
+      await expect(octaveCell(page, "C4", 0)).toHaveAttribute("data-note-lanes", /track-2-ch-1/);
       await octaveCell(page, "D4", 1).click();
-      await expect(octaveCell(page, "D4", 1).locator('[data-lane="track-2-ch-1"]')).toHaveText("D4");
+      await expect(octaveCell(page, "D4", 1)).toHaveText("D4");
+      await expect(octaveCell(page, "D4", 1)).toHaveAttribute("data-note-lanes", /track-2-ch-1/);
       expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes["track-2-ch-1"])).toContain("D4");
       await page.evaluate(() => {
         window.__midiStudioPreviewSynthEvents = [];
@@ -506,6 +517,136 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#playButton").click();
       await expect(page.locator("#stopButton")).toBeEnabled();
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("octave grid density supports icon controls and simultaneous chord editing", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectInstrumentRow(page, "lead");
+
+      const leadVisibility = instrumentRow(page, "lead").locator("[data-toggle-instrument-visibility='lead']");
+      await expect(leadVisibility).toHaveText("");
+      await expect(leadVisibility).toHaveAttribute("aria-pressed", "true");
+      await expect(leadVisibility).toHaveAttribute("aria-label", /Hide Lead/);
+      const controlAlignment = await instrumentRow(page, "lead").locator(".midi-studio-v2__instrument-control-row").evaluate((row) => {
+        const controls = [
+          row.querySelector('[aria-label="Mute Lead"]')?.closest("label"),
+          row.querySelector('[aria-label="Solo Lead"]')?.closest("label"),
+          row.querySelector("[data-toggle-instrument-visibility='lead']"),
+          row.querySelector("[data-delete-instrument-row='lead']")
+        ];
+        if (controls.some((control) => !control)) {
+          return { maxCenterDelta: 999, missing: true };
+        }
+        const centers = controls.map((control) => {
+          const rect = control.getBoundingClientRect();
+          return rect.top + rect.height / 2;
+        });
+        return {
+          maxCenterDelta: Math.max(...centers) - Math.min(...centers),
+          missing: false
+        };
+      });
+      expect(controlAlignment.missing).toBe(false);
+      expect(controlAlignment.maxCenterDelta).toBeLessThanOrEqual(4);
+
+      const octaveCellHeight = await octaveCell(page, "C5", 0).evaluate((cell) => cell.getBoundingClientRect().height);
+      expect(octaveCellHeight).toBeLessThanOrEqual(32);
+      await expect(page.locator(".midi-studio-v2__octave-timeline .midi-studio-v2__note-block")).toHaveCount(0);
+
+      const chordStep = await page.evaluate(() => {
+        const result = window.__midiStudioV2App.lastInstrumentGridResult;
+        const target = new Set(["C5", "E5", "G5"]);
+        for (let stepIndex = 0; stepIndex < result.totalSteps; stepIndex += 1) {
+          const leadValues = result.timeline
+            .filter((event) => event.lane === "lead" && event.kind === "note" && event.stepIndex === stepIndex)
+            .map((event) => event.value);
+          if (leadValues.length && leadValues.every((value) => !target.has(value))) {
+            return stepIndex;
+          }
+        }
+        return 0;
+      });
+      const initialLeadValues = await page.evaluate((stepIndex) => window.__midiStudioV2App.lastInstrumentGridResult.timeline
+        .filter((event) => event.lane === "lead" && event.kind === "note" && event.stepIndex === stepIndex)
+        .map((event) => event.value), chordStep);
+      await octaveCell(page, "C5", chordStep).click();
+      await octaveCell(page, "E5", chordStep).click();
+      await expect(octaveCell(page, "C5", chordStep)).toHaveText("C5");
+      await expect(octaveCell(page, "E5", chordStep)).toHaveText("E5");
+      await octaveCell(page, "G5", chordStep).click();
+      const leadChordValues = await page.evaluate((stepIndex) => window.__midiStudioV2App.lastInstrumentGridResult.timeline
+        .filter((event) => event.lane === "lead" && event.kind === "note" && event.stepIndex === stepIndex)
+        .map((event) => event.value)
+        .sort(), chordStep);
+      expect(leadChordValues).toEqual(expect.arrayContaining(["C5", "E5", "G5"]));
+      expect(leadChordValues).toEqual(expect.arrayContaining(initialLeadValues));
+      await expect(octaveCell(page, "C5", chordStep)).toHaveClass(/midi-studio-v2__grid-cell--lane-selected/);
+      await expect(octaveNoteBlock(page, "chords").first()).toHaveClass(/midi-studio-v2__grid-cell--lane-dimmed/);
+
+      await leadVisibility.click();
+      await expect(octaveNoteBlock(page, "lead")).toHaveCount(0);
+      await leadVisibility.click();
+      await expect(octaveCell(page, "C5", chordStep)).toHaveAttribute("data-note-lanes", /lead/);
+
+      await selectInstrumentRow(page, "drums");
+      const drumPlan = await page.evaluate(() => {
+        const result = window.__midiStudioV2App.lastInstrumentGridResult;
+        const target = ["kick", "snare", "hat"];
+        for (let stepIndex = 0; stepIndex < result.totalSteps; stepIndex += 1) {
+          const values = result.timeline
+            .filter((event) => event.lane === "drums" && event.kind === "drum" && event.stepIndex === stepIndex)
+            .map((event) => event.value);
+          const missing = target.filter((value) => !values.includes(value));
+          if (missing.length) {
+            return { missing, stepIndex };
+          }
+        }
+        return { missing: [], stepIndex: 0 };
+      });
+      for (const rowToken of drumPlan.missing) {
+        await octaveCell(page, rowToken, drumPlan.stepIndex).click();
+      }
+      const drumValues = await page.evaluate((stepIndex) => window.__midiStudioV2App.lastInstrumentGridResult.timeline
+        .filter((event) => event.lane === "drums" && event.kind === "drum" && event.stepIndex === stepIndex)
+        .map((event) => event.value)
+        .sort(), drumPlan.stepIndex);
+      expect(drumValues).toEqual(expect.arrayContaining(["hat", "kick", "snare"]));
+
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await page.locator("#playButton").click();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await expect(page.locator('.midi-studio-v2__grid-cell--playhead-active[data-step-index="0"]').first()).toBeVisible();
+      const playbackEvidence = await page.evaluate(() => {
+        const maxSameTime = (action) => {
+          const counts = new Map();
+          window.__midiStudioPreviewSynthEvents
+            .filter((event) => event.action === action)
+            .forEach((event) => {
+              const key = Number(event.time).toFixed(3);
+              counts.set(key, (counts.get(key) || 0) + 1);
+            });
+          return Math.max(0, ...counts.values());
+        };
+        return {
+          bufferStartsAtSameTime: maxSameTime("buffer-start"),
+          oscillatorStartsAtSameTime: maxSameTime("oscillator-start")
+        };
+      });
+      expect(playbackEvidence.oscillatorStartsAtSameTime).toBeGreaterThanOrEqual(3);
+      expect(playbackEvidence.bufferStartsAtSameTime).toBeGreaterThanOrEqual(2);
+      await page.waitForFunction(() => window.__midiStudioV2App.instrumentGrid.playheadStep > 0);
+      const activeStep = await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.playheadStep);
+      await expect(page.locator(`.midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active[data-step-index="${activeStep}"]`)).toHaveCount(1);
       await page.locator("#stopButton").click();
       await expect(page.locator("#playButton")).toBeEnabled();
     } finally {

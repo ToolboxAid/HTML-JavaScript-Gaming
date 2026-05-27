@@ -240,6 +240,12 @@ export class InstrumentGridParser {
     if (lane === "drums" || this.isDrumToken(value)) {
       return this.normalizeDrums({ cell, timing, value });
     }
+    if (value.includes("+")) {
+      return this.normalizeNotes({ cell, timing, value });
+    }
+    if (NOTE_PATTERN.test(value)) {
+      return { cell, events: [this.eventForCell({ cell, kind: "note", value })], ok: true, warnings: [] };
+    }
     if (lane === "chords") {
       if (!CHORD_PATTERN.test(value)) {
         return { message: `Invalid chord token "${value}" in ${lane} at bar ${timing.bar}, beat ${timing.beat}.`, ok: false };
@@ -249,10 +255,24 @@ export class InstrumentGridParser {
     if (lane === "pad" && CHORD_PATTERN.test(value)) {
       return { cell, events: [this.eventForCell({ cell, kind: "chord", value })], ok: true, warnings: [] };
     }
-    if (!NOTE_PATTERN.test(value)) {
-      return { message: `Invalid note token "${value}" in ${lane} at bar ${timing.bar}, beat ${timing.beat}. Use notes like C4 or rests (-).`, ok: false };
+    return { message: `Invalid note token "${value}" in ${lane} at bar ${timing.bar}, beat ${timing.beat}. Use notes like C4, C4+E4, or rests (-).`, ok: false };
+  }
+
+  normalizeNotes({ cell, timing, value }) {
+    const parts = value.split("+").map((part) => part.trim()).filter(Boolean);
+    const invalid = parts.filter((part) => !NOTE_PATTERN.test(part));
+    if (!parts.length || invalid.length) {
+      return {
+        message: `Invalid multi-note token "${value}" in ${cell.lane} at bar ${timing.bar}, beat ${timing.beat}. Use notes like C4+E4+G4.`,
+        ok: false
+      };
     }
-    return { cell, events: [this.eventForCell({ cell, kind: "note", value })], ok: true, warnings: [] };
+    return {
+      cell,
+      events: parts.map((part) => this.eventForCell({ cell, kind: "note", value: part })),
+      ok: true,
+      warnings: []
+    };
   }
 
   normalizeDrums({ cell, timing, value }) {
