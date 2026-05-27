@@ -12,12 +12,19 @@ function sourceDetailRows(details) {
     ["Ticks per quarter note", details.ticksPerQuarterNote],
     ["Parsed track chunks", details.tracks.length],
     ["Estimated duration", `${details.durationSeconds} seconds`],
+    ["Loop-safe duration", `${details.loopSafeDurationSeconds} seconds`],
     ["Tempo summary", details.tempoSummary],
     ["Time signature summary", details.timeSignatureSummary],
     ["Note on events", details.eventCounts.noteOn],
     ["Note off events", details.eventCounts.noteOff],
     ["MIDI events", details.eventCounts.midi],
-    ["Meta events", details.eventCounts.meta]
+    ["Meta events", details.eventCounts.meta],
+    ["Normalized note count", details.normalizedNoteCount],
+    ["Channel summary", details.channelSummary],
+    ["Instrument/program summary", details.instrumentSummary],
+    ["Bar/measure estimate", details.measureTimingSummary],
+    ["Track activity summary", details.trackActivitySummary],
+    ["Warnings", details.warningSummary]
   ];
 }
 

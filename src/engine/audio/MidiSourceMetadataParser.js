@@ -37,19 +37,37 @@ export class MidiSourceMetadataParser {
       tempoEvents: events.tempoEvents,
       ticksPerQuarterNote: division
     });
+    const measureTiming = this.createMeasureTiming({
+      maxTick: events.maxTick,
+      ticksPerQuarterNote: division,
+      timeSignatureEvents: events.timeSignatureEvents
+    });
     return {
+      channelSummary: this.formatChannelSummary(events.channels),
+      channels: events.channels,
       durationSeconds,
       format,
       eventCounts: events.eventCounts,
+      instrumentSummary: this.formatInstrumentSummary(events.programChanges),
+      loopSafeDurationSeconds: durationSeconds,
+      measureTiming,
+      measureTimingSummary: this.formatMeasureTimingSummary(measureTiming),
+      normalizedNotes: events.normalizedNotes,
+      normalizedNoteCount: events.normalizedNotes.length,
       ok: true,
+      programChanges: events.programChanges,
       ticksPerQuarterNote: division,
       trackCount,
       tempoEvents: events.tempoEvents,
       tempoSummary: this.formatTempoSummary(events.tempoEvents),
       timeSignatureEvents: events.timeSignatureEvents,
       timeSignatureSummary: this.formatTimeSignatureSummary(events.timeSignatureEvents),
+      trackActivity: events.trackActivity,
+      trackActivitySummary: this.formatTrackActivitySummary(events.trackActivity),
       tracks: tracks.tracks,
-      validationStatus: `Valid Standard MIDI File header with ${tracks.tracks.length} declared track chunk${tracks.tracks.length === 1 ? "" : "s"}.`
+      validationStatus: `Valid Standard MIDI File header with ${tracks.tracks.length} declared track chunk${tracks.tracks.length === 1 ? "" : "s"}.`,
+      warningSummary: this.formatWarnings(events.warnings),
+      warnings: events.warnings
     };
   }
 
@@ -87,11 +105,27 @@ export class MidiSourceMetadataParser {
       noteOn: 0,
       system: 0
     };
+    const channelMap = new Map();
+    const openNotes = new Map();
+    const normalizedNotes = [];
+    const programChanges = [];
     const tempoEvents = [];
+    const trackActivity = tracks.map((track, index) => ({
+      eventCount: 0,
+      index: index + 1,
+      length: track.length,
+      metaEvents: 0,
+      noteEvents: 0,
+      notes: 0,
+      programChanges: 0,
+      systemEvents: 0
+    }));
     const timeSignatureEvents = [];
+    const warnings = [];
     let maxTick = 0;
     for (let trackIndex = 0; trackIndex < tracks.length; trackIndex += 1) {
       const track = tracks[trackIndex];
+      const activity = trackActivity[trackIndex];
       let absoluteTick = 0;
       let cursor = track.offset;
       let runningStatus = 0;
@@ -124,6 +158,8 @@ export class MidiSourceMetadataParser {
           }
           cursor = meta.nextOffset;
           eventCounts.meta += 1;
+          activity.eventCount += 1;
+          activity.metaEvents += 1;
           if (meta.tempoEvent) {
             tempoEvents.push(meta.tempoEvent);
           }
@@ -139,6 +175,9 @@ export class MidiSourceMetadataParser {
           }
           cursor = systemEvent.nextOffset;
           eventCounts.system += 1;
+          activity.eventCount += 1;
+          activity.systemEvents += 1;
+          warnings.push(`Track ${trackIndex + 1} contains unsupported system/SysEx event 0x${status.toString(16)} at tick ${absoluteTick}; event was skipped for normalized timeline output.`);
           continue;
         }
         const channelEvent = this.readChannelEvent(view, cursor, endOffset, status, trackIndex);
@@ -147,17 +186,62 @@ export class MidiSourceMetadataParser {
         }
         cursor = channelEvent.nextOffset;
         eventCounts.midi += 1;
+        activity.eventCount += 1;
+        this.updateChannelSummary(channelMap, channelEvent);
+        if (channelEvent.programChange) {
+          activity.programChanges += 1;
+          programChanges.push({
+            channel: channelEvent.channel,
+            program: channelEvent.data1,
+            tick: absoluteTick,
+            track: trackIndex + 1
+          });
+        }
         if (channelEvent.noteOn) {
           eventCounts.noteOn += 1;
+          activity.noteEvents += 1;
+          this.openNote(openNotes, channelEvent, absoluteTick, trackIndex);
         }
         if (channelEvent.noteOff) {
           eventCounts.noteOff += 1;
+          activity.noteEvents += 1;
+          const note = this.closeNote(openNotes, channelEvent, absoluteTick, trackIndex);
+          if (note) {
+            activity.notes += 1;
+            normalizedNotes.push(note);
+          } else {
+            warnings.push(`Track ${trackIndex + 1} has note-off without matching note-on for channel ${channelEvent.channel}, note ${channelEvent.noteNumber} at tick ${absoluteTick}.`);
+          }
         }
       }
     }
+    openNotes.forEach((entries) => {
+      entries.forEach((entry) => {
+        warnings.push(`Track ${entry.track} has note-on without matching note-off for channel ${entry.channel}, note ${entry.noteNumber} at tick ${entry.startTick}.`);
+      });
+    });
+    trackActivity.forEach((activity) => {
+      if (!activity.noteEvents && !activity.programChanges && !activity.systemEvents && activity.metaEvents <= 1) {
+        warnings.push(`Track ${activity.index} has no note, program, tempo, or time signature activity.`);
+      }
+    });
+    const channels = Array.from(channelMap.values()).sort((left, right) => left.channel - right.channel);
+    normalizedNotes.sort((left, right) => left.startTick - right.startTick || left.channel - right.channel || left.noteNumber - right.noteNumber);
+    programChanges.sort((left, right) => left.tick - right.tick || left.channel - right.channel);
     tempoEvents.sort((left, right) => left.tick - right.tick);
     timeSignatureEvents.sort((left, right) => left.tick - right.tick);
-    return { eventCounts, maxTick, ok: true, tempoEvents, timeSignatureEvents };
+    return {
+      channels,
+      eventCounts,
+      maxTick,
+      normalizedNotes,
+      ok: true,
+      programChanges,
+      tempoEvents,
+      timeSignatureEvents,
+      trackActivity,
+      warnings
+    };
   }
 
   readMetaEvent(view, offset, endOffset, tick, trackIndex) {
@@ -222,6 +306,7 @@ export class MidiSourceMetadataParser {
 
   readChannelEvent(view, offset, endOffset, status, trackIndex) {
     const command = status & 0xf0;
+    const channel = (status & 0x0f) + 1;
     const dataLength = command === 0xc0 || command === 0xd0 ? 1 : 2;
     if (status < 0x80 || status > 0xef) {
       return { ok: false, message: `MIDI track ${trackIndex + 1} has unsupported event status 0x${status.toString(16)}.` };
@@ -229,12 +314,75 @@ export class MidiSourceMetadataParser {
     if (offset + dataLength > endOffset) {
       return { ok: false, message: `MIDI track ${trackIndex + 1} channel event is truncated.` };
     }
+    const data1 = view.getUint8(offset);
     const data2 = dataLength === 2 ? view.getUint8(offset + 1) : 0;
     return {
+      channel,
+      command,
+      data1,
+      data2,
       nextOffset: offset + dataLength,
+      noteNumber: data1,
       noteOff: command === 0x80 || (command === 0x90 && data2 === 0),
       noteOn: command === 0x90 && data2 > 0,
-      ok: true
+      ok: true,
+      programChange: command === 0xc0
+    };
+  }
+
+  updateChannelSummary(channelMap, event) {
+    if (!channelMap.has(event.channel)) {
+      channelMap.set(event.channel, {
+        channel: event.channel,
+        eventCount: 0,
+        noteCount: 0,
+        programs: []
+      });
+    }
+    const channel = channelMap.get(event.channel);
+    channel.eventCount += 1;
+    if (event.noteOn) {
+      channel.noteCount += 1;
+    }
+    if (event.programChange && !channel.programs.includes(event.data1)) {
+      channel.programs.push(event.data1);
+      channel.programs.sort((left, right) => left - right);
+    }
+  }
+
+  openNote(openNotes, event, absoluteTick, trackIndex) {
+    const key = `${event.channel}:${event.noteNumber}`;
+    const entries = openNotes.get(key) || [];
+    entries.push({
+      channel: event.channel,
+      noteNumber: event.noteNumber,
+      startTick: absoluteTick,
+      track: trackIndex + 1,
+      velocity: event.data2
+    });
+    openNotes.set(key, entries);
+  }
+
+  closeNote(openNotes, event, absoluteTick, trackIndex) {
+    const key = `${event.channel}:${event.noteNumber}`;
+    const entries = openNotes.get(key) || [];
+    const started = entries.shift();
+    if (!entries.length) {
+      openNotes.delete(key);
+    } else {
+      openNotes.set(key, entries);
+    }
+    if (!started) {
+      return null;
+    }
+    return {
+      channel: event.channel,
+      durationTicks: Math.max(0, absoluteTick - started.startTick),
+      endTick: absoluteTick,
+      noteNumber: event.noteNumber,
+      startTick: started.startTick,
+      track: trackIndex + 1,
+      velocity: started.velocity
     };
   }
 
@@ -270,6 +418,17 @@ export class MidiSourceMetadataParser {
     return Number(seconds.toFixed(3));
   }
 
+  createMeasureTiming({ maxTick, ticksPerQuarterNote, timeSignatureEvents }) {
+    const signature = timeSignatureEvents[0] || { denominator: 4, numerator: 4, tick: 0 };
+    const ticksPerBar = ticksPerQuarterNote * signature.numerator * (4 / signature.denominator);
+    return {
+      estimatedBars: ticksPerBar ? Number((maxTick / ticksPerBar).toFixed(2)) : 0,
+      maxTick,
+      ticksPerBar,
+      timeSignature: `${signature.numerator}/${signature.denominator}`
+    };
+  }
+
   formatTempoSummary(tempoEvents) {
     if (!tempoEvents.length) {
       return "Default 120 BPM";
@@ -282,6 +441,35 @@ export class MidiSourceMetadataParser {
       return "not declared";
     }
     return timeSignatureEvents.map((event) => `${event.numerator}/${event.denominator} at tick ${event.tick}`).join("; ");
+  }
+
+  formatChannelSummary(channels) {
+    if (!channels.length) {
+      return "No channel events";
+    }
+    return channels.map((channel) => `Ch ${channel.channel}: ${channel.noteCount} notes, ${channel.eventCount} events`).join("; ");
+  }
+
+  formatInstrumentSummary(programChanges) {
+    if (!programChanges.length) {
+      return "No program changes";
+    }
+    return programChanges.map((event) => `Ch ${event.channel} program ${event.program} at tick ${event.tick}`).join("; ");
+  }
+
+  formatMeasureTimingSummary(measureTiming) {
+    return `${measureTiming.estimatedBars} bars at ${measureTiming.timeSignature}`;
+  }
+
+  formatTrackActivitySummary(trackActivity) {
+    if (!trackActivity.length) {
+      return "No tracks";
+    }
+    return trackActivity.map((track) => `Track ${track.index}: ${track.notes} notes, ${track.eventCount} events`).join("; ");
+  }
+
+  formatWarnings(warnings) {
+    return warnings.length ? warnings.join("; ") : "none";
   }
 
   roundBpm(value) {

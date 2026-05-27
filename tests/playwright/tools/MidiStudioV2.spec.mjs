@@ -90,9 +90,32 @@ const validMidiBytes = Buffer.from([
   0x00, 0xff, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
   0x00, 0xff, 0x2f, 0x00,
   0x4d, 0x54, 0x72, 0x6b,
-  0x00, 0x00, 0x00, 0x0d,
+  0x00, 0x00, 0x00, 0x10,
+  0x00, 0xc0, 0x05,
   0x00, 0x90, 0x3c, 0x40,
   0x83, 0x60, 0x80, 0x3c, 0x40,
+  0x00, 0xff, 0x2f, 0x00
+]);
+
+const warningMidiBytes = Buffer.from([
+  0x4d, 0x54, 0x68, 0x64,
+  0x00, 0x00, 0x00, 0x06,
+  0x00, 0x01,
+  0x00, 0x03,
+  0x01, 0xe0,
+  0x4d, 0x54, 0x72, 0x6b,
+  0x00, 0x00, 0x00, 0x13,
+  0x00, 0xff, 0x51, 0x03, 0x07, 0xa1, 0x20,
+  0x00, 0xff, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
+  0x00, 0xff, 0x2f, 0x00,
+  0x4d, 0x54, 0x72, 0x6b,
+  0x00, 0x00, 0x00, 0x10,
+  0x00, 0xf0, 0x01, 0x7e,
+  0x00, 0x80, 0x3e, 0x40,
+  0x00, 0x90, 0x40, 0x40,
+  0x00, 0xff, 0x2f, 0x00,
+  0x4d, 0x54, 0x72, 0x6b,
+  0x00, 0x00, 0x00, 0x04,
   0x00, 0xff, 0x2f, 0x00
 ]);
 
@@ -221,6 +244,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#midiSourceDetails")).toContainText("480");
       await expect(page.locator("#midiSourceDetails")).toContainText("Estimated duration");
       await expect(page.locator("#midiSourceDetails")).toContainText("0.5 seconds");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Loop-safe duration");
       await expect(page.locator("#midiSourceDetails")).toContainText("Tempo summary");
       await expect(page.locator("#midiSourceDetails")).toContainText("120 BPM at tick 0");
       await expect(page.locator("#midiSourceDetails")).toContainText("Time signature summary");
@@ -229,16 +253,26 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#midiSourceDetails")).toContainText("Note off events");
       await expect(page.locator("#midiSourceDetails")).toContainText("MIDI events");
       await expect(page.locator("#midiSourceDetails")).toContainText("Meta events");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Channel summary");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Instrument/program summary");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Bar/measure estimate");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Track activity summary");
       expect(await page.locator("#midiSourceDetails div").evaluateAll((rows) => Object.fromEntries(rows.map((row) => [
         row.querySelector("dt")?.textContent || "",
         row.querySelector("dd")?.textContent || ""
       ])))).toMatchObject({
+        "Bar/measure estimate": "0.25 bars at 4/4",
+        "Channel summary": "Ch 1: 1 notes, 3 events",
         "Estimated duration": "0.5 seconds",
+        "Instrument/program summary": "Ch 1 program 5 at tick 0",
+        "Loop-safe duration": "0.5 seconds",
         "Meta events": "4",
-        "MIDI events": "2",
+        "MIDI events": "3",
         "Note off events": "1",
         "Note on events": "1",
+        "Normalized note count": "1",
         "Tempo summary": "120 BPM at tick 0",
+        "Track activity summary": "Track 1: 0 notes, 3 events; Track 2: 1 notes, 4 events",
         "Time signature summary": "4/4 at tick 0"
       });
       await expect(page.locator("#statusLog")).toHaveValue(/OK MIDI source inspected for Main Theme: format 1, 2 tracks, 480 TPQN\./);
@@ -260,6 +294,26 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#midiSourceDetails")).toContainText("Missing MIDI source for Light Combat.");
       await expect(page.locator("#midiSourceDetails")).not.toContainText("480");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI source for Light Combat\. Add music\.songs\[\]\.sourceMidi in game\.manifest\.json\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("shows parser warnings for malformed pairs, unsupported events, and empty tracks", async ({ page }) => {
+    const server = await openMidiStudio(page, validManifest, {
+      "assets/music/midi/theme-main.mid": warningMidiBytes
+    });
+    try {
+      await page.locator("#inspectMidiSourceButton").click();
+      await expect(page.locator("#midiSourceDetails")).toContainText("Warnings");
+      await expect(page.locator("#midiSourceDetails")).toContainText("unsupported system/SysEx event");
+      await expect(page.locator("#midiSourceDetails")).toContainText("note-off without matching note-on");
+      await expect(page.locator("#midiSourceDetails")).toContainText("note-on without matching note-off");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Track 3 has no note, program, tempo, or time signature activity.");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Normalized note count");
+      await expect(page.locator("#midiSourceDetails")).toContainText("0");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK MIDI source inspected for Main Theme/);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
