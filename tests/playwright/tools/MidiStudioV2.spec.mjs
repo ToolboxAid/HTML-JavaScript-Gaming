@@ -57,6 +57,22 @@ const validManifest = {
           notes: "Short encounter loop."
         },
         tags: ["combat"]
+      },
+      {
+        id: "source-only",
+        name: "Source Only",
+        sourceMidi: "assets/music/midi/source-only.mid",
+        instrumentSet: "General MIDI",
+        rendered: {},
+        defaultRuntimeFormat: "ogg",
+        loop: { enabled: false },
+        director: {
+          mood: "mysterious",
+          intensity: "low",
+          usage: ["debug"],
+          notes: "Instruction-only MIDI with no rendered preview target."
+        },
+        tags: ["instruction-only"]
       }
     ]
   }
@@ -93,14 +109,14 @@ function installMockAudio(page) {
 async function openMidiStudio(page, routePayload = validManifest) {
   const server = await startRepoServer();
   await installMockAudio(page);
-  await page.route("**/midi-fixture.game.manifest.json", async (route) => {
+  await page.route((url) => url.pathname === "/midi-fixture.game.manifest.json", async (route) => {
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify(routePayload)
     });
   });
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html?manifestPath=/midi-fixture.game.manifest.json`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html?manifestPath=/midi-fixture.game.manifest.json`, { waitUntil: "domcontentloaded" });
   return server;
 }
 
@@ -112,15 +128,18 @@ test.describe("MIDI Studio V2", () => {
   test("launches and renders a valid multi-song manifest payload", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
-      await expect(page.locator("body[data-tool-id='midi-studio-v2']")).toBeVisible();
+      await expect(page.locator("body")).toHaveAttribute("data-tool-id", "midi-studio-v2");
       await expect(page.locator("[data-midi-studio-header]")).toContainText("MIDI Studio V2");
-      await expect(page.locator("#songList [data-song-id]")).toHaveCount(2);
+      await expect(page.locator("#songList [data-song-id]")).toHaveCount(3);
       await expect(page.locator('[data-song-id="theme-main"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#songSourceField")).toHaveValue("assets/music/midi/theme-main.mid");
       await expect(page.locator("#instrumentSetField")).toHaveValue("General MIDI");
       await expect(page.locator("#renderedTargets")).toContainText("theme-main.ogg");
       await expect(page.locator("#directorPanel")).toContainText("heroic");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 2 MIDI songs/);
+      await expect(page.locator("#playButton")).toHaveText("Play Rendered Preview");
+      await expect(page.locator("#playbackState")).toContainText("Live MIDI synthesis: NOT IMPLEMENTED");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 3 MIDI songs/);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Live MIDI synthesis not implemented\. sourceMidi is musical instruction data; rendered OGG\/MP3\/WAV targets are used for preview and gameplay audio\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -144,12 +163,13 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("shows actionable failure for a selected song with missing MIDI source", async ({ page }) => {
+  test("shows actionable failure when no rendered target and no live MIDI engine exist", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
-      await page.locator('[data-song-id="combat-light"]').click();
+      await page.locator('[data-song-id="source-only"]').click();
       await page.locator("#playButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI source for Light Combat\. Add music\.songs\[\]\.sourceMidi in game\.manifest\.json\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Live MIDI synthesis not implemented\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL No rendered audio target is available for Source Only, and no live MIDI engine is available\./);
       await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#playButton")).toBeEnabled();
     } finally {
@@ -165,15 +185,15 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();
-      await expect(page.locator("#playbackState")).toContainText("Playing preview: Main Theme");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview play started for Main Theme/);
+      await expect(page.locator("#playbackState")).toContainText("Playing rendered preview: Main Theme");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rendered preview started for Main Theme: assets\/music\/rendered\/theme-main\.ogg\./);
       expect(await page.evaluate(() => window.__midiStudioAudioEvents)).toEqual([
-        { action: "play", loop: true, src: "assets/music/midi/theme-main.mid" }
+        { action: "play", loop: true, src: "assets/music/rendered/theme-main.ogg" }
       ]);
       await page.locator("#stopButton").click();
       await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#playButton")).toBeEnabled();
-      await expect(page.locator("#playbackState")).toContainText("Stopped: Main Theme");
+      await expect(page.locator("#playbackState")).toContainText("Stopped rendered preview: Main Theme");
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

@@ -82,6 +82,7 @@ export class MidiStudioV2App {
     this.selectedSongId = this.payload.activeSongId;
     this.render();
     this.statusLog.ok(`Loaded ${this.payload.songs.length} MIDI song${this.payload.songs.length === 1 ? "" : "s"} from ${sourceLabel} via ${normalized.sourceKind}.`);
+    this.statusLog.warn("Live MIDI synthesis not implemented. sourceMidi is musical instruction data; rendered OGG/MP3/WAV targets are used for preview and gameplay audio.");
     return true;
   }
 
@@ -112,14 +113,17 @@ export class MidiStudioV2App {
 
   async playSelectedSong() {
     const song = this.selectedSong();
-    const result = await this.playback.play(song, { loop: this.playbackControl.loopEnabled() });
+    const result = await this.playback.playRenderedPreview(song, { loop: this.playbackControl.loopEnabled() });
     if (!result.ok) {
       this.playbackControl.setStopped(song);
+      if (result.liveMidiNotImplemented) {
+        this.statusLog.warn("Live MIDI synthesis not implemented.");
+      }
       this.statusLog.fail(result.message);
       return;
     }
     this.playbackControl.setPlaying(song);
-    this.statusLog.ok(`Preview play started for ${song.name}. Live MIDI playback is for tools, preview, and debugging; prefer rendered OGG/MP3 for gameplay.`);
+    this.statusLog.ok(`Rendered preview started for ${song.name}: ${result.path}.`);
   }
 
   stopPlayback() {

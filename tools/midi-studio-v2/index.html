@@ -29,7 +29,7 @@
                 </div>
               </div>
               <div class="tools-platform-frame__topline">
-                <p class="tools-platform-frame__description">Inspect multi-song MIDI metadata, preview source files when the browser can play them, and verify rendered gameplay targets.</p>
+                <p class="tools-platform-frame__description">Inspect multi-song MIDI metadata, preview rendered audio targets, and track future live MIDI synthesis readiness.</p>
               </div>
             </div>
           </section>
@@ -70,7 +70,7 @@
           </button>
           <div id="songSourceContent" class="accordion-v2__content midi-studio-v2__stack">
             <div class="tool-starter__field tool-starter__field--not-editable">
-              <span>.mid source</span>
+              <span>.mid instruction source</span>
               <input id="songSourceField" type="text" readonly value="No song selected">
             </div>
             <div class="tool-starter__field tool-starter__field--not-editable">
@@ -84,12 +84,12 @@
       <section class="tool-starter__panel tool-starter__panel--center" aria-label="MIDI preview">
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="playbackContent">
-            <span>Playback Preview</span>
+            <span>Rendered Preview</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="playbackContent" class="accordion-v2__content">
             <div class="midi-studio-v2__playback-controls">
-              <button id="playButton" type="button" disabled>Play</button>
+              <button id="playButton" type="button" disabled>Play Rendered Preview</button>
               <button id="stopButton" type="button" disabled>Stop</button>
               <label class="tool-starter__toggle" for="loopToggle">
                 <input id="loopToggle" type="checkbox">
