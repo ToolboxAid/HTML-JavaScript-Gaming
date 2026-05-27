@@ -995,6 +995,9 @@ export class InstrumentGridControl {
       return;
     }
     this.suppressNextCellClick = true;
+    this.window.setTimeout(() => {
+      this.suppressNextCellClick = false;
+    }, 0);
     this.onNoteEdit?.(this.readInput(), {
       action: "paint-notes",
       lane: this.selectedLane,

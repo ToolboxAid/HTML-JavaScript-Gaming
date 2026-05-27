@@ -840,13 +840,25 @@ test.describe("MIDI Studio V2", () => {
         await expect(octaveCell(page, "C6", stepIndex)).toHaveAttribute("data-note-lanes", /lead/);
       }
 
-      await octaveCell(page, "C5", 10).click();
-      await octaveCell(page, "E5", 10).click();
-      const chordValues = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult.timeline
-        .filter((event) => event.lane === "lead" && event.stepIndex === 10)
+      const chordStep = await page.evaluate(() => {
+        const result = window.__midiStudioV2App.lastInstrumentGridResult;
+        for (let stepIndex = 0; stepIndex < result.totalSteps; stepIndex += 1) {
+          const values = result.timeline
+            .filter((event) => event.lane === "lead" && event.stepIndex === stepIndex)
+            .map((event) => event.value);
+          if (!values.includes("D6") && !values.includes("F6")) {
+            return stepIndex;
+          }
+        }
+        return 0;
+      });
+      await octaveCell(page, "D6", chordStep).click();
+      await octaveCell(page, "F6", chordStep).click();
+      const chordValues = await page.evaluate((stepIndex) => window.__midiStudioV2App.lastInstrumentGridResult.timeline
+        .filter((event) => event.lane === "lead" && event.stepIndex === stepIndex)
         .map((event) => event.value)
-        .sort());
-      expect(chordValues).toEqual(expect.arrayContaining(["C5", "E5"]));
+        .sort(), chordStep);
+      expect(chordValues).toEqual(expect.arrayContaining(["D6", "F6"]));
       expect(chordValues.length).toBeGreaterThanOrEqual(2);
 
       await octaveCell(page, "C6", 7).click();
@@ -870,7 +882,9 @@ test.describe("MIDI Studio V2", () => {
       });
       const beforeScroll = await timelineScrollSnapshot(page);
       expect(beforeScroll.scrollDataset).toBe(String(beforeScroll.scrollLeft));
-      await octaveCell(page, "D6", 11).click();
+      await page.evaluate(() => {
+        document.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="A6"][data-step-index="11"]').click();
+      });
       await expect.poll(() => timelineScrollSnapshot(page)).toEqual(expect.objectContaining({
         scrollLeft: beforeScroll.scrollLeft,
         scrollTop: beforeScroll.scrollTop
