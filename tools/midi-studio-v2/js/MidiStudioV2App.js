@@ -9,6 +9,8 @@ export class MidiStudioV2App {
     details,
     directorPanel,
     manifestLoader,
+    midiSourceDetails,
+    midiSourceInspection,
     playback,
     playbackControl,
     serializer,
@@ -22,6 +24,8 @@ export class MidiStudioV2App {
     this.details = details;
     this.directorPanel = directorPanel;
     this.manifestLoader = manifestLoader;
+    this.midiSourceDetails = midiSourceDetails;
+    this.midiSourceInspection = midiSourceInspection;
     this.payload = null;
     this.playback = playback;
     this.playbackControl = playbackControl;
@@ -38,6 +42,7 @@ export class MidiStudioV2App {
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
+    this.midiSourceDetails.mount({ onInspect: () => this.inspectSelectedSource() });
     this.playbackControl.mount({
       onPlay: () => this.playSelectedSong(),
       onStop: () => this.stopPlayback()
@@ -67,6 +72,8 @@ export class MidiStudioV2App {
     this.songList.render([], "");
     this.details.render(null, null);
     this.directorPanel.render(null, {});
+    this.midiSourceDetails.render(null);
+    this.midiSourceDetails.setEnabled(false);
     this.playbackControl.setSelected(null);
     this.actionNav.setToolActionsEnabled(false);
   }
@@ -91,6 +98,8 @@ export class MidiStudioV2App {
     this.songList.render(this.payload?.songs || [], this.selectedSongId);
     this.details.render(song, this.payload);
     this.directorPanel.render(song, this.payload?.directorMode || {});
+    this.midiSourceDetails.render(null);
+    this.midiSourceDetails.setEnabled(Boolean(song));
     this.playbackControl.setSelected(song);
     this.actionNav.setToolActionsEnabled(Boolean(this.payload));
   }
@@ -124,6 +133,19 @@ export class MidiStudioV2App {
     }
     this.playbackControl.setPlaying(song);
     this.statusLog.ok(`Rendered preview started for ${song.name}: ${result.path}.`);
+  }
+
+  async inspectSelectedSource() {
+    const song = this.selectedSong();
+    this.midiSourceDetails.render(null);
+    const result = await this.midiSourceInspection.inspect(song);
+    if (!result.ok) {
+      this.midiSourceDetails.render(result);
+      this.statusLog.fail(result.message);
+      return;
+    }
+    this.midiSourceDetails.render(result);
+    this.statusLog.ok(`MIDI source inspected for ${song.name}: format ${result.format}, ${result.trackCount} track${result.trackCount === 1 ? "" : "s"}, ${result.ticksPerQuarterNote} TPQN.`);
   }
 
   stopPlayback() {

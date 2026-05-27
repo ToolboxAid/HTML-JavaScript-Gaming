@@ -1,0 +1,47 @@
+import { MidiSourceMetadataParser } from "../../../../src/engine/audio/MidiSourceMetadataParser.js";
+
+export class MidiSourceInspectionService {
+  constructor({ fetchImpl = null, parser = new MidiSourceMetadataParser() } = {}) {
+    this.fetchImpl = fetchImpl || globalThis.fetch?.bind(globalThis) || null;
+    this.parser = parser;
+  }
+
+  async inspect(song) {
+    if (!song?.id) {
+      return { ok: false, message: "No MIDI song is selected." };
+    }
+    const sourceMidi = String(song.sourceMidi || "").trim();
+    if (!sourceMidi) {
+      return {
+        ok: false,
+        message: `Missing MIDI source for ${song.name}. Add music.songs[].sourceMidi in game.manifest.json.`
+      };
+    }
+    if (typeof this.fetchImpl !== "function") {
+      return { ok: false, message: "Fetch API is unavailable for MIDI source inspection." };
+    }
+    let response;
+    try {
+      response = await this.fetchImpl(sourceMidi);
+    } catch (error) {
+      return {
+        ok: false,
+        message: `MIDI source load failed for ${sourceMidi}: ${error.message}`
+      };
+    }
+    if (!response?.ok) {
+      return {
+        ok: false,
+        message: `MIDI source load failed for ${sourceMidi}: HTTP ${response?.status || "unknown"}.`
+      };
+    }
+    const parsed = this.parser.parse(await response.arrayBuffer());
+    if (!parsed.ok) {
+      return {
+        ok: false,
+        message: `MIDI source validation failed for ${sourceMidi}: ${parsed.message}`
+      };
+    }
+    return { ...parsed, path: sourceMidi };
+  }
+}

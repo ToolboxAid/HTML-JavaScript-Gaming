@@ -73,3 +73,8 @@
   display: grid;
   gap: 0.6rem;
 }
+
+.midi-studio-v2__status-clear-button {
+  padding-left: 0;
+  padding-right: 0;
+}

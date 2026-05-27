@@ -3,12 +3,14 @@ import { MidiStudioV2App } from "./MidiStudioV2App.js";
 import { AccordionSection } from "./controls/AccordionSection.js";
 import { ActionNavControl } from "./controls/ActionNavControl.js";
 import { DirectorPanelControl } from "./controls/DirectorPanelControl.js";
+import { MidiSourceDetailsControl } from "./controls/MidiSourceDetailsControl.js";
 import { PlaybackControl } from "./controls/PlaybackControl.js";
 import { SongDetailsControl } from "./controls/SongDetailsControl.js";
 import { SongListControl } from "./controls/SongListControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
 import { MidiPlaybackService } from "./services/MidiPlaybackService.js";
+import { MidiSourceInspectionService } from "./services/MidiSourceInspectionService.js";
 import { MidiStudioStateSerializer } from "./services/MidiStudioStateSerializer.js";
 
 function requireElement(selector) {
@@ -47,6 +49,11 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     directorPanel: new DirectorPanelControl({ panel: requireElement("#directorPanel") }),
     manifestLoader: new GameManifestLoader({ windowRef: window }),
+    midiSourceDetails: new MidiSourceDetailsControl({
+      details: requireElement("#midiSourceDetails"),
+      inspectButton: requireElement("#inspectMidiSourceButton")
+    }),
+    midiSourceInspection: new MidiSourceInspectionService(),
     playback: new MidiPlaybackService(),
     playbackControl: new PlaybackControl({
       loopToggle: requireElement("#loopToggle"),

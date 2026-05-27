@@ -77,6 +77,7 @@
               <span>Instrument set</span>
               <input id="instrumentSetField" type="text" readonly value="No song selected">
             </div>
+            <button id="inspectMidiSourceButton" type="button" disabled>Inspect MIDI Source</button>
           </div>
         </section>
       </aside>
@@ -107,6 +108,16 @@
           </button>
           <div id="songDetailsContent" class="accordion-v2__content">
             <dl id="songDetails" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="midiSourceDetailsContent">
+            <span>MIDI Source Details</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="midiSourceDetailsContent" class="accordion-v2__content">
+            <dl id="midiSourceDetails" class="midi-studio-v2__details"></dl>
           </div>
         </section>
       </section>
@@ -146,7 +157,7 @@
           <button class="accordion-v2__header tool-starter__status-accordion-header" type="button" aria-expanded="true" aria-controls="statusLogContent">
             <span>Status</span>
             <div class="tool-starter__status-header-actions">
-              <button id="clearStatusButton" class="tool-starter__status-clear-button" type="button">Clear</button>
+              <button id="clearStatusButton" class="tool-starter__status-clear-button midi-studio-v2__status-clear-button" type="button">Clear</button>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
             </div>
           </button>
