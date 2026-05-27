@@ -35,6 +35,14 @@ export class SongSheetControl {
     this.parseRawButton.addEventListener("click", () => onParse(this.rawInput.value));
   }
 
+  applyGuidedDefaults({ intro, key, loop, style, tempo }) {
+    this.tempoInput.value = tempo || "";
+    this.keyInput.value = key || "";
+    this.styleInput.value = style || "";
+    this.introInput.value = intro || "";
+    this.loopInput.value = loop || "";
+  }
+
   composeGuidedSheet() {
     const tempo = this.tempoInput.value.trim();
     const key = this.keyInput.value.trim();

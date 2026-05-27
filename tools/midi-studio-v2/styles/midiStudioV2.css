@@ -63,6 +63,13 @@
   gap: 0.75rem;
 }
 
+.midi-studio-v2__test-steps {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
 .midi-studio-v2__details {
   display: grid;
   gap: 0.45rem;
@@ -245,6 +252,19 @@
   flex-wrap: wrap;
   gap: 0.4rem;
   justify-content: flex-start;
+}
+
+.midi-studio-v2__compact-field {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.midi-studio-v2__compact-field span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .midi-studio-v2__header-actions .accordion-v2__icon {

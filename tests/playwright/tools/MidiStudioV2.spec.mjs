@@ -186,8 +186,8 @@ async function openMidiStudio(page, routePayload = validManifest, midiRoutes = {
 
 async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop = "Am F C G", style = "retro-arcade", tempo = "132" } = {}) {
   await page.locator("#songSheetTempoInput").fill(tempo);
-  await page.locator("#songSheetKeyInput").fill(key);
-  await page.locator("#songSheetStyleInput").fill(style);
+  await page.locator("#songSheetKeyInput").selectOption(key);
+  await page.locator("#songSheetStyleInput").selectOption(style);
   await page.locator("#songSheetIntroInput").fill(intro);
   await page.locator("#songSheetLoopInput").fill(loop);
 }
@@ -245,12 +245,71 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
+  test("shows guided visible options and how-to-test steps", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await expect(page.locator("#songSheetKeyInput option")).toContainText(["Choose key", "A minor", "C major", "D minor", "E minor", "G major"]);
+      await expect(page.locator("#songSheetStyleInput option")).toContainText(["Choose style", "retro-arcade", "chip", "orchestral-boss", "ambient-loop", "victory-fanfare"]);
+      await expect(page.locator("#instrumentGridSubdivisionInput option")).toContainText(["1/1", "1/2", "1/4", "1/8", "1/16"]);
+      await expect(page.locator("#instrumentGridLaneTypeSelect option")).toContainText(["Chords", "Bass", "Pad", "Lead", "Drums"]);
+      await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
+      await expect(page.locator("#instrumentGridSectionSelect")).toContainText("No section selected");
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("No section selected. Normalize grid data before testing section timing.");
+      await expect(page.locator("#howToTestContent")).toContainText("Step 1: choose style/key/tempo");
+      await expect(page.locator("#howToTestContent")).toContainText("Step 6: test export action status");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("loads explicit demo test song data for UAT grid and timing preview", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await page.locator("#useExampleButton").click();
+      await expect(page.locator("#songList")).toContainText("Demo Test Song");
+      await expect(page.locator("#songList")).toContainText("Demo Missing Target");
+      await expect(page.locator("#songSheetKeyInput")).toHaveValue("A minor");
+      await expect(page.locator("#songSheetStyleInput")).toHaveValue("retro-arcade");
+      await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("intro:1, loop:1, victory:1");
+      await expect(page.locator("#instrumentGridChordsInput")).toHaveValue("Am F C G | Am F C G | C G F Am");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded explicit demo test song data\. Demo paths are declared for UAT only; they are not hidden fallback assets\./);
+
+      await page.locator("#generateBassFromChordsButton").click();
+      await page.locator("#generatePadFromChordsButton").click();
+      await page.locator("#generateArpeggioFromChordsButton").click();
+      await page.locator("#generateBasicDrumsButton").click();
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#instrumentGridOutput")).toContainText("victory");
+      await expect(page.locator(".midi-studio-v2__grid-cell--bar")).toHaveCount(3);
+      await expect(page.locator("#instrumentGridSectionSelect")).toContainText("victory");
+      const demoModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
+      expect(demoModel).toMatchObject({ barCount: 3, ok: true });
+      expect(demoModel.timeline.some((event) => event.source === "generated" && event.lane === "bass")).toBe(true);
+
+      await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
+      await page.locator("#instrumentGridLoopEndSelect").selectOption("victory");
+      expect(await page.locator(".midi-studio-v2__grid-cell--loop-region").count()).toBeGreaterThan(0);
+      await page.locator("#playLoopButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Live playback synthesis not implemented\. Playing timing-preview playhead only; no audio playback was started\./);
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop timing preview: loop to victory");
+      await page.locator("#exportOggButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for OGG\. Planned target: assets\/music\/demo\/demo-test-song\.ogg\./);
+      await page.locator('[data-song-id="demo-missing-target"]').click();
+      await page.locator("#exportWavButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered WAV export target for Demo Missing Target\. Add music\.songs\[\]\.rendered\.wav before exporting\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("selects multiple songs and updates source, director, and rendered targets", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       await page.locator('[data-song-id="combat-light"]').click();
       await expect(page.locator('[data-song-id="combat-light"]')).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#songSourceField")).toHaveValue("missing sourceMidi");
+      await expect(page.locator("#songSourceField")).toHaveValue("No MIDI source declared.");
       await expect(page.locator("#instrumentSetField")).toHaveValue("Combat GM");
       await expect(page.locator("#renderedTargets")).toContainText("combat-light.mp3");
       await expect(page.locator("#directorPanel")).toContainText("Short encounter loop.");
@@ -448,7 +507,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetSummary")).not.toContainText("intro:");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Invalid tempo\/BPM\. Enter a positive number before parsing the guided Song Sheet\./);
       await page.locator("#songSheetTempoInput").fill("132");
-      await page.locator("#songSheetKeyInput").fill("");
+      await page.locator("#songSheetKeyInput").selectOption("");
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText("Missing key. Enter a key before parsing the guided Song Sheet.");
       await expect(page.locator("#songSheetSummary")).not.toContainText("loop:");
@@ -906,6 +965,11 @@ Am F`);
     try {
       await expect(page.locator("#songList")).toContainText("No MIDI songs loaded.");
       await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#songDetails")).toContainText("No song selected");
+      await expect(page.locator("#instrumentGridOutput")).toContainText("No grid data normalized. Enter sections/chords or use the example test song, then choose Normalize Grid.");
+      await expect(page.locator("#instrumentGridSectionSelect")).toContainText("No section selected");
+      await expect(page.locator("#songSourceField")).toHaveValue("No song selected");
+      await expect(page.locator("#renderedTargets")).toContainText("No rendered WAV target selected.");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL MIDI Studio V2 payload rejected before render .* music\.songs\[0\]\.id is required\./);
       await page.locator("#exportWavButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI song for WAV export\. Load or select a song before exporting\./);

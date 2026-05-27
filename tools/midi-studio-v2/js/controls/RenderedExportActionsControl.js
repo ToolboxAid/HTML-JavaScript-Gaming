@@ -1,5 +1,6 @@
 export class RenderedExportActionsControl {
-  constructor({ mp3Button, oggButton, wavButton }) {
+  constructor({ exportTargetTypeSelect, mp3Button, oggButton, wavButton }) {
+    this.exportTargetTypeSelect = exportTargetTypeSelect;
     this.mp3Button = mp3Button;
     this.oggButton = oggButton;
     this.wavButton = wavButton;

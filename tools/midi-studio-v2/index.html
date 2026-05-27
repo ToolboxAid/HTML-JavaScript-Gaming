@@ -39,6 +39,7 @@
 
     <nav class="tool-starter__menu tool-starter__tool__menu midi-studio-v2__tool-menu" aria-label="Tool actions" data-launch-mode-nav="tool">
       <button id="toolImportManifestButton" type="button">Import Manifest</button>
+      <button id="useExampleButton" type="button">Use Example Test Song</button>
       <button id="toolCopyJsonButton" type="button" disabled>Copy JSON</button>
       <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
       <input id="toolImportManifestInput" type="file" accept="application/json,.json" hidden>
@@ -93,11 +94,25 @@
             </label>
             <label class="tool-starter__field" for="songSheetKeyInput">
               <span>Key</span>
-              <input id="songSheetKeyInput" type="text" placeholder="A minor">
+              <select id="songSheetKeyInput">
+                <option value="">Choose key</option>
+                <option value="A minor">A minor</option>
+                <option value="C major">C major</option>
+                <option value="D minor">D minor</option>
+                <option value="E minor">E minor</option>
+                <option value="G major">G major</option>
+              </select>
             </label>
             <label class="tool-starter__field" for="songSheetStyleInput">
               <span>Style</span>
-              <input id="songSheetStyleInput" type="text" placeholder="retro-arcade">
+              <select id="songSheetStyleInput">
+                <option value="">Choose style</option>
+                <option value="retro-arcade">retro-arcade</option>
+                <option value="chip">chip</option>
+                <option value="orchestral-boss">orchestral-boss</option>
+                <option value="ambient-loop">ambient-loop</option>
+                <option value="victory-fanfare">victory-fanfare</option>
+              </select>
             </label>
             <label class="tool-starter__field" for="songSheetIntroInput">
               <span>Intro chord progression</span>
@@ -195,6 +210,16 @@
                   <option value="16">1/16</option>
                 </select>
               </label>
+              <label class="tool-starter__field" for="instrumentGridLaneTypeSelect">
+                <span>Instrument/lane type</span>
+                <select id="instrumentGridLaneTypeSelect">
+                  <option value="chords">Chords</option>
+                  <option value="bass">Bass</option>
+                  <option value="pad">Pad</option>
+                  <option value="lead">Lead</option>
+                  <option value="drums">Drums</option>
+                </select>
+              </label>
             </div>
             <div class="midi-studio-v2__grid-lane-inputs">
               <label class="tool-starter__field" for="instrumentGridChordsInput">
@@ -263,6 +288,23 @@
 
       <aside class="tool-starter__panel tool-starter__panel--right" aria-label="MIDI output">
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="howToTestContent">
+            <span>How To Test This Tool</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="howToTestContent" class="accordion-v2__content">
+            <ol class="midi-studio-v2__test-steps">
+              <li>Step 1: choose style/key/tempo</li>
+              <li>Step 2: enter intro/loop chords</li>
+              <li>Step 3: generate lanes</li>
+              <li>Step 4: inspect grid alignment</li>
+              <li>Step 5: test playhead/loop timing preview</li>
+              <li>Step 6: test export action status</li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="directorContent">
             <span>Game Music Director</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -276,6 +318,14 @@
           <div class="accordion-v2__header midi-studio-v2__rendered-targets-header" aria-expanded="true" aria-controls="renderedTargetsContent">
             <span>Rendered Export Targets</span>
             <div class="midi-studio-v2__header-actions" aria-label="Rendered export actions">
+              <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
+                <span>Export target type</span>
+                <select id="renderedExportTargetTypeSelect">
+                  <option value="wav">WAV</option>
+                  <option value="mp3">MP3</option>
+                  <option value="ogg">OGG</option>
+                </select>
+              </label>
               <button id="exportWavButton" type="button">Export WAV</button>
               <button id="exportMp3Button" type="button">Export MP3</button>
               <button id="exportOggButton" type="button">Export OGG</button>

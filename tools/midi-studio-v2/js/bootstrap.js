@@ -40,6 +40,7 @@ window.addEventListener("DOMContentLoaded", () => {
       toolImportManifestButton: requireElement("#toolImportManifestButton"),
       toolImportManifestInput: requireElement("#toolImportManifestInput"),
       toolNav: requireElement(".tool-starter__tool__menu"),
+      useExampleButton: requireElement("#useExampleButton"),
       workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
       workspaceExportManifestButton: requireElement("#workspaceExportManifestButton"),
       workspaceImportManifestButton: requireElement("#workspaceImportManifestButton"),
@@ -64,6 +65,7 @@ window.addEventListener("DOMContentLoaded", () => {
       generatePadButton: requireElement("#generatePadFromChordsButton"),
       gridOutput: requireElement("#instrumentGridOutput"),
       jumpToSectionButton: requireElement("#jumpToSectionButton"),
+      laneTypeSelect: requireElement("#instrumentGridLaneTypeSelect"),
       leadInput: requireElement("#instrumentGridLeadInput"),
       loopEndSelect: requireElement("#instrumentGridLoopEndSelect"),
       loopStartSelect: requireElement("#instrumentGridLoopStartSelect"),
@@ -96,6 +98,7 @@ window.addEventListener("DOMContentLoaded", () => {
       stopButton: requireElement("#stopButton")
     }),
     renderedExportActions: new RenderedExportActionsControl({
+      exportTargetTypeSelect: requireElement("#renderedExportTargetTypeSelect"),
       mp3Button: requireElement("#exportMp3Button"),
       oggButton: requireElement("#exportOggButton"),
       wavButton: requireElement("#exportWavButton")

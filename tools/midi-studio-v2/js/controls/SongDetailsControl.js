@@ -25,11 +25,11 @@ export class SongDetailsControl {
       this.sourceField.value = "No song selected";
       this.instrumentSetField.value = "No song selected";
       this.renderDefinitionList(this.details, [["Selection", "No song selected"]]);
-      this.renderDefinitionList(this.renderedTargets, [["WAV", "not declared"], ["MP3", "not declared"], ["OGG", "not declared"]]);
+      this.renderDefinitionList(this.renderedTargets, [["WAV", "No rendered WAV target selected."], ["MP3", "No rendered MP3 target selected."], ["OGG", "No rendered OGG target selected."]]);
       this.inspector.textContent = JSON.stringify(payload || {}, null, 2);
       return;
     }
-    this.sourceField.value = song.sourceMidi || "missing sourceMidi";
+    this.sourceField.value = song.sourceMidi || "No MIDI source declared.";
     this.instrumentSetField.value = song.instrumentSet || "not declared";
     this.renderDefinitionList(this.details, [
       ["Name", song.name],
@@ -42,9 +42,9 @@ export class SongDetailsControl {
       ["Tags", song.tags]
     ]);
     this.renderDefinitionList(this.renderedTargets, [
-      ["WAV", song.rendered.wav],
-      ["MP3", song.rendered.mp3],
-      ["OGG", song.rendered.ogg]
+      ["WAV", song.rendered.wav || "No rendered WAV target declared."],
+      ["MP3", song.rendered.mp3 || "No rendered MP3 target declared."],
+      ["OGG", song.rendered.ogg || "No rendered OGG target declared."]
     ]);
     this.inspector.textContent = JSON.stringify(song, null, 2);
   }

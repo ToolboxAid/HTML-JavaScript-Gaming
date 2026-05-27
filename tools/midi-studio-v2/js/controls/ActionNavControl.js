@@ -7,6 +7,7 @@ export class ActionNavControl {
     toolImportManifestButton,
     toolImportManifestInput,
     toolNav,
+    useExampleButton,
     windowRef = window,
     workspaceCopyManifestButton,
     workspaceExportManifestButton,
@@ -20,6 +21,7 @@ export class ActionNavControl {
     this.toolImportManifestButton = toolImportManifestButton;
     this.toolImportManifestInput = toolImportManifestInput;
     this.toolNav = toolNav;
+    this.useExampleButton = useExampleButton;
     this.window = windowRef;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
     this.workspaceExportManifestButton = workspaceExportManifestButton;
@@ -31,6 +33,7 @@ export class ActionNavControl {
     onToolCopyJson,
     onToolExportToolState,
     onToolImportManifest,
+    onUseExample,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
     onWorkspaceImportManifest
@@ -38,6 +41,7 @@ export class ActionNavControl {
     this.applyLaunchMode();
     this.toolImportManifestButton.addEventListener("click", () => this.toolImportManifestInput.click());
     this.toolImportManifestInput.addEventListener("change", () => onToolImportManifest(this.toolImportManifestInput.files?.[0] || null));
+    this.useExampleButton.addEventListener("click", onUseExample);
     this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
     this.toolExportToolStateButton.addEventListener("click", onToolExportToolState);
     this.workspaceImportManifestButton.addEventListener("click", onWorkspaceImportManifest);

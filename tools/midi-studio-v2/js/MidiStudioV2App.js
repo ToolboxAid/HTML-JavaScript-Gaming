@@ -2,6 +2,72 @@ import { readFileText } from "../../../src/engine/persistence/FilePersistenceSer
 
 const TOOL_ID = "midi-studio-v2";
 
+const EXAMPLE_TOOL_STATE = {
+  schema: "html-js-gaming.midi-studio-v2",
+  toolId: TOOL_ID,
+  version: 1,
+  runtimePreference: "rendered",
+  activeSongId: "demo-test-song",
+  directorMode: { enabled: true, defaultIntensity: "medium" },
+  songs: [
+    {
+      id: "demo-test-song",
+      name: "Demo Test Song",
+      sourceMidi: "assets/music/demo/demo-test-song.mid",
+      instrumentSet: "General MIDI demo",
+      rendered: {
+        wav: "assets/music/demo/demo-test-song.wav",
+        mp3: "assets/music/demo/demo-test-song.mp3",
+        ogg: "assets/music/demo/demo-test-song.ogg"
+      },
+      defaultRuntimeFormat: "ogg",
+      loop: { enabled: true, startSeconds: 0, endSeconds: 16 },
+      director: {
+        mood: "demo",
+        intensity: "medium",
+        usage: ["uat", "timing-preview"],
+        notes: "Explicit demo data for manual MIDI Studio V2 testing."
+      },
+      tags: ["demo", "test"]
+    },
+    {
+      id: "demo-missing-target",
+      name: "Demo Missing Target",
+      sourceMidi: "",
+      instrumentSet: "General MIDI demo",
+      rendered: {},
+      defaultRuntimeFormat: "ogg",
+      loop: { enabled: false },
+      director: {
+        mood: "debug",
+        intensity: "low",
+        usage: ["export-status"],
+        notes: "Demo song for missing source and missing rendered target status."
+      },
+      tags: ["demo", "missing-target"]
+    }
+  ]
+};
+
+const EXAMPLE_GUIDED_SHEET = {
+  intro: "Am F",
+  key: "A minor",
+  loop: "Am F C G",
+  style: "retro-arcade",
+  tempo: "132"
+};
+
+const EXAMPLE_GRID = {
+  bass: "",
+  beatsPerBar: "4",
+  chords: "Am F C G | Am F C G | C G F Am",
+  drums: "",
+  lead: "",
+  pad: "",
+  sections: "intro:1, loop:1, victory:1",
+  subdivision: "1"
+};
+
 export class MidiStudioV2App {
   constructor({
     accordions,
@@ -69,6 +135,7 @@ export class MidiStudioV2App {
       onToolCopyJson: () => this.copyJson(),
       onToolExportToolState: () => this.exportToolState(),
       onToolImportManifest: (file) => this.importManifestFile(file),
+      onUseExample: () => this.useExampleToolState(),
       onWorkspaceCopyManifest: () => this.statusLog.info("Workspace copy is owned by Workspace Manager V2."),
       onWorkspaceExportManifest: () => this.statusLog.info("Workspace export is owned by Workspace Manager V2."),
       onWorkspaceImportManifest: () => this.statusLog.info("Workspace import is owned by Workspace Manager V2.")
@@ -79,6 +146,7 @@ export class MidiStudioV2App {
       this.applyPayload(loadResult.manifest, loadResult.sourceLabel || "initial manifest");
     } else if (loadResult.skipped) {
       this.statusLog.info("No manifest or workspace toolState payload loaded. Import a manifest or launch from Workspace Manager V2.");
+      this.statusLog.info("First-run guide: choose Use Example Test Song, or choose style/key/tempo and enter intro/loop chords.");
     } else {
       this.statusLog.fail(loadResult.message);
     }
@@ -111,6 +179,7 @@ export class MidiStudioV2App {
     this.render();
     this.statusLog.ok(`Loaded ${this.payload.songs.length} MIDI song${this.payload.songs.length === 1 ? "" : "s"} from ${sourceLabel} via ${normalized.sourceKind}.`);
     this.statusLog.warn("Live MIDI synthesis not implemented. sourceMidi is musical instruction data; rendered OGG/MP3/WAV targets are used for preview and gameplay audio.");
+    this.statusLog.info("Next: parse guided Song Sheet fields, generate lanes, normalize the grid, then test timing preview or export status.");
     return true;
   }
 
@@ -267,6 +336,16 @@ export class MidiStudioV2App {
       return;
     }
     this.statusLog.warn(`Export rendering not implemented for ${label}. Planned target: ${target}.`);
+  }
+
+  useExampleToolState() {
+    if (!this.applyPayload(EXAMPLE_TOOL_STATE, "explicit demo toolState")) {
+      return;
+    }
+    this.songSheet.applyGuidedDefaults(EXAMPLE_GUIDED_SHEET);
+    this.instrumentGrid.applyGridDefaults(EXAMPLE_GRID);
+    this.statusLog.ok("Loaded explicit demo test song data. Demo paths are declared for UAT only; they are not hidden fallback assets.");
+    this.statusLog.info("Demo next step: parse the guided Song Sheet, generate lanes, normalize the grid, then test playhead loop timing preview.");
   }
 
   stopPlayback() {

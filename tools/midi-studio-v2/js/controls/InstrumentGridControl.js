@@ -39,6 +39,7 @@ export class InstrumentGridControl {
     generatePadButton,
     gridOutput,
     jumpToSectionButton,
+    laneTypeSelect,
     leadInput,
     loopEndSelect,
     loopStartSelect,
@@ -67,6 +68,7 @@ export class InstrumentGridControl {
     this.generatedLanes = {};
     this.gridOutput = gridOutput;
     this.jumpToSectionButton = jumpToSectionButton;
+    this.laneTypeSelect = laneTypeSelect;
     this.leadInput = leadInput;
     this.loopEndSelect = loopEndSelect;
     this.loopStartSelect = loopStartSelect;
@@ -110,6 +112,7 @@ export class InstrumentGridControl {
       input.addEventListener("change", () => this.updateSnapIndicator());
     });
     this.setTransportEnabled(false);
+    this.populateSectionControls([]);
     this.updateSnapIndicator();
   }
 
@@ -136,6 +139,19 @@ export class InstrumentGridControl {
     }
     laneInput.value = result.text;
     this.generatedLanes[result.lane] = result.text;
+  }
+
+  applyGridDefaults({ bass, beatsPerBar, chords, drums, lead, pad, sections, subdivision }) {
+    this.sectionsInput.value = sections || "";
+    this.beatsInput.value = beatsPerBar || "";
+    this.subdivisionInput.value = subdivision || "1";
+    this.chordsInput.value = chords || "";
+    this.bassInput.value = bass || "";
+    this.padInput.value = pad || "";
+    this.leadInput.value = lead || "";
+    this.drumsInput.value = drums || "";
+    this.generatedLanes = {};
+    this.updateSnapIndicator();
   }
 
   inputForLane(lane) {
@@ -175,7 +191,7 @@ export class InstrumentGridControl {
       this.setTransportEnabled(false);
       const empty = document.createElement("p");
       empty.className = "midi-studio-v2__empty";
-      empty.textContent = result?.message || "No aligned grid normalized.";
+      empty.textContent = result?.message || "No grid data normalized. Enter sections/chords or use the example test song, then choose Normalize Grid.";
       this.gridOutput.append(empty);
       return;
     }
@@ -197,7 +213,14 @@ export class InstrumentGridControl {
       this.loopEndSelect.append(optionForSection(section));
     });
     if (!sections.length) {
-      this.transportState.textContent = "Timing preview stopped.";
+      [this.sectionSelect, this.loopStartSelect, this.loopEndSelect].forEach((select) => {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No section selected";
+        select.append(option);
+        select.value = "";
+      });
+      this.transportState.textContent = "No section selected. Normalize grid data before testing section timing.";
       return;
     }
     this.sectionSelect.value = sections.some((section) => section.label === previousSection) ? previousSection : sections[0].label;
