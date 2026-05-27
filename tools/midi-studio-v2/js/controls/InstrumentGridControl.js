@@ -98,8 +98,12 @@ export class InstrumentGridControl {
     this.generateDrumsButton.addEventListener("click", () => onGenerate("drums", this.readInput()));
     this.normalizeButton.addEventListener("click", () => onNormalize(this.readInput()));
     this.jumpToSectionButton.addEventListener("click", () => this.jumpToSelectedSection(onTransport));
-    this.playSectionButton.addEventListener("click", () => this.playSelectedSection(onTransport));
-    this.playLoopButton.addEventListener("click", () => this.playSelectedLoop(onTransport));
+    this.playSectionButton.addEventListener("click", () => {
+      void this.playSelectedSection(onTransport);
+    });
+    this.playLoopButton.addEventListener("click", () => {
+      void this.playSelectedLoop(onTransport);
+    });
     this.stopTimingPreviewButton.addEventListener("click", () => this.stopTimingPreview(onTransport));
     this.sectionPresetButtons.forEach((button) => {
       button.addEventListener("click", () => this.selectPresetSection(button.dataset.sectionPreset, onTransport));
@@ -370,20 +374,27 @@ export class InstrumentGridControl {
     onTransport("jump-section", { section });
   }
 
-  playSelectedSection(onTransport) {
+  async playSelectedSection(onTransport) {
     const section = this.sectionByLabel(this.sectionSelect.value);
     if (!section) {
       onTransport("invalid-section", { label: this.sectionSelect.value || "(none)" });
       return;
     }
+    const canStart = await onTransport("play-section", { section });
+    if (canStart === false) {
+      return;
+    }
     this.startTimingPreview({ endStep: section.endStep, label: section.label, mode: "section", startStep: section.startStep });
-    onTransport("play-section", { section });
   }
 
-  playSelectedLoop(onTransport) {
+  async playSelectedLoop(onTransport) {
     const bounds = this.selectedLoopBounds();
     if (!bounds.ok) {
       onTransport("invalid-loop", { message: bounds.message });
+      return;
+    }
+    const canStart = await onTransport("play-loop", { endSection: bounds.endSection, startSection: bounds.startSection });
+    if (canStart === false) {
       return;
     }
     this.startTimingPreview({
@@ -392,19 +403,18 @@ export class InstrumentGridControl {
       mode: "loop",
       startStep: bounds.startSection.startStep
     });
-    onTransport("play-loop", { endSection: bounds.endSection, startSection: bounds.startSection });
   }
 
   stopTimingPreview(onTransport) {
     this.stopTimer();
-    this.transportState.textContent = "Timing preview stopped.";
+    this.transportState.textContent = "Preview Synth timing preview stopped.";
     onTransport("stop-preview", {});
   }
 
   startTimingPreview({ endStep, label, mode, startStep }) {
     this.stopTimer();
     this.setPlayheadStep(startStep);
-    this.transportState.textContent = `${mode === "loop" ? "Playing loop" : "Playing section"} timing preview: ${label}`;
+    this.transportState.textContent = `${mode === "loop" ? "Playing loop" : "Playing section"} Preview Synth timing preview: ${label}`;
     this.playTimer = this.window.setInterval(() => {
       const nextStep = this.playheadStep + 1;
       if (nextStep > endStep) {

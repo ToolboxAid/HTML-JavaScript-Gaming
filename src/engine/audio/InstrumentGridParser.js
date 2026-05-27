@@ -217,6 +217,7 @@ export class InstrumentGridParser {
       lane,
       section: timing.section,
       source: tokenSource,
+      stepIndex: barIndex * beatsPerBar * subdivision + stepIndex,
       subdivision: timing.subdivision,
       subdivisionStep: timing.subdivisionStep,
       token: value
@@ -270,7 +271,9 @@ export class InstrumentGridParser {
       lane: cell.lane,
       section: cell.section,
       source: cell.source,
+      stepIndex: cell.stepIndex,
       subdivision: cell.subdivision,
+      subdivisionStep: cell.subdivisionStep,
       value
     };
   }

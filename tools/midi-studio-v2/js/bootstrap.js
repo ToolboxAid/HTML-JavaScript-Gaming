@@ -13,6 +13,7 @@ import { SongSheetControl } from "./controls/SongSheetControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
 import { InstrumentGridParser } from "../../../src/engine/audio/InstrumentGridParser.js";
+import { PreviewSynthEngine } from "../../../src/engine/audio/PreviewSynthEngine.js";
 import { SongSheetParser } from "../../../src/engine/audio/SongSheetParser.js";
 import { MidiPlaybackService } from "./services/MidiPlaybackService.js";
 import { MidiSourceInspectionService } from "./services/MidiSourceInspectionService.js";
@@ -97,6 +98,7 @@ window.addEventListener("DOMContentLoaded", () => {
       stateOutput: requireElement("#playbackState"),
       stopButton: requireElement("#stopButton")
     }),
+    previewSynth: new PreviewSynthEngine({ windowRef: window }),
     renderedExportActions: new RenderedExportActionsControl({
       exportTargetTypeSelect: requireElement("#renderedExportTargetTypeSelect"),
       mp3Button: requireElement("#exportMp3Button"),

@@ -81,6 +81,7 @@ export class MidiStudioV2App {
     midiSourceInspection,
     playback,
     playbackControl,
+    previewSynth,
     renderedExportActions,
     serializer,
     shell,
@@ -97,12 +98,14 @@ export class MidiStudioV2App {
     this.instrumentGrid = instrumentGrid;
     this.instrumentGridParser = instrumentGridParser;
     this.lastInstrumentGridResult = null;
+    this.lastSongSheetResult = null;
     this.manifestLoader = manifestLoader;
     this.midiSourceDetails = midiSourceDetails;
     this.midiSourceInspection = midiSourceInspection;
     this.payload = null;
     this.playback = playback;
     this.playbackControl = playbackControl;
+    this.previewSynth = previewSynth;
     this.renderedExportActions = renderedExportActions;
     this.selectedSongId = "";
     this.serializer = serializer;
@@ -163,6 +166,7 @@ export class MidiStudioV2App {
     this.songSheet.render(null);
     this.instrumentGrid.render(null);
     this.lastInstrumentGridResult = null;
+    this.lastSongSheetResult = null;
     this.playbackControl.setSelected(null);
     this.actionNav.setToolActionsEnabled(false);
   }
@@ -187,7 +191,7 @@ export class MidiStudioV2App {
     this.render();
     this.statusLog.ok(`Loaded ${this.payload.songs.length} MIDI song${this.payload.songs.length === 1 ? "" : "s"} from ${sourceLabel} via ${normalized.sourceKind}.`);
     this.statusLog.warn("Live MIDI synthesis not implemented. sourceMidi is musical instruction data; rendered OGG/MP3/WAV targets are used for preview and gameplay audio.");
-    this.statusLog.info("Next: parse guided Song Sheet fields, generate lanes, normalize the grid, then test timing preview or export status.");
+    this.statusLog.info("Next: parse guided Song Sheet fields, generate lanes, normalize the grid, then test Preview Synth timing preview or export status.");
     return true;
   }
 
@@ -250,9 +254,11 @@ export class MidiStudioV2App {
     const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
     this.songSheet.render(result);
     if (!result.ok) {
+      this.lastSongSheetResult = null;
       this.statusLog.fail(`Song Sheet rejected: ${result.message}`);
       return;
     }
+    this.lastSongSheetResult = result;
     if (result.warnings.length) {
       this.statusLog.warn(`Song Sheet parsed with warnings: ${result.warningSummary}`);
     }
@@ -299,7 +305,7 @@ export class MidiStudioV2App {
     this.statusLog.ok(generated.message);
   }
 
-  handleInstrumentGridTransport(action, detail = {}) {
+  async handleInstrumentGridTransport(action, detail = {}) {
     if (action === "invalid-section") {
       this.statusLog.fail(`Instrument grid section not found: ${detail.label}. Normalize a section map containing that label or choose a listed custom section.`);
       return;
@@ -309,14 +315,22 @@ export class MidiStudioV2App {
       return;
     }
     if (action === "play-section") {
-      this.statusLog.warn("Live playback synthesis not implemented. Playing timing-preview playhead only; no audio playback was started.");
-      this.statusLog.ok(`Timing preview started for section ${detail.section.label}.`);
-      return;
+      return this.startPreviewSynth({
+        endStep: detail.section.endStep,
+        label: detail.section.label,
+        loop: false,
+        mode: "section",
+        startStep: detail.section.startStep
+      });
     }
     if (action === "play-loop") {
-      this.statusLog.warn("Live playback synthesis not implemented. Playing timing-preview playhead only; no audio playback was started.");
-      this.statusLog.ok(`Timing preview loop started from ${detail.startSection.label} to ${detail.endSection.label}.`);
-      return;
+      return this.startPreviewSynth({
+        endStep: detail.endSection.endStep,
+        label: `${detail.startSection.label} to ${detail.endSection.label}`,
+        loop: true,
+        mode: "loop",
+        startStep: detail.startSection.startStep
+      });
     }
     if (action === "jump-section") {
       this.statusLog.ok(`Timing playhead jumped to section ${detail.section.label}.`);
@@ -327,8 +341,36 @@ export class MidiStudioV2App {
       return;
     }
     if (action === "stop-preview") {
-      this.statusLog.ok("Timing preview stopped.");
+      const stoppedCount = this.previewSynth.stop();
+      this.statusLog.ok(`Preview Synth timing preview stopped. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"}.`);
     }
+  }
+
+  async startPreviewSynth({ endStep, label, loop, mode, startStep }) {
+    const result = await this.previewSynth.playGridRange({
+      endStep,
+      grid: this.lastInstrumentGridResult,
+      label,
+      loop,
+      mode,
+      startStep,
+      tempoBpm: this.previewTempoBpm()
+    });
+    if (!result.ok) {
+      if (result.reason === "audio-suspended" || result.reason === "audio-resume-failed") {
+        this.statusLog.warn("Browser audio did not unlock for Preview Synth. Start from a direct click/tap and check site audio permissions.");
+      }
+      this.statusLog.fail(result.message);
+      return false;
+    }
+    this.statusLog.ok(`Preview Synth started for ${mode} ${label} with ${result.eventCount} playable event${result.eventCount === 1 ? "" : "s"}.`);
+    this.statusLog.info("Preview Synth uses temporary oscillator instruments for grid audition only; SoundFont playback is not implemented.");
+    return true;
+  }
+
+  previewTempoBpm() {
+    const parsedTempo = Number(this.lastSongSheetResult?.tempo);
+    return Number.isFinite(parsedTempo) && parsedTempo > 0 ? parsedTempo : 120;
   }
 
   exportRenderedTarget(format) {
@@ -353,11 +395,12 @@ export class MidiStudioV2App {
     this.songSheet.applyGuidedDefaults(EXAMPLE_GUIDED_SHEET);
     this.instrumentGrid.applyGridDefaults(EXAMPLE_GRID);
     this.statusLog.ok("Loaded explicit demo test song data. Demo paths are declared for UAT only; they are not hidden fallback assets.");
-    this.statusLog.info("Demo next step: parse the guided Song Sheet, generate lanes, normalize the grid, then test playhead loop timing preview.");
+    this.statusLog.info("Demo next step: parse the guided Song Sheet, generate lanes, normalize the grid, then test Preview Synth playhead loop timing preview.");
   }
 
   stopPlayback() {
     this.playback.stop();
+    this.previewSynth.stop();
     this.playbackControl.setStopped(this.selectedSong());
   }
 

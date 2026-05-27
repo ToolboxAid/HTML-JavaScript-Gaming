@@ -130,9 +130,10 @@ const corruptMidiBytes = Buffer.from([
   0x00
 ]);
 
-function installMockAudio(page) {
-  return page.addInitScript(() => {
+function installMockAudio(page, { webAudio = true, webAudioResumeError = "" } = {}) {
+  return page.addInitScript(({ webAudio, webAudioResumeError }) => {
     window.__midiStudioAudioEvents = [];
+    window.__midiStudioPreviewSynthEvents = [];
     window.Audio = class MockAudio {
       constructor(src) {
         this.currentTime = 0;
@@ -155,12 +156,79 @@ function installMockAudio(page) {
         window.__midiStudioAudioEvents.push({ action: "pause", src: this.src });
       }
     };
-  });
+    if (!webAudio) {
+      Object.defineProperty(window, "AudioContext", { configurable: true, value: undefined });
+      Object.defineProperty(window, "webkitAudioContext", { configurable: true, value: undefined });
+      return;
+    }
+    class MockAudioParam {
+      setValueAtTime(value, time) {
+        window.__midiStudioPreviewSynthEvents.push({ action: "param-set", time, value });
+      }
+
+      linearRampToValueAtTime(value, time) {
+        window.__midiStudioPreviewSynthEvents.push({ action: "param-ramp", time, value });
+      }
+    }
+    class MockGain {
+      constructor() {
+        this.gain = new MockAudioParam();
+      }
+
+      connect() {}
+
+      disconnect() {}
+    }
+    class MockOscillator {
+      constructor() {
+        this.frequency = new MockAudioParam();
+        this.type = "sine";
+      }
+
+      connect() {}
+
+      disconnect() {}
+
+      start(time) {
+        window.__midiStudioPreviewSynthEvents.push({ action: "oscillator-start", time, type: this.type });
+      }
+
+      stop(time) {
+        window.__midiStudioPreviewSynthEvents.push({ action: "oscillator-stop", time });
+      }
+    }
+    class MockAudioContext {
+      constructor() {
+        this.currentTime = 0;
+        this.destination = {};
+        this.state = "suspended";
+      }
+
+      createGain() {
+        return new MockGain();
+      }
+
+      createOscillator() {
+        return new MockOscillator();
+      }
+
+      resume() {
+        if (webAudioResumeError) {
+          return Promise.reject(new Error(webAudioResumeError));
+        }
+        this.state = "running";
+        window.__midiStudioPreviewSynthEvents.push({ action: "resume" });
+        return Promise.resolve();
+      }
+    }
+    Object.defineProperty(window, "AudioContext", { configurable: true, value: MockAudioContext });
+    Object.defineProperty(window, "webkitAudioContext", { configurable: true, value: MockAudioContext });
+  }, { webAudio, webAudioResumeError });
 }
 
-async function openMidiStudio(page, routePayload = validManifest, midiRoutes = {}) {
+async function openMidiStudio(page, routePayload = validManifest, midiRoutes = {}, audioOptions = {}) {
   const server = await startRepoServer();
-  await installMockAudio(page);
+  await installMockAudio(page, audioOptions);
   await page.route((url) => url.pathname === "/midi-fixture.game.manifest.json", async (route) => {
     await route.fulfill({
       contentType: "application/json",
@@ -257,6 +325,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentGridSectionSelect")).toContainText("No section selected");
       await expect(page.locator("#instrumentGridTransportState")).toContainText("No section selected. Normalize grid data before testing section timing.");
       await expect(page.locator("#howToTestContent")).toContainText("Step 1: choose style/key/tempo");
+      await expect(page.locator("#howToTestContent")).toContainText("Step 5: test Preview Synth playhead/loop timing preview");
       await expect(page.locator("#howToTestContent")).toContainText("Step 6: test export action status");
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -264,7 +333,7 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("loads explicit demo test song data for UAT grid and timing preview", async ({ page }) => {
+  test("loads explicit demo test song data for UAT grid and Preview Synth timing preview", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       await page.locator("#useExampleButton").click();
@@ -292,8 +361,10 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#instrumentGridLoopEndSelect").selectOption("victory");
       expect(await page.locator(".midi-studio-v2__grid-cell--loop-region").count()).toBeGreaterThan(0);
       await page.locator("#playLoopButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Live playback synthesis not implemented\. Playing timing-preview playhead only; no audio playback was started\./);
-      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop timing preview: loop to victory");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for loop loop to victory with \d+ playable events\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/Preview Synth uses temporary oscillator instruments for grid audition only; SoundFont playback is not implemented\./);
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop Preview Synth timing preview: loop to victory");
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await page.locator("#exportOggButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for OGG\. Planned target: assets\/music\/demo\/demo-test-song\.ogg\./);
       await page.locator('[data-song-id="demo-missing-target"]').click();
@@ -714,7 +785,7 @@ Am F`);
     }
   });
 
-  test("animates timing-only playhead by subdivision and preserves generated manual cells", async ({ page }) => {
+  test("animates Preview Synth playhead by subdivision and preserves generated manual cells", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       await fillInstrumentGrid(page, {
@@ -734,13 +805,54 @@ Am F`);
       await page.locator("#instrumentGridSectionSelect").selectOption("intro");
       const beforeStep = await page.locator(".midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
       await page.locator("#playSectionButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Live playback synthesis not implemented\. Playing timing-preview playhead only; no audio playback was started\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
       await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", beforeStep || "");
       await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-beat", /1|2/);
       await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-subdivision-step", /1|2/);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await page.locator("#stopTimingPreviewButton").click();
-      await expect(page.locator("#instrumentGridTransportState")).toContainText("Timing preview stopped.");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Timing preview stopped\./);
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Preview Synth timing preview stopped.");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth timing preview stopped\. Cleared \d+ scheduled oscillators\./);
+      expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot().playing)).toBe(false);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("reports no playable notes before starting Preview Synth playback", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, {
+        bass: "",
+        chords: "",
+        drums: "",
+        lead: "",
+        pad: ""
+      });
+      await page.locator("#normalizeInstrumentGridButton").click();
+      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL No playable Preview Synth notes found for section intro\. Generate or enter chords, bass, pad, lead, or drum cells before playing\./);
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-step-index", beforeStep || "0");
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(false);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("reports browser audio unavailable before Preview Synth playback", async ({ page }) => {
+    const server = await openMidiStudio(page, validManifest, {}, { webAudio: false });
+    try {
+      await fillInstrumentGrid(page);
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Preview Synth audio unavailable: Web Audio AudioContext is not available\. Use a browser with Web Audio support\./);
+      expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot())).toMatchObject({
+        playing: false,
+        supported: false
+      });
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
