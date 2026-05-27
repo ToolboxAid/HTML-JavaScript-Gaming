@@ -660,7 +660,7 @@ export class MidiStudioV2App {
     return true;
   }
 
-  handlePreviewLaneSettingChange(kind, detail) {
+  async handlePreviewLaneSettingChange(kind, detail) {
     if (kind === "instrument") {
       if (!detail.instrumentValue) {
         this.statusLog.warn(`Missing preview instrument selection for ${detail.laneLabel}. Choose a Preview Synth instrument before playback.`);
@@ -669,12 +669,20 @@ export class MidiStudioV2App {
       }
       this.syncSelectedArrangementFromGridInput(this.instrumentGrid.readInput());
       this.statusLog.ok(`Preview instrument selected for ${detail.laneLabel}: ${detail.instrumentLabel}.`);
+      if (detail.instrumentWarning) {
+        this.statusLog.warn(`Preview Synth mapping: ${detail.instrumentWarning}`);
+      }
+      await this.auditionPreviewInstrument(detail);
       this.updateAudioDiagnostics();
       return;
     }
     if (kind === "instrument-type") {
       this.syncSelectedArrangementFromGridInput(this.instrumentGrid.readInput());
       this.statusLog.ok(`Instrument type selected for ${detail.laneLabel}: ${detail.instrumentType}; instrument options updated to ${detail.instrumentLabel || "none"}.`);
+      if (detail.instrumentWarning) {
+        this.statusLog.warn(`Preview Synth mapping: ${detail.instrumentWarning}`);
+      }
+      await this.auditionPreviewInstrument(detail);
       this.updateAudioDiagnostics();
       return;
     }
@@ -707,6 +715,23 @@ export class MidiStudioV2App {
       this.statusLog.info(`Selected instrument lane: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
     }
+  }
+
+  async auditionPreviewInstrument(detail) {
+    if (!detail.instrumentValue) {
+      return;
+    }
+    const result = await this.previewSynth.previewInstrument({
+      instrumentId: detail.instrumentValue,
+      label: detail.instrumentLabel,
+      lane: detail.lane
+    });
+    if (!result.ok) {
+      this.statusLog.warn(result.message);
+      return;
+    }
+    const previewLabel = result.mappedPreviewInstrumentLabel || detail.previewInstrumentLabel || result.instrumentLabel || detail.instrumentLabel;
+    this.statusLog.info(`Auditioned ${detail.instrumentLabel} for ${detail.laneLabel} with ${previewLabel}.`);
   }
 
   previewTempoBpm() {

@@ -580,15 +580,27 @@ test.describe("MIDI Studio V2", () => {
       await expect(leadVisibility).toHaveText("");
       await expect(leadVisibility).toHaveAttribute("aria-pressed", "true");
       await expect(leadVisibility).toHaveAttribute("aria-label", /Hide Lead/);
+      await expect(leadVisibility).toHaveAttribute("title", "Hide Lead");
       await expect(instrumentToggle(page, "lead", "mute")).toHaveText("");
       await expect(instrumentToggle(page, "lead", "solo")).toHaveText("");
+      await expect(instrumentToggle(page, "lead", "mute")).toHaveAttribute("title", "Mute Lead");
+      await expect(instrumentToggle(page, "lead", "solo")).toHaveAttribute("title", "Solo Lead");
       await expect(instrumentToggle(page, "lead", "mute").locator(".midi-studio-v2__lane-toggle-icon")).toHaveCount(1);
       await expect(instrumentToggle(page, "lead", "solo").locator(".midi-studio-v2__lane-toggle-icon")).toHaveCount(1);
+      await expect(instrumentRow(page, "lead").locator("[data-delete-instrument-row='lead']")).toHaveAttribute("aria-label", "Delete instrument row Lead");
+      await expect(instrumentRow(page, "lead").locator("[data-delete-instrument-row='lead']")).toHaveAttribute("title", "Delete instrument row Lead");
+      await expect(page.locator("#addInstrumentRowButton")).toHaveAttribute("aria-label", "Add instrument");
+      await expect(page.locator("#addInstrumentRowButton")).toHaveAttribute("title", "Add instrument");
       await expect(instrumentRow(page, "lead").locator('[aria-label="Mute Lead"]')).not.toBeChecked();
       await instrumentToggle(page, "lead", "mute").click();
       await expect(instrumentRow(page, "lead").locator('[aria-label="Mute Lead"]')).toBeChecked();
       await instrumentToggle(page, "lead", "mute").click();
       await expect(instrumentRow(page, "lead").locator('[aria-label="Mute Lead"]')).not.toBeChecked();
+      const compactIconSizes = await instrumentRow(page, "lead").locator(".midi-studio-v2__instrument-control-row").evaluate((row) => Array.from(row.children).map((control) => {
+        const rect = control.getBoundingClientRect();
+        return { height: rect.height, width: rect.width };
+      }));
+      expect(compactIconSizes.every((size) => size.width <= 32 && size.height <= 32)).toBe(true);
       const controlAlignment = await instrumentRow(page, "lead").locator(".midi-studio-v2__instrument-control-row").evaluate((row) => {
         const controls = [
           row.querySelector('[aria-label="Mute Lead"]')?.closest("label"),
@@ -624,6 +636,40 @@ test.describe("MIDI Studio V2", () => {
       expect(leftColumnFit.leftWidth).toBeGreaterThanOrEqual(560);
       expect(leftColumnFit.controlsFit).toBe(true);
       expect(leftColumnFit.rowScrollWidth).toBeLessThanOrEqual(leftColumnFit.rowClientWidth + 1);
+
+      const gmFamilyOptions = await instrumentTypeSelect(page, "lead").locator("option").evaluateAll((options) => options.map((option) => option.value));
+      for (const family of gmFamilyOptions) {
+        await instrumentTypeSelect(page, "lead").selectOption(family);
+        const instrumentOptionCount = await instrumentSelect(page, "lead").locator("option").evaluateAll((options) => options.filter((option) => option.value).length);
+        expect(instrumentOptionCount, `${family} should expose at least 3 GM instruments`).toBeGreaterThanOrEqual(3);
+      }
+      await instrumentTypeSelect(page, "lead").selectOption("Synth Effects");
+      await page.waitForTimeout(80);
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await instrumentSelect(page, "lead").selectOption("gm-fx-atmosphere");
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Preview Synth mapping: FX 4 \(Atmosphere\) maps to FX 1 \(Rain\)/);
+      await expect.poll(() => page.evaluate(() => ({
+        audibleRamp: window.__midiStudioPreviewSynthEvents.some((event) => event.action === "param-ramp" && event.value >= 0.1),
+        oscillatorStart: window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start")
+      }))).toEqual({ audibleRamp: true, oscillatorStart: true });
+
+      await instrumentTypeSelect(page, "drums").selectOption("Percussive");
+      await page.waitForTimeout(80);
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await instrumentSelect(page, "drums").selectOption("gm-room-drum-kit");
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Preview Synth mapping: Room Drum Kit maps to Standard Drum Kit/);
+      await expect.poll(() => page.evaluate(() => ({
+        bufferStart: window.__midiStudioPreviewSynthEvents.some((event) => event.action === "buffer-start"),
+        oscillatorStart: window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start")
+      }))).toEqual({ bufferStart: true, oscillatorStart: false });
+
+      await instrumentTypeSelect(page, "lead").selectOption("Synth Lead");
+      await instrumentSelect(page, "lead").selectOption("retro-square-lead");
+      await selectInstrumentRow(page, "lead");
 
       const octaveCellHeight = await octaveCell(page, "C5", 0).evaluate((cell) => cell.getBoundingClientRect().height);
       expect(octaveCellHeight).toBeLessThanOrEqual(32);

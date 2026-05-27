@@ -1,4 +1,4 @@
-import { PREVIEW_INSTRUMENT_PACKS } from "../../../../src/engine/audio/PreviewInstrumentPacks.js";
+import { PREVIEW_INSTRUMENT_PACKS, previewInstrumentById } from "../../../../src/engine/audio/PreviewInstrumentPacks.js";
 
 function summaryRows(result) {
   if (!result?.ok) {
@@ -182,6 +182,22 @@ function laneId(lane) {
 
 function instrumentLabel(value) {
   return PREVIEW_INSTRUMENT_PACKS.find((instrument) => instrument.id === value)?.label || "";
+}
+
+function previewInstrumentWarning(value) {
+  const instrument = previewInstrumentById(value);
+  if (!instrument?.approximationWarning) {
+    return "";
+  }
+  if (instrument.mappedPreviewInstrumentLabel) {
+    return `${instrument.label} maps to ${instrument.mappedPreviewInstrumentLabel} for audible Preview Synth playback. ${instrument.approximationWarning}`;
+  }
+  return instrument.approximationWarning;
+}
+
+function audiblePreviewLabel(value) {
+  const instrument = previewInstrumentById(value);
+  return instrument?.mappedPreviewInstrumentLabel || instrument?.label || "";
 }
 
 function laneLabel(lane) {
@@ -699,7 +715,7 @@ export class InstrumentGridControl {
     const visible = this.previewLaneState[lane]?.visible !== false;
     button.setAttribute("aria-pressed", String(visible));
     button.setAttribute("aria-label", `${visible ? "Hide" : "Show"} ${laneLabel(lane)}`);
-    button.title = visible ? "Hide instrument" : "Show instrument";
+    button.title = `${visible ? "Hide" : "Show"} ${laneLabel(lane)}`;
     button.dataset.visibilityState = visible ? "visible" : "hidden";
     button.textContent = "";
   }
@@ -1060,10 +1076,12 @@ export class InstrumentGridControl {
       this.updateLaneTitle(lane);
       this.onLaneSettingChange?.("instrument-type", {
         instrumentLabel: instrumentLabel(nextInstrument),
+        instrumentWarning: previewInstrumentWarning(nextInstrument),
         instrumentType: select.value,
         instrumentValue: nextInstrument,
         lane,
-        laneLabel: laneLabel(lane)
+        laneLabel: laneLabel(lane),
+        previewInstrumentLabel: audiblePreviewLabel(nextInstrument)
       });
     });
     return select;
@@ -1088,10 +1106,12 @@ export class InstrumentGridControl {
       this.updateLaneTitle(lane);
       this.onLaneSettingChange?.("instrument", {
         instrumentLabel: select.selectedOptions[0]?.textContent || "",
+        instrumentWarning: previewInstrumentWarning(select.value),
         instrumentType: nextType,
         instrumentValue: select.value,
         lane,
-        laneLabel: laneLabel(lane)
+        laneLabel: laneLabel(lane),
+        previewInstrumentLabel: audiblePreviewLabel(select.value)
       });
     });
     return select;
@@ -1111,6 +1131,13 @@ export class InstrumentGridControl {
       const option = document.createElement("option");
       option.value = instrument.id;
       option.textContent = instrument.label;
+      if (instrument.previewInstrumentId) {
+        option.dataset.previewInstrumentId = instrument.previewInstrumentId;
+        option.dataset.unsupportedPreview = "true";
+      }
+      if (instrument.approximationWarning) {
+        option.title = instrument.approximationWarning;
+      }
       select.append(option);
     });
     const selectedInstrument = this.previewLaneState[lane]?.instrument || "";
@@ -1137,10 +1164,12 @@ export class InstrumentGridControl {
     input.checked = kind === "mute" ? this.previewLaneState[lane]?.muted === true : this.previewLaneState[lane]?.soloed === true;
     input.dataset[kind === "mute" ? "previewMuteLane" : "previewSoloLane"] = lane;
     input.setAttribute("aria-label", `${controlLabel} ${laneLabel(lane)}`);
+    input.title = `${controlLabel} ${laneLabel(lane)}`;
     label.className = `tool-starter__toggle midi-studio-v2__lane-toggle midi-studio-v2__lane-toggle--${kind}`;
     label.classList.toggle("is-active", input.checked);
     label.dataset.laneControlKind = kind;
     label.htmlFor = input.id;
+    label.title = `${controlLabel} ${laneLabel(lane)}`;
     icon.className = "midi-studio-v2__lane-toggle-icon";
     icon.setAttribute("aria-hidden", "true");
     this.preventPointerFocusScroll(label);
@@ -1215,7 +1244,7 @@ export class InstrumentGridControl {
     button.type = "button";
     button.dataset.deleteInstrumentRow = lane;
     button.setAttribute("aria-label", `Delete instrument row ${laneLabel(lane)}`);
-    button.title = "Delete instrument row";
+    button.title = `Delete instrument row ${laneLabel(lane)}`;
     button.textContent = "x";
     this.preventPointerFocusScroll(button);
     button.addEventListener("click", () => {

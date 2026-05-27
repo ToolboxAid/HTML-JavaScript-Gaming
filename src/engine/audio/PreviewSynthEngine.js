@@ -140,6 +140,60 @@ export class PreviewSynthEngine {
     }
   }
 
+  async previewInstrument({ instrumentId, label = "", lane = "" } = {}) {
+    const contextResult = await this.ensureContext();
+    if (!contextResult.ok) {
+      return contextResult;
+    }
+    const instrument = previewInstrumentById(instrumentId);
+    if (!instrument) {
+      return this.fail(`Missing preview instrument selection for ${label || lane || "instrument"}. Choose a Preview Synth instrument before auditioning.`, "missing-instrument");
+    }
+    const event = {
+      durationBeats: instrument.synthRole === "pad" ? 0.5 : 0.25,
+      kind: instrument.synthRole === "percussion" ? "drum" : "note",
+      lane,
+      previewInstrument: instrument,
+      stepIndex: 0,
+      value: this.auditionValueForInstrument(instrument)
+    };
+    const startTime = contextResult.context.currentTime + 0.01;
+    if (event.kind === "drum") {
+      this.scheduleDrumHit({ context: contextResult.context, event, startTime });
+    } else {
+      const durationSeconds = instrument.synthRole === "pad" ? 0.34 : 0.2;
+      this.frequenciesForEvent(event, instrument).forEach((frequency, index) => {
+        this.scheduleTone({
+          context: contextResult.context,
+          durationSeconds,
+          event,
+          frequency,
+          startTime: startTime + index * 0.006
+        });
+      });
+    }
+    this.lastError = "";
+    return {
+      instrumentLabel: instrument.label,
+      mappedPreviewInstrumentLabel: instrument.mappedPreviewInstrumentLabel || "",
+      ok: true,
+      warnings: instrument.approximationWarning ? [instrument.approximationWarning] : []
+    };
+  }
+
+  auditionValueForInstrument(instrument) {
+    if (instrument.synthRole === "percussion") {
+      return "kick";
+    }
+    if (instrument.synthRole === "bass") {
+      return "C2";
+    }
+    if (instrument.synthRole === "pad") {
+      return "C4";
+    }
+    return "C5";
+  }
+
   playableEventsForRange(grid, startStep = 0, endStep = 0, laneSettings = {}) {
     const instruments = laneSettings.instruments || {};
     const muted = laneSettings.muted || {};
@@ -304,7 +358,12 @@ export class PreviewSynthEngine {
   }
 
   volumeForEvent(event, instrument = null) {
-    return Number(instrument?.volume || (event.kind === "chord" ? 0.045 : 0.075));
+    const fallbackVolume = event.kind === "chord" ? 0.1 : event.kind === "drum" ? 0.16 : 0.11;
+    const volume = Number(instrument?.volume || fallbackVolume);
+    if (event.kind === "drum") {
+      return Math.max(volume, 0.16);
+    }
+    return Math.max(volume, event.kind === "chord" ? 0.1 : 0.11);
   }
 
   stop() {
