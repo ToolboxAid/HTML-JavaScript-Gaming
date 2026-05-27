@@ -107,10 +107,13 @@
           </div>
         </section>
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio instruments">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="instrumentListContent">
+          <div class="accordion-v2__header midi-studio-v2__instrument-accordion-header" aria-expanded="true" aria-controls="instrumentListContent">
             <span>Instruments</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
+            <span class="midi-studio-v2__instrument-header-actions">
+              <button id="addInstrumentRowButton" class="midi-studio-v2__instrument-header-button" type="button" aria-label="Add instrument" title="Add instrument">Add</button>
+              <button id="closeInstrumentPanelButton" class="midi-studio-v2__instrument-header-button" type="button" aria-label="Collapse Instruments panel" title="Collapse Instruments panel">X</button>
+            </span>
+          </div>
           <div id="instrumentListContent" class="accordion-v2__content midi-studio-v2__instrument-list-panel">
             <div id="instrumentList" class="midi-studio-v2__instrument-list" aria-label="Timeline instruments"></div>
           </div>

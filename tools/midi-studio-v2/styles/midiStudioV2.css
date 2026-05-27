@@ -183,6 +183,27 @@
   justify-content: flex-start;
 }
 
+.midi-studio-v2__instrument-accordion-header {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.midi-studio-v2__instrument-header-actions {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+.midi-studio-v2__instrument-header-button {
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  min-height: 1.45rem;
+  padding: 0.08rem 0.45rem;
+}
+
 .midi-studio-v2__instrument-row {
   border: 1px solid var(--tool-starter-line);
   border-radius: 6px;
@@ -330,8 +351,8 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 .midi-studio-v2__grid-cell {
   display: grid;
   align-items: center;
-  border-bottom: 1px solid var(--tool-starter-line);
-  border-right: 1px solid var(--tool-starter-line);
+  border-bottom: 2px solid var(--tool-starter-line);
+  border-right: 2px solid var(--tool-starter-line);
   background: var(--tool-starter-panel-strong);
   min-height: 1.55rem;
   padding: 0.08rem 0.12rem;
@@ -342,13 +363,6 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 .midi-studio-v2__grid-cell--instrument-column {
   background: var(--tool-starter-surface);
   left: 0;
-  position: sticky;
-  z-index: 4;
-}
-
-.midi-studio-v2__grid-cell--timeline-axis {
-  background: var(--tool-starter-surface);
-  left: 4.25rem;
   position: sticky;
   z-index: 4;
 }
@@ -402,10 +416,6 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   justify-items: start;
   min-height: 1.55rem;
   text-align: left;
-}
-
-.midi-studio-v2__octave-row-axis-spacer {
-  z-index: 4;
 }
 
 .midi-studio-v2__lane-header-cell {
@@ -680,6 +690,11 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   background: var(--tool-starter-surface);
   font-weight: 700;
   text-transform: capitalize;
+}
+
+.midi-studio-v2__octave-row-label--alternate,
+.midi-studio-v2__octave-note-cell--alternate:not(.midi-studio-v2__grid-cell--event) {
+  background: color-mix(in srgb, var(--tool-starter-panel-strong) 88%, #ffffff 12%);
 }
 
 .midi-studio-v2__grid-cell--bar,

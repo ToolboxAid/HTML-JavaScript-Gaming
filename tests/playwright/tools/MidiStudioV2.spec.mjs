@@ -607,6 +607,27 @@ test.describe("MIDI Studio V2", () => {
       await expect(instrumentRow(page, "lead").locator("[data-delete-instrument-row='lead']")).toHaveAttribute("title", "Delete instrument row Lead");
       await expect(page.locator("#addInstrumentRowButton")).toHaveAttribute("aria-label", "Add instrument");
       await expect(page.locator("#addInstrumentRowButton")).toHaveAttribute("title", "Add instrument");
+      const instrumentHeaderLayout = await page.locator(".midi-studio-v2__instrument-accordion-header").evaluate((header) => {
+        const title = header.querySelector("span:first-child").getBoundingClientRect();
+        const add = header.querySelector("#addInstrumentRowButton").getBoundingClientRect();
+        const close = header.querySelector("#closeInstrumentPanelButton").getBoundingClientRect();
+        return {
+          addAfterTitle: add.left > title.right,
+          addText: header.querySelector("#addInstrumentRowButton").textContent,
+          closeAfterAdd: close.left > add.right,
+          closeText: header.querySelector("#closeInstrumentPanelButton").textContent,
+          sameRow: Math.abs(title.top - add.top) <= 2 && Math.abs(add.top - close.top) <= 2,
+          titleText: header.querySelector("span:first-child").textContent
+        };
+      });
+      expect(instrumentHeaderLayout).toEqual({
+        addAfterTitle: true,
+        addText: "Add",
+        closeAfterAdd: true,
+        closeText: "X",
+        sameRow: true,
+        titleText: "Instruments"
+      });
       await expect(instrumentRow(page, "lead").locator('[aria-label="Mute Lead"]')).not.toBeChecked();
       await instrumentToggle(page, "lead", "mute").click();
       await expect(instrumentRow(page, "lead").locator('[aria-label="Mute Lead"]')).toBeChecked();
@@ -761,6 +782,13 @@ test.describe("MIDI Studio V2", () => {
       await expectInstrumentClickKeepsScroll(page, leadVisibility);
       await page.locator("#addInstrumentRowButton").click();
       await expect(instrumentRow(page, "instrument-1")).toBeVisible();
+      await page.locator("#closeInstrumentPanelButton").click();
+      await expect(page.locator(".midi-studio-v2__instrument-accordion-header")).toHaveAttribute("aria-expanded", "false");
+      await expect(page.locator("#instrumentListContent")).toBeHidden();
+      await expect(instrumentRow(page, "instrument-1")).toHaveCount(1);
+      await page.locator(".midi-studio-v2__instrument-accordion-header").click();
+      await expect(page.locator(".midi-studio-v2__instrument-accordion-header")).toHaveAttribute("aria-expanded", "true");
+      await expect(instrumentRow(page, "instrument-1")).toBeVisible();
       await expectInstrumentClickKeepsScroll(page, instrumentRow(page, "instrument-1").locator("[data-delete-instrument-row='instrument-1']"));
       await expect(instrumentRow(page, "instrument-1")).toHaveCount(0);
       await selectInstrumentRow(page, "lead");
@@ -799,7 +827,7 @@ test.describe("MIDI Studio V2", () => {
       });
       await page.locator("#playButton").click();
       await expect(page.locator("#stopButton")).toBeEnabled();
-      await expect(page.locator('.midi-studio-v2__grid-cell--playhead-active[data-step-index="0"]').first()).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active").first()).toBeVisible();
       const playbackEvidence = await page.evaluate(() => {
         const maxSameTime = (action) => {
           const counts = new Map();
@@ -930,10 +958,10 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
       await selectInstrumentRow(page, "lead");
 
-      await expect(page.locator(".midi-studio-v2__timing-header-row-1.midi-studio-v2__note-table-instrument-header")).toHaveText("Octave");
       await expect(page.locator(".midi-studio-v2__timing-header-row-1.midi-studio-v2__timing-axis-header")).toHaveText("Bar");
-      await expect(page.locator(".midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-instrument-header")).toHaveText("");
       await expect(page.locator(".midi-studio-v2__timing-header-row-2.midi-studio-v2__timing-axis-header")).toHaveText("Beat");
+      expect(await page.locator(".midi-studio-v2__timing-header-row-1").evaluateAll((cells) => cells.map((cell) => cell.textContent).join("|"))).not.toContain("Octave");
+      expect(await page.locator(".midi-studio-v2__timing-header-row-2").evaluateAll((cells) => cells.map((cell) => cell.textContent).join("|"))).not.toContain("Octave");
       await expect(page.locator('.midi-studio-v2__timing-header-row-1.midi-studio-v2__note-table-column-header[data-step-index="0"]')).toHaveText("1");
       await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="0"]')).toHaveText("1");
       await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="1"]')).toHaveText("2");
@@ -943,11 +971,17 @@ test.describe("MIDI Studio V2", () => {
       const output = page.locator("#instrumentGridOutput");
       const gridLayout = await output.evaluate((element) => {
         const firstNote = element.querySelector('.midi-studio-v2__octave-note-cell[data-step-index="0"]');
+        const firstRow = element.querySelector('.midi-studio-v2__octave-note-cell[data-octave-row-index="0"][data-step-index="0"]');
+        const secondRow = element.querySelector('.midi-studio-v2__octave-note-cell[data-octave-row-index="1"][data-step-index="0"]');
         return {
+          alternatingRowsDiffer: getComputedStyle(firstRow).backgroundColor !== getComputedStyle(secondRow).backgroundColor,
+          borderRightWidth: getComputedStyle(firstNote).borderRightWidth,
           columnWidth: firstNote.getBoundingClientRect().width,
           columnTemplate: getComputedStyle(element.querySelector(".midi-studio-v2__octave-timeline")).gridTemplateColumns
         };
       });
+      expect(gridLayout.alternatingRowsDiffer).toBe(true);
+      expect(gridLayout.borderRightWidth).toBe("2px");
       expect(gridLayout.columnWidth).toBeLessThanOrEqual(32);
       expect(gridLayout.columnTemplate).toContain("28.8px");
 

@@ -60,9 +60,11 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     directorPanel: new DirectorPanelControl({ panel: requireElement("#directorPanel") }),
     instrumentGrid: new InstrumentGridControl({
+      addInstrumentButton: requireElement("#addInstrumentRowButton"),
       bassInput: requireElement("#instrumentGridBassInput"),
       beatsInput: requireElement("#instrumentGridBeatsInput"),
       chordsInput: requireElement("#instrumentGridChordsInput"),
+      closeInstrumentPanelButton: requireElement("#closeInstrumentPanelButton"),
       drumsInput: requireElement("#instrumentGridDrumsInput"),
       generateArpeggioButton: requireElement("#generateArpeggioFromChordsButton"),
       generateBassButton: requireElement("#generateBassFromChordsButton"),
