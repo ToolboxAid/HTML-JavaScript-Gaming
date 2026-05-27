@@ -281,13 +281,50 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("keeps the Status Clear action aligned with MIDI Studio status layout", async ({ page }) => {
+  test("keeps header actions inside section headers", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       const clearButton = page.locator("#clearStatusButton");
+      await expect(clearButton.locator("xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' accordion-v2__header ')][1]")).toHaveAttribute("aria-controls", "statusLogContent");
+      await expect(page.locator("#statusLogContent #clearStatusButton")).toHaveCount(0);
+      await expect(page.locator(".accordion-v2__header #clearStatusButton")).toHaveCount(1);
       await expect(clearButton).toHaveClass(/midi-studio-v2__status-clear-button/);
       await expect(clearButton).toHaveCSS("padding-left", "0px");
       await expect(clearButton).toHaveCSS("padding-right", "0px");
+      expect(await page.locator(".accordion-v2").evaluateAll((sections) => sections.every((section) => {
+        const header = section.querySelector(".accordion-v2__header");
+        const icon = section.querySelector(".accordion-v2__icon");
+        return Boolean(header && icon && header.contains(icon));
+      }))).toBe(true);
+      expect(await page.locator("body").evaluate((body) => Array.from(body.querySelectorAll('[aria-label*="close" i], [title*="close" i], [data-close], .tool-starter__close-button')).every((control) => Boolean(control.closest(".accordion-v2__header, .tools-platform-frame__accordion-summary, .is-collapsible__summary"))))).toBe(true);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("clears status content and preserves accordion open close behavior", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      const statusHeader = page.locator('.accordion-v2__header[aria-controls="statusLogContent"]');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 3 MIDI songs/);
+      await page.locator("#clearStatusButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue("");
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(page.locator("#statusLogContent")).toBeVisible();
+      await statusHeader.click();
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "false");
+      await expect(page.locator("#statusLogContent")).toBeHidden();
+      await statusHeader.click();
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(page.locator("#statusLogContent")).toBeVisible();
+      const sourceHeader = page.locator('.accordion-v2__header[aria-controls="songSourceContent"]');
+      await sourceHeader.click();
+      await expect(sourceHeader).toHaveAttribute("aria-expanded", "false");
+      await expect(page.locator("#songSourceContent")).toBeHidden();
+      await sourceHeader.click();
+      await expect(sourceHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(page.locator("#songSourceContent")).toBeVisible();
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
