@@ -8,6 +8,8 @@ export class MidiStudioV2App {
     actionNav,
     details,
     directorPanel,
+    instrumentGrid,
+    instrumentGridParser,
     manifestLoader,
     midiSourceDetails,
     midiSourceInspection,
@@ -26,6 +28,9 @@ export class MidiStudioV2App {
     this.actionNav = actionNav;
     this.details = details;
     this.directorPanel = directorPanel;
+    this.instrumentGrid = instrumentGrid;
+    this.instrumentGridParser = instrumentGridParser;
+    this.lastInstrumentGridResult = null;
     this.manifestLoader = manifestLoader;
     this.midiSourceDetails = midiSourceDetails;
     this.midiSourceInspection = midiSourceInspection;
@@ -49,6 +54,7 @@ export class MidiStudioV2App {
     this.statusLog.mount();
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
     this.songSheet.mount({ onParse: (sourceText) => this.parseSongSheet(sourceText) });
+    this.instrumentGrid.mount({ onNormalize: (input) => this.normalizeInstrumentGrid(input) });
     this.midiSourceDetails.mount({ onInspect: () => this.inspectSelectedSource() });
     this.playbackControl.mount({
       onPlay: () => this.playSelectedSong(),
@@ -83,6 +89,8 @@ export class MidiStudioV2App {
     this.midiSourceDetails.render(null);
     this.midiSourceDetails.setEnabled(false);
     this.songSheet.render(null);
+    this.instrumentGrid.render(null);
+    this.lastInstrumentGridResult = null;
     this.playbackControl.setSelected(null);
     this.actionNav.setToolActionsEnabled(false);
   }
@@ -168,6 +176,20 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Song Sheet parsed with warnings: ${result.warningSummary}`);
     }
     this.statusLog.ok(`Song Sheet parsed: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.bars} bars, ${result.chordCount} chords.`);
+  }
+
+  normalizeInstrumentGrid(input) {
+    const result = this.instrumentGridParser.parse(input);
+    this.instrumentGrid.render(result);
+    this.lastInstrumentGridResult = result.ok ? result : null;
+    if (!result.ok) {
+      this.statusLog.fail(`Instrument grid rejected: ${result.message}`);
+      return;
+    }
+    if (result.warnings.length) {
+      this.statusLog.warn(`Instrument grid normalized with warnings: ${result.warningSummary}`);
+    }
+    this.statusLog.ok(`Instrument grid normalized: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.barCount} bars, ${result.eventCount} events.`);
   }
 
   exportRenderedTarget(format) {

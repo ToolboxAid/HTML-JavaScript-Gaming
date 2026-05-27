@@ -88,6 +88,60 @@
   overflow-wrap: anywhere;
 }
 
+.midi-studio-v2__grid-settings,
+.midi-studio-v2__grid-lane-inputs {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.midi-studio-v2__grid-lane-inputs textarea {
+  min-height: 3.25rem;
+  resize: vertical;
+}
+
+.midi-studio-v2__instrument-grid-output {
+  max-width: 100%;
+  overflow: auto;
+}
+
+.midi-studio-v2__instrument-grid {
+  display: grid;
+  min-width: max-content;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.midi-studio-v2__grid-cell {
+  min-height: 2.35rem;
+  display: grid;
+  align-items: center;
+  border-bottom: 1px solid var(--tool-starter-line);
+  border-right: 1px solid var(--tool-starter-line);
+  background: var(--tool-starter-panel-strong);
+  padding: 0.35rem 0.45rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.midi-studio-v2__grid-cell--label,
+.midi-studio-v2__grid-cell--section {
+  background: var(--tool-starter-surface);
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.midi-studio-v2__grid-cell--beat {
+  color: var(--tool-starter-muted);
+  font-size: 0.78rem;
+}
+
+.midi-studio-v2__grid-cell--event {
+  background: rgba(221, 214, 254, 0.16);
+  color: #ffffff;
+  font-weight: 700;
+}
+
 .midi-studio-v2__director {
   display: grid;
   gap: 0.6rem;

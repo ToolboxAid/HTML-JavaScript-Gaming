@@ -192,6 +192,26 @@ async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop
   await page.locator("#songSheetLoopInput").fill(loop);
 }
 
+async function fillInstrumentGrid(page, {
+  bass = "A2 - F2 - | C3 - G2 -",
+  beats = "4",
+  chords = "Am F C G | Am F C G",
+  drums = "kick hat snare hat | kick hat snare hat",
+  lead = "E4 G4 A4 - | C5 B4 G4 -",
+  pad = "Am - F - | C - G -",
+  sections = "intro:1, loop:1",
+  subdivision = "1"
+} = {}) {
+  await page.locator("#instrumentGridSectionsInput").fill(sections);
+  await page.locator("#instrumentGridBeatsInput").fill(beats);
+  await page.locator("#instrumentGridSubdivisionInput").selectOption(subdivision);
+  await page.locator("#instrumentGridChordsInput").fill(chords);
+  await page.locator("#instrumentGridBassInput").fill(bass);
+  await page.locator("#instrumentGridPadInput").fill(pad);
+  await page.locator("#instrumentGridLeadInput").fill(lead);
+  await page.locator("#instrumentGridDrumsInput").fill(drums);
+}
+
 test.describe("MIDI Studio V2", () => {
   test.afterAll(async () => {
     await workspaceV2CoverageReporter.writeReport();
@@ -473,6 +493,116 @@ Am F`);
       expect(await page.evaluate(() => window.__midiStudioAudioEvents)).toEqual([
         { action: "play", loop: false, src: "assets/music/rendered/theme-main.ogg" }
       ]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("renders an aligned multi-instrument grid and shared normalized timeline", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page);
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#instrumentGridSummary")).toContainText("intro: 1 bar; loop: 1 bar");
+      await expect(page.locator("#instrumentGridSummary")).toContainText("30 normalized events");
+      await expect(page.locator("#instrumentGridOutput")).toContainText("intro");
+      await expect(page.locator("#instrumentGridOutput")).toContainText("loop");
+      await expect(page.locator("#instrumentGridOutput")).toContainText("Am");
+      await expect(page.locator("#instrumentGridOutput")).toContainText("A2");
+      await expect(page.locator("#instrumentGridOutput")).toContainText("kick");
+      const gridModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
+      expect(gridModel).toMatchObject({
+        barCount: 2,
+        beatCount: 8,
+        eventCount: 30,
+        ok: true,
+        totalSteps: 8
+      });
+      expect(gridModel.timeline[0]).toMatchObject({
+        bar: 1,
+        beat: 1,
+        kind: "chord",
+        lane: "chords",
+        section: "intro",
+        value: "Am"
+      });
+      expect(gridModel.timeline.some((event) => event.lane === "lead" && event.value === "C5" && event.bar === 2)).toBe(true);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Instrument grid normalized: 2 sections, 2 bars, 30 events\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps beat bar alignment consistent across grid lanes", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page);
+      await page.locator("#normalizeInstrumentGridButton").click();
+      expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length)).toBe(9);
+      expect(await page.locator(".midi-studio-v2__grid-cell--section").evaluateAll((cells) => cells.map((cell) => cell.style.gridColumn))).toEqual(["span 4", "span 4"]);
+      expect(await page.locator(".midi-studio-v2__grid-cell--beat").evaluateAll((cells) => cells.map((cell) => cell.textContent))).toEqual(["B1.1", "B1.2", "B1.3", "B1.4", "B2.1", "B2.2", "B2.3", "B2.4"]);
+      expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => Array.from(grid.children).filter((cell) => cell.textContent === "Am").length)).toBe(3);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("reports grid note, subdivision, bar count, and drum validation states", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, { lead: "E4 BAD A4 - | C5 B4 G4 -" });
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#instrumentGridSummary")).toContainText('Invalid note token "BAD"');
+      await expect(page.locator("#instrumentGridOutput")).not.toContainText("intro");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid rejected: Invalid note token "BAD" in lead at bar 1, beat 2\./);
+      expect(await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult)).toBeNull();
+
+      await fillInstrumentGrid(page);
+      await page.locator("#instrumentGridSubdivisionInput").evaluate((select) => {
+        const option = document.createElement("option");
+        option.value = "3";
+        option.textContent = "3";
+        select.append(option);
+        select.value = "3";
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#instrumentGridSummary")).toContainText("Unsupported timing subdivision: 3");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid rejected: Unsupported timing subdivision: 3\. Use 1, 2, or 4\./);
+
+      await fillInstrumentGrid(page, { chords: "Am F C G" });
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#instrumentGridSummary")).toContainText("Malformed bar counts for chords");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid rejected: Malformed bar counts for chords\. Expected 2 bars from the section map, received 1\./);
+
+      await fillInstrumentGrid(page, { drums: "kick zap snare hat | kick hat snare hat" });
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#instrumentGridSummary")).toContainText('Invalid drum token "zap"');
+      await expect(page.locator("#instrumentGridOutput")).toContainText("intro");
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Instrument grid normalized with warnings: Invalid drum token "zap" at bar 1, beat 2; token was skipped\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Instrument grid normalized: 2 sections, 2 bars, 29 events\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps guided Song Sheet workflow primary alongside the advanced grid editor", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillGuidedSongSheet(page);
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary")).toContainText("loop: 4 bars, 4 chords, loop");
+      await fillInstrumentGrid(page, {
+        bass: "A2 - F2 - | C3 - G2 -",
+        chords: "Am F C G | Am F C G"
+      });
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#songSheetSummary")).toContainText("loop: 4 bars, 4 chords, loop");
+      await expect(page.locator("#instrumentGridSummary")).toContainText("30 normalized events");
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

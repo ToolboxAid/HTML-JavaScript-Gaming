@@ -168,6 +168,58 @@
             <dl id="songSheetSummary" class="midi-studio-v2__details"></dl>
           </div>
         </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="instrumentGridContent">
+            <span>Multi-Instrument Grid</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="instrumentGridContent" class="accordion-v2__content midi-studio-v2__stack">
+            <div class="midi-studio-v2__grid-settings">
+              <label class="tool-starter__field" for="instrumentGridSectionsInput">
+                <span>Sections</span>
+                <input id="instrumentGridSectionsInput" type="text" placeholder="intro:1, loop:1">
+              </label>
+              <label class="tool-starter__field" for="instrumentGridBeatsInput">
+                <span>Beats/bar</span>
+                <input id="instrumentGridBeatsInput" type="number" min="1" step="1" inputmode="numeric" placeholder="4">
+              </label>
+              <label class="tool-starter__field" for="instrumentGridSubdivisionInput">
+                <span>Subdivision</span>
+                <select id="instrumentGridSubdivisionInput">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="4">4</option>
+                </select>
+              </label>
+            </div>
+            <div class="midi-studio-v2__grid-lane-inputs">
+              <label class="tool-starter__field" for="instrumentGridChordsInput">
+                <span>Chords</span>
+                <textarea id="instrumentGridChordsInput" rows="2" placeholder="Am F C G | Am F C G"></textarea>
+              </label>
+              <label class="tool-starter__field" for="instrumentGridBassInput">
+                <span>Bass</span>
+                <textarea id="instrumentGridBassInput" rows="2" placeholder="A2 - F2 - | C3 - G2 -"></textarea>
+              </label>
+              <label class="tool-starter__field" for="instrumentGridPadInput">
+                <span>Pad</span>
+                <textarea id="instrumentGridPadInput" rows="2" placeholder="Am - F - | C - G -"></textarea>
+              </label>
+              <label class="tool-starter__field" for="instrumentGridLeadInput">
+                <span>Lead</span>
+                <textarea id="instrumentGridLeadInput" rows="2" placeholder="E4 G4 A4 - | C5 B4 G4 -"></textarea>
+              </label>
+              <label class="tool-starter__field" for="instrumentGridDrumsInput">
+                <span>Drums</span>
+                <textarea id="instrumentGridDrumsInput" rows="2" placeholder="kick hat snare hat | kick hat snare hat"></textarea>
+              </label>
+            </div>
+            <button id="normalizeInstrumentGridButton" type="button">Normalize Grid</button>
+            <dl id="instrumentGridSummary" class="midi-studio-v2__details"></dl>
+            <div id="instrumentGridOutput" class="midi-studio-v2__instrument-grid-output" aria-label="Aligned multi-instrument grid"></div>
+          </div>
+        </section>
       </section>
 
       <aside class="tool-starter__panel tool-starter__panel--right" aria-label="MIDI output">

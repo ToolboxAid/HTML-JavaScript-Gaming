@@ -3,6 +3,7 @@ import { MidiStudioV2App } from "./MidiStudioV2App.js";
 import { AccordionSection } from "./controls/AccordionSection.js";
 import { ActionNavControl } from "./controls/ActionNavControl.js";
 import { DirectorPanelControl } from "./controls/DirectorPanelControl.js";
+import { InstrumentGridControl } from "./controls/InstrumentGridControl.js";
 import { MidiSourceDetailsControl } from "./controls/MidiSourceDetailsControl.js";
 import { PlaybackControl } from "./controls/PlaybackControl.js";
 import { RenderedExportActionsControl } from "./controls/RenderedExportActionsControl.js";
@@ -11,6 +12,7 @@ import { SongListControl } from "./controls/SongListControl.js";
 import { SongSheetControl } from "./controls/SongSheetControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
+import { InstrumentGridParser } from "../../../src/engine/audio/InstrumentGridParser.js";
 import { SongSheetParser } from "../../../src/engine/audio/SongSheetParser.js";
 import { MidiPlaybackService } from "./services/MidiPlaybackService.js";
 import { MidiSourceInspectionService } from "./services/MidiSourceInspectionService.js";
@@ -51,6 +53,20 @@ window.addEventListener("DOMContentLoaded", () => {
       sourceField: requireElement("#songSourceField")
     }),
     directorPanel: new DirectorPanelControl({ panel: requireElement("#directorPanel") }),
+    instrumentGrid: new InstrumentGridControl({
+      bassInput: requireElement("#instrumentGridBassInput"),
+      beatsInput: requireElement("#instrumentGridBeatsInput"),
+      chordsInput: requireElement("#instrumentGridChordsInput"),
+      drumsInput: requireElement("#instrumentGridDrumsInput"),
+      gridOutput: requireElement("#instrumentGridOutput"),
+      leadInput: requireElement("#instrumentGridLeadInput"),
+      normalizeButton: requireElement("#normalizeInstrumentGridButton"),
+      padInput: requireElement("#instrumentGridPadInput"),
+      sectionsInput: requireElement("#instrumentGridSectionsInput"),
+      subdivisionInput: requireElement("#instrumentGridSubdivisionInput"),
+      summary: requireElement("#instrumentGridSummary")
+    }),
+    instrumentGridParser: new InstrumentGridParser(),
     manifestLoader: new GameManifestLoader({ windowRef: window }),
     midiSourceDetails: new MidiSourceDetailsControl({
       details: requireElement("#midiSourceDetails"),
