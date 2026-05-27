@@ -356,6 +356,10 @@ function laneInstrumentSelect(page, lane) {
   return laneHeader(page, lane).locator("[data-lane-instrument-select]");
 }
 
+function laneInstrumentTypeSelect(page, lane) {
+  return laneHeader(page, lane).locator("[data-lane-instrument-type-select]");
+}
+
 async function setSpreadsheetRowToggle(page, laneLabel, kind, checked) {
   const labelKind = kind.charAt(0).toUpperCase() + kind.slice(1);
   const toggle = page.locator(`.midi-studio-v2__lane-header-cell [aria-label="${labelKind} ${laneLabel}"]`);
@@ -388,6 +392,16 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
 
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 3 MIDI songs from Import JSON Manifest:.*uat-midi-studio-v2\.game\.manifest\.json via manifest\.music\./);
+      await expect(page.locator('[data-midi-studio-tab="midi-import"]')).toHaveCount(0);
+      await expect(page.locator('[data-midi-studio-tab="export"]')).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__advanced-song-sheet")).toHaveCount(0);
+      await expect(page.locator("#songSheetInput")).toHaveCount(0);
+      await expect(page.locator("#parseRawSongSheetButton")).toHaveCount(0);
+      await expect(page.locator("#midiSourceFileInput")).toHaveAttribute("accept", /\.mid,.midi/);
+      await selectMidiStudioTab(page, "song-setup");
+      await expect(page.locator("#songDetailsContent #midiImportContent")).toBeVisible();
+      await expect(page.locator("#songDetailsContent #midiSourceDetails")).toContainText("No MIDI source inspected.");
+      await expect(page.locator("#statusLog")).not.toHaveValue(/HTTP 404/);
       await expect(page.locator("#songList [data-song-id]")).toHaveCount(3);
       await expect(page.locator("#songList")).toContainText("Camptown Races UAT Reel");
       await expect(page.locator("#songList")).toContainText("Frog Hop Nursery Rhyme UAT");
@@ -413,6 +427,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetStyleInput")).toHaveValue("public-domain-reel");
       await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("verse:2, chorus:2");
 
+      await selectMidiStudioTab(page, "studio");
       await expect(page.locator('[data-midi-studio-tab="studio"]')).toHaveAttribute("aria-selected", "true");
       await expect(page.locator(".midi-studio-v2__instrument-list-panel")).toHaveCount(0);
       await expect(page.locator(".midi-studio-v2__instrument-row")).toHaveCount(0);
@@ -435,6 +450,20 @@ test.describe("MIDI Studio V2", () => {
       await expect(laneInstrumentSelect(page, "pad")).toHaveValue("ambient-pad");
       await expect(laneInstrumentSelect(page, "drums")).toHaveValue("basic-drums");
       await expect(laneInstrumentSelect(page, "mallets")).toHaveValue("retro-square-lead");
+      await expect(laneInstrumentTypeSelect(page, "lead")).toHaveValue("Synth");
+      await expect(laneInstrumentTypeSelect(page, "drums")).toHaveValue("Percussion");
+      await laneInstrumentTypeSelect(page, "lead").selectOption("Keyboard");
+      await expect(laneInstrumentSelect(page, "lead")).toHaveValue("preview-electric-piano");
+      await expect(laneHeader(page, "lead").locator("[data-lane-label='lead']")).toHaveText("Preview Electric Piano");
+      expect(await laneInstrumentSelect(page, "lead").locator("option").evaluateAll((options) => options.map((option) => option.textContent))).toEqual([
+        "Choose instrument",
+        "Preview Electric Piano",
+        "Warm Pad"
+      ]);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Instrument type selected for Lead: Keyboard; instrument options updated to Preview Electric Piano\./);
+      await laneInstrumentSelect(page, "lead").selectOption("warm-pad");
+      await expect(laneHeader(page, "lead").locator("[data-lane-label='lead']")).toHaveText("Warm Pad");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview instrument selected for Lead: Warm Pad\./);
       await expect(page.locator(".midi-studio-v2__lane-role")).toHaveCount(0);
       await expect(laneHeader(page, "lead")).not.toContainText("Volume");
       await expect(laneHeader(page, "lead")).not.toContainText("Pan");
@@ -442,6 +471,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(laneHeader(page, "lead").locator('[aria-label="Solo Lead"]')).toHaveCount(1);
       await expect(laneHeader(page, "lead").locator('[data-lane-control-toggle="volume"]')).toHaveCount(1);
       await expect(laneHeader(page, "lead").locator('[data-lane-control-toggle="pan"]')).toHaveCount(1);
+      expect(await laneHeader(page, "lead").evaluate((row) => Math.round(row.getBoundingClientRect().height))).toBeLessThanOrEqual(120);
       await expect(page.locator("#previewVolumeLeadInput")).toBeHidden();
       await laneHeader(page, "lead").locator('[data-lane-control-toggle="volume"]').click();
       await expect(page.locator("#previewVolumeLeadInput")).toBeVisible();
@@ -450,6 +480,18 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#previewPanLeadInput")).toBeHidden();
       await laneHeader(page, "lead").locator('[data-lane-control-toggle="pan"]').click();
       await expect(page.locator("#previewPanLeadInput")).toBeVisible();
+      const laneCountBeforeAdd = await page.locator(".midi-studio-v2__lane-header-cell").count();
+      await page.locator("#addInstrumentRowButton").click();
+      await expect(laneHeader(page, "instrument-1")).toBeVisible();
+      await expect(laneInstrumentTypeSelect(page, "instrument-1")).toHaveValue("Synth");
+      expect(await page.evaluate(() => Object.hasOwn(window.__midiStudioV2App.selectedSong().studioArrangement.lanes, "instrument-1"))).toBe(true);
+      expect(await page.locator(".midi-studio-v2__lane-header-cell").count()).toBe(laneCountBeforeAdd + 1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added instrument row Instrument 1; playback data updated\./);
+      await laneHeader(page, "instrument-1").locator('[data-delete-instrument-row="instrument-1"]').click();
+      await expect(laneHeader(page, "instrument-1")).toHaveCount(0);
+      expect(await page.evaluate(() => Object.hasOwn(window.__midiStudioV2App.selectedSong().studioArrangement.lanes, "instrument-1"))).toBe(false);
+      await expect(page.locator(".midi-studio-v2__lane-header-cell")).toHaveCount(laneCountBeforeAdd);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted instrument row Instrument 1; playback data updated\./);
       await expect(page.locator(".midi-studio-v2__note-block")).not.toHaveCount(0);
       await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="lead"] .midi-studio-v2__note-block').first()).toHaveText("G4");
       await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="bass"] .midi-studio-v2__note-block').first()).toHaveText("G2");
@@ -492,6 +534,50 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Camptown Races UAT Reel");
       expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot().playing)).toBe(false);
       expect(await page.locator(".midi-studio-v2__grid-cell--lane-active").count()).toBe(0);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("imports a local MIDI source from Selected Song Details without default HTTP 404 noise", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await expect(page.locator('[data-midi-studio-tab="midi-import"]')).toHaveCount(0);
+      await expect(page.locator('[data-midi-studio-tab="export"]')).toHaveCount(0);
+      await selectMidiStudioTab(page, "song-setup");
+      await expect(page.locator("#songDetailsContent #midiImportContent")).toBeVisible();
+      await expect(page.locator("#midiSourceFileInput")).toHaveAttribute("accept", /\.mid,.midi/);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/HTTP 404/);
+
+      await page.locator("#midiSourceFileInput").setInputFiles({
+        buffer: validMidiBytes,
+        mimeType: "audio/midi",
+        name: "local-import.midi"
+      });
+
+      await expect(page.locator("#midiSourceDetails")).toContainText("local-import.midi");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Format");
+      await expect(page.locator("#songList [data-song-id]")).toHaveCount(1);
+      await expect(page.locator("#songList")).toContainText("Local Import");
+      await expect(page.locator("#songSourceField")).toHaveValue("local-import.midi");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Imported MIDI source local-import\.midi: format 1, 2 tracks\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN MIDI note conversion to editable timeline rows is not implemented yet\./);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/HTTP 404/);
+      expect(await page.evaluate(() => {
+        const song = window.__midiStudioV2App.selectedSong();
+        return {
+          activeSongId: window.__midiStudioV2App.payload.activeSongId,
+          hasArrangement: Boolean(song.studioArrangement),
+          name: song.name,
+          sourceMidi: song.sourceMidi
+        };
+      })).toEqual({
+        activeSongId: "local-import",
+        hasArrangement: false,
+        name: "Local Import",
+        sourceMidi: "local-import.midi"
+      });
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -563,7 +649,8 @@ test.describe("MIDI Studio V2", () => {
     expect(roadmap).toContain("[x] UAT manifest import uses Import JSON Manifest");
     expect(roadmap).toContain("[x] Real UAT manifest fixture includes multiple MIDI Studio songs.");
     expect(roadmap).toContain("[x] Playable upbeat public-domain/traditional-style test song arrangement includes Lead, Bass, Chords/Pad, and Drums.");
-    expect(roadmap).toContain("[x] Tabs organize Studio, Song Setup, Instruments, Auto-Create Parts, MIDI Import, Export, and Diagnostics.");
+    expect(roadmap).toContain("[x] Tabs organize Studio, Song Setup, Instruments, Auto-Create Parts, and Diagnostics; MIDI Import lives under Selected Song Details and export actions live in the action bar.");
+    expect(roadmap).toContain("[x] Track volume, pan, mute, and solo controls live on instrument timeline rows.");
     expect(roadmap).toContain("[ ] MIDI import conversion to editable tracks.");
     expect(roadmap).toContain("[ ] Rendered WAV/MP3/OGG export.");
     expect(roadmap).toContain("[ ] SoundFont and real instrument playback.");
@@ -863,20 +950,15 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("rejects malformed raw Song Sheet syntax without partial section summary", async ({ page }) => {
+  test("removes the Advanced Raw Song Sheet surface from the primary workflow", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       await selectMidiStudioTab(page, "song-setup");
-      await page.locator(".midi-studio-v2__advanced-song-sheet summary").click();
-      await page.locator("#songSheetInput").fill(`tempo:132
-key=A minor
-
-[loop]
-Am F`);
-      await page.locator("#parseRawSongSheetButton").click();
-      await expect(page.locator("#songSheetSummary")).toContainText("Unsupported Song Sheet syntax on line 1: tempo:132");
-      await expect(page.locator("#songSheetSummary")).not.toContainText("loop:");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Unsupported Song Sheet syntax on line 1: tempo:132/);
+      await expect(page.locator(".midi-studio-v2__advanced-song-sheet")).toHaveCount(0);
+      await expect(page.locator("#songSheetInput")).toHaveCount(0);
+      await expect(page.locator("#parseRawSongSheetButton")).toHaveCount(0);
+      await expect(page.locator("#songSheetContent")).toBeVisible();
+      await expect(page.locator("#parseSongSheetButton")).toBeVisible();
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -891,7 +973,8 @@ Am F`);
       await fillGuidedSongSheet(page, { intro: "", loop: "Am F C G" });
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText("loop: 4 bars, 4 chords, loop");
-      await selectMidiStudioTab(page, "midi-import");
+      await selectMidiStudioTab(page, "song-setup");
+      await expect(page.locator("#songDetailsContent #midiImportContent")).toBeVisible();
       await page.locator("#inspectMidiSourceButton").click();
       await expect(page.locator("#midiSourceDetails")).toContainText("Tempo summary");
       await page.locator("#playButton").click();
@@ -1436,8 +1519,10 @@ Am F`);
       });
       expect(fullscreenLayout.layoutDisplay).toBe("grid");
       expect(fullscreenLayout.rootWidth).toBeGreaterThanOrEqual(fullscreenLayout.viewportWidth - 24);
-      expect(fullscreenLayout.leftWidth).toBe(340);
-      expect(fullscreenLayout.rightWidth).toBe(360);
+      expect(fullscreenLayout.leftWidth).toBeLessThanOrEqual(260);
+      expect(fullscreenLayout.rightWidth).toBeLessThanOrEqual(220);
+      expect(fullscreenLayout.centerWidth).toBeGreaterThan(1200);
+      expect(fullscreenLayout.centerWidth).toBeGreaterThan(fullscreenLayout.leftWidth + fullscreenLayout.rightWidth);
       expect(fullscreenLayout.leftAtSide).toBe(true);
       expect(fullscreenLayout.centerAfterLeft).toBe(true);
       expect(fullscreenLayout.rightAtSide).toBe(true);
@@ -1564,13 +1649,14 @@ Am F`);
       await statusHeader.click();
       await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
       await expect(page.locator("#statusLogContent")).toBeVisible();
-      const sourceHeader = page.locator('.accordion-v2__header[aria-controls="songSourceContent"]');
-      await sourceHeader.click();
-      await expect(sourceHeader).toHaveAttribute("aria-expanded", "false");
-      await expect(page.locator("#songSourceContent")).toBeHidden();
-      await sourceHeader.click();
-      await expect(sourceHeader).toHaveAttribute("aria-expanded", "true");
-      await expect(page.locator("#songSourceContent")).toBeVisible();
+      await selectMidiStudioTab(page, "song-setup");
+      const songDetailsHeader = page.locator('.accordion-v2__header[aria-controls="songDetailsContent"]');
+      await songDetailsHeader.click();
+      await expect(songDetailsHeader).toHaveAttribute("aria-expanded", "false");
+      await expect(page.locator("#songDetailsContent")).toBeHidden();
+      await songDetailsHeader.click();
+      await expect(songDetailsHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(page.locator("#songDetailsContent")).toBeVisible();
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

@@ -44,4 +44,30 @@ export class MidiSourceInspectionService {
     }
     return { ...parsed, path: sourceMidi };
   }
+
+  async inspectFile(file) {
+    if (!file) {
+      return { ok: false, message: "No MIDI source file selected." };
+    }
+    const fileName = String(file.name || "").trim();
+    if (!/\.(mid|midi)$/i.test(fileName)) {
+      return { ok: false, message: `MIDI source import rejected for ${fileName || "selected file"}: choose a .mid or .midi file.` };
+    }
+    let parsed;
+    try {
+      parsed = this.parser.parse(await file.arrayBuffer());
+    } catch (error) {
+      return {
+        ok: false,
+        message: `MIDI source import failed for ${fileName}: ${error.message || "file could not be read"}`
+      };
+    }
+    if (!parsed.ok) {
+      return {
+        ok: false,
+        message: `MIDI source validation failed for ${fileName}: ${parsed.message}`
+      };
+    }
+    return { ...parsed, fileName, path: fileName, size: file.size };
+  }
 }

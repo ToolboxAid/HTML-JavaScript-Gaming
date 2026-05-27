@@ -18,13 +18,11 @@ function songSheetRows(result) {
 }
 
 export class SongSheetControl {
-  constructor({ introInput, keyInput, loopInput, parseButton, parseRawButton, rawInput, styleInput, summary, tempoInput }) {
+  constructor({ introInput, keyInput, loopInput, parseButton, styleInput, summary, tempoInput }) {
     this.introInput = introInput;
     this.keyInput = keyInput;
     this.loopInput = loopInput;
     this.parseButton = parseButton;
-    this.parseRawButton = parseRawButton;
-    this.rawInput = rawInput;
     this.styleInput = styleInput;
     this.summary = summary;
     this.tempoInput = tempoInput;
@@ -32,7 +30,6 @@ export class SongSheetControl {
 
   mount({ onParse }) {
     this.parseButton.addEventListener("click", () => onParse(this.composeGuidedSheet()));
-    this.parseRawButton.addEventListener("click", () => onParse(this.rawInput.value));
   }
 
   applyGuidedDefaults({ intro, key, loop, style, tempo }) {

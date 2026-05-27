@@ -92,6 +92,8 @@ window.addEventListener("DOMContentLoaded", () => {
     manifestLoader: new GameManifestLoader({ windowRef: window }),
     midiSourceDetails: new MidiSourceDetailsControl({
       details: requireElement("#midiSourceDetails"),
+      importButton: requireElement("#importMidiSourceButton"),
+      input: requireElement("#midiSourceFileInput"),
       inspectButton: requireElement("#inspectMidiSourceButton")
     }),
     midiSourceInspection: new MidiSourceInspectionService(),
@@ -117,8 +119,6 @@ window.addEventListener("DOMContentLoaded", () => {
       keyInput: requireElement("#songSheetKeyInput"),
       loopInput: requireElement("#songSheetLoopInput"),
       parseButton: requireElement("#parseSongSheetButton"),
-      parseRawButton: requireElement("#parseRawSongSheetButton"),
-      rawInput: requireElement("#songSheetInput"),
       styleInput: requireElement("#songSheetStyleInput"),
       summary: requireElement("#songSheetSummary"),
       tempoInput: requireElement("#songSheetTempoInput")

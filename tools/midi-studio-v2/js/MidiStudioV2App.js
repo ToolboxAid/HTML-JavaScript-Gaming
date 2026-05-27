@@ -70,7 +70,10 @@ export class MidiStudioV2App {
       onNoteEdit: (input, detail) => this.syncEditedInstrumentGrid(input, detail),
       onTransport: (action, detail) => this.handleInstrumentGridTransport(action, detail)
     });
-    this.midiSourceDetails.mount({ onInspect: () => this.inspectSelectedSource() });
+    this.midiSourceDetails.mount({
+      onImport: (file) => this.importMidiSourceFile(file),
+      onInspect: () => this.inspectSelectedSource()
+    });
     this.playbackControl.mount({
       onPlay: () => this.playSelectedSong(),
       onStop: () => this.stopPlayback()
@@ -298,6 +301,68 @@ export class MidiStudioV2App {
     this.statusLog.ok(`MIDI source inspected for ${song.name}: format ${result.format}, ${result.trackCount} track${result.trackCount === 1 ? "" : "s"}, ${result.ticksPerQuarterNote} TPQN.`);
   }
 
+  async importMidiSourceFile(file) {
+    if (!file) {
+      return;
+    }
+    const result = await this.midiSourceInspection.inspectFile(file);
+    this.midiSourceDetails.render(result);
+    if (!result.ok) {
+      this.statusLog.fail(result.message);
+      return;
+    }
+    const song = this.createImportedMidiSong(file, result);
+    if (!this.payload) {
+      this.payload = {
+        activeSongId: song.id,
+        directorMode: { enabled: false },
+        runtimePreference: "live-midi",
+        songs: [song],
+        version: 1
+      };
+    } else {
+      this.payload.songs.push(song);
+      this.payload.activeSongId = song.id;
+    }
+    this.selectedSongId = song.id;
+    this.render();
+    this.midiSourceDetails.render(result);
+    this.instrumentGrid.render(null);
+    this.lastInstrumentGridResult = null;
+    this.lastSongSheetResult = null;
+    this.statusLog.ok(`Imported MIDI source ${result.fileName}: format ${result.format}, ${result.trackCount} track${result.trackCount === 1 ? "" : "s"}.`);
+    this.statusLog.warn("MIDI note conversion to editable timeline rows is not implemented yet. Use Song Sheet or timeline row editing to create playable Preview Synth data.");
+    this.updateAudioDiagnostics();
+  }
+
+  createImportedMidiSong(file, result) {
+    const baseName = String(file.name || "imported-midi").replace(/\.[^.]+$/, "") || "imported-midi";
+    const baseId = baseName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "imported-midi";
+    const existingIds = new Set(this.payload?.songs?.map((song) => song.id) || []);
+    let id = baseId;
+    let index = 2;
+    while (existingIds.has(id)) {
+      id = `${baseId}-${index}`;
+      index += 1;
+    }
+    return {
+      defaultRuntimeFormat: "ogg",
+      director: {
+        mood: "imported",
+        intensity: "medium",
+        usage: ["midi-import"],
+        notes: `Imported from local MIDI file ${result.fileName}.`
+      },
+      id,
+      instrumentSet: "Imported MIDI source",
+      loop: { enabled: false },
+      name: baseName.replace(/[-_]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()),
+      rendered: {},
+      sourceMidi: result.fileName,
+      tags: ["midi-import"]
+    };
+  }
+
   parseSongSheet(request, { updateGrid = true } = {}) {
     const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
     this.songSheet.render(result);
@@ -404,9 +469,33 @@ export class MidiStudioV2App {
       return;
     }
     this.lastInstrumentGridResult = result;
-    this.instrumentGrid.syncEditedGridResult(result);
-    this.statusLog.ok(`Edited ${detail.laneLabel || "instrument"} note cell; playback data updated.`);
+    if (detail.action === "add-lane" || detail.action === "delete-lane") {
+      this.instrumentGrid.render(result);
+    } else {
+      this.instrumentGrid.syncEditedGridResult(result);
+    }
+    this.syncSelectedArrangementFromGridInput(input);
+    if (detail.action === "add-lane") {
+      this.statusLog.ok(`Added instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
+    } else if (detail.action === "delete-lane") {
+      this.statusLog.ok(`Deleted instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
+    } else {
+      this.statusLog.ok(`Edited ${detail.laneLabel || "instrument"} note cell; playback data updated.`);
+    }
     this.updateAudioDiagnostics();
+  }
+
+  syncSelectedArrangementFromGridInput(input) {
+    const song = this.selectedSong();
+    if (!song?.studioArrangement) {
+      return;
+    }
+    song.studioArrangement.beatsPerBar = String(input.beatsPerBar || "");
+    song.studioArrangement.sections = String(input.sections || "");
+    song.studioArrangement.subdivision = String(input.subdivision || "1");
+    song.studioArrangement.lanes = { ...(input.lanes || {}) };
+    song.studioArrangement.previewInstruments = { ...(input.previewLaneSettings?.instruments || {}) };
+    this.details.showJson(song);
   }
 
   async handleInstrumentGridTransport(action, detail = {}) {
@@ -491,7 +580,14 @@ export class MidiStudioV2App {
         this.updateAudioDiagnostics();
         return;
       }
+      this.syncSelectedArrangementFromGridInput(this.instrumentGrid.readInput());
       this.statusLog.ok(`Preview instrument selected for ${detail.laneLabel}: ${detail.instrumentLabel}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "instrument-type") {
+      this.syncSelectedArrangementFromGridInput(this.instrumentGrid.readInput());
+      this.statusLog.ok(`Instrument type selected for ${detail.laneLabel}: ${detail.instrumentType}; instrument options updated to ${detail.instrumentLabel || "none"}.`);
       this.updateAudioDiagnostics();
       return;
     }

@@ -46,6 +46,7 @@ const DEFAULT_PREVIEW_INSTRUMENTS = {
 };
 
 const FIXED_LANES = ["bass", "chords", "drums", "lead", "pad"];
+const INSTRUMENT_TYPE_GROUPS = ["Percussion", "Keyboard", "Strings", "Brass", "Woodwind", "Guitar", "Bass", "Synth", "FX"];
 
 const REST_TOKENS = new Set(["", "-", ".", "rest"]);
 
@@ -62,17 +63,45 @@ function defaultInstrumentForLane(lane) {
   return DEFAULT_PREVIEW_INSTRUMENTS[lane] || "retro-square-lead";
 }
 
+function instrumentTypeGroup(instrumentId) {
+  return PREVIEW_INSTRUMENT_PACKS.find((instrument) => instrument.id === instrumentId)?.typeGroup || "Synth";
+}
+
+function defaultInstrumentForType(typeGroup) {
+  return PREVIEW_INSTRUMENT_PACKS.find((instrument) => instrument.typeGroup === typeGroup)?.id || "";
+}
+
+function instrumentsForType(typeGroup) {
+  return PREVIEW_INSTRUMENT_PACKS.filter((instrument) => instrument.typeGroup === typeGroup);
+}
+
 function clonePreviewLaneState(lanes = Object.keys(DEFAULT_PREVIEW_INSTRUMENTS)) {
-  return Object.fromEntries(lanes.map((lane) => [
-    lane,
-    {
-      instrument: defaultInstrumentForLane(lane),
-      muted: false,
-      pan: 0,
-      soloed: false,
-      volume: 1
-    }
-  ]));
+  return Object.fromEntries(lanes.map((lane) => {
+    const instrument = defaultInstrumentForLane(lane);
+    return [
+      lane,
+      {
+        instrument,
+        instrumentType: instrumentTypeGroup(instrument),
+        muted: false,
+        pan: 0,
+        soloed: false,
+        volume: 1
+      }
+    ];
+  }));
+}
+
+function defaultPreviewLaneState(lane) {
+  const instrument = defaultInstrumentForLane(lane);
+  return {
+    instrument,
+    instrumentType: instrumentTypeGroup(instrument),
+    muted: false,
+    pan: 0,
+    soloed: false,
+    volume: 1
+  };
 }
 
 function laneId(lane) {
@@ -163,6 +192,7 @@ export class InstrumentGridControl {
     this.loopBounds = null;
     this.playTimer = null;
     this.playheadStep = 0;
+    this.removedFixedLanes = new Set();
     this.selectedLane = "lead";
   }
 
@@ -199,17 +229,22 @@ export class InstrumentGridControl {
   }
 
   readInput() {
+    const lanes = { ...this.extraLaneSources };
+    [
+      ["bass", this.bassInput],
+      ["chords", this.chordsInput],
+      ["drums", this.drumsInput],
+      ["lead", this.leadInput],
+      ["pad", this.padInput]
+    ].forEach(([lane, input]) => {
+      if (!this.removedFixedLanes.has(lane)) {
+        lanes[lane] = input.value;
+      }
+    });
     return {
       beatsPerBar: this.beatsInput.value,
       generatedLanes: { ...this.generatedLanes },
-      lanes: {
-        ...this.extraLaneSources,
-        bass: this.bassInput.value,
-        chords: this.chordsInput.value,
-        drums: this.drumsInput.value,
-        lead: this.leadInput.value,
-        pad: this.padInput.value
-      },
+      lanes,
       previewLaneSettings: this.previewLaneSettings(),
       sections: this.sectionsInput.value,
       subdivision: this.subdivisionInput.value
@@ -236,6 +271,7 @@ export class InstrumentGridControl {
     this.leadInput.value = laneSources.lead || "";
     this.drumsInput.value = laneSources.drums || "";
     this.extraLaneSources = Object.fromEntries(Object.entries(laneSources).filter(([lane]) => !FIXED_LANES.includes(lane)));
+    this.removedFixedLanes = new Set(FIXED_LANES.filter((lane) => !Object.hasOwn(laneSources, lane)));
     this.previewLaneState = clonePreviewLaneState(Object.keys(laneSources));
     this.generatedLanes = {};
     this.applyPreviewInstruments(previewInstruments);
@@ -247,6 +283,7 @@ export class InstrumentGridControl {
     Object.entries(previewInstruments).forEach(([lane, instrument]) => {
       if (this.previewLaneState[lane]) {
         this.previewLaneState[lane].instrument = String(instrument || "");
+        this.previewLaneState[lane].instrumentType = instrumentTypeGroup(instrument);
       }
     });
     this.syncLaneHeaderControls();
@@ -263,8 +300,9 @@ export class InstrumentGridControl {
   }
 
   previewLaneSettings() {
-    const settings = { instruments: {}, muted: {}, pans: {}, soloed: {}, volumes: {} };
+    const settings = { instrumentTypes: {}, instruments: {}, muted: {}, pans: {}, soloed: {}, volumes: {} };
     Object.entries(this.previewLaneState).forEach(([lane, state]) => {
+      settings.instrumentTypes[lane] = state.instrumentType || instrumentTypeGroup(state.instrument);
       settings.instruments[lane] = state.instrument || "";
       settings.muted[lane] = Boolean(state.muted);
       settings.pans[lane] = Number(state.pan || 0);
@@ -405,7 +443,7 @@ export class InstrumentGridControl {
     grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table";
     grid.setAttribute("role", "table");
     grid.setAttribute("aria-label", "Signal-style note table");
-    grid.style.gridTemplateColumns = `minmax(17rem, 22rem) repeat(${result.totalSteps}, minmax(4.75rem, 1fr))`;
+    grid.style.gridTemplateColumns = `minmax(13rem, 16rem) repeat(${result.totalSteps}, minmax(4.25rem, 1fr))`;
     this.renderNoteTableHeader(grid, result);
     result.lanes.forEach((lane) => {
       grid.append(this.createLaneHeaderCell(lane));
@@ -420,8 +458,20 @@ export class InstrumentGridControl {
   }
 
   renderNoteTableHeader(grid, result) {
-    const instrumentHeader = this.appendCell(grid, "Instrument", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__note-table-instrument-header");
+    const instrumentHeader = this.appendCell(grid, "", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__note-table-instrument-header");
     instrumentHeader.setAttribute("role", "columnheader");
+    const label = document.createElement("span");
+    label.textContent = "Instrument";
+    const addButton = document.createElement("button");
+    addButton.id = "addInstrumentRowButton";
+    addButton.className = "midi-studio-v2__lane-add-button";
+    addButton.type = "button";
+    addButton.dataset.addInstrumentRow = "true";
+    addButton.setAttribute("aria-label", "Add instrument row");
+    addButton.title = "Add instrument row";
+    addButton.textContent = "+";
+    addButton.addEventListener("click", () => this.addInstrumentRow());
+    instrumentHeader.append(label, addButton);
     const rulerCells = result.cells.chords || result.cells[result.lanes[0]] || [];
     rulerCells.forEach((cell, stepIndex) => {
       const classes = [
@@ -465,6 +515,11 @@ export class InstrumentGridControl {
     cell.dataset.lane = lane;
     cell.tabIndex = 0;
 
+    const instrumentLabelElement = document.createElement("span");
+    instrumentLabelElement.className = "midi-studio-v2__lane-title";
+    instrumentLabelElement.dataset.laneLabel = lane;
+    instrumentLabelElement.textContent = instrumentLabel(this.previewLaneState[lane]?.instrument) || laneLabel(lane);
+    const typeSelect = this.createInstrumentTypeSelect(lane);
     const instrumentSelect = this.createInstrumentSelect(lane);
 
     const mute = this.createLaneToggle(lane, "mute");
@@ -473,14 +528,15 @@ export class InstrumentGridControl {
     const pan = this.createLaneSlider(lane, "pan");
     const volumeButton = this.createLaneSliderButton(lane, "volume");
     const panButton = this.createLaneSliderButton(lane, "pan");
+    const deleteButton = this.createDeleteLaneButton(lane);
 
     const main = document.createElement("div");
     main.className = "midi-studio-v2__lane-header-main";
-    main.append(instrumentSelect);
+    main.append(instrumentLabelElement, typeSelect, instrumentSelect);
 
     const toggles = document.createElement("div");
     toggles.className = "midi-studio-v2__lane-control-row";
-    toggles.append(mute.label, solo.label, volumeButton, panButton);
+    toggles.append(mute.label, solo.label, volumeButton, panButton, deleteButton);
 
     const sliders = document.createElement("div");
     sliders.className = "midi-studio-v2__lane-slider-row";
@@ -503,7 +559,10 @@ export class InstrumentGridControl {
       this.handleLaneSelection(lane);
     });
     this.previewLaneControls[lane] = {
+      deleteButton,
       instrument: instrumentSelect,
+      instrumentLabel: instrumentLabelElement,
+      instrumentType: typeSelect,
       mute: mute.input,
       pan: pan.input,
       panButton,
@@ -516,6 +575,36 @@ export class InstrumentGridControl {
     return cell;
   }
 
+  createInstrumentTypeSelect(lane) {
+    const select = document.createElement("select");
+    select.id = `previewInstrumentType${laneId(lane)}Select`;
+    select.className = "midi-studio-v2__lane-type-select";
+    select.dataset.laneInstrumentTypeSelect = lane;
+    select.setAttribute("aria-label", `Instrument type ${laneLabel(lane)}`);
+    INSTRUMENT_TYPE_GROUPS.forEach((typeGroup) => {
+      const option = document.createElement("option");
+      option.value = typeGroup;
+      option.textContent = typeGroup;
+      select.append(option);
+    });
+    select.value = this.previewLaneState[lane]?.instrumentType || instrumentTypeGroup(this.previewLaneState[lane]?.instrument);
+    select.addEventListener("change", () => {
+      const nextInstrument = defaultInstrumentForType(select.value);
+      this.previewLaneState[lane].instrumentType = select.value;
+      this.previewLaneState[lane].instrument = nextInstrument;
+      this.populateInstrumentOptions(lane);
+      this.updateLaneTitle(lane);
+      this.onLaneSettingChange?.("instrument-type", {
+        instrumentLabel: instrumentLabel(nextInstrument),
+        instrumentType: select.value,
+        instrumentValue: nextInstrument,
+        lane,
+        laneLabel: laneLabel(lane)
+      });
+    });
+    return select;
+  }
+
   createInstrumentSelect(lane) {
     const select = document.createElement("select");
     select.id = `previewInstrument${laneId(lane)}Select`;
@@ -523,28 +612,55 @@ export class InstrumentGridControl {
     select.dataset.laneInstrumentSelect = lane;
     select.dataset.previewInstrumentLane = lane;
     select.setAttribute("aria-label", `Preview instrument ${laneLabel(lane)}`);
-
-    const emptyOption = document.createElement("option");
-    emptyOption.value = "";
-    emptyOption.textContent = "Choose preview instrument";
-    select.append(emptyOption);
-    PREVIEW_INSTRUMENT_PACKS.forEach((instrument) => {
-      const option = document.createElement("option");
-      option.value = instrument.id;
-      option.textContent = instrument.label;
-      select.append(option);
-    });
-    select.value = this.previewLaneState[lane]?.instrument || "";
+    this.populateInstrumentOptions(lane, select);
     select.addEventListener("change", () => {
+      const nextType = select.value ? instrumentTypeGroup(select.value) : this.previewLaneState[lane].instrumentType;
       this.previewLaneState[lane].instrument = select.value;
+      this.previewLaneState[lane].instrumentType = nextType;
+      const controls = this.previewLaneControls[lane];
+      if (controls?.instrumentType) {
+        controls.instrumentType.value = nextType;
+      }
+      this.updateLaneTitle(lane);
       this.onLaneSettingChange?.("instrument", {
         instrumentLabel: select.selectedOptions[0]?.textContent || "",
+        instrumentType: nextType,
         instrumentValue: select.value,
         lane,
         laneLabel: laneLabel(lane)
       });
     });
     return select;
+  }
+
+  populateInstrumentOptions(lane, select = this.previewLaneControls[lane]?.instrument) {
+    if (!select) {
+      return;
+    }
+    const typeGroup = this.previewLaneState[lane]?.instrumentType || "Synth";
+    select.replaceChildren();
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = "Choose instrument";
+    select.append(emptyOption);
+    instrumentsForType(typeGroup).forEach((instrument) => {
+      const option = document.createElement("option");
+      option.value = instrument.id;
+      option.textContent = instrument.label;
+      select.append(option);
+    });
+    const selectedInstrument = this.previewLaneState[lane]?.instrument || "";
+    select.value = instrumentsForType(typeGroup).some((instrument) => instrument.id === selectedInstrument)
+      ? selectedInstrument
+      : "";
+  }
+
+  updateLaneTitle(lane) {
+    const controls = this.previewLaneControls[lane];
+    if (!controls?.instrumentLabel) {
+      return;
+    }
+    controls.instrumentLabel.textContent = instrumentLabel(this.previewLaneState[lane]?.instrument) || laneLabel(lane);
   }
 
   createLaneToggle(lane, kind) {
@@ -622,6 +738,59 @@ export class InstrumentGridControl {
     return button;
   }
 
+  createDeleteLaneButton(lane) {
+    const button = document.createElement("button");
+    button.className = "midi-studio-v2__lane-icon-button midi-studio-v2__lane-delete-button";
+    button.type = "button";
+    button.dataset.deleteInstrumentRow = lane;
+    button.setAttribute("aria-label", `Delete instrument row ${laneLabel(lane)}`);
+    button.title = "Delete instrument row";
+    button.textContent = "x";
+    button.addEventListener("click", () => this.deleteInstrumentRow(lane));
+    return button;
+  }
+
+  addInstrumentRow() {
+    const lane = this.nextInstrumentLaneName();
+    this.extraLaneSources[lane] = "";
+    this.previewLaneState[lane] = defaultPreviewLaneState(lane);
+    this.selectedLane = lane;
+    this.emitGridStructureChange("add-lane", lane);
+  }
+
+  deleteInstrumentRow(lane) {
+    if (!lane) {
+      return;
+    }
+    if (FIXED_LANES.includes(lane)) {
+      this.removedFixedLanes.add(lane);
+      const laneInput = this.inputForLane(lane);
+      if (laneInput) {
+        laneInput.value = "";
+      }
+    } else {
+      delete this.extraLaneSources[lane];
+    }
+    delete this.previewLaneState[lane];
+    this.selectedLane = Object.keys(this.readInput().lanes)[0] || "";
+    this.emitGridStructureChange("delete-lane", lane);
+  }
+
+  emitGridStructureChange(action, lane) {
+    this.onNoteEdit?.(this.readInput(), { action, lane, laneLabel: laneLabel(lane) });
+  }
+
+  nextInstrumentLaneName() {
+    const existing = new Set(Object.keys(this.readInput().lanes));
+    let index = 1;
+    let lane = `instrument-${index}`;
+    while (existing.has(lane)) {
+      index += 1;
+      lane = `instrument-${index}`;
+    }
+    return lane;
+  }
+
   toggleLaneSlider(lane, kind) {
     const controls = this.previewLaneControls[lane];
     const slider = kind === "volume" ? controls?.volume : controls?.pan;
@@ -640,8 +809,13 @@ export class InstrumentGridControl {
         return;
       }
       if (controls.instrument) {
+        this.populateInstrumentOptions(lane, controls.instrument);
         controls.instrument.value = state.instrument || "";
       }
+      if (controls.instrumentType) {
+        controls.instrumentType.value = state.instrumentType || instrumentTypeGroup(state.instrument);
+      }
+      this.updateLaneTitle(lane);
       if (controls.mute) {
         controls.mute.checked = state.muted === true;
       }

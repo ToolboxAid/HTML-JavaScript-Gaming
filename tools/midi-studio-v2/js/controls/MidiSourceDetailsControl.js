@@ -29,12 +29,16 @@ function sourceDetailRows(details) {
 }
 
 export class MidiSourceDetailsControl {
-  constructor({ details, inspectButton }) {
+  constructor({ details, importButton, input, inspectButton }) {
     this.details = details;
+    this.importButton = importButton;
+    this.input = input;
     this.inspectButton = inspectButton;
   }
 
-  mount({ onInspect }) {
+  mount({ onImport, onInspect }) {
+    this.importButton.addEventListener("click", () => this.input.click());
+    this.input.addEventListener("change", () => onImport(this.input.files?.[0] || null));
     this.inspectButton.addEventListener("click", () => onInspect());
   }
 

@@ -173,6 +173,13 @@ export class PreviewSynthEngine {
           warningKeys.add(key);
         }
       }
+      if (instrument.approximationWarning) {
+        const key = `approximation:${instrument.id}`;
+        if (!warningKeys.has(key)) {
+          warnings.push(instrument.approximationWarning);
+          warningKeys.add(key);
+        }
+      }
       if (this.canScheduleEvent(event, instrument)) {
         events.push({ ...event, previewInstrument: instrument });
       }
