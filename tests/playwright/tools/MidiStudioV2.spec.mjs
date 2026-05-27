@@ -538,11 +538,13 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Audible preview playback started for Camptown Races UAT Reel\./);
-      await expect(page.locator('.midi-studio-v2__grid-cell--playhead-active[data-step-index="0"]').first()).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(2);
+      await expect(page.locator(".midi-studio-v2__note-table-cell.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(0);
       await page.waitForFunction(() => window.__midiStudioV2App.instrumentGrid.playheadStep > 0);
       const activeStep = await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.playheadStep);
       expect(activeStep).toBeGreaterThan(0);
-      expect(await page.locator(`.midi-studio-v2__grid-cell--playhead-active[data-step-index="${activeStep}"]`).count()).toBeGreaterThan(0);
+      await expect(page.locator(`.midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active[data-step-index="${activeStep}"]`)).toHaveCount(2);
+      await expect(page.locator(`.midi-studio-v2__note-table-cell.midi-studio-v2__grid-cell--playhead-active[data-step-index="${activeStep}"]`)).toHaveCount(0);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "buffer-start"))).toBe(true);
       await page.locator("#stopButton").click();
@@ -827,7 +829,8 @@ test.describe("MIDI Studio V2", () => {
       });
       await page.locator("#playButton").click();
       await expect(page.locator("#stopButton")).toBeEnabled();
-      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active").first()).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(2);
+      await expect(page.locator(".midi-studio-v2__note-table-cell.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(0);
       const playbackEvidence = await page.evaluate(() => {
         const maxSameTime = (action) => {
           const counts = new Map();
@@ -847,8 +850,10 @@ test.describe("MIDI Studio V2", () => {
       expect(playbackEvidence.oscillatorStartsAtSameTime).toBeGreaterThanOrEqual(3);
       expect(playbackEvidence.bufferStartsAtSameTime).toBeGreaterThanOrEqual(2);
       await page.waitForFunction(() => window.__midiStudioV2App.instrumentGrid.playheadStep > 0);
-      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(1);
-      expect(Number(await page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index"))).toBeGreaterThan(0);
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(2);
+      await expect(page.locator(".midi-studio-v2__note-table-cell.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__grid-cell--lane-active")).toHaveCount(0);
+      expect(Number(await page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index"))).toBeGreaterThan(0);
       await page.locator("#stopButton").click();
       await expect(page.locator("#playButton")).toBeEnabled();
       await page.locator("#playButton").click();
@@ -981,7 +986,8 @@ test.describe("MIDI Studio V2", () => {
         };
       });
       expect(gridLayout.alternatingRowsDiffer).toBe(true);
-      expect(gridLayout.borderRightWidth).toBe("2px");
+      expect(Number.parseFloat(gridLayout.borderRightWidth)).toBeGreaterThanOrEqual(0.8);
+      expect(Number.parseFloat(gridLayout.borderRightWidth)).toBeLessThanOrEqual(1);
       expect(gridLayout.columnWidth).toBeLessThanOrEqual(32);
       expect(gridLayout.columnTemplate).toContain("28.8px");
 
@@ -995,6 +1001,7 @@ test.describe("MIDI Studio V2", () => {
         const row1 = element.querySelector(".midi-studio-v2__timing-header-row-1.midi-studio-v2__note-table-column-header").getBoundingClientRect();
         const row2 = element.querySelector(".midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header").getBoundingClientRect();
         return {
+          headerGap: Math.round(row2.top - row1.bottom),
           row1TopDelta: Math.abs(row1.top - outputRect.top),
           row2BelowRow1: row2.top >= row1.bottom - 1,
           scrollTop: Math.round(element.scrollTop)
@@ -1002,6 +1009,7 @@ test.describe("MIDI Studio V2", () => {
       });
       expect(verticalFreeze.scrollTop).toBeGreaterThan(0);
       expect(verticalFreeze.row1TopDelta).toBeLessThanOrEqual(2);
+      expect(verticalFreeze.headerGap).toBeLessThanOrEqual(1);
       expect(verticalFreeze.row2BelowRow1).toBe(true);
 
       await output.evaluate((element) => {
@@ -1174,7 +1182,9 @@ test.describe("MIDI Studio V2", () => {
       )))).toBe(true);
 
       await page.locator("#playButton").click();
-      const firstPlayheadStep = Number(await page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index"));
+      const firstPlayheadStep = Number(await page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index"));
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(2);
+      await expect(page.locator(".midi-studio-v2__note-table-cell.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(0);
       await expect(page.locator("#playbackState")).toContainText("Playing audible preview: Camptown Races UAT Reel");
       await expect(page.locator("#nowPlayingLabel")).toHaveText("Playing: Camptown Races UAT Reel");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Audible preview playback started for Camptown Races UAT Reel\./);
@@ -1185,7 +1195,7 @@ test.describe("MIDI Studio V2", () => {
         event.lane === "lead" && event.stepIndex === 0 && event.value === "C5"
       )))).toBe(true);
       await page.waitForTimeout(520);
-      const nextPlayheadStep = Number(await page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index"));
+      const nextPlayheadStep = Number(await page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index"));
       expect(nextPlayheadStep).toBeGreaterThan(firstPlayheadStep);
       expect(nextPlayheadStep - firstPlayheadStep).toBeLessThanOrEqual(2);
 
@@ -1323,6 +1333,8 @@ test.describe("MIDI Studio V2", () => {
     expect(roadmap).toContain("[x] Diagnostics for audio state, selected song, selected section, active lanes, and warnings.");
     expect(roadmap).toContain("[ ] Optional piano roll.");
     expect(roadmap).toContain("[ ] Optional advanced MIDI event editor.");
+    expect(roadmap).toContain("[.] Optional per-note velocity and duration editing.");
+    expect(Array.from(roadmap.matchAll(/\[[^\]]+\]/g), ([match]) => match).every((marker) => ["[ ]", "[.]", "[x]"].includes(marker))).toBe(true);
     expect(audit).toContain("Highest Actually Applied MIDI Studio V2 PR");
     expect(audit).toContain("PR_26146_032-midi-studio-v2-fast-note-editing-and-keyboard-flow");
     expect(audit).toContain("Broken/UAT-Blocking");
@@ -1361,6 +1373,65 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#playbackState")).toContainText("Audible preview ready: Main Theme.");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 3 MIDI songs/);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Next: select a MIDI Studio song, review the Studio tab timeline, then press Play to audition the imported arrangement\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("places Copy JSON in the JSON Details header and preserves copy behavior", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__midiStudioCopiedJson = "";
+      Object.defineProperty(window.navigator, "clipboard", {
+        configurable: true,
+        value: {
+          writeText: async (text) => {
+            window.__midiStudioCopiedJson = text;
+          }
+        }
+      });
+    });
+    const server = await openMidiStudio(page);
+    try {
+      await selectMidiStudioTab(page, "diagnostics");
+      const header = page.locator(".midi-studio-v2__json-details-header");
+      await expect(header).toContainText("JSON Details");
+      await expect(header.locator("#toolCopyJsonButton")).toHaveCount(1);
+      await expect(page.locator(".midi-studio-v2__tool-menu #toolCopyJsonButton")).toHaveCount(0);
+      await expect(header.locator(".accordion-v2__icon")).toHaveCount(1);
+      const headerLayout = await header.evaluate((element) => {
+        const title = element.querySelector("span:first-child").getBoundingClientRect();
+        const copy = element.querySelector("#toolCopyJsonButton").getBoundingClientRect();
+        const close = element.querySelector(".accordion-v2__icon").getBoundingClientRect();
+        return {
+          closeAfterCopy: close.left > copy.right,
+          copyAfterTitle: copy.left > title.right,
+          copyText: element.querySelector("#toolCopyJsonButton").textContent,
+          sameRow: Math.max(
+            Math.abs((title.top + title.height / 2) - (copy.top + copy.height / 2)),
+            Math.abs((copy.top + copy.height / 2) - (close.top + close.height / 2))
+          ) <= 4,
+          titleText: element.querySelector("span:first-child").textContent
+        };
+      });
+      expect(headerLayout).toEqual({
+        closeAfterCopy: true,
+        copyAfterTitle: true,
+        copyText: "Copy JSON",
+        sameRow: true,
+        titleText: "JSON Details"
+      });
+
+      await header.locator("#toolCopyJsonButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK MIDI Studio V2 toolState JSON copied\./);
+      const copiedJson = await page.evaluate(() => window.__midiStudioCopiedJson);
+      expect(JSON.parse(copiedJson)).toMatchObject({
+        schema: "html-js-gaming.tool-state",
+        toolId: "midi-studio-v2",
+        payload: {
+          activeSongId: "theme-main"
+        }
+      });
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -1863,7 +1934,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentGridOutput")).toContainText("Bar 5");
       await expect(page.locator(".midi-studio-v2__grid-cell--bar")).toHaveCount(5);
       await expect(page.locator(".midi-studio-v2__grid-cell--ruler").first()).toContainText("1");
-      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "intro");
+      await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "intro");
       await expect(page.locator("#instrumentGridSectionSelect")).toContainText("bridge");
       await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
       await page.locator("#instrumentGridLoopEndSelect").selectOption("boss");
@@ -1871,7 +1942,7 @@ test.describe("MIDI Studio V2", () => {
       await page.locator('[data-section-preset="boss"]').click();
       await expect(page.locator("#instrumentGridSectionSelect")).toHaveValue("boss");
       await page.locator("#jumpToSectionButton").click();
-      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "boss");
+      await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "boss");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Timing playhead jumped to section boss\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -1897,12 +1968,12 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator('[data-lane="bass"][data-source="generated"]')).toHaveCount(4);
       await expect(page.locator('[data-lane="bass"][data-source="manual"]')).toHaveCount(1);
       await page.locator("#instrumentGridSectionSelect").selectOption("intro");
-      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
+      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
-      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", beforeStep || "");
-      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-beat", /1|2/);
-      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-subdivision-step", /1|2/);
+      await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", beforeStep || "");
+      await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-beat", /1|2/);
+      await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-subdivision-step", /1|2/);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await page.locator("#stopTimingPreviewButton").click();
       await expect(page.locator("#instrumentGridTransportState")).toContainText("Preview Synth timing preview stopped.");
@@ -1925,11 +1996,11 @@ test.describe("MIDI Studio V2", () => {
         pad: ""
       });
       await page.locator("#normalizeInstrumentGridButton").click();
-      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
+      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL No playable Preview Synth notes found for section intro\. Generate or enter chords, bass, pad, lead, or drum cells before playing\./);
       await expect(page.locator("#audioDiagnostics")).toContainText("No playable Preview Synth notes found for section intro.");
-      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-step-index", beforeStep || "0");
+      await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-step-index", beforeStep || "0");
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(false);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -1978,10 +2049,9 @@ test.describe("MIDI Studio V2", () => {
       await setSpreadsheetRowToggle(page, "Lead", "solo", true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Lane soloed: Lead\./);
       await page.locator("#playSectionButton").click();
-      await expect(page.locator(".midi-studio-v2__grid-cell--lane-active")).not.toHaveCount(0);
-      expect(await page.locator(".midi-studio-v2__grid-cell--lane-active").evaluateAll((cells) => (
-        cells.every((cell) => cell.dataset.lane === "lead")
-      ))).toBe(true);
+      await expect(page.locator(".midi-studio-v2__grid-cell--lane-active")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__note-table-cell.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveCount(2);
       const soloDiagnostics = await audioDiagnosticsRows(page);
       expect(soloDiagnostics["Active lanes"]).toBe("lead");
       expect(soloDiagnostics["Soloed lanes"]).toBe("lead");

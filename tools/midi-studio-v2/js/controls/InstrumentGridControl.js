@@ -284,6 +284,7 @@ export class InstrumentGridControl {
     this.loopBounds = null;
     this.playTimer = null;
     this.playheadStep = 0;
+    this.lastPlayheadHighlightStep = null;
     this.removedFixedLanes = new Set();
     this.selectedCell = null;
     this.selectedLane = "lead";
@@ -478,6 +479,7 @@ export class InstrumentGridControl {
     this.renderDefinitionList(summaryRows(result));
     this.gridOutput.replaceChildren();
     this.previewLaneControls = {};
+    this.lastPlayheadHighlightStep = null;
     if (!result?.ok) {
       this.renderInstrumentList([]);
       this.populateSectionControls([]);
@@ -1970,24 +1972,21 @@ export class InstrumentGridControl {
     const result = this.currentResult;
     if (!result?.ok) {
       this.playheadStep = 0;
+      this.lastPlayheadHighlightStep = null;
       return;
     }
-    this.playheadStep = Math.max(0, Math.min(stepIndex, result.totalSteps - 1));
-    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--playhead-active").forEach((cell) => {
-      cell.classList.remove("midi-studio-v2__grid-cell--playhead-active");
+    const nextStep = Math.max(0, Math.min(stepIndex, result.totalSteps - 1));
+    const previousStep = this.lastPlayheadHighlightStep;
+    this.playheadStep = nextStep;
+    if (previousStep !== null && previousStep !== nextStep) {
+      this.gridOutput.querySelectorAll(`.midi-studio-v2__grid-cell--timing-header[data-step-index="${previousStep}"]`).forEach((cell) => {
+        cell.classList.remove("midi-studio-v2__grid-cell--playhead-active");
+      });
+    }
+    this.gridOutput.querySelectorAll(`.midi-studio-v2__grid-cell--timing-header[data-step-index="${nextStep}"]`).forEach((cell) => {
+      cell.classList.add("midi-studio-v2__grid-cell--playhead-active");
     });
-    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-active").forEach((cell) => {
-      cell.classList.remove("midi-studio-v2__grid-cell--lane-active");
-    });
-    this.gridOutput.querySelectorAll(`[data-step-index="${this.playheadStep}"]`).forEach((cell) => {
-      if (cell.classList.contains("midi-studio-v2__grid-cell--beat-header") || cell.classList.contains("midi-studio-v2__note-table-cell")) {
-        cell.classList.add("midi-studio-v2__grid-cell--playhead-active");
-      }
-      const cellLanes = String(cell.dataset.noteLanes || "").split(/\s+/).filter(Boolean);
-      if (cellLanes.some((lane) => this.activePreviewLanes.includes(lane))) {
-        cell.classList.add("midi-studio-v2__grid-cell--lane-active");
-      }
-    });
+    this.lastPlayheadHighlightStep = nextStep;
   }
 
   updateLoopRegion() {

@@ -21,6 +21,6 @@
 
 - [ ] Optional piano roll.
 - [ ] Optional advanced MIDI event editor.
-- [ ] Optional per-note velocity and duration editing.
+- [.] Optional per-note velocity and duration editing.
 - [ ] Optional arrangement section copy/paste helpers.
 - [ ] Optional quantize and humanize helpers.

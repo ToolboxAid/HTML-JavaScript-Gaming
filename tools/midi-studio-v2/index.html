@@ -55,7 +55,6 @@
         </label>
         <button id="renderedExportSaveButton" type="button">Save</button>
       </div>
-      <button id="toolCopyJsonButton" type="button" disabled>Copy JSON</button>
       <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
       <input id="toolImportManifestInput" type="file" accept="application/json,.json" hidden>
     </nav>
@@ -329,10 +328,13 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
+          <div class="accordion-v2__header midi-studio-v2__json-details-header" aria-expanded="true" aria-controls="inspectorContent">
             <span>JSON Details</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
+            <span class="midi-studio-v2__json-header-actions">
+              <button id="toolCopyJsonButton" class="midi-studio-v2__json-copy-button" type="button" disabled>Copy JSON</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </span>
+          </div>
           <div id="inspectorContent" class="accordion-v2__content">
             <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
           </div>
