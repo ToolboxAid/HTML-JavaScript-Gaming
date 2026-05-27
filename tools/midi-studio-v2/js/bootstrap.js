@@ -2,6 +2,7 @@ import { GameManifestLoader } from "../../../src/tools/common/GameManifestLoader
 import { MidiStudioV2App } from "./MidiStudioV2App.js";
 import { AccordionSection } from "./controls/AccordionSection.js";
 import { ActionNavControl } from "./controls/ActionNavControl.js";
+import { AudioDiagnosticsControl } from "./controls/AudioDiagnosticsControl.js";
 import { DirectorPanelControl } from "./controls/DirectorPanelControl.js";
 import { InstrumentGridControl } from "./controls/InstrumentGridControl.js";
 import { MidiSourceDetailsControl } from "./controls/MidiSourceDetailsControl.js";
@@ -35,7 +36,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const app = new MidiStudioV2App({
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     actionNav: new ActionNavControl({
+      loadExampleAndPlayButton: requireElement("#loadExampleAndPlayButton"),
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
+      stopAllAudioButton: requireElement("#stopAllAudioButton"),
       toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
       toolExportToolStateButton: requireElement("#toolExportToolStateButton"),
       toolImportManifestButton: requireElement("#toolImportManifestButton"),
@@ -47,6 +50,7 @@ window.addEventListener("DOMContentLoaded", () => {
       workspaceImportManifestButton: requireElement("#workspaceImportManifestButton"),
       workspaceNav: requireElement(".tool-starter__workspace__menu")
     }),
+    audioDiagnostics: new AudioDiagnosticsControl({ details: requireElement("#audioDiagnostics") }),
     details: new SongDetailsControl({
       details: requireElement("#songDetails"),
       instrumentSetField: requireElement("#instrumentSetField"),

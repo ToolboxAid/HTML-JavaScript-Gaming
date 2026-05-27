@@ -79,6 +79,7 @@ export class MidiStudioV2App {
   constructor({
     accordions,
     actionNav,
+    audioDiagnostics,
     details,
     directorPanel,
     instrumentGrid,
@@ -100,6 +101,7 @@ export class MidiStudioV2App {
   }) {
     this.accordions = accordions;
     this.actionNav = actionNav;
+    this.audioDiagnostics = audioDiagnostics;
     this.details = details;
     this.directorPanel = directorPanel;
     this.instrumentGrid = instrumentGrid;
@@ -143,6 +145,10 @@ export class MidiStudioV2App {
     });
     this.renderedExportActions.mount({ onExport: (format) => this.exportRenderedTarget(format) });
     this.actionNav.mount({
+      onLoadExampleAndPlay: () => {
+        void this.loadExampleAndPlay();
+      },
+      onStopAllAudio: () => this.stopAllAudio(),
       onToolCopyJson: () => this.copyJson(),
       onToolExportToolState: () => this.exportToolState(),
       onToolImportManifest: (file) => this.importManifestFile(file),
@@ -177,6 +183,7 @@ export class MidiStudioV2App {
     this.lastSongSheetResult = null;
     this.playbackControl.setSelected(null);
     this.actionNav.setToolActionsEnabled(false);
+    this.updateAudioDiagnostics();
   }
 
   handleExpandedModeChange(isExpanded) {
@@ -212,6 +219,7 @@ export class MidiStudioV2App {
     this.midiSourceDetails.setEnabled(Boolean(song));
     this.playbackControl.setSelected(song);
     this.actionNav.setToolActionsEnabled(Boolean(this.payload));
+    this.updateAudioDiagnostics();
   }
 
   selectedSong() {
@@ -228,6 +236,7 @@ export class MidiStudioV2App {
     this.payload.activeSongId = songId;
     this.render();
     this.statusLog.ok(`Selected MIDI song: ${this.selectedSong()?.name || songId}.`);
+    this.updateAudioDiagnostics();
   }
 
   async playSelectedSong() {
@@ -239,10 +248,12 @@ export class MidiStudioV2App {
         this.statusLog.warn("Live MIDI synthesis not implemented.");
       }
       this.statusLog.fail(result.message);
+      this.updateAudioDiagnostics();
       return;
     }
     this.playbackControl.setPlaying(song);
     this.statusLog.ok(`Rendered preview started for ${song.name}: ${result.path}.`);
+    this.updateAudioDiagnostics();
   }
 
   async inspectSelectedSource() {
@@ -264,6 +275,7 @@ export class MidiStudioV2App {
     if (!result.ok) {
       this.lastSongSheetResult = null;
       this.statusLog.fail(`Song Sheet rejected: ${result.message}`);
+      this.updateAudioDiagnostics();
       return;
     }
     this.lastSongSheetResult = result;
@@ -271,6 +283,7 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Song Sheet parsed with warnings: ${result.warningSummary}`);
     }
     this.statusLog.ok(`Song Sheet parsed: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.bars} bars, ${result.chordCount} chords.`);
+    this.updateAudioDiagnostics();
   }
 
   normalizeInstrumentGrid(input) {
@@ -279,18 +292,21 @@ export class MidiStudioV2App {
     this.lastInstrumentGridResult = result.ok ? result : null;
     if (!result.ok) {
       this.statusLog.fail(`Instrument grid rejected: ${result.message}`);
+      this.updateAudioDiagnostics();
       return;
     }
     if (result.warnings.length) {
       this.statusLog.warn(`Instrument grid normalized with warnings: ${result.warningSummary}`);
     }
     this.statusLog.ok(`Instrument grid normalized: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.barCount} bars, ${result.eventCount} events.`);
+    this.updateAudioDiagnostics();
   }
 
   generateInstrumentLane(lane, input) {
     const generated = this.instrumentGridParser.generateLane(input, lane);
     if (!generated.ok) {
       this.statusLog.fail(`Instrument grid generation rejected: ${generated.message}`);
+      this.updateAudioDiagnostics();
       return;
     }
     this.instrumentGrid.applyGeneratedLane(generated);
@@ -305,12 +321,14 @@ export class MidiStudioV2App {
     }
     if (!normalized.ok) {
       this.statusLog.fail(`Instrument grid generation normalized into invalid grid: ${normalized.message}`);
+      this.updateAudioDiagnostics();
       return;
     }
     if (normalized.warnings.length) {
       this.statusLog.warn(`Instrument grid normalized with warnings: ${normalized.warningSummary}`);
     }
     this.statusLog.ok(generated.message);
+    this.updateAudioDiagnostics();
   }
 
   async handleInstrumentGridTransport(action, detail = {}) {
@@ -351,6 +369,7 @@ export class MidiStudioV2App {
     if (action === "stop-preview") {
       const stoppedCount = this.previewSynth.stop();
       this.statusLog.ok(`Preview playback stopped. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"}.`);
+      this.updateAudioDiagnostics();
     }
   }
 
@@ -374,6 +393,7 @@ export class MidiStudioV2App {
         this.statusLog.warn("Browser audio did not unlock for Preview Synth. Start from a direct click/tap and check site audio permissions.");
       }
       this.statusLog.fail(result.message);
+      this.updateAudioDiagnostics();
       return false;
     }
     if (result.warnings.length) {
@@ -382,6 +402,7 @@ export class MidiStudioV2App {
     this.instrumentGrid.setPreviewPlaybackLanes(result.activeLanes);
     this.statusLog.ok(`Preview Synth started for ${mode} ${label} with ${result.eventCount} playable event${result.eventCount === 1 ? "" : "s"}.`);
     this.statusLog.info("Preview Synth uses temporary oscillator instruments for grid audition only; SoundFont playback is not implemented.");
+    this.updateAudioDiagnostics();
     return true;
   }
 
@@ -389,17 +410,21 @@ export class MidiStudioV2App {
     if (kind === "instrument") {
       if (!detail.instrumentValue) {
         this.statusLog.warn(`Missing preview instrument selection for ${detail.laneLabel}. Choose a Preview Synth instrument before playback.`);
+        this.updateAudioDiagnostics();
         return;
       }
       this.statusLog.ok(`Preview instrument selected for ${detail.laneLabel}: ${detail.instrumentLabel}.`);
+      this.updateAudioDiagnostics();
       return;
     }
     if (kind === "mute") {
       this.statusLog[detail.enabled ? "warn" : "info"](`Lane ${detail.enabled ? "muted" : "unmuted"}: ${detail.laneLabel}.`);
+      this.updateAudioDiagnostics();
       return;
     }
     if (kind === "solo") {
       this.statusLog[detail.enabled ? "ok" : "info"](`Lane ${detail.enabled ? "soloed" : "solo cleared"}: ${detail.laneLabel}.`);
+      this.updateAudioDiagnostics();
     }
   }
 
@@ -424,13 +449,87 @@ export class MidiStudioV2App {
   }
 
   useExampleToolState() {
-    if (!this.applyPayload(EXAMPLE_TOOL_STATE, "explicit demo toolState")) {
+    if (!this.prepareExampleToolState()) {
       return;
+    }
+    this.statusLog.info("Demo next step: click Play Section or Play Loop to hear Preview Synth audition audio, or use Load Example And Play for the one-click UAT path.");
+  }
+
+  async loadExampleAndPlay() {
+    this.statusLog.ok("Load Example And Play started.");
+    if (!this.prepareExampleToolState()) {
+      this.statusLog.fail("Load Example And Play stopped because explicit demo data could not be loaded.");
+      this.updateAudioDiagnostics();
+      return;
+    }
+    this.statusLog.ok("Load Example And Play loaded explicit demo data.");
+    this.statusLog.ok("Load Example And Play assigned Preview Synth instruments.");
+    const section = this.instrumentGrid.selectedSection() || this.lastInstrumentGridResult?.sections?.[0] || null;
+    if (!section) {
+      this.statusLog.fail("Load Example And Play could not find a normalized section to preview.");
+      this.updateAudioDiagnostics();
+      return;
+    }
+    this.statusLog.ok(`Load Example And Play selected section: ${section.label}.`);
+    const started = await this.startPreviewSynth({
+      endStep: section.endStep,
+      label: section.label,
+      loop: false,
+      mode: "section",
+      startStep: section.startStep
+    });
+    if (!started) {
+      this.statusLog.fail("Load Example And Play could not start audible Preview Synth playback.");
+      this.updateAudioDiagnostics();
+      return;
+    }
+    this.instrumentGrid.startTimingPreview({
+      endStep: section.endStep,
+      label: section.label,
+      mode: "section",
+      startStep: section.startStep
+    });
+    this.statusLog.ok("Load Example And Play started audible Preview Synth playback and moved the playhead.");
+    this.updateAudioDiagnostics();
+  }
+
+  prepareExampleToolState() {
+    if (!this.applyPayload(EXAMPLE_TOOL_STATE, "explicit demo toolState")) {
+      return false;
     }
     this.songSheet.applyGuidedDefaults(EXAMPLE_GUIDED_SHEET);
     this.instrumentGrid.applyGridDefaults(EXAMPLE_GRID);
     this.statusLog.ok("Loaded explicit demo test song data. Demo paths are declared for UAT only; they are not hidden fallback assets.");
-    this.statusLog.info("Demo next step: parse the guided Song Sheet, generate lanes, normalize the grid, then test Preview Synth playhead loop timing preview.");
+    this.parseSongSheet(this.songSheet.composeGuidedSheet());
+    ["bass", "pad", "lead", "drums"].forEach((lane) => {
+      const input = this.instrumentGrid.readInput();
+      const laneText = String(input.lanes?.[lane] || "").trim();
+      if (laneText) {
+        return;
+      }
+      const generated = this.instrumentGridParser.generateLane(input, lane);
+      if (!generated.ok) {
+        this.statusLog.fail(`Demo lane generation rejected for ${lane}: ${generated.message}`);
+        return;
+      }
+      this.instrumentGrid.applyGeneratedLane(generated);
+      if (generated.warnings.length) {
+        this.statusLog.warn(`Demo lane generation warnings for ${lane}: ${generated.warningSummary}`);
+      }
+      if (generated.skippedEmptyBars) {
+        this.statusLog.warn(`Demo lane generation skipped ${generated.skippedEmptyBars} empty bar${generated.skippedEmptyBars === 1 ? "" : "s"} for ${lane}.`);
+      }
+      this.statusLog.ok(generated.message);
+    });
+    this.normalizeInstrumentGrid(this.instrumentGrid.readInput());
+    const playable = this.playableEventSummary();
+    if (playable.count > 0) {
+      this.statusLog.ok(`Demo grid has ${playable.count} playable Preview Synth note${playable.count === 1 ? "" : "s"} after lane generation.`);
+    } else {
+      this.statusLog.fail("Demo grid has no playable Preview Synth notes after lane generation.");
+    }
+    this.updateAudioDiagnostics();
+    return true;
   }
 
   stopPlayback() {
@@ -438,6 +537,58 @@ export class MidiStudioV2App {
     this.previewSynth.stop();
     this.instrumentGrid.clearPreviewPlaybackLanes();
     this.playbackControl.setStopped(this.selectedSong());
+    this.updateAudioDiagnostics();
+  }
+
+  stopAllAudio() {
+    this.playback.stop();
+    const stoppedCount = this.previewSynth.stop();
+    this.instrumentGrid.stopPreviewUi();
+    this.playbackControl.setStopped(this.selectedSong());
+    this.statusLog.ok(`Stop All Audio completed. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"} and reset Preview Synth state.`);
+    this.updateAudioDiagnostics();
+  }
+
+  playableEventSummary() {
+    const section = this.instrumentGrid.selectedSection() || this.lastInstrumentGridResult?.sections?.[0] || null;
+    if (!this.lastInstrumentGridResult?.ok || !section) {
+      return { activeLanes: [], count: 0, warnings: [] };
+    }
+    const playable = this.previewSynth.playableEventsForRange(
+      this.lastInstrumentGridResult,
+      section.startStep,
+      section.endStep,
+      this.instrumentGrid.previewLaneSettings()
+    );
+    return {
+      activeLanes: playable.activeLanes,
+      count: playable.events.length,
+      warnings: playable.warnings
+    };
+  }
+
+  updateAudioDiagnostics() {
+    if (!this.audioDiagnostics) {
+      return;
+    }
+    const snapshot = this.previewSynth.getSnapshot();
+    const laneDiagnostics = this.instrumentGrid.previewLaneDiagnostics();
+    const playable = this.playableEventSummary();
+    const selectedSection = this.instrumentGrid.selectedSection();
+    const packSummary = Object.entries(laneDiagnostics.instrumentLabels)
+      .map(([lane, label]) => `${lane}: ${label || "missing"}`)
+      .join("; ");
+    this.audioDiagnostics.render([
+      ["Audio context state", snapshot.audioContextState],
+      ["Selected song", this.selectedSong()?.name || "none"],
+      ["Selected section", selectedSection?.label || "none"],
+      ["Playable note count", playable.count],
+      ["Active lanes", laneDiagnostics.activeLanes.length ? laneDiagnostics.activeLanes.join(", ") : "none"],
+      ["Muted lanes", laneDiagnostics.mutedLanes.length ? laneDiagnostics.mutedLanes.join(", ") : "none"],
+      ["Soloed lanes", laneDiagnostics.soloedLanes.length ? laneDiagnostics.soloedLanes.join(", ") : "none"],
+      ["Current preview instrument pack", packSummary || "none"],
+      ["Last playback error", snapshot.lastError || "none"]
+    ]);
   }
 
   async importManifestFile(file) {

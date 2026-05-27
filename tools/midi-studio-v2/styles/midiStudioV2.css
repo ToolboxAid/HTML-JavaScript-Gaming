@@ -286,6 +286,10 @@
   text-transform: uppercase;
 }
 
+.midi-studio-v2__primary-action {
+  font-weight: 800;
+}
+
 .midi-studio-v2__header-actions .accordion-v2__icon {
   margin-left: auto;
 }

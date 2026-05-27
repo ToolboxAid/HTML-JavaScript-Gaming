@@ -51,6 +51,8 @@ function chordNotes(chordName) {
 export class PreviewSynthEngine {
   constructor({ windowRef = globalThis } = {}) {
     this.context = null;
+    this.lastError = "";
+    this.lastPlayback = null;
     this.loopTimer = null;
     this.nodes = [];
     this.playing = false;
@@ -64,7 +66,7 @@ export class PreviewSynthEngine {
   async playGridRange({ endStep, grid, label, laneSettings = {}, loop = false, mode = "section", startStep, tempoBpm = 120 } = {}) {
     this.stop();
     if (!grid?.ok) {
-      return { message: "Preview Synth needs a normalized instrument grid before playback.", ok: false, reason: "missing-grid" };
+      return this.fail("Preview Synth needs a normalized instrument grid before playback.", "missing-grid");
     }
     const contextResult = await this.ensureContext();
     if (!contextResult.ok) {
@@ -72,12 +74,11 @@ export class PreviewSynthEngine {
     }
     const playable = this.playableEventsForRange(grid, startStep, endStep, laneSettings);
     if (!playable.events.length) {
-      return {
-        message: `No playable Preview Synth notes found for ${mode} ${label || "(unnamed)"}. Generate or enter chords, bass, pad, lead, or drum cells before playing.`,
-        ok: false,
-        warnings: playable.warnings,
-        reason: "no-playable-notes"
-      };
+      return this.fail(
+        `No playable Preview Synth notes found for ${mode} ${label || "(unnamed)"}. Generate or enter chords, bass, pad, lead, or drum cells before playing.`,
+        "no-playable-notes",
+        { warnings: playable.warnings }
+      );
     }
     const safeTempo = Number.isFinite(Number(tempoBpm)) && Number(tempoBpm) > 0 ? Number(tempoBpm) : 120;
     const secondsPerBeat = 60 / safeTempo;
@@ -90,6 +91,13 @@ export class PreviewSynthEngine {
         this.scheduleEvents({ context: contextResult.context, events: playable.events, secondsPerBeat, secondsPerStep, startStep });
       }, cycleSeconds * 1000);
     }
+    this.lastError = "";
+    this.lastPlayback = {
+      activeLanes: playable.activeLanes,
+      eventCount: playable.events.length,
+      label,
+      mode
+    };
     return {
       activeLanes: playable.activeLanes,
       eventCount: playable.events.length,
@@ -105,11 +113,7 @@ export class PreviewSynthEngine {
   async ensureContext() {
     const AudioContextCtor = audioContextCtor(this.window);
     if (!AudioContextCtor) {
-      return {
-        message: "Preview Synth audio unavailable: Web Audio AudioContext is not available. Use a browser with Web Audio support.",
-        ok: false,
-        reason: "audio-unavailable"
-      };
+      return this.fail("Preview Synth audio unavailable: Web Audio AudioContext is not available. Use a browser with Web Audio support.", "audio-unavailable");
     }
     try {
       this.context = this.context || new AudioContextCtor();
@@ -117,19 +121,11 @@ export class PreviewSynthEngine {
         await this.context.resume();
       }
       if (this.context.state === "suspended") {
-        return {
-          message: "Preview Synth audio is still suspended after the play gesture. Click Play Section or Play Loop again and check browser audio permissions.",
-          ok: false,
-          reason: "audio-suspended"
-        };
+        return this.fail("Preview Synth audio is still suspended after the play gesture. Click Play Section or Play Loop again and check browser audio permissions.", "audio-suspended");
       }
       return { context: this.context, ok: true };
     } catch (error) {
-      return {
-        message: `Preview Synth audio could not start after the play gesture: ${error.message || "browser audio permission blocked playback"}.`,
-        ok: false,
-        reason: "audio-resume-failed"
-      };
+      return this.fail(`Preview Synth audio could not start after the play gesture: ${error.message || "browser audio permission blocked playback"}.`, "audio-resume-failed");
     }
   }
 
@@ -256,15 +252,31 @@ export class PreviewSynthEngine {
     const stoppedCount = this.nodes.length;
     this.nodes = [];
     this.playing = false;
+    this.lastPlayback = null;
     return stoppedCount;
   }
 
   getSnapshot() {
     return {
       activeNodeCount: this.nodes.length,
+      audioContextState: this.context?.state || "not created",
+      lastError: this.lastError || "none",
+      lastPlayback: this.lastPlayback,
       loopActive: Boolean(this.loopTimer),
       playing: this.playing,
       supported: this.isSupported()
+    };
+  }
+
+  fail(message, reason, extra = {}) {
+    this.lastError = message;
+    this.lastPlayback = null;
+    this.playing = false;
+    return {
+      message,
+      ok: false,
+      reason,
+      ...extra
     };
   }
 }

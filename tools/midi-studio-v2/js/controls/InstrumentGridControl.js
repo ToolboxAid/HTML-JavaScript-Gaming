@@ -220,6 +220,21 @@ export class InstrumentGridControl {
     return settings;
   }
 
+  previewLaneDiagnostics() {
+    const settings = this.previewLaneSettings();
+    const instrumentLabels = {};
+    this.previewLaneEntries().forEach(([lane, controls]) => {
+      instrumentLabels[lane] = controls.instrument?.selectedOptions[0]?.textContent || "";
+    });
+    return {
+      activeLanes: this.activePreviewLanes,
+      instrumentLabels,
+      instruments: settings.instruments,
+      mutedLanes: Object.entries(settings.muted).filter((entry) => entry[1]).map(([lane]) => lane),
+      soloedLanes: Object.entries(settings.soloed).filter((entry) => entry[1]).map(([lane]) => lane)
+    };
+  }
+
   previewLaneEntries() {
     return Object.entries(this.previewLaneControls);
   }
@@ -477,6 +492,11 @@ export class InstrumentGridControl {
     onTransport("stop-preview", {});
   }
 
+  stopPreviewUi() {
+    this.stopTimer({ clearPreviewLanes: true });
+    this.transportState.textContent = "Preview Synth timing preview stopped.";
+  }
+
   startTimingPreview({ endStep, label, mode, startStep }) {
     this.stopTimer();
     this.setPlayheadStep(startStep);
@@ -572,6 +592,10 @@ export class InstrumentGridControl {
       return { message: `Invalid loop region: ${startSection.label} starts after ${endSection.label}.`, ok: false };
     }
     return { endSection, ok: true, startSection };
+  }
+
+  selectedSection() {
+    return this.sectionByLabel(this.sectionSelect.value);
   }
 
   sectionByLabel(label) {

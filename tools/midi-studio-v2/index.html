@@ -39,7 +39,9 @@
 
     <nav class="tool-starter__menu tool-starter__tool__menu midi-studio-v2__tool-menu" aria-label="Tool actions" data-launch-mode-nav="tool">
       <button id="toolImportManifestButton" type="button">Import Manifest</button>
+      <button id="loadExampleAndPlayButton" class="midi-studio-v2__primary-action" type="button">Load Example And Play</button>
       <button id="useExampleButton" type="button">Use Example Test Song</button>
+      <button id="stopAllAudioButton" type="button">Stop All Audio</button>
       <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
         <span>Export target type</span>
         <select id="renderedExportTargetTypeSelect">
@@ -454,6 +456,16 @@
           </button>
           <div id="inspectorContent" class="accordion-v2__content">
             <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="audioDiagnosticsContent">
+            <span>Audio Diagnostics</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="audioDiagnosticsContent" class="accordion-v2__content">
+            <dl id="audioDiagnostics" class="midi-studio-v2__details"></dl>
           </div>
         </section>
 

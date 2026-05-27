@@ -280,6 +280,13 @@ async function fillInstrumentGrid(page, {
   await page.locator("#instrumentGridDrumsInput").fill(drums);
 }
 
+async function audioDiagnosticsRows(page) {
+  return page.locator("#audioDiagnostics div").evaluateAll((rows) => Object.fromEntries(rows.map((row) => [
+    row.querySelector("dt")?.textContent || "",
+    row.querySelector("dd")?.textContent || ""
+  ])));
+}
+
 test.describe("MIDI Studio V2", () => {
   test.afterAll(async () => {
     await workspaceV2CoverageReporter.writeReport();
@@ -301,10 +308,14 @@ test.describe("MIDI Studio V2", () => {
       const renderedHeader = page.locator('.accordion-v2__header[aria-controls="renderedTargetsContent"]');
       await expect(renderedHeader).toContainText("Rendered Export Targets");
       await expect(renderedHeader.locator("#exportWavButton")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__tool-menu #loadExampleAndPlayButton")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__tool-menu #stopAllAudioButton")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #exportWavButton")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #exportMp3Button")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #exportOggButton")).toBeVisible();
       await expect(page.locator("#midiSourceDetails")).toContainText("No MIDI source inspected.");
+      await expect(page.locator("#audioDiagnostics")).toContainText("Audio context state");
+      await expect(page.locator("#audioDiagnostics")).toContainText("Playable note count");
       await expect(page.locator("#playbackState")).toContainText("Live MIDI synthesis: NOT IMPLEMENTED");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 3 MIDI songs/);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Live MIDI synthesis not implemented\. sourceMidi is musical instruction data; rendered OGG\/MP3\/WAV targets are used for preview and gameplay audio\./);
@@ -360,6 +371,11 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#previewInstrumentLeadSelect")).toHaveValue("retro-pulse-lead");
       await expect(page.locator("#previewInstrumentPadSelect")).toHaveValue("ambient-pad");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded explicit demo test song data\. Demo paths are declared for UAT only; they are not hidden fallback assets\./);
+      await expect(page.locator("#instrumentGridSectionSelect")).toContainText("intro");
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      await page.locator("#stopTimingPreviewButton").click();
 
       await page.locator("#generateBassFromChordsButton").click();
       await page.locator("#generatePadFromChordsButton").click();
@@ -387,6 +403,44 @@ test.describe("MIDI Studio V2", () => {
       await page.locator('[data-song-id="demo-missing-target"]').click();
       await page.locator("#exportWavButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered WAV export target for Demo Missing Target\. Add music\.songs\[\]\.rendered\.wav before exporting\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("loads example and starts audible Preview Synth MVP playback with diagnostics", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await page.locator("#loadExampleAndPlayButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play started\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play loaded explicit demo data\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play assigned Preview Synth instruments\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Demo grid has \d+ playable Preview Synth notes after lane generation\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play started audible Preview Synth playback and moved the playhead\./);
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing section Preview Synth timing preview: intro");
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "resume"))).toBe(true);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", "0");
+      const diagnostics = await audioDiagnosticsRows(page);
+      expect(Number(diagnostics["Playable note count"])).toBeGreaterThan(0);
+      expect(diagnostics).toMatchObject({
+        "Audio context state": "running",
+        "Last playback error": "none",
+        "Selected section": "intro",
+        "Selected song": "Demo Test Song"
+      });
+      expect(diagnostics["Active lanes"]).toMatch(/bass|chords|drums|lead|pad/);
+      expect(diagnostics["Current preview instrument pack"]).toContain("lead: Retro Pulse Lead");
+      expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot().playing)).toBe(true);
+
+      await page.locator("#stopAllAudioButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Stop All Audio completed\. Cleared \d+ scheduled oscillators and reset Preview Synth state\./);
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Preview Synth timing preview stopped.");
+      const stoppedDiagnostics = await audioDiagnosticsRows(page);
+      expect(stoppedDiagnostics["Active lanes"]).toBe("none");
+      expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot().playing)).toBe(false);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -854,6 +908,7 @@ Am F`);
       const beforeStep = await page.locator(".midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL No playable Preview Synth notes found for section intro\. Generate or enter chords, bass, pad, lead, or drum cells before playing\./);
+      await expect(page.locator("#audioDiagnostics")).toContainText("No playable Preview Synth notes found for section intro.");
       await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-step-index", beforeStep || "0");
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(false);
     } finally {
@@ -869,6 +924,7 @@ Am F`);
       await page.locator("#normalizeInstrumentGridButton").click();
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Preview Synth audio unavailable: Web Audio AudioContext is not available\. Use a browser with Web Audio support\./);
+      await expect(page.locator("#audioDiagnostics")).toContainText("Preview Synth audio unavailable");
       expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot())).toMatchObject({
         playing: false,
         supported: false
@@ -895,6 +951,7 @@ Am F`);
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
       await expect(page.locator('.midi-studio-v2__grid-cell--lane-active[data-lane="bass"]')).toHaveCount(0);
+      expect((await audioDiagnosticsRows(page))["Muted lanes"]).toBe("bass");
       await page.locator("#stopTimingPreviewButton").click();
 
       await page.locator("#previewMuteBassToggle").uncheck();
@@ -905,6 +962,9 @@ Am F`);
       expect(await page.locator(".midi-studio-v2__grid-cell--lane-active").evaluateAll((cells) => (
         cells.every((cell) => cell.dataset.lane === "lead")
       ))).toBe(true);
+      const soloDiagnostics = await audioDiagnosticsRows(page);
+      expect(soloDiagnostics["Active lanes"]).toBe("lead");
+      expect(soloDiagnostics["Soloed lanes"]).toBe("lead");
       await page.locator("#stopTimingPreviewButton").click();
 
       await page.locator("#previewSoloLeadToggle").uncheck();
