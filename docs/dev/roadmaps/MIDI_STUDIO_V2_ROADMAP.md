@@ -10,12 +10,12 @@
 - [x] Tabs organize Studio, Song Setup, Instruments, Auto-Create Parts, and Diagnostics; MIDI Import lives under Selected Song Details and export actions live in the action bar.
 - [x] Editable note/timeline grid remains the primary music studio editing surface.
 - [x] Track volume, pan, mute, and solo controls live on instrument timeline rows.
-- [.] Song setup fields for tempo, key, style, intro, and loop.
+- [x] Song setup fields for tempo, key, style, intro, and loop.
 - [x] MIDI import conversion to editable tracks.
 - [ ] Rendered WAV/MP3/OGG export.
 - [ ] SoundFont and real instrument playback.
-- [ ] Auto-Create Parts helpers for generated bass, pad, arpeggio, and drums.
-- [.] Diagnostics for audio state, selected song, selected section, active lanes, and warnings.
+- [.] Auto-Create Parts helpers for generated bass, pad, arpeggio, and drums.
+- [x] Diagnostics for audio state, selected song, selected section, active lanes, and warnings.
 
 ## Optional Future Items
 

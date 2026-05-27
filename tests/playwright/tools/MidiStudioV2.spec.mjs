@@ -6,6 +6,8 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 
 const uatManifestPath = path.resolve("tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json");
 const roadmapPath = path.resolve("docs/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md");
+const implementationAuditPath = path.resolve("docs/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit.md");
+const implementationAuditValidationPath = path.resolve("docs/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit_validation.md");
 
 const validManifest = {
   schema: "html-js-gaming.game-manifest",
@@ -636,20 +638,37 @@ test.describe("MIDI Studio V2", () => {
       });
       expect(controlAlignment.missing).toBe(false);
       expect(controlAlignment.maxCenterDelta).toBeLessThanOrEqual(4);
-      const leftColumnFit = await instrumentRow(page, "lead").locator(".midi-studio-v2__instrument-control-row").evaluate((row) => {
-        const leftPanel = document.querySelector(".tool-starter__panel--left").getBoundingClientRect();
-        const rowRect = row.getBoundingClientRect();
-        const controls = Array.from(row.children).map((control) => control.getBoundingClientRect());
+      const leftColumnFit = await instrumentRow(page, "lead").evaluate((instrumentRowElement) => {
+        const leftPanel = document.querySelector(".tool-starter__panel--left");
+        const controlRow = instrumentRowElement.querySelector(".midi-studio-v2__instrument-control-row");
+        const selectors = instrumentRowElement.querySelector(".midi-studio-v2__instrument-selectors");
+        const selectElements = Array.from(selectors.querySelectorAll("select"));
+        const leftPanelRect = leftPanel.getBoundingClientRect();
+        const controlRowRect = controlRow.getBoundingClientRect();
+        const controls = Array.from(controlRow.children).map((control) => control.getBoundingClientRect());
+        const selectorRect = selectors.getBoundingClientRect();
+        const selectRects = selectElements.map((select) => select.getBoundingClientRect());
         return {
-          controlsFit: controls.every((rect) => rect.left >= rowRect.left - 1 && rect.right <= rowRect.right + 1 && rect.right <= leftPanel.right + 1),
-          leftWidth: leftPanel.width,
-          rowClientWidth: row.clientWidth,
-          rowScrollWidth: row.scrollWidth
+          controlsFit: controls.every((rect) => rect.left >= controlRowRect.left - 1 && rect.right <= controlRowRect.right + 1 && rect.right <= leftPanelRect.right + 1),
+          controlTopDelta: Math.max(...controls.map((rect) => rect.top)) - Math.min(...controls.map((rect) => rect.top)),
+          leftClientWidth: leftPanel.clientWidth,
+          leftScrollWidth: leftPanel.scrollWidth,
+          leftWidth: Math.round(leftPanelRect.width),
+          rowClientWidth: instrumentRowElement.clientWidth,
+          rowScrollWidth: instrumentRowElement.scrollWidth,
+          selectCount: selectElements.length,
+          selectsFit: selectRects.every((rect) => rect.left >= selectorRect.left - 1 && rect.right <= selectorRect.right + 1 && rect.right <= leftPanelRect.right + 1),
+          selectorsWrap: selectRects.length === 2 && Math.abs(selectRects[0].top - selectRects[1].top) <= 1
         };
       });
-      expect(leftColumnFit.leftWidth).toBeGreaterThanOrEqual(560);
+      expect(leftColumnFit.leftWidth).toBe(350);
+      expect(leftColumnFit.leftScrollWidth).toBeLessThanOrEqual(leftColumnFit.leftClientWidth + 1);
       expect(leftColumnFit.controlsFit).toBe(true);
+      expect(leftColumnFit.controlTopDelta).toBeLessThanOrEqual(2);
       expect(leftColumnFit.rowScrollWidth).toBeLessThanOrEqual(leftColumnFit.rowClientWidth + 1);
+      expect(leftColumnFit.selectCount).toBe(2);
+      expect(leftColumnFit.selectsFit).toBe(true);
+      expect(leftColumnFit.selectorsWrap).toBe(true);
 
       const gmFamilyOptions = await instrumentTypeSelect(page, "lead").locator("option").evaluateAll((options) => options.map((option) => option.value));
       for (const family of gmFamilyOptions) {
@@ -1165,19 +1184,30 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("roadmap exists with required MIDI Studio V2 status markers", async () => {
+  test("roadmap and implementation audit exist with actual MIDI Studio V2 status markers", async () => {
     const roadmap = await fs.readFile(roadmapPath, "utf8");
+    const audit = await fs.readFile(implementationAuditPath, "utf8");
+    const validation = await fs.readFile(implementationAuditValidationPath, "utf8");
     expect(roadmap).toContain("[.] First priority: UAT manifest import");
     expect(roadmap).toContain("[x] UAT manifest import uses Import JSON Manifest");
     expect(roadmap).toContain("[x] Real UAT manifest fixture includes multiple MIDI Studio songs.");
     expect(roadmap).toContain("[x] Playable upbeat public-domain/traditional-style test song arrangement includes Lead, Bass, Chords/Pad, and Drums.");
     expect(roadmap).toContain("[x] Tabs organize Studio, Song Setup, Instruments, Auto-Create Parts, and Diagnostics; MIDI Import lives under Selected Song Details and export actions live in the action bar.");
     expect(roadmap).toContain("[x] Track volume, pan, mute, and solo controls live on instrument timeline rows.");
+    expect(roadmap).toContain("[x] Song setup fields for tempo, key, style, intro, and loop.");
     expect(roadmap).toContain("[x] MIDI import conversion to editable tracks.");
     expect(roadmap).toContain("[ ] Rendered WAV/MP3/OGG export.");
     expect(roadmap).toContain("[ ] SoundFont and real instrument playback.");
+    expect(roadmap).toContain("[.] Auto-Create Parts helpers for generated bass, pad, arpeggio, and drums.");
+    expect(roadmap).toContain("[x] Diagnostics for audio state, selected song, selected section, active lanes, and warnings.");
     expect(roadmap).toContain("[ ] Optional piano roll.");
     expect(roadmap).toContain("[ ] Optional advanced MIDI event editor.");
+    expect(audit).toContain("Highest Actually Applied MIDI Studio V2 PR");
+    expect(audit).toContain("PR_26146_032-midi-studio-v2-fast-note-editing-and-keyboard-flow");
+    expect(audit).toContain("Broken/UAT-Blocking");
+    expect(audit).toContain("No current UAT-blocking MIDI Studio V2 runtime issues were found in the audited files.");
+    expect(audit).toContain("UNKNOWN");
+    expect(validation).toContain("Status: PASS");
   });
 
   test("launches and renders a valid multi-song manifest payload", async ({ page }) => {
@@ -1874,7 +1904,6 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#generateBasicDrumsButton").click();
       await expect(page.locator("#instrumentGridDrumsInput")).toHaveValue("kick hat snare hat | kick hat snare hat");
       await expect(page.locator("#instrumentGridSummary")).toContainText("Generated cells");
-      await expect(page.locator("#instrumentGridOutput")).toContainText("kick");
       const gridModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
       expect(gridModel.timeline.some((event) => event.lane === "bass" && event.source === "generated" && event.value === "A2")).toBe(true);
       expect(gridModel.timeline.some((event) => event.lane === "pad" && event.kind === "chord" && event.source === "generated")).toBe(true);

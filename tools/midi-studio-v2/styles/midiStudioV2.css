@@ -93,7 +93,7 @@
 }
 
 .midi-studio-v2.app-shell {
-  grid-template-columns: minmax(calc(14rem + 350px), calc(18rem + 350px)) minmax(0, 1fr) minmax(14rem, 18rem);
+  grid-template-columns: 350px minmax(0, 1fr) minmax(14rem, 18rem);
 }
 
 .midi-studio-v2__timeline-title h2 {
@@ -188,6 +188,7 @@
   border-radius: 6px;
   display: grid;
   gap: 0.26rem;
+  min-width: 0;
   padding: 0.35rem;
 }
 
@@ -207,6 +208,7 @@
   display: grid;
   gap: 0.25rem;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  min-width: 0;
 }
 
 .midi-studio-v2__song-sheet-grid {
@@ -415,6 +417,7 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   font-size: 0.72rem;
   font-weight: 800;
   min-height: 1.45rem;
+  min-width: 0;
   padding-bottom: 0.08rem;
   padding-top: 0.08rem;
   width: 100%;
@@ -432,7 +435,7 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   gap: 0.28rem;
   justify-content: flex-start;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .midi-studio-v2__lane-toggle {
