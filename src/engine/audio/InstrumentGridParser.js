@@ -173,14 +173,14 @@ export class InstrumentGridParser {
   }
 
   laneNamesFor(lanes = {}) {
-    const names = DEFAULT_LANE_NAMES.slice();
+    const names = [];
     Object.keys(lanes || {}).forEach((lane) => {
       const normalized = String(lane || "").trim();
       if (normalized && !names.includes(normalized)) {
         names.push(normalized);
       }
     });
-    return names;
+    return names.length ? names : DEFAULT_LANE_NAMES.slice();
   }
 
   parseLane({ barCount, beatsPerBar, generatedSource, lane, sections, source, stepsPerBar, subdivision }) {

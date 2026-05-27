@@ -323,7 +323,7 @@ async function fillInstrumentGrid(page, {
   sections = "intro:1, loop:1",
   subdivision = "1"
 } = {}) {
-  await selectMidiStudioTab(page, "studio");
+  await selectMidiStudioTab(page, "auto-create-parts");
   await page.locator("#instrumentGridSectionsInput").fill(sections);
   await page.locator("#instrumentGridBeatsInput").fill(beats);
   await page.locator("#instrumentGridSubdivisionInput").selectOption(subdivision);
@@ -346,6 +346,26 @@ async function audioDiagnosticsRows(page) {
 
 function spreadsheetCell(page, lane, stepIndex) {
   return page.locator(`.midi-studio-v2__spreadsheet-note-cell[data-lane="${lane}"][data-step-index="${stepIndex}"]`);
+}
+
+function octaveCell(page, rowToken, stepIndex) {
+  return page.locator(`.midi-studio-v2__octave-note-cell[data-row-token="${rowToken}"][data-step-index="${stepIndex}"]`);
+}
+
+function octaveNoteBlock(page, lane) {
+  return page.locator(`.midi-studio-v2__note-block[data-lane="${lane}"]`);
+}
+
+function instrumentRow(page, lane) {
+  return page.locator(`.midi-studio-v2__instrument-row[data-lane="${lane}"]`);
+}
+
+function instrumentTypeSelect(page, lane) {
+  return instrumentRow(page, lane).locator("[data-lane-instrument-type-select]");
+}
+
+function instrumentSelect(page, lane) {
+  return instrumentRow(page, lane).locator("[data-lane-instrument-select]");
 }
 
 function laneHeader(page, lane) {
@@ -381,6 +401,117 @@ async function setSpreadsheetRowToggle(page, laneLabel, kind, checked) {
 test.describe("MIDI Studio V2", () => {
   test.afterAll(async () => {
     await workspaceV2CoverageReporter.writeReport();
+  });
+
+  test("octave timeline editor is the default editable and playable Studio workflow", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await expect(page.locator('[data-midi-studio-tab="studio"]')).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator('[data-midi-studio-tab="midi-import"]')).toHaveCount(1);
+      await expect(page.locator('[data-midi-studio-tab="export"]')).toHaveCount(0);
+      await expect(page.locator("#instrumentGridHeading")).toHaveText("Octave Timeline");
+      await expect(page.locator("#instrumentGridOutput")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__octave-timeline")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__advanced-lane-source")).toBeHidden();
+      await expect(page.locator("#songList [data-song-id]")).toHaveCount(3);
+      await expect(page.locator("#songList")).toContainText("Camptown Races UAT Reel");
+      await expect(page.locator("#songList")).toContainText("Frog Hop Nursery Rhyme UAT");
+      await expect(page.locator("#songList")).toContainText("Coal Mine Descent");
+      await expect(page.locator(".midi-studio-v2__instrument-list-panel")).toBeVisible();
+      await expect(instrumentRow(page, "lead")).toBeVisible();
+      await expect(instrumentRow(page, "bass")).toBeVisible();
+      await expect(instrumentRow(page, "chords")).toBeVisible();
+      await expect(instrumentRow(page, "pad")).toBeVisible();
+      await expect(instrumentRow(page, "drums")).toBeVisible();
+      await expect(instrumentTypeSelect(page, "lead")).toHaveValue("Synth Lead");
+      await expect(instrumentTypeSelect(page, "drums")).toHaveValue("Percussive");
+      await instrumentTypeSelect(page, "lead").selectOption("Piano");
+      await expect(instrumentSelect(page, "lead")).toHaveValue("preview-acoustic-grand-piano");
+      expect(await instrumentSelect(page, "lead").locator("option").evaluateAll((options) => options.map((option) => option.textContent))).toContain("Acoustic Grand Piano");
+      expect(await instrumentTypeSelect(page, "lead").locator("option").evaluateAll((options) => options.map((option) => option.textContent))).toEqual([
+        "Piano",
+        "Chromatic Percussion",
+        "Organ",
+        "Guitar",
+        "Bass",
+        "Strings",
+        "Ensemble",
+        "Brass",
+        "Reed",
+        "Pipe",
+        "Synth Lead",
+        "Synth Pad",
+        "Synth Effects",
+        "Ethnic",
+        "Percussive",
+        "Sound Effects"
+      ]);
+      await instrumentTypeSelect(page, "lead").selectOption("Synth Lead");
+      await instrumentSelect(page, "lead").selectOption("retro-pulse-lead");
+      await instrumentRow(page, "lead").click();
+      await expect(octaveNoteBlock(page, "lead").first()).toHaveClass(/midi-studio-v2__note-block--selected/);
+      await expect(octaveNoteBlock(page, "chords").first()).toHaveClass(/midi-studio-v2__note-block--dimmed/);
+      await expect(page.locator(".midi-studio-v2__octave-row-label[data-octave='5']")).not.toHaveCount(0);
+      await expect(octaveCell(page, "G4", 0).locator('[data-lane="lead"]')).toContainText("G4");
+      await instrumentRow(page, "bass").click();
+      await expect(octaveCell(page, "G2", 0).locator('[data-lane="bass"]')).toContainText("G2");
+      await instrumentRow(page, "bass").locator("[data-toggle-instrument-visibility='bass']").click();
+      await expect(octaveNoteBlock(page, "bass")).toHaveCount(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Lane hidden: Bass\./);
+      await instrumentRow(page, "bass").locator("[data-toggle-instrument-visibility='bass']").click();
+      await expect(octaveNoteBlock(page, "bass").first()).toBeVisible();
+      await instrumentRow(page, "lead").click();
+      await octaveCell(page, "C5", 1).click();
+      await expect(octaveCell(page, "C5", 1).locator('[data-lane="lead"]')).toHaveText("C5");
+      expect(await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult.timeline.some((event) => event.lane === "lead" && event.value === "C5" && event.stepIndex === 1))).toBe(true);
+
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Audible preview playback started for Camptown Races UAT Reel\./);
+      await expect(page.locator('.midi-studio-v2__grid-cell--playhead-active[data-step-index="0"]').first()).toBeVisible();
+      await page.waitForFunction(() => window.__midiStudioV2App.instrumentGrid.playheadStep > 0);
+      const activeStep = await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.playheadStep);
+      expect(activeStep).toBeGreaterThan(0);
+      expect(await page.locator(`.midi-studio-v2__grid-cell--playhead-active[data-step-index="${activeStep}"]`).count()).toBeGreaterThan(0);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "buffer-start"))).toBe(true);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await page.locator('[data-song-id="frog-hop-nursery-rhyme"]').click();
+      await expect(octaveCell(page, "C5", 0).locator('[data-lane="lead"]')).toContainText("C5");
+      await page.locator('[data-song-id="quiet-village-pad"]').click();
+      await expect(octaveCell(page, "D5", 0).locator('[data-lane="lead"]')).toContainText("D5");
+
+      await selectMidiStudioTab(page, "midi-import");
+      await page.locator("#midiSourceFileInput").setInputFiles({
+        buffer: validMidiBytes,
+        mimeType: "audio/midi",
+        name: "local-import.midi"
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Normalized 1 MIDI note into editable octave timeline data\./);
+      await expect(page.locator("#songList")).toContainText("Local Import");
+      await selectMidiStudioTab(page, "studio");
+      await expect(instrumentRow(page, "track-2-ch-1")).toBeVisible();
+      await expect(octaveCell(page, "C4", 0).locator('[data-lane="track-2-ch-1"]')).toContainText("C4");
+      await octaveCell(page, "D4", 1).click();
+      await expect(octaveCell(page, "D4", 1).locator('[data-lane="track-2-ch-1"]')).toHaveText("D4");
+      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes["track-2-ch-1"])).toContain("D4");
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await page.locator("#playButton").click();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
   });
 
   test("imports UAT manifest and plays the upbeat multi-instrument studio arrangement", async ({ page }) => {
@@ -651,7 +782,7 @@ test.describe("MIDI Studio V2", () => {
     expect(roadmap).toContain("[x] Playable upbeat public-domain/traditional-style test song arrangement includes Lead, Bass, Chords/Pad, and Drums.");
     expect(roadmap).toContain("[x] Tabs organize Studio, Song Setup, Instruments, Auto-Create Parts, and Diagnostics; MIDI Import lives under Selected Song Details and export actions live in the action bar.");
     expect(roadmap).toContain("[x] Track volume, pan, mute, and solo controls live on instrument timeline rows.");
-    expect(roadmap).toContain("[ ] MIDI import conversion to editable tracks.");
+    expect(roadmap).toContain("[x] MIDI import conversion to editable tracks.");
     expect(roadmap).toContain("[ ] Rendered WAV/MP3/OGG export.");
     expect(roadmap).toContain("[ ] SoundFont and real instrument playback.");
     expect(roadmap).toContain("[ ] Optional piano roll.");

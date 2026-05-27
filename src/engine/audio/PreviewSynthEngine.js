@@ -144,6 +144,7 @@ export class PreviewSynthEngine {
     const instruments = laneSettings.instruments || {};
     const muted = laneSettings.muted || {};
     const soloed = laneSettings.soloed || {};
+    const visible = laneSettings.visible || {};
     const soloedLanes = Object.entries(soloed).filter((entry) => entry[1]).map(([lane]) => lane);
     const warnings = [];
     const warningKeys = new Set();
@@ -151,6 +152,9 @@ export class PreviewSynthEngine {
     (grid.timeline || []).forEach((event) => {
       const stepIndex = Number(event.stepIndex);
       if (!Number.isFinite(stepIndex) || stepIndex < startStep || stepIndex > endStep) {
+        return;
+      }
+      if (visible[event.lane] === false) {
         return;
       }
       if (muted[event.lane] || (soloedLanes.length && !soloedLanes.includes(event.lane))) {

@@ -1,6 +1,7 @@
 import { readFileText } from "../../../src/engine/persistence/FilePersistenceService.js";
 
 const TOOL_ID = "midi-studio-v2";
+const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
 export class MidiStudioV2App {
   constructor({
@@ -327,11 +328,9 @@ export class MidiStudioV2App {
     this.selectedSongId = song.id;
     this.render();
     this.midiSourceDetails.render(result);
-    this.instrumentGrid.render(null);
-    this.lastInstrumentGridResult = null;
-    this.lastSongSheetResult = null;
+    this.applySelectedSongArrangement("local MIDI import");
     this.statusLog.ok(`Imported MIDI source ${result.fileName}: format ${result.format}, ${result.trackCount} track${result.trackCount === 1 ? "" : "s"}.`);
-    this.statusLog.warn("MIDI note conversion to editable timeline rows is not implemented yet. Use Song Sheet or timeline row editing to create playable Preview Synth data.");
+    this.statusLog.ok(`Normalized ${song.studioArrangement.importedNoteCount} MIDI note${song.studioArrangement.importedNoteCount === 1 ? "" : "s"} into editable octave timeline data.`);
     this.updateAudioDiagnostics();
   }
 
@@ -359,8 +358,94 @@ export class MidiStudioV2App {
       name: baseName.replace(/[-_]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()),
       rendered: {},
       sourceMidi: result.fileName,
+      studioArrangement: this.arrangementFromMidiInspection(result),
       tags: ["midi-import"]
     };
+  }
+
+  arrangementFromMidiInspection(result) {
+    const ticksPerQuarterNote = Number(result.ticksPerQuarterNote || 480);
+    const timeSignature = result.timeSignatureEvents?.[0] || { denominator: 4, numerator: 4 };
+    const beatsPerBar = String(timeSignature.denominator === 4 ? timeSignature.numerator || 4 : 4);
+    const safeBeatsPerBar = Number(beatsPerBar) || 4;
+    const maxTick = Math.max(
+      ticksPerQuarterNote,
+      ...((result.normalizedNotes || []).map((note) => Number(note.endTick || note.startTick || 0)))
+    );
+    const barCount = Math.max(1, Math.ceil(maxTick / (ticksPerQuarterNote * safeBeatsPerBar)));
+    const lanes = {};
+    const previewInstruments = {};
+    (result.normalizedNotes || []).forEach((note) => {
+      const lane = this.importedLaneName(note);
+      lanes[lane] = lanes[lane] || Array.from({ length: barCount }, () => Array.from({ length: safeBeatsPerBar }, () => "-"));
+      previewInstruments[lane] = note.channel === 10 ? "basic-drums" : this.previewInstrumentForImportedProgram(result, note.channel);
+      const stepIndex = Math.max(0, Math.min(barCount * safeBeatsPerBar - 1, Math.round(Number(note.startTick || 0) / ticksPerQuarterNote)));
+      const barIndex = Math.floor(stepIndex / safeBeatsPerBar);
+      const stepInBar = stepIndex % safeBeatsPerBar;
+      lanes[lane][barIndex][stepInBar] = note.channel === 10 ? "kick" : this.noteNameFromMidiNumber(note.noteNumber);
+    });
+    if (!Object.keys(lanes).length) {
+      lanes["imported-1"] = Array.from({ length: barCount }, () => Array.from({ length: safeBeatsPerBar }, () => "-"));
+      previewInstruments["imported-1"] = "preview-acoustic-grand-piano";
+    }
+    return {
+      beatsPerBar,
+      importedNoteCount: result.normalizedNoteCount || 0,
+      key: "C major",
+      lanes: Object.fromEntries(Object.entries(lanes).map(([lane, bars]) => [lane, bars.map((tokens) => tokens.join(" ")).join(" | ")])),
+      previewInstruments,
+      sections: `import:${barCount}`,
+      songSheet: {
+        intro: "C",
+        loop: "C"
+      },
+      style: "midi-import",
+      subdivision: "1",
+      tempo: String(result.tempoEvents?.[0]?.bpm || 120)
+    };
+  }
+
+  importedLaneName(note) {
+    if (note.channel === 10) {
+      return "drums";
+    }
+    return `track-${note.track}-ch-${note.channel}`;
+  }
+
+  previewInstrumentForImportedProgram(result, channel) {
+    const program = result.programChanges?.find((entry) => entry.channel === channel)?.program;
+    if (!Number.isFinite(Number(program))) {
+      return "preview-acoustic-grand-piano";
+    }
+    const familyIndex = Math.floor(Number(program) / 8);
+    return [
+      "preview-acoustic-grand-piano",
+      "preview-celesta",
+      "preview-drawbar-organ",
+      "preview-clean-guitar",
+      "synth-bass",
+      "preview-violin",
+      "preview-string-ensemble",
+      "preview-brass-stab",
+      "preview-woodwind",
+      "preview-flute",
+      "retro-square-lead",
+      "warm-pad",
+      "preview-synth-fx",
+      "preview-shamisen",
+      "basic-drums",
+      "preview-sci-fi"
+    ][familyIndex] || "preview-acoustic-grand-piano";
+  }
+
+  noteNameFromMidiNumber(noteNumber) {
+    const value = Number(noteNumber);
+    if (!Number.isFinite(value)) {
+      return "C4";
+    }
+    const rounded = Math.max(0, Math.min(127, Math.round(value)));
+    const octave = Math.floor(rounded / 12) - 1;
+    return `${NOTE_NAMES[rounded % 12]}${octave}`;
   }
 
   parseSongSheet(request, { updateGrid = true } = {}) {
@@ -469,7 +554,7 @@ export class MidiStudioV2App {
       return;
     }
     this.lastInstrumentGridResult = result;
-    if (detail.action === "add-lane" || detail.action === "delete-lane") {
+    if (detail.action === "add-lane" || detail.action === "delete-lane" || detail.action === "toggle-note") {
       this.instrumentGrid.render(result);
     } else {
       this.instrumentGrid.syncEditedGridResult(result);
@@ -479,6 +564,8 @@ export class MidiStudioV2App {
       this.statusLog.ok(`Added instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
     } else if (detail.action === "delete-lane") {
       this.statusLog.ok(`Deleted instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
+    } else if (detail.action === "toggle-note") {
+      this.statusLog.ok(`Toggled ${detail.rowToken || detail.note || "note"} for ${detail.laneLabel || "instrument"}; visible timeline playback data updated.`);
     } else {
       this.statusLog.ok(`Edited ${detail.laneLabel || "instrument"} note cell; playback data updated.`);
     }
@@ -598,6 +685,11 @@ export class MidiStudioV2App {
     }
     if (kind === "solo") {
       this.statusLog[detail.enabled ? "ok" : "info"](`Lane ${detail.enabled ? "soloed" : "solo cleared"}: ${detail.laneLabel}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "visibility") {
+      this.statusLog.info(`Lane ${detail.enabled ? "shown" : "hidden"}: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
       return;
     }
@@ -742,6 +834,7 @@ export class MidiStudioV2App {
       ["Selected section", selectedSection?.label || "none"],
       ["Playable note count", playable.count],
       ["Active lanes", laneDiagnostics.activeLanes.length ? laneDiagnostics.activeLanes.join(", ") : "none"],
+      ["Hidden lanes", laneDiagnostics.hiddenLanes.length ? laneDiagnostics.hiddenLanes.join(", ") : "none"],
       ["Muted lanes", laneDiagnostics.mutedLanes.length ? laneDiagnostics.mutedLanes.join(", ") : "none"],
       ["Soloed lanes", laneDiagnostics.soloedLanes.length ? laneDiagnostics.soloedLanes.join(", ") : "none"],
       ["Lane volumes", laneDiagnostics.volumeSummary || "none"],

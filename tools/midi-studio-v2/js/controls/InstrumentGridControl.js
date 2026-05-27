@@ -46,9 +46,55 @@ const DEFAULT_PREVIEW_INSTRUMENTS = {
 };
 
 const FIXED_LANES = ["bass", "chords", "drums", "lead", "pad"];
-const INSTRUMENT_TYPE_GROUPS = ["Percussion", "Keyboard", "Strings", "Brass", "Woodwind", "Guitar", "Bass", "Synth", "FX"];
+const INSTRUMENT_TYPE_GROUPS = [
+  "Piano",
+  "Chromatic Percussion",
+  "Organ",
+  "Guitar",
+  "Bass",
+  "Strings",
+  "Ensemble",
+  "Brass",
+  "Reed",
+  "Pipe",
+  "Synth Lead",
+  "Synth Pad",
+  "Synth Effects",
+  "Ethnic",
+  "Percussive",
+  "Sound Effects"
+];
 
 const REST_TOKENS = new Set(["", "-", ".", "rest"]);
+const PERCUSSION_ROWS = ["crash", "ride", "hat", "clap", "snare", "tom", "perc", "kick"];
+const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const FLAT_TO_SHARP = {
+  Ab: "G#",
+  Bb: "A#",
+  Db: "C#",
+  Eb: "D#",
+  Gb: "F#"
+};
+const CHORD_ROOT_ROW = /^([A-G](?:#|b)?)/;
+
+const NOTE_RANGE_BY_TYPE = {
+  Bass: [1, 3],
+  Brass: [2, 5],
+  "Chromatic Percussion": [3, 6],
+  Ensemble: [2, 6],
+  Ethnic: [2, 5],
+  Guitar: [2, 5],
+  Organ: [2, 6],
+  Percussive: [1, 3],
+  Piano: [2, 6],
+  Pipe: [3, 6],
+  Reed: [2, 6],
+  "Sound Effects": [2, 6],
+  Strings: [2, 6],
+  "Synth Effects": [2, 6],
+  "Synth Lead": [3, 6],
+  "Synth Pad": [2, 6]
+};
 
 function defaultInstrumentForLane(lane) {
   if (lane === "drums" || lane.toLowerCase().includes("drum")) {
@@ -64,10 +110,13 @@ function defaultInstrumentForLane(lane) {
 }
 
 function instrumentTypeGroup(instrumentId) {
-  return PREVIEW_INSTRUMENT_PACKS.find((instrument) => instrument.id === instrumentId)?.typeGroup || "Synth";
+  return PREVIEW_INSTRUMENT_PACKS.find((instrument) => instrument.id === instrumentId)?.typeGroup || "Synth Lead";
 }
 
 function defaultInstrumentForType(typeGroup) {
+  if (typeGroup === "Piano") {
+    return "preview-acoustic-grand-piano";
+  }
   return PREVIEW_INSTRUMENT_PACKS.find((instrument) => instrument.typeGroup === typeGroup)?.id || "";
 }
 
@@ -86,6 +135,7 @@ function clonePreviewLaneState(lanes = Object.keys(DEFAULT_PREVIEW_INSTRUMENTS))
         muted: false,
         pan: 0,
         soloed: false,
+        visible: true,
         volume: 1
       }
     ];
@@ -100,6 +150,7 @@ function defaultPreviewLaneState(lane) {
     muted: false,
     pan: 0,
     soloed: false,
+    visible: true,
     volume: 1
   };
 }
@@ -136,6 +187,7 @@ export class InstrumentGridControl {
     generateDrumsButton,
     generatePadButton,
     gridOutput,
+    instrumentList,
     jumpToSectionButton,
     laneTypeSelect,
     leadInput,
@@ -147,6 +199,7 @@ export class InstrumentGridControl {
     playSectionButton,
     sectionPresetButtons,
     sectionSelect,
+    selectionDetails,
     sectionsInput,
     snapIndicator,
     stopTimingPreviewButton,
@@ -166,6 +219,7 @@ export class InstrumentGridControl {
     this.generatedLanes = {};
     this.gridOutput = gridOutput;
     this.extraLaneSources = {};
+    this.instrumentList = instrumentList;
     this.jumpToSectionButton = jumpToSectionButton;
     this.laneTypeSelect = laneTypeSelect;
     this.leadInput = leadInput;
@@ -180,6 +234,7 @@ export class InstrumentGridControl {
     this.previewTempoBpm = 120;
     this.sectionPresetButtons = sectionPresetButtons;
     this.sectionSelect = sectionSelect;
+    this.selectionDetails = selectionDetails;
     this.sectionsInput = sectionsInput;
     this.snapIndicator = snapIndicator;
     this.stopTimingPreviewButton = stopTimingPreviewButton;
@@ -193,6 +248,7 @@ export class InstrumentGridControl {
     this.playTimer = null;
     this.playheadStep = 0;
     this.removedFixedLanes = new Set();
+    this.selectedCell = null;
     this.selectedLane = "lead";
   }
 
@@ -226,6 +282,7 @@ export class InstrumentGridControl {
     this.populateSectionControls([]);
     this.updateSnapIndicator();
     this.selectLane(this.selectedLane);
+    this.renderSelectionDetails();
   }
 
   readInput() {
@@ -273,6 +330,9 @@ export class InstrumentGridControl {
     this.extraLaneSources = Object.fromEntries(Object.entries(laneSources).filter(([lane]) => !FIXED_LANES.includes(lane)));
     this.removedFixedLanes = new Set(FIXED_LANES.filter((lane) => !Object.hasOwn(laneSources, lane)));
     this.previewLaneState = clonePreviewLaneState(Object.keys(laneSources));
+    if (!this.previewLaneState[this.selectedLane]) {
+      this.selectedLane = Object.keys(laneSources)[0] || "lead";
+    }
     this.generatedLanes = {};
     this.applyPreviewInstruments(previewInstruments);
     this.clearLaneToggles();
@@ -294,19 +354,21 @@ export class InstrumentGridControl {
       state.muted = false;
       state.pan = 0;
       state.soloed = false;
+      state.visible = true;
       state.volume = 1;
     });
     this.syncLaneHeaderControls();
   }
 
   previewLaneSettings() {
-    const settings = { instrumentTypes: {}, instruments: {}, muted: {}, pans: {}, soloed: {}, volumes: {} };
+    const settings = { instrumentTypes: {}, instruments: {}, muted: {}, pans: {}, soloed: {}, visible: {}, volumes: {} };
     Object.entries(this.previewLaneState).forEach(([lane, state]) => {
       settings.instrumentTypes[lane] = state.instrumentType || instrumentTypeGroup(state.instrument);
       settings.instruments[lane] = state.instrument || "";
       settings.muted[lane] = Boolean(state.muted);
       settings.pans[lane] = Number(state.pan || 0);
       settings.soloed[lane] = Boolean(state.soloed);
+      settings.visible[lane] = state.visible !== false;
       settings.volumes[lane] = Number(state.volume || 1);
     });
     return settings;
@@ -322,6 +384,7 @@ export class InstrumentGridControl {
       activeLanes: this.activePreviewLanes,
       instrumentLabels,
       instruments: settings.instruments,
+      hiddenLanes: Object.entries(settings.visible).filter((entry) => entry[1] === false).map(([lane]) => lane),
       mutedLanes: Object.entries(settings.muted).filter((entry) => entry[1]).map(([lane]) => lane),
       panSummary: Object.entries(settings.pans).map(([lane, value]) => `${lane}:${value}`).join(", "),
       soloedLanes: Object.entries(settings.soloed).filter((entry) => entry[1]).map(([lane]) => lane),
@@ -373,20 +436,24 @@ export class InstrumentGridControl {
     this.gridOutput.replaceChildren();
     this.previewLaneControls = {};
     if (!result?.ok) {
+      this.renderInstrumentList([]);
       this.populateSectionControls([]);
       this.setTransportEnabled(false);
       const empty = document.createElement("p");
       empty.className = "midi-studio-v2__empty";
       empty.textContent = result?.message || "No grid data normalized. Import a manifest arrangement or enter sections/chords, then choose Normalize Grid.";
       this.gridOutput.append(empty);
+      this.renderSelectionDetails();
       return;
     }
     this.populateSectionControls(result.sections);
     this.setTransportEnabled(true);
+    this.renderInstrumentList(result.lanes);
     this.renderGrid(result);
     this.setPlayheadStep(this.playheadStep);
     this.updateLoopRegion();
     this.applySelectedLaneHighlight();
+    this.renderSelectionDetails();
   }
 
   syncEditedGridResult(result) {
@@ -438,17 +505,17 @@ export class InstrumentGridControl {
   }
 
   renderGrid(result) {
-    this.previewLaneControls = {};
     const grid = document.createElement("div");
-    grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table";
+    const octaveRows = this.octaveRowsFor(result);
+    grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table midi-studio-v2__octave-timeline";
     grid.setAttribute("role", "table");
-    grid.setAttribute("aria-label", "Signal-style note table");
-    grid.style.gridTemplateColumns = `minmax(13rem, 16rem) repeat(${result.totalSteps}, minmax(4.25rem, 1fr))`;
+    grid.setAttribute("aria-label", "Octave timeline editor");
+    grid.style.gridTemplateColumns = `minmax(5.5rem, 7rem) repeat(${result.totalSteps}, minmax(3.5rem, 1fr))`;
     this.renderNoteTableHeader(grid, result);
-    result.lanes.forEach((lane) => {
-      grid.append(this.createLaneHeaderCell(lane));
-      result.cells[lane].forEach((cell, stepIndex) => {
-        const outputCell = this.createNoteTableCell(cell, stepIndex);
+    octaveRows.forEach((row) => {
+      grid.append(this.createOctaveRowHeader(row));
+      this.referenceCells(result).forEach((cell, stepIndex) => {
+        const outputCell = this.createOctaveTimelineCell({ result, row, stepIndex });
         this.applyTimingDataset(outputCell, cell, stepIndex);
         grid.append(outputCell);
       });
@@ -460,19 +527,8 @@ export class InstrumentGridControl {
   renderNoteTableHeader(grid, result) {
     const instrumentHeader = this.appendCell(grid, "", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__note-table-instrument-header");
     instrumentHeader.setAttribute("role", "columnheader");
-    const label = document.createElement("span");
-    label.textContent = "Instrument";
-    const addButton = document.createElement("button");
-    addButton.id = "addInstrumentRowButton";
-    addButton.className = "midi-studio-v2__lane-add-button";
-    addButton.type = "button";
-    addButton.dataset.addInstrumentRow = "true";
-    addButton.setAttribute("aria-label", "Add instrument row");
-    addButton.title = "Add instrument row";
-    addButton.textContent = "+";
-    addButton.addEventListener("click", () => this.addInstrumentRow());
-    instrumentHeader.append(label, addButton);
-    const rulerCells = result.cells.chords || result.cells[result.lanes[0]] || [];
+    instrumentHeader.textContent = "Octave";
+    const rulerCells = this.referenceCells(result);
     rulerCells.forEach((cell, stepIndex) => {
       const classes = [
         "midi-studio-v2__grid-cell",
@@ -506,6 +562,340 @@ export class InstrumentGridControl {
     const line = document.createElement("span");
     line.textContent = `${label} ${value}`;
     return line;
+  }
+
+  referenceCells(result) {
+    return result.cells.chords || result.cells[result.lanes[0]] || [];
+  }
+
+  renderInstrumentList(lanes = []) {
+    if (!this.instrumentList) {
+      return;
+    }
+    this.instrumentList.replaceChildren();
+    this.previewLaneControls = {};
+    const actions = document.createElement("div");
+    actions.className = "midi-studio-v2__instrument-list-actions";
+    const addButton = document.createElement("button");
+    addButton.id = "addInstrumentRowButton";
+    addButton.className = "midi-studio-v2__lane-add-button";
+    addButton.type = "button";
+    addButton.dataset.addInstrumentRow = "true";
+    addButton.setAttribute("aria-label", "Add instrument");
+    addButton.title = "Add instrument";
+    addButton.textContent = "+ Instrument";
+    addButton.addEventListener("click", () => this.addInstrumentRow());
+    actions.append(addButton);
+    this.instrumentList.append(actions);
+    if (!lanes.length) {
+      const empty = document.createElement("p");
+      empty.className = "midi-studio-v2__empty";
+      empty.textContent = "No timeline instruments loaded.";
+      this.instrumentList.append(empty);
+      return;
+    }
+    lanes.forEach((lane) => {
+      this.instrumentList.append(this.createInstrumentRow(lane));
+    });
+    this.syncLaneHeaderControls();
+  }
+
+  createInstrumentRow(lane) {
+    if (!this.previewLaneState[lane]) {
+      this.previewLaneState[lane] = defaultPreviewLaneState(lane);
+    }
+    const row = document.createElement("div");
+    row.className = "midi-studio-v2__instrument-row";
+    row.dataset.lane = lane;
+    row.tabIndex = 0;
+    row.setAttribute("role", "button");
+    row.setAttribute("aria-selected", String(this.selectedLane === lane));
+
+    const title = document.createElement("span");
+    title.className = "midi-studio-v2__lane-title";
+    title.dataset.laneLabel = lane;
+    title.textContent = instrumentLabel(this.previewLaneState[lane]?.instrument) || laneLabel(lane);
+
+    const visibilityButton = this.createVisibilityButton(lane);
+    const typeSelect = this.createInstrumentTypeSelect(lane);
+    const instrumentSelect = this.createInstrumentSelect(lane);
+    const mute = this.createLaneToggle(lane, "mute");
+    const solo = this.createLaneToggle(lane, "solo");
+    const deleteButton = this.createDeleteLaneButton(lane);
+
+    const titleRow = document.createElement("div");
+    titleRow.className = "midi-studio-v2__instrument-title-row";
+    titleRow.append(visibilityButton, title, deleteButton);
+
+    const selectors = document.createElement("div");
+    selectors.className = "midi-studio-v2__instrument-selectors";
+    selectors.append(typeSelect, instrumentSelect);
+
+    const toggles = document.createElement("div");
+    toggles.className = "midi-studio-v2__lane-control-row";
+    toggles.append(mute.label, solo.label);
+
+    row.addEventListener("click", (event) => {
+      if (event.target.closest("input, select, option, button")) {
+        return;
+      }
+      this.handleLaneSelection(lane);
+    });
+    row.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      if (event.target.closest("input, select, option, button")) {
+        return;
+      }
+      event.preventDefault();
+      this.handleLaneSelection(lane);
+    });
+    this.previewLaneControls[lane] = {
+      deleteButton,
+      instrument: instrumentSelect,
+      instrumentLabel: title,
+      instrumentType: typeSelect,
+      mute: mute.input,
+      row,
+      solo: solo.input,
+      visibilityButton
+    };
+    row.append(titleRow, selectors, toggles);
+    return row;
+  }
+
+  createVisibilityButton(lane) {
+    const button = document.createElement("button");
+    button.className = "midi-studio-v2__lane-icon-button midi-studio-v2__visibility-button";
+    button.type = "button";
+    button.dataset.toggleInstrumentVisibility = lane;
+    button.addEventListener("click", () => this.toggleInstrumentVisibility(lane));
+    this.updateVisibilityButton(button, lane);
+    return button;
+  }
+
+  updateVisibilityButton(button, lane) {
+    const visible = this.previewLaneState[lane]?.visible !== false;
+    button.setAttribute("aria-pressed", String(visible));
+    button.setAttribute("aria-label", `${visible ? "Hide" : "Show"} ${laneLabel(lane)}`);
+    button.title = visible ? "Hide instrument" : "Show instrument";
+    button.textContent = visible ? "eye" : "off";
+  }
+
+  toggleInstrumentVisibility(lane) {
+    if (!this.previewLaneState[lane]) {
+      return;
+    }
+    this.previewLaneState[lane].visible = this.previewLaneState[lane].visible === false;
+    this.onLaneSettingChange?.("visibility", {
+      enabled: this.previewLaneState[lane].visible !== false,
+      lane,
+      laneLabel: laneLabel(lane)
+    });
+    this.render(this.currentResult);
+  }
+
+  createOctaveRowHeader(row) {
+    const header = document.createElement("div");
+    header.className = "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__octave-row-label";
+    header.setAttribute("role", "rowheader");
+    header.dataset.octaveRow = row.value;
+    header.dataset.octave = row.octave;
+    header.textContent = row.label;
+    return header;
+  }
+
+  createOctaveTimelineCell({ result, row, stepIndex }) {
+    const events = this.visibleEventsForCell({ result, row, stepIndex });
+    const cell = document.createElement("div");
+    cell.className = this.octaveCellClass(events).join(" ");
+    cell.dataset.octaveRow = row.value;
+    cell.dataset.rowToken = row.value;
+    cell.dataset.stepIndex = String(stepIndex);
+    cell.role = "button";
+    cell.tabIndex = 0;
+    cell.setAttribute("aria-label", `${row.label} at step ${stepIndex + 1}`);
+    events.forEach((event) => {
+      cell.append(this.createTimelineNoteBlock(event));
+    });
+    cell.addEventListener("click", () => this.toggleTimelineCell(row.value, stepIndex));
+    cell.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      event.preventDefault();
+      this.toggleTimelineCell(row.value, stepIndex);
+    });
+    return cell;
+  }
+
+  octaveCellClass(events) {
+    const classes = ["midi-studio-v2__grid-cell", "midi-studio-v2__spreadsheet-note-cell", "midi-studio-v2__note-table-cell", "midi-studio-v2__octave-note-cell"];
+    if (events.length) {
+      classes.push("midi-studio-v2__grid-cell--event");
+    }
+    if (events.some((event) => event.lane === this.selectedLane)) {
+      classes.push("midi-studio-v2__grid-cell--lane-selected");
+    } else if (events.length) {
+      classes.push("midi-studio-v2__grid-cell--lane-dimmed");
+    }
+    return classes;
+  }
+
+  createTimelineNoteBlock(event) {
+    const block = document.createElement("span");
+    block.className = "midi-studio-v2__note-block";
+    block.dataset.lane = event.lane;
+    block.textContent = event.value;
+    if (event.lane === this.selectedLane) {
+      block.classList.add("midi-studio-v2__note-block--selected");
+    } else {
+      block.classList.add("midi-studio-v2__note-block--dimmed");
+    }
+    return block;
+  }
+
+  visibleEventsForCell({ result, row, stepIndex }) {
+    return (result.timeline || []).filter((event) => {
+      if (event.stepIndex !== stepIndex || this.previewLaneState[event.lane]?.visible === false) {
+        return false;
+      }
+      return this.rowsForEvent(event).includes(row.value);
+    });
+  }
+
+  rowsForEvent(event) {
+    if (event.kind === "drum") {
+      return [String(event.value || "").toLowerCase()];
+    }
+    if (event.kind === "chord") {
+      return [this.chordRootRow(event.value)];
+    }
+    return [this.normalizeNoteName(event.value)];
+  }
+
+  chordRootRow(value) {
+    const match = String(value || "").match(CHORD_ROOT_ROW);
+    return `${this.normalizePitchName(match?.[1] || "C")}4`;
+  }
+
+  normalizeNoteName(value) {
+    const match = String(value || "").trim().match(/^([A-G](?:#|b)?)([0-8])$/);
+    if (!match) {
+      return String(value || "").trim();
+    }
+    return `${this.normalizePitchName(match[1])}${match[2]}`;
+  }
+
+  normalizePitchName(value) {
+    return FLAT_TO_SHARP[value] || value;
+  }
+
+  octaveRowsFor(result) {
+    if (this.selectedInstrumentIsPercussion()) {
+      const rows = new Set(PERCUSSION_ROWS);
+      (result.timeline || []).forEach((event) => {
+        if (event.kind === "drum") {
+          rows.add(String(event.value || "").toLowerCase());
+        }
+      });
+      return Array.from(rows).map((value) => ({ label: value, octave: "percussion", value }));
+    }
+    const typeGroup = this.previewLaneState[this.selectedLane]?.instrumentType || "Synth Lead";
+    const [lowOctave, highOctave] = NOTE_RANGE_BY_TYPE[typeGroup] || [2, 6];
+    const rows = [];
+    for (let octave = highOctave; octave >= lowOctave; octave -= 1) {
+      for (let index = NOTE_NAMES.length - 1; index >= 0; index -= 1) {
+        const note = `${NOTE_NAMES[index]}${octave}`;
+        rows.push({ label: note, octave: String(octave), value: note });
+      }
+    }
+    return rows;
+  }
+
+  selectedInstrumentIsPercussion() {
+    const state = this.previewLaneState[this.selectedLane] || {};
+    return this.selectedLane === "drums" || state.instrumentType === "Percussive";
+  }
+
+  toggleTimelineCell(rowToken, stepIndex) {
+    if (!this.currentResult?.ok || !this.selectedLane) {
+      return;
+    }
+    this.selectedCell = { rowToken, stepIndex };
+    const existingToken = this.tokenForLaneStep(this.selectedLane, stepIndex);
+    const nextToken = this.rowsForSelectedToken(existingToken).includes(rowToken)
+      ? "-"
+      : this.tokenForRow(rowToken);
+    this.setLaneStepToken(this.selectedLane, stepIndex, nextToken);
+    this.onNoteEdit?.(this.readInput(), {
+      action: "toggle-note",
+      lane: this.selectedLane,
+      laneLabel: laneLabel(this.selectedLane),
+      note: nextToken,
+      rowToken,
+      stepIndex
+    });
+  }
+
+  tokenForRow(rowToken) {
+    if (this.selectedInstrumentIsPercussion()) {
+      return rowToken;
+    }
+    if (this.selectedLane === "chords") {
+      return String(rowToken || "C4").replace(/[0-8]$/, "");
+    }
+    return rowToken;
+  }
+
+  rowsForSelectedToken(token) {
+    const value = String(token || "").trim();
+    if (REST_TOKENS.has(value.toLowerCase())) {
+      return [];
+    }
+    if (this.selectedInstrumentIsPercussion()) {
+      return [value.toLowerCase()];
+    }
+    if (this.selectedLane === "chords" || (this.selectedLane === "pad" && /^[A-G](?:#|b)?/.test(value) && !/[0-8]$/.test(value))) {
+      return [this.chordRootRow(value)];
+    }
+    return [this.normalizeNoteName(value)];
+  }
+
+  tokenForLaneStep(lane, stepIndex) {
+    const stepsPerBar = this.currentResult.beatsPerBar * this.currentResult.subdivision;
+    const source = this.readInput().lanes[lane] || "";
+    const bars = source ? source.split("|").map((bar) => bar.trim()) : [];
+    const barIndex = Math.floor(stepIndex / stepsPerBar);
+    const stepInBar = stepIndex % stepsPerBar;
+    const tokens = bars[barIndex] ? bars[barIndex].split(/\s+/).filter(Boolean) : [];
+    return tokens[stepInBar] || "-";
+  }
+
+  setLaneStepToken(lane, stepIndex, token) {
+    const result = this.currentResult;
+    const stepsPerBar = result.beatsPerBar * result.subdivision;
+    const source = this.readInput().lanes[lane] || "";
+    const bars = [];
+    for (let barIndex = 0; barIndex < result.barCount; barIndex += 1) {
+      const sourceTokens = source.split("|")[barIndex]?.trim().split(/\s+/).filter(Boolean) || [];
+      const tokens = [];
+      for (let stepInBar = 0; stepInBar < stepsPerBar; stepInBar += 1) {
+        tokens.push(sourceTokens[stepInBar] || "-");
+      }
+      bars.push(tokens);
+    }
+    const barIndex = Math.floor(stepIndex / stepsPerBar);
+    const stepInBar = stepIndex % stepsPerBar;
+    bars[barIndex][stepInBar] = token || "-";
+    const laneText = bars.map((tokens) => tokens.join(" ")).join(" | ");
+    const laneInput = this.inputForLane(lane);
+    if (laneInput) {
+      laneInput.value = laneText;
+    } else {
+      this.extraLaneSources[lane] = laneText;
+    }
   }
 
   createLaneHeaderCell(lane) {
@@ -611,7 +1001,7 @@ export class InstrumentGridControl {
     select.className = "midi-studio-v2__lane-instrument-select";
     select.dataset.laneInstrumentSelect = lane;
     select.dataset.previewInstrumentLane = lane;
-    select.setAttribute("aria-label", `Preview instrument ${laneLabel(lane)}`);
+    select.setAttribute("aria-label", `Instrument ${laneLabel(lane)}`);
     this.populateInstrumentOptions(lane, select);
     select.addEventListener("change", () => {
       const nextType = select.value ? instrumentTypeGroup(select.value) : this.previewLaneState[lane].instrumentType;
@@ -637,7 +1027,7 @@ export class InstrumentGridControl {
     if (!select) {
       return;
     }
-    const typeGroup = this.previewLaneState[lane]?.instrumentType || "Synth";
+    const typeGroup = this.previewLaneState[lane]?.instrumentType || "Synth Lead";
     select.replaceChildren();
     const emptyOption = document.createElement("option");
     emptyOption.value = "";
@@ -822,6 +1212,9 @@ export class InstrumentGridControl {
       if (controls.solo) {
         controls.solo.checked = state.soloed === true;
       }
+      if (controls.visibilityButton) {
+        this.updateVisibilityButton(controls.visibilityButton, lane);
+      }
       if (controls.volume) {
         controls.volume.value = String(state.volume ?? 1);
       }
@@ -937,11 +1330,15 @@ export class InstrumentGridControl {
       return;
     }
     this.selectedLane = lane;
+    if (this.currentResult?.ok) {
+      this.render(this.currentResult);
+      return;
+    }
     this.previewLaneEntries().forEach(([entryLane, controls]) => {
       controls.row?.classList.toggle("is-selected", entryLane === lane);
       controls.row?.setAttribute("aria-selected", String(entryLane === lane));
     });
-    this.applySelectedLaneHighlight();
+    this.renderSelectionDetails();
   }
 
   handleLaneSelection(lane) {
@@ -950,15 +1347,11 @@ export class InstrumentGridControl {
   }
 
   applySelectedLaneHighlight() {
-    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-selected").forEach((cell) => {
-      cell.classList.remove("midi-studio-v2__grid-cell--lane-selected");
+    this.previewLaneEntries().forEach(([entryLane, controls]) => {
+      controls.row?.classList.toggle("is-selected", entryLane === this.selectedLane);
+      controls.row?.setAttribute("aria-selected", String(entryLane === this.selectedLane));
     });
-    if (!this.selectedLane) {
-      return;
-    }
-    this.gridOutput.querySelectorAll(`[data-lane="${this.selectedLane}"]`).forEach((cell) => {
-      cell.classList.add("midi-studio-v2__grid-cell--lane-selected");
-    });
+    this.renderSelectionDetails();
   }
 
   renderDefinitionList(rows) {
@@ -971,6 +1364,34 @@ export class InstrumentGridControl {
       description.textContent = value === undefined || value === null || value === "" ? "not declared" : String(value);
       row.append(term, description);
       this.summary.append(row);
+    });
+  }
+
+  renderSelectionDetails() {
+    if (!this.selectionDetails) {
+      return;
+    }
+    const state = this.previewLaneState[this.selectedLane] || {};
+    const rows = [
+      ["Instrument", this.selectedLane ? laneLabel(this.selectedLane) : "none"],
+      ["Type", state.instrumentType || "not selected"],
+      ["Patch", instrumentLabel(state.instrument) || "not selected"],
+      ["Visibility", state.visible === false ? "hidden" : "visible"],
+      ["Mute", state.muted ? "on" : "off"],
+      ["Solo", state.soloed ? "on" : "off"]
+    ];
+    if (this.selectedCell) {
+      rows.push(["Selected cell", `${this.selectedCell.rowToken} / step ${this.selectedCell.stepIndex + 1}`]);
+    }
+    this.selectionDetails.replaceChildren();
+    rows.forEach(([label, value]) => {
+      const row = document.createElement("div");
+      const term = document.createElement("dt");
+      const description = document.createElement("dd");
+      term.textContent = label;
+      description.textContent = value;
+      row.append(term, description);
+      this.selectionDetails.append(row);
     });
   }
 
@@ -1102,13 +1523,19 @@ export class InstrumentGridControl {
     this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-active").forEach((cell) => {
       cell.classList.remove("midi-studio-v2__grid-cell--lane-active");
     });
+    this.gridOutput.querySelectorAll(".midi-studio-v2__note-block--active").forEach((block) => {
+      block.classList.remove("midi-studio-v2__note-block--active");
+    });
     this.gridOutput.querySelectorAll(`[data-step-index="${this.playheadStep}"]`).forEach((cell) => {
-      if (cell.classList.contains("midi-studio-v2__grid-cell--timing-header") || cell.classList.contains("midi-studio-v2__grid-cell--playhead")) {
+      if (cell.classList.contains("midi-studio-v2__grid-cell--timing-header") || cell.classList.contains("midi-studio-v2__note-table-cell")) {
         cell.classList.add("midi-studio-v2__grid-cell--playhead-active");
       }
-      if (this.activePreviewLanes.includes(cell.dataset.lane) && cell.classList.contains("midi-studio-v2__grid-cell--event")) {
-        cell.classList.add("midi-studio-v2__grid-cell--lane-active");
-      }
+      cell.querySelectorAll(".midi-studio-v2__note-block").forEach((block) => {
+        if (this.activePreviewLanes.includes(block.dataset.lane)) {
+          block.classList.add("midi-studio-v2__note-block--active");
+          cell.classList.add("midi-studio-v2__grid-cell--lane-active");
+        }
+      });
     });
   }
 

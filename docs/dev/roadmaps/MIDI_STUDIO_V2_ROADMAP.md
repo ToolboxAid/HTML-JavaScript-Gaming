@@ -8,10 +8,10 @@
 - [x] Playable upbeat public-domain/traditional-style test song arrangement includes Lead, Bass, Chords/Pad, and Drums.
 - [x] Studio tab shows a visible track/timeline editor without opening accordions.
 - [x] Tabs organize Studio, Song Setup, Instruments, Auto-Create Parts, and Diagnostics; MIDI Import lives under Selected Song Details and export actions live in the action bar.
-- [.] Editable note/timeline grid remains the primary music studio editing surface.
+- [x] Editable note/timeline grid remains the primary music studio editing surface.
 - [x] Track volume, pan, mute, and solo controls live on instrument timeline rows.
 - [.] Song setup fields for tempo, key, style, intro, and loop.
-- [ ] MIDI import conversion to editable tracks.
+- [x] MIDI import conversion to editable tracks.
 - [ ] Rendered WAV/MP3/OGG export.
 - [ ] SoundFont and real instrument playback.
 - [ ] Auto-Create Parts helpers for generated bass, pad, arpeggio, and drums.
