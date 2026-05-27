@@ -85,11 +85,26 @@ const validMidiBytes = Buffer.from([
   0x00, 0x02,
   0x01, 0xe0,
   0x4d, 0x54, 0x72, 0x6b,
-  0x00, 0x00, 0x00, 0x04,
+  0x00, 0x00, 0x00, 0x13,
+  0x00, 0xff, 0x51, 0x03, 0x07, 0xa1, 0x20,
+  0x00, 0xff, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
   0x00, 0xff, 0x2f, 0x00,
   0x4d, 0x54, 0x72, 0x6b,
-  0x00, 0x00, 0x00, 0x04,
+  0x00, 0x00, 0x00, 0x0d,
+  0x00, 0x90, 0x3c, 0x40,
+  0x83, 0x60, 0x80, 0x3c, 0x40,
   0x00, 0xff, 0x2f, 0x00
+]);
+
+const corruptMidiBytes = Buffer.from([
+  0x4d, 0x54, 0x68, 0x64,
+  0x00, 0x00, 0x00, 0x06,
+  0x00, 0x00,
+  0x00, 0x01,
+  0x01, 0xe0,
+  0x4d, 0x54, 0x72, 0x6b,
+  0x00, 0x00, 0x00, 0x01,
+  0x00
 ]);
 
 function installMockAudio(page) {
@@ -204,6 +219,28 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#midiSourceDetails")).toContainText("2");
       await expect(page.locator("#midiSourceDetails")).toContainText("Ticks per quarter note");
       await expect(page.locator("#midiSourceDetails")).toContainText("480");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Estimated duration");
+      await expect(page.locator("#midiSourceDetails")).toContainText("0.5 seconds");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Tempo summary");
+      await expect(page.locator("#midiSourceDetails")).toContainText("120 BPM at tick 0");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Time signature summary");
+      await expect(page.locator("#midiSourceDetails")).toContainText("4/4 at tick 0");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Note on events");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Note off events");
+      await expect(page.locator("#midiSourceDetails")).toContainText("MIDI events");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Meta events");
+      expect(await page.locator("#midiSourceDetails div").evaluateAll((rows) => Object.fromEntries(rows.map((row) => [
+        row.querySelector("dt")?.textContent || "",
+        row.querySelector("dd")?.textContent || ""
+      ])))).toMatchObject({
+        "Estimated duration": "0.5 seconds",
+        "Meta events": "4",
+        "MIDI events": "2",
+        "Note off events": "1",
+        "Note on events": "1",
+        "Tempo summary": "120 BPM at tick 0",
+        "Time signature summary": "4/4 at tick 0"
+      });
       await expect(page.locator("#statusLog")).toHaveValue(/OK MIDI source inspected for Main Theme: format 1, 2 tracks, 480 TPQN\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -229,15 +266,15 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("shows actionable failure for invalid MIDI source bytes without partial render", async ({ page }) => {
+  test("shows actionable failure for corrupt MIDI source bytes without partial render", async ({ page }) => {
     const server = await openMidiStudio(page, validManifest, {
-      "assets/music/midi/theme-main.mid": Buffer.from([0x4e, 0x6f])
+      "assets/music/midi/theme-main.mid": corruptMidiBytes
     });
     try {
       await page.locator("#inspectMidiSourceButton").click();
       await expect(page.locator("#midiSourceDetails")).toContainText("MIDI source validation failed");
       await expect(page.locator("#midiSourceDetails")).not.toContainText("Ticks per quarter note");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL MIDI source validation failed for assets\/music\/midi\/theme-main\.mid: MIDI source is too small/);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL MIDI source validation failed for assets\/music\/midi\/theme-main\.mid: MIDI track 1 ended after delta time without an event\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

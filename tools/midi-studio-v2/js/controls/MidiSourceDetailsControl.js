@@ -10,7 +10,14 @@ function sourceDetailRows(details) {
     ["Format", details.format],
     ["Track count", details.trackCount],
     ["Ticks per quarter note", details.ticksPerQuarterNote],
-    ["Parsed track chunks", details.tracks.length]
+    ["Parsed track chunks", details.tracks.length],
+    ["Estimated duration", `${details.durationSeconds} seconds`],
+    ["Tempo summary", details.tempoSummary],
+    ["Time signature summary", details.timeSignatureSummary],
+    ["Note on events", details.eventCounts.noteOn],
+    ["Note off events", details.eventCounts.noteOff],
+    ["MIDI events", details.eventCounts.midi],
+    ["Meta events", details.eventCounts.meta]
   ];
 }
 
