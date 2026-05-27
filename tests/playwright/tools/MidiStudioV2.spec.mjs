@@ -273,6 +273,9 @@ async function fillInstrumentGrid(page, {
   await page.locator("#instrumentGridSectionsInput").fill(sections);
   await page.locator("#instrumentGridBeatsInput").fill(beats);
   await page.locator("#instrumentGridSubdivisionInput").selectOption(subdivision);
+  await page.locator(".midi-studio-v2__advanced-lane-source").evaluate((details) => {
+    details.open = true;
+  });
   await page.locator("#instrumentGridChordsInput").fill(chords);
   await page.locator("#instrumentGridBassInput").fill(bass);
   await page.locator("#instrumentGridPadInput").fill(pad);
@@ -397,7 +400,10 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator(".midi-studio-v2__grid-cell").first()).toHaveText("Instrument");
       await expect(page.locator(".midi-studio-v2__note-table-column-header").first()).toContainText("Bar 1");
       await expect(page.locator(".midi-studio-v2__note-table-cell[data-lane]")).not.toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__note-block")).not.toHaveCount(0);
+      await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="lead"] .midi-studio-v2__note-block').first()).toHaveText("C4");
       await expect(page.locator("#instrumentGridOutput textarea")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__advanced-lane-source")).not.toHaveAttribute("open", "");
       await expect(page.locator(".midi-studio-v2__lane-header-cell strong")).toContainText(["Chords", "Bass", "Pad", "Lead", "Drums"]);
       expect(await page.evaluate(() => {
         const output = document.querySelector("#instrumentGridOutput");
@@ -461,6 +467,7 @@ test.describe("MIDI Studio V2", () => {
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", "0");
       await expect(spreadsheetCell(page, "bass", 0)).toHaveText("C2");
+      await expect(page.locator('.midi-studio-v2__note-table-cell[data-lane="lead"] .midi-studio-v2__note-block').first()).toHaveText("C4");
       const diagnostics = await audioDiagnosticsRows(page);
       expect(Number(diagnostics["Playable note count"])).toBeGreaterThan(0);
       expect(diagnostics).toMatchObject({
@@ -788,6 +795,7 @@ Am F`);
       await expect(page.locator("#instrumentGridLeadInput")).toHaveValue("E4 G4 A4 B4 | C5 B4 G4 -");
       await page.locator("#normalizeInstrumentGridButton").click();
       await expect(spreadsheetCell(page, "lead", 3)).toHaveText("B4");
+      await expect(spreadsheetCell(page, "lead", 3).locator(".midi-studio-v2__note-block")).toHaveText("B4");
       const editedModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
       expect(editedModel.timeline.some((event) => event.lane === "lead" && event.value === "B4" && event.bar === 1)).toBe(true);
       expect(Number((await audioDiagnosticsRows(page))["Playable note count"])).toBeGreaterThan(beforeCount);

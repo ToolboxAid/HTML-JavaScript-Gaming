@@ -440,7 +440,7 @@ export class InstrumentGridControl {
     outputCell.contentEditable = "true";
     outputCell.role = "textbox";
     outputCell.spellcheck = false;
-    outputCell.textContent = cell.token || "-";
+    outputCell.append(this.createNoteBlock(cell));
     outputCell.setAttribute("aria-label", `${LANE_LABELS[cell.lane] || cell.lane} note cell, section ${cell.section}, bar ${cell.bar}, beat ${cell.beat}`);
     outputCell.dataset.lane = cell.lane;
     outputCell.dataset.source = cell.source;
@@ -452,6 +452,13 @@ export class InstrumentGridControl {
       }
     });
     return outputCell;
+  }
+
+  createNoteBlock(cell) {
+    const block = document.createElement("span");
+    block.className = "midi-studio-v2__note-block";
+    block.textContent = cell.token || "-";
+    return block;
   }
 
   noteTableCellClass(cell) {

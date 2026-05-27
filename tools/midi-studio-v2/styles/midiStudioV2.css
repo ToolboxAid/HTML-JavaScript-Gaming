@@ -42,11 +42,13 @@
   gap: 0.75rem;
 }
 
-.midi-studio-v2__advanced-song-sheet[open] {
+.midi-studio-v2__advanced-song-sheet[open],
+.midi-studio-v2__advanced-lane-source[open] {
   padding-top: 0.25rem;
 }
 
-.midi-studio-v2__advanced-song-sheet summary {
+.midi-studio-v2__advanced-song-sheet summary,
+.midi-studio-v2__advanced-lane-source summary {
   cursor: pointer;
   font-weight: 700;
 }
@@ -143,6 +145,12 @@
   padding-top: 0.75rem;
 }
 
+.midi-studio-v2__advanced-lane-source {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+}
+
 .midi-studio-v2__instrument-grid-output {
   max-width: 100%;
   overflow: auto;
@@ -235,6 +243,18 @@
 .midi-studio-v2__note-table-cell:focus {
   outline: 3px solid rgba(56, 189, 248, 0.86);
   outline-offset: -3px;
+}
+
+.midi-studio-v2__note-block {
+  align-items: center;
+  background: rgba(14, 165, 233, 0.22);
+  border: 1px solid rgba(125, 211, 252, 0.56);
+  border-radius: 6px;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 2rem;
+  min-width: 3.25rem;
+  padding: 0.22rem 0.45rem;
 }
 
 .midi-studio-v2__grid-cell--label,

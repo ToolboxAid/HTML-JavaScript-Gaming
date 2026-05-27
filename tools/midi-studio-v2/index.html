@@ -236,28 +236,31 @@
             </div>
             <dl id="instrumentGridSummary" class="midi-studio-v2__details"></dl>
             <div id="instrumentGridOutput" class="midi-studio-v2__instrument-grid-output" aria-label="Signal-style MIDI note table"></div>
-            <div class="midi-studio-v2__grid-lane-inputs midi-studio-v2__grid-lane-inputs--source" aria-label="Advanced pipe-delimited lane source inputs">
-              <label class="tool-starter__field" for="instrumentGridChordsInput">
-                <span>Chords</span>
-                <textarea id="instrumentGridChordsInput" rows="2" placeholder="Am F C G | Am F C G"></textarea>
-              </label>
-              <label class="tool-starter__field" for="instrumentGridBassInput">
-                <span>Bass</span>
-                <textarea id="instrumentGridBassInput" rows="2" placeholder="A2 - F2 - | C3 - G2 -"></textarea>
-              </label>
-              <label class="tool-starter__field" for="instrumentGridPadInput">
-                <span>Pad</span>
-                <textarea id="instrumentGridPadInput" rows="2" placeholder="Am - F - | C - G -"></textarea>
-              </label>
-              <label class="tool-starter__field" for="instrumentGridLeadInput">
-                <span>Lead</span>
-                <textarea id="instrumentGridLeadInput" rows="2" placeholder="E4 G4 A4 - | C5 B4 G4 -"></textarea>
-              </label>
-              <label class="tool-starter__field" for="instrumentGridDrumsInput">
-                <span>Drums</span>
-                <textarea id="instrumentGridDrumsInput" rows="2" placeholder="kick hat snare hat | kick hat snare hat"></textarea>
-              </label>
-            </div>
+            <details class="midi-studio-v2__advanced-lane-source">
+              <summary>Advanced lane source text</summary>
+              <div class="midi-studio-v2__grid-lane-inputs midi-studio-v2__grid-lane-inputs--source" aria-label="Advanced pipe-delimited lane source inputs">
+                <label class="tool-starter__field" for="instrumentGridChordsInput">
+                  <span>Chords</span>
+                  <textarea id="instrumentGridChordsInput" rows="2" placeholder="Am F C G | Am F C G"></textarea>
+                </label>
+                <label class="tool-starter__field" for="instrumentGridBassInput">
+                  <span>Bass</span>
+                  <textarea id="instrumentGridBassInput" rows="2" placeholder="A2 - F2 - | C3 - G2 -"></textarea>
+                </label>
+                <label class="tool-starter__field" for="instrumentGridPadInput">
+                  <span>Pad</span>
+                  <textarea id="instrumentGridPadInput" rows="2" placeholder="Am - F - | C - G -"></textarea>
+                </label>
+                <label class="tool-starter__field" for="instrumentGridLeadInput">
+                  <span>Lead</span>
+                  <textarea id="instrumentGridLeadInput" rows="2" placeholder="E4 G4 A4 - | C5 B4 G4 -"></textarea>
+                </label>
+                <label class="tool-starter__field" for="instrumentGridDrumsInput">
+                  <span>Drums</span>
+                  <textarea id="instrumentGridDrumsInput" rows="2" placeholder="kick hat snare hat | kick hat snare hat"></textarea>
+                </label>
+              </div>
+            </details>
             <div class="midi-studio-v2__preview-lane-controls" aria-label="Preview Synth lane controls">
               <div class="midi-studio-v2__preview-lane-row" data-preview-lane="chords">
                 <label class="tool-starter__field" for="previewInstrumentChordsSelect">
