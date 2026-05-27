@@ -332,13 +332,15 @@ export class InstrumentGridControl {
 
   renderGrid(result) {
     const grid = document.createElement("div");
-    grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__spreadsheet-grid";
-    grid.style.gridTemplateColumns = `minmax(15rem, 18rem) repeat(${result.totalSteps}, minmax(5rem, 1fr))`;
-    this.renderSpreadsheetHeader(grid, result);
+    grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table";
+    grid.setAttribute("role", "table");
+    grid.setAttribute("aria-label", "Signal-style note table");
+    grid.style.gridTemplateColumns = `minmax(13rem, 16rem) repeat(${result.totalSteps}, minmax(4.75rem, 1fr))`;
+    this.renderNoteTableHeader(grid, result);
     result.lanes.forEach((lane) => {
-      grid.append(this.createLaneHeaderCell(lane, result));
+      grid.append(this.createLaneHeaderCell(lane));
       result.cells[lane].forEach((cell, stepIndex) => {
-        const outputCell = this.createSpreadsheetNoteCell(cell, stepIndex);
+        const outputCell = this.createNoteTableCell(cell, stepIndex);
         this.applyTimingDataset(outputCell, cell, stepIndex);
         grid.append(outputCell);
       });
@@ -346,14 +348,16 @@ export class InstrumentGridControl {
     this.gridOutput.append(grid);
   }
 
-  renderSpreadsheetHeader(grid, result) {
-    this.appendCell(grid, "Instrument/Lane", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column");
+  renderNoteTableHeader(grid, result) {
+    const instrumentHeader = this.appendCell(grid, "Instrument", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__note-table-instrument-header");
+    instrumentHeader.setAttribute("role", "columnheader");
     result.cells.chords.forEach((cell, stepIndex) => {
       const classes = [
         "midi-studio-v2__grid-cell",
         "midi-studio-v2__grid-cell--beat",
         "midi-studio-v2__grid-cell--ruler",
-        "midi-studio-v2__grid-cell--timing-header"
+        "midi-studio-v2__grid-cell--timing-header",
+        "midi-studio-v2__note-table-column-header"
       ];
       if (cell.beat === 1 && cell.subdivisionStep === 1) {
         classes.push("midi-studio-v2__grid-cell--bar");
@@ -363,8 +367,9 @@ export class InstrumentGridControl {
         classes.push("midi-studio-v2__grid-cell--section", `midi-studio-v2__section-tone-${section.colorIndex}`);
       }
       const outputCell = this.appendCell(grid, "", classes.join(" "));
+      outputCell.setAttribute("role", "columnheader");
+      outputCell.setAttribute("aria-label", `Bar ${cell.bar}, beat ${cell.beat}${result.subdivision > 1 ? `, subdivision ${cell.subdivisionStep}` : ""}, section ${cell.section}`);
       outputCell.append(
-        this.timingHeaderLine("Section", cell.section),
         this.timingHeaderLine("Bar", cell.bar),
         this.timingHeaderLine("Beat", cell.beat)
       );
@@ -381,22 +386,14 @@ export class InstrumentGridControl {
     return line;
   }
 
-  createLaneHeaderCell(lane, result) {
+  createLaneHeaderCell(lane) {
     const cell = document.createElement("div");
     cell.className = "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__lane-header-cell";
+    cell.setAttribute("role", "rowheader");
     const title = document.createElement("strong");
     title.textContent = LANE_LABELS[lane] || lane;
-    const sourceSummary = document.createElement("span");
-    sourceSummary.textContent = this.laneSourceSummary(lane, result);
-    cell.append(title, this.createLaneInstrumentControl(lane), this.createLaneToggleControl(lane, "mute"), this.createLaneToggleControl(lane, "solo"), sourceSummary);
+    cell.append(title, this.createLaneInstrumentControl(lane), this.createLaneToggleControl(lane, "mute"), this.createLaneToggleControl(lane, "solo"));
     return cell;
-  }
-
-  laneSourceSummary(lane, result) {
-    const cells = result.cells[lane] || [];
-    const generated = cells.filter((cell) => cell.source === "generated").length;
-    const manual = cells.filter((cell) => cell.source === "manual").length;
-    return `${manual} manual / ${generated} generated`;
   }
 
   createLaneInstrumentControl(lane) {
@@ -437,9 +434,9 @@ export class InstrumentGridControl {
     return label;
   }
 
-  createSpreadsheetNoteCell(cell, stepIndex) {
+  createNoteTableCell(cell, stepIndex) {
     const outputCell = document.createElement("div");
-    outputCell.className = this.spreadsheetCellClass(cell).join(" ");
+    outputCell.className = this.noteTableCellClass(cell).join(" ");
     outputCell.contentEditable = "true";
     outputCell.role = "textbox";
     outputCell.spellcheck = false;
@@ -447,7 +444,7 @@ export class InstrumentGridControl {
     outputCell.setAttribute("aria-label", `${LANE_LABELS[cell.lane] || cell.lane} note cell, section ${cell.section}, bar ${cell.bar}, beat ${cell.beat}`);
     outputCell.dataset.lane = cell.lane;
     outputCell.dataset.source = cell.source;
-    outputCell.addEventListener("input", () => this.updateLaneFromSpreadsheetCell(outputCell, stepIndex));
+    outputCell.addEventListener("input", () => this.updateLaneFromNoteTableCell(outputCell, stepIndex));
     outputCell.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
@@ -457,8 +454,8 @@ export class InstrumentGridControl {
     return outputCell;
   }
 
-  spreadsheetCellClass(cell) {
-    const classes = ["midi-studio-v2__grid-cell", "midi-studio-v2__spreadsheet-note-cell"];
+  noteTableCellClass(cell) {
+    const classes = ["midi-studio-v2__grid-cell", "midi-studio-v2__spreadsheet-note-cell", "midi-studio-v2__note-table-cell"];
     if (!REST_TOKENS.has(String(cell.token || "").trim().toLowerCase())) {
       classes.push("midi-studio-v2__grid-cell--event");
     }
@@ -471,17 +468,17 @@ export class InstrumentGridControl {
     return classes;
   }
 
-  updateLaneFromSpreadsheetCell(cell) {
+  updateLaneFromNoteTableCell(cell) {
     const lane = cell.dataset.lane;
     const laneInput = this.inputForLane(lane);
     if (!laneInput || !this.currentResult?.ok) {
       return;
     }
-    this.syncSpreadsheetCellState(cell);
-    laneInput.value = this.spreadsheetLaneText(lane);
+    this.syncNoteTableCellState(cell);
+    laneInput.value = this.noteTableLaneText(lane);
   }
 
-  syncSpreadsheetCellState(cell) {
+  syncNoteTableCellState(cell) {
     const value = String(cell.textContent || "").trim();
     const isRest = REST_TOKENS.has(value.toLowerCase());
     cell.classList.toggle("midi-studio-v2__grid-cell--event", !isRest);
@@ -490,10 +487,10 @@ export class InstrumentGridControl {
     cell.dataset.source = isRest ? "empty" : "manual";
   }
 
-  spreadsheetLaneText(lane) {
+  noteTableLaneText(lane) {
     const result = this.currentResult;
     const stepsPerBar = result.beatsPerBar * result.subdivision;
-    const cells = Array.from(this.gridOutput.querySelectorAll(`.midi-studio-v2__spreadsheet-note-cell[data-lane="${lane}"]`));
+    const cells = Array.from(this.gridOutput.querySelectorAll(`.midi-studio-v2__note-table-cell[data-lane="${lane}"]`));
     const bars = [];
     for (let barIndex = 0; barIndex < result.barCount; barIndex += 1) {
       const tokens = [];

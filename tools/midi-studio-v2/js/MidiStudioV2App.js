@@ -7,28 +7,28 @@ const EXAMPLE_TOOL_STATE = {
   toolId: TOOL_ID,
   version: 1,
   runtimePreference: "rendered",
-  activeSongId: "demo-test-song",
+  activeSongId: "twinkle-twinkle-little-star",
   directorMode: { enabled: true, defaultIntensity: "medium" },
   songs: [
     {
-      id: "demo-test-song",
-      name: "Demo Test Song",
-      sourceMidi: "assets/music/demo/demo-test-song.mid",
-      instrumentSet: "General MIDI demo",
+      id: "twinkle-twinkle-little-star",
+      name: "Twinkle Twinkle Little Star",
+      sourceMidi: "assets/music/demo/twinkle-twinkle-little-star.mid",
+      instrumentSet: "Preview Synth demo",
       rendered: {
-        wav: "assets/music/demo/demo-test-song.wav",
-        mp3: "assets/music/demo/demo-test-song.mp3",
-        ogg: "assets/music/demo/demo-test-song.ogg"
+        wav: "assets/music/demo/twinkle-twinkle-little-star.wav",
+        mp3: "assets/music/demo/twinkle-twinkle-little-star.mp3",
+        ogg: "assets/music/demo/twinkle-twinkle-little-star.ogg"
       },
       defaultRuntimeFormat: "ogg",
       loop: { enabled: true, startSeconds: 0, endSeconds: 16 },
       director: {
-        mood: "demo",
+        mood: "bright",
         intensity: "medium",
         usage: ["uat", "timing-preview"],
-        notes: "Explicit demo data for manual MIDI Studio V2 testing."
+        notes: "Explicit Twinkle Twinkle Little Star demo data for manual MIDI Studio V2 testing."
       },
-      tags: ["demo", "test"]
+      tags: ["demo", "test", "twinkle"]
     },
     {
       id: "demo-missing-target",
@@ -50,20 +50,20 @@ const EXAMPLE_TOOL_STATE = {
 };
 
 const EXAMPLE_GUIDED_SHEET = {
-  intro: "Am F",
-  key: "A minor",
-  loop: "Am F C G",
-  style: "retro-arcade",
-  tempo: "132"
+  intro: "C C G G",
+  key: "C major",
+  loop: "F F C C",
+  style: "chip",
+  tempo: "100"
 };
 
 const EXAMPLE_GRID = {
-  bass: "",
+  bass: "C2 C2 G2 G2 | A2 A2 G2 - | F2 F2 E2 E2 | D2 D2 C2 -",
   beatsPerBar: "4",
-  chords: "Am F C G | Am F C G | C G F Am",
-  drums: "",
-  lead: "",
-  pad: "",
+  chords: "C C G G | F F C C | F F C C | G G C C",
+  drums: "kick hat snare hat | kick hat snare hat | kick hat snare hat | kick hat snare hat",
+  lead: "C4 C4 G4 G4 | A4 A4 G4 - | F4 F4 E4 E4 | D4 D4 C4 -",
+  pad: "C - G - | F - C - | F - C - | G - C -",
   previewInstruments: {
     bass: "synth-bass",
     chords: "warm-pad",
@@ -71,7 +71,7 @@ const EXAMPLE_GRID = {
     lead: "retro-pulse-lead",
     pad: "ambient-pad"
   },
-  sections: "intro:1, loop:1, victory:1",
+  sections: "intro:2, loop:2",
   subdivision: "1"
 };
 
@@ -452,7 +452,7 @@ export class MidiStudioV2App {
     if (!this.prepareExampleToolState()) {
       return;
     }
-    this.statusLog.info("Demo next step: click Play Section or Play Loop to hear Preview Synth audition audio, or use Load Example And Play for the one-click UAT path.");
+    this.statusLog.info("Twinkle next step: click Play Section or Play Loop to hear Preview Synth audition audio, or use Load Example And Play for the one-click UAT path.");
   }
 
   async loadExampleAndPlay() {
@@ -462,7 +462,7 @@ export class MidiStudioV2App {
       this.updateAudioDiagnostics();
       return;
     }
-    this.statusLog.ok("Load Example And Play loaded explicit demo data.");
+    this.statusLog.ok("Load Example And Play loaded explicit Twinkle Twinkle Little Star data.");
     this.statusLog.ok("Load Example And Play assigned Preview Synth instruments.");
     const section = this.instrumentGrid.selectedSection() || this.lastInstrumentGridResult?.sections?.[0] || null;
     if (!section) {
@@ -499,7 +499,7 @@ export class MidiStudioV2App {
     }
     this.songSheet.applyGuidedDefaults(EXAMPLE_GUIDED_SHEET);
     this.instrumentGrid.applyGridDefaults(EXAMPLE_GRID);
-    this.statusLog.ok("Loaded explicit demo test song data. Demo paths are declared for UAT only; they are not hidden fallback assets.");
+    this.statusLog.ok("Loaded explicit Twinkle Twinkle Little Star test song data. Demo paths are declared for UAT only; they are not hidden fallback assets.");
     this.parseSongSheet(this.songSheet.composeGuidedSheet());
     ["bass", "pad", "lead", "drums"].forEach((lane) => {
       const input = this.instrumentGrid.readInput();
@@ -509,24 +509,24 @@ export class MidiStudioV2App {
       }
       const generated = this.instrumentGridParser.generateLane(input, lane);
       if (!generated.ok) {
-        this.statusLog.fail(`Demo lane generation rejected for ${lane}: ${generated.message}`);
+        this.statusLog.fail(`Twinkle lane generation rejected for ${lane}: ${generated.message}`);
         return;
       }
       this.instrumentGrid.applyGeneratedLane(generated);
       if (generated.warnings.length) {
-        this.statusLog.warn(`Demo lane generation warnings for ${lane}: ${generated.warningSummary}`);
+        this.statusLog.warn(`Twinkle lane generation warnings for ${lane}: ${generated.warningSummary}`);
       }
       if (generated.skippedEmptyBars) {
-        this.statusLog.warn(`Demo lane generation skipped ${generated.skippedEmptyBars} empty bar${generated.skippedEmptyBars === 1 ? "" : "s"} for ${lane}.`);
+        this.statusLog.warn(`Twinkle lane generation skipped ${generated.skippedEmptyBars} empty bar${generated.skippedEmptyBars === 1 ? "" : "s"} for ${lane}.`);
       }
       this.statusLog.ok(generated.message);
     });
     this.normalizeInstrumentGrid(this.instrumentGrid.readInput());
     const playable = this.playableEventSummary();
     if (playable.count > 0) {
-      this.statusLog.ok(`Demo grid has ${playable.count} playable Preview Synth note${playable.count === 1 ? "" : "s"} after lane generation.`);
+      this.statusLog.ok(`Twinkle grid has ${playable.count} playable Preview Synth note${playable.count === 1 ? "" : "s"} after lane generation.`);
     } else {
-      this.statusLog.fail("Demo grid has no playable Preview Synth notes after lane generation.");
+      this.statusLog.fail("Twinkle grid has no playable Preview Synth notes after lane generation.");
     }
     this.updateAudioDiagnostics();
     return true;

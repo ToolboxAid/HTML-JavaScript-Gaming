@@ -199,7 +199,7 @@
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="instrumentGridContent">
-            <span>Multi-Instrument Grid</span>
+            <span>Signal-Style Note Table</span>
             <span id="instrumentGridSnapIndicator" class="midi-studio-v2__snap-indicator">Snap: not set</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
@@ -234,7 +234,9 @@
                 </select>
               </label>
             </div>
-            <div class="midi-studio-v2__grid-lane-inputs">
+            <dl id="instrumentGridSummary" class="midi-studio-v2__details"></dl>
+            <div id="instrumentGridOutput" class="midi-studio-v2__instrument-grid-output" aria-label="Signal-style MIDI note table"></div>
+            <div class="midi-studio-v2__grid-lane-inputs midi-studio-v2__grid-lane-inputs--source" aria-label="Advanced pipe-delimited lane source inputs">
               <label class="tool-starter__field" for="instrumentGridChordsInput">
                 <span>Chords</span>
                 <textarea id="instrumentGridChordsInput" rows="2" placeholder="Am F C G | Am F C G"></textarea>
@@ -405,8 +407,6 @@
               </div>
               <p id="instrumentGridTransportState" class="tool-starter__hint">Preview Synth timing preview stopped.</p>
             </div>
-            <dl id="instrumentGridSummary" class="midi-studio-v2__details"></dl>
-            <div id="instrumentGridOutput" class="midi-studio-v2__instrument-grid-output" aria-label="Aligned multi-instrument grid"></div>
           </div>
         </section>
       </section>

@@ -379,27 +379,37 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("loads explicit demo test song data for UAT grid and Preview Synth timing preview", async ({ page }) => {
+  test("loads explicit Twinkle Twinkle Little Star test song data for UAT note table and Preview Synth timing preview", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       await page.locator("#useExampleButton").click();
-      await expect(page.locator("#songList")).toContainText("Demo Test Song");
+      await expect(page.locator("#songList")).toContainText("Twinkle Twinkle Little Star");
       await expect(page.locator("#songList")).toContainText("Demo Missing Target");
-      await expect(page.locator("#songSheetKeyInput")).toHaveValue("A minor");
-      await expect(page.locator("#songSheetStyleInput")).toHaveValue("retro-arcade");
-      await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("intro:1, loop:1, victory:1");
-      await expect(page.locator("#instrumentGridChordsInput")).toHaveValue("Am F C G | Am F C G | C G F Am");
+      await expect(page.locator("#songSheetKeyInput")).toHaveValue("C major");
+      await expect(page.locator("#songSheetStyleInput")).toHaveValue("chip");
+      await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("intro:2, loop:2");
+      await expect(page.locator("#instrumentGridChordsInput")).toHaveValue("C C G G | F F C C | F F C C | G G C C");
       await expect(page.locator("#previewInstrumentLeadSelect")).toHaveValue("retro-pulse-lead");
       await expect(page.locator("#previewInstrumentPadSelect")).toHaveValue("ambient-pad");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded explicit demo test song data\. Demo paths are declared for UAT only; they are not hidden fallback assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded explicit Twinkle Twinkle Little Star test song data\. Demo paths are declared for UAT only; they are not hidden fallback assets\./);
       await expect(page.locator("#instrumentGridSectionSelect")).toContainText("intro");
-      await expect(page.locator(".midi-studio-v2__grid-cell").first()).toHaveText("Instrument/Lane");
-      await expect(page.locator(".midi-studio-v2__spreadsheet-note-cell[data-lane]")).not.toHaveCount(0);
-      await expect(spreadsheetCell(page, "chords", 0)).toHaveText("Am");
-      await expect(spreadsheetCell(page, "bass", 0)).toHaveText("A2");
-      await expect(spreadsheetCell(page, "pad", 0)).toHaveText("Am");
-      await expect(spreadsheetCell(page, "lead", 0)).toHaveText("A4");
+      await expect(page.locator(".midi-studio-v2__note-table")).toHaveCount(1);
+      await expect(page.locator(".midi-studio-v2__grid-cell").first()).toHaveText("Instrument");
+      await expect(page.locator(".midi-studio-v2__note-table-column-header").first()).toContainText("Bar 1");
+      await expect(page.locator(".midi-studio-v2__note-table-cell[data-lane]")).not.toHaveCount(0);
+      await expect(page.locator("#instrumentGridOutput textarea")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__lane-header-cell strong")).toContainText(["Chords", "Bass", "Pad", "Lead", "Drums"]);
+      expect(await page.evaluate(() => {
+        const output = document.querySelector("#instrumentGridOutput");
+        const sourceInputs = document.querySelector(".midi-studio-v2__grid-lane-inputs--source");
+        return Boolean(output && sourceInputs && (output.compareDocumentPosition(sourceInputs) & Node.DOCUMENT_POSITION_FOLLOWING));
+      })).toBe(true);
+      await expect(spreadsheetCell(page, "chords", 0)).toHaveText("C");
+      await expect(spreadsheetCell(page, "bass", 0)).toHaveText("C2");
+      await expect(spreadsheetCell(page, "pad", 0)).toHaveText("C");
+      await expect(spreadsheetCell(page, "lead", 0)).toHaveText("C4");
       await expect(spreadsheetCell(page, "drums", 0)).toHaveText("kick");
+      expect(await page.locator("#instrumentGridOutput").evaluate((output) => !output.contains(document.querySelector("#audioDiagnostics")))).toBe(true);
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
@@ -410,24 +420,23 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#generateArpeggioFromChordsButton").click();
       await page.locator("#generateBasicDrumsButton").click();
       await page.locator("#normalizeInstrumentGridButton").click();
-      await expect(page.locator("#instrumentGridOutput")).toContainText("victory");
-      await expect(page.locator(".midi-studio-v2__grid-cell--bar")).toHaveCount(3);
-      await expect(page.locator("#instrumentGridSectionSelect")).toContainText("victory");
+      await expect(page.locator(".midi-studio-v2__grid-cell--bar")).toHaveCount(4);
+      await expect(page.locator("#instrumentGridSectionSelect")).toContainText("loop");
       const demoModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
-      expect(demoModel).toMatchObject({ barCount: 3, ok: true });
-      expect(demoModel.timeline.some((event) => event.source === "generated" && event.lane === "bass")).toBe(true);
+      expect(demoModel).toMatchObject({ barCount: 4, ok: true });
+      expect(demoModel.timeline.some((event) => event.lane === "lead" && event.value === "C4")).toBe(true);
 
-      await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
-      await page.locator("#instrumentGridLoopEndSelect").selectOption("victory");
+      await page.locator("#instrumentGridLoopStartSelect").selectOption("intro");
+      await page.locator("#instrumentGridLoopEndSelect").selectOption("loop");
       expect(await page.locator(".midi-studio-v2__grid-cell--loop-region").count()).toBeGreaterThan(0);
       await page.locator("#playLoopButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for loop loop to victory with \d+ playable events\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for loop intro to loop with \d+ playable events\./);
       await expect(page.locator("#statusLog")).toHaveValue(/Preview Synth uses temporary oscillator instruments for grid audition only; SoundFont playback is not implemented\./);
-      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop Preview Synth timing preview: loop to victory");
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop Preview Synth timing preview: intro to loop");
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await expect(page.locator(".midi-studio-v2__grid-cell--lane-active")).not.toHaveCount(0);
       await page.locator("#exportOggButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for OGG\. Planned target: assets\/music\/demo\/demo-test-song\.ogg\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for OGG\. Planned target: assets\/music\/demo\/twinkle-twinkle-little-star\.ogg\./);
       await page.locator('[data-song-id="demo-missing-target"]').click();
       await page.locator("#exportWavButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered WAV export target for Demo Missing Target\. Add music\.songs\[\]\.rendered\.wav before exporting\./);
@@ -442,23 +451,23 @@ test.describe("MIDI Studio V2", () => {
     try {
       await page.locator("#loadExampleAndPlayButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play started\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play loaded explicit demo data\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play loaded explicit Twinkle Twinkle Little Star data\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play assigned Preview Synth instruments\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Demo grid has \d+ playable Preview Synth notes after lane generation\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Twinkle grid has \d+ playable Preview Synth notes after lane generation\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Load Example And Play started audible Preview Synth playback and moved the playhead\./);
       await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing section Preview Synth timing preview: intro");
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "resume"))).toBe(true);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", "0");
-      await expect(spreadsheetCell(page, "bass", 0)).toHaveText("A2");
+      await expect(spreadsheetCell(page, "bass", 0)).toHaveText("C2");
       const diagnostics = await audioDiagnosticsRows(page);
       expect(Number(diagnostics["Playable note count"])).toBeGreaterThan(0);
       expect(diagnostics).toMatchObject({
         "Audio context state": "running",
         "Last playback error": "none",
         "Selected section": "intro",
-        "Selected song": "Demo Test Song"
+        "Selected song": "Twinkle Twinkle Little Star"
       });
       expect(diagnostics["Active lanes"]).toMatch(/bass|chords|drums|lead|pad/);
       expect(diagnostics["Current preview instrument pack"]).toContain("lead: Retro Pulse Lead");
@@ -739,8 +748,8 @@ Am F`);
       await page.locator("#normalizeInstrumentGridButton").click();
       await expect(page.locator("#instrumentGridSummary")).toContainText("intro: 1 bar; loop: 1 bar");
       await expect(page.locator("#instrumentGridSummary")).toContainText("30 normalized events");
-      await expect(page.locator("#instrumentGridOutput")).toContainText("intro");
-      await expect(page.locator("#instrumentGridOutput")).toContainText("loop");
+      await expect(page.locator("#instrumentGridOutput")).not.toContainText("intro");
+      await expect(page.locator("#instrumentGridOutput")).not.toContainText("loop");
       await expect(page.locator("#instrumentGridOutput")).toContainText("Am");
       await expect(page.locator("#instrumentGridOutput")).toContainText("A2");
       await expect(page.locator("#instrumentGridOutput")).toContainText("kick");
@@ -804,16 +813,16 @@ Am F`);
       });
       await page.locator("#normalizeInstrumentGridButton").click();
       expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length)).toBe(9);
-      await expect(page.locator(".midi-studio-v2__grid-cell").first()).toHaveText("Instrument/Lane");
+      await expect(page.locator(".midi-studio-v2__grid-cell").first()).toHaveText("Instrument");
       expect(await page.locator(".midi-studio-v2__grid-cell--timing-header").evaluateAll((cells) => cells.map((cell) => cell.textContent))).toEqual([
-        "Section introBar 1Beat 1",
-        "Section introBar 1Beat 2",
-        "Section introBar 1Beat 3",
-        "Section introBar 1Beat 4",
-        "Section loopBar 2Beat 1",
-        "Section loopBar 2Beat 2",
-        "Section loopBar 2Beat 3",
-        "Section loopBar 2Beat 4"
+        "Bar 1Beat 1",
+        "Bar 1Beat 2",
+        "Bar 1Beat 3",
+        "Bar 1Beat 4",
+        "Bar 2Beat 1",
+        "Bar 2Beat 2",
+        "Bar 2Beat 3",
+        "Bar 2Beat 4"
       ]);
       await expect(spreadsheetCell(page, "chords", 0)).toHaveText("Am");
       await expect(spreadsheetCell(page, "bass", 0)).toHaveText("A2");
@@ -854,7 +863,8 @@ Am F`);
       await fillInstrumentGrid(page, { drums: "kick zap snare hat | kick hat snare hat" });
       await page.locator("#normalizeInstrumentGridButton").click();
       await expect(page.locator("#instrumentGridSummary")).toContainText('Invalid drum token "zap"');
-      await expect(page.locator("#instrumentGridOutput")).toContainText("intro");
+      await expect(page.locator("#instrumentGridSummary")).toContainText("intro: 1 bar; loop: 1 bar");
+      await expect(page.locator("#instrumentGridOutput")).not.toContainText("intro");
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Instrument grid normalized with warnings: Invalid drum token "zap" at bar 1, beat 2; token was skipped\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Instrument grid normalized: 2 sections, 2 bars, 29 events\./);
     } finally {
@@ -880,10 +890,10 @@ Am F`);
       await page.locator("#normalizeInstrumentGridButton").click();
       expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length)).toBe(5);
       expect(await page.locator(".midi-studio-v2__grid-cell--timing-header").evaluateAll((cells) => cells.map((cell) => cell.textContent))).toEqual([
-        "Section introBar 1Beat 1Subdivision 1",
-        "Section introBar 1Beat 1Subdivision 2",
-        "Section introBar 1Beat 2Subdivision 1",
-        "Section introBar 1Beat 2Subdivision 2"
+        "Bar 1Beat 1Subdivision 1",
+        "Bar 1Beat 1Subdivision 2",
+        "Bar 1Beat 2Subdivision 1",
+        "Bar 1Beat 2Subdivision 2"
       ]);
       await page.locator("#instrumentGridSubdivisionInput").selectOption("16");
       await expect(page.locator("#instrumentGridSnapIndicator")).toContainText("Snap: 1 bar / 2 beats / 1/16");
