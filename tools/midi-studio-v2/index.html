@@ -87,11 +87,35 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="songSheetContent" class="accordion-v2__content midi-studio-v2__stack">
-            <label class="tool-starter__field" for="songSheetInput">
-              <span>Structured song sheet</span>
-              <textarea id="songSheetInput" class="midi-studio-v2__song-sheet-input" rows="9" placeholder="tempo=132&#10;key=A minor&#10;style=retro-arcade&#10;&#10;[intro]&#10;Am F&#10;&#10;[loop]&#10;Am F C G"></textarea>
+            <label class="tool-starter__field" for="songSheetTempoInput">
+              <span>Tempo/BPM</span>
+              <input id="songSheetTempoInput" type="number" min="1" step="1" inputmode="numeric" placeholder="132">
             </label>
-            <button id="parseSongSheetButton" type="button">Parse Song Sheet</button>
+            <label class="tool-starter__field" for="songSheetKeyInput">
+              <span>Key</span>
+              <input id="songSheetKeyInput" type="text" placeholder="A minor">
+            </label>
+            <label class="tool-starter__field" for="songSheetStyleInput">
+              <span>Style</span>
+              <input id="songSheetStyleInput" type="text" placeholder="retro-arcade">
+            </label>
+            <label class="tool-starter__field" for="songSheetIntroInput">
+              <span>Intro chord progression</span>
+              <input id="songSheetIntroInput" type="text" placeholder="Am F">
+            </label>
+            <label class="tool-starter__field" for="songSheetLoopInput">
+              <span>Loop chord progression</span>
+              <input id="songSheetLoopInput" type="text" placeholder="Am F C G">
+            </label>
+            <button id="parseSongSheetButton" type="button">Parse Guided Song Sheet</button>
+            <details class="midi-studio-v2__advanced-song-sheet">
+              <summary>Advanced raw song sheet</summary>
+              <label class="tool-starter__field" for="songSheetInput">
+                <span>Structured song sheet</span>
+                <textarea id="songSheetInput" class="midi-studio-v2__song-sheet-input" rows="9" placeholder="tempo=132&#10;key=A minor&#10;style=retro-arcade&#10;&#10;[intro]&#10;Am F&#10;&#10;[loop]&#10;Am F C G"></textarea>
+              </label>
+              <button id="parseRawSongSheetButton" type="button">Parse Raw Song Sheet</button>
+            </details>
           </div>
         </section>
       </aside>
@@ -158,10 +182,15 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderedTargetsContent">
+          <div class="accordion-v2__header midi-studio-v2__rendered-targets-header" aria-expanded="true" aria-controls="renderedTargetsContent">
             <span>Rendered Export Targets</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
+            <div class="midi-studio-v2__header-actions" aria-label="Rendered export actions">
+              <button id="exportWavButton" type="button">Export WAV</button>
+              <button id="exportMp3Button" type="button">Export MP3</button>
+              <button id="exportOggButton" type="button">Export OGG</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
           <div id="renderedTargetsContent" class="accordion-v2__content">
             <dl id="renderedTargets" class="midi-studio-v2__details"></dl>
           </div>

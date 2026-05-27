@@ -184,6 +184,14 @@ async function openMidiStudio(page, routePayload = validManifest, midiRoutes = {
   return server;
 }
 
+async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop = "Am F C G", style = "retro-arcade", tempo = "132" } = {}) {
+  await page.locator("#songSheetTempoInput").fill(tempo);
+  await page.locator("#songSheetKeyInput").fill(key);
+  await page.locator("#songSheetStyleInput").fill(style);
+  await page.locator("#songSheetIntroInput").fill(intro);
+  await page.locator("#songSheetLoopInput").fill(loop);
+}
+
 test.describe("MIDI Studio V2", () => {
   test.afterAll(async () => {
     await workspaceV2CoverageReporter.writeReport();
@@ -202,6 +210,11 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#directorPanel")).toContainText("heroic");
       await expect(page.locator("#playButton")).toHaveText("Play Rendered Preview");
       await expect(page.locator("#inspectMidiSourceButton")).toBeEnabled();
+      const renderedHeader = page.locator('.accordion-v2__header[aria-controls="renderedTargetsContent"]');
+      await expect(renderedHeader).toContainText("Rendered Export Targets");
+      await expect(renderedHeader.locator("#exportWavButton")).toBeVisible();
+      await expect(renderedHeader.locator("#exportMp3Button")).toBeVisible();
+      await expect(renderedHeader.locator("#exportOggButton")).toBeVisible();
       await expect(page.locator("#midiSourceDetails")).toContainText("No MIDI source inspected.");
       await expect(page.locator("#playbackState")).toContainText("Live MIDI synthesis: NOT IMPLEMENTED");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 3 MIDI songs/);
@@ -223,6 +236,24 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#directorPanel")).toContainText("Short encounter loop.");
       await page.locator('[data-song-id="theme-main"]').click();
       await expect(page.locator("#songSourceField")).toHaveValue("assets/music/midi/theme-main.mid");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("reports rendered export header action status without claiming files were written", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await page.locator("#exportWavButton").click();
+      await page.locator("#exportMp3Button").click();
+      await page.locator("#exportOggButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for WAV\. Planned target: assets\/music\/rendered\/theme-main\.wav\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for MP3\. Planned target: assets\/music\/rendered\/theme-main\.mp3\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for OGG\. Planned target: assets\/music\/rendered\/theme-main\.ogg\./);
+      await page.locator('[data-song-id="source-only"]').click();
+      await page.locator("#exportWavButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered WAV export target for Source Only\. Add music\.songs\[\]\.rendered\.wav before exporting\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -335,18 +366,10 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("parses a valid Song Sheet into section summary metadata", async ({ page }) => {
+  test("parses guided Song Sheet fields into section summary metadata", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
-      await page.locator("#songSheetInput").fill(`tempo=132
-key=A minor
-style=retro-arcade
-
-[intro]
-Am F
-
-[loop]
-Am F C G`);
+      await fillGuidedSongSheet(page);
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText("intro: 2 bars, 2 chords");
       await expect(page.locator("#songSheetSummary")).toContainText("loop: 4 bars, 4 chords, loop");
@@ -370,38 +393,62 @@ Am F C G`);
     }
   });
 
-  test("shows Song Sheet warnings for invalid chords and empty sections", async ({ page }) => {
+  test("shows guided Song Sheet warnings for invalid chords and empty intro loop fields", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
-      await page.locator("#songSheetInput").fill(`tempo=120
-key=C major
-style=chip
-
-[loop]
-C Hm G
-
-[break]`);
+      await fillGuidedSongSheet(page, {
+        intro: "",
+        key: "C major",
+        loop: "C Hm G",
+        style: "chip",
+        tempo: "120"
+      });
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText('Invalid chord "Hm"');
-      await expect(page.locator("#songSheetSummary")).toContainText("Section break is empty.");
+      await expect(page.locator("#songSheetSummary")).toContainText("Section intro is empty.");
       await expect(page.locator("#songSheetSummary")).toContainText("loop: 2 bars, 2 chords, loop");
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Song Sheet parsed with warnings: Invalid chord "Hm" in section loop/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet parsed: 2 sections, 2 bars, 2 chords\./);
+      await page.locator("#songSheetLoopInput").fill("");
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary")).toContainText("Section loop is empty.");
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Song Sheet parsed with warnings: Section intro is empty\.; Section loop is empty\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
 
-  test("rejects malformed Song Sheet syntax without partial section summary", async ({ page }) => {
+  test("rejects invalid guided Song Sheet tempo and missing key before parser render", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
+      await fillGuidedSongSheet(page, { tempo: "-1" });
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary")).toContainText("Invalid tempo/BPM. Enter a positive number before parsing the guided Song Sheet.");
+      await expect(page.locator("#songSheetSummary")).not.toContainText("intro:");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Invalid tempo\/BPM\. Enter a positive number before parsing the guided Song Sheet\./);
+      await page.locator("#songSheetTempoInput").fill("132");
+      await page.locator("#songSheetKeyInput").fill("");
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary")).toContainText("Missing key. Enter a key before parsing the guided Song Sheet.");
+      await expect(page.locator("#songSheetSummary")).not.toContainText("loop:");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Missing key\. Enter a key before parsing the guided Song Sheet\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("rejects malformed raw Song Sheet syntax without partial section summary", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await page.locator(".midi-studio-v2__advanced-song-sheet summary").click();
       await page.locator("#songSheetInput").fill(`tempo:132
 key=A minor
 
 [loop]
 Am F`);
-      await page.locator("#parseSongSheetButton").click();
+      await page.locator("#parseRawSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText("Unsupported Song Sheet syntax on line 1: tempo:132");
       await expect(page.locator("#songSheetSummary")).not.toContainText("loop:");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Unsupported Song Sheet syntax on line 1: tempo:132/);
@@ -416,12 +463,7 @@ Am F`);
       "assets/music/midi/theme-main.mid": validMidiBytes
     });
     try {
-      await page.locator("#songSheetInput").fill(`tempo=132
-key=A minor
-style=retro-arcade
-
-[loop]
-Am F C G`);
+      await fillGuidedSongSheet(page, { intro: "", loop: "Am F C G" });
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText("loop: 4 bars, 4 chords, loop");
       await page.locator("#inspectMidiSourceButton").click();
@@ -535,6 +577,8 @@ Am F C G`);
       await expect(page.locator("#songList")).toContainText("No MIDI songs loaded.");
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL MIDI Studio V2 payload rejected before render .* music\.songs\[0\]\.id is required\./);
+      await page.locator("#exportWavButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI song for WAV export\. Load or select a song before exporting\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

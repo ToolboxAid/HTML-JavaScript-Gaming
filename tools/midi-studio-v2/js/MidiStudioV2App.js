@@ -13,6 +13,7 @@ export class MidiStudioV2App {
     midiSourceInspection,
     playback,
     playbackControl,
+    renderedExportActions,
     serializer,
     shell,
     songList,
@@ -31,6 +32,7 @@ export class MidiStudioV2App {
     this.payload = null;
     this.playback = playback;
     this.playbackControl = playbackControl;
+    this.renderedExportActions = renderedExportActions;
     this.selectedSongId = "";
     this.serializer = serializer;
     this.shell = shell;
@@ -52,6 +54,7 @@ export class MidiStudioV2App {
       onPlay: () => this.playSelectedSong(),
       onStop: () => this.stopPlayback()
     });
+    this.renderedExportActions.mount({ onExport: (format) => this.exportRenderedTarget(format) });
     this.actionNav.mount({
       onToolCopyJson: () => this.copyJson(),
       onToolExportToolState: () => this.exportToolState(),
@@ -154,8 +157,8 @@ export class MidiStudioV2App {
     this.statusLog.ok(`MIDI source inspected for ${song.name}: format ${result.format}, ${result.trackCount} track${result.trackCount === 1 ? "" : "s"}, ${result.ticksPerQuarterNote} TPQN.`);
   }
 
-  parseSongSheet(sourceText) {
-    const result = this.songSheetParser.parse(sourceText);
+  parseSongSheet(request) {
+    const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
     this.songSheet.render(result);
     if (!result.ok) {
       this.statusLog.fail(`Song Sheet rejected: ${result.message}`);
@@ -165,6 +168,21 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Song Sheet parsed with warnings: ${result.warningSummary}`);
     }
     this.statusLog.ok(`Song Sheet parsed: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.bars} bars, ${result.chordCount} chords.`);
+  }
+
+  exportRenderedTarget(format) {
+    const song = this.selectedSong();
+    const label = String(format || "").toUpperCase();
+    if (!song) {
+      this.statusLog.fail(`Missing MIDI song for ${label} export. Load or select a song before exporting.`);
+      return;
+    }
+    const target = String(song.rendered?.[format] || "").trim();
+    if (!target) {
+      this.statusLog.fail(`Missing rendered ${label} export target for ${song.name}. Add music.songs[].rendered.${format} before exporting.`);
+      return;
+    }
+    this.statusLog.warn(`Export rendering not implemented for ${label}. Planned target: ${target}.`);
   }
 
   stopPlayback() {

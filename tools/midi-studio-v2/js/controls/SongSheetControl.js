@@ -18,14 +18,51 @@ function songSheetRows(result) {
 }
 
 export class SongSheetControl {
-  constructor({ input, parseButton, summary }) {
-    this.input = input;
+  constructor({ introInput, keyInput, loopInput, parseButton, parseRawButton, rawInput, styleInput, summary, tempoInput }) {
+    this.introInput = introInput;
+    this.keyInput = keyInput;
+    this.loopInput = loopInput;
     this.parseButton = parseButton;
+    this.parseRawButton = parseRawButton;
+    this.rawInput = rawInput;
+    this.styleInput = styleInput;
     this.summary = summary;
+    this.tempoInput = tempoInput;
   }
 
   mount({ onParse }) {
-    this.parseButton.addEventListener("click", () => onParse(this.input.value));
+    this.parseButton.addEventListener("click", () => onParse(this.composeGuidedSheet()));
+    this.parseRawButton.addEventListener("click", () => onParse(this.rawInput.value));
+  }
+
+  composeGuidedSheet() {
+    const tempo = this.tempoInput.value.trim();
+    const key = this.keyInput.value.trim();
+    const style = this.styleInput.value.trim();
+    const intro = this.introInput.value.trim();
+    const loop = this.loopInput.value.trim();
+    const numericTempo = Number(tempo);
+    if (!Number.isFinite(numericTempo) || numericTempo <= 0) {
+      return {
+        message: "Invalid tempo/BPM. Enter a positive number before parsing the guided Song Sheet.",
+        ok: false
+      };
+    }
+    if (!key) {
+      return {
+        message: "Missing key. Enter a key before parsing the guided Song Sheet.",
+        ok: false
+      };
+    }
+    const lines = [`tempo=${tempo}`, `key=${key}`];
+    if (style) {
+      lines.push(`style=${style}`);
+    }
+    lines.push("", "[intro]", intro, "", "[loop]", loop);
+    return {
+      ok: true,
+      sourceText: lines.join("\n")
+    };
   }
 
   render(result = null) {

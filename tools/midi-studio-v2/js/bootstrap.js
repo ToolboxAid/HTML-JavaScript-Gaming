@@ -5,6 +5,7 @@ import { ActionNavControl } from "./controls/ActionNavControl.js";
 import { DirectorPanelControl } from "./controls/DirectorPanelControl.js";
 import { MidiSourceDetailsControl } from "./controls/MidiSourceDetailsControl.js";
 import { PlaybackControl } from "./controls/PlaybackControl.js";
+import { RenderedExportActionsControl } from "./controls/RenderedExportActionsControl.js";
 import { SongDetailsControl } from "./controls/SongDetailsControl.js";
 import { SongListControl } from "./controls/SongListControl.js";
 import { SongSheetControl } from "./controls/SongSheetControl.js";
@@ -63,13 +64,24 @@ window.addEventListener("DOMContentLoaded", () => {
       stateOutput: requireElement("#playbackState"),
       stopButton: requireElement("#stopButton")
     }),
+    renderedExportActions: new RenderedExportActionsControl({
+      mp3Button: requireElement("#exportMp3Button"),
+      oggButton: requireElement("#exportOggButton"),
+      wavButton: requireElement("#exportWavButton")
+    }),
     serializer: new MidiStudioStateSerializer(),
     shell: new ToolShellControl(),
     songList: new SongListControl({ list: requireElement("#songList") }),
     songSheet: new SongSheetControl({
-      input: requireElement("#songSheetInput"),
+      introInput: requireElement("#songSheetIntroInput"),
+      keyInput: requireElement("#songSheetKeyInput"),
+      loopInput: requireElement("#songSheetLoopInput"),
       parseButton: requireElement("#parseSongSheetButton"),
-      summary: requireElement("#songSheetSummary")
+      parseRawButton: requireElement("#parseRawSongSheetButton"),
+      rawInput: requireElement("#songSheetInput"),
+      styleInput: requireElement("#songSheetStyleInput"),
+      summary: requireElement("#songSheetSummary"),
+      tempoInput: requireElement("#songSheetTempoInput")
     }),
     songSheetParser: new SongSheetParser(),
     statusLog,

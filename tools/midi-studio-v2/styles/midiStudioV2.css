@@ -37,6 +37,20 @@
   resize: vertical;
 }
 
+.midi-studio-v2__advanced-song-sheet {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.midi-studio-v2__advanced-song-sheet[open] {
+  padding-top: 0.25rem;
+}
+
+.midi-studio-v2__advanced-song-sheet summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .midi-studio-v2__empty {
   margin: 0;
   opacity: 0.8;
@@ -77,6 +91,28 @@
 .midi-studio-v2__director {
   display: grid;
   gap: 0.6rem;
+}
+
+.midi-studio-v2__rendered-targets-header {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.midi-studio-v2__header-actions {
+  align-items: center;
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-start;
+}
+
+.midi-studio-v2__header-actions .accordion-v2__icon {
+  margin-left: auto;
 }
 
 .midi-studio-v2__status-clear-button {
