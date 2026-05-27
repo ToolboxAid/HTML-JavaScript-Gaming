@@ -89,9 +89,14 @@
 }
 
 .midi-studio-v2__grid-settings,
-.midi-studio-v2__grid-lane-inputs {
+.midi-studio-v2__grid-lane-inputs,
+.midi-studio-v2__grid-actions {
   display: grid;
   gap: 0.65rem;
+}
+
+.midi-studio-v2__grid-actions {
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
 }
 
 .midi-studio-v2__grid-lane-inputs textarea {
@@ -140,6 +145,22 @@
   background: rgba(221, 214, 254, 0.16);
   color: #ffffff;
   font-weight: 700;
+}
+
+.midi-studio-v2__grid-cell--generated {
+  box-shadow: inset 0 -0.2rem 0 rgba(34, 197, 94, 0.75);
+}
+
+.midi-studio-v2__grid-cell--manual {
+  box-shadow: inset 0 -0.2rem 0 rgba(251, 191, 36, 0.85);
+}
+
+.midi-studio-v2__snap-indicator {
+  color: var(--tool-starter-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-left: auto;
+  text-transform: none;
 }
 
 .midi-studio-v2__director {

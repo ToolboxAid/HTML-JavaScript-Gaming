@@ -172,6 +172,7 @@
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="instrumentGridContent">
             <span>Multi-Instrument Grid</span>
+            <span id="instrumentGridSnapIndicator" class="midi-studio-v2__snap-indicator">Snap: not set</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="instrumentGridContent" class="accordion-v2__content midi-studio-v2__stack">
@@ -187,9 +188,11 @@
               <label class="tool-starter__field" for="instrumentGridSubdivisionInput">
                 <span>Subdivision</span>
                 <select id="instrumentGridSubdivisionInput">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="4">4</option>
+                  <option value="1">1/1</option>
+                  <option value="2">1/2</option>
+                  <option value="4">1/4</option>
+                  <option value="8">1/8</option>
+                  <option value="16">1/16</option>
                 </select>
               </label>
             </div>
@@ -215,7 +218,13 @@
                 <textarea id="instrumentGridDrumsInput" rows="2" placeholder="kick hat snare hat | kick hat snare hat"></textarea>
               </label>
             </div>
-            <button id="normalizeInstrumentGridButton" type="button">Normalize Grid</button>
+            <div class="midi-studio-v2__grid-actions" aria-label="Instrument grid actions">
+              <button id="generateBassFromChordsButton" type="button">Generate Bass From Chords</button>
+              <button id="generatePadFromChordsButton" type="button">Generate Pad From Chords</button>
+              <button id="generateArpeggioFromChordsButton" type="button">Generate Arpeggio From Chords</button>
+              <button id="generateBasicDrumsButton" type="button">Generate Basic Drums</button>
+              <button id="normalizeInstrumentGridButton" type="button">Normalize Grid</button>
+            </div>
             <dl id="instrumentGridSummary" class="midi-studio-v2__details"></dl>
             <div id="instrumentGridOutput" class="midi-studio-v2__instrument-grid-output" aria-label="Aligned multi-instrument grid"></div>
           </div>

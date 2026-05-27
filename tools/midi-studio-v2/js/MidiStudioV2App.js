@@ -54,7 +54,10 @@ export class MidiStudioV2App {
     this.statusLog.mount();
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
     this.songSheet.mount({ onParse: (sourceText) => this.parseSongSheet(sourceText) });
-    this.instrumentGrid.mount({ onNormalize: (input) => this.normalizeInstrumentGrid(input) });
+    this.instrumentGrid.mount({
+      onGenerate: (lane, input) => this.generateInstrumentLane(lane, input),
+      onNormalize: (input) => this.normalizeInstrumentGrid(input)
+    });
     this.midiSourceDetails.mount({ onInspect: () => this.inspectSelectedSource() });
     this.playbackControl.mount({
       onPlay: () => this.playSelectedSong(),
@@ -190,6 +193,32 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Instrument grid normalized with warnings: ${result.warningSummary}`);
     }
     this.statusLog.ok(`Instrument grid normalized: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.barCount} bars, ${result.eventCount} events.`);
+  }
+
+  generateInstrumentLane(lane, input) {
+    const generated = this.instrumentGridParser.generateLane(input, lane);
+    if (!generated.ok) {
+      this.statusLog.fail(`Instrument grid generation rejected: ${generated.message}`);
+      return;
+    }
+    this.instrumentGrid.applyGeneratedLane(generated);
+    const normalized = this.instrumentGridParser.parse(this.instrumentGrid.readInput());
+    this.instrumentGrid.render(normalized);
+    this.lastInstrumentGridResult = normalized.ok ? normalized : null;
+    if (generated.warnings.length) {
+      this.statusLog.warn(`Instrument grid generation warnings: ${generated.warningSummary}`);
+    }
+    if (generated.skippedEmptyBars) {
+      this.statusLog.warn(`Instrument grid generation skipped ${generated.skippedEmptyBars} empty bar${generated.skippedEmptyBars === 1 ? "" : "s"}.`);
+    }
+    if (!normalized.ok) {
+      this.statusLog.fail(`Instrument grid generation normalized into invalid grid: ${normalized.message}`);
+      return;
+    }
+    if (normalized.warnings.length) {
+      this.statusLog.warn(`Instrument grid normalized with warnings: ${normalized.warningSummary}`);
+    }
+    this.statusLog.ok(generated.message);
   }
 
   exportRenderedTarget(format) {

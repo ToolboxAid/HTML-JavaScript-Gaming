@@ -571,7 +571,7 @@ Am F`);
       });
       await page.locator("#normalizeInstrumentGridButton").click();
       await expect(page.locator("#instrumentGridSummary")).toContainText("Unsupported timing subdivision: 3");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid rejected: Unsupported timing subdivision: 3\. Use 1, 2, or 4\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid rejected: Unsupported timing subdivision: 3\. Use 1, 2, 4, 8, or 16\./);
 
       await fillInstrumentGrid(page, { chords: "Am F C G" });
       await page.locator("#normalizeInstrumentGridButton").click();
@@ -584,6 +584,124 @@ Am F`);
       await expect(page.locator("#instrumentGridOutput")).toContainText("intro");
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Instrument grid normalized with warnings: Invalid drum token "zap" at bar 1, beat 2; token was skipped\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Instrument grid normalized: 2 sections, 2 bars, 29 events\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("switches snap subdivisions and keeps beat bar alignment consistent", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, {
+        bass: "",
+        beats: "2",
+        chords: "Am - F -",
+        drums: "",
+        lead: "",
+        pad: "",
+        sections: "intro:1",
+        subdivision: "2"
+      });
+      await expect(page.locator("#instrumentGridSnapIndicator")).toContainText("Snap: 1 bar / 2 beats / 1/2");
+      await page.locator("#normalizeInstrumentGridButton").click();
+      expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length)).toBe(5);
+      expect(await page.locator(".midi-studio-v2__grid-cell--beat").evaluateAll((cells) => cells.map((cell) => cell.textContent))).toEqual([
+        "B1.1.1",
+        "B1.1.2",
+        "B1.2.1",
+        "B1.2.2"
+      ]);
+      await page.locator("#instrumentGridSubdivisionInput").selectOption("16");
+      await expect(page.locator("#instrumentGridSnapIndicator")).toContainText("Snap: 1 bar / 2 beats / 1/16");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("generates bass pad arpeggio and drum lanes from chord grid", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, {
+        bass: "",
+        chords: "Am F C G | Am F C G",
+        drums: "",
+        lead: "",
+        pad: ""
+      });
+      await page.locator("#generateBassFromChordsButton").click();
+      await expect(page.locator("#instrumentGridBassInput")).toHaveValue("A2 F2 C2 G2 | A2 F2 C2 G2");
+      await page.locator("#generatePadFromChordsButton").click();
+      await expect(page.locator("#instrumentGridPadInput")).toHaveValue("Am F C G | Am F C G");
+      await page.locator("#generateArpeggioFromChordsButton").click();
+      await expect(page.locator("#instrumentGridLeadInput")).toHaveValue("A4 A4 G4 G4 | A4 A4 G4 G4");
+      await page.locator("#generateBasicDrumsButton").click();
+      await expect(page.locator("#instrumentGridDrumsInput")).toHaveValue("kick hat snare hat | kick hat snare hat");
+      await expect(page.locator("#instrumentGridSummary")).toContainText("Generated cells");
+      await expect(page.locator("#instrumentGridOutput")).toContainText("kick");
+      const gridModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
+      expect(gridModel.timeline.some((event) => event.lane === "bass" && event.source === "generated" && event.value === "A2")).toBe(true);
+      expect(gridModel.timeline.some((event) => event.lane === "pad" && event.kind === "chord" && event.source === "generated")).toBe(true);
+      expect(gridModel.timeline.some((event) => event.lane === "lead" && event.source === "generated")).toBe(true);
+      expect(gridModel.timeline.some((event) => event.lane === "drums" && event.source === "generated")).toBe(true);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Generated Basic Drums for 2 bars\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("marks manual cell overrides without hidden regeneration", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, {
+        bass: "",
+        chords: "Am F C G | Am F C G",
+        drums: "",
+        lead: "",
+        pad: ""
+      });
+      await page.locator("#generateBassFromChordsButton").click();
+      await page.locator("#instrumentGridBassInput").fill("A2 E2 C2 G2 | A2 F2 C2 G2");
+      await page.locator("#normalizeInstrumentGridButton").click();
+      const sourceCells = await page.locator('[data-lane="bass"]').evaluateAll((cells) => cells.map((cell) => ({
+        source: cell.dataset.source,
+        text: cell.textContent
+      })));
+      expect(sourceCells.slice(0, 4)).toEqual([
+        { source: "generated", text: "A2" },
+        { source: "manual", text: "E2" },
+        { source: "generated", text: "C2" },
+        { source: "generated", text: "G2" }
+      ]);
+      const gridModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
+      expect(gridModel.timeline.some((event) => event.lane === "bass" && event.value === "E2" && event.source === "manual")).toBe(true);
+      expect(await page.locator("#instrumentGridBassInput").inputValue()).toContain("E2");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("reports invalid chord generation warnings and skipped empty bars", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, {
+        bass: "",
+        chords: "Am Cmaj7 Bb G | - - - -",
+        drums: "",
+        lead: "",
+        pad: ""
+      });
+      await page.locator("#generateBassFromChordsButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Instrument grid generation warnings: Unsupported chord pattern "Cmaj7" for lane generation/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Invalid note generation for chord "Bb"/);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Instrument grid generation skipped 1 empty bar\./);
+      await expect(page.locator("#instrumentGridBassInput")).toHaveValue("A2 - - G2 | - - - -");
+      const gridModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
+      expect(gridModel.timeline.some((event) => event.lane === "bass" && event.value === "A2" && event.source === "generated")).toBe(true);
+      expect(gridModel.timeline.some((event) => event.lane === "bass" && event.value === "Bb")).toBe(false);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
