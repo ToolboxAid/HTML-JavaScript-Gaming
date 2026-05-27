@@ -35,6 +35,8 @@ const LANE_LABELS = {
   pad: "Pad"
 };
 
+const REST_TOKENS = new Set(["", "-", ".", "rest"]);
+
 export class InstrumentGridControl {
   constructor({
     bassInput,
@@ -242,6 +244,7 @@ export class InstrumentGridControl {
   inputForLane(lane) {
     return {
       bass: this.bassInput,
+      chords: this.chordsInput,
       drums: this.drumsInput,
       lead: this.leadInput,
       pad: this.padInput
@@ -329,77 +332,179 @@ export class InstrumentGridControl {
 
   renderGrid(result) {
     const grid = document.createElement("div");
-    grid.className = "midi-studio-v2__instrument-grid";
-    grid.style.gridTemplateColumns = `7rem repeat(${result.totalSteps}, minmax(3rem, 1fr))`;
-    this.renderSectionRow(grid, result);
-    this.renderBarRow(grid, result);
-    this.renderBeatRow(grid, result);
-    this.renderRulerRow(grid, result);
-    this.renderPlayheadRow(grid, result);
+    grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__spreadsheet-grid";
+    grid.style.gridTemplateColumns = `minmax(15rem, 18rem) repeat(${result.totalSteps}, minmax(5rem, 1fr))`;
+    this.renderSpreadsheetHeader(grid, result);
     result.lanes.forEach((lane) => {
-      this.appendCell(grid, lane, "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label");
+      grid.append(this.createLaneHeaderCell(lane, result));
       result.cells[lane].forEach((cell, stepIndex) => {
-        const classes = ["midi-studio-v2__grid-cell"];
-        if (cell.token) {
-          classes.push("midi-studio-v2__grid-cell--event");
-        }
-        if (cell.source === "generated") {
-          classes.push("midi-studio-v2__grid-cell--generated");
-        }
-        if (cell.source === "manual") {
-          classes.push("midi-studio-v2__grid-cell--manual");
-        }
-        const outputCell = this.appendCell(grid, cell.token || "-", classes.join(" "));
+        const outputCell = this.createSpreadsheetNoteCell(cell, stepIndex);
         this.applyTimingDataset(outputCell, cell, stepIndex);
-        outputCell.dataset.lane = lane;
-        outputCell.dataset.source = cell.source;
+        grid.append(outputCell);
       });
     });
     this.gridOutput.append(grid);
   }
 
-  renderSectionRow(grid, result) {
-    this.appendCell(grid, "Section", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label");
-    result.sections.forEach((section) => {
-      const cell = this.appendCell(grid, section.label, `midi-studio-v2__grid-cell midi-studio-v2__grid-cell--section midi-studio-v2__section-tone-${section.colorIndex}`);
-      cell.style.gridColumn = `span ${section.steps}`;
-      cell.dataset.section = section.label;
+  renderSpreadsheetHeader(grid, result) {
+    this.appendCell(grid, "Instrument/Lane", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column");
+    result.cells.chords.forEach((cell, stepIndex) => {
+      const classes = [
+        "midi-studio-v2__grid-cell",
+        "midi-studio-v2__grid-cell--beat",
+        "midi-studio-v2__grid-cell--ruler",
+        "midi-studio-v2__grid-cell--timing-header"
+      ];
+      if (cell.beat === 1 && cell.subdivisionStep === 1) {
+        classes.push("midi-studio-v2__grid-cell--bar");
+      }
+      const section = result.sections.find((entry) => entry.label === cell.section);
+      if (section && section.startStep === stepIndex) {
+        classes.push("midi-studio-v2__grid-cell--section", `midi-studio-v2__section-tone-${section.colorIndex}`);
+      }
+      const outputCell = this.appendCell(grid, "", classes.join(" "));
+      outputCell.append(
+        this.timingHeaderLine("Section", cell.section),
+        this.timingHeaderLine("Bar", cell.bar),
+        this.timingHeaderLine("Beat", cell.beat)
+      );
+      if (result.subdivision > 1) {
+        outputCell.append(this.timingHeaderLine("Subdivision", cell.subdivisionStep));
+      }
+      this.applyTimingDataset(outputCell, cell, stepIndex);
     });
   }
 
-  renderBarRow(grid, result) {
-    this.appendCell(grid, "Bar", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label");
-    const stepsPerBar = result.beatsPerBar * result.subdivision;
-    for (let bar = 1; bar <= result.barCount; bar += 1) {
-      const cell = this.appendCell(grid, `Bar ${bar}`, "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--bar");
-      cell.style.gridColumn = `span ${stepsPerBar}`;
-      cell.dataset.bar = String(bar);
+  timingHeaderLine(label, value) {
+    const line = document.createElement("span");
+    line.textContent = `${label} ${value}`;
+    return line;
+  }
+
+  createLaneHeaderCell(lane, result) {
+    const cell = document.createElement("div");
+    cell.className = "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__lane-header-cell";
+    const title = document.createElement("strong");
+    title.textContent = LANE_LABELS[lane] || lane;
+    const sourceSummary = document.createElement("span");
+    sourceSummary.textContent = this.laneSourceSummary(lane, result);
+    cell.append(title, this.createLaneInstrumentControl(lane), this.createLaneToggleControl(lane, "mute"), this.createLaneToggleControl(lane, "solo"), sourceSummary);
+    return cell;
+  }
+
+  laneSourceSummary(lane, result) {
+    const cells = result.cells[lane] || [];
+    const generated = cells.filter((cell) => cell.source === "generated").length;
+    const manual = cells.filter((cell) => cell.source === "manual").length;
+    return `${manual} manual / ${generated} generated`;
+  }
+
+  createLaneInstrumentControl(lane) {
+    const sourceSelect = this.previewLaneControls[lane]?.instrument;
+    const select = document.createElement("select");
+    select.className = "midi-studio-v2__lane-instrument-select";
+    select.setAttribute("aria-label", `${LANE_LABELS[lane] || lane} preview instrument`);
+    Array.from(sourceSelect?.options || []).forEach((option) => {
+      select.append(option.cloneNode(true));
+    });
+    select.value = sourceSelect?.value || "";
+    select.addEventListener("change", () => {
+      if (!sourceSelect) {
+        return;
+      }
+      sourceSelect.value = select.value;
+      sourceSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    return select;
+  }
+
+  createLaneToggleControl(lane, kind) {
+    const sourceToggle = this.previewLaneControls[lane]?.[kind];
+    const label = document.createElement("label");
+    label.className = "midi-studio-v2__lane-toggle";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = Boolean(sourceToggle?.checked);
+    checkbox.setAttribute("aria-label", `${kind} ${LANE_LABELS[lane] || lane}`);
+    checkbox.addEventListener("change", () => {
+      if (!sourceToggle) {
+        return;
+      }
+      sourceToggle.checked = checkbox.checked;
+      sourceToggle.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    label.append(checkbox, ` ${kind === "mute" ? "Mute" : "Solo"}`);
+    return label;
+  }
+
+  createSpreadsheetNoteCell(cell, stepIndex) {
+    const outputCell = document.createElement("div");
+    outputCell.className = this.spreadsheetCellClass(cell).join(" ");
+    outputCell.contentEditable = "true";
+    outputCell.role = "textbox";
+    outputCell.spellcheck = false;
+    outputCell.textContent = cell.token || "-";
+    outputCell.setAttribute("aria-label", `${LANE_LABELS[cell.lane] || cell.lane} note cell, section ${cell.section}, bar ${cell.bar}, beat ${cell.beat}`);
+    outputCell.dataset.lane = cell.lane;
+    outputCell.dataset.source = cell.source;
+    outputCell.addEventListener("input", () => this.updateLaneFromSpreadsheetCell(outputCell, stepIndex));
+    outputCell.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        outputCell.blur();
+      }
+    });
+    return outputCell;
+  }
+
+  spreadsheetCellClass(cell) {
+    const classes = ["midi-studio-v2__grid-cell", "midi-studio-v2__spreadsheet-note-cell"];
+    if (!REST_TOKENS.has(String(cell.token || "").trim().toLowerCase())) {
+      classes.push("midi-studio-v2__grid-cell--event");
     }
+    if (cell.source === "generated") {
+      classes.push("midi-studio-v2__grid-cell--generated");
+    }
+    if (cell.source === "manual") {
+      classes.push("midi-studio-v2__grid-cell--manual");
+    }
+    return classes;
   }
 
-  renderBeatRow(grid, result) {
-    this.appendCell(grid, "Beat", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label");
-    result.cells.chords.forEach((cell, stepIndex) => {
-      const outputCell = this.appendCell(grid, `B${cell.bar}.${cell.beat}${result.subdivision > 1 ? `.${cell.subdivisionStep}` : ""}`, "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--beat");
-      this.applyTimingDataset(outputCell, cell, stepIndex);
-    });
+  updateLaneFromSpreadsheetCell(cell) {
+    const lane = cell.dataset.lane;
+    const laneInput = this.inputForLane(lane);
+    if (!laneInput || !this.currentResult?.ok) {
+      return;
+    }
+    this.syncSpreadsheetCellState(cell);
+    laneInput.value = this.spreadsheetLaneText(lane);
   }
 
-  renderRulerRow(grid, result) {
-    this.appendCell(grid, "Ruler", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label");
-    result.cells.chords.forEach((cell, stepIndex) => {
-      const isBeatStart = cell.subdivisionStep === 1;
-      const outputCell = this.appendCell(grid, isBeatStart ? String(cell.beat) : ".", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--ruler");
-      this.applyTimingDataset(outputCell, cell, stepIndex);
-    });
+  syncSpreadsheetCellState(cell) {
+    const value = String(cell.textContent || "").trim();
+    const isRest = REST_TOKENS.has(value.toLowerCase());
+    cell.classList.toggle("midi-studio-v2__grid-cell--event", !isRest);
+    cell.classList.toggle("midi-studio-v2__grid-cell--generated", false);
+    cell.classList.toggle("midi-studio-v2__grid-cell--manual", !isRest);
+    cell.dataset.source = isRest ? "empty" : "manual";
   }
 
-  renderPlayheadRow(grid, result) {
-    this.appendCell(grid, "Playhead", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label");
-    result.cells.chords.forEach((cell, stepIndex) => {
-      const outputCell = this.appendCell(grid, "", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--playhead");
-      this.applyTimingDataset(outputCell, cell, stepIndex);
-    });
+  spreadsheetLaneText(lane) {
+    const result = this.currentResult;
+    const stepsPerBar = result.beatsPerBar * result.subdivision;
+    const cells = Array.from(this.gridOutput.querySelectorAll(`.midi-studio-v2__spreadsheet-note-cell[data-lane="${lane}"]`));
+    const bars = [];
+    for (let barIndex = 0; barIndex < result.barCount; barIndex += 1) {
+      const tokens = [];
+      for (let stepIndex = 0; stepIndex < stepsPerBar; stepIndex += 1) {
+        const cell = cells[barIndex * stepsPerBar + stepIndex];
+        const token = String(cell?.textContent || "").trim();
+        tokens.push(token || "-");
+      }
+      bars.push(tokens.join(" "));
+    }
+    return bars.join(" | ");
   }
 
   applyTimingDataset(element, cell, stepIndex) {
@@ -547,15 +652,13 @@ export class InstrumentGridControl {
     this.playheadStep = Math.max(0, Math.min(stepIndex, result.totalSteps - 1));
     this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--playhead-active").forEach((cell) => {
       cell.classList.remove("midi-studio-v2__grid-cell--playhead-active");
-      cell.textContent = "";
     });
     this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-active").forEach((cell) => {
       cell.classList.remove("midi-studio-v2__grid-cell--lane-active");
     });
     this.gridOutput.querySelectorAll(`[data-step-index="${this.playheadStep}"]`).forEach((cell) => {
-      if (cell.classList.contains("midi-studio-v2__grid-cell--playhead")) {
+      if (cell.classList.contains("midi-studio-v2__grid-cell--timing-header") || cell.classList.contains("midi-studio-v2__grid-cell--playhead")) {
         cell.classList.add("midi-studio-v2__grid-cell--playhead-active");
-        cell.textContent = ">";
       }
       if (this.activePreviewLanes.includes(cell.dataset.lane) && cell.classList.contains("midi-studio-v2__grid-cell--event")) {
         cell.classList.add("midi-studio-v2__grid-cell--lane-active");

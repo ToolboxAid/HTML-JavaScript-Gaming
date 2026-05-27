@@ -287,6 +287,27 @@ async function audioDiagnosticsRows(page) {
   ])));
 }
 
+function spreadsheetCell(page, lane, stepIndex) {
+  return page.locator(`.midi-studio-v2__spreadsheet-note-cell[data-lane="${lane}"][data-step-index="${stepIndex}"]`);
+}
+
+async function setSpreadsheetRowToggle(page, laneLabel, kind, checked) {
+  const toggle = page.locator(`.midi-studio-v2__lane-header-cell [aria-label="${kind} ${laneLabel}"]`);
+  await expect(toggle).toHaveCount(1);
+  await toggle.evaluate(
+    (input, nextChecked) => {
+      input.checked = nextChecked;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    },
+    checked
+  );
+  if (checked) {
+    await expect(toggle).toBeChecked();
+  } else {
+    await expect(toggle).not.toBeChecked();
+  }
+}
+
 test.describe("MIDI Studio V2", () => {
   test.afterAll(async () => {
     await workspaceV2CoverageReporter.writeReport();
@@ -372,6 +393,13 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#previewInstrumentPadSelect")).toHaveValue("ambient-pad");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded explicit demo test song data\. Demo paths are declared for UAT only; they are not hidden fallback assets\./);
       await expect(page.locator("#instrumentGridSectionSelect")).toContainText("intro");
+      await expect(page.locator(".midi-studio-v2__grid-cell").first()).toHaveText("Instrument/Lane");
+      await expect(page.locator(".midi-studio-v2__spreadsheet-note-cell[data-lane]")).not.toHaveCount(0);
+      await expect(spreadsheetCell(page, "chords", 0)).toHaveText("Am");
+      await expect(spreadsheetCell(page, "bass", 0)).toHaveText("A2");
+      await expect(spreadsheetCell(page, "pad", 0)).toHaveText("Am");
+      await expect(spreadsheetCell(page, "lead", 0)).toHaveText("A4");
+      await expect(spreadsheetCell(page, "drums", 0)).toHaveText("kick");
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
@@ -422,7 +450,8 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing section Preview Synth timing preview: intro");
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "resume"))).toBe(true);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
-      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", "0");
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", "0");
+      await expect(spreadsheetCell(page, "bass", 0)).toHaveText("A2");
       const diagnostics = await audioDiagnosticsRows(page);
       expect(Number(diagnostics["Playable note count"])).toBeGreaterThan(0);
       expect(diagnostics).toMatchObject({
@@ -739,6 +768,33 @@ Am F`);
     }
   });
 
+  test("edits spreadsheet note cells into playable timeline data", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page);
+      await page.locator("#normalizeInstrumentGridButton").click();
+      const beforeDiagnostics = await audioDiagnosticsRows(page);
+      const beforeCount = Number(beforeDiagnostics["Playable note count"]);
+      await spreadsheetCell(page, "lead", 3).fill("B4");
+      await expect(page.locator("#instrumentGridLeadInput")).toHaveValue("E4 G4 A4 B4 | C5 B4 G4 -");
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(spreadsheetCell(page, "lead", 3)).toHaveText("B4");
+      const editedModel = await page.evaluate(() => window.__midiStudioV2App.lastInstrumentGridResult);
+      expect(editedModel.timeline.some((event) => event.lane === "lead" && event.value === "B4" && event.bar === 1)).toBe(true);
+      expect(Number((await audioDiagnosticsRows(page))["Playable note count"])).toBeGreaterThan(beforeCount);
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
+
+      await spreadsheetCell(page, "lead", 1).fill("BAD");
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await expect(page.locator("#instrumentGridSummary")).toContainText('Invalid note token "BAD"');
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid rejected: Invalid note token "BAD" in lead at bar 1, beat 2\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("keeps beat bar alignment consistent across grid lanes", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
@@ -748,9 +804,19 @@ Am F`);
       });
       await page.locator("#normalizeInstrumentGridButton").click();
       expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length)).toBe(9);
-      expect(await page.locator(".midi-studio-v2__grid-cell--section").evaluateAll((cells) => cells.map((cell) => cell.style.gridColumn))).toEqual(["span 4", "span 4"]);
-      expect(await page.locator(".midi-studio-v2__grid-cell--beat").evaluateAll((cells) => cells.map((cell) => cell.textContent))).toEqual(["B1.1", "B1.2", "B1.3", "B1.4", "B2.1", "B2.2", "B2.3", "B2.4"]);
-      expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => Array.from(grid.children).filter((cell) => cell.textContent === "Am").length)).toBe(3);
+      await expect(page.locator(".midi-studio-v2__grid-cell").first()).toHaveText("Instrument/Lane");
+      expect(await page.locator(".midi-studio-v2__grid-cell--timing-header").evaluateAll((cells) => cells.map((cell) => cell.textContent))).toEqual([
+        "Section introBar 1Beat 1",
+        "Section introBar 1Beat 2",
+        "Section introBar 1Beat 3",
+        "Section introBar 1Beat 4",
+        "Section loopBar 2Beat 1",
+        "Section loopBar 2Beat 2",
+        "Section loopBar 2Beat 3",
+        "Section loopBar 2Beat 4"
+      ]);
+      await expect(spreadsheetCell(page, "chords", 0)).toHaveText("Am");
+      await expect(spreadsheetCell(page, "bass", 0)).toHaveText("A2");
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -813,11 +879,11 @@ Am F`);
       await expect(page.locator("#instrumentGridSnapIndicator")).toContainText("Snap: 1 bar / 2 beats / 1/2");
       await page.locator("#normalizeInstrumentGridButton").click();
       expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length)).toBe(5);
-      expect(await page.locator(".midi-studio-v2__grid-cell--beat").evaluateAll((cells) => cells.map((cell) => cell.textContent))).toEqual([
-        "B1.1.1",
-        "B1.1.2",
-        "B1.2.1",
-        "B1.2.2"
+      expect(await page.locator(".midi-studio-v2__grid-cell--timing-header").evaluateAll((cells) => cells.map((cell) => cell.textContent))).toEqual([
+        "Section introBar 1Beat 1Subdivision 1",
+        "Section introBar 1Beat 1Subdivision 2",
+        "Section introBar 1Beat 2Subdivision 1",
+        "Section introBar 1Beat 2Subdivision 2"
       ]);
       await page.locator("#instrumentGridSubdivisionInput").selectOption("16");
       await expect(page.locator("#instrumentGridSnapIndicator")).toContainText("Snap: 1 bar / 2 beats / 1/16");
@@ -843,7 +909,7 @@ Am F`);
       await expect(page.locator("#instrumentGridOutput")).toContainText("Bar 5");
       await expect(page.locator(".midi-studio-v2__grid-cell--bar")).toHaveCount(5);
       await expect(page.locator(".midi-studio-v2__grid-cell--ruler").first()).toContainText("1");
-      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "intro");
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "intro");
       await expect(page.locator("#instrumentGridSectionSelect")).toContainText("bridge");
       await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
       await page.locator("#instrumentGridLoopEndSelect").selectOption("boss");
@@ -851,7 +917,7 @@ Am F`);
       await page.locator('[data-section-preset="boss"]').click();
       await expect(page.locator("#instrumentGridSectionSelect")).toHaveValue("boss");
       await page.locator("#jumpToSectionButton").click();
-      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "boss");
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "boss");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Timing playhead jumped to section boss\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -877,12 +943,12 @@ Am F`);
       await expect(page.locator('[data-lane="bass"][data-source="generated"]')).toHaveCount(4);
       await expect(page.locator('[data-lane="bass"][data-source="manual"]')).toHaveCount(1);
       await page.locator("#instrumentGridSectionSelect").selectOption("intro");
-      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
+      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
-      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", beforeStep || "");
-      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-beat", /1|2/);
-      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-subdivision-step", /1|2/);
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).not.toHaveAttribute("data-step-index", beforeStep || "");
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-beat", /1|2/);
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-subdivision-step", /1|2/);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await page.locator("#stopTimingPreviewButton").click();
       await expect(page.locator("#instrumentGridTransportState")).toContainText("Preview Synth timing preview stopped.");
@@ -905,11 +971,11 @@ Am F`);
         pad: ""
       });
       await page.locator("#normalizeInstrumentGridButton").click();
-      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
+      const beforeStep = await page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active").getAttribute("data-step-index");
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL No playable Preview Synth notes found for section intro\. Generate or enter chords, bass, pad, lead, or drum cells before playing\./);
       await expect(page.locator("#audioDiagnostics")).toContainText("No playable Preview Synth notes found for section intro.");
-      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-step-index", beforeStep || "0");
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-step-index", beforeStep || "0");
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(false);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -946,7 +1012,7 @@ Am F`);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Preview instrument selected for Lead: Retro Pulse Lead\./);
       await page.locator("#normalizeInstrumentGridButton").click();
 
-      await page.locator("#previewMuteBassToggle").check();
+      await setSpreadsheetRowToggle(page, "Bass", "mute", true);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Lane muted: Bass\./);
       await page.locator("#playSectionButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
@@ -954,8 +1020,8 @@ Am F`);
       expect((await audioDiagnosticsRows(page))["Muted lanes"]).toBe("bass");
       await page.locator("#stopTimingPreviewButton").click();
 
-      await page.locator("#previewMuteBassToggle").uncheck();
-      await page.locator("#previewSoloLeadToggle").check();
+      await setSpreadsheetRowToggle(page, "Bass", "mute", false);
+      await setSpreadsheetRowToggle(page, "Lead", "solo", true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Lane soloed: Lead\./);
       await page.locator("#playSectionButton").click();
       await expect(page.locator(".midi-studio-v2__grid-cell--lane-active")).not.toHaveCount(0);
@@ -967,7 +1033,7 @@ Am F`);
       expect(soloDiagnostics["Soloed lanes"]).toBe("lead");
       await page.locator("#stopTimingPreviewButton").click();
 
-      await page.locator("#previewSoloLeadToggle").uncheck();
+      await setSpreadsheetRowToggle(page, "Lead", "solo", false);
       await page.locator("#previewInstrumentLeadSelect").selectOption("");
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Missing preview instrument selection for Lead\. Choose a Preview Synth instrument before playback\./);
       await page.locator("#playSectionButton").click();
