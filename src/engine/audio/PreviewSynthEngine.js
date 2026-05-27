@@ -1,3 +1,5 @@
+import { previewInstrumentById } from "./PreviewInstrumentPacks.js";
+
 const CHORD_TONES = {
   A: ["A", "C#", "E"],
   Am: ["A", "C", "E"],
@@ -59,7 +61,7 @@ export class PreviewSynthEngine {
     return Boolean(audioContextCtor(this.window));
   }
 
-  async playGridRange({ endStep, grid, label, loop = false, mode = "section", startStep, tempoBpm = 120 } = {}) {
+  async playGridRange({ endStep, grid, label, laneSettings = {}, loop = false, mode = "section", startStep, tempoBpm = 120 } = {}) {
     this.stop();
     if (!grid?.ok) {
       return { message: "Preview Synth needs a normalized instrument grid before playback.", ok: false, reason: "missing-grid" };
@@ -68,11 +70,12 @@ export class PreviewSynthEngine {
     if (!contextResult.ok) {
       return contextResult;
     }
-    const playableEvents = this.playableEventsForRange(grid, startStep, endStep);
-    if (!playableEvents.length) {
+    const playable = this.playableEventsForRange(grid, startStep, endStep, laneSettings);
+    if (!playable.events.length) {
       return {
         message: `No playable Preview Synth notes found for ${mode} ${label || "(unnamed)"}. Generate or enter chords, bass, pad, lead, or drum cells before playing.`,
         ok: false,
+        warnings: playable.warnings,
         reason: "no-playable-notes"
       };
     }
@@ -81,19 +84,21 @@ export class PreviewSynthEngine {
     const secondsPerStep = secondsPerBeat / grid.subdivision;
     const cycleSeconds = Math.max((endStep - startStep + 1) * secondsPerStep, secondsPerStep);
     this.playing = true;
-    this.scheduleEvents({ context: contextResult.context, events: playableEvents, secondsPerBeat, secondsPerStep, startStep });
+    this.scheduleEvents({ context: contextResult.context, events: playable.events, secondsPerBeat, secondsPerStep, startStep });
     if (loop) {
       this.loopTimer = this.window.setInterval(() => {
-        this.scheduleEvents({ context: contextResult.context, events: playableEvents, secondsPerBeat, secondsPerStep, startStep });
+        this.scheduleEvents({ context: contextResult.context, events: playable.events, secondsPerBeat, secondsPerStep, startStep });
       }, cycleSeconds * 1000);
     }
     return {
-      eventCount: playableEvents.length,
+      activeLanes: playable.activeLanes,
+      eventCount: playable.events.length,
       label,
       mode,
       ok: true,
       soundFontPlayback: false,
-      synthName: "Preview Synth"
+      synthName: "Preview Synth",
+      warnings: playable.warnings
     };
   }
 
@@ -128,22 +133,51 @@ export class PreviewSynthEngine {
     }
   }
 
-  playableEventsForRange(grid, startStep = 0, endStep = 0) {
-    return (grid.timeline || []).filter((event) => {
+  playableEventsForRange(grid, startStep = 0, endStep = 0, laneSettings = {}) {
+    const instruments = laneSettings.instruments || {};
+    const muted = laneSettings.muted || {};
+    const soloed = laneSettings.soloed || {};
+    const soloedLanes = Object.entries(soloed).filter((entry) => entry[1]).map(([lane]) => lane);
+    const warnings = [];
+    const warningKeys = new Set();
+    const events = [];
+    (grid.timeline || []).forEach((event) => {
       const stepIndex = Number(event.stepIndex);
-      return Number.isFinite(stepIndex)
-        && stepIndex >= startStep
-        && stepIndex <= endStep
-        && this.frequenciesForEvent(event).length > 0;
+      if (!Number.isFinite(stepIndex) || stepIndex < startStep || stepIndex > endStep) {
+        return;
+      }
+      if (muted[event.lane] || (soloedLanes.length && !soloedLanes.includes(event.lane))) {
+        return;
+      }
+      const instrumentId = String(instruments[event.lane] || "").trim();
+      const instrument = previewInstrumentById(instrumentId);
+      if (!instrument) {
+        const key = `missing:${event.lane}`;
+        if (!warningKeys.has(key)) {
+          warnings.push(`Missing preview instrument selection for ${event.lane}. Choose a Preview Synth instrument before playback.`);
+          warningKeys.add(key);
+        }
+        return;
+      }
+      if (this.frequenciesForEvent(event, instrument).length > 0) {
+        events.push({ ...event, previewInstrument: instrument });
+      }
     });
+    return {
+      activeLanes: Array.from(new Set(events.map((event) => event.lane))),
+      events,
+      warnings
+    };
   }
 
   scheduleEvents({ context, events, secondsPerBeat, secondsPerStep, startStep }) {
     const now = context.currentTime;
     events.forEach((event) => {
       const offsetSeconds = Math.max(0, (event.stepIndex - startStep) * secondsPerStep);
-      const durationSeconds = Math.max(0.06, Number(event.durationBeats || 1) * secondsPerBeat * 0.82);
-      this.frequenciesForEvent(event).forEach((frequency, index) => {
+      const instrument = event.previewInstrument;
+      const durationScale = Number(instrument?.durationScale || 1);
+      const durationSeconds = Math.max(0.06, Number(event.durationBeats || 1) * secondsPerBeat * 0.82 * durationScale);
+      this.frequenciesForEvent(event, instrument).forEach((frequency, index) => {
         this.scheduleTone({
           context,
           durationSeconds,
@@ -158,8 +192,8 @@ export class PreviewSynthEngine {
   scheduleTone({ context, durationSeconds, event, frequency, startTime }) {
     const oscillator = context.createOscillator();
     const gainNode = context.createGain();
-    const waveform = this.waveformForEvent(event);
-    const volume = this.volumeForEvent(event);
+    const waveform = this.waveformForEvent(event, event.previewInstrument);
+    const volume = this.volumeForEvent(event, event.previewInstrument);
     const endTime = startTime + durationSeconds;
     oscillator.type = waveform;
     oscillator.frequency.setValueAtTime(frequency, startTime);
@@ -174,33 +208,31 @@ export class PreviewSynthEngine {
     this.nodes.push({ gainNode, oscillator });
   }
 
-  frequenciesForEvent(event) {
+  frequenciesForEvent(event, instrument = null) {
+    const transposeFactor = 2 ** (Number(instrument?.transposeSemitones || 0) / 12);
     if (event.kind === "drum") {
       const frequency = DRUM_FREQUENCIES[String(event.value || "").toLowerCase()];
-      return frequency ? [frequency] : [];
+      return frequency ? [frequency * transposeFactor] : [];
     }
     if (event.kind === "chord") {
-      return chordNotes(event.value).map((note) => noteFrequency(note)).filter(Boolean);
+      return chordNotes(event.value).map((note) => noteFrequency(note)).filter(Boolean).map((frequency) => frequency * transposeFactor);
     }
     if (event.kind === "note") {
       const frequency = noteFrequency(event.value);
-      return frequency ? [frequency] : [];
+      return frequency ? [frequency * transposeFactor] : [];
     }
     return [];
   }
 
-  waveformForEvent(event) {
+  waveformForEvent(event, instrument = null) {
     if (event.kind === "drum") {
-      return event.value === "kick" || event.value === "tom" ? "sine" : "square";
+      return event.value === "kick" || event.value === "tom" ? "sine" : instrument?.waveform || "square";
     }
-    return event.lane === "lead" ? "sawtooth" : event.lane === "bass" ? "triangle" : "sine";
+    return instrument?.waveform || "sine";
   }
 
-  volumeForEvent(event) {
-    if (event.kind === "drum") {
-      return 0.12;
-    }
-    return event.kind === "chord" ? 0.045 : 0.075;
+  volumeForEvent(event, instrument = null) {
+    return Number(instrument?.volume || (event.kind === "chord" ? 0.045 : 0.075));
   }
 
   stop() {

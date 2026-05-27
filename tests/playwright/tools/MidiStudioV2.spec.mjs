@@ -322,6 +322,20 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentGridSubdivisionInput option")).toContainText(["1/1", "1/2", "1/4", "1/8", "1/16"]);
       await expect(page.locator("#instrumentGridLaneTypeSelect option")).toContainText(["Chords", "Bass", "Pad", "Lead", "Drums"]);
       await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
+      await expect(page.locator("#previewInstrumentLeadSelect option")).toContainText([
+        "Choose preview instrument",
+        "Retro Square Lead",
+        "Retro Pulse Lead",
+        "Synth Bass",
+        "Warm Pad",
+        "Basic Drums",
+        "Ambient Pad"
+      ]);
+      await expect(page.locator("#previewInstrumentChordsSelect")).toHaveValue("warm-pad");
+      await expect(page.locator("#previewInstrumentBassSelect")).toHaveValue("synth-bass");
+      await expect(page.locator("#previewInstrumentPadSelect")).toHaveValue("warm-pad");
+      await expect(page.locator("#previewInstrumentLeadSelect")).toHaveValue("retro-square-lead");
+      await expect(page.locator("#previewInstrumentDrumsSelect")).toHaveValue("basic-drums");
       await expect(page.locator("#instrumentGridSectionSelect")).toContainText("No section selected");
       await expect(page.locator("#instrumentGridTransportState")).toContainText("No section selected. Normalize grid data before testing section timing.");
       await expect(page.locator("#howToTestContent")).toContainText("Step 1: choose style/key/tempo");
@@ -343,6 +357,8 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetStyleInput")).toHaveValue("retro-arcade");
       await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("intro:1, loop:1, victory:1");
       await expect(page.locator("#instrumentGridChordsInput")).toHaveValue("Am F C G | Am F C G | C G F Am");
+      await expect(page.locator("#previewInstrumentLeadSelect")).toHaveValue("retro-pulse-lead");
+      await expect(page.locator("#previewInstrumentPadSelect")).toHaveValue("ambient-pad");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded explicit demo test song data\. Demo paths are declared for UAT only; they are not hidden fallback assets\./);
 
       await page.locator("#generateBassFromChordsButton").click();
@@ -365,6 +381,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/Preview Synth uses temporary oscillator instruments for grid audition only; SoundFont playback is not implemented\./);
       await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop Preview Synth timing preview: loop to victory");
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      await expect(page.locator(".midi-studio-v2__grid-cell--lane-active")).not.toHaveCount(0);
       await page.locator("#exportOggButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for OGG\. Planned target: assets\/music\/demo\/demo-test-song\.ogg\./);
       await page.locator('[data-song-id="demo-missing-target"]').click();
@@ -671,7 +688,10 @@ Am F`);
   test("keeps beat bar alignment consistent across grid lanes", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
-      await fillInstrumentGrid(page);
+      await fillInstrumentGrid(page, {
+        bass: "A2 E2 F2 C2 | C3 B2 G2 E2",
+        lead: "E4 G4 A4 B4 | C5 B4 G4 E4"
+      });
       await page.locator("#normalizeInstrumentGridButton").click();
       expect(await page.locator(".midi-studio-v2__instrument-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length)).toBe(9);
       expect(await page.locator(".midi-studio-v2__grid-cell--section").evaluateAll((cells) => cells.map((cell) => cell.style.gridColumn))).toEqual(["span 4", "span 4"]);
@@ -812,7 +832,7 @@ Am F`);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await page.locator("#stopTimingPreviewButton").click();
       await expect(page.locator("#instrumentGridTransportState")).toContainText("Preview Synth timing preview stopped.");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth timing preview stopped\. Cleared \d+ scheduled oscillators\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview playback stopped\. Cleared \d+ scheduled oscillators\./);
       expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot().playing)).toBe(false);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
@@ -853,6 +873,47 @@ Am F`);
         playing: false,
         supported: false
       });
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("applies Preview Synth instruments, mute, solo, and missing-instrument warnings", async ({ page }) => {
+    const server = await openMidiStudio(page);
+    try {
+      await fillInstrumentGrid(page, {
+        bass: "A2 E2 F2 C2 | C3 B2 G2 E2",
+        lead: "E4 G4 A4 B4 | C5 B4 G4 E4"
+      });
+      await page.locator("#previewInstrumentLeadSelect").selectOption("retro-pulse-lead");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview instrument selected for Lead: Retro Pulse Lead\./);
+      await page.locator("#normalizeInstrumentGridButton").click();
+
+      await page.locator("#previewMuteBassToggle").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Lane muted: Bass\./);
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
+      await expect(page.locator('.midi-studio-v2__grid-cell--lane-active[data-lane="bass"]')).toHaveCount(0);
+      await page.locator("#stopTimingPreviewButton").click();
+
+      await page.locator("#previewMuteBassToggle").uncheck();
+      await page.locator("#previewSoloLeadToggle").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Lane soloed: Lead\./);
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator(".midi-studio-v2__grid-cell--lane-active")).not.toHaveCount(0);
+      expect(await page.locator(".midi-studio-v2__grid-cell--lane-active").evaluateAll((cells) => (
+        cells.every((cell) => cell.dataset.lane === "lead")
+      ))).toBe(true);
+      await page.locator("#stopTimingPreviewButton").click();
+
+      await page.locator("#previewSoloLeadToggle").uncheck();
+      await page.locator("#previewInstrumentLeadSelect").selectOption("");
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Missing preview instrument selection for Lead\. Choose a Preview Synth instrument before playback\./);
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Preview Synth warnings: Missing preview instrument selection for lead\. Choose a Preview Synth instrument before playback\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

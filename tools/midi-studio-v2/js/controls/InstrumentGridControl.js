@@ -27,6 +27,14 @@ function optionForSection(section) {
   return option;
 }
 
+const LANE_LABELS = {
+  bass: "Bass",
+  chords: "Chords",
+  drums: "Drums",
+  lead: "Lead",
+  pad: "Pad"
+};
+
 export class InstrumentGridControl {
   constructor({
     bassInput,
@@ -47,6 +55,7 @@ export class InstrumentGridControl {
     padInput,
     playLoopButton,
     playSectionButton,
+    previewLaneControls = {},
     sectionPresetButtons,
     sectionSelect,
     sectionsInput,
@@ -76,6 +85,7 @@ export class InstrumentGridControl {
     this.padInput = padInput;
     this.playLoopButton = playLoopButton;
     this.playSectionButton = playSectionButton;
+    this.previewLaneControls = previewLaneControls;
     this.sectionPresetButtons = sectionPresetButtons;
     this.sectionSelect = sectionSelect;
     this.sectionsInput = sectionsInput;
@@ -86,12 +96,13 @@ export class InstrumentGridControl {
     this.transportState = transportState;
     this.window = windowRef;
     this.currentResult = null;
+    this.activePreviewLanes = [];
     this.loopBounds = null;
     this.playTimer = null;
     this.playheadStep = 0;
   }
 
-  mount({ onGenerate, onNormalize, onTransport }) {
+  mount({ onGenerate, onLaneSettingChange, onNormalize, onTransport }) {
     this.generateBassButton.addEventListener("click", () => onGenerate("bass", this.readInput()));
     this.generatePadButton.addEventListener("click", () => onGenerate("pad", this.readInput()));
     this.generateArpeggioButton.addEventListener("click", () => onGenerate("lead", this.readInput()));
@@ -105,6 +116,24 @@ export class InstrumentGridControl {
       void this.playSelectedLoop(onTransport);
     });
     this.stopTimingPreviewButton.addEventListener("click", () => this.stopTimingPreview(onTransport));
+    this.previewLaneEntries().forEach(([lane, controls]) => {
+      controls.instrument?.addEventListener("change", () => onLaneSettingChange("instrument", {
+        instrumentLabel: controls.instrument.selectedOptions[0]?.textContent || "",
+        instrumentValue: controls.instrument.value,
+        lane,
+        laneLabel: LANE_LABELS[lane] || lane
+      }));
+      controls.mute?.addEventListener("change", () => onLaneSettingChange("mute", {
+        enabled: controls.mute.checked,
+        lane,
+        laneLabel: LANE_LABELS[lane] || lane
+      }));
+      controls.solo?.addEventListener("change", () => onLaneSettingChange("solo", {
+        enabled: controls.solo.checked,
+        lane,
+        laneLabel: LANE_LABELS[lane] || lane
+      }));
+    });
     this.sectionPresetButtons.forEach((button) => {
       button.addEventListener("click", () => this.selectPresetSection(button.dataset.sectionPreset, onTransport));
     });
@@ -131,6 +160,7 @@ export class InstrumentGridControl {
         lead: this.leadInput.value,
         pad: this.padInput.value
       },
+      previewLaneSettings: this.previewLaneSettings(),
       sections: this.sectionsInput.value,
       subdivision: this.subdivisionInput.value
     };
@@ -145,7 +175,7 @@ export class InstrumentGridControl {
     this.generatedLanes[result.lane] = result.text;
   }
 
-  applyGridDefaults({ bass, beatsPerBar, chords, drums, lead, pad, sections, subdivision }) {
+  applyGridDefaults({ bass, beatsPerBar, chords, drums, lead, pad, previewInstruments = {}, sections, subdivision }) {
     this.sectionsInput.value = sections || "";
     this.beatsInput.value = beatsPerBar || "";
     this.subdivisionInput.value = subdivision || "1";
@@ -155,7 +185,43 @@ export class InstrumentGridControl {
     this.leadInput.value = lead || "";
     this.drumsInput.value = drums || "";
     this.generatedLanes = {};
+    this.applyPreviewInstruments(previewInstruments);
+    this.clearLaneToggles();
     this.updateSnapIndicator();
+  }
+
+  applyPreviewInstruments(previewInstruments = {}) {
+    Object.entries(previewInstruments).forEach(([lane, instrument]) => {
+      const select = this.previewLaneControls[lane]?.instrument;
+      if (select) {
+        select.value = instrument || "";
+      }
+    });
+  }
+
+  clearLaneToggles() {
+    this.previewLaneEntries().forEach(([, controls]) => {
+      if (controls.mute) {
+        controls.mute.checked = false;
+      }
+      if (controls.solo) {
+        controls.solo.checked = false;
+      }
+    });
+  }
+
+  previewLaneSettings() {
+    const settings = { instruments: {}, muted: {}, soloed: {} };
+    this.previewLaneEntries().forEach(([lane, controls]) => {
+      settings.instruments[lane] = controls.instrument?.value || "";
+      settings.muted[lane] = Boolean(controls.mute?.checked);
+      settings.soloed[lane] = Boolean(controls.solo?.checked);
+    });
+    return settings;
+  }
+
+  previewLaneEntries() {
+    return Object.entries(this.previewLaneControls);
   }
 
   inputForLane(lane) {
@@ -186,7 +252,7 @@ export class InstrumentGridControl {
   }
 
   render(result = null) {
-    this.stopTimer();
+    this.stopTimer({ clearPreviewLanes: true });
     this.currentResult = result?.ok ? result : null;
     this.renderDefinitionList(summaryRows(result));
     this.gridOutput.replaceChildren();
@@ -406,7 +472,7 @@ export class InstrumentGridControl {
   }
 
   stopTimingPreview(onTransport) {
-    this.stopTimer();
+    this.stopTimer({ clearPreviewLanes: true });
     this.transportState.textContent = "Preview Synth timing preview stopped.";
     onTransport("stop-preview", {});
   }
@@ -422,7 +488,7 @@ export class InstrumentGridControl {
           this.setPlayheadStep(startStep);
           return;
         }
-        this.stopTimer();
+        this.stopTimer({ clearPreviewLanes: true });
         this.transportState.textContent = `Timing preview complete: ${label}`;
         return;
       }
@@ -430,11 +496,26 @@ export class InstrumentGridControl {
     }, 90);
   }
 
-  stopTimer() {
+  stopTimer({ clearPreviewLanes = false } = {}) {
     if (this.playTimer) {
       this.window.clearInterval(this.playTimer);
       this.playTimer = null;
     }
+    if (clearPreviewLanes) {
+      this.clearPreviewPlaybackLanes();
+    }
+  }
+
+  setPreviewPlaybackLanes(lanes = []) {
+    this.activePreviewLanes = Array.from(new Set(lanes));
+    this.setPlayheadStep(this.playheadStep);
+  }
+
+  clearPreviewPlaybackLanes() {
+    this.activePreviewLanes = [];
+    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-active").forEach((cell) => {
+      cell.classList.remove("midi-studio-v2__grid-cell--lane-active");
+    });
   }
 
   setPlayheadStep(stepIndex) {
@@ -448,10 +529,16 @@ export class InstrumentGridControl {
       cell.classList.remove("midi-studio-v2__grid-cell--playhead-active");
       cell.textContent = "";
     });
+    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-active").forEach((cell) => {
+      cell.classList.remove("midi-studio-v2__grid-cell--lane-active");
+    });
     this.gridOutput.querySelectorAll(`[data-step-index="${this.playheadStep}"]`).forEach((cell) => {
       if (cell.classList.contains("midi-studio-v2__grid-cell--playhead")) {
         cell.classList.add("midi-studio-v2__grid-cell--playhead-active");
         cell.textContent = ">";
+      }
+      if (this.activePreviewLanes.includes(cell.dataset.lane) && cell.classList.contains("midi-studio-v2__grid-cell--event")) {
+        cell.classList.add("midi-studio-v2__grid-cell--lane-active");
       }
     });
   }

@@ -254,6 +254,118 @@
                 <textarea id="instrumentGridDrumsInput" rows="2" placeholder="kick hat snare hat | kick hat snare hat"></textarea>
               </label>
             </div>
+            <div class="midi-studio-v2__preview-lane-controls" aria-label="Preview Synth lane controls">
+              <div class="midi-studio-v2__preview-lane-row" data-preview-lane="chords">
+                <label class="tool-starter__field" for="previewInstrumentChordsSelect">
+                  <span>Chords preview instrument</span>
+                  <select id="previewInstrumentChordsSelect" data-preview-instrument-lane="chords">
+                    <option value="">Choose preview instrument</option>
+                    <option value="retro-square-lead">Retro Square Lead</option>
+                    <option value="retro-pulse-lead">Retro Pulse Lead</option>
+                    <option value="synth-bass">Synth Bass</option>
+                    <option value="warm-pad" selected>Warm Pad</option>
+                    <option value="basic-drums">Basic Drums</option>
+                    <option value="ambient-pad">Ambient Pad</option>
+                  </select>
+                </label>
+                <label class="tool-starter__toggle" for="previewMuteChordsToggle">
+                  <input id="previewMuteChordsToggle" type="checkbox" data-preview-mute-lane="chords">
+                  <span>Mute</span>
+                </label>
+                <label class="tool-starter__toggle" for="previewSoloChordsToggle">
+                  <input id="previewSoloChordsToggle" type="checkbox" data-preview-solo-lane="chords">
+                  <span>Solo</span>
+                </label>
+              </div>
+              <div class="midi-studio-v2__preview-lane-row" data-preview-lane="bass">
+                <label class="tool-starter__field" for="previewInstrumentBassSelect">
+                  <span>Bass preview instrument</span>
+                  <select id="previewInstrumentBassSelect" data-preview-instrument-lane="bass">
+                    <option value="">Choose preview instrument</option>
+                    <option value="retro-square-lead">Retro Square Lead</option>
+                    <option value="retro-pulse-lead">Retro Pulse Lead</option>
+                    <option value="synth-bass" selected>Synth Bass</option>
+                    <option value="warm-pad">Warm Pad</option>
+                    <option value="basic-drums">Basic Drums</option>
+                    <option value="ambient-pad">Ambient Pad</option>
+                  </select>
+                </label>
+                <label class="tool-starter__toggle" for="previewMuteBassToggle">
+                  <input id="previewMuteBassToggle" type="checkbox" data-preview-mute-lane="bass">
+                  <span>Mute</span>
+                </label>
+                <label class="tool-starter__toggle" for="previewSoloBassToggle">
+                  <input id="previewSoloBassToggle" type="checkbox" data-preview-solo-lane="bass">
+                  <span>Solo</span>
+                </label>
+              </div>
+              <div class="midi-studio-v2__preview-lane-row" data-preview-lane="pad">
+                <label class="tool-starter__field" for="previewInstrumentPadSelect">
+                  <span>Pad preview instrument</span>
+                  <select id="previewInstrumentPadSelect" data-preview-instrument-lane="pad">
+                    <option value="">Choose preview instrument</option>
+                    <option value="retro-square-lead">Retro Square Lead</option>
+                    <option value="retro-pulse-lead">Retro Pulse Lead</option>
+                    <option value="synth-bass">Synth Bass</option>
+                    <option value="warm-pad" selected>Warm Pad</option>
+                    <option value="basic-drums">Basic Drums</option>
+                    <option value="ambient-pad">Ambient Pad</option>
+                  </select>
+                </label>
+                <label class="tool-starter__toggle" for="previewMutePadToggle">
+                  <input id="previewMutePadToggle" type="checkbox" data-preview-mute-lane="pad">
+                  <span>Mute</span>
+                </label>
+                <label class="tool-starter__toggle" for="previewSoloPadToggle">
+                  <input id="previewSoloPadToggle" type="checkbox" data-preview-solo-lane="pad">
+                  <span>Solo</span>
+                </label>
+              </div>
+              <div class="midi-studio-v2__preview-lane-row" data-preview-lane="lead">
+                <label class="tool-starter__field" for="previewInstrumentLeadSelect">
+                  <span>Lead preview instrument</span>
+                  <select id="previewInstrumentLeadSelect" data-preview-instrument-lane="lead">
+                    <option value="">Choose preview instrument</option>
+                    <option value="retro-square-lead" selected>Retro Square Lead</option>
+                    <option value="retro-pulse-lead">Retro Pulse Lead</option>
+                    <option value="synth-bass">Synth Bass</option>
+                    <option value="warm-pad">Warm Pad</option>
+                    <option value="basic-drums">Basic Drums</option>
+                    <option value="ambient-pad">Ambient Pad</option>
+                  </select>
+                </label>
+                <label class="tool-starter__toggle" for="previewMuteLeadToggle">
+                  <input id="previewMuteLeadToggle" type="checkbox" data-preview-mute-lane="lead">
+                  <span>Mute</span>
+                </label>
+                <label class="tool-starter__toggle" for="previewSoloLeadToggle">
+                  <input id="previewSoloLeadToggle" type="checkbox" data-preview-solo-lane="lead">
+                  <span>Solo</span>
+                </label>
+              </div>
+              <div class="midi-studio-v2__preview-lane-row" data-preview-lane="drums">
+                <label class="tool-starter__field" for="previewInstrumentDrumsSelect">
+                  <span>Drums preview instrument</span>
+                  <select id="previewInstrumentDrumsSelect" data-preview-instrument-lane="drums">
+                    <option value="">Choose preview instrument</option>
+                    <option value="retro-square-lead">Retro Square Lead</option>
+                    <option value="retro-pulse-lead">Retro Pulse Lead</option>
+                    <option value="synth-bass">Synth Bass</option>
+                    <option value="warm-pad">Warm Pad</option>
+                    <option value="basic-drums" selected>Basic Drums</option>
+                    <option value="ambient-pad">Ambient Pad</option>
+                  </select>
+                </label>
+                <label class="tool-starter__toggle" for="previewMuteDrumsToggle">
+                  <input id="previewMuteDrumsToggle" type="checkbox" data-preview-mute-lane="drums">
+                  <span>Mute</span>
+                </label>
+                <label class="tool-starter__toggle" for="previewSoloDrumsToggle">
+                  <input id="previewSoloDrumsToggle" type="checkbox" data-preview-solo-lane="drums">
+                  <span>Solo</span>
+                </label>
+              </div>
+            </div>
             <div class="midi-studio-v2__grid-actions" aria-label="Instrument grid actions">
               <button id="generateBassFromChordsButton" type="button">Generate Bass From Chords</button>
               <button id="generatePadFromChordsButton" type="button">Generate Pad From Chords</button>

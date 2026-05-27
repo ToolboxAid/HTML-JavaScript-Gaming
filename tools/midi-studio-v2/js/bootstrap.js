@@ -74,6 +74,33 @@ window.addEventListener("DOMContentLoaded", () => {
       padInput: requireElement("#instrumentGridPadInput"),
       playLoopButton: requireElement("#playLoopButton"),
       playSectionButton: requireElement("#playSectionButton"),
+      previewLaneControls: {
+        bass: {
+          instrument: requireElement("#previewInstrumentBassSelect"),
+          mute: requireElement("#previewMuteBassToggle"),
+          solo: requireElement("#previewSoloBassToggle")
+        },
+        chords: {
+          instrument: requireElement("#previewInstrumentChordsSelect"),
+          mute: requireElement("#previewMuteChordsToggle"),
+          solo: requireElement("#previewSoloChordsToggle")
+        },
+        drums: {
+          instrument: requireElement("#previewInstrumentDrumsSelect"),
+          mute: requireElement("#previewMuteDrumsToggle"),
+          solo: requireElement("#previewSoloDrumsToggle")
+        },
+        lead: {
+          instrument: requireElement("#previewInstrumentLeadSelect"),
+          mute: requireElement("#previewMuteLeadToggle"),
+          solo: requireElement("#previewSoloLeadToggle")
+        },
+        pad: {
+          instrument: requireElement("#previewInstrumentPadSelect"),
+          mute: requireElement("#previewMutePadToggle"),
+          solo: requireElement("#previewSoloPadToggle")
+        }
+      },
       sectionPresetButtons: Array.from(document.querySelectorAll(".midi-studio-v2__section-preset")),
       sectionSelect: requireElement("#instrumentGridSectionSelect"),
       sectionsInput: requireElement("#instrumentGridSectionsInput"),

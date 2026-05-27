@@ -98,6 +98,7 @@
 .midi-studio-v2__grid-settings,
 .midi-studio-v2__grid-lane-inputs,
 .midi-studio-v2__grid-actions,
+.midi-studio-v2__preview-lane-controls,
 .midi-studio-v2__transport-panel,
 .midi-studio-v2__transport-fields,
 .midi-studio-v2__transport-actions,
@@ -117,6 +118,19 @@
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
   padding: 0.75rem;
+}
+
+.midi-studio-v2__preview-lane-controls {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.midi-studio-v2__preview-lane-row {
+  align-items: end;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: minmax(14rem, 1fr) auto auto;
 }
 
 .midi-studio-v2__grid-lane-inputs textarea {
@@ -182,6 +196,11 @@
 .midi-studio-v2__grid-cell--playhead-active {
   background: #f97316;
   color: #101827;
+}
+
+.midi-studio-v2__grid-cell--lane-active {
+  outline: 3px solid rgba(14, 165, 233, 0.86);
+  outline-offset: -4px;
 }
 
 .midi-studio-v2__grid-cell--loop-region {

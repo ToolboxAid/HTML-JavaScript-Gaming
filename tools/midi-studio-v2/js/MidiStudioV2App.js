@@ -64,6 +64,13 @@ const EXAMPLE_GRID = {
   drums: "",
   lead: "",
   pad: "",
+  previewInstruments: {
+    bass: "synth-bass",
+    chords: "warm-pad",
+    drums: "basic-drums",
+    lead: "retro-pulse-lead",
+    pad: "ambient-pad"
+  },
   sections: "intro:1, loop:1, victory:1",
   subdivision: "1"
 };
@@ -125,6 +132,7 @@ export class MidiStudioV2App {
     this.songSheet.mount({ onParse: (sourceText) => this.parseSongSheet(sourceText) });
     this.instrumentGrid.mount({
       onGenerate: (lane, input) => this.generateInstrumentLane(lane, input),
+      onLaneSettingChange: (kind, detail) => this.handlePreviewLaneSettingChange(kind, detail),
       onNormalize: (input) => this.normalizeInstrumentGrid(input),
       onTransport: (action, detail) => this.handleInstrumentGridTransport(action, detail)
     });
@@ -342,7 +350,7 @@ export class MidiStudioV2App {
     }
     if (action === "stop-preview") {
       const stoppedCount = this.previewSynth.stop();
-      this.statusLog.ok(`Preview Synth timing preview stopped. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"}.`);
+      this.statusLog.ok(`Preview playback stopped. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"}.`);
     }
   }
 
@@ -351,21 +359,48 @@ export class MidiStudioV2App {
       endStep,
       grid: this.lastInstrumentGridResult,
       label,
+      laneSettings: this.instrumentGrid.previewLaneSettings(),
       loop,
       mode,
       startStep,
       tempoBpm: this.previewTempoBpm()
     });
     if (!result.ok) {
+      this.instrumentGrid.clearPreviewPlaybackLanes();
+      if (result.warnings?.length) {
+        this.statusLog.warn(`Preview Synth warnings: ${result.warnings.join("; ")}`);
+      }
       if (result.reason === "audio-suspended" || result.reason === "audio-resume-failed") {
         this.statusLog.warn("Browser audio did not unlock for Preview Synth. Start from a direct click/tap and check site audio permissions.");
       }
       this.statusLog.fail(result.message);
       return false;
     }
+    if (result.warnings.length) {
+      this.statusLog.warn(`Preview Synth warnings: ${result.warnings.join("; ")}`);
+    }
+    this.instrumentGrid.setPreviewPlaybackLanes(result.activeLanes);
     this.statusLog.ok(`Preview Synth started for ${mode} ${label} with ${result.eventCount} playable event${result.eventCount === 1 ? "" : "s"}.`);
     this.statusLog.info("Preview Synth uses temporary oscillator instruments for grid audition only; SoundFont playback is not implemented.");
     return true;
+  }
+
+  handlePreviewLaneSettingChange(kind, detail) {
+    if (kind === "instrument") {
+      if (!detail.instrumentValue) {
+        this.statusLog.warn(`Missing preview instrument selection for ${detail.laneLabel}. Choose a Preview Synth instrument before playback.`);
+        return;
+      }
+      this.statusLog.ok(`Preview instrument selected for ${detail.laneLabel}: ${detail.instrumentLabel}.`);
+      return;
+    }
+    if (kind === "mute") {
+      this.statusLog[detail.enabled ? "warn" : "info"](`Lane ${detail.enabled ? "muted" : "unmuted"}: ${detail.laneLabel}.`);
+      return;
+    }
+    if (kind === "solo") {
+      this.statusLog[detail.enabled ? "ok" : "info"](`Lane ${detail.enabled ? "soloed" : "solo cleared"}: ${detail.laneLabel}.`);
+    }
   }
 
   previewTempoBpm() {
@@ -401,6 +436,7 @@ export class MidiStudioV2App {
   stopPlayback() {
     this.playback.stop();
     this.previewSynth.stop();
+    this.instrumentGrid.clearPreviewPlaybackLanes();
     this.playbackControl.setStopped(this.selectedSong());
   }
 
