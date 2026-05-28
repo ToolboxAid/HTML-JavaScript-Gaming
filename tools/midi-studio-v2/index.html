@@ -270,12 +270,16 @@
           <div id="songSheetContent" class="accordion-v2__content midi-studio-v2__stack midi-studio-v2__song-sheet-panel" aria-label="Song Sheet">
             <div class="midi-studio-v2__song-sheet-grid">
               <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionsInput">
-                <span>Sections</span>
-                <textarea id="songSheetSectionsInput" rows="4" placeholder="intro: Am F&#10;loop: Am F C G"></textarea>
+                <span>Musical Sections</span>
+                <textarea id="songSheetSectionsInput" rows="4" placeholder="Intro: C F&#10;Verse: Am F&#10;Chorus: G C"></textarea>
+              </label>
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSequenceInput">
+                <span>Sequence</span>
+                <textarea id="songSheetSequenceInput" rows="2" placeholder="Intro, Verse, Chorus, Verse, Chorus, Bridge, Chorus, Outro"></textarea>
               </label>
               <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetLoopSectionsInput">
                 <span>Loop sections</span>
-                <textarea id="songSheetLoopSectionsInput" rows="2" placeholder="loop"></textarea>
+                <textarea id="songSheetLoopSectionsInput" rows="2" placeholder="Chorus"></textarea>
               </label>
             </div>
             <div class="midi-studio-v2__song-sheet-actions">
@@ -397,7 +401,16 @@
               <div class="midi-studio-v2__section-presets" aria-label="Section shortcuts">
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="intro">Intro</button>
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="loop">Loop</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="verse">Verse</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="chorus">Chorus</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="pre-chorus">Pre-Chorus</button>
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="bridge">Bridge</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="outro">Outro</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="solo">Solo</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="break">Break</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="a">A</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="b">B</button>
+                <button class="midi-studio-v2__section-preset" type="button" data-section-preset="c">C</button>
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="boss">Boss</button>
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="victory">Victory</button>
               </div>

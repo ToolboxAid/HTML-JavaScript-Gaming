@@ -1,5 +1,5 @@
 const CHORD_PATTERN = /^[A-G](?:#|b)?(?:m|min|maj|dim|aug|sus2|sus4|7|maj7|m7|min7|dim7|add9)?$/;
-const DIRECTIVES = new Set(["key", "style", "tempo"]);
+const DIRECTIVES = new Set(["key", "sequence", "style", "tempo"]);
 
 export class SongSheetParser {
   parse(sourceText) {
@@ -8,8 +8,8 @@ export class SongSheetParser {
       return { ok: false, message: "Song Sheet is empty. Add tempo, key, style, and at least one section." };
     }
     const lines = String(sourceText || "").split(/\r?\n/);
-    const metadata = { key: "", style: "", tempo: 120 };
-    const sections = [];
+    const metadata = { key: "", sequence: [], style: "", tempo: 120 };
+    const sectionDefinitions = [];
     const warnings = [];
     let activeSection = null;
     for (let index = 0; index < lines.length; index += 1) {
@@ -34,7 +34,7 @@ export class SongSheetParser {
           loop: label.toLowerCase() === "loop",
           timeline: []
         };
-        sections.push(activeSection);
+        sectionDefinitions.push(activeSection);
         continue;
       }
       if (line.includes("=")) {
@@ -69,14 +69,33 @@ export class SongSheetParser {
         activeSection.chords.push(chord);
       });
     }
-    if (!sections.length) {
+    if (!sectionDefinitions.length) {
       return { ok: false, message: "Song Sheet must include at least one [section]." };
     }
-    sections.forEach((section) => {
+    const duplicateDefinition = sectionDefinitions.find((section, index) => sectionDefinitions.findIndex((entry) => entry.label.toLowerCase() === section.label.toLowerCase()) !== index);
+    if (duplicateDefinition) {
+      return { ok: false, message: `Duplicate musical section definition: ${duplicateDefinition.label}` };
+    }
+    sectionDefinitions.forEach((section) => {
       section.bars = section.chords.length;
       if (!section.chords.length) {
         warnings.push(`Section ${section.label} is empty.`);
       }
+    });
+    const sectionLookup = new Map(sectionDefinitions.map((section) => [section.label.toLowerCase(), section]));
+    const sequence = metadata.sequence.length ? metadata.sequence : sectionDefinitions.map((section) => section.label);
+    const missingSequenceLabel = sequence.find((label) => !sectionLookup.has(label.toLowerCase()));
+    if (missingSequenceLabel) {
+      return { ok: false, message: `Song Sheet Sequence references missing musical section: ${missingSequenceLabel}` };
+    }
+    const sections = sequence.map((label, index) => {
+      const definition = sectionLookup.get(label.toLowerCase());
+      return {
+        ...definition,
+        chords: definition.chords.slice(),
+        occurrence: index + 1,
+        timeline: definition.timeline.map((entry) => ({ ...entry }))
+      };
     });
     const bars = sections.reduce((total, section) => total + section.bars, 0);
     const chordCount = sections.reduce((total, section) => total + section.chords.length, 0);
@@ -88,7 +107,9 @@ export class SongSheetParser {
       key: metadata.key || "not declared",
       ok: true,
       sections,
+      sectionDefinitions,
       sectionSummary: sections.map((section) => `${section.label}: ${section.bars} bars, ${section.chords.length} chords${section.loop ? ", loop" : ""}`).join("; "),
+      sequence,
       style: metadata.style || "not declared",
       tempo: metadata.tempo,
       timeline: sections.flatMap((section) => section.timeline),
@@ -113,6 +134,13 @@ export class SongSheetParser {
         return { ok: false, message: `Invalid tempo on line ${lineNumber}: ${value}` };
       }
       return { key, ok: true, value: tempo };
+    }
+    if (key === "sequence") {
+      return {
+        key,
+        ok: true,
+        value: value.split(/[\n,;]+/).map((entry) => entry.trim()).filter(Boolean)
+      };
     }
     return { key, ok: true, value };
   }

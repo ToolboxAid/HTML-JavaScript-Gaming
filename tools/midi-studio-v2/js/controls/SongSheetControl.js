@@ -13,10 +13,15 @@ function splitList(value) {
     .filter(Boolean);
 }
 
+function sequenceFromSectionRows(rows = []) {
+  return rows.map((row) => row.label).join(", ");
+}
+
 function songSheetRows(result) {
   if (!result?.ok) {
     return [
       ["Sections", "not parsed"],
+      ["Sequence", "not parsed"],
       ["Bars", "not parsed"],
       ["Chord count", "not parsed"],
       ["Estimated duration", "not parsed"],
@@ -26,6 +31,7 @@ function songSheetRows(result) {
   }
   return [
     ["Sections", result.sectionSummary],
+    ["Sequence", result.sequence?.length ? result.sequence.join(", ") : result.sections.map((section) => section.label).join(", ")],
     ["Bars", result.bars],
     ["Chord count", result.chordCount],
     ["Estimated duration", `${result.estimatedDurationSeconds} seconds`],
@@ -35,10 +41,11 @@ function songSheetRows(result) {
 }
 
 export class SongSheetControl {
-  constructor({ keyInput, loopSectionsInput, parseButton, sectionsInput, styleInput, summary, tempoInput }) {
+  constructor({ keyInput, loopSectionsInput, parseButton, sectionsInput, sequenceInput, styleInput, summary, tempoInput }) {
     this.keyInput = keyInput;
     this.loopSectionsInput = loopSectionsInput;
     this.parseButton = parseButton;
+    this.sequenceInput = sequenceInput;
     this.sectionsInput = sectionsInput;
     this.styleInput = styleInput;
     this.summary = summary;
@@ -51,14 +58,17 @@ export class SongSheetControl {
     this.keyInput.addEventListener("change", () => onMetadataChange("key", this.keyInput.value));
     this.styleInput.addEventListener("change", () => onMetadataChange("style", this.styleInput.value));
     this.sectionsInput.addEventListener("input", () => onFieldChange("sections", this.sectionsInput.value));
+    this.sequenceInput.addEventListener("input", () => onFieldChange("sequence", this.sequenceInput.value));
     this.loopSectionsInput.addEventListener("input", () => onFieldChange("loopSections", this.loopSectionsInput.value));
   }
 
-  applyGuidedDefaults({ intro, key, loop, loopSections, sections, style, tempo }) {
+  applyGuidedDefaults({ intro, key, loop, loopSections, sections, sequence, style, tempo }) {
     this.tempoInput.value = tempo || "";
     this.keyInput.value = key || "";
     this.styleInput.value = style || "";
     this.sectionsInput.value = sections || this.sectionsTextFromLegacy({ intro, loop });
+    const structured = this.structuredSections();
+    this.sequenceInput.value = sequence || (structured.ok ? sequenceFromSectionRows(structured.rows) : "");
     this.loopSectionsInput.value = loopSections || (loop ? "loop" : "");
   }
 
@@ -98,6 +108,13 @@ export class SongSheetControl {
     if (style) {
       lines.push(`style=${style}`);
     }
+    const sequence = this.sequenceLabels(sections.rows);
+    if (!sequence.ok) {
+      return sequence;
+    }
+    if (sequence.labels.length) {
+      lines.push(`sequence=${sequence.labels.join(", ")}`);
+    }
     sections.rows.forEach((section) => {
       lines.push("", `[${section.label}]`, section.chords);
     });
@@ -105,6 +122,8 @@ export class SongSheetControl {
       loopSections: this.loopSectionLabels(),
       loopSectionsText: this.loopSectionsInput.value.trim(),
       ok: true,
+      sequence: sequence.labels,
+      sequenceText: this.sequenceInput.value.trim(),
       sectionsText: this.sectionsInput.value.trim(),
       sourceText: lines.join("\n")
     };
@@ -138,6 +157,19 @@ export class SongSheetControl {
       rows.push({ chords, label });
     }
     return { ok: true, rows };
+  }
+
+  sequenceLabels(sectionRows = []) {
+    const labels = splitList(this.sequenceInput.value);
+    if (!labels.length) {
+      return { labels: sectionRows.map((section) => section.label), ok: true };
+    }
+    const defined = new Set(sectionRows.map((section) => section.label.toLowerCase()));
+    const missing = labels.find((label) => !defined.has(label.toLowerCase()));
+    if (missing) {
+      return { ok: false, message: `Song Sheet Sequence references missing musical section: ${missing}` };
+    }
+    return { labels, ok: true };
   }
 
   loopSectionLabels() {

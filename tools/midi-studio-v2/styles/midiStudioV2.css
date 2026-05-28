@@ -242,6 +242,26 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
   padding: 0.45rem;
 }
 
+.midi-studio-v2__editable-detail dt {
+  align-items: center;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.midi-studio-v2__field-help {
+  align-items: center;
+  border: 1px solid rgba(125, 211, 252, 0.72);
+  border-radius: 999px;
+  color: #bae6fd;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 800;
+  height: 1rem;
+  justify-content: center;
+  line-height: 1;
+  width: 1rem;
+}
+
 .midi-studio-v2__editable-detail input,
 .midi-studio-v2__editable-detail textarea {
   width: 100%;

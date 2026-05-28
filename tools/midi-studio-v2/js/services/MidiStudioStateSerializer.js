@@ -89,6 +89,7 @@ function normalizeStudioArrangement(value) {
     sections: text(value.sections),
     songSheet: {
       loopSections: text(songSheet.loopSections || (songSheet.loop ? "loop" : "")),
+      sequence: text(songSheet.sequence),
       sections: text(songSheet.sections) || legacySongSheetSections(songSheet)
     },
     style: text(value.style),
@@ -109,6 +110,7 @@ function normalizeSong(song, index) {
     ok: true,
     song: {
       defaultRuntimeFormat: text(song.defaultRuntimeFormat || "ogg"),
+      classification: text(song.classification),
       director: normalizeDirector(song.director),
       id,
       instrumentSet: normalizeInstrumentSet(song.instrumentSet),

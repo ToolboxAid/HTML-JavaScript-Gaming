@@ -14,9 +14,12 @@ function displayValue(value) {
   return String(value);
 }
 
+const CLASSIFICATION_HELP = "Classification examples: Menu, Intro, Loop, Boss, Victory, Game Over, Ambient, Cutscene, Underwater, Flying, Ice, Lava, Space, Castle, Town, Dungeon, Forest, Night, Stealth, Puzzle, Chase.";
+
 function editableRows(song) {
   return [
     { field: "name", label: "Name", type: "text", value: song.name },
+    { field: "classification", help: CLASSIFICATION_HELP, label: "Classification", type: "text", value: song.classification },
     { field: "id", label: "Id", readonly: true, type: "text", value: song.id }
   ];
 }
@@ -170,7 +173,18 @@ export class SongDetailsControl {
       const id = `songDetail${row.field.charAt(0).toUpperCase()}${row.field.slice(1)}`;
 
       wrapper.className = "midi-studio-v2__editable-detail";
-      term.textContent = row.label;
+      const label = document.createElement("span");
+      label.textContent = row.label;
+      term.append(label);
+      if (row.help) {
+        const help = document.createElement("span");
+        help.className = "midi-studio-v2__field-help";
+        help.dataset.songDetailHelp = row.field;
+        help.setAttribute("aria-label", row.help);
+        help.title = row.help;
+        help.textContent = "?";
+        term.append(help);
+      }
       input.id = id;
       input.dataset.songDetailField = row.field;
       input.readOnly = row.readonly === true;

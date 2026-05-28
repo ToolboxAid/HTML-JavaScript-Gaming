@@ -155,6 +155,7 @@ window.addEventListener("DOMContentLoaded", () => {
       keyInput: requireElement("#songSheetKeyInput"),
       loopSectionsInput: requireElement("#songSheetLoopSectionsInput"),
       parseButton: requireElement("#parseSongSheetButton"),
+      sequenceInput: requireElement("#songSheetSequenceInput"),
       sectionsInput: requireElement("#songSheetSectionsInput"),
       styleInput: requireElement("#songSheetStyleInput"),
       summary: optionalElement("#songSheetSummary"),

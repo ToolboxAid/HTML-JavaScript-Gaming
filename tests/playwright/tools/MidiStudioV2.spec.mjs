@@ -359,12 +359,15 @@ async function selectMidiStudioTab(page, tabId) {
   await expect(tab).toHaveAttribute("aria-selected", "true");
 }
 
-async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop = "Am F C G", loopSections = "loop", sections = null, style = "retro-arcade", tempo = "132" } = {}) {
+async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop = "Am F C G", loopSections = "loop", sections = null, sequence = null, style = "retro-arcade", tempo = "132" } = {}) {
   await selectMidiStudioTab(page, "song-setup");
   await page.locator("#songSheetTempoInput").fill(tempo);
   await page.locator("#songSheetKeyInput").selectOption(key);
   await page.locator("#songSheetStyleInput").selectOption(style);
   await page.locator("#songSheetSectionsInput").fill(sections || `intro: ${intro}\nloop: ${loop}`);
+  if (sequence !== null) {
+    await page.locator("#songSheetSequenceInput").fill(sequence);
+  }
   await page.locator("#songSheetLoopSectionsInput").fill(loopSections);
 }
 
@@ -660,6 +663,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       saveProjectButton: { canonical: "serialized midi-studio-v2 tool state", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
       songSheetKeyInput: { canonical: "music.songs[].studioArrangement.key", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetLoopSectionsInput: { canonical: "music.songs[].studioArrangement.songSheet.loopSections", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSequenceInput: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetSectionsInput: { canonical: "music.songs[].studioArrangement.songSheet.sections", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetStyleInput: { canonical: "music.songs[].studioArrangement.style", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetTempoInput: { canonical: "music.songs[].studioArrangement.tempo", kind: "canonical", owner: "Song Setup", wired: "wired" },
@@ -764,7 +768,8 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       if (element.dataset.songDetailField) {
         const field = element.dataset.songDetailField;
         const fields = {
-          id: "music.songs[].id (read-only derived from name)",
+          classification: "music.songs[].classification",
+          id: "music.songs[].id (read-only derived from name and classification)",
           loopEnabled: "music.songs[].loop.enabled",
           loopEndSeconds: "music.songs[].loop.endSeconds",
           loopStartSeconds: "music.songs[].loop.startSeconds",
@@ -4156,6 +4161,119 @@ test.describe("MIDI Studio V2", () => {
       expect(scrolledState.frozenHeaderVisible).toBe(true);
       expect(Math.round(scrolledState.frozenHeaderScrollLeft)).toBe(scrollEvidence.scrollLeft);
       expect(Math.round(scrolledState.frozenHeaderScrollTop)).toBe(scrollEvidence.scrollTop);
+
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("separates PR070 classification from reusable musical sections and sequence", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      const classificationInput = page.locator("#songDetails [data-song-detail-field='classification']");
+      await expect(classificationInput).toBeVisible();
+      await expect(classificationInput).toHaveAttribute("type", "text");
+      const classificationHelp = page.locator("[data-song-detail-help='classification']");
+      await expect(classificationHelp).toHaveText("?");
+      const helpText = await classificationHelp.getAttribute("title");
+      expect(helpText).toContain("Menu");
+      expect(helpText).toContain("Game Over");
+      expect(helpText).toContain("Flying");
+      expect(helpText).toContain("Puzzle");
+      expect(helpText).toContain("Chase");
+
+      await classificationInput.fill("Loop");
+      await page.locator("#songDetails [data-song-detail-field='name']").fill("Main Theme");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("mainTheme-Loop");
+      await classificationInput.fill("Flying");
+      await page.locator("#songDetails [data-song-detail-field='name']").fill("Sky Battle");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("skyBattle-Flying");
+
+      const sequence = "Intro, Verse, Chorus, Verse, Chorus, Bridge, Chorus, Outro";
+      await page.locator("#songSheetSectionsInput").fill("Intro: C F\nVerse: Am F\nChorus: G C\nBridge: Dm G\nOutro: C");
+      await page.locator("#songSheetSequenceInput").fill(sequence);
+      await page.locator("#songSheetLoopSectionsInput").fill("Chorus");
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sequence'] dd")).toHaveText(sequence);
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("Verse: 2 bars, 2 chords");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("Chorus: 2 bars, 2 chords, loop");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars'] dd")).toHaveText("15");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='chord-count'] dd")).toHaveText("15");
+
+      const canonical = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const gridResult = app.currentInstrumentGridResult();
+        return {
+          classification: song.classification,
+          id: song.id,
+          sectionColors: gridResult.sections.map((section) => ({ colorIndex: section.colorIndex, label: section.label })),
+          sectionLabels: gridResult.sections.map((section) => section.label),
+          sections: song.studioArrangement.sections,
+          sequence: song.studioArrangement.songSheet.sequence,
+          songSheetSections: song.studioArrangement.songSheet.sections
+        };
+      });
+      expect(canonical).toEqual(expect.objectContaining({
+        classification: "Flying",
+        id: "skyBattle-Flying",
+        sectionLabels: ["Intro", "Verse", "Chorus", "Verse", "Chorus", "Bridge", "Chorus", "Outro"],
+        sections: "Intro:2, Verse:2, Chorus:2, Verse:2, Chorus:2, Bridge:2, Chorus:2, Outro:1",
+        sequence,
+        songSheetSections: "Intro: C F\nVerse: Am F\nChorus: G C\nBridge: Dm G\nOutro: C"
+      }));
+      expect(canonical.sectionColors[1].colorIndex).toBe(canonical.sectionColors[3].colorIndex);
+      expect(canonical.sectionColors[2].colorIndex).toBe(canonical.sectionColors[4].colorIndex);
+      expect(canonical.sectionColors[2].colorIndex).toBe(canonical.sectionColors[6].colorIndex);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      const canvasState = await canvasTimelineState(page);
+      expect(canvasState.sections.map((section) => section.label)).toEqual(canonical.sectionLabels);
+      expect(canvasState.sections[1].color).toBe(canvasState.sections[3].color);
+      expect(canvasState.sections[2].color).toBe(canvasState.sections[4].color);
+      expect(canvasState.sections[2].color).toBe(canvasState.sections[6].color);
+
+      const buttonState = await page.locator(".midi-studio-v2__section-preset").evaluateAll((buttons) => Object.fromEntries(buttons.map((button) => [
+        button.dataset.sectionPreset,
+        {
+          color: button.dataset.sectionColor || "",
+          disabled: button.disabled,
+          title: button.title,
+          unwired: button.classList.contains("midi-studio-v2__unwired-control")
+        }
+      ])));
+      expect(buttonState.verse).toEqual(expect.objectContaining({
+        color: canvasState.sections[1].color,
+        disabled: false,
+        unwired: false
+      }));
+      expect(buttonState.chorus).toEqual(expect.objectContaining({
+        color: canvasState.sections[2].color,
+        disabled: false,
+        unwired: false
+      }));
+      expect(buttonState.boss).toEqual(expect.objectContaining({
+        disabled: true,
+        title: "Boss section not available for this song",
+        unwired: true
+      }));
+      expect(buttonState.victory).toEqual(expect.objectContaining({
+        disabled: true,
+        title: "Victory section not available for this song",
+        unwired: true
+      }));
 
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();

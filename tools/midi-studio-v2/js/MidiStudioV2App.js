@@ -19,6 +19,11 @@ function camelCaseSongId(value) {
     .join("");
 }
 
+function classificationIdSuffix(value) {
+  const classification = String(value || "").trim().replace(/\s+/g, " ");
+  return classification ? `-${classification}` : "";
+}
+
 export class MidiStudioV2App {
   constructor({
     accordions,
@@ -246,8 +251,16 @@ export class MidiStudioV2App {
       this.actionNav.setNowPlaying(song);
     } else if (field === "id") {
       this.details.updateFieldValue("id", song.id);
-      this.statusLog.info("Song id is derived from Name and is read-only by default.");
+      this.statusLog.info("Song id is derived from Name and Classification and is read-only by default.");
       return;
+    } else if (field === "classification") {
+      song.classification = String(value || "").trim();
+      const derivedId = this.uniqueDerivedSongId(song.name, song);
+      this.updateSelectedSongId(derivedId);
+      this.details.updateFieldValue("id", song.id);
+      this.songList.render(this.payload?.songs || [], this.selectedSongId);
+      this.playbackControl.setSelected(song, this.playbackControlStatus(song));
+      this.actionNav.setNowPlaying(song);
     } else if (field === "tempo" && arrangement) {
       arrangement.tempo = String(value || "").trim();
       this.syncSongSheetFields(arrangement);
@@ -288,7 +301,7 @@ export class MidiStudioV2App {
   }
 
   uniqueDerivedSongId(name, targetSong) {
-    const baseId = camelCaseSongId(name);
+    const baseId = `${camelCaseSongId(name)}${classificationIdSuffix(targetSong?.classification)}`;
     const existingIds = new Set((this.payload?.songs || [])
       .filter((song) => song !== targetSong)
       .map((song) => song.id));
@@ -369,6 +382,25 @@ export class MidiStudioV2App {
     return songSheet.loop ? "loop" : "";
   }
 
+  songSheetSequenceFromArrangement(arrangement) {
+    const songSheet = arrangement?.songSheet || {};
+    if (songSheet.sequence) {
+      return String(songSheet.sequence || "");
+    }
+    return this.songSheetStructureFromArrangement(arrangement)
+      .split(/[\n;]+/)
+      .map((entry) => {
+        const bracketMatch = entry.trim().match(/^\[([^\]]+)\]/);
+        if (bracketMatch) {
+          return bracketMatch[1].trim();
+        }
+        const separatorIndex = entry.indexOf(":");
+        return separatorIndex >= 0 ? entry.slice(0, separatorIndex).trim() : "";
+      })
+      .filter(Boolean)
+      .join(", ");
+  }
+
   applySongSheetLoopSections(result, loopSections = []) {
     if (!result?.ok) {
       return result;
@@ -386,7 +418,7 @@ export class MidiStudioV2App {
   }
 
   handleSongSheetFieldChange(field, value) {
-    if (field !== "sections" && field !== "loopSections") {
+    if (field !== "sections" && field !== "loopSections" && field !== "sequence") {
       return;
     }
     const song = this.selectedSong();
@@ -411,6 +443,7 @@ export class MidiStudioV2App {
       sections: this.songSheetStructureFromArrangement(arrangement),
       key: arrangement.key,
       loopSections: this.loopSectionsFromArrangement(arrangement),
+      sequence: this.songSheetSequenceFromArrangement(arrangement),
       style: arrangement.style,
       tempo: arrangement.tempo
     });
@@ -558,6 +591,7 @@ export class MidiStudioV2App {
         usage: ["song-setup"],
         notes: "Created in MIDI Studio V2 Song Setup."
       },
+      classification: "",
       id: `new-song-${draftNumber}`,
       instrumentSet: source?.instrumentSet || "General MIDI",
       loop: source?.loop ? deepClone(source.loop) : { enabled: false, endSeconds: "", startSeconds: "" },
@@ -608,6 +642,7 @@ export class MidiStudioV2App {
       sections: "draft:2",
       songSheet: {
         loopSections: "draft",
+        sequence: "draft",
         sections: "draft: C G"
       },
       style: "retro-arcade",
@@ -742,6 +777,7 @@ export class MidiStudioV2App {
         usage: ["midi-import"],
         notes: `Imported from local MIDI file ${result.fileName}.`
       },
+      classification: "",
       id,
       instrumentSet: "Imported MIDI source",
       loop: { enabled: false },
@@ -788,6 +824,7 @@ export class MidiStudioV2App {
       sections: `import:${barCount}`,
       songSheet: {
         loopSections: "",
+        sequence: "import",
         sections: "import: C"
       },
       style: "midi-import",
@@ -1059,6 +1096,7 @@ export class MidiStudioV2App {
     song.studioArrangement.tempo = String(result.tempo || "");
     song.studioArrangement.songSheet = {
       loopSections: this.songSheet.loopSectionsInput.value.trim(),
+      sequence: this.songSheet.sequenceInput.value.trim(),
       sections: this.songSheet.sectionsInput.value.trim()
     };
     this.details.showJson(song);
@@ -1360,6 +1398,7 @@ export class MidiStudioV2App {
     this.songSheet.applyGuidedDefaults({
       key: arrangement.key,
       loopSections: this.loopSectionsFromArrangement(arrangement),
+      sequence: this.songSheetSequenceFromArrangement(arrangement),
       sections: this.songSheetStructureFromArrangement(arrangement) || `main: ${arrangement.lanes.chords || ""}`.trim(),
       style: arrangement.style,
       tempo: arrangement.tempo
