@@ -1004,14 +1004,45 @@ test.describe("MIDI Studio V2", () => {
         const topScrollbar = element.querySelector(".midi-studio-v2__timeline-scroll-proxy");
         const grid = element.querySelector(".midi-studio-v2__octave-timeline");
         const firstLabel = element.querySelector(".midi-studio-v2__octave-row-label");
+        const whiteLabel = element.querySelector('.midi-studio-v2__octave-row-label[data-octave-row="C5"]');
+        const blackLabel = element.querySelector('.midi-studio-v2__octave-row-label[data-octave-row="C#5"]');
+        const whiteCell = element.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="C5"][data-step-index="0"]');
+        const blackCell = element.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="C#5"][data-step-index="0"]');
+        const outputStyle = getComputedStyle(element);
+        const whiteLabelStyle = getComputedStyle(whiteLabel);
+        const blackLabelStyle = getComputedStyle(blackLabel);
+        const whiteLabelRect = whiteLabel.getBoundingClientRect();
+        const blackLabelRect = blackLabel.getBoundingClientRect();
+        const whiteCellRect = whiteCell.getBoundingClientRect();
+        const blackCellRect = blackCell.getBoundingClientRect();
         return {
           alternatingRowsDiffer: getComputedStyle(firstRow).backgroundColor !== getComputedStyle(secondRow).backgroundColor,
+          blackBackground: blackLabelStyle.backgroundImage || blackLabelStyle.backgroundColor,
+          blackClass: blackLabel.className,
+          blackColor: blackLabelStyle.color,
+          blackKind: blackLabel.dataset.keyKind,
+          blackLabelHeight: blackLabelRect.height,
+          blackLabelText: blackLabel.textContent,
           borderRightWidth: getComputedStyle(firstNote).borderRightWidth,
+          canScrollVertically: element.scrollHeight > element.clientHeight,
           cellCssWidth: getComputedStyle(firstNote).width,
           cellHeight: firstNote.getBoundingClientRect().height,
           columnWidth: firstNote.getBoundingClientRect().width,
           columnTemplate: getComputedStyle(grid).gridTemplateColumns,
           containsGrid: grid?.parentElement === element,
+          expectedViewportHeight: window.innerHeight * 0.5,
+          overflowY: outputStyle.overflowY,
+          viewportHeight: element.getBoundingClientRect().height,
+          whiteBackground: whiteLabelStyle.backgroundImage || whiteLabelStyle.backgroundColor,
+          whiteClass: whiteLabel.className,
+          whiteColor: whiteLabelStyle.color,
+          whiteKind: whiteLabel.dataset.keyKind,
+          whiteLabelHeight: whiteLabelRect.height,
+          whiteLabelText: whiteLabel.textContent,
+          whiteRowDelta: Math.abs(whiteLabelRect.top - whiteCellRect.top),
+          whiteRowHeightDelta: Math.abs(whiteLabelRect.height - whiteCellRect.height),
+          blackRowDelta: Math.abs(blackLabelRect.top - blackCellRect.top),
+          blackRowHeightDelta: Math.abs(blackLabelRect.height - blackCellRect.height),
           labelWidth: firstLabel.getBoundingClientRect().width,
           topScrollbarHeight: topScrollbar.getBoundingClientRect().height
         };
@@ -1026,20 +1057,39 @@ test.describe("MIDI Studio V2", () => {
       expect(gridLayout.columnTemplate).toContain("22px");
       expect(gridLayout.labelWidth).toBeGreaterThan(40);
       expect(gridLayout.topScrollbarHeight).toBeGreaterThanOrEqual(12);
+      expect(Math.abs(gridLayout.viewportHeight - gridLayout.expectedViewportHeight)).toBeLessThanOrEqual(2);
+      expect(gridLayout.overflowY).toMatch(/auto|scroll/);
+      expect(gridLayout.canScrollVertically).toBe(true);
+      expect(gridLayout.whiteKind).toBe("white");
+      expect(gridLayout.blackKind).toBe("black");
+      expect(gridLayout.whiteClass).toContain("midi-studio-v2__octave-row-label--white-key");
+      expect(gridLayout.blackClass).toContain("midi-studio-v2__octave-row-label--black-key");
+      expect(gridLayout.whiteLabelText).toBe("C5");
+      expect(gridLayout.blackLabelText).toBe("C#5");
+      expect(gridLayout.whiteBackground).not.toBe(gridLayout.blackBackground);
+      expect(gridLayout.whiteColor).not.toBe(gridLayout.blackColor);
+      expect(gridLayout.whiteRowDelta).toBeLessThanOrEqual(1);
+      expect(gridLayout.blackRowDelta).toBeLessThanOrEqual(1);
+      expect(gridLayout.whiteRowHeightDelta).toBeLessThanOrEqual(1);
+      expect(gridLayout.blackRowHeightDelta).toBeLessThanOrEqual(1);
 
       await page.locator("#instrumentGridZoomInButton").click();
       const zoomedInLayout = await output.evaluate((element) => {
         const firstNote = element.querySelector('.midi-studio-v2__octave-note-cell[data-step-index="0"]');
         const header = element.querySelector('.midi-studio-v2__grid-cell--beat-header[data-step-index="6"]').getBoundingClientRect();
         const bodyCell = element.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="C5"][data-step-index="6"]').getBoundingClientRect();
+        const label = element.querySelector('.midi-studio-v2__octave-row-label[data-octave-row="C5"]').getBoundingClientRect();
         return {
           bodyHeaderDelta: Math.abs(header.left - bodyCell.left),
           height: firstNote.getBoundingClientRect().height,
+          labelHeight: label.height,
           width: firstNote.getBoundingClientRect().width
         };
       });
       expect(zoomedInLayout.width).toBeGreaterThan(gridLayout.columnWidth);
       expect(Math.abs(zoomedInLayout.width - zoomedInLayout.height)).toBeLessThanOrEqual(1);
+      expect(zoomedInLayout.labelHeight).toBeGreaterThan(gridLayout.whiteLabelHeight);
+      expect(Math.abs(zoomedInLayout.labelHeight - zoomedInLayout.height)).toBeLessThanOrEqual(1);
       expect(zoomedInLayout.bodyHeaderDelta).toBeLessThanOrEqual(1);
 
       await page.locator("#instrumentGridZoomOutButton").click();
@@ -1048,15 +1098,19 @@ test.describe("MIDI Studio V2", () => {
         const firstNote = element.querySelector('.midi-studio-v2__octave-note-cell[data-step-index="0"]');
         const header = element.querySelector('.midi-studio-v2__grid-cell--beat-header[data-step-index="6"]').getBoundingClientRect();
         const bodyCell = element.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="C5"][data-step-index="6"]').getBoundingClientRect();
+        const label = element.querySelector('.midi-studio-v2__octave-row-label[data-octave-row="C5"]').getBoundingClientRect();
         return {
           bodyHeaderDelta: Math.abs(header.left - bodyCell.left),
           height: firstNote.getBoundingClientRect().height,
+          labelHeight: label.height,
           width: firstNote.getBoundingClientRect().width
         };
       });
       expect(zoomedOutLayout.width).toBeLessThan(zoomedInLayout.width);
       expect(zoomedOutLayout.width).toBeGreaterThan(1);
       expect(Math.abs(zoomedOutLayout.width - zoomedOutLayout.height)).toBeLessThanOrEqual(1);
+      expect(zoomedOutLayout.labelHeight).toBeLessThan(zoomedInLayout.labelHeight);
+      expect(Math.abs(zoomedOutLayout.labelHeight - zoomedOutLayout.height)).toBeLessThanOrEqual(1);
       expect(zoomedOutLayout.bodyHeaderDelta).toBeLessThanOrEqual(1);
 
       await output.evaluate((element) => {
@@ -1161,6 +1215,13 @@ test.describe("MIDI Studio V2", () => {
       });
       expect(activeHighlight.content).not.toBe("none");
       expect(Number.parseFloat(activeHighlight.width)).toBeGreaterThan(1);
+
+      await page.locator("#playButton").click();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

@@ -811,20 +811,30 @@ export class InstrumentGridControl {
   }
 
   createOctaveRowHeader(row, rowIndex) {
+    const keyKind = this.octaveRowKeyKind(row);
     const header = document.createElement("div");
     header.className = [
       "midi-studio-v2__grid-cell",
       "midi-studio-v2__grid-cell--label",
       "midi-studio-v2__grid-cell--instrument-column",
       "midi-studio-v2__octave-row-label",
+      `midi-studio-v2__octave-row-label--${keyKind}-key`,
       rowIndex % 2 === 1 ? "midi-studio-v2__octave-row-label--alternate" : ""
     ].filter(Boolean).join(" ");
     header.setAttribute("role", "rowheader");
     header.dataset.octaveRow = row.value;
     header.dataset.octave = row.octave;
+    header.dataset.keyKind = keyKind;
     header.dataset.octaveRowIndex = String(rowIndex);
     header.textContent = row.label;
     return header;
+  }
+
+  octaveRowKeyKind(row) {
+    if (row.octave === "percussion") {
+      return "percussion";
+    }
+    return /#|b/.test(row.value) ? "black" : "white";
   }
 
   createOctaveTimelineCell({ result, row, rowIndex, stepIndex }) {
