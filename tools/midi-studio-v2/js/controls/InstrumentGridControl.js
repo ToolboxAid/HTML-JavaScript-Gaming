@@ -577,7 +577,7 @@ export class InstrumentGridControl {
     grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table midi-studio-v2__octave-timeline";
     grid.setAttribute("role", "table");
     grid.setAttribute("aria-label", "Octave timeline editor");
-    grid.style.gridTemplateColumns = `4.25rem repeat(${result.totalSteps}, var(--midi-studio-v2-octave-cell-size))`;
+    grid.style.gridTemplateColumns = `5.25rem repeat(${result.totalSteps}, var(--midi-studio-v2-octave-cell-size))`;
     this.renderNoteTableHeader(grid, result);
     octaveRows.forEach((row, rowIndex) => {
       grid.append(this.createOctaveRowHeader(row, rowIndex));
@@ -828,7 +828,10 @@ export class InstrumentGridControl {
     header.dataset.octave = row.octave;
     header.dataset.keyKind = keyKind;
     header.dataset.octaveRowIndex = String(rowIndex);
-    header.textContent = row.label;
+    const label = document.createElement("span");
+    label.className = "midi-studio-v2__octave-row-label-text";
+    label.textContent = row.label;
+    header.append(label);
     return header;
   }
 
