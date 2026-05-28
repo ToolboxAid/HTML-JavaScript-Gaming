@@ -82,6 +82,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     instrumentGrid: new InstrumentGridControl({
       addInstrumentButton: requireElement("#addInstrumentRowButton"),
+      auditionKeyboard: requireElement("#instrumentAuditionKeyboard"),
       bassInput: requireElement("#instrumentGridBassInput"),
       beatsInput: requireElement("#instrumentGridBeatsInput"),
       chordsInput: requireElement("#instrumentGridChordsInput"),
@@ -102,9 +103,9 @@ window.addEventListener("DOMContentLoaded", () => {
       loopStartSelect: requireElement("#instrumentGridLoopStartSelect"),
       normalizeButton: requireElement("#normalizeInstrumentGridButton"),
       padInput: requireElement("#instrumentGridPadInput"),
-      playMiddleCButton: requireElement("#playMiddleCButton"),
       playLoopButton: requireElement("#playLoopButton"),
       playSectionButton: requireElement("#playSectionButton"),
+      quickInstrumentList: requireElement("#timelineInstrumentQuickList"),
       sectionAvailability: requireElement("#instrumentGridSectionAvailability"),
       sectionPresetButtons: Array.from(document.querySelectorAll(".midi-studio-v2__section-preset")),
       sectionSelect: requireElement("#instrumentGridSectionSelect"),

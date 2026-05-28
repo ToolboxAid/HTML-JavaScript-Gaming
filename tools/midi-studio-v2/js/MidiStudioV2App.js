@@ -5,6 +5,20 @@ import { notifyWorkspaceToolDirty } from "../../../src/tools/common/WorkspaceDir
 const TOOL_ID = "midi-studio-v2";
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
+function camelCaseSongId(value) {
+  const parts = String(value || "")
+    .trim()
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean)
+    .map((part) => part.toLowerCase());
+  if (!parts.length) {
+    return "untitledSong";
+  }
+  return parts
+    .map((part, index) => (index === 0 ? part : `${part.charAt(0).toUpperCase()}${part.slice(1)}`))
+    .join("");
+}
+
 export class MidiStudioV2App {
   constructor({
     accordions,
@@ -223,13 +237,16 @@ export class MidiStudioV2App {
     const arrangement = song.studioArrangement || null;
     if (field === "name") {
       song.name = String(value || "").trim() || song.id;
+      const derivedId = this.uniqueDerivedSongId(song.name, song);
+      this.updateSelectedSongId(derivedId);
+      this.details.updateFieldValue("id", song.id);
       this.songList.render(this.payload?.songs || [], this.selectedSongId);
       this.playbackControl.setSelected(song, this.playbackControlStatus(song));
       this.actionNav.setNowPlaying(song);
     } else if (field === "id") {
-      if (!this.updateSelectedSongId(value)) {
-        return;
-      }
+      this.details.updateFieldValue("id", song.id);
+      this.statusLog.info("Song id is derived from Name and is read-only by default.");
+      return;
     } else if (field === "tempo" && arrangement) {
       arrangement.tempo = String(value || "").trim();
       this.syncSongSheetFields(arrangement);
@@ -267,6 +284,23 @@ export class MidiStudioV2App {
     this.markDirty({ changedKeys: ["data.songs"], reason: "midi-studio-song-details-edited" });
     this.statusLog.info(`Edited selected song detail: ${field}.`);
     this.updateAudioDiagnostics();
+  }
+
+  uniqueDerivedSongId(name, targetSong) {
+    const baseId = camelCaseSongId(name);
+    const existingIds = new Set((this.payload?.songs || [])
+      .filter((song) => song !== targetSong)
+      .map((song) => song.id));
+    if (!existingIds.has(baseId)) {
+      return baseId;
+    }
+    let index = 2;
+    let candidate = `${baseId}${index}`;
+    while (existingIds.has(candidate)) {
+      index += 1;
+      candidate = `${baseId}${index}`;
+    }
+    return candidate;
   }
 
   handleRenderedTargetChange(format, value) {
@@ -1080,7 +1114,12 @@ export class MidiStudioV2App {
       return;
     }
     if (kind === "audition-middle-c") {
-      await this.auditionMiddleC(detail);
+      await this.auditionNote({ ...detail, note: "C4" });
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "audition-note") {
+      await this.auditionNote(detail);
       this.updateAudioDiagnostics();
       return;
     }
@@ -1132,11 +1171,12 @@ export class MidiStudioV2App {
     this.statusLog.info(`Auditioned ${detail.instrumentLabel} for ${detail.laneLabel} with ${previewLabel}.`);
   }
 
-  async auditionMiddleC(detail) {
+  async auditionNote(detail) {
     if (!detail.instrumentValue) {
-      this.statusLog.warn(`Missing preview instrument selection for ${detail.laneLabel}. Choose a Preview Synth instrument before auditioning middle C.`);
+      this.statusLog.warn(`Missing preview instrument selection for ${detail.laneLabel}. Choose a Preview Synth instrument before auditioning ${detail.note || "a note"}.`);
       return;
     }
+    const note = String(detail.note || "C4").trim() || "C4";
     const audition = await this.previewSynth.playGridRange({
       endStep: 0,
       grid: {
@@ -1147,25 +1187,25 @@ export class MidiStudioV2App {
           kind: "note",
           lane: detail.lane,
           stepIndex: 0,
-          value: "C4"
+          value: note
         }]
       },
-      label: "middle C",
+      label: note,
       laneSettings: this.instrumentGrid.previewLaneSettings(),
       loop: false,
-      mode: "middle C audition",
+      mode: "keyboard audition",
       startStep: 0,
       tempoBpm: this.previewTempoBpm()
     });
     if (!audition.ok) {
-      this.statusLog.warn(`Preview Synth middle C audition unavailable: ${audition.message}`);
+      this.statusLog.warn(`Preview Synth keyboard audition unavailable: ${audition.message}`);
       return;
     }
     if (detail.instrumentWarning) {
       this.statusLog.warn(`Preview Synth mapping: ${detail.instrumentWarning}`);
     }
     const previewLabel = detail.previewInstrumentLabel || detail.instrumentLabel;
-    this.statusLog.info(`Auditioned middle C for ${detail.laneLabel} with ${previewLabel}.`);
+    this.statusLog.info(`Auditioned ${note} for ${detail.laneLabel} with ${previewLabel}.`);
   }
 
   previewTempoBpm() {

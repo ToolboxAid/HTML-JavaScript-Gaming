@@ -17,12 +17,8 @@ function displayValue(value) {
 function editableRows(song) {
   const rows = [
     { field: "name", label: "Name", type: "text", value: song.name },
-    { field: "id", label: "Id", type: "text", value: song.id },
-    { field: "tags", label: "Tags", type: "text", value: song.tags.join(", ") }
+    { field: "id", label: "Id", readonly: true, type: "text", value: song.id }
   ];
-  if (song.director?.usage?.length) {
-    rows.push({ field: "usage", label: "Usage", type: "text", value: song.director.usage.join(", ") });
-  }
   if (song.director?.notes) {
     rows.push({ field: "notes", label: "Notes", rows: 2, type: "textarea", value: song.director.notes });
   }
@@ -177,6 +173,13 @@ export class SongDetailsControl {
 
   showJson(value) {
     this.inspector.textContent = JSON.stringify(value || {}, null, 2);
+  }
+
+  updateFieldValue(field, value) {
+    const control = this.details.querySelector(`[data-song-detail-field="${field}"]`);
+    if (control && control.type !== "checkbox") {
+      control.value = displayValue(value) === "not declared" ? "" : displayValue(value);
+    }
   }
 
   syncSourceFields(song) {

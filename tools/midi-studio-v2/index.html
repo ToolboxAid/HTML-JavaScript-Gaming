@@ -189,8 +189,7 @@
           </button>
           <div id="instrumentSettingsContent" class="accordion-v2__content midi-studio-v2__stack">
             <div class="midi-studio-v2__instrument-audition">
-              <button id="playMiddleCButton" type="button">Play C</button>
-              <p class="tool-starter__hint">Selected instrument audition.</p>
+              <div id="instrumentAuditionKeyboard" class="midi-studio-v2__audition-keyboard" aria-label="Selected instrument audition keyboard"></div>
             </div>
             <div class="midi-studio-v2__future-panel" aria-label="Future instrument settings">
               <h3>Future Instrument Settings</h3>
@@ -322,6 +321,10 @@
                 <button id="instrumentGridZoomInButton" class="midi-studio-v2__zoom-button" type="button" aria-label="Zoom in octave grid" title="Zoom in octave grid">+</button>
               </div>
             </div>
+            <section class="midi-studio-v2__timeline-instruments" data-midi-studio-tab-panel="studio" aria-labelledby="timelineQuickInstrumentsHeading">
+              <h3 id="timelineQuickInstrumentsHeading">Instruments</h3>
+              <div id="timelineInstrumentQuickList" class="midi-studio-v2__timeline-instrument-list" aria-label="Octave Timeline quick instrument controls"></div>
+            </section>
             <div class="midi-studio-v2__grid-settings" data-midi-studio-tab-panel="auto-create-parts">
               <label class="tool-starter__field" for="instrumentGridSectionsInput">
                 <span>Sections</span>
