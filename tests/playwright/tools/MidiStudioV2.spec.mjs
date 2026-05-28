@@ -578,6 +578,273 @@ async function setCheckboxValue(page, selector, checked) {
   }, checked);
 }
 
+async function visibleMidiStudioControlOwnership(page, activeTabId) {
+  return page.evaluate((tabId) => {
+    const staticControls = {
+      addInstrumentRowButton: { canonical: "music.songs[].studioArrangement.lanes / previewLaneSettings", kind: "canonical-action", owner: "Instruments", wired: "wired" },
+      addSongButton: { canonical: "music.songs[] / tools.midi-studio-v2.activeSongId", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      clearStatusButton: { canonical: "diagnostic status log", kind: "action", owner: "Diagnostics", wired: "wired" },
+      closeInstrumentPanelButton: { canonical: "accordion view state", kind: "view-state", owner: "Instruments", wired: "wired" },
+      futureAutosaveButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
+      futureEnableMidiInputButton: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
+      futureMidiDeviceSelect: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
+      futureRecordMidiButton: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
+      futureRedoButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
+      futureRevertToSavedButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
+      futureRevisionHistoryButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
+      futureRenderQualitySelect: { canonical: "future export rendering", kind: "unwired", owner: "Export", wired: "unwired" },
+      futureSampleRateSelect: { canonical: "future export rendering", kind: "unwired", owner: "Export", wired: "unwired" },
+      futureSnapshotsButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
+      futureSoundFontSelect: { canonical: "future export rendering", kind: "unwired", owner: "Export", wired: "unwired" },
+      futureUndoButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
+      generateArpeggioFromChordsButton: { canonical: "music.songs[].studioArrangement.lanes.lead", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
+      generateBasicDrumsButton: { canonical: "music.songs[].studioArrangement.lanes.drums", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
+      generateBassFromChordsButton: { canonical: "music.songs[].studioArrangement.lanes.bass", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
+      generatePadFromChordsButton: { canonical: "music.songs[].studioArrangement.lanes.pad", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
+      importMidiSourceButton: { canonical: "music.songs[].studioArrangement / source MIDI normalization", kind: "canonical-action", owner: "MIDI Import", wired: "wired" },
+      inspectMidiSourceButton: { canonical: "MIDI import diagnostics", kind: "action", owner: "MIDI Import", wired: "wired" },
+      instrumentGridBeatsInput: { canonical: "music.songs[].studioArrangement.beatsPerBar", kind: "canonical", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridChordsInput: { canonical: "music.songs[].studioArrangement.lanes.chords", kind: "canonical", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridDrumsInput: { canonical: "music.songs[].studioArrangement.lanes.drums", kind: "canonical", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridBassInput: { canonical: "music.songs[].studioArrangement.lanes.bass", kind: "canonical", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridLaneTypeSelect: { canonical: "helper workflow selection", kind: "workflow-state", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridLeadInput: { canonical: "music.songs[].studioArrangement.lanes.lead", kind: "canonical", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridLoopEndSelect: { canonical: "timing preview region state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      instrumentGridLoopStartSelect: { canonical: "timing preview region state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      instrumentGridPadInput: { canonical: "music.songs[].studioArrangement.lanes.pad", kind: "canonical", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridSectionSelect: { canonical: "timing preview section state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      instrumentGridSectionsInput: { canonical: "derived from music.songs[].studioArrangement.sections", kind: "readonly", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridSubdivisionInput: { canonical: "music.songs[].studioArrangement.subdivision", kind: "canonical", owner: "Auto-Create Parts", wired: "wired" },
+      instrumentGridZoomInButton: { canonical: "octave timeline view zoom state", kind: "view-state", owner: "Octave Timeline", wired: "wired" },
+      instrumentGridZoomOutButton: { canonical: "octave timeline view zoom state", kind: "view-state", owner: "Octave Timeline", wired: "wired" },
+      instrumentSetField: { canonical: "music.songs[].instrumentSet", kind: "readonly", owner: "MIDI Import", wired: "wired" },
+      jumpToSectionButton: { canonical: "timing preview section state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      loopToggle: { canonical: "playback loop state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      normalizeInstrumentGridButton: { canonical: "music.songs[].studioArrangement", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
+      parseSongSheetButton: { canonical: "music.songs[].studioArrangement", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      playButton: { canonical: "playback from selected canonical song model", kind: "action", owner: "Global NAV", wired: "wired" },
+      playLoopButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      playSectionButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      renderedExportSaveButton: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
+      renderedExportTargetTypeSelect: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
+      resetSongEditsButton: { canonical: "music.songs[] reset baseline", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
+      returnToWorkspaceButton: { canonical: "workspace navigation", kind: "action", owner: "Workspace NAV", wired: "wired" },
+      saveProjectButton: { canonical: "serialized midi-studio-v2 tool state", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
+      songSheetKeyInput: { canonical: "music.songs[].studioArrangement.key", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetLoopSectionsInput: { canonical: "music.songs[].studioArrangement.songSheet.loopSections", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSectionsInput: { canonical: "music.songs[].studioArrangement.songSheet.sections", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetStyleInput: { canonical: "music.songs[].studioArrangement.style", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetTempoInput: { canonical: "music.songs[].studioArrangement.tempo", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSourceField: { canonical: "music.songs[].sourceMidi", kind: "readonly", owner: "MIDI Import", wired: "wired" },
+      statusLog: { canonical: "diagnostic status log", kind: "readonly", owner: "Diagnostics", wired: "wired" },
+      stopAllAudioButton: { canonical: "preview/playback audio state", kind: "action", owner: "Global NAV", wired: "wired" },
+      stopButton: { canonical: "playback state", kind: "action", owner: "Global NAV", wired: "wired" },
+      stopTimingPreviewButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      toolCopyJsonButton: { canonical: "serialized midi-studio-v2 tool state", kind: "action", owner: "Diagnostics", wired: "wired" },
+      toolExportToolStateButton: { canonical: "serialized midi-studio-v2 tool state", kind: "action", owner: "Export", wired: "wired" },
+      toolImportManifestButton: { canonical: "imported game manifest / midi-studio-v2 payload", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
+      workspaceCopyManifestButton: { canonical: "workspace manifest proxy", kind: "unwired", owner: "Workspace NAV", wired: "unwired" },
+      workspaceExportManifestButton: { canonical: "workspace manifest proxy", kind: "unwired", owner: "Workspace NAV", wired: "unwired" },
+      workspaceImportManifestButton: { canonical: "workspace manifest proxy", kind: "unwired", owner: "Workspace NAV", wired: "unwired" }
+    };
+    const selector = [
+      "button",
+      "input",
+      "select",
+      "textarea",
+      "output",
+      "summary",
+      "canvas[data-octave-timeline-canvas='true']",
+      "[role='button']",
+      "[role='tab']",
+      "[contenteditable='true']",
+      ".accordion-v2__header"
+    ].join(",");
+    const isVisible = (element) => {
+      if (element.hidden || element.type === "hidden" || element.closest("[hidden]")) {
+        return false;
+      }
+      const style = getComputedStyle(element);
+      if (style.display === "none" || style.visibility === "hidden") {
+        return false;
+      }
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    };
+    const panelName = (element) => {
+      const panel = element.closest("[data-midi-studio-tab-panel]")?.dataset.midiStudioTabPanel || "";
+      if (panel.includes("song-setup")) {
+        return "Song Setup";
+      }
+      if (panel.includes("studio")) {
+        return "Octave Timeline";
+      }
+      if (panel.includes("instruments")) {
+        return "Instruments";
+      }
+      if (panel.includes("auto-create-parts")) {
+        return "Auto-Create Parts";
+      }
+      if (panel.includes("midi-import")) {
+        return "MIDI Import";
+      }
+      if (panel.includes("diagnostics")) {
+        return "Diagnostics";
+      }
+      if (panel.includes("export")) {
+        return "Export";
+      }
+      if (element.closest("#workspaceNav")) {
+        return "Workspace NAV";
+      }
+      if (element.closest("#toolNav")) {
+        return "Global NAV";
+      }
+      return "Shell";
+    };
+    const controlText = (element) => (element.getAttribute("aria-label")
+      || element.title
+      || element.placeholder
+      || element.textContent
+      || element.value
+      || element.id
+      || element.tagName).trim().replace(/\s+/g, " ");
+    const stateForUnwired = (element, owner = panelName(element)) => ({
+      canonical: element.dataset.midiStudioFutureDetail || element.dataset.midiStudioUnwiredStatus || "not implemented",
+      kind: "unwired",
+      owner,
+      wired: "unwired"
+    });
+    const classify = (element) => {
+      if (element.dataset.midiStudioFutureControl !== undefined || element.dataset.midiStudioUnwired) {
+        return stateForUnwired(element);
+      }
+      if (element.id && staticControls[element.id]) {
+        return staticControls[element.id];
+      }
+      if (element.dataset.midiStudioTab) {
+        return { canonical: "active tab view state", kind: "view-state", owner: "Tabs", wired: "wired" };
+      }
+      if (element.matches("summary, .accordion-v2__header")) {
+        return { canonical: "accordion view state", kind: "view-state", owner: panelName(element), wired: "wired" };
+      }
+      if (element.dataset.songId) {
+        return { canonical: "tools.midi-studio-v2.activeSongId", kind: "canonical-action", owner: "Song Setup", wired: "wired" };
+      }
+      if (element.dataset.songDetailField) {
+        const field = element.dataset.songDetailField;
+        const fields = {
+          id: "music.songs[].id (read-only derived from name)",
+          loopEnabled: "music.songs[].loop.enabled",
+          loopEndSeconds: "music.songs[].loop.endSeconds",
+          loopStartSeconds: "music.songs[].loop.startSeconds",
+          name: "music.songs[].name",
+          notes: "music.songs[].director.notes"
+        };
+        return { canonical: fields[field] || `music.songs[].${field}`, kind: field === "id" ? "readonly" : "canonical", owner: "Song Setup", wired: "wired" };
+      }
+      if (element.dataset.renderedTargetFormat) {
+        return { canonical: `music.songs[].rendered.${element.dataset.renderedTargetFormat}`, kind: "canonical", owner: "Export", wired: "wired" };
+      }
+      if (element.dataset.quickInstrumentLane) {
+        return { canonical: "tools.midi-studio-v2.selectedInstrumentId", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" };
+      }
+      if (element.dataset.timelineQuickMute) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.muted", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" };
+      }
+      if (element.dataset.timelineQuickSolo) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.soloed", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" };
+      }
+      if (element.dataset.toggleInstrumentVisibility) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.visible", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" };
+      }
+      if (element.dataset.lane) {
+        return { canonical: "tools.midi-studio-v2.selectedInstrumentId", kind: "canonical-action", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.deleteInstrumentRow) {
+        return { canonical: "music.songs[].studioArrangement.lanes / previewLaneSettings", kind: "canonical-action", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.instrumentDisplayNameLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.displayNames", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.laneInstrumentTypeSelect) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.instrumentTypes", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.laneInstrumentSelect) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.instruments", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.previewVolumeLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.volumes", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.previewPanLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.pans", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.previewMuteLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.muted", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.previewSoloLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.soloed", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.instrumentOctaveLowLane || element.dataset.instrumentOctaveHighLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.octaveRanges", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.instrumentTransposeLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.transposes", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.instrumentVelocityLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.velocities", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.instrumentDurationLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.durations", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.instrumentDerivedField) {
+        return { canonical: "derived from selected instrument preview mapping", kind: "readonly", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.auditionNote) {
+        return { canonical: "Preview Synth audition action", kind: "action", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.sectionPreset) {
+        return { canonical: "timing preview section state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" };
+      }
+      if (element.dataset.octaveTimelineCanvas) {
+        return { canonical: "music.songs[].studioArrangement.lanes", kind: "canonical", owner: "Octave Timeline", wired: "wired" };
+      }
+      return { canonical: "", kind: "unclassified", owner: panelName(element), wired: "unknown" };
+    };
+    const editableTag = (element) => {
+      if (element.isContentEditable) {
+        return true;
+      }
+      if (!element.matches("input, select, textarea")) {
+        return false;
+      }
+      return !element.disabled && !element.readOnly && element.type !== "file" && element.type !== "hidden";
+    };
+    return Array.from(document.querySelectorAll(selector))
+      .filter(isVisible)
+      .map((element) => {
+        const ownership = classify(element);
+        const unwired = element.dataset.midiStudioFutureControl !== undefined || element.dataset.midiStudioUnwired;
+        return {
+          activeTabId: tabId,
+          ariaLabel: element.getAttribute("aria-label") || "",
+          canonical: ownership.canonical,
+          control: element.id ? `#${element.id}` : controlText(element),
+          editable: editableTag(element),
+          kind: ownership.kind,
+          owner: ownership.owner,
+          tag: element.tagName.toLowerCase(),
+          text: controlText(element),
+          title: element.title || "",
+          unwired,
+          unwiredClass: element.classList.contains("midi-studio-v2__unwired-control"),
+          unwiredStatus: element.dataset.midiStudioUnwired || "",
+          wired: ownership.wired
+        };
+      });
+  }, activeTabId);
+}
+
 async function prepareInstrumentScrollSentinel(page) {
   await page.evaluate(() => {
     const leftPanel = document.querySelector(".tool-starter__panel--left");
@@ -3167,6 +3434,161 @@ test.describe("MIDI Studio V2", () => {
       });
 
       await selectMidiStudioTab(page, "studio");
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("audits PR065 visible control ownership and canonical editable mapping", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      const auditTabs = [
+        "song-setup",
+        "studio",
+        "instruments",
+        "auto-create-parts",
+        "midi-import",
+        "diagnostics",
+        "export"
+      ];
+      const controls = [];
+      for (const tabId of auditTabs) {
+        await selectMidiStudioTab(page, tabId);
+        if (tabId === "studio") {
+          await waitForCanvasRender(page);
+        }
+        controls.push(...await visibleMidiStudioControlOwnership(page, tabId));
+      }
+      const uniqueControls = Array.from(new Map(controls.map((control) => [
+        `${control.activeTabId}|${control.control}|${control.text}|${control.owner}`,
+        control
+      ])).values());
+      const unclassifiedControls = uniqueControls
+        .filter((control) => control.kind === "unclassified")
+        .map(({ activeTabId, control, owner, tag, text }) => ({ activeTabId, control, owner, tag, text }));
+      expect(unclassifiedControls).toEqual([]);
+
+      const editableOwnershipGaps = uniqueControls
+        .filter((control) => control.editable && !["canonical", "readonly", "unwired", "workflow-state"].includes(control.kind))
+        .map(({ activeTabId, canonical, control, kind, owner, text }) => ({ activeTabId, canonical, control, kind, owner, text }));
+      expect(editableOwnershipGaps).toEqual([]);
+
+      const unwiredStateGaps = uniqueControls
+        .filter((control) => control.unwired)
+        .filter((control) => control.unwiredStatus !== "not-implemented" || !control.unwiredClass || !/Not implemented:|Incomplete:/.test(control.title))
+        .map(({ activeTabId, control, owner, text, title, unwiredClass, unwiredStatus }) => ({
+          activeTabId,
+          control,
+          owner,
+          text,
+          title,
+          unwiredClass,
+          unwiredStatus
+        }));
+      expect(unwiredStateGaps).toEqual([]);
+
+      const editableCanonicalFields = new Set(uniqueControls
+        .filter((control) => control.editable && control.kind === "canonical")
+        .map((control) => control.canonical));
+      expect(editableCanonicalFields).toEqual(new Set([
+        "music.songs[].director.notes",
+        "music.songs[].loop.enabled",
+        "music.songs[].loop.endSeconds",
+        "music.songs[].loop.startSeconds",
+        "music.songs[].rendered.mp3",
+        "music.songs[].rendered.ogg",
+        "music.songs[].rendered.wav",
+        "music.songs[].studioArrangement.beatsPerBar",
+        "music.songs[].studioArrangement.key",
+        "music.songs[].studioArrangement.lanes.bass",
+        "music.songs[].studioArrangement.lanes.chords",
+        "music.songs[].studioArrangement.lanes.drums",
+        "music.songs[].studioArrangement.lanes.lead",
+        "music.songs[].studioArrangement.lanes.pad",
+        "music.songs[].studioArrangement.previewLaneSettings.displayNames",
+        "music.songs[].studioArrangement.previewLaneSettings.durations",
+        "music.songs[].studioArrangement.previewLaneSettings.instruments",
+        "music.songs[].studioArrangement.previewLaneSettings.instrumentTypes",
+        "music.songs[].studioArrangement.previewLaneSettings.muted",
+        "music.songs[].studioArrangement.previewLaneSettings.octaveRanges",
+        "music.songs[].studioArrangement.previewLaneSettings.pans",
+        "music.songs[].studioArrangement.previewLaneSettings.soloed",
+        "music.songs[].studioArrangement.previewLaneSettings.transposes",
+        "music.songs[].studioArrangement.previewLaneSettings.velocities",
+        "music.songs[].studioArrangement.previewLaneSettings.volumes",
+        "music.songs[].studioArrangement.songSheet.loopSections",
+        "music.songs[].studioArrangement.songSheet.sections",
+        "music.songs[].studioArrangement.style",
+        "music.songs[].studioArrangement.subdivision",
+        "music.songs[].studioArrangement.tempo",
+        "music.songs[].name"
+      ]));
+
+      await selectMidiStudioTab(page, "song-setup");
+      await page.locator("#songDetails [data-song-detail-field='name']").fill("UAT Gap Audit Reel");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("uatGapAuditReel");
+      await page.locator("#songSheetSectionsInput").fill("intro: C F\nloop: G C");
+      await page.locator("#songSheetLoopSectionsInput").fill("loop");
+      expect(await page.evaluate(() => {
+        const song = window.__midiStudioV2App.selectedSong();
+        return {
+          id: song.id,
+          name: song.name,
+          songSheet: song.studioArrangement.songSheet
+        };
+      })).toEqual({
+        id: "uatGapAuditReel",
+        name: "UAT Gap Audit Reel",
+        songSheet: {
+          loopSections: "loop",
+          sections: "intro: C F\nloop: G C"
+        }
+      });
+
+      await selectMidiStudioTab(page, "export");
+      await page.locator("#renderedTargetOggInput").fill("assets/music/rendered/uat-gap-audit.ogg");
+      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().rendered.ogg)).toBe("assets/music/rendered/uat-gap-audit.ogg");
+
+      await selectMidiStudioTab(page, "instruments");
+      await setInputValue(page, "#previewVolumeLeadInput", "0.8");
+      await setCheckboxValue(page, "#previewMuteLeadToggle", true);
+      await setCheckboxValue(page, "#previewSoloLeadToggle", true);
+      expect(await page.evaluate(() => {
+        const settings = window.__midiStudioV2App.selectedSong().studioArrangement.previewLaneSettings;
+        return {
+          muted: settings.muted.lead,
+          soloed: settings.soloed.lead,
+          volume: settings.volumes.lead
+        };
+      })).toEqual({ muted: true, soloed: true, volume: 0.8 });
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await expect(timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-mute='lead']")).toHaveAttribute("aria-pressed", "true");
+      await expect(timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-solo='lead']")).toHaveAttribute("aria-pressed", "true");
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-mute='lead']").click();
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-solo='lead']").click();
+      expect(await page.evaluate(() => {
+        const settings = window.__midiStudioV2App.selectedSong().studioArrangement.previewLaneSettings;
+        return {
+          muted: settings.muted.lead,
+          soloed: settings.soloed.lead
+        };
+      })).toEqual({ muted: false, soloed: false });
+
+      const editableTarget = await emptyCanvasRun(page, { lane: "lead", length: 1 });
+      expect(editableTarget).toBeTruthy();
+      await clickCanvasCell(page, editableTarget.rowToken, editableTarget.stepIndex);
+      expect(await hasCanvasNote(page, "lead", editableTarget.rowToken, editableTarget.stepIndex)).toBe(true);
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();
