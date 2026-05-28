@@ -1,6 +1,7 @@
 import { PREVIEW_INSTRUMENT_PACKS, previewInstrumentById } from "../../../../src/engine/audio/PreviewInstrumentPacks.js";
 import { OctaveTimelineCanvasRenderer } from "./OctaveTimelineCanvasRenderer.js";
 import { setUnwiredControlState } from "./UnwiredControlState.js";
+import { sectionTone } from "../sectionColors.js";
 
 function summaryRows(result) {
   if (!result?.ok) {
@@ -794,25 +795,62 @@ export class InstrumentGridControl {
   }
 
   updateSectionPresetAvailability(sections) {
-    const availableLabels = new Set(sections.map((section) => section.label.toLowerCase()));
+    const sectionByLabel = new Map(sections.map((section) => [section.label.toLowerCase(), section]));
     const unavailable = [];
     this.sectionPresetButtons.forEach((button) => {
       const label = String(button.dataset.sectionPreset || "").toLowerCase();
-      const available = availableLabels.has(label);
+      const section = sectionByLabel.get(label) || null;
+      const available = Boolean(section);
       button.disabled = !available;
       button.classList.toggle("is-unavailable", !available);
+      button.classList.toggle("midi-studio-v2__unwired-control", !available);
+      button.classList.toggle("is-section-colored", available);
       button.setAttribute("aria-disabled", String(!available));
-      button.title = available ? `Select ${button.textContent.trim()}` : `${button.textContent.trim()} section not available for this song`;
+      if (available) {
+        const color = sectionTone(section.colorIndex);
+        button.style.setProperty("--midi-studio-v2-section-color", color);
+        button.dataset.sectionColor = color;
+        button.dataset.sectionStartStep = String(section.startStep);
+        button.dataset.sectionEndStep = String(section.endStep);
+        button.title = `Select ${section.label} section`;
+      } else {
+        button.style.removeProperty("--midi-studio-v2-section-color");
+        delete button.dataset.sectionColor;
+        delete button.dataset.sectionStartStep;
+        delete button.dataset.sectionEndStep;
+        button.title = `${button.textContent.trim()} section not available for this song`;
+      }
       if (!available) {
         unavailable.push(button.textContent.trim());
       }
     });
+    this.syncSectionPresetState();
     if (!this.sectionAvailability) {
       return;
     }
     this.sectionAvailability.textContent = unavailable.length
       ? `Section not available: ${unavailable.join(", ")}. Choose a listed custom section.`
       : "Quick sections available.";
+  }
+
+  syncSectionPresetState() {
+    const selectedLabel = String(this.sectionSelect.value || "").toLowerCase();
+    const loopBounds = this.loopBounds?.ok ? this.loopBounds : { ok: false };
+    this.sectionPresetButtons.forEach((button) => {
+      const label = String(button.dataset.sectionPreset || "").toLowerCase();
+      const isSelected = Boolean(label && label === selectedLabel);
+      const startStep = Number(button.dataset.sectionStartStep);
+      const endStep = Number(button.dataset.sectionEndStep);
+      const inLoop = loopBounds.ok
+        && Number.isFinite(startStep)
+        && Number.isFinite(endStep)
+        && endStep >= loopBounds.startSection.startStep
+        && startStep <= loopBounds.endSection.endStep;
+      button.classList.toggle("is-selected-section", isSelected);
+      button.classList.toggle("is-loop-section", inLoop);
+      button.dataset.sectionSelected = String(isSelected);
+      button.dataset.sectionLoop = String(inLoop);
+    });
   }
 
   setTransportEnabled(enabled) {
@@ -3077,6 +3115,7 @@ export class InstrumentGridControl {
     this.sectionSelect.value = section.label;
     this.setPlayheadStep(section.startStep);
     this.updateSelectedSectionRegion();
+    this.syncSectionPresetState();
     this.transportState.textContent = `Selected section: ${section.label}`;
     onTransport("select-section", { section });
   }
@@ -3090,6 +3129,7 @@ export class InstrumentGridControl {
     }
     this.setPlayheadStep(section.startStep);
     this.updateSelectedSectionRegion();
+    this.syncSectionPresetState();
     this.transportState.textContent = `Selected section: ${section.label}`;
     onTransport("select-section", { section });
   }
@@ -3100,6 +3140,7 @@ export class InstrumentGridControl {
       onTransport("invalid-loop", { message: bounds.message });
       return;
     }
+    this.syncSectionPresetState();
     this.transportState.textContent = `Loop region set: ${bounds.startSection.label} -> ${bounds.endSection.label}`;
     onTransport("set-loop-region", { endSection: bounds.endSection, startSection: bounds.startSection });
   }
@@ -3113,6 +3154,7 @@ export class InstrumentGridControl {
     this.stopTimer();
     this.setPlayheadStep(section.startStep);
     this.updateSelectedSectionRegion();
+    this.syncSectionPresetState();
     this.transportState.textContent = `Jumped to section: ${section.label}`;
     onTransport("jump-section", { section });
   }
@@ -3136,6 +3178,9 @@ export class InstrumentGridControl {
       onTransport("invalid-loop", { message: bounds.message });
       return;
     }
+    this.loopBounds = bounds;
+    this.renderCanvasTimeline();
+    this.syncSectionPresetState();
     const canStart = await onTransport("play-loop", { endSection: bounds.endSection, startSection: bounds.startSection });
     if (canStart === false) {
       return;

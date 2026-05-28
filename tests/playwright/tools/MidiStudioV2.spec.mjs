@@ -4043,6 +4043,132 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
+  test("color-codes PR069 octave timeline sections and matching section buttons", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudio(page);
+    try {
+      await fillGuidedSongSheet(page, {
+        loopSections: "loop, bridge",
+        sections: "intro: C F\nloop: G C\nbridge: Dm G"
+      });
+      await page.locator("#parseSongSheetButton").click();
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+
+      const sectionState = await canvasTimelineState(page);
+      expect(sectionState.sections.map((section) => section.label)).toEqual(["intro", "loop", "bridge"]);
+      expect(new Set(sectionState.sections.map((section) => section.color)).size).toBe(3);
+
+      const canvasSectionPixels = await page.evaluate(() => {
+        const canvas = document.querySelector("[data-octave-timeline-canvas='true']");
+        const state = window.__midiStudioV2App.instrumentGrid.timelineCanvasState();
+        const ratio = canvas.width / canvas.clientWidth;
+        const context = canvas.getContext("2d");
+        const sampleBody = (sectionLabel) => {
+          const section = state.sections.find((entry) => entry.label === sectionLabel);
+          const x = Math.round((state.axisWidth + section.startStep * state.cellSize + state.cellSize / 2) * ratio);
+          const y = Math.round((state.headerHeight + 4) * ratio);
+          return Array.from(context.getImageData(x, y, 1, 1).data).slice(0, 3);
+        };
+        return {
+          bridge: sampleBody("bridge"),
+          intro: sampleBody("intro"),
+          loop: sampleBody("loop")
+        };
+      });
+      expect(canvasSectionPixels.intro).not.toEqual(canvasSectionPixels.loop);
+      expect(canvasSectionPixels.loop).not.toEqual(canvasSectionPixels.bridge);
+
+      const buttonState = await page.locator(".midi-studio-v2__section-preset").evaluateAll((buttons) => Object.fromEntries(buttons.map((button) => [
+        button.dataset.sectionPreset,
+        {
+          color: button.dataset.sectionColor || "",
+          disabled: button.disabled,
+          loop: button.dataset.sectionLoop,
+          selected: button.dataset.sectionSelected,
+          title: button.title,
+          unwired: button.classList.contains("midi-studio-v2__unwired-control")
+        }
+      ])));
+      const colorsBySection = Object.fromEntries(sectionState.sections.map((section) => [section.label, section.color]));
+      expect(buttonState.intro).toEqual(expect.objectContaining({
+        color: colorsBySection.intro,
+        disabled: false,
+        unwired: false
+      }));
+      expect(buttonState.loop).toEqual(expect.objectContaining({
+        color: colorsBySection.loop,
+        disabled: false,
+        unwired: false
+      }));
+      expect(buttonState.bridge).toEqual(expect.objectContaining({
+        color: colorsBySection.bridge,
+        disabled: false,
+        unwired: false
+      }));
+      expect(buttonState.boss).toEqual(expect.objectContaining({
+        disabled: true,
+        title: "Boss section not available for this song",
+        unwired: true
+      }));
+      await expect(page.locator("[data-section-preset='boss']")).toHaveClass(/midi-studio-v2__unwired-control/);
+
+      await page.locator("[data-section-preset='intro']").click();
+      await expect(page.locator("#instrumentGridSectionSelect")).toHaveValue("intro");
+      await expect(page.locator("[data-section-preset='intro']")).toHaveAttribute("data-section-selected", "true");
+      await expect(page.locator("#instrumentGridOutput")).toHaveAttribute("data-playhead-section", "intro");
+      expect((await canvasTimelineState(page)).selectedSection).toEqual(expect.objectContaining({
+        color: colorsBySection.intro,
+        label: "intro"
+      }));
+
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
+      await expect(page.locator("[data-section-preset='intro']")).toHaveClass(/is-selected-section/);
+      await page.locator("#stopTimingPreviewButton").click();
+
+      await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
+      await page.locator("#instrumentGridLoopEndSelect").selectOption("bridge");
+      await expect(page.locator("[data-section-preset='loop']")).toHaveAttribute("data-section-loop", "true");
+      await expect(page.locator("[data-section-preset='bridge']")).toHaveAttribute("data-section-loop", "true");
+      await page.locator("#playLoopButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for loop loop to bridge with \d+ playable events\./);
+      const loopState = await canvasTimelineState(page);
+      expect(loopState.loopBounds).toEqual(expect.objectContaining({
+        endLabel: "bridge",
+        startLabel: "loop"
+      }));
+      await page.locator("#stopTimingPreviewButton").click();
+
+      const scrollEvidence = await page.locator("#instrumentGridOutput").evaluate((output) => {
+        output.style.width = "340px";
+        output.style.maxWidth = "340px";
+        output.scrollLeft = 220;
+        output.scrollTop = 180;
+        output.dispatchEvent(new Event("scroll"));
+        return {
+          scrollLeft: Math.round(output.scrollLeft),
+          scrollTop: Math.round(output.scrollTop)
+        };
+      });
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-frozen-header", "true");
+      const scrolledState = await canvasTimelineState(page);
+      expect(scrolledState.frozenHeaderVisible).toBe(true);
+      expect(Math.round(scrolledState.frozenHeaderScrollLeft)).toBe(scrollEvidence.scrollLeft);
+      expect(Math.round(scrolledState.frozenHeaderScrollTop)).toBe(scrollEvidence.scrollTop);
+
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("derives primary song, instrument, grid, playback, and diagnostics views from the canonical selected song", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {

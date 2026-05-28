@@ -709,6 +709,21 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__timeline-instruments {
   padding: 0.12rem 0.35rem;
 }
 
+.midi-studio-v2__section-preset.is-section-colored {
+  background: color-mix(in srgb, var(--midi-studio-v2-section-color, #0ea5e9) 72%, #020617 28%);
+  border-color: var(--midi-studio-v2-section-color, #0ea5e9);
+  color: #f8fafc;
+}
+
+.midi-studio-v2__section-preset.is-selected-section,
+.midi-studio-v2__section-preset.is-loop-section {
+  box-shadow: inset 0 0 0 2px #f8fafc, 0 0 0 1px var(--midi-studio-v2-section-color, #0ea5e9);
+}
+
+.midi-studio-v2__section-preset.is-loop-section:not(.is-selected-section) {
+  box-shadow: inset 0 0 0 2px rgba(125, 211, 252, 0.9), 0 0 0 1px var(--midi-studio-v2-section-color, #0ea5e9);
+}
+
 .midi-studio-v2__section-preset.is-unavailable {
   opacity: 0.55;
 }
