@@ -221,6 +221,10 @@ export class MidiStudioV2App {
       this.songList.render(this.payload?.songs || [], this.selectedSongId);
       this.playbackControl.setSelected(song);
       this.actionNav.setNowPlaying(song);
+    } else if (field === "id") {
+      if (!this.updateSelectedSongId(value)) {
+        return;
+      }
     } else if (field === "tempo" && arrangement) {
       arrangement.tempo = String(value || "").trim();
       this.syncSongSheetFields(arrangement);
@@ -247,14 +251,44 @@ export class MidiStudioV2App {
       this.details.syncSourceFields(song);
     } else if (field === "tags") {
       song.tags = String(value || "").split(",").map((tag) => tag.trim()).filter(Boolean);
+    } else if (field === "usage") {
+      song.director.usage = String(value || "").split(",").map((entry) => entry.trim()).filter(Boolean);
+    } else if (field === "notes") {
+      song.director.notes = String(value || "").trim();
+    } else if (field === "sections" && arrangement) {
+      arrangement.sections = String(value || "").trim();
     }
     this.details.showJson(song);
+    this.markDirty({ changedKeys: ["data.songs"], reason: "midi-studio-song-details-edited" });
     this.statusLog.info(`Edited selected song detail: ${field}.`);
     this.updateAudioDiagnostics();
   }
 
+  updateSelectedSongId(value) {
+    const song = this.selectedSong();
+    const nextId = String(value || "").trim();
+    if (!song || !nextId) {
+      this.statusLog.warn("Song Id was not updated because the value is empty.");
+      return false;
+    }
+    if ((this.payload?.songs || []).some((candidate) => candidate !== song && candidate.id === nextId)) {
+      this.statusLog.warn(`Song Id was not updated because ${nextId} already exists.`);
+      return false;
+    }
+    const previousId = song.id;
+    song.id = nextId;
+    this.payload.activeSongId = nextId;
+    if (this.importedSongBaselines.has(previousId)) {
+      const baseline = this.importedSongBaselines.get(previousId);
+      this.importedSongBaselines.delete(previousId);
+      this.importedSongBaselines.set(nextId, { ...baseline, id: nextId });
+    }
+    this.songList.render(this.payload?.songs || [], this.selectedSongId);
+    return true;
+  }
+
   handleSongSheetFieldChange(field, value) {
-    if (field !== "key" && field !== "style") {
+    if (field !== "key" && field !== "style" && field !== "tempo") {
       return;
     }
     const song = this.selectedSong();

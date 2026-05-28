@@ -64,6 +64,7 @@ window.addEventListener("DOMContentLoaded", () => {
       instrumentSetField: requireElement("#instrumentSetField"),
       inspector: requireElement("#inspectorOutput"),
       renderedTargets: requireElement("#renderedTargets"),
+      sectionsLoopDetails: requireElement("#songSectionsLoopDetails"),
       sourceField: requireElement("#songSourceField")
     }),
     directorPanel: new DirectorPanelControl({ panel: requireElement("#directorPanel") }),

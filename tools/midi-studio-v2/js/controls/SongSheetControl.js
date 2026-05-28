@@ -30,6 +30,7 @@ export class SongSheetControl {
 
   mount({ onFieldChange = () => {}, onParse }) {
     this.parseButton.addEventListener("click", () => onParse(this.composeGuidedSheet()));
+    this.tempoInput.addEventListener("input", () => onFieldChange("tempo", this.tempoInput.value));
     this.keyInput.addEventListener("change", () => onFieldChange("key", this.keyInput.value));
     this.styleInput.addEventListener("change", () => onFieldChange("style", this.styleInput.value));
   }

@@ -186,6 +186,16 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__tabs button.is-active {
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 }
 
+.midi-studio-v2__song-detail-editor,
+.midi-studio-v2__song-detail-core-fields {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.midi-studio-v2__song-detail-core-fields {
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+
 .midi-studio-v2__editable-detail {
   align-content: start;
   border: 1px solid var(--tool-starter-line);
@@ -195,8 +205,14 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__tabs button.is-active {
   padding: 0.45rem;
 }
 
-.midi-studio-v2__editable-detail input {
+.midi-studio-v2__editable-detail input,
+.midi-studio-v2__editable-detail textarea {
   width: 100%;
+}
+
+.midi-studio-v2__editable-detail textarea {
+  min-height: 3.8rem;
+  resize: vertical;
 }
 
 .midi-studio-v2__editable-detail input[type="checkbox"] {

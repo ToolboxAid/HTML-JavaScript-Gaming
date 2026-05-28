@@ -113,7 +113,7 @@
             <dl id="midiSourceDetails" class="midi-studio-v2__details"></dl>
           </div>
         </section>
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio instruments">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="instruments">
           <div class="accordion-v2__header midi-studio-v2__instrument-accordion-header" aria-expanded="true" aria-controls="instrumentListContent">
             <span>Instruments</span>
             <span class="midi-studio-v2__instrument-header-actions">
@@ -144,18 +144,19 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songDetailsContent">
-            <span>Song Setup</span>
+            <span>Song Details</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="songDetailsContent" class="accordion-v2__content midi-studio-v2__selected-song-details">
             <div class="midi-studio-v2__song-setup-header">
-              <h3 id="songSheetHeading">Song Sheet</h3>
+              <h3 id="songDetailsHeading">Song Details</h3>
               <button id="addSongButton" type="button">Add Song</button>
             </div>
-            <section id="songSheetContent" class="midi-studio-v2__stack midi-studio-v2__song-sheet-panel" aria-labelledby="songSheetHeading">
-              <div class="midi-studio-v2__song-sheet-grid">
+            <div class="midi-studio-v2__song-detail-editor" aria-labelledby="songDetailsHeading">
+              <dl id="songDetails" class="midi-studio-v2__details"></dl>
+              <div class="midi-studio-v2__song-detail-core-fields">
                 <label class="tool-starter__field" for="songSheetTempoInput">
                   <span>Tempo/BPM</span>
                   <input id="songSheetTempoInput" type="number" min="1" step="1" inputmode="numeric" placeholder="132">
@@ -183,20 +184,41 @@
                     <option value="victory-fanfare">victory-fanfare</option>
                   </select>
                 </label>
-                <label class="tool-starter__field" for="songSheetIntroInput">
-                  <span>Intro chord progression</span>
-                  <input id="songSheetIntroInput" type="text" placeholder="Am F">
-                </label>
-                <label class="tool-starter__field" for="songSheetLoopInput">
-                  <span>Loop chord progression</span>
-                  <input id="songSheetLoopInput" type="text" placeholder="Am F C G">
-                </label>
               </div>
-              <div class="midi-studio-v2__song-sheet-actions">
-                <button id="parseSongSheetButton" type="button">Parse Guided Song Sheet</button>
-              </div>
-            </section>
-            <dl id="songDetails" class="midi-studio-v2__details" hidden></dl>
+            </div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSheetContent">
+            <span>Song Sheet</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="songSheetContent" class="accordion-v2__content midi-studio-v2__stack midi-studio-v2__song-sheet-panel" aria-label="Song Sheet">
+            <div class="midi-studio-v2__song-sheet-grid">
+              <label class="tool-starter__field" for="songSheetIntroInput">
+                <span>Intro chord progression</span>
+                <input id="songSheetIntroInput" type="text" placeholder="Am F">
+              </label>
+              <label class="tool-starter__field" for="songSheetLoopInput">
+                <span>Loop chord progression</span>
+                <input id="songSheetLoopInput" type="text" placeholder="Am F C G">
+              </label>
+            </div>
+            <div class="midi-studio-v2__song-sheet-actions">
+              <button id="parseSongSheetButton" type="button">Parse Guided Song Sheet</button>
+            </div>
+            <dl id="songSheetSummary" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSectionsLoopContent">
+            <span>Sections / Loop</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="songSectionsLoopContent" class="accordion-v2__content midi-studio-v2__selected-song-details">
+            <dl id="songSectionsLoopDetails" class="midi-studio-v2__details"></dl>
           </div>
         </section>
 
@@ -353,7 +375,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio instruments diagnostics">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="instrumentGridSummaryContent">
             <span>Timeline Diagnostics</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
