@@ -122,6 +122,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     previewSynth: new PreviewSynthEngine({ windowRef: window }),
     renderedExportActions: new RenderedExportActionsControl({
+      exportTargetTypeLabel: requireElement('label[for="renderedExportTargetTypeSelect"]'),
       exportTargetTypeSelect: requireElement("#renderedExportTargetTypeSelect"),
       saveButton: requireElement("#renderedExportSaveButton")
     }),

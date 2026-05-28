@@ -342,6 +342,14 @@ async function openMidiStudioFromWorkspace(page, manifestPayload, audioOptions =
   return server;
 }
 
+async function openMidiStudioWorkspaceProxyNav(page, audioOptions = {}) {
+  const server = await startRepoServer();
+  await installMockAudio(page, audioOptions);
+  await workspaceV2CoverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html?launch=workspace`, { waitUntil: "domcontentloaded" });
+  return server;
+}
+
 async function selectMidiStudioTab(page, tabId) {
   const tab = page.locator(`[data-midi-studio-tab="${tabId}"]`);
   if (await tab.getAttribute("aria-selected") === "true") {
@@ -463,6 +471,16 @@ async function instrumentScrollSnapshot(page) {
       leftTop: leftPanel?.scrollTop || 0,
       windowX: window.scrollX,
       windowY: window.scrollY
+    };
+  });
+}
+
+async function controlColors(page, selector) {
+  return page.locator(selector).evaluate((control) => {
+    const style = getComputedStyle(control);
+    return {
+      borderTopColor: style.borderTopColor,
+      color: style.color
     };
   });
 }
@@ -2464,6 +2482,90 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
       await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered WAV export target for Source Only\. Add music\.songs\[\]\.rendered\.wav before exporting\./);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("marks unwired visible controls red with tooltips while working controls stay normal", async ({ page }) => {
+    let server = await openMidiStudio(page);
+    try {
+      const outputLabel = page.locator('label[for="renderedExportTargetTypeSelect"]');
+      const outputTypeSelect = page.locator("#renderedExportTargetTypeSelect");
+      const saveOutputButton = page.locator("#renderedExportSaveButton");
+      const playButton = page.locator("#playButton");
+      const stopButton = page.locator("#stopButton");
+      const stopAllAudioButton = page.locator("#stopAllAudioButton");
+
+      await expect(outputLabel).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(outputTypeSelect).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(saveOutputButton).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(saveOutputButton).toHaveAttribute("title", /Not implemented: Rendered audio export generation is not implemented yet/);
+      await expect(saveOutputButton).toHaveAttribute("aria-label", /Save Output \(Not implemented\)/);
+      await expect(outputTypeSelect).toHaveAttribute("title", /Not implemented: Rendered audio export generation is not implemented yet/);
+      expect(await controlColors(page, "#renderedExportSaveButton")).toMatchObject({
+        borderTopColor: "rgb(248, 113, 113)",
+        color: "rgb(254, 202, 202)"
+      });
+      expect(await controlColors(page, "#renderedExportTargetTypeSelect")).toMatchObject({
+        borderTopColor: "rgb(248, 113, 113)",
+        color: "rgb(254, 202, 202)"
+      });
+
+      await expect(stopAllAudioButton).not.toHaveAttribute("data-midi-studio-unwired");
+      await expect(playButton).not.toHaveAttribute("data-midi-studio-unwired");
+      expect((await controlColors(page, "#stopAllAudioButton")).borderTopColor).not.toBe("rgb(248, 113, 113)");
+
+      await playButton.click();
+      await expect(stopButton).toBeEnabled();
+      await expect(playButton).not.toHaveAttribute("data-midi-studio-unwired");
+      await stopButton.click();
+      await expect(playButton).toBeEnabled();
+      await expect(stopButton).toBeDisabled();
+
+      await page.locator('[data-song-id="source-only"]').click();
+      await expect(playButton).toHaveAttribute("data-midi-studio-unwired", "incomplete");
+      await expect(playButton).toHaveAttribute("title", /Incomplete: Live MIDI playback is not implemented/);
+      await expect(playButton).toHaveAttribute("aria-label", /Play \(Incomplete\)/);
+      expect(await controlColors(page, "#playButton")).toMatchObject({
+        borderTopColor: "rgb(248, 113, 113)",
+        color: "rgb(254, 202, 202)"
+      });
+      await playButton.click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Live MIDI synthesis not implemented\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL No rendered audio target is available for Source Only, and no live MIDI engine is available\./);
+      await page.locator('[data-song-id="theme-main"]').click();
+      await expect(playButton).not.toHaveAttribute("data-midi-studio-unwired");
+
+      const visibleUnwired = await page.locator("[data-midi-studio-unwired]").evaluateAll((controls) => controls
+        .filter((control) => {
+          const rect = control.getBoundingClientRect();
+          const style = getComputedStyle(control);
+          return rect.width > 0 && rect.height > 0 && style.visibility !== "hidden" && style.display !== "none";
+        })
+        .map((control) => control.id || control.getAttribute("for") || control.textContent.trim()));
+      expect(visibleUnwired).toEqual(expect.arrayContaining([
+        "renderedExportTargetTypeSelect",
+        "renderedExportSaveButton"
+      ]));
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+
+    server = await openMidiStudioWorkspaceProxyNav(page);
+    try {
+      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
+      for (const selector of ["#workspaceImportManifestButton", "#workspaceCopyManifestButton", "#workspaceExportManifestButton"]) {
+        await expect(page.locator(selector)).toBeVisible();
+        await expect(page.locator(selector)).toHaveAttribute("data-midi-studio-unwired", "incomplete");
+        await expect(page.locator(selector)).toHaveAttribute("title", /Incomplete: Workspace Manager V2 owns this action/);
+        expect(await controlColors(page, selector)).toMatchObject({
+          borderTopColor: "rgb(248, 113, 113)",
+          color: "rgb(254, 202, 202)"
+        });
+      }
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

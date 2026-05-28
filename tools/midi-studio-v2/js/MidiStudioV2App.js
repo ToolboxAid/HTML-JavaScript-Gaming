@@ -204,7 +204,7 @@ export class MidiStudioV2App {
     this.directorPanel.render(song, this.payload?.directorMode || {});
     this.midiSourceDetails.render(null);
     this.midiSourceDetails.setEnabled(Boolean(song));
-    this.playbackControl.setSelected(song);
+    this.playbackControl.setSelected(song, this.playbackControlStatus(song));
     this.actionNav.setNowPlaying(song);
     this.actionNav.setToolActionsEnabled(Boolean(this.payload));
     this.updateAudioDiagnostics();
@@ -219,7 +219,7 @@ export class MidiStudioV2App {
     if (field === "name") {
       song.name = String(value || "").trim() || song.id;
       this.songList.render(this.payload?.songs || [], this.selectedSongId);
-      this.playbackControl.setSelected(song);
+      this.playbackControl.setSelected(song, this.playbackControlStatus(song));
       this.actionNav.setNowPlaying(song);
     } else if (field === "id") {
       if (!this.updateSelectedSongId(value)) {
@@ -316,6 +316,17 @@ export class MidiStudioV2App {
 
   selectedSong() {
     return (this.payload?.songs || []).find((song) => song.id === this.selectedSongId) || null;
+  }
+
+  playbackControlStatus(song) {
+    if (!song || song.studioArrangement || this.playback.renderedPreviewSource(song)) {
+      return { unwired: false };
+    }
+    return {
+      detail: `Live MIDI playback is not implemented and ${song.name || song.id} has no rendered OGG/MP3/WAV target.`,
+      status: "Incomplete",
+      unwired: true
+    };
   }
 
   selectedSongState() {
@@ -501,7 +512,7 @@ export class MidiStudioV2App {
     }
     const result = await this.playback.playRenderedPreview(song, { loop: this.playbackControl.loopEnabled() });
     if (!result.ok) {
-      this.playbackControl.setStopped(song);
+      this.playbackControl.setStopped(song, this.playbackControlStatus(song));
       if (result.liveMidiNotImplemented) {
         this.statusLog.warn("Live MIDI synthesis not implemented.");
       }
@@ -520,7 +531,7 @@ export class MidiStudioV2App {
     if (!this.currentInstrumentGridResult()?.ok) {
       const arranged = this.applySelectedSongArrangement("play request");
       if (!arranged) {
-        this.playbackControl.setStopped(song);
+        this.playbackControl.setStopped(song, this.playbackControlStatus(song));
         this.updateAudioDiagnostics();
         return;
       }
@@ -528,7 +539,7 @@ export class MidiStudioV2App {
     const gridResult = this.currentInstrumentGridResult();
     const section = this.instrumentGrid.selectedSection() || gridResult?.sections?.[0] || null;
     if (!section) {
-      this.playbackControl.setStopped(song);
+      this.playbackControl.setStopped(song, this.playbackControlStatus(song));
       this.statusLog.fail(`Playable arrangement section not found for ${song.name}.`);
       this.updateAudioDiagnostics();
       return;
@@ -541,7 +552,7 @@ export class MidiStudioV2App {
       startStep: section.startStep
     });
     if (!started) {
-      this.playbackControl.setStopped(song);
+      this.playbackControl.setStopped(song, this.playbackControlStatus(song));
       this.actionNav.setNowPlaying(song);
       return;
     }
@@ -1130,7 +1141,7 @@ export class MidiStudioV2App {
     this.playback.stop();
     const stoppedCount = this.previewSynth.stop();
     this.instrumentGrid.stopPreviewUi();
-    this.playbackControl.setStopped(this.selectedSong());
+    this.playbackControl.setStopped(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
     this.actionNav.setNowPlaying(this.selectedSong());
     if (log) {
       this.statusLog.ok(`Stop completed. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"} and stopped all MIDI Studio preview audio.`);
@@ -1142,7 +1153,7 @@ export class MidiStudioV2App {
     this.playback.stop();
     const stoppedCount = this.previewSynth.stop();
     this.instrumentGrid.stopPreviewUi();
-    this.playbackControl.setStopped(this.selectedSong());
+    this.playbackControl.setStopped(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
     this.actionNav.setNowPlaying(this.selectedSong());
     this.statusLog.ok(`Stop All Audio completed. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"} and reset Preview Synth state.`);
     this.updateAudioDiagnostics();

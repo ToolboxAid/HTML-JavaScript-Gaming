@@ -105,6 +105,32 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__tabs button.is-active {
   opacity: 1;
 }
 
+body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control {
+  --midi-studio-v2-unwired-color: #f87171;
+  --midi-studio-v2-unwired-text: #fecaca;
+  --midi-studio-v2-unwired-bg: rgba(127, 29, 29, 0.2);
+}
+
+body[data-tool-id="midi-studio-v2"] :is(button, select, input, textarea).midi-studio-v2__unwired-control {
+  background: var(--midi-studio-v2-unwired-bg) !important;
+  border-color: var(--midi-studio-v2-unwired-color) !important;
+  color: var(--midi-studio-v2-unwired-text) !important;
+}
+
+body[data-tool-id="midi-studio-v2"] label.midi-studio-v2__unwired-control {
+  color: var(--midi-studio-v2-unwired-text);
+}
+
+body[data-tool-id="midi-studio-v2"] label.midi-studio-v2__unwired-control :is(span, select, input, textarea) {
+  border-color: var(--midi-studio-v2-unwired-color) !important;
+  color: var(--midi-studio-v2-unwired-text) !important;
+}
+
+body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visible {
+  outline: 2px solid var(--midi-studio-v2-unwired-color);
+  outline-offset: 2px;
+}
+
 .midi-studio-v2__now-playing-label {
   border: 1px solid var(--tool-starter-line);
   border-radius: 6px;

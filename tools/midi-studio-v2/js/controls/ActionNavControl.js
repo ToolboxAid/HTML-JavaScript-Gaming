@@ -1,3 +1,7 @@
+import { setUnwiredControlState } from "./UnwiredControlState.js";
+
+const WORKSPACE_PROXY_INCOMPLETE = "Workspace Manager V2 owns this action in connected launches; this standalone workspace proxy only reports ownership.";
+
 export class ActionNavControl {
   constructor({
     locationRef = window.location,
@@ -49,6 +53,7 @@ export class ActionNavControl {
     onWorkspaceImportManifest
   }) {
     this.applyLaunchMode();
+    this.markWorkspaceProxyActionsIncomplete();
     this.toolImportManifestButton.addEventListener("click", () => this.toolImportManifestInput.click());
     this.toolImportManifestInput.addEventListener("change", () => onToolImportManifest(this.toolImportManifestInput.files?.[0] || null));
     this.saveProjectButton.addEventListener("click", onSaveProject);
@@ -61,6 +66,20 @@ export class ActionNavControl {
     this.workspaceExportManifestButton.addEventListener("click", onWorkspaceExportManifest);
     this.returnToWorkspaceButton.addEventListener("click", () => {
       this.window.location.href = this.workspaceManagerUrl();
+    });
+  }
+
+  markWorkspaceProxyActionsIncomplete() {
+    [
+      this.workspaceImportManifestButton,
+      this.workspaceCopyManifestButton,
+      this.workspaceExportManifestButton
+    ].forEach((control) => {
+      setUnwiredControlState(control, {
+        active: true,
+        detail: WORKSPACE_PROXY_INCOMPLETE,
+        status: "Incomplete"
+      });
     });
   }
 

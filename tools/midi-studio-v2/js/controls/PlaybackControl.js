@@ -1,3 +1,5 @@
+import { setUnwiredControlState } from "./UnwiredControlState.js";
+
 export class PlaybackControl {
   constructor({ loopToggle, playButton, stateOutput, stopButton }) {
     this.loopToggle = loopToggle;
@@ -25,21 +27,32 @@ export class PlaybackControl {
     return !this.stopButton.disabled;
   }
 
-  setSelected(song) {
+  setSelected(song, playbackStatus = {}) {
     this.playButton.disabled = !song;
     this.stopButton.disabled = true;
+    this.applyPlayButtonStatus(Boolean(song), playbackStatus);
     this.stateOutput.textContent = song ? `Audible preview ready: ${song.name}.` : "No song selected.";
   }
 
   setPlaying(song) {
     this.playButton.disabled = true;
     this.stopButton.disabled = false;
+    this.applyPlayButtonStatus(false);
     this.stateOutput.textContent = `Playing audible preview: ${song.name}`;
   }
 
-  setStopped(song) {
+  setStopped(song, playbackStatus = {}) {
     this.playButton.disabled = !song;
     this.stopButton.disabled = true;
+    this.applyPlayButtonStatus(Boolean(song), playbackStatus);
     this.stateOutput.textContent = song ? `Stopped audible preview: ${song.name}.` : "No song selected.";
+  }
+
+  applyPlayButtonStatus(hasSong, playbackStatus = {}) {
+    setUnwiredControlState(this.playButton, {
+      active: hasSong && playbackStatus.unwired === true,
+      detail: playbackStatus.detail || "",
+      status: playbackStatus.status || "Incomplete"
+    });
   }
 }
