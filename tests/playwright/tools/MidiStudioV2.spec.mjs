@@ -960,6 +960,74 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
+  test("persists octave note edits into canonical song data, playback, save, and reset", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectInstrumentRow(page, "lead");
+      await expect(page.locator("#projectDirtyState")).toHaveText("Saved");
+      await expect(page.locator("body")).toHaveAttribute("data-midi-studio-dirty", "false");
+      const originalLeadLane = await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead);
+      await expect(octaveCell(page, "C6", 2)).not.toHaveAttribute("data-note-lanes", /lead/);
+
+      await octaveCell(page, "C6", 2).click();
+      await expect(octaveCell(page, "C6", 2)).toHaveAttribute("data-note-lanes", /lead/);
+      await expect(page.locator("#projectDirtyState")).toHaveText("Unsaved changes");
+      await expect(page.locator("body")).toHaveAttribute("data-midi-studio-dirty", "true");
+      const editedState = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        return {
+          currentGridHasEdit: app.lastInstrumentGridResult.timeline.some((event) => event.lane === "lead" && event.stepIndex === 2 && event.value === "C6"),
+          json: document.querySelector("#inspectorOutput").textContent,
+          leadLane: app.selectedSong().studioArrangement.lanes.lead
+        };
+      });
+      expect(editedState.currentGridHasEdit).toBe(true);
+      expect(editedState.leadLane).toContain("C6");
+      expect(editedState.json).toContain('"lead"');
+      expect(editedState.json).toContain("C6");
+
+      await page.locator('[data-song-id="frog-hop-nursery-rhyme"]').click();
+      await page.locator('[data-song-id="camptown-races-uat-reel"]').click();
+      await selectInstrumentRow(page, "lead");
+      await expect(octaveCell(page, "C6", 2)).toHaveAttribute("data-note-lanes", /lead/);
+      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead)).toContain("C6");
+
+      await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const originalPlayGridRange = app.previewSynth.playGridRange.bind(app.previewSynth);
+        app.__lastPreviewGridValues = [];
+        app.previewSynth.playGridRange = async (options) => {
+          app.__lastPreviewGridValues = options.grid.timeline
+            .filter((event) => event.lane === "lead" && event.stepIndex === 2)
+            .map((event) => event.value);
+          return originalPlayGridRange(options);
+        };
+      });
+      await page.locator("#playButton").click();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      expect(await page.evaluate(() => window.__midiStudioV2App.__lastPreviewGridValues)).toContain("C6");
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await page.locator("#saveProjectButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save Project completed: 3 songs saved with \d+ editable note events\./);
+      await expect(page.locator("#projectDirtyState")).toHaveText("Saved");
+      await expect(page.locator("body")).toHaveAttribute("data-midi-studio-dirty", "false");
+      await expect(page.locator("#inspectorOutput")).toContainText('"schema": "html-js-gaming.tool-state"');
+      await expect(page.locator("#inspectorOutput")).toContainText("C6");
+
+      await page.locator("#resetSongEditsButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Reset Song Edits restored Camptown Races UAT Reel to imported manifest state\./);
+      await expect(octaveCell(page, "C6", 2)).not.toHaveAttribute("data-note-lanes", /lead/);
+      await expect(page.locator("#projectDirtyState")).toHaveText("Saved");
+      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead)).toBe(originalLeadLane);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("octave timeline freezes compact headers and note labels while active cells stay textless", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {

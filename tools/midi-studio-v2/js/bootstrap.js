@@ -42,7 +42,10 @@ window.addEventListener("DOMContentLoaded", () => {
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     actionNav: new ActionNavControl({
       nowPlayingLabel: requireElement("#nowPlayingLabel"),
+      projectDirtyState: requireElement("#projectDirtyState"),
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
+      resetSongEditsButton: requireElement("#resetSongEditsButton"),
+      saveProjectButton: requireElement("#saveProjectButton"),
       stopAllAudioButton: requireElement("#stopAllAudioButton"),
       toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
       toolExportToolStateButton: requireElement("#toolExportToolStateButton"),

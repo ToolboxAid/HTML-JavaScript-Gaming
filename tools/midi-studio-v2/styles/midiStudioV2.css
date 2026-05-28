@@ -92,6 +92,20 @@
   text-transform: uppercase;
 }
 
+.midi-studio-v2__dirty-state {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.26rem 0.55rem;
+  white-space: nowrap;
+}
+
+.midi-studio-v2__dirty-state[data-midi-studio-dirty-state="dirty"] {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.72);
+}
+
 .midi-studio-v2.app-shell {
   grid-template-columns: 350px minmax(0, 1fr) minmax(14rem, 18rem);
 }

@@ -1,4 +1,6 @@
 import { readFileText } from "../../../src/engine/persistence/FilePersistenceService.js";
+import { deepClone } from "../../../src/shared/json/clone.js";
+import { notifyWorkspaceToolDirty } from "../../../src/tools/common/WorkspaceDirtyNotifier.js";
 
 const TOOL_ID = "midi-studio-v2";
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -36,6 +38,9 @@ export class MidiStudioV2App {
     this.instrumentGrid = instrumentGrid;
     this.instrumentGridParser = instrumentGridParser;
     this.instrumentGridResults = new WeakMap();
+    this.importedSongBaselines = new Map();
+    this.isDirty = false;
+    this.lastSavedToolState = null;
     this.manifestLoader = manifestLoader;
     this.midiSourceDetails = midiSourceDetails;
     this.midiSourceInspection = midiSourceInspection;
@@ -85,6 +90,8 @@ export class MidiStudioV2App {
       onToolCopyJson: () => this.copyJson(),
       onToolExportToolState: () => this.exportToolState(),
       onToolImportManifest: (file) => this.importManifestFile(file),
+      onResetSongEdits: () => this.resetSelectedSongEdits(),
+      onSaveProject: () => this.saveProject(),
       onWorkspaceCopyManifest: () => this.statusLog.info("Workspace copy is owned by Workspace Manager V2."),
       onWorkspaceExportManifest: () => this.statusLog.info("Workspace export is owned by Workspace Manager V2."),
       onWorkspaceImportManifest: () => this.statusLog.info("Workspace import is owned by Workspace Manager V2.")
@@ -141,6 +148,9 @@ export class MidiStudioV2App {
 
   renderEmpty() {
     this.payload = null;
+    this.importedSongBaselines = new Map();
+    this.lastSavedToolState = null;
+    this.setDirtyState(false);
     this.songList.render([], "");
     this.details.render(null, null);
     this.directorPanel.render(null, {});
@@ -171,6 +181,9 @@ export class MidiStudioV2App {
       return false;
     }
     this.payload = normalized.payload;
+    this.importedSongBaselines = new Map(this.payload.songs.map((song) => [song.id, deepClone(song)]));
+    this.lastSavedToolState = null;
+    this.setDirtyState(false);
     this.render();
     this.applySelectedSongArrangement("active manifest song");
     this.statusLog.ok(`Loaded ${this.payload.songs.length} MIDI song${this.payload.songs.length === 1 ? "" : "s"} from ${sourceLabel} via ${normalized.sourceKind}.`);
@@ -257,6 +270,27 @@ export class MidiStudioV2App {
       song,
       songId: this.selectedSongId
     };
+  }
+
+  setDirtyState(isDirty) {
+    this.isDirty = isDirty === true;
+    this.actionNav.setDirtyState(this.isDirty);
+    this.window.document.body.dataset.midiStudioDirty = this.isDirty ? "true" : "false";
+  }
+
+  markDirty({ changedKeys = ["data.songs"], reason = "midi-studio-song-updated" } = {}) {
+    this.setDirtyState(true);
+    const result = notifyWorkspaceToolDirty({
+      changedKeys,
+      payload: this.payload,
+      reason,
+      toolId: TOOL_ID,
+      windowRef: this.window
+    });
+    if (!result.ok) {
+      this.statusLog.warn(`Workspace dirty state not updated: ${result.message}`);
+    }
+    return result;
   }
 
   get selectedSongId() {
@@ -420,6 +454,7 @@ export class MidiStudioV2App {
       this.payload.songs.push(song);
       this.payload.activeSongId = song.id;
     }
+    this.importedSongBaselines.set(song.id, deepClone(song));
     this.render();
     this.midiSourceDetails.render(result);
     this.applySelectedSongArrangement("local MIDI import");
@@ -655,6 +690,7 @@ export class MidiStudioV2App {
       this.instrumentGrid.syncEditedGridResult(result);
     }
     this.syncSelectedArrangementFromGridInput(input);
+    this.markDirty({ changedKeys: ["data.songs.studioArrangement"], reason: "midi-studio-note-grid-edited" });
     if (detail.action === "add-lane") {
       this.statusLog.ok(`Added instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
     } else if (detail.action === "delete-lane") {
@@ -684,6 +720,31 @@ export class MidiStudioV2App {
     song.studioArrangement.lanes = { ...(input.lanes || {}) };
     song.studioArrangement.previewInstruments = { ...(input.previewLaneSettings?.instruments || {}) };
     this.details.showJson(song);
+  }
+
+  gridInputFromArrangement(arrangement) {
+    return {
+      bass: arrangement.lanes?.bass || "",
+      beatsPerBar: arrangement.beatsPerBar,
+      chords: arrangement.lanes?.chords || "",
+      drums: arrangement.lanes?.drums || "",
+      lanes: arrangement.lanes || {},
+      lead: arrangement.lanes?.lead || "",
+      pad: arrangement.lanes?.pad || "",
+      previewInstruments: arrangement.previewInstruments || {},
+      sections: arrangement.sections,
+      subdivision: arrangement.subdivision
+    };
+  }
+
+  editableNoteCount(payload = this.payload) {
+    return (payload?.songs || []).reduce((count, song) => {
+      if (!song.studioArrangement) {
+        return count;
+      }
+      const result = this.instrumentGridParser.parse(this.gridInputFromArrangement(song.studioArrangement));
+      return result.ok ? count + result.timeline.length : count;
+    }, 0);
   }
 
   syncSelectedArrangementFromSongSheetResult(result) {
@@ -1024,6 +1085,48 @@ export class MidiStudioV2App {
     const toolState = this.serializer.createToolState(this.payload);
     this.details.showJson(toolState);
     this.statusLog.ok("MIDI Studio V2 toolState preview written to JSON Details.");
+  }
+
+  saveProject() {
+    if (!this.payload) {
+      this.statusLog.fail("Save Project failed: no MIDI Studio V2 payload is loaded.");
+      return;
+    }
+    try {
+      const toolState = this.serializer.createToolState(this.payload);
+      JSON.stringify(toolState);
+      this.lastSavedToolState = toolState;
+      this.details.showJson(toolState);
+      this.setDirtyState(false);
+      const noteCount = this.editableNoteCount();
+      this.statusLog.ok(`Save Project completed: ${this.payload.songs.length} song${this.payload.songs.length === 1 ? "" : "s"} saved with ${noteCount} editable note event${noteCount === 1 ? "" : "s"}.`);
+    } catch (error) {
+      this.statusLog.fail(`Save Project failed: ${error.message}`);
+    }
+  }
+
+  resetSelectedSongEdits() {
+    const song = this.selectedSong();
+    if (!song) {
+      this.statusLog.fail("Reset Song Edits failed: no MIDI song is selected.");
+      return;
+    }
+    const baseline = this.importedSongBaselines.get(song.id);
+    if (!baseline) {
+      this.statusLog.fail(`Reset Song Edits failed: imported state is unavailable for ${song.name || song.id}.`);
+      return;
+    }
+    const index = this.payload.songs.findIndex((candidate) => candidate.id === song.id);
+    if (index < 0) {
+      this.statusLog.fail(`Reset Song Edits failed: ${song.id} is not in the active MIDI payload.`);
+      return;
+    }
+    this.stopPlayback({ log: false });
+    this.payload.songs[index] = deepClone(baseline);
+    this.render();
+    this.applySelectedSongArrangement("Reset Song Edits");
+    this.setDirtyState(false);
+    this.statusLog.ok(`Reset Song Edits restored ${baseline.name || baseline.id} to imported manifest state.`);
   }
 
   async copyJson() {

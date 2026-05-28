@@ -2,7 +2,10 @@ export class ActionNavControl {
   constructor({
     locationRef = window.location,
     nowPlayingLabel,
+    projectDirtyState,
     returnToWorkspaceButton,
+    resetSongEditsButton,
+    saveProjectButton,
     stopAllAudioButton,
     toolCopyJsonButton,
     toolExportToolStateButton,
@@ -17,7 +20,10 @@ export class ActionNavControl {
   }) {
     this.location = locationRef;
     this.nowPlayingLabel = nowPlayingLabel;
+    this.projectDirtyState = projectDirtyState;
     this.returnToWorkspaceButton = returnToWorkspaceButton;
+    this.resetSongEditsButton = resetSongEditsButton;
+    this.saveProjectButton = saveProjectButton;
     this.stopAllAudioButton = stopAllAudioButton;
     this.toolCopyJsonButton = toolCopyJsonButton;
     this.toolExportToolStateButton = toolExportToolStateButton;
@@ -35,6 +41,8 @@ export class ActionNavControl {
     onToolCopyJson,
     onToolExportToolState,
     onToolImportManifest,
+    onResetSongEdits,
+    onSaveProject,
     onStopAllAudio,
     onWorkspaceCopyManifest,
     onWorkspaceExportManifest,
@@ -43,6 +51,8 @@ export class ActionNavControl {
     this.applyLaunchMode();
     this.toolImportManifestButton.addEventListener("click", () => this.toolImportManifestInput.click());
     this.toolImportManifestInput.addEventListener("change", () => onToolImportManifest(this.toolImportManifestInput.files?.[0] || null));
+    this.saveProjectButton.addEventListener("click", onSaveProject);
+    this.resetSongEditsButton.addEventListener("click", onResetSongEdits);
     this.stopAllAudioButton.addEventListener("click", onStopAllAudio);
     this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
     this.toolExportToolStateButton.addEventListener("click", onToolExportToolState);
@@ -69,6 +79,16 @@ export class ActionNavControl {
   setToolActionsEnabled(isEnabled) {
     this.toolCopyJsonButton.disabled = !isEnabled;
     this.toolExportToolStateButton.disabled = !isEnabled;
+    this.saveProjectButton.disabled = !isEnabled;
+    this.resetSongEditsButton.disabled = !isEnabled;
+  }
+
+  setDirtyState(isDirty) {
+    if (!this.projectDirtyState) {
+      return;
+    }
+    this.projectDirtyState.dataset.midiStudioDirtyState = isDirty ? "dirty" : "clean";
+    this.projectDirtyState.textContent = isDirty ? "Unsaved changes" : "Saved";
   }
 
   setNowPlaying(song, { playing = false } = {}) {
