@@ -93,6 +93,7 @@ window.addEventListener("DOMContentLoaded", () => {
       generateDrumsButton: requireElement("#generateBasicDrumsButton"),
       generatePadButton: requireElement("#generatePadFromChordsButton"),
       gridOutput: requireElement("#instrumentGridOutput"),
+      instrumentEditor: requireElement("#selectedInstrumentEditor"),
       instrumentList: requireElement("#instrumentList"),
       instrumentGridZoomInButton: requireElement("#instrumentGridZoomInButton"),
       instrumentGridZoomOutButton: requireElement("#instrumentGridZoomOutButton"),

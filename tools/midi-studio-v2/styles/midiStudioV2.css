@@ -381,6 +381,15 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
   min-width: 0;
 }
 
+.midi-studio-v2__instrument-row-summary {
+  color: var(--tool-starter-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .midi-studio-v2__instrument-selectors {
   display: grid;
   gap: 0.25rem;
@@ -409,6 +418,45 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
 
 .midi-studio-v2__instrument-slider-field .midi-studio-v2__lane-slider {
   min-width: 0;
+}
+
+.midi-studio-v2__instrument-editor {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.midi-studio-v2__instrument-editor-bucket {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  display: grid;
+  gap: 0.42rem;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  padding: 0.55rem;
+}
+
+.midi-studio-v2__instrument-editor-bucket h3 {
+  font-size: 0.82rem;
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.midi-studio-v2__instrument-editor-field {
+  min-width: 0;
+}
+
+.midi-studio-v2__instrument-editor-field :is(input, select, textarea) {
+  min-width: 0;
+  width: 100%;
+}
+
+.midi-studio-v2__instrument-editor-field .midi-studio-v2__lane-toggle {
+  width: 1.6rem;
+}
+
+.midi-studio-v2__octave-range-field {
+  display: grid;
+  gap: 0.25rem;
+  grid-template-columns: 1fr 1fr;
 }
 
 .midi-studio-v2__song-sheet-grid {

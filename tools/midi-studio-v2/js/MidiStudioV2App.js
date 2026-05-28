@@ -552,6 +552,15 @@ export class MidiStudioV2App {
         lead: "retro-pulse-lead",
         pad: "ambient-pad"
       },
+      previewLaneSettings: {
+        instruments: {
+          bass: "synth-bass",
+          chords: "warm-pad",
+          drums: "basic-drums",
+          lead: "retro-pulse-lead",
+          pad: "ambient-pad"
+        }
+      },
       sections: "draft:2",
       songSheet: {
         intro: "C G",
@@ -731,6 +740,7 @@ export class MidiStudioV2App {
       key: "C major",
       lanes: Object.fromEntries(Object.entries(lanes).map(([lane, bars]) => [lane, bars.map((tokens) => tokens.join(" ")).join(" | ")])),
       previewInstruments,
+      previewLaneSettings: { instruments: previewInstruments },
       sections: `import:${barCount}`,
       songSheet: {
         intro: "C",
@@ -824,6 +834,7 @@ export class MidiStudioV2App {
       lead: "",
       pad: "",
       previewInstruments: this.instrumentGrid.previewLaneSettings().instruments,
+      previewLaneSettings: this.instrumentGrid.previewLaneSettings(),
       sections,
       subdivision: "1"
     });
@@ -958,6 +969,7 @@ export class MidiStudioV2App {
     song.studioArrangement.sections = String(input.sections || "");
     song.studioArrangement.subdivision = String(input.subdivision || "1");
     song.studioArrangement.lanes = { ...(input.lanes || {}) };
+    song.studioArrangement.previewLaneSettings = deepClone(input.previewLaneSettings || {});
     song.studioArrangement.previewInstruments = { ...(input.previewLaneSettings?.instruments || {}) };
     this.details.showJson(song);
   }
@@ -972,6 +984,7 @@ export class MidiStudioV2App {
       lead: arrangement.lanes?.lead || "",
       pad: arrangement.lanes?.pad || "",
       previewInstruments: arrangement.previewInstruments || {},
+      previewLaneSettings: arrangement.previewLaneSettings || { instruments: arrangement.previewInstruments || {} },
       sections: arrangement.sections,
       subdivision: arrangement.subdivision
     };
@@ -1094,7 +1107,7 @@ export class MidiStudioV2App {
         this.updateAudioDiagnostics();
         return;
       }
-      this.syncSelectedArrangementFromGridInput(this.instrumentGrid.readInput());
+      this.persistInstrumentSettings("instrument");
       this.statusLog.ok(`Preview instrument selected for ${detail.laneLabel}: ${detail.instrumentLabel}.`);
       if (detail.instrumentWarning) {
         this.statusLog.warn(`Preview Synth mapping: ${detail.instrumentWarning}`);
@@ -1104,7 +1117,7 @@ export class MidiStudioV2App {
       return;
     }
     if (kind === "instrument-type") {
-      this.syncSelectedArrangementFromGridInput(this.instrumentGrid.readInput());
+      this.persistInstrumentSettings("instrument-type");
       this.statusLog.ok(`Instrument type selected for ${detail.laneLabel}: ${detail.instrumentType}; instrument options updated to ${detail.instrumentLabel || "none"}.`);
       if (detail.instrumentWarning) {
         this.statusLog.warn(`Preview Synth mapping: ${detail.instrumentWarning}`);
@@ -1124,27 +1137,50 @@ export class MidiStudioV2App {
       return;
     }
     if (kind === "mute") {
+      this.persistInstrumentSettings("mute");
       this.statusLog[detail.enabled ? "warn" : "info"](`Lane ${detail.enabled ? "muted" : "unmuted"}: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
       return;
     }
     if (kind === "solo") {
+      this.persistInstrumentSettings("solo");
       this.statusLog[detail.enabled ? "ok" : "info"](`Lane ${detail.enabled ? "soloed" : "solo cleared"}: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
       return;
     }
     if (kind === "visibility") {
+      this.persistInstrumentSettings("visibility");
       this.statusLog.info(`Lane ${detail.enabled ? "shown" : "hidden"}: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
       return;
     }
     if (kind === "volume") {
+      this.persistInstrumentSettings("volume");
       this.statusLog.info(`Lane volume set for ${detail.laneLabel}: ${detail.value}.`);
       this.updateAudioDiagnostics();
       return;
     }
     if (kind === "pan") {
+      this.persistInstrumentSettings("pan");
       this.statusLog.info(`Lane pan set for ${detail.laneLabel}: ${detail.value}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "display-name") {
+      this.persistInstrumentSettings("display-name");
+      this.statusLog.info(`Instrument display name set for ${detail.laneLabel}: ${detail.value || "default"}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "octave-range") {
+      this.persistInstrumentSettings("octave-range");
+      this.statusLog.info(`Instrument octave range set for ${detail.laneLabel}: ${detail.value}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "transpose" || kind === "velocity" || kind === "duration") {
+      this.persistInstrumentSettings(kind);
+      this.statusLog.info(`Instrument ${kind} set for ${detail.laneLabel}: ${detail.value}.`);
       this.updateAudioDiagnostics();
       return;
     }
@@ -1152,6 +1188,14 @@ export class MidiStudioV2App {
       this.statusLog.info(`Selected instrument lane: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
     }
+  }
+
+  persistInstrumentSettings(kind) {
+    this.syncSelectedArrangementFromGridInput(this.instrumentGrid.readInput());
+    this.markDirty({
+      changedKeys: ["data.songs.studioArrangement.previewLaneSettings"],
+      reason: `midi-studio-instrument-${kind}-edited`
+    });
   }
 
   async auditionPreviewInstrument(detail) {
@@ -1265,6 +1309,7 @@ export class MidiStudioV2App {
       lead: arrangement.lanes.lead,
       pad: arrangement.lanes.pad,
       previewInstruments: arrangement.previewInstruments,
+      previewLaneSettings: arrangement.previewLaneSettings,
       sections: arrangement.sections,
       subdivision: arrangement.subdivision
     });

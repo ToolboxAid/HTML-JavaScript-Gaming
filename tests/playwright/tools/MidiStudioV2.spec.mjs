@@ -511,6 +511,14 @@ function instrumentRow(page, lane) {
   return page.locator(`.midi-studio-v2__instrument-row[data-lane="${lane}"]`);
 }
 
+function instrumentLaneDomId(lane) {
+  return String(lane || "")
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join("");
+}
+
 async function selectInstrumentRow(page, lane) {
   await instrumentRow(page, lane).locator(`[data-lane-label="${lane}"]`).click();
 }
@@ -520,11 +528,11 @@ function timelineQuickInstrumentRow(page, lane) {
 }
 
 function instrumentTypeSelect(page, lane) {
-  return instrumentRow(page, lane).locator("[data-lane-instrument-type-select]");
+  return page.locator(`#previewInstrumentType${instrumentLaneDomId(lane)}Select`);
 }
 
 function instrumentSelect(page, lane) {
-  return instrumentRow(page, lane).locator("[data-lane-instrument-select]");
+  return page.locator(`#previewInstrument${instrumentLaneDomId(lane)}Select`);
 }
 
 function instrumentToggle(page, lane, kind) {
@@ -554,6 +562,20 @@ async function controlColors(page, selector) {
       color: style.color
     };
   });
+}
+
+async function setInputValue(page, selector, value, eventType = "input") {
+  await page.locator(selector).evaluate((input, { dispatchType, nextValue }) => {
+    input.value = String(nextValue);
+    input.dispatchEvent(new Event(dispatchType, { bubbles: true }));
+  }, { dispatchType: eventType, nextValue: value });
+}
+
+async function setCheckboxValue(page, selector, checked) {
+  await page.locator(selector).evaluate((input, nextChecked) => {
+    input.checked = Boolean(nextChecked);
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, checked);
 }
 
 async function prepareInstrumentScrollSentinel(page) {
@@ -808,19 +830,21 @@ test.describe("MIDI Studio V2", () => {
       expect(keyboardAxisPixel[3]).toBeGreaterThan(0);
       expect(keyboardAxisPixel.slice(0, 3).some((channel) => channel > 0)).toBe(true);
 
-      await clickCanvasCell(page, "C6", 2);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Painted C6 for Lead across the timeline; playback data updated\./);
-      const canonicalEdit = await page.evaluate(() => {
+      const editableTarget = await emptyCanvasRun(page, { lane: "lead", length: 1 });
+      expect(editableTarget).toBeTruthy();
+      await clickCanvasCell(page, editableTarget.rowToken, editableTarget.stepIndex);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Painted .* for Lead across the timeline; playback data updated\./);
+      const canonicalEdit = await page.evaluate((target) => {
         const app = window.__midiStudioV2App;
         return {
-          gridHasEdit: app.lastInstrumentGridResult.timeline.some((event) => event.lane === "lead" && event.stepIndex === 2 && event.value === "C6"),
+          gridHasEdit: app.lastInstrumentGridResult.timeline.some((event) => event.lane === "lead" && event.stepIndex === target.stepIndex && event.value === target.rowToken),
           leadLane: app.selectedSong().studioArrangement.lanes.lead,
           selectedCell: app.instrumentGrid.timelineCanvasState().selectedCell
         };
-      });
+      }, editableTarget);
       expect(canonicalEdit.gridHasEdit).toBe(true);
-      expect(canonicalEdit.leadLane).toContain("C6");
-      expect(canonicalEdit.selectedCell).toEqual({ rowToken: "C6", stepIndex: 2 });
+      expect(canonicalEdit.leadLane).toContain(editableTarget.rowToken);
+      expect(canonicalEdit.selectedCell).toEqual({ rowToken: editableTarget.rowToken, stepIndex: editableTarget.stepIndex });
 
       await page.locator("#instrumentGridOutput").evaluate((output) => {
         window.__midiStudioGridClassMutations = [];
@@ -850,7 +874,7 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#playButton").click();
       await expect(page.locator("#stopButton")).toBeEnabled();
       await expect(page.locator("#playButton")).toBeDisabled();
-      expect(await page.evaluate(() => window.__midiStudioV2App.__lastPreviewGridValues)).toContain("C6");
+      expect(await page.evaluate(() => window.__midiStudioV2App.__lastPreviewGridValues)).toContain(editableTarget.rowToken);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await page.waitForFunction(() => window.__midiStudioV2App.instrumentGrid.playheadStep > 0);
       const playbackCanvasState = await canvasTimelineState(page);
@@ -2420,26 +2444,26 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentAuditionKeyboard")).not.toHaveAttribute("data-midi-studio-unwired");
       await expect(page.locator("#previewVolumeLeadInput")).toBeVisible();
       await expect(page.locator("#previewPanLeadInput")).toBeVisible();
+      await expect(page.locator("#previewOctaveLowLeadInput")).toBeVisible();
+      await expect(page.locator("#previewTransposeLeadInput")).toBeVisible();
       const instrumentFutureControls = await page.locator('[data-midi-studio-tab-panel="instruments"] [data-midi-studio-future-control]').evaluateAll((controls) => controls.map((control) => ({
+        label: (control.getAttribute("aria-label") || control.placeholder || control.textContent).replace(/\s*\(Not implemented\)$/, "").trim(),
         disabled: control.disabled,
         status: control.dataset.midiStudioUnwired,
         text: control.textContent.trim(),
         title: control.title
       })));
-      expect(instrumentFutureControls).toHaveLength(11);
+      expect(instrumentFutureControls).toHaveLength(8);
       expect(instrumentFutureControls.every((control) => control.disabled && control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
-      expect(instrumentFutureControls.map((control) => control.text)).toEqual(expect.arrayContaining([
-        "Effects",
+      expect(instrumentFutureControls.map((control) => control.label)).toEqual(expect.arrayContaining([
         "Reverb",
         "Chorus",
         "Delay",
         "Filter",
         "Brightness/Tone",
-        "Octave Range",
-        "Transpose",
-        "Velocity",
-        "Duration",
-        "Instrument Settings"
+        "MIDI Channel",
+        "GM Program",
+        "Controller Values"
       ]));
       await selectInstrumentRow(page, "lead");
       await page.evaluate(() => {
@@ -2693,6 +2717,122 @@ test.describe("MIDI Studio V2", () => {
       await keyboard.locator("[data-audition-note='C2']").click();
       await expect(page.locator("#statusLog")).toHaveValue(/Auditioned C2 for Bass/);
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+
+      await selectInstrumentRow(page, "lead");
+      expect(await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.selectedInstrumentId)).toBe("lead");
+      await selectMidiStudioTab(page, "studio");
+      await expect(timelineQuickInstrumentRow(page, "lead")).toHaveClass(/is-selected/);
+
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("builds PR061 instrument editor buckets from selectedInstrumentId", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await expect(page.locator("#timelineInstrumentQuickList")).toBeVisible();
+      await expect(timelineQuickInstrumentRow(page, "bass")).toBeVisible();
+      await expect(timelineQuickInstrumentRow(page, "bass").locator("[data-timeline-quick-mute='bass']")).toBeVisible();
+      await expect(timelineQuickInstrumentRow(page, "bass").locator("[data-timeline-quick-solo='bass']")).toBeVisible();
+      await expect(timelineQuickInstrumentRow(page, "bass").locator("[data-toggle-instrument-visibility='bass']")).toBeVisible();
+      await expect(page.locator("#timelineInstrumentQuickList select, #timelineInstrumentQuickList input:not([type='checkbox'])")).toHaveCount(0);
+      await timelineQuickInstrumentRow(page, "bass").click();
+      expect(await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.selectedInstrumentId)).toBe("bass");
+
+      await selectMidiStudioTab(page, "instruments");
+      await expect(instrumentRow(page, "bass")).toHaveClass(/is-selected/);
+      const editor = page.locator("#selectedInstrumentEditor");
+      await expect(editor).toHaveAttribute("data-selected-instrument-id", "bass");
+      await expect(editor.locator("[data-instrument-editor-bucket='identity']")).toContainText("Identity");
+      await expect(editor.locator("[data-instrument-editor-bucket='mix']")).toContainText("Mix");
+      await expect(editor.locator("[data-instrument-editor-bucket='playback']")).toContainText("Playback");
+      await expect(editor.locator("[data-instrument-editor-bucket='effects']")).toContainText("Effects");
+      await expect(editor.locator("[data-instrument-editor-bucket='advanced']")).toContainText("Advanced");
+
+      await page.locator("#previewDisplayNameBassInput").fill("Bass Anchor");
+      await instrumentTypeSelect(page, "bass").selectOption("Bass");
+      await instrumentSelect(page, "bass").selectOption("gm-electric-bass-finger");
+      await setInputValue(page, "#previewVolumeBassInput", "0.65");
+      await setInputValue(page, "#previewPanBassInput", "-0.4");
+      await setCheckboxValue(page, "#previewMuteBassToggle", true);
+      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.previewLaneSettings.muted.bass)).toBe(true);
+      await setCheckboxValue(page, "#previewMuteBassToggle", false);
+      await setCheckboxValue(page, "#previewSoloBassToggle", true);
+      await setInputValue(page, "#previewOctaveLowBassInput", "2");
+      await setInputValue(page, "#previewOctaveHighBassInput", "4");
+      await setInputValue(page, "#previewTransposeBassInput", "12");
+      await setInputValue(page, "#previewVelocityBassInput", "96");
+      await setInputValue(page, "#previewDurationBassInput", "1.5");
+
+      expect(await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const settings = app.selectedSong().studioArrangement.previewLaneSettings;
+        return {
+          displayName: settings.displayNames.bass,
+          duration: settings.durations.bass,
+          instrument: settings.instruments.bass,
+          instrumentType: settings.instrumentTypes.bass,
+          muted: settings.muted.bass,
+          octaveRange: settings.octaveRanges.bass,
+          pan: settings.pans.bass,
+          selectedInstrumentId: app.instrumentGrid.selectedInstrumentId,
+          soloed: settings.soloed.bass,
+          transpose: settings.transposes.bass,
+          velocity: settings.velocities.bass,
+          volume: settings.volumes.bass
+        };
+      })).toEqual({
+        displayName: "Bass Anchor",
+        duration: 1.5,
+        instrument: "gm-electric-bass-finger",
+        instrumentType: "Bass",
+        muted: false,
+        octaveRange: { high: 4, low: 2 },
+        pan: -0.4,
+        selectedInstrumentId: "bass",
+        soloed: true,
+        transpose: 12,
+        velocity: 96,
+        volume: 0.65
+      });
+
+      const keyboard = page.locator("#instrumentAuditionKeyboard");
+      await expect(keyboard).toBeVisible();
+      await expect(keyboard).toHaveAttribute("data-selected-lane", "bass");
+      await expect(keyboard).toHaveAttribute("data-octave-min", "2");
+      await expect(keyboard).toHaveAttribute("data-octave-max", "4");
+      expect(await keyboard.locator("[data-audition-note]").count()).toBe(36);
+      await expect(keyboard.locator("[data-audition-note='C1']")).toHaveCount(0);
+      await expect(keyboard.locator("[data-audition-note='C4']")).toHaveCount(1);
+
+      const effectControls = await editor.locator("[data-instrument-editor-bucket='effects'] [data-midi-studio-future-control]").evaluateAll((controls) => controls.map((control) => ({
+        label: (control.getAttribute("aria-label") || control.placeholder).replace(/\s*\(Not implemented\)$/, "").trim(),
+        status: control.dataset.midiStudioUnwired,
+        title: control.title
+      })));
+      expect(effectControls).toHaveLength(5);
+      expect(effectControls.map((control) => control.label)).toEqual(["Reverb", "Chorus", "Delay", "Filter", "Brightness/Tone"]);
+      expect(effectControls.every((control) => control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
+      const advancedControls = await editor.locator("[data-instrument-editor-bucket='advanced'] [data-midi-studio-future-control]").evaluateAll((controls) => controls.map((control) => ({
+        label: (control.getAttribute("aria-label") || control.placeholder).replace(/\s*\(Not implemented\)$/, "").trim(),
+        status: control.dataset.midiStudioUnwired,
+        title: control.title
+      })));
+      expect(advancedControls).toHaveLength(3);
+      expect(advancedControls.map((control) => control.label)).toEqual(["MIDI Channel", "GM Program", "Controller Values"]);
+      expect(advancedControls.every((control) => control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
 
       await selectInstrumentRow(page, "lead");
       expect(await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.selectedInstrumentId)).toBe("lead");

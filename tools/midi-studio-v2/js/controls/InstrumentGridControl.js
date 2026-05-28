@@ -1,5 +1,6 @@
 import { PREVIEW_INSTRUMENT_PACKS, previewInstrumentById } from "../../../../src/engine/audio/PreviewInstrumentPacks.js";
 import { OctaveTimelineCanvasRenderer } from "./OctaveTimelineCanvasRenderer.js";
+import { setUnwiredControlState } from "./UnwiredControlState.js";
 
 function summaryRows(result) {
   if (!result?.ok) {
@@ -144,6 +145,15 @@ function defaultInstrumentForType(typeGroup) {
   return PREVIEW_INSTRUMENT_PACKS.find((instrument) => instrument.typeGroup === typeGroup)?.id || "";
 }
 
+function finiteNumber(value, fallback) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function hasOwnValue(source, key) {
+  return Object.hasOwn(source || {}, key);
+}
+
 function instrumentsForType(typeGroup) {
   return PREVIEW_INSTRUMENT_PACKS.filter((instrument) => instrument.typeGroup === typeGroup);
 }
@@ -154,11 +164,17 @@ function clonePreviewLaneState(lanes = Object.keys(DEFAULT_PREVIEW_INSTRUMENTS))
     return [
       lane,
       {
+        displayName: "",
+        duration: 1,
         instrument,
         instrumentType: instrumentTypeGroup(instrument),
         muted: false,
+        octaveHigh: null,
+        octaveLow: null,
         pan: 0,
         soloed: false,
+        transpose: 0,
+        velocity: 100,
         visible: true,
         volume: 1
       }
@@ -169,11 +185,17 @@ function clonePreviewLaneState(lanes = Object.keys(DEFAULT_PREVIEW_INSTRUMENTS))
 function defaultPreviewLaneState(lane) {
   const instrument = defaultInstrumentForLane(lane);
   return {
+    displayName: "",
+    duration: 1,
     instrument,
     instrumentType: instrumentTypeGroup(instrument),
     muted: false,
+    octaveHigh: null,
+    octaveLow: null,
     pan: 0,
     soloed: false,
+    transpose: 0,
+    velocity: 100,
     visible: true,
     volume: 1
   };
@@ -230,6 +252,7 @@ export class InstrumentGridControl {
     generateDrumsButton,
     generatePadButton,
     gridOutput,
+    instrumentEditor,
     instrumentList,
     instrumentGridZoomInButton,
     instrumentGridZoomOutButton,
@@ -269,6 +292,7 @@ export class InstrumentGridControl {
     this.generatedLanes = {};
     this.gridOutput = gridOutput;
     this.extraLaneSources = {};
+    this.instrumentEditor = instrumentEditor;
     this.instrumentList = instrumentList;
     this.instrumentGridZoomInButton = instrumentGridZoomInButton;
     this.instrumentGridZoomOutButton = instrumentGridZoomOutButton;
@@ -286,6 +310,7 @@ export class InstrumentGridControl {
     this.previewTempoBpm = 120;
     this.quickInstrumentList = quickInstrumentList;
     this.quickLaneControls = {};
+    this.selectedEditorControls = null;
     this.sectionAvailability = sectionAvailability;
     this.sectionPresetButtons = sectionPresetButtons;
     this.sectionSelect = sectionSelect;
@@ -366,6 +391,7 @@ export class InstrumentGridControl {
     this.applyOctaveGridZoom();
     this.selectLane(this.selectedLane);
     this.renderQuickInstrumentList([]);
+    this.renderSelectedInstrumentEditor();
     this.renderAuditionKeyboard();
     this.renderSelectionDetails();
   }
@@ -402,7 +428,7 @@ export class InstrumentGridControl {
     this.generatedLanes[result.lane] = result.text;
   }
 
-  applyGridDefaults({ bass, beatsPerBar, chords, drums, lanes = null, lead, pad, previewInstruments = {}, sections, subdivision }) {
+  applyGridDefaults({ bass, beatsPerBar, chords, drums, lanes = null, lead, pad, previewInstruments = {}, previewLaneSettings = null, sections, subdivision }) {
     const laneSources = lanes || { bass, chords, drums, lead, pad };
     this.sectionsInput.value = sections || "";
     this.beatsInput.value = beatsPerBar || "";
@@ -419,16 +445,64 @@ export class InstrumentGridControl {
       this.selectedLane = Object.keys(laneSources)[0] || "lead";
     }
     this.generatedLanes = {};
-    this.applyPreviewInstruments(previewInstruments);
-    this.clearLaneToggles();
+    this.applyPreviewLaneSettings(previewLaneSettings || { instruments: previewInstruments }, previewInstruments);
     this.updateSnapIndicator();
   }
 
   applyPreviewInstruments(previewInstruments = {}) {
-    Object.entries(previewInstruments).forEach(([lane, instrument]) => {
+    this.applyPreviewLaneSettings({ instruments: previewInstruments }, previewInstruments);
+  }
+
+  applyPreviewLaneSettings(previewLaneSettings = {}, previewInstruments = {}) {
+    const instruments = { ...(previewInstruments || {}), ...(previewLaneSettings.instruments || {}) };
+    Object.entries(instruments).forEach(([lane, instrument]) => {
       if (this.previewLaneState[lane]) {
         this.previewLaneState[lane].instrument = String(instrument || "");
         this.previewLaneState[lane].instrumentType = instrumentTypeGroup(instrument);
+      }
+    });
+    Object.entries(this.previewLaneState).forEach(([lane, state]) => {
+      const instrument = instruments[lane];
+      if (instrument !== undefined) {
+        state.instrument = String(instrument || "");
+        state.instrumentType = instrumentTypeGroup(instrument);
+      }
+      if (hasOwnValue(previewLaneSettings.instrumentTypes, lane)) {
+        state.instrumentType = String(previewLaneSettings.instrumentTypes[lane] || state.instrumentType || instrumentTypeGroup(state.instrument));
+      }
+      if (hasOwnValue(previewLaneSettings.displayNames, lane)) {
+        state.displayName = String(previewLaneSettings.displayNames[lane] || "");
+      }
+      if (hasOwnValue(previewLaneSettings.muted, lane)) {
+        state.muted = previewLaneSettings.muted[lane] === true;
+      }
+      if (hasOwnValue(previewLaneSettings.soloed, lane)) {
+        state.soloed = previewLaneSettings.soloed[lane] === true;
+      }
+      if (hasOwnValue(previewLaneSettings.visible, lane)) {
+        state.visible = previewLaneSettings.visible[lane] !== false;
+      }
+      if (hasOwnValue(previewLaneSettings.volumes, lane)) {
+        state.volume = Math.max(0, Math.min(1, finiteNumber(previewLaneSettings.volumes[lane], 1)));
+      }
+      if (hasOwnValue(previewLaneSettings.pans, lane)) {
+        state.pan = Math.max(-1, Math.min(1, finiteNumber(previewLaneSettings.pans[lane], 0)));
+      }
+      if (hasOwnValue(previewLaneSettings.transposes, lane)) {
+        state.transpose = Math.max(-24, Math.min(24, Math.round(finiteNumber(previewLaneSettings.transposes[lane], 0))));
+      }
+      if (hasOwnValue(previewLaneSettings.velocities, lane)) {
+        state.velocity = Math.max(1, Math.min(127, Math.round(finiteNumber(previewLaneSettings.velocities[lane], 100))));
+      }
+      if (hasOwnValue(previewLaneSettings.durations, lane)) {
+        state.duration = Math.max(0.1, Math.min(8, finiteNumber(previewLaneSettings.durations[lane], 1)));
+      }
+      const octaveRange = previewLaneSettings.octaveRanges?.[lane] || null;
+      if (octaveRange) {
+        const low = Array.isArray(octaveRange) ? octaveRange[0] : octaveRange.low;
+        const high = Array.isArray(octaveRange) ? octaveRange[1] : octaveRange.high;
+        state.octaveLow = Number.isFinite(Number(low)) ? Math.max(0, Math.min(8, Math.round(Number(low)))) : null;
+        state.octaveHigh = Number.isFinite(Number(high)) ? Math.max(0, Math.min(8, Math.round(Number(high)))) : null;
       }
     });
     this.syncLaneHeaderControls();
@@ -446,15 +520,34 @@ export class InstrumentGridControl {
   }
 
   previewLaneSettings() {
-    const settings = { instrumentTypes: {}, instruments: {}, muted: {}, pans: {}, soloed: {}, visible: {}, volumes: {} };
+    const settings = {
+      displayNames: {},
+      durations: {},
+      instrumentTypes: {},
+      instruments: {},
+      muted: {},
+      octaveRanges: {},
+      pans: {},
+      soloed: {},
+      transposes: {},
+      velocities: {},
+      visible: {},
+      volumes: {}
+    };
     Object.entries(this.previewLaneState).forEach(([lane, state]) => {
+      const [lowOctave, highOctave] = this.octaveRangeForLane(lane);
+      settings.displayNames[lane] = String(state.displayName || "");
+      settings.durations[lane] = Number(state.duration ?? 1);
       settings.instrumentTypes[lane] = state.instrumentType || instrumentTypeGroup(state.instrument);
       settings.instruments[lane] = state.instrument || "";
       settings.muted[lane] = Boolean(state.muted);
-      settings.pans[lane] = Number(state.pan || 0);
+      settings.octaveRanges[lane] = { high: highOctave, low: lowOctave };
+      settings.pans[lane] = Number(state.pan ?? 0);
       settings.soloed[lane] = Boolean(state.soloed);
+      settings.transposes[lane] = Number(state.transpose ?? 0);
+      settings.velocities[lane] = Number(state.velocity ?? 100);
       settings.visible[lane] = state.visible !== false;
-      settings.volumes[lane] = Number(state.volume || 1);
+      settings.volumes[lane] = Number(state.volume ?? 1);
     });
     return settings;
   }
@@ -547,6 +640,7 @@ export class InstrumentGridControl {
     if (!result?.ok) {
       this.renderInstrumentList([]);
       this.renderQuickInstrumentList([]);
+      this.renderSelectedInstrumentEditor();
       this.renderAuditionKeyboard();
       this.populateSectionControls([]);
       this.setTransportEnabled(false);
@@ -561,6 +655,7 @@ export class InstrumentGridControl {
     this.setTransportEnabled(true);
     this.renderInstrumentList(result.lanes);
     this.renderQuickInstrumentList(result.lanes);
+    this.renderSelectedInstrumentEditor();
     this.renderAuditionKeyboard();
     this.renderGrid(result);
     this.setPlayheadStep(this.playheadStep);
@@ -849,34 +944,22 @@ export class InstrumentGridControl {
     const title = document.createElement("span");
     title.className = "midi-studio-v2__lane-title";
     title.dataset.laneLabel = lane;
-    title.textContent = instrumentLabel(this.previewLaneState[lane]?.instrument) || laneLabel(lane);
+    title.textContent = this.displayNameForLane(lane);
 
-    const visibilityButton = this.createVisibilityButton(lane);
-    const typeSelect = this.createInstrumentTypeSelect(lane);
-    const instrumentSelect = this.createInstrumentSelect(lane);
-    const mute = this.createLaneToggle(lane, "mute");
-    const solo = this.createLaneToggle(lane, "solo");
-    const volume = this.createLaneSlider(lane, "volume");
-    const pan = this.createLaneSlider(lane, "pan");
+    const summary = document.createElement("span");
+    summary.className = "midi-studio-v2__instrument-row-summary";
+    summary.dataset.laneSummary = lane;
+    summary.textContent = this.instrumentSummaryForLane(lane);
+
     const deleteButton = this.createDeleteLaneButton(lane);
-    volume.input.hidden = false;
-    pan.input.hidden = false;
 
     const titleRow = document.createElement("div");
     titleRow.className = "midi-studio-v2__instrument-title-row";
     titleRow.append(title);
 
-    const selectors = document.createElement("div");
-    selectors.className = "midi-studio-v2__instrument-selectors";
-    selectors.append(typeSelect, instrumentSelect);
-
     const controls = document.createElement("div");
     controls.className = "midi-studio-v2__lane-control-row midi-studio-v2__instrument-control-row";
-    controls.append(mute.label, solo.label, visibilityButton, deleteButton);
-
-    const sliders = document.createElement("div");
-    sliders.className = "midi-studio-v2__instrument-sliders";
-    sliders.append(this.createInstrumentSliderField("Volume", volume.input), this.createInstrumentSliderField("Pan", pan.input));
+    controls.append(deleteButton);
 
     row.addEventListener("click", (event) => {
       if (event.target.closest("input, select, option, button, label")) {
@@ -896,18 +979,282 @@ export class InstrumentGridControl {
     });
     this.previewLaneControls[lane] = {
       deleteButton,
-      instrument: instrumentSelect,
       instrumentLabel: title,
-      instrumentType: typeSelect,
-      mute: mute.input,
-      pan: pan.input,
       row,
-      solo: solo.input,
-      volume: volume.input,
-      visibilityButton
+      summary
     };
-    row.append(titleRow, selectors, sliders, controls);
+    row.append(titleRow, summary, controls);
     return row;
+  }
+
+  renderSelectedInstrumentEditor() {
+    if (!this.instrumentEditor) {
+      return;
+    }
+    this.instrumentEditor.replaceChildren();
+    this.selectedEditorControls = null;
+    const lane = this.selectedLane;
+    const state = this.previewLaneState[lane];
+    this.instrumentEditor.dataset.selectedInstrumentId = lane || "";
+    if (!lane || !state) {
+      const empty = document.createElement("p");
+      empty.className = "midi-studio-v2__empty";
+      empty.textContent = "Select an instrument to edit its settings.";
+      this.instrumentEditor.append(empty);
+      return;
+    }
+    this.selectedEditorControls = { lane };
+    this.instrumentEditor.append(
+      this.createIdentityBucket(lane),
+      this.createMixBucket(lane),
+      this.createPlaybackBucket(lane),
+      this.createEffectsBucket(),
+      this.createAdvancedBucket()
+    );
+  }
+
+  createInstrumentEditorBucket(title, bucket, fields) {
+    const section = document.createElement("section");
+    const heading = document.createElement("h3");
+    section.className = "midi-studio-v2__instrument-editor-bucket";
+    section.dataset.instrumentEditorBucket = bucket;
+    heading.textContent = title;
+    section.append(heading, ...fields);
+    return section;
+  }
+
+  createIdentityBucket(lane) {
+    const displayName = this.createDisplayNameInput(lane);
+    const typeSelect = this.createInstrumentTypeSelect(lane);
+    const instrumentSelect = this.createInstrumentSelect(lane);
+    this.selectedEditorControls.displayName = displayName;
+    this.selectedEditorControls.instrumentType = typeSelect;
+    this.selectedEditorControls.instrument = instrumentSelect;
+    return this.createInstrumentEditorBucket("Identity", "identity", [
+      this.createEditorField("Instrument display name", displayName),
+      this.createEditorField("GM Type", typeSelect),
+      this.createEditorField("GM Instrument", instrumentSelect)
+    ]);
+  }
+
+  createMixBucket(lane) {
+    const volume = this.createLaneSlider(lane, "volume");
+    const pan = this.createLaneSlider(lane, "pan");
+    const mute = this.createLaneToggle(lane, "mute");
+    const solo = this.createLaneToggle(lane, "solo");
+    volume.input.hidden = false;
+    pan.input.hidden = false;
+    this.selectedEditorControls.volume = volume.input;
+    this.selectedEditorControls.pan = pan.input;
+    this.selectedEditorControls.mute = mute.input;
+    this.selectedEditorControls.solo = solo.input;
+    return this.createInstrumentEditorBucket("Mix", "mix", [
+      this.createEditorField("Volume", volume.input),
+      this.createEditorField("Pan/Balance", pan.input),
+      this.createEditorField("Mute default", mute.label),
+      this.createEditorField("Solo default", solo.label)
+    ]);
+  }
+
+  createPlaybackBucket(lane) {
+    const [lowOctave, highOctave] = this.octaveRangeForLane(lane);
+    const low = this.createInstrumentNumberInput(lane, "octaveLow", {
+      ariaLabel: `Octave range low ${laneLabel(lane)}`,
+      datasetName: "instrumentOctaveLowLane",
+      max: 8,
+      min: 0,
+      step: 1,
+      value: lowOctave
+    });
+    const high = this.createInstrumentNumberInput(lane, "octaveHigh", {
+      ariaLabel: `Octave range high ${laneLabel(lane)}`,
+      datasetName: "instrumentOctaveHighLane",
+      max: 8,
+      min: 0,
+      step: 1,
+      value: highOctave
+    });
+    const transpose = this.createInstrumentNumberInput(lane, "transpose", {
+      ariaLabel: `Transpose ${laneLabel(lane)}`,
+      datasetName: "instrumentTransposeLane",
+      max: 24,
+      min: -24,
+      step: 1,
+      value: this.previewLaneState[lane]?.transpose ?? 0
+    });
+    const velocity = this.createInstrumentNumberInput(lane, "velocity", {
+      ariaLabel: `Velocity ${laneLabel(lane)}`,
+      datasetName: "instrumentVelocityLane",
+      max: 127,
+      min: 1,
+      step: 1,
+      value: this.previewLaneState[lane]?.velocity ?? 100
+    });
+    const duration = this.createInstrumentNumberInput(lane, "duration", {
+      ariaLabel: `Duration ${laneLabel(lane)}`,
+      datasetName: "instrumentDurationLane",
+      max: 8,
+      min: 0.1,
+      step: 0.1,
+      value: this.previewLaneState[lane]?.duration ?? 1
+    });
+    this.selectedEditorControls.octaveLow = low;
+    this.selectedEditorControls.octaveHigh = high;
+    this.selectedEditorControls.transpose = transpose;
+    this.selectedEditorControls.velocity = velocity;
+    this.selectedEditorControls.duration = duration;
+    return this.createInstrumentEditorBucket("Playback", "playback", [
+      this.createEditorField("Octave range", this.createOctaveRangeField(low, high)),
+      this.createEditorField("Transpose", transpose),
+      this.createEditorField("Velocity", velocity),
+      this.createEditorField("Duration", duration)
+    ]);
+  }
+
+  createEffectsBucket() {
+    return this.createInstrumentEditorBucket("Effects", "effects", [
+      this.createEditorField("Reverb", this.createUnwiredInstrumentInput("Reverb", "Reverb is planned but not implemented yet.")),
+      this.createEditorField("Chorus", this.createUnwiredInstrumentInput("Chorus", "Chorus is planned but not implemented yet.")),
+      this.createEditorField("Delay", this.createUnwiredInstrumentInput("Delay", "Delay is planned but not implemented yet.")),
+      this.createEditorField("Filter", this.createUnwiredInstrumentInput("Filter", "Filter is planned but not implemented yet.")),
+      this.createEditorField("Brightness/Tone", this.createUnwiredInstrumentInput("Brightness/Tone", "Brightness and tone controls are planned but not implemented yet."))
+    ]);
+  }
+
+  createAdvancedBucket() {
+    return this.createInstrumentEditorBucket("Advanced", "advanced", [
+      this.createEditorField("MIDI Channel", this.createUnwiredInstrumentInput("MIDI Channel", "MIDI channel editing is planned but not implemented yet.")),
+      this.createEditorField("GM Program", this.createUnwiredInstrumentInput("GM Program", "GM program editing is planned but not implemented yet.")),
+      this.createEditorField("Controller Values", this.createUnwiredInstrumentInput("Controller Values", "MIDI controller values are planned but not implemented yet.", "textarea"))
+    ]);
+  }
+
+  createEditorField(labelText, control) {
+    const label = document.createElement("label");
+    const text = document.createElement("span");
+    label.className = "tool-starter__field midi-studio-v2__instrument-editor-field";
+    text.textContent = labelText;
+    label.append(text, control);
+    return label;
+  }
+
+  createOctaveRangeField(lowInput, highInput) {
+    const group = document.createElement("span");
+    group.className = "midi-studio-v2__octave-range-field";
+    group.append(lowInput, highInput);
+    return group;
+  }
+
+  createDisplayNameInput(lane) {
+    const input = document.createElement("input");
+    input.id = `previewDisplayName${laneId(lane)}Input`;
+    input.type = "text";
+    input.dataset.instrumentDisplayNameLane = lane;
+    input.value = this.previewLaneState[lane]?.displayName || "";
+    input.placeholder = instrumentLabel(this.previewLaneState[lane]?.instrument) || laneLabel(lane);
+    input.setAttribute("aria-label", `Instrument display name ${laneLabel(lane)}`);
+    input.addEventListener("input", () => {
+      this.previewLaneState[lane].displayName = input.value.trim();
+      this.syncLaneHeaderControls();
+      this.syncQuickInstrumentControls();
+      this.renderSelectionDetails();
+      this.onLaneSettingChange?.("display-name", {
+        lane,
+        laneLabel: laneLabel(lane),
+        value: input.value.trim()
+      });
+    });
+    return input;
+  }
+
+  createInstrumentNumberInput(lane, kind, { ariaLabel, datasetName, max, min, step, value }) {
+    const input = document.createElement("input");
+    input.id = `preview${kind.charAt(0).toUpperCase()}${kind.slice(1)}${laneId(lane)}Input`;
+    input.type = "number";
+    input.inputMode = "decimal";
+    input.min = String(min);
+    input.max = String(max);
+    input.step = String(step);
+    input.value = String(value);
+    input.dataset[datasetName] = lane;
+    input.setAttribute("aria-label", ariaLabel);
+    input.addEventListener("input", () => this.updatePlaybackSetting(lane, kind, input.value));
+    input.addEventListener("change", () => this.updatePlaybackSetting(lane, kind, input.value));
+    return input;
+  }
+
+  createUnwiredInstrumentInput(label, detail, elementType = "input") {
+    const control = elementType === "textarea" ? document.createElement("textarea") : document.createElement("input");
+    control.disabled = true;
+    control.dataset.midiStudioFutureControl = "";
+    control.dataset.midiStudioFutureDetail = detail;
+    control.placeholder = label;
+    control.setAttribute("aria-label", label);
+    if (elementType !== "textarea") {
+      control.type = "text";
+    }
+    control.value = "";
+    setUnwiredControlState(control, {
+      active: true,
+      detail,
+      status: "Not implemented"
+    });
+    return control;
+  }
+
+  updatePlaybackSetting(lane, kind, value) {
+    const state = this.previewLaneState[lane];
+    if (!state) {
+      return;
+    }
+    if (kind === "octaveLow" || kind === "octaveHigh") {
+      const [defaultLow, defaultHigh] = this.defaultOctaveRangeForLane(lane);
+      const parsed = Math.max(0, Math.min(8, Math.round(finiteNumber(value, kind === "octaveLow" ? defaultLow : defaultHigh))));
+      state[kind] = parsed;
+      if (state.octaveLow !== null && state.octaveHigh !== null && state.octaveLow > state.octaveHigh) {
+        if (kind === "octaveLow") {
+          state.octaveHigh = state.octaveLow;
+        } else {
+          state.octaveLow = state.octaveHigh;
+        }
+      }
+      this.render(this.currentResult);
+      this.onLaneSettingChange?.("octave-range", {
+        lane,
+        laneLabel: laneLabel(lane),
+        value: this.octaveRangeForLane(lane).join("-")
+      });
+      return;
+    }
+    const range = {
+      duration: { max: 8, min: 0.1 },
+      transpose: { max: 24, min: -24 },
+      velocity: { max: 127, min: 1 }
+    }[kind];
+    if (!range) {
+      return;
+    }
+    const parsed = kind === "duration"
+      ? finiteNumber(value, 1)
+      : Math.round(finiteNumber(value, kind === "velocity" ? 100 : 0));
+    state[kind] = Math.max(range.min, Math.min(range.max, parsed));
+    this.onLaneSettingChange?.(kind, {
+      lane,
+      laneLabel: laneLabel(lane),
+      value: state[kind]
+    });
+  }
+
+  displayNameForLane(lane) {
+    const state = this.previewLaneState[lane] || {};
+    return String(state.displayName || "").trim() || instrumentLabel(state.instrument) || laneLabel(lane);
+  }
+
+  instrumentSummaryForLane(lane) {
+    const state = this.previewLaneState[lane] || {};
+    const typeGroup = state.instrumentType || instrumentTypeGroup(state.instrument);
+    const patch = instrumentLabel(state.instrument) || "No GM instrument selected";
+    return `${typeGroup} / ${patch}`;
   }
 
   createQuickInstrumentRow(lane) {
@@ -924,7 +1271,7 @@ export class InstrumentGridControl {
     const title = document.createElement("span");
     title.className = "midi-studio-v2__quick-instrument-title";
     title.dataset.quickInstrumentLabel = lane;
-    title.textContent = instrumentLabel(this.previewLaneState[lane]?.instrument) || laneLabel(lane);
+    title.textContent = this.displayNameForLane(lane);
 
     const controls = document.createElement("div");
     controls.className = "midi-studio-v2__quick-instrument-controls";
@@ -1096,8 +1443,7 @@ export class InstrumentGridControl {
       });
       return Array.from(rows).map((value) => ({ label: value, octave: "percussion", value }));
     }
-    const typeGroup = this.previewLaneState[this.selectedLane]?.instrumentType || "Synth Lead";
-    const [lowOctave, highOctave] = NOTE_RANGE_BY_TYPE[typeGroup] || [2, 6];
+    const [lowOctave, highOctave] = this.octaveRangeForLane(this.selectedLane);
     const rows = [];
     for (let octave = highOctave; octave >= lowOctave; octave -= 1) {
       for (let index = NOTE_NAMES.length - 1; index >= 0; index -= 1) {
@@ -1630,10 +1976,14 @@ export class InstrumentGridControl {
       const nextInstrument = defaultInstrumentForType(select.value);
       this.previewLaneState[lane].instrumentType = select.value;
       this.previewLaneState[lane].instrument = nextInstrument;
-      this.populateInstrumentOptions(lane);
+      this.populateInstrumentOptions(lane, this.previewLaneControls[lane]?.instrument);
+      if (this.selectedEditorControls?.lane === lane) {
+        this.populateInstrumentOptions(lane, this.selectedEditorControls.instrument);
+      }
       this.updateLaneTitle(lane);
       this.syncQuickInstrumentControls();
       this.renderAuditionKeyboard();
+      this.renderSelectionDetails();
       this.onLaneSettingChange?.("instrument-type", {
         instrumentLabel: instrumentLabel(nextInstrument),
         instrumentWarning: previewInstrumentWarning(nextInstrument),
@@ -1660,12 +2010,17 @@ export class InstrumentGridControl {
       this.previewLaneState[lane].instrument = select.value;
       this.previewLaneState[lane].instrumentType = nextType;
       const controls = this.previewLaneControls[lane];
+      const editorControls = this.selectedEditorControls?.lane === lane ? this.selectedEditorControls : null;
       if (controls?.instrumentType) {
         controls.instrumentType.value = nextType;
+      }
+      if (editorControls?.instrumentType) {
+        editorControls.instrumentType.value = nextType;
       }
       this.updateLaneTitle(lane);
       this.syncQuickInstrumentControls();
       this.renderAuditionKeyboard();
+      this.renderSelectionDetails();
       this.onLaneSettingChange?.("instrument", {
         instrumentLabel: select.selectedOptions[0]?.textContent || "",
         instrumentWarning: previewInstrumentWarning(select.value),
@@ -1710,10 +2065,12 @@ export class InstrumentGridControl {
 
   updateLaneTitle(lane) {
     const controls = this.previewLaneControls[lane];
-    if (!controls?.instrumentLabel) {
-      return;
+    if (controls?.instrumentLabel) {
+      controls.instrumentLabel.textContent = this.displayNameForLane(lane);
     }
-    controls.instrumentLabel.textContent = instrumentLabel(this.previewLaneState[lane]?.instrument) || laneLabel(lane);
+    if (controls?.summary) {
+      controls.summary.textContent = this.instrumentSummaryForLane(lane);
+    }
   }
 
   createLaneToggle(lane, kind) {
@@ -1744,6 +2101,7 @@ export class InstrumentGridControl {
           this.previewLaneState[lane].soloed = input.checked;
         }
         this.syncQuickInstrumentControls();
+        this.renderSelectedInstrumentEditor();
         this.onLaneSettingChange?.(kind, {
           enabled: input.checked,
           lane,
@@ -1776,12 +2134,14 @@ export class InstrumentGridControl {
       } else {
         this.previewLaneState[lane].pan = value;
       }
+      this.syncLaneHeaderControls();
       this.onLaneSettingChange?.(kind, {
         lane,
         laneLabel: laneLabel(lane),
         value: input.value
       });
     };
+    input.addEventListener("input", update);
     input.addEventListener("change", update);
     return { input };
   }
@@ -1962,6 +2322,52 @@ export class InstrumentGridControl {
         controls.pan.value = String(state.pan ?? 0);
       }
     });
+    if (this.selectedEditorControls?.lane) {
+      const lane = this.selectedEditorControls.lane;
+      const state = this.previewLaneState[lane];
+      if (state) {
+        if (this.selectedEditorControls.displayName) {
+          this.selectedEditorControls.displayName.value = state.displayName || "";
+        }
+        if (this.selectedEditorControls.instrument) {
+          this.populateInstrumentOptions(lane, this.selectedEditorControls.instrument);
+          this.selectedEditorControls.instrument.value = state.instrument || "";
+        }
+        if (this.selectedEditorControls.instrumentType) {
+          this.selectedEditorControls.instrumentType.value = state.instrumentType || instrumentTypeGroup(state.instrument);
+        }
+        if (this.selectedEditorControls.mute) {
+          this.selectedEditorControls.mute.checked = state.muted === true;
+        }
+        if (this.selectedEditorControls.solo) {
+          this.selectedEditorControls.solo.checked = state.soloed === true;
+        }
+        if (this.selectedEditorControls.volume) {
+          this.selectedEditorControls.volume.value = String(state.volume ?? 1);
+        }
+        if (this.selectedEditorControls.pan) {
+          this.selectedEditorControls.pan.value = String(state.pan ?? 0);
+        }
+        if (this.selectedEditorControls.transpose) {
+          this.selectedEditorControls.transpose.value = String(state.transpose ?? 0);
+        }
+        if (this.selectedEditorControls.velocity) {
+          this.selectedEditorControls.velocity.value = String(state.velocity ?? 100);
+        }
+        if (this.selectedEditorControls.duration) {
+          this.selectedEditorControls.duration.value = String(state.duration ?? 1);
+        }
+        if (this.selectedEditorControls.octaveLow || this.selectedEditorControls.octaveHigh) {
+          const [lowOctave, highOctave] = this.octaveRangeForLane(lane);
+          if (this.selectedEditorControls.octaveLow) {
+            this.selectedEditorControls.octaveLow.value = String(lowOctave);
+          }
+          if (this.selectedEditorControls.octaveHigh) {
+            this.selectedEditorControls.octaveHigh.value = String(highOctave);
+          }
+        }
+      }
+    }
     this.syncQuickInstrumentControls();
     this.renderAuditionKeyboard();
   }
@@ -1975,7 +2381,7 @@ export class InstrumentGridControl {
       controls.row?.classList.toggle("is-selected", lane === this.selectedLane);
       controls.row?.setAttribute("aria-selected", String(lane === this.selectedLane));
       if (controls.instrumentLabel) {
-        controls.instrumentLabel.textContent = instrumentLabel(state.instrument) || laneLabel(lane);
+        controls.instrumentLabel.textContent = this.displayNameForLane(lane);
       }
       if (controls.mute) {
         this.updateQuickToggleButton(controls.mute, lane, "mute");
@@ -1990,9 +2396,25 @@ export class InstrumentGridControl {
   }
 
   auditionOctaveRange() {
-    const state = this.previewLaneState[this.selectedLane] || {};
+    return this.octaveRangeForLane(this.selectedLane);
+  }
+
+  defaultOctaveRangeForLane(lane) {
+    const state = this.previewLaneState[lane] || {};
     const typeGroup = state.instrumentType || instrumentTypeGroup(state.instrument);
     return NOTE_RANGE_BY_TYPE[typeGroup] || NOTE_RANGE_BY_TYPE["Synth Lead"];
+  }
+
+  octaveRangeForLane(lane) {
+    const state = this.previewLaneState[lane] || {};
+    const [defaultLow, defaultHigh] = this.defaultOctaveRangeForLane(lane);
+    const hasLow = state.octaveLow !== null && state.octaveLow !== undefined && String(state.octaveLow).trim() !== "";
+    const hasHigh = state.octaveHigh !== null && state.octaveHigh !== undefined && String(state.octaveHigh).trim() !== "";
+    const low = hasLow && Number.isFinite(Number(state.octaveLow)) ? Number(state.octaveLow) : defaultLow;
+    const high = hasHigh && Number.isFinite(Number(state.octaveHigh)) ? Number(state.octaveHigh) : defaultHigh;
+    const safeLow = Math.max(0, Math.min(8, Math.round(low)));
+    const safeHigh = Math.max(safeLow, Math.min(8, Math.round(high)));
+    return [safeLow, safeHigh];
   }
 
   renderAuditionKeyboard() {
@@ -2133,6 +2555,7 @@ export class InstrumentGridControl {
       controls.row?.setAttribute("aria-selected", String(entryLane === lane));
     });
     this.syncQuickInstrumentControls();
+    this.renderSelectedInstrumentEditor();
     this.renderAuditionKeyboard();
     this.renderSelectionDetails();
   }
@@ -2148,6 +2571,7 @@ export class InstrumentGridControl {
       controls.row?.setAttribute("aria-selected", String(entryLane === this.selectedLane));
     });
     this.syncQuickInstrumentControls();
+    this.renderSelectedInstrumentEditor();
     this.renderAuditionKeyboard();
     this.renderCanvasTimeline();
     this.renderSelectionDetails();
@@ -2171,10 +2595,15 @@ export class InstrumentGridControl {
       return;
     }
     const state = this.previewLaneState[this.selectedLane] || {};
+    const [lowOctave, highOctave] = this.selectedLane ? this.octaveRangeForLane(this.selectedLane) : ["", ""];
     const rows = [
-      ["Instrument", this.selectedLane ? laneLabel(this.selectedLane) : "none"],
+      ["Instrument", this.selectedLane ? this.displayNameForLane(this.selectedLane) : "none"],
       ["Type", state.instrumentType || "not selected"],
       ["Patch", instrumentLabel(state.instrument) || "not selected"],
+      ["Octave range", this.selectedLane ? `${lowOctave}-${highOctave}` : "none"],
+      ["Transpose", String(state.transpose ?? 0)],
+      ["Velocity", String(state.velocity ?? 100)],
+      ["Duration", String(state.duration ?? 1)],
       ["Visibility", state.visible === false ? "hidden" : "visible"],
       ["Mute", state.muted ? "on" : "off"],
       ["Solo", state.soloed ? "on" : "off"]
