@@ -15,14 +15,17 @@ function displayValue(value) {
 }
 
 function editableRows(song) {
-  const rows = [
+  return [
     { field: "name", label: "Name", type: "text", value: song.name },
     { field: "id", label: "Id", readonly: true, type: "text", value: song.id }
   ];
+}
+
+function notesRows(song) {
   if (song.director?.notes) {
-    rows.push({ field: "notes", label: "Notes", rows: 2, type: "textarea", value: song.director.notes });
+    return [{ field: "notes", label: "Notes", rows: 3, type: "textarea", value: song.director.notes }];
   }
-  return rows;
+  return [];
 }
 
 function sectionsLoopRows(song) {
@@ -34,10 +37,11 @@ function sectionsLoopRows(song) {
 }
 
 export class SongDetailsControl {
-  constructor({ details, instrumentSetField, inspector, renderedTargets, sectionsLoopDetails, sourceField }) {
+  constructor({ details, instrumentSetField, inspector, notesDetails, renderedTargets, sectionsLoopDetails, sourceField }) {
     this.details = details;
     this.instrumentSetField = instrumentSetField;
     this.inspector = inspector;
+    this.notesDetails = notesDetails;
     this.onChange = () => {};
     this.renderedTargets = renderedTargets;
     this.sectionsLoopDetails = sectionsLoopDetails;
@@ -46,7 +50,7 @@ export class SongDetailsControl {
 
   mount({ onChange = () => {} } = {}) {
     this.onChange = onChange;
-    [this.details, this.sectionsLoopDetails].filter(Boolean).forEach((list) => {
+    [this.details, this.notesDetails, this.sectionsLoopDetails].filter(Boolean).forEach((list) => {
       list.addEventListener("input", (event) => this.handleFieldChange(event));
       list.addEventListener("change", (event) => this.handleFieldChange(event));
     });
@@ -81,6 +85,7 @@ export class SongDetailsControl {
   renderEmptyDetails(payload) {
     this.details.replaceChildren();
     this.details.classList.remove("midi-studio-v2__editable-details");
+    this.renderEmptyNotesDetails();
     this.renderEmptySectionsLoopDetails();
     if (this.details.hidden) {
       this.renderDefinitionList(this.renderedTargets, [["WAV", "No rendered WAV target selected."], ["MP3", "No rendered MP3 target selected."], ["OGG", "No rendered OGG target selected."]]);
@@ -110,6 +115,20 @@ export class SongDetailsControl {
     this.details.replaceChildren();
     this.details.classList.add("midi-studio-v2__editable-details");
     this.renderEditableRows(this.details, editableRows(song));
+    this.renderNotesDetails(song);
+  }
+
+  renderNotesDetails(song) {
+    if (!this.notesDetails) {
+      return;
+    }
+    this.notesDetails.replaceChildren();
+    const rows = notesRows(song);
+    this.notesDetails.hidden = !rows.length;
+    this.notesDetails.classList.toggle("midi-studio-v2__editable-details", rows.length > 0);
+    if (rows.length) {
+      this.renderEditableRows(this.notesDetails, rows);
+    }
   }
 
   renderSectionsLoopDetails(song) {
@@ -131,6 +150,15 @@ export class SongDetailsControl {
     empty.className = "tool-starter__hint";
     empty.textContent = "No song selected.";
     this.sectionsLoopDetails.append(empty);
+  }
+
+  renderEmptyNotesDetails() {
+    if (!this.notesDetails) {
+      return;
+    }
+    this.notesDetails.replaceChildren();
+    this.notesDetails.classList.remove("midi-studio-v2__editable-details");
+    this.notesDetails.hidden = true;
   }
 
   renderEditableRows(list, rows) {
@@ -174,7 +202,8 @@ export class SongDetailsControl {
   }
 
   updateFieldValue(field, value) {
-    const control = this.details.querySelector(`[data-song-detail-field="${field}"]`);
+    const control = this.details.querySelector(`[data-song-detail-field="${field}"]`)
+      || this.notesDetails?.querySelector(`[data-song-detail-field="${field}"]`);
     if (control && control.type !== "checkbox") {
       control.value = displayValue(value) === "not declared" ? "" : displayValue(value);
     }

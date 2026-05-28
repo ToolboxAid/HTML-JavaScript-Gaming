@@ -2166,7 +2166,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetStyleInput")).toHaveValue("public-domain-reel");
       await expect(page.locator("#songDetails [data-song-detail-field='tags']")).toHaveCount(0);
       await expect(page.locator("#songDetails [data-song-detail-field='usage']")).toHaveCount(0);
-      await expect(page.locator("#songDetails [data-song-detail-field='notes']")).toHaveValue("Traditional Camptown Races style public-domain test arrangement with lead, bass, chords/pad, and drums.");
+      await expect(page.locator("#songDetailNotes [data-song-detail-field='notes']")).toHaveValue("Traditional Camptown Races style public-domain test arrangement with lead, bass, chords/pad, and drums.");
       await expect(page.locator("#songSectionsLoopDetails [data-song-detail-field='sections']")).toHaveCount(0);
       await expect(page.locator("#songSheetSectionsInput")).toHaveValue(/intro: G C G D/);
       await expect(page.locator("#songSheetLoopSectionsInput")).toHaveValue("loop");
@@ -2189,7 +2189,7 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#songSheetTempoInput").fill("156");
       await page.locator("#songSheetKeyInput").selectOption("C major");
       await page.locator("#songSheetStyleInput").selectOption("chip");
-      await page.locator("#songDetails [data-song-detail-field='notes']").fill("Edited notes from Song Setup.");
+      await page.locator("#songDetailNotes [data-song-detail-field='notes']").fill("Edited notes from Song Setup.");
       await page.locator("#songSectionsLoopDetails [data-song-detail-field='loopEnabled']").setChecked(false);
       expect(await page.evaluate(() => {
         const song = window.__midiStudioV2App.selectedSong();
@@ -2358,7 +2358,7 @@ test.describe("MIDI Studio V2", () => {
         songTempo: "#songSheetTempoInput",
         songKey: "#songSheetKeyInput",
         songStyle: "#songSheetStyleInput",
-        songNotes: "#songDetails [data-song-detail-field='notes']"
+        songNotes: "#songDetailNotes [data-song-detail-field='notes']"
       };
       const ownership = await page.evaluate((selectors) => Object.fromEntries(Object.entries(selectors).map(([name, selector]) => {
         const elements = Array.from(document.querySelectorAll(selector));
@@ -2937,6 +2937,108 @@ test.describe("MIDI Studio V2", () => {
       await selectMidiStudioTab(page, "studio");
       await waitForCanvasRender(page);
       expect(await page.evaluate(() => window.__midiStudioV2App.currentInstrumentGridResult().sections.map((section) => section.label))).toEqual(["intro", "bridge", "loop"]);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps PR063 notes layout and Octave Timeline quick instruments scoped to the left column", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      const notesLayout = await page.locator("#songDetailsContent").evaluate((container) => {
+        const editor = container.querySelector(".midi-studio-v2__song-detail-editor");
+        const core = container.querySelector(".midi-studio-v2__song-detail-core-fields");
+        const notesList = container.querySelector("#songDetailNotes");
+        const notesRow = notesList?.querySelector(".midi-studio-v2__editable-detail");
+        const notesField = notesList?.querySelector("[data-song-detail-field='notes']");
+        const detailRows = Array.from(container.querySelectorAll("#songDetails .midi-studio-v2__editable-detail, .midi-studio-v2__song-detail-core-fields .tool-starter__field, #songDetailNotes .midi-studio-v2__editable-detail"));
+        const editorRect = editor.getBoundingClientRect();
+        const coreRect = core.getBoundingClientRect();
+        const notesRect = notesRow.getBoundingClientRect();
+        const notesFieldRect = notesField.getBoundingClientRect();
+        const laterRows = detailRows.filter((row) => row.getBoundingClientRect().top > notesRect.top + 1);
+        const sameRowPeers = detailRows.filter((row) => {
+          const rect = row.getBoundingClientRect();
+          return row !== notesRow && Math.abs(rect.top - notesRect.top) <= 2;
+        });
+        return {
+          editorWidth: editorRect.width,
+          laterRows: laterRows.length,
+          notesAfterCore: notesRect.top >= coreRect.bottom - 2,
+          notesFieldWidth: notesFieldRect.width,
+          notesListWidth: notesList.getBoundingClientRect().width,
+          notesRowWidth: notesRect.width,
+          sameRowPeers: sameRowPeers.length
+        };
+      });
+      expect(notesLayout.laterRows).toBe(0);
+      expect(notesLayout.notesAfterCore).toBe(true);
+      expect(notesLayout.sameRowPeers).toBe(0);
+      expect(notesLayout.notesListWidth).toBeGreaterThanOrEqual(notesLayout.editorWidth - 2);
+      expect(notesLayout.notesRowWidth).toBeGreaterThanOrEqual(notesLayout.editorWidth - 4);
+      expect(notesLayout.notesFieldWidth).toBeGreaterThan(notesLayout.editorWidth * 0.85);
+
+      await expect(page.locator("#songDetailsContent #songSheetTempoInput")).toBeVisible();
+      await expect(page.locator("#songDetailsContent #songSheetKeyInput")).toBeVisible();
+      await expect(page.locator("#songDetailsContent #songSheetStyleInput")).toBeVisible();
+      expect(await page.locator("#songSheetTempoInput").evaluate((input) => input.readOnly || input.disabled)).toBe(false);
+      expect(await page.locator("#songSheetKeyInput").evaluate((select) => select.disabled)).toBe(false);
+      expect(await page.locator("#songSheetStyleInput").evaluate((select) => select.disabled)).toBe(false);
+      await page.locator("#songSheetTempoInput").fill("151");
+      await page.locator("#songSheetKeyInput").selectOption("C major");
+      await page.locator("#songSheetStyleInput").selectOption("chip");
+      expect(await page.evaluate(() => {
+        const arrangement = window.__midiStudioV2App.selectedSong().studioArrangement;
+        return {
+          key: arrangement.key,
+          style: arrangement.style,
+          tempo: arrangement.tempo
+        };
+      })).toEqual({ key: "C major", style: "chip", tempo: "151" });
+
+      await expect(page.locator("#songSheetContent #songSheetTempoInput, #songSheetContent #songSheetKeyInput, #songSheetContent #songSheetStyleInput")).toHaveCount(0);
+      await expect(page.locator("#songSheetSectionsInput")).toBeVisible();
+      await expect(page.locator("#songSheetLoopSectionsInput")).toBeVisible();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars'] [data-song-sheet-computed='true']")).toHaveCount(1);
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='warnings'] [data-song-sheet-diagnostics='true']")).toHaveCount(1);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      const quickAccordion = page.locator('.tool-starter__panel--left [aria-controls="timelineInstrumentQuickContent"]');
+      await expect(quickAccordion).toBeVisible();
+      await expect(quickAccordion).toContainText("Instruments");
+      await expect(page.locator('.tool-starter__panel--left #timelineInstrumentQuickContent')).toBeVisible();
+      await expect(page.locator(".tool-starter__panel--center #timelineInstrumentQuickList")).toHaveCount(0);
+      await expect(timelineQuickInstrumentRow(page, "lead")).toBeVisible();
+      await expect(timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-mute='lead']")).toBeVisible();
+      await expect(timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-solo='lead']")).toBeVisible();
+      await expect(timelineQuickInstrumentRow(page, "lead").locator("[data-toggle-instrument-visibility='lead']")).toBeVisible();
+      await expect(page.locator("#timelineInstrumentQuickList select, #timelineInstrumentQuickList input:not([type='checkbox']), #timelineInstrumentQuickList [data-lane-instrument-type-select], #timelineInstrumentQuickList [data-lane-instrument-select]")).toHaveCount(0);
+
+      await timelineQuickInstrumentRow(page, "bass").click();
+      expect(await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.selectedInstrumentId)).toBe("bass");
+      await selectMidiStudioTab(page, "instruments");
+      await expect(instrumentRow(page, "bass")).toHaveClass(/is-selected/);
+      await expect(instrumentTypeSelect(page, "bass")).toBeVisible();
+      await expect(instrumentSelect(page, "bass")).toBeVisible();
+      expect(await instrumentTypeSelect(page, "bass").evaluate((select) => select.closest("[data-midi-studio-tab-panel]")?.dataset.midiStudioTabPanel)).toBe("instruments");
+      expect(await instrumentSelect(page, "bass").evaluate((select) => select.closest("[data-midi-studio-tab-panel]")?.dataset.midiStudioTabPanel)).toBe("instruments");
+
+      await selectInstrumentRow(page, "lead");
+      expect(await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.selectedInstrumentId)).toBe("lead");
+      await selectMidiStudioTab(page, "studio");
+      await expect(timelineQuickInstrumentRow(page, "lead")).toHaveClass(/is-selected/);
+
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();

@@ -69,6 +69,7 @@ window.addEventListener("DOMContentLoaded", () => {
       details: requireElement("#songDetails"),
       instrumentSetField: requireElement("#instrumentSetField"),
       inspector: requireElement("#inspectorOutput"),
+      notesDetails: requireElement("#songDetailNotes"),
       renderedTargets: requireElement("#renderedTargets"),
       sectionsLoopDetails: requireElement("#songSectionsLoopDetails"),
       sourceField: requireElement("#songSourceField")

@@ -222,6 +222,17 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 }
 
+.midi-studio-v2__song-detail-notes {
+  grid-column: 1 / -1;
+  grid-template-columns: 1fr;
+  width: 100%;
+}
+
+.midi-studio-v2__song-detail-notes .midi-studio-v2__editable-detail {
+  box-sizing: border-box;
+  width: 100%;
+}
+
 .midi-studio-v2__editable-detail {
   align-content: start;
   border: 1px solid var(--tool-starter-line);
@@ -283,16 +294,8 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
 }
 
 .midi-studio-v2__timeline-instruments {
-  border: 1px solid var(--tool-starter-line);
-  border-radius: 6px;
   display: grid;
   gap: 0.35rem;
-  padding: 0.4rem;
-}
-
-.midi-studio-v2__timeline-instruments h3 {
-  font-size: 0.82rem;
-  margin: 0;
 }
 
 .midi-studio-v2__timeline-instrument-list {

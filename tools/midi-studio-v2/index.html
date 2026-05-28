@@ -78,6 +78,15 @@
             <div id="songList" class="midi-studio-v2__song-list" role="listbox" aria-label="MIDI songs"></div>
           </div>
         </section>
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="timelineInstrumentQuickContent">
+            <span>Instruments</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="timelineInstrumentQuickContent" class="accordion-v2__content midi-studio-v2__timeline-instruments">
+            <div id="timelineInstrumentQuickList" class="midi-studio-v2__timeline-instrument-list" aria-label="Octave Timeline quick instrument controls"></div>
+          </div>
+        </section>
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="midi-import">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="midiImportContent">
             <span>MIDI Import</span>
@@ -178,6 +187,7 @@
                   </select>
                 </label>
               </div>
+              <dl id="songDetailNotes" class="midi-studio-v2__details midi-studio-v2__song-detail-notes" aria-label="Song notes"></dl>
             </div>
           </div>
         </section>
@@ -306,10 +316,6 @@
                 <button id="instrumentGridZoomInButton" class="midi-studio-v2__zoom-button" type="button" aria-label="Zoom in octave grid" title="Zoom in octave grid">+</button>
               </div>
             </div>
-            <section class="midi-studio-v2__timeline-instruments" data-midi-studio-tab-panel="studio" aria-labelledby="timelineQuickInstrumentsHeading">
-              <h3 id="timelineQuickInstrumentsHeading">Instruments</h3>
-              <div id="timelineInstrumentQuickList" class="midi-studio-v2__timeline-instrument-list" aria-label="Octave Timeline quick instrument controls"></div>
-            </section>
             <div class="midi-studio-v2__grid-settings" data-midi-studio-tab-panel="auto-create-parts">
               <label class="tool-starter__field" for="instrumentGridSectionsInput">
                 <span>Grid sections from Song Sheet</span>
