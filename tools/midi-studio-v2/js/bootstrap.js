@@ -104,6 +104,8 @@ window.addEventListener("DOMContentLoaded", () => {
       leadInput: requireElement("#instrumentGridLeadInput"),
       loopEndSelect: requireElement("#instrumentGridLoopEndSelect"),
       loopStartSelect: requireElement("#instrumentGridLoopStartSelect"),
+      moveInstrumentDownButton: requireElement("#moveInstrumentDownButton"),
+      moveInstrumentUpButton: requireElement("#moveInstrumentUpButton"),
       normalizeButton: requireElement("#normalizeInstrumentGridButton"),
       padInput: requireElement("#instrumentGridPadInput"),
       playLoopButton: requireElement("#playLoopButton"),

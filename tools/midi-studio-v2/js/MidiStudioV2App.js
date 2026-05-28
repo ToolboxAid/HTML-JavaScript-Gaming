@@ -948,7 +948,7 @@ export class MidiStudioV2App {
       return;
     }
     this.setCurrentInstrumentGridResult(result);
-    if (["add-lane", "delete-lane", "duplicate-lane"].includes(detail.action)) {
+    if (["add-lane", "delete-lane", "duplicate-lane", "move-lane-down", "move-lane-up"].includes(detail.action)) {
       this.instrumentGrid.render(result);
     } else {
       this.instrumentGrid.syncEditedGridResult(result);
@@ -959,6 +959,8 @@ export class MidiStudioV2App {
       this.statusLog.ok(`Added instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
     } else if (detail.action === "duplicate-lane") {
       this.statusLog.ok(`Duplicated instrument row ${detail.sourceLaneLabel || detail.sourceLane || "instrument"} as ${detail.laneLabel || detail.lane}; playback data updated.`);
+    } else if (detail.action === "move-lane-up" || detail.action === "move-lane-down") {
+      this.statusLog.ok(`Moved instrument row ${detail.laneLabel || detail.lane} ${detail.direction || "in order"}; canonical order updated.`);
     } else if (detail.action === "delete-lane") {
       this.statusLog.ok(`Deleted instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
     } else if (detail.action === "delete-selected-note") {
@@ -1198,6 +1200,21 @@ export class MidiStudioV2App {
     if (kind === "visibility") {
       this.persistInstrumentSettings("visibility");
       this.statusLog.info(`Lane ${detail.enabled ? "shown" : "hidden"}: ${detail.laneLabel}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "delete-confirmation") {
+      this.statusLog.warn(`Confirm delete requested for ${detail.laneLabel}. Confirming will remove its notes and instrument settings.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "delete-blocked") {
+      this.statusLog.warn(`Final instrument cannot be deleted: ${detail.laneLabel}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (kind === "delete-cancelled") {
+      this.statusLog.info(`Delete cancelled for ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
       return;
     }

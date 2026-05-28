@@ -621,6 +621,8 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       instrumentSetField: { canonical: "music.songs[].instrumentSet", kind: "readonly", owner: "MIDI Import", wired: "wired" },
       jumpToSectionButton: { canonical: "timing preview section state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       loopToggle: { canonical: "playback loop state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      moveInstrumentDownButton: { canonical: "music.songs[].studioArrangement.lanes order", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
+      moveInstrumentUpButton: { canonical: "music.songs[].studioArrangement.lanes order", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
       normalizeInstrumentGridButton: { canonical: "music.songs[].studioArrangement", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
       parseSongSheetButton: { canonical: "music.songs[].studioArrangement", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       playButton: { canonical: "playback from selected canonical song model", kind: "action", owner: "Global NAV", wired: "wired" },
@@ -3675,7 +3677,7 @@ test.describe("MIDI Studio V2", () => {
       await timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-solo='lead']").click();
       await timelineQuickInstrumentRow(page, "lead").locator("[data-toggle-instrument-visibility='lead']").click();
       await page.locator("#duplicateInstrumentRowButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated instrument row Lead as Lead Copy; playback data updated\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated instrument row Lead as Lead 1; playback data updated\./);
 
       const duplicateState = await page.evaluate((leadLaneSource) => {
         const app = window.__midiStudioV2App;
@@ -3698,7 +3700,7 @@ test.describe("MIDI Studio V2", () => {
       }, beforeDuplicate.leadLane);
       expect(duplicateState).toEqual({
         copiedLaneData: true,
-        duplicateDisplayName: "Lead Copy Source Copy",
+        duplicateDisplayName: "Lead 1",
         duplicateInstrument: "gm-electric-bass-finger",
         duplicateInstrumentType: "Bass",
         duplicatePan: -0.3,
@@ -3707,24 +3709,176 @@ test.describe("MIDI Studio V2", () => {
         duplicateSoloed: true,
         duplicateVolume: 0.6,
         hasUniqueId: true,
-        selected: "lead-copy"
+        selected: "lead-1"
       });
-      await expect(timelineQuickInstrumentRow(page, "lead-copy")).toHaveClass(/is-selected/);
+      await expect(timelineQuickInstrumentRow(page, "lead-1")).toHaveClass(/is-selected/);
 
       await selectMidiStudioTab(page, "instruments");
-      await expect(instrumentRow(page, "lead-copy")).toHaveClass(/is-selected/);
+      await expect(instrumentRow(page, "lead-1")).toHaveClass(/is-selected/);
       await expect(page.locator("#selectedInstrumentEditor")).not.toContainText("Mute default");
       await expect(page.locator("#selectedInstrumentEditor")).not.toContainText("Solo default");
 
       await selectMidiStudioTab(page, "studio");
-      await timelineQuickInstrumentRow(page, "lead-copy").locator("[data-timeline-quick-mute='lead-copy']").click();
-      await timelineQuickInstrumentRow(page, "lead-copy").locator("[data-toggle-instrument-visibility='lead-copy']").click();
+      await timelineQuickInstrumentRow(page, "lead-1").locator("[data-timeline-quick-mute='lead-1']").click();
+      await timelineQuickInstrumentRow(page, "lead-1").locator("[data-toggle-instrument-visibility='lead-1']").click();
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();
       await page.locator("#stopButton").click();
       await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("manages PR067 instrument duplication ordering and guarded deletion", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+      await instrumentTypeSelect(page, "lead").selectOption("Bass");
+      await instrumentSelect(page, "lead").selectOption("gm-electric-bass-finger");
+      await setInputValue(page, "#previewVolumeLeadInput", "0.62");
+      await setInputValue(page, "#previewPanLeadInput", "-0.25");
+      await setInputValue(page, "#previewTransposeLeadInput", "7");
+      await setInputValue(page, "#previewVelocityLeadInput", "91");
+      await setInputValue(page, "#previewDurationLeadInput", "1.4");
+      await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const state = app.instrumentGrid.previewLaneState.lead;
+        state.effects = { ...state.effects, reverb: "future-room" };
+        state.advanced = { ...state.advanced, midiChannel: 3 };
+        app.syncSelectedArrangementFromGridInput(app.instrumentGrid.readInput());
+      });
+      const leadState = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const settings = song.studioArrangement.previewLaneSettings;
+        return {
+          advanced: settings.advanced.lead,
+          effects: settings.effects.lead,
+          laneText: song.studioArrangement.lanes.lead,
+          settings: {
+            duration: settings.durations.lead,
+            instrument: settings.instruments.lead,
+            instrumentType: settings.instrumentTypes.lead,
+            pan: settings.pans.lead,
+            transpose: settings.transposes.lead,
+            velocity: settings.velocities.lead,
+            volume: settings.volumes.lead
+          }
+        };
+      });
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await page.locator("#duplicateInstrumentRowButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated instrument row Lead as Lead 1; playback data updated\./);
+      await expect(timelineQuickInstrumentRow(page, "lead-1")).toHaveClass(/is-selected/);
+      await expect(timelineQuickInstrumentRow(page, "lead-1")).toHaveAttribute("data-duplicate-confirmation", "true");
+
+      const duplicateState = await page.evaluate((expectedLeadState) => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const settings = song.studioArrangement.previewLaneSettings;
+        const selected = app.instrumentGrid.selectedInstrumentId;
+        return {
+          copiedAdvanced: settings.advanced[selected],
+          copiedEffects: settings.effects[selected],
+          copiedLaneText: song.studioArrangement.lanes[selected] === expectedLeadState.laneText,
+          copiedSettings: {
+            duration: settings.durations[selected],
+            instrument: settings.instruments[selected],
+            instrumentType: settings.instrumentTypes[selected],
+            pan: settings.pans[selected],
+            transpose: settings.transposes[selected],
+            velocity: settings.velocities[selected],
+            volume: settings.volumes[selected]
+          },
+          displayName: settings.displayNames[selected],
+          hasUniqueId: selected === "lead-1" && Object.hasOwn(song.studioArrangement.lanes, selected),
+          order: Object.keys(song.studioArrangement.lanes),
+          selected
+        };
+      }, leadState);
+      expect(duplicateState).toEqual({
+        copiedAdvanced: leadState.advanced,
+        copiedEffects: leadState.effects,
+        copiedLaneText: true,
+        copiedSettings: leadState.settings,
+        displayName: "Lead 1",
+        hasUniqueId: true,
+        order: expect.arrayContaining(["lead", "lead-1"]),
+        selected: "lead-1"
+      });
+      const duplicateOrder = duplicateState.order;
+      const duplicateIndex = duplicateOrder.indexOf("lead-1");
+      expect(duplicateIndex).toBeGreaterThan(0);
+      expect(duplicateOrder[duplicateIndex - 1]).toBe("lead");
+
+      await selectMidiStudioTab(page, "instruments");
+      await expect(instrumentRow(page, "lead-1")).toHaveClass(/is-selected/);
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#moveInstrumentUpButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved instrument row Lead 1 up; canonical order updated\./);
+      const orderAfterMoveUp = await page.evaluate(() => Object.keys(window.__midiStudioV2App.selectedSong().studioArrangement.lanes));
+      expect(orderAfterMoveUp.indexOf("lead-1")).toBe(duplicateIndex - 1);
+      await page.locator("#moveInstrumentDownButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved instrument row Lead 1 down; canonical order updated\./);
+      const orderAfterMoveDown = await page.evaluate(() => Object.keys(window.__midiStudioV2App.selectedSong().studioArrangement.lanes));
+      expect(orderAfterMoveDown).toEqual(duplicateOrder);
+      await expect(timelineQuickInstrumentRow(page, "lead-1")).toHaveClass(/is-selected/);
+      const expectedSelectionAfterDelete = orderAfterMoveDown[orderAfterMoveDown.indexOf("lead-1") + 1]
+        || orderAfterMoveDown[orderAfterMoveDown.indexOf("lead-1") - 1]
+        || "";
+
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await selectMidiStudioTab(page, "instruments");
+      await instrumentRow(page, "lead-1").locator("[data-delete-instrument-row='lead-1']").click();
+      await expect(page.locator("[data-delete-confirmation-lane='lead-1']")).toBeVisible();
+      expect(await page.evaluate(() => Object.hasOwn(window.__midiStudioV2App.selectedSong().studioArrangement.lanes, "lead-1"))).toBe(true);
+      await page.locator("[data-confirm-delete-instrument-row='lead-1']").click();
+      await expect(instrumentRow(page, "lead-1")).toHaveCount(0);
+      const afterDelete = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        return {
+          hasDeletedLane: Object.hasOwn(app.selectedSong().studioArrangement.lanes, "lead-1"),
+          selected: app.instrumentGrid.selectedInstrumentId
+        };
+      });
+      expect(afterDelete).toEqual({ hasDeletedLane: false, selected: expectedSelectionAfterDelete });
+
+      await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const settings = song.studioArrangement.previewLaneSettings;
+        song.studioArrangement.lanes = { lead: song.studioArrangement.lanes.lead };
+        Object.keys(settings).forEach((key) => {
+          if (settings[key] && typeof settings[key] === "object" && !Array.isArray(settings[key])) {
+            settings[key] = { lead: settings[key].lead };
+          }
+        });
+        song.studioArrangement.previewInstruments = { lead: settings.instruments.lead };
+        app.applySelectedSongArrangement("final instrument delete guard");
+      });
+      await selectMidiStudioTab(page, "instruments");
+      await expect(instrumentRow(page, "lead")).toHaveCount(1);
+      await instrumentRow(page, "lead").locator("[data-delete-instrument-row='lead']").click();
+      await expect(page.locator("[data-delete-blocked-lane='lead']")).toBeVisible();
+      await expect(page.locator("[data-delete-blocked-lane='lead']")).toContainText("Final instrument cannot be deleted");
+      expect(await page.evaluate(() => Object.keys(window.__midiStudioV2App.selectedSong().studioArrangement.lanes))).toEqual(["lead"]);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Final instrument cannot be deleted: Lead\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

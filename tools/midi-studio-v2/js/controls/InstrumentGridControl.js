@@ -164,8 +164,10 @@ function clonePreviewLaneState(lanes = Object.keys(DEFAULT_PREVIEW_INSTRUMENTS))
     return [
       lane,
       {
+        advanced: defaultAdvancedState(),
         displayName: "",
         duration: 1,
+        effects: defaultEffectsState(),
         instrument,
         instrumentType: instrumentTypeGroup(instrument),
         muted: false,
@@ -182,11 +184,38 @@ function clonePreviewLaneState(lanes = Object.keys(DEFAULT_PREVIEW_INSTRUMENTS))
   }));
 }
 
+function defaultEffectsState() {
+  return {
+    brightnessTone: null,
+    chorus: null,
+    delay: null,
+    filter: null,
+    reverb: null
+  };
+}
+
+function defaultAdvancedState() {
+  return {
+    controllerValues: null,
+    gmProgram: null,
+    midiChannel: null
+  };
+}
+
+function clonePlainObject(value) {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+  return JSON.parse(JSON.stringify(value));
+}
+
 function defaultPreviewLaneState(lane) {
   const instrument = defaultInstrumentForLane(lane);
   return {
+    advanced: defaultAdvancedState(),
     displayName: "",
     duration: 1,
+    effects: defaultEffectsState(),
     instrument,
     instrumentType: instrumentTypeGroup(instrument),
     muted: false,
@@ -262,6 +291,8 @@ export class InstrumentGridControl {
     leadInput,
     loopEndSelect,
     loopStartSelect,
+    moveInstrumentDownButton,
+    moveInstrumentUpButton,
     normalizeButton,
     padInput,
     playLoopButton,
@@ -305,6 +336,8 @@ export class InstrumentGridControl {
     this.leadInput = leadInput;
     this.loopEndSelect = loopEndSelect;
     this.loopStartSelect = loopStartSelect;
+    this.moveInstrumentDownButton = moveInstrumentDownButton;
+    this.moveInstrumentUpButton = moveInstrumentUpButton;
     this.normalizeButton = normalizeButton;
     this.padInput = padInput;
     this.playLoopButton = playLoopButton;
@@ -335,6 +368,10 @@ export class InstrumentGridControl {
     this.playheadStep = 0;
     this.lastPlayheadHighlightStep = null;
     this.octaveCellSize = OCTAVE_GRID_ZOOM.default;
+    this.deleteBlockedLane = null;
+    this.laneOrder = [];
+    this.pendingDeleteLane = null;
+    this.recentlyDuplicatedLane = null;
     this.syncingTimelineScroll = false;
     this.timelineScrollProxy = null;
     this.timelineScrollProxySpacer = null;
@@ -389,9 +426,14 @@ export class InstrumentGridControl {
     this.gridOutput.addEventListener("scroll", () => this.syncTimelineScrollState());
     this.instrumentGridZoomInButton?.addEventListener("click", () => this.adjustOctaveGridZoom(OCTAVE_GRID_ZOOM.step));
     this.instrumentGridZoomOutButton?.addEventListener("click", () => this.adjustOctaveGridZoom(-OCTAVE_GRID_ZOOM.step));
+    [this.duplicateInstrumentButton, this.moveInstrumentUpButton, this.moveInstrumentDownButton].filter(Boolean).forEach((button) => {
+      this.preventPointerFocusScroll(button);
+    });
     this.addInstrumentButton?.addEventListener("click", () => this.addInstrumentRow());
     this.timelineAddInstrumentButton?.addEventListener("click", () => this.addInstrumentRow());
     this.duplicateInstrumentButton?.addEventListener("click", () => this.duplicateSelectedInstrument());
+    this.moveInstrumentUpButton?.addEventListener("click", () => this.moveSelectedInstrument(-1));
+    this.moveInstrumentDownButton?.addEventListener("click", () => this.moveSelectedInstrument(1));
     this.closeInstrumentPanelButton?.addEventListener("click", () => this.collapseInstrumentPanel());
     this.timelineCloseInstrumentPanelButton?.addEventListener("click", () => this.collapseTimelineInstrumentPanel());
     this.setTransportEnabled(false);
@@ -406,17 +448,9 @@ export class InstrumentGridControl {
   }
 
   readInput() {
-    const lanes = { ...this.extraLaneSources };
-    [
-      ["bass", this.bassInput],
-      ["chords", this.chordsInput],
-      ["drums", this.drumsInput],
-      ["lead", this.leadInput],
-      ["pad", this.padInput]
-    ].forEach(([lane, input]) => {
-      if (!this.removedFixedLanes.has(lane)) {
-        lanes[lane] = input.value;
-      }
+    const lanes = {};
+    this.orderedLaneNames().forEach((lane) => {
+      lanes[lane] = this.laneSourceValue(lane);
     });
     return {
       beatsPerBar: this.beatsInput.value,
@@ -448,6 +482,7 @@ export class InstrumentGridControl {
     this.leadInput.value = laneSources.lead || "";
     this.drumsInput.value = laneSources.drums || "";
     this.extraLaneSources = Object.fromEntries(Object.entries(laneSources).filter(([lane]) => !FIXED_LANES.includes(lane)));
+    this.laneOrder = Object.keys(laneSources);
     this.removedFixedLanes = new Set(FIXED_LANES.filter((lane) => !Object.hasOwn(laneSources, lane)));
     this.previewLaneState = clonePreviewLaneState(Object.keys(laneSources));
     if (!this.previewLaneState[this.selectedLane]) {
@@ -506,6 +541,12 @@ export class InstrumentGridControl {
       if (hasOwnValue(previewLaneSettings.durations, lane)) {
         state.duration = Math.max(0.1, Math.min(8, finiteNumber(previewLaneSettings.durations[lane], 1)));
       }
+      if (hasOwnValue(previewLaneSettings.effects, lane)) {
+        state.effects = { ...defaultEffectsState(), ...clonePlainObject(previewLaneSettings.effects[lane]) };
+      }
+      if (hasOwnValue(previewLaneSettings.advanced, lane)) {
+        state.advanced = { ...defaultAdvancedState(), ...clonePlainObject(previewLaneSettings.advanced[lane]) };
+      }
       const octaveRange = previewLaneSettings.octaveRanges?.[lane] || null;
       if (octaveRange) {
         const low = Array.isArray(octaveRange) ? octaveRange[0] : octaveRange.low;
@@ -530,8 +571,10 @@ export class InstrumentGridControl {
 
   previewLaneSettings() {
     const settings = {
+      advanced: {},
       displayNames: {},
       durations: {},
+      effects: {},
       instrumentTypes: {},
       instruments: {},
       muted: {},
@@ -543,10 +586,13 @@ export class InstrumentGridControl {
       visible: {},
       volumes: {}
     };
-    Object.entries(this.previewLaneState).forEach(([lane, state]) => {
+    this.orderedLaneNames().forEach((lane) => {
+      const state = this.previewLaneState[lane] || defaultPreviewLaneState(lane);
       const [lowOctave, highOctave] = this.octaveRangeForLane(lane);
+      settings.advanced[lane] = clonePlainObject(state.advanced || defaultAdvancedState());
       settings.displayNames[lane] = String(state.displayName || "");
       settings.durations[lane] = Number(state.duration ?? 1);
+      settings.effects[lane] = clonePlainObject(state.effects || defaultEffectsState());
       settings.instrumentTypes[lane] = state.instrumentType || instrumentTypeGroup(state.instrument);
       settings.instruments[lane] = state.instrument || "";
       settings.muted[lane] = Boolean(state.muted);
@@ -577,6 +623,39 @@ export class InstrumentGridControl {
       soloedLanes: Object.entries(settings.soloed).filter((entry) => entry[1]).map(([lane]) => lane),
       volumeSummary: Object.entries(settings.volumes).map(([lane, value]) => `${lane}:${value}`).join(", ")
     };
+  }
+
+  orderedLaneNames() {
+    const active = new Set([
+      ...Object.keys(this.extraLaneSources),
+      ...FIXED_LANES.filter((lane) => !this.removedFixedLanes.has(lane))
+    ]);
+    const ordered = [];
+    this.laneOrder.forEach((lane) => {
+      if (active.has(lane) && !ordered.includes(lane)) {
+        ordered.push(lane);
+      }
+    });
+    FIXED_LANES.forEach((lane) => {
+      if (active.has(lane) && !ordered.includes(lane)) {
+        ordered.push(lane);
+      }
+    });
+    Object.keys(this.extraLaneSources).forEach((lane) => {
+      if (active.has(lane) && !ordered.includes(lane)) {
+        ordered.push(lane);
+      }
+    });
+    this.laneOrder = ordered.slice();
+    return ordered;
+  }
+
+  laneSourceValue(lane) {
+    const fixedInput = this.inputForLane(lane);
+    if (fixedInput && !this.removedFixedLanes.has(lane)) {
+      return fixedInput.value;
+    }
+    return this.extraLaneSources[lane] || "";
   }
 
   selectedAuditionDetail(note = "C4") {
@@ -664,6 +743,7 @@ export class InstrumentGridControl {
     this.setTransportEnabled(true);
     this.renderInstrumentList(result.lanes);
     this.renderQuickInstrumentList(result.lanes);
+    this.syncInstrumentManagementButtons();
     this.renderSelectedInstrumentEditor();
     this.renderAuditionKeyboard();
     this.renderGrid(result);
@@ -671,6 +751,7 @@ export class InstrumentGridControl {
     this.updateLoopRegion();
     this.updateSelectedSectionRegion();
     this.applySelectedLaneHighlight();
+    this.revealSelectedInstrument();
     this.restoreTimelineScrollState(timelineScrollState);
     this.renderSelectionDetails();
   }
@@ -949,6 +1030,11 @@ export class InstrumentGridControl {
     row.tabIndex = 0;
     row.setAttribute("role", "button");
     row.setAttribute("aria-selected", String(this.selectedLane === lane));
+    row.classList.toggle("is-delete-pending", this.pendingDeleteLane === lane || this.deleteBlockedLane === lane);
+    row.classList.toggle("is-duplicate-confirmed", this.recentlyDuplicatedLane === lane);
+    if (this.recentlyDuplicatedLane === lane) {
+      row.dataset.duplicateConfirmation = "true";
+    }
 
     const title = document.createElement("span");
     title.className = "midi-studio-v2__lane-title";
@@ -993,6 +1079,10 @@ export class InstrumentGridControl {
       summary
     };
     row.append(titleRow, summary, controls);
+    const deleteConfirmation = this.createDeleteConfirmation(lane);
+    if (deleteConfirmation) {
+      row.append(deleteConfirmation);
+    }
     return row;
   }
 
@@ -1320,6 +1410,10 @@ export class InstrumentGridControl {
     row.tabIndex = 0;
     row.setAttribute("role", "button");
     row.setAttribute("aria-selected", String(this.selectedLane === lane));
+    row.classList.toggle("is-duplicate-confirmed", this.recentlyDuplicatedLane === lane);
+    if (this.recentlyDuplicatedLane === lane) {
+      row.dataset.duplicateConfirmation = "true";
+    }
 
     const title = document.createElement("span");
     title.className = "midi-studio-v2__quick-instrument-title";
@@ -2226,9 +2320,48 @@ export class InstrumentGridControl {
     button.textContent = "x";
     this.preventPointerFocusScroll(button);
     button.addEventListener("click", () => {
-      this.runInstrumentControlAction(() => this.deleteInstrumentRow(lane));
+      this.runInstrumentControlAction(() => this.requestDeleteInstrumentRow(lane));
     });
     return button;
+  }
+
+  createDeleteConfirmation(lane) {
+    if (this.deleteBlockedLane === lane) {
+      const blocked = document.createElement("div");
+      const message = document.createElement("span");
+      blocked.className = "midi-studio-v2__delete-confirmation";
+      blocked.dataset.deleteBlockedLane = lane;
+      message.textContent = "Final instrument cannot be deleted.";
+      blocked.append(message);
+      return blocked;
+    }
+    if (this.pendingDeleteLane !== lane) {
+      return null;
+    }
+    const confirmation = document.createElement("div");
+    const message = document.createElement("span");
+    const confirmButton = document.createElement("button");
+    const cancelButton = document.createElement("button");
+    confirmation.className = "midi-studio-v2__delete-confirmation";
+    confirmation.dataset.deleteConfirmationLane = lane;
+    message.textContent = `Delete ${this.displayNameForLane(lane)}?`;
+    confirmButton.type = "button";
+    confirmButton.dataset.confirmDeleteInstrumentRow = lane;
+    confirmButton.textContent = "Confirm";
+    confirmButton.setAttribute("aria-label", `Confirm delete instrument row ${laneLabel(lane)}`);
+    cancelButton.type = "button";
+    cancelButton.dataset.cancelDeleteInstrumentRow = lane;
+    cancelButton.textContent = "Cancel";
+    cancelButton.setAttribute("aria-label", `Cancel delete instrument row ${laneLabel(lane)}`);
+    [confirmButton, cancelButton].forEach((button) => this.preventPointerFocusScroll(button));
+    confirmButton.addEventListener("click", () => {
+      this.runInstrumentControlAction(() => this.deleteInstrumentRow(lane));
+    });
+    cancelButton.addEventListener("click", () => {
+      this.runInstrumentControlAction(() => this.cancelDeleteInstrumentRow(lane));
+    });
+    confirmation.append(message, confirmButton, cancelButton);
+    return confirmation;
   }
 
   preventPointerFocusScroll(element) {
@@ -2286,6 +2419,10 @@ export class InstrumentGridControl {
     const lane = this.nextInstrumentLaneName();
     this.extraLaneSources[lane] = "";
     this.previewLaneState[lane] = defaultPreviewLaneState(lane);
+    this.laneOrder = [...this.orderedLaneNames(), lane];
+    this.pendingDeleteLane = null;
+    this.deleteBlockedLane = null;
+    this.recentlyDuplicatedLane = null;
     this.selectedLane = lane;
     this.emitGridStructureChange("add-lane", lane);
   }
@@ -2296,17 +2433,43 @@ export class InstrumentGridControl {
     if (!sourceLane || !Object.hasOwn(lanes, sourceLane)) {
       return false;
     }
-    const lane = this.nextDuplicateInstrumentLaneName(sourceLane);
+    const identity = this.nextDuplicateInstrumentIdentity(sourceLane);
+    const lane = identity.lane;
     const sourceState = this.previewLaneState[sourceLane] || defaultPreviewLaneState(sourceLane);
     this.extraLaneSources[lane] = String(lanes[sourceLane] || "");
     this.previewLaneState[lane] = {
-      ...sourceState,
-      displayName: this.nextDuplicateInstrumentDisplayName(sourceLane)
+      ...clonePlainObject(sourceState),
+      displayName: identity.displayName
     };
+    this.laneOrder = this.orderWithInsertedLane(sourceLane, lane);
+    this.pendingDeleteLane = null;
+    this.deleteBlockedLane = null;
+    this.recentlyDuplicatedLane = lane;
     this.selectedLane = lane;
     this.emitGridStructureChange("duplicate-lane", lane, {
+      duplicateDisplayName: identity.displayName,
       sourceLane,
       sourceLaneLabel: laneLabel(sourceLane)
+    });
+    return true;
+  }
+
+  moveSelectedInstrument(direction) {
+    const lanes = this.orderedLaneNames();
+    const lane = this.selectedLane;
+    const currentIndex = lanes.indexOf(lane);
+    const nextIndex = currentIndex + direction;
+    if (!lane || currentIndex < 0 || nextIndex < 0 || nextIndex >= lanes.length) {
+      return false;
+    }
+    const nextOrder = lanes.slice();
+    [nextOrder[currentIndex], nextOrder[nextIndex]] = [nextOrder[nextIndex], nextOrder[currentIndex]];
+    this.laneOrder = nextOrder;
+    this.pendingDeleteLane = null;
+    this.deleteBlockedLane = null;
+    this.recentlyDuplicatedLane = null;
+    this.emitGridStructureChange(direction < 0 ? "move-lane-up" : "move-lane-down", lane, {
+      direction: direction < 0 ? "up" : "down"
     });
     return true;
   }
@@ -2337,10 +2500,59 @@ export class InstrumentGridControl {
     content.hidden = true;
   }
 
+  requestDeleteInstrumentRow(lane) {
+    if (!lane) {
+      return false;
+    }
+    if (this.orderedLaneNames().length <= 1) {
+      return this.showDeleteBlocked(lane);
+    }
+    this.pendingDeleteLane = lane;
+    this.deleteBlockedLane = null;
+    this.renderInstrumentList(this.currentResult?.lanes || this.orderedLaneNames());
+    this.onLaneSettingChange?.("delete-confirmation", {
+      lane,
+      laneLabel: laneLabel(lane)
+    });
+    return true;
+  }
+
+  cancelDeleteInstrumentRow(lane) {
+    this.pendingDeleteLane = null;
+    this.deleteBlockedLane = null;
+    this.renderInstrumentList(this.currentResult?.lanes || this.orderedLaneNames());
+    this.onLaneSettingChange?.("delete-cancelled", {
+      lane,
+      laneLabel: laneLabel(lane)
+    });
+    return true;
+  }
+
+  showDeleteBlocked(lane) {
+    this.pendingDeleteLane = null;
+    this.deleteBlockedLane = lane;
+    this.renderInstrumentList(this.currentResult?.lanes || this.orderedLaneNames());
+    this.onLaneSettingChange?.("delete-blocked", {
+      lane,
+      laneLabel: laneLabel(lane)
+    });
+    return false;
+  }
+
   deleteInstrumentRow(lane) {
     if (!lane) {
       return;
     }
+    const lanesBefore = this.orderedLaneNames();
+    if (lanesBefore.length <= 1) {
+      this.showDeleteBlocked(lane);
+      return false;
+    }
+    const laneIndex = lanesBefore.indexOf(lane);
+    if (laneIndex < 0) {
+      return false;
+    }
+    const nextSelectedLane = lanesBefore[laneIndex + 1] || lanesBefore[laneIndex - 1] || lanesBefore.find((entry) => entry !== lane) || "";
     if (FIXED_LANES.includes(lane)) {
       this.removedFixedLanes.add(lane);
       const laneInput = this.inputForLane(lane);
@@ -2351,8 +2563,13 @@ export class InstrumentGridControl {
       delete this.extraLaneSources[lane];
     }
     delete this.previewLaneState[lane];
-    this.selectedLane = Object.keys(this.readInput().lanes)[0] || "";
+    this.laneOrder = lanesBefore.filter((entry) => entry !== lane);
+    this.pendingDeleteLane = null;
+    this.deleteBlockedLane = null;
+    this.recentlyDuplicatedLane = null;
+    this.selectedLane = nextSelectedLane;
     this.emitGridStructureChange("delete-lane", lane);
+    return true;
   }
 
   emitGridStructureChange(action, lane, detail = {}) {
@@ -2370,29 +2587,41 @@ export class InstrumentGridControl {
     return lane;
   }
 
-  nextDuplicateInstrumentLaneName(sourceLane) {
+  nextDuplicateInstrumentIdentity(sourceLane) {
     const existing = new Set(Object.keys(this.readInput().lanes));
-    const base = `${String(sourceLane || "instrument").trim() || "instrument"}-copy`;
+    const base = this.duplicateBaseId(sourceLane);
+    const displayBase = laneLabel(base);
+    const existingNames = new Set(this.orderedLaneNames().map((lane) => this.displayNameForLane(lane).toLowerCase()));
     let index = 1;
-    let lane = base;
-    while (existing.has(lane)) {
+    let lane = `${base}-${index}`;
+    let displayName = `${displayBase} ${index}`;
+    while (existing.has(lane) || existingNames.has(displayName.toLowerCase())) {
       index += 1;
       lane = `${base}-${index}`;
+      displayName = `${displayBase} ${index}`;
     }
-    return lane;
+    return { displayName, lane };
   }
 
-  nextDuplicateInstrumentDisplayName(sourceLane) {
-    const sourceName = String(this.displayNameForLane(sourceLane) || laneLabel(sourceLane)).trim() || "Instrument";
-    const existing = new Set(Object.keys(this.previewLaneState).map((lane) => this.displayNameForLane(lane).toLowerCase()));
-    const base = `${sourceName} Copy`;
-    let index = 1;
-    let displayName = base;
-    while (existing.has(displayName.toLowerCase())) {
-      index += 1;
-      displayName = `${base} ${index}`;
+  duplicateBaseId(sourceLane) {
+    const normalized = String(sourceLane || "instrument").trim().toLowerCase();
+    const stripped = normalized
+      .replace(/-copy(?:-\d+)?$/, "")
+      .replace(/-\d+$/, "");
+    return stripped || "instrument";
+  }
+
+  orderWithInsertedLane(sourceLane, lane) {
+    const lanes = this.orderedLaneNames();
+    const sourceIndex = lanes.indexOf(sourceLane);
+    if (sourceIndex < 0) {
+      return [...lanes, lane];
     }
-    return displayName;
+    return [
+      ...lanes.slice(0, sourceIndex + 1),
+      lane,
+      ...lanes.slice(sourceIndex + 1)
+    ];
   }
 
   toggleLaneSlider(lane, kind) {
@@ -2406,7 +2635,35 @@ export class InstrumentGridControl {
     button.setAttribute("aria-expanded", String(!slider.hidden));
   }
 
+  syncInstrumentManagementButtons() {
+    const lanes = this.orderedLaneNames();
+    const selectedIndex = lanes.indexOf(this.selectedLane);
+    if (this.duplicateInstrumentButton) {
+      this.duplicateInstrumentButton.disabled = selectedIndex < 0;
+    }
+    if (this.moveInstrumentUpButton) {
+      this.moveInstrumentUpButton.disabled = selectedIndex <= 0;
+    }
+    if (this.moveInstrumentDownButton) {
+      this.moveInstrumentDownButton.disabled = selectedIndex < 0 || selectedIndex >= lanes.length - 1;
+    }
+  }
+
+  revealSelectedInstrument() {
+    const lane = this.selectedLane;
+    if (!lane) {
+      return;
+    }
+    this.window.requestAnimationFrame?.(() => {
+      const quickRow = this.quickLaneControls?.[lane]?.row || null;
+      const instrumentRow = this.previewLaneControls?.[lane]?.row || null;
+      quickRow?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+      instrumentRow?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+    });
+  }
+
   syncLaneHeaderControls() {
+    this.syncInstrumentManagementButtons();
     this.previewLaneEntries().forEach(([lane, controls]) => {
       const state = this.previewLaneState[lane];
       if (!state) {
@@ -2661,6 +2918,8 @@ export class InstrumentGridControl {
       return;
     }
     this.selectedLane = lane;
+    this.pendingDeleteLane = null;
+    this.deleteBlockedLane = null;
     if (this.currentResult?.ok) {
       this.render(this.currentResult);
       return;
@@ -2670,6 +2929,8 @@ export class InstrumentGridControl {
       controls.row?.setAttribute("aria-selected", String(entryLane === lane));
     });
     this.syncQuickInstrumentControls();
+    this.syncInstrumentManagementButtons();
+    this.revealSelectedInstrument();
     this.renderSelectedInstrumentEditor();
     this.renderAuditionKeyboard();
     this.renderSelectionDetails();
@@ -2686,6 +2947,7 @@ export class InstrumentGridControl {
       controls.row?.setAttribute("aria-selected", String(entryLane === this.selectedLane));
     });
     this.syncQuickInstrumentControls();
+    this.syncInstrumentManagementButtons();
     this.renderSelectedInstrumentEditor();
     this.renderAuditionKeyboard();
     this.renderCanvasTimeline();
