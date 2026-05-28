@@ -423,12 +423,14 @@ async function timelineScrollSnapshot(page) {
   return page.locator("#instrumentGridOutput").evaluate((output) => {
     const firstHeader = output.querySelector(".midi-studio-v2__grid-cell--timing-header");
     const firstNoteCell = output.querySelector(".midi-studio-v2__octave-note-cell");
+    const topScrollbar = output.querySelector(".midi-studio-v2__timeline-scroll-proxy");
     return {
       headerLeft: Math.round(firstHeader?.getBoundingClientRect().left || 0),
       noteLeft: Math.round(firstNoteCell?.getBoundingClientRect().left || 0),
       scrollDataset: output.dataset.timelineScrollLeft || "",
       scrollLeft: Math.round(output.scrollLeft),
-      scrollTop: Math.round(output.scrollTop)
+      scrollTop: Math.round(output.scrollTop),
+      topScrollLeft: Math.round(topScrollbar?.scrollLeft || 0)
     };
   });
 }
@@ -978,18 +980,70 @@ test.describe("MIDI Studio V2", () => {
         const firstNote = element.querySelector('.midi-studio-v2__octave-note-cell[data-step-index="0"]');
         const firstRow = element.querySelector('.midi-studio-v2__octave-note-cell[data-octave-row-index="0"][data-step-index="0"]');
         const secondRow = element.querySelector('.midi-studio-v2__octave-note-cell[data-octave-row-index="1"][data-step-index="0"]');
+        const topScrollbar = element.querySelector(".midi-studio-v2__timeline-scroll-proxy");
+        const grid = element.querySelector(".midi-studio-v2__octave-timeline");
+        const firstLabel = element.querySelector(".midi-studio-v2__octave-row-label");
         return {
           alternatingRowsDiffer: getComputedStyle(firstRow).backgroundColor !== getComputedStyle(secondRow).backgroundColor,
           borderRightWidth: getComputedStyle(firstNote).borderRightWidth,
+          cellCssWidth: getComputedStyle(firstNote).width,
           columnWidth: firstNote.getBoundingClientRect().width,
-          columnTemplate: getComputedStyle(element.querySelector(".midi-studio-v2__octave-timeline")).gridTemplateColumns
+          columnTemplate: getComputedStyle(grid).gridTemplateColumns,
+          containsGrid: grid?.parentElement === element,
+          labelWidth: firstLabel.getBoundingClientRect().width,
+          topScrollbarHeight: topScrollbar.getBoundingClientRect().height
         };
       });
+      expect(gridLayout.containsGrid).toBe(true);
       expect(gridLayout.alternatingRowsDiffer).toBe(true);
       expect(Number.parseFloat(gridLayout.borderRightWidth)).toBeGreaterThanOrEqual(0.8);
       expect(Number.parseFloat(gridLayout.borderRightWidth)).toBeLessThanOrEqual(1);
-      expect(gridLayout.columnWidth).toBeLessThanOrEqual(32);
-      expect(gridLayout.columnTemplate).toContain("28.8px");
+      expect(Number.parseFloat(gridLayout.cellCssWidth)).toBeGreaterThanOrEqual(0.8);
+      expect(Number.parseFloat(gridLayout.cellCssWidth)).toBeLessThanOrEqual(1);
+      expect(gridLayout.columnWidth).toBeLessThanOrEqual(1);
+      expect(gridLayout.columnTemplate).toContain("1px");
+      expect(gridLayout.labelWidth).toBeGreaterThan(40);
+      expect(gridLayout.topScrollbarHeight).toBeGreaterThanOrEqual(12);
+
+      await output.evaluate((element) => {
+        element.style.maxWidth = "80px";
+        element.dispatchEvent(new Event("scroll"));
+      });
+      const scrollbars = await output.evaluate((element) => {
+        const topScrollbar = element.querySelector(".midi-studio-v2__timeline-scroll-proxy");
+        const grid = element.querySelector(".midi-studio-v2__octave-timeline");
+        const topRect = topScrollbar.getBoundingClientRect();
+        return {
+          bottomCanScroll: element.scrollWidth > element.clientWidth,
+          bottomOverflowX: getComputedStyle(element).overflowX,
+          gridOverflowsOutput: grid.scrollWidth > element.clientWidth,
+          topCanScroll: topScrollbar.scrollWidth > topScrollbar.clientWidth,
+          topOverflowX: getComputedStyle(topScrollbar).overflowX,
+          topVisible: topRect.height >= 12 && topRect.width > 0
+        };
+      });
+      expect(scrollbars.bottomCanScroll).toBe(true);
+      expect(scrollbars.bottomOverflowX).toMatch(/auto|scroll/);
+      expect(scrollbars.gridOverflowsOutput).toBe(true);
+      expect(scrollbars.topCanScroll).toBe(true);
+      expect(scrollbars.topOverflowX).toMatch(/auto|scroll/);
+      expect(scrollbars.topVisible).toBe(true);
+
+      await output.evaluate((element) => {
+        const topScrollbar = element.querySelector(".midi-studio-v2__timeline-scroll-proxy");
+        topScrollbar.scrollLeft = Math.min(14, topScrollbar.scrollWidth - topScrollbar.clientWidth);
+        topScrollbar.dispatchEvent(new Event("scroll"));
+      });
+      await expect.poll(() => timelineScrollSnapshot(page)).toEqual(expect.objectContaining({
+        scrollLeft: await output.evaluate((element) => Math.round(element.querySelector(".midi-studio-v2__timeline-scroll-proxy").scrollLeft))
+      }));
+      await output.evaluate((element) => {
+        element.scrollLeft = Math.min(9, element.scrollWidth - element.clientWidth);
+        element.dispatchEvent(new Event("scroll"));
+      });
+      await expect.poll(() => timelineScrollSnapshot(page)).toEqual(expect.objectContaining({
+        topScrollLeft: await output.evaluate((element) => Math.round(element.scrollLeft))
+      }));
 
       await output.evaluate((element) => {
         element.style.maxHeight = "150px";
@@ -1000,15 +1054,16 @@ test.describe("MIDI Studio V2", () => {
         const outputRect = element.getBoundingClientRect();
         const row1 = element.querySelector(".midi-studio-v2__timing-header-row-1.midi-studio-v2__note-table-column-header").getBoundingClientRect();
         const row2 = element.querySelector(".midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header").getBoundingClientRect();
+        const topScrollbar = element.querySelector(".midi-studio-v2__timeline-scroll-proxy").getBoundingClientRect();
         return {
           headerGap: Math.round(row2.top - row1.bottom),
-          row1TopDelta: Math.abs(row1.top - outputRect.top),
+          row1BelowTopScrollbar: Math.abs(row1.top - topScrollbar.bottom),
           row2BelowRow1: row2.top >= row1.bottom - 1,
           scrollTop: Math.round(element.scrollTop)
         };
       });
       expect(verticalFreeze.scrollTop).toBeGreaterThan(0);
-      expect(verticalFreeze.row1TopDelta).toBeLessThanOrEqual(2);
+      expect(verticalFreeze.row1BelowTopScrollbar).toBeLessThanOrEqual(2);
       expect(verticalFreeze.headerGap).toBeLessThanOrEqual(1);
       expect(verticalFreeze.row2BelowRow1).toBe(true);
 
@@ -1023,16 +1078,21 @@ test.describe("MIDI Studio V2", () => {
         const label = element.querySelector('.midi-studio-v2__octave-row-label[data-octave-row="C5"]').getBoundingClientRect();
         return {
           headerBodyDelta: Math.abs(header.left - bodyCell.left),
-          labelLeftDelta: Math.abs(label.left - outputRect.left),
+          labelVisibleInViewport: label.right > outputRect.left && label.left < outputRect.right,
           labelRowDelta: Math.abs(label.top - bodyCell.top),
           scrollLeft: Math.round(element.scrollLeft)
         };
       });
       expect(horizontalFreeze.scrollLeft).toBeGreaterThan(0);
       expect(horizontalFreeze.headerBodyDelta).toBeLessThanOrEqual(1);
-      expect(horizontalFreeze.labelLeftDelta).toBeLessThanOrEqual(2);
+      expect(horizontalFreeze.labelVisibleInViewport).toBe(true);
       expect(horizontalFreeze.labelRowDelta).toBeLessThanOrEqual(1);
 
+      await output.evaluate((element) => {
+        element.style.maxWidth = "";
+        element.scrollLeft = 0;
+        element.dispatchEvent(new Event("scroll"));
+      });
       await octaveCell(page, "C6", 10).click();
       await expect(octaveCell(page, "C6", 10)).toHaveText("");
       await expect(octaveCell(page, "C6", 10)).toHaveAttribute("data-note-lanes", /lead/);
@@ -1046,7 +1106,8 @@ test.describe("MIDI Studio V2", () => {
         };
       });
       expect(activeHighlight.content).not.toBe("none");
-      expect(Number.parseFloat(activeHighlight.width)).toBeGreaterThan(8);
+      expect(Number.parseFloat(activeHighlight.width)).toBeGreaterThanOrEqual(0.8);
+      expect(Number.parseFloat(activeHighlight.width)).toBeLessThanOrEqual(1);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

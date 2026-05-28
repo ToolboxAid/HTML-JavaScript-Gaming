@@ -320,7 +320,7 @@
 .midi-studio-v2__instrument-grid-output {
   max-width: 100%;
   overflow: auto;
-  scrollbar-gutter: stable;
+  --midi-studio-v2-top-scrollbar-height: 16px;
 }
 
 body[data-tool-id="midi-studio-v2"] [data-midi-studio-tab-panel][hidden] {
@@ -353,6 +353,7 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   align-items: center;
   border-bottom: 1px solid var(--tool-starter-line);
   border-right: 1px solid var(--tool-starter-line);
+  box-sizing: border-box;
   background: var(--tool-starter-panel-strong);
   min-height: 1.55rem;
   padding: 0.08rem 0.12rem;
@@ -377,12 +378,12 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 
 .midi-studio-v2__timing-header-row-1 {
   min-height: 1.35rem;
-  top: 0;
+  top: var(--midi-studio-v2-top-scrollbar-height);
 }
 
 .midi-studio-v2__timing-header-row-2 {
   min-height: 1.35rem;
-  top: 1.35rem;
+  top: calc(var(--midi-studio-v2-top-scrollbar-height) + 1.35rem);
 }
 
 .midi-studio-v2__note-table-column-header {
@@ -416,6 +417,24 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   justify-items: start;
   min-height: 1.55rem;
   text-align: left;
+}
+
+.midi-studio-v2__timeline-scroll-proxy {
+  background: var(--tool-starter-surface);
+  border-bottom: 1px solid var(--tool-starter-line);
+  box-sizing: border-box;
+  height: var(--midi-studio-v2-top-scrollbar-height);
+  left: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 9;
+}
+
+.midi-studio-v2__timeline-scroll-proxy-spacer {
+  height: 1px;
 }
 
 .midi-studio-v2__lane-header-cell {
@@ -628,10 +647,12 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   gap: 0;
   line-height: 1;
   min-height: 1.55rem;
-  min-width: 1.8rem;
-  padding: 0.08rem;
+  min-width: 1px;
+  overflow: hidden;
+  padding: 0;
   position: relative;
   white-space: normal;
+  width: 1px;
   word-break: break-word;
 }
 
@@ -657,12 +678,14 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 
 .midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--event::before {
   background: rgba(221, 214, 254, 0.78);
-  border-radius: 0.25rem;
+  border-radius: 0;
   content: "";
   display: block;
   height: 0.72rem;
   justify-self: stretch;
-  margin: 0 0.1rem;
+  margin: 0;
+  min-width: 1px;
+  width: 1px;
 }
 
 .midi-studio-v2__note-block {

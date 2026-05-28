@@ -285,6 +285,9 @@ export class InstrumentGridControl {
     this.playTimer = null;
     this.playheadStep = 0;
     this.lastPlayheadHighlightStep = null;
+    this.syncingTimelineScroll = false;
+    this.timelineScrollProxy = null;
+    this.timelineScrollProxySpacer = null;
     this.removedFixedLanes = new Set();
     this.selectedCell = null;
     this.selectedLane = "lead";
@@ -480,6 +483,8 @@ export class InstrumentGridControl {
     this.gridOutput.replaceChildren();
     this.previewLaneControls = {};
     this.lastPlayheadHighlightStep = null;
+    this.timelineScrollProxy = null;
+    this.timelineScrollProxySpacer = null;
     if (!result?.ok) {
       this.renderInstrumentList([]);
       this.populateSectionControls([]);
@@ -556,7 +561,7 @@ export class InstrumentGridControl {
     grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table midi-studio-v2__octave-timeline";
     grid.setAttribute("role", "table");
     grid.setAttribute("aria-label", "Octave timeline editor");
-    grid.style.gridTemplateColumns = `4.25rem repeat(${result.totalSteps}, 1.8rem)`;
+    grid.style.gridTemplateColumns = `4.25rem repeat(${result.totalSteps}, 1px)`;
     this.renderNoteTableHeader(grid, result);
     octaveRows.forEach((row, rowIndex) => {
       grid.append(this.createOctaveRowHeader(row, rowIndex));
@@ -566,8 +571,37 @@ export class InstrumentGridControl {
         grid.append(outputCell);
       });
     });
+    this.gridOutput.append(this.createTimelineScrollProxy());
     this.gridOutput.append(grid);
+    this.updateTimelineScrollProxyWidth();
+    this.window.requestAnimationFrame?.(() => this.updateTimelineScrollProxyWidth());
     this.applySelectedLaneHighlight();
+  }
+
+  createTimelineScrollProxy() {
+    const proxy = document.createElement("div");
+    proxy.className = "midi-studio-v2__timeline-scroll-proxy";
+    proxy.setAttribute("aria-label", "Octave timeline horizontal scroll");
+    proxy.tabIndex = 0;
+
+    const spacer = document.createElement("div");
+    spacer.className = "midi-studio-v2__timeline-scroll-proxy-spacer";
+    proxy.append(spacer);
+
+    proxy.addEventListener("scroll", () => this.syncTimelineScrollFromProxy());
+    this.timelineScrollProxy = proxy;
+    this.timelineScrollProxySpacer = spacer;
+    return proxy;
+  }
+
+  updateTimelineScrollProxyWidth() {
+    if (!this.timelineScrollProxySpacer || !this.gridOutput) {
+      return;
+    }
+    const grid = this.gridOutput.querySelector(".midi-studio-v2__octave-timeline");
+    const scrollWidth = Math.max(grid?.scrollWidth || 0, this.gridOutput.clientWidth || 0);
+    this.timelineScrollProxySpacer.style.width = `${scrollWidth}px`;
+    this.timelineScrollProxy.scrollLeft = this.gridOutput.scrollLeft;
   }
 
   renderNoteTableHeader(grid, result) {
@@ -1259,6 +1293,9 @@ export class InstrumentGridControl {
     }
     this.gridOutput.scrollLeft = scrollState.scrollLeft;
     this.gridOutput.scrollTop = scrollState.scrollTop;
+    if (this.timelineScrollProxy) {
+      this.timelineScrollProxy.scrollLeft = scrollState.scrollLeft;
+    }
     this.syncTimelineScrollState();
   }
 
@@ -1266,7 +1303,22 @@ export class InstrumentGridControl {
     if (!this.gridOutput) {
       return;
     }
+    if (!this.syncingTimelineScroll && this.timelineScrollProxy) {
+      this.syncingTimelineScroll = true;
+      this.timelineScrollProxy.scrollLeft = this.gridOutput.scrollLeft;
+      this.syncingTimelineScroll = false;
+    }
     this.gridOutput.dataset.timelineScrollLeft = String(Math.round(this.gridOutput.scrollLeft));
+  }
+
+  syncTimelineScrollFromProxy() {
+    if (!this.gridOutput || !this.timelineScrollProxy || this.syncingTimelineScroll) {
+      return;
+    }
+    this.syncingTimelineScroll = true;
+    this.gridOutput.scrollLeft = this.timelineScrollProxy.scrollLeft;
+    this.gridOutput.dataset.timelineScrollLeft = String(Math.round(this.gridOutput.scrollLeft));
+    this.syncingTimelineScroll = false;
   }
 
   createLaneHeaderCell(lane) {
