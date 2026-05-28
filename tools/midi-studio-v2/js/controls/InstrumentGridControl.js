@@ -434,8 +434,8 @@ export class InstrumentGridControl {
     this.duplicateInstrumentButton?.addEventListener("click", () => this.duplicateSelectedInstrument());
     this.moveInstrumentUpButton?.addEventListener("click", () => this.moveSelectedInstrument(-1));
     this.moveInstrumentDownButton?.addEventListener("click", () => this.moveSelectedInstrument(1));
-    this.closeInstrumentPanelButton?.addEventListener("click", () => this.collapseInstrumentPanel());
-    this.timelineCloseInstrumentPanelButton?.addEventListener("click", () => this.collapseTimelineInstrumentPanel());
+    this.closeInstrumentPanelButton?.addEventListener("click", () => this.toggleInstrumentPanel());
+    this.timelineCloseInstrumentPanelButton?.addEventListener("click", () => this.toggleTimelineInstrumentPanel());
     this.setTransportEnabled(false);
     this.populateSectionControls([]);
     this.updateSnapIndicator();
@@ -845,6 +845,11 @@ export class InstrumentGridControl {
         this.suppressNextCellClick = false;
         return;
       }
+      const keyboardHit = this.timelineCanvasRenderer?.keyboardKeyFromPoint(event.clientX, event.clientY) || null;
+      if (keyboardHit) {
+        this.auditionTimelineKeyboardKey(keyboardHit);
+        return;
+      }
       const hit = this.timelineCanvasRenderer?.cellFromPoint(event.clientX, event.clientY) || this.lastTimelinePointerHit || null;
       if (hit) {
         this.toggleTimelineCell(hit.rowToken, hit.stepIndex);
@@ -875,6 +880,7 @@ export class InstrumentGridControl {
     }
     const rows = this.timelineCanvasRows.length ? this.timelineCanvasRows : this.octaveRowsFor(result);
     const referenceCells = this.referenceCells(result);
+    const viewport = this.timelineCanvasViewport();
     this.timelineCanvasRenderer.setState({
       activePreviewLanes: this.activePreviewLanes,
       cellSize: this.octaveCellSize,
@@ -886,11 +892,15 @@ export class InstrumentGridControl {
       playheadStep: this.playheadStep,
       referenceCells,
       rows,
+      scrollLeft: viewport.scrollLeft,
+      scrollTop: viewport.scrollTop,
       sections: result.sections,
       selectedCell: this.selectedCell,
       selectedLane: this.selectedLane,
       selectedSection: this.selectedSectionBounds,
-      totalSteps: result.totalSteps
+      totalSteps: result.totalSteps,
+      viewportHeight: viewport.height,
+      viewportWidth: viewport.width
     });
     this.gridOutput.dataset.timelineRenderer = "canvas";
     this.gridOutput.dataset.timelineRows = String(rows.length);
@@ -1050,11 +1060,7 @@ export class InstrumentGridControl {
 
     const titleRow = document.createElement("div");
     titleRow.className = "midi-studio-v2__instrument-title-row";
-    titleRow.append(title);
-
-    const controls = document.createElement("div");
-    controls.className = "midi-studio-v2__lane-control-row midi-studio-v2__instrument-control-row";
-    controls.append(deleteButton);
+    titleRow.append(title, deleteButton);
 
     row.addEventListener("click", (event) => {
       if (event.target.closest("input, select, option, button, label")) {
@@ -1078,7 +1084,7 @@ export class InstrumentGridControl {
       row,
       summary
     };
-    row.append(titleRow, summary, controls);
+    row.append(titleRow, summary);
     const deleteConfirmation = this.createDeleteConfirmation(lane);
     if (deleteConfirmation) {
       row.append(deleteConfirmation);
@@ -1695,6 +1701,20 @@ export class InstrumentGridControl {
     return this.timelineCanvasRenderer?.cellFromPoint(event.clientX, event.clientY) || null;
   }
 
+  auditionTimelineKeyboardKey(hit) {
+    if (!hit?.rowToken || !this.selectedLane) {
+      return false;
+    }
+    const stepIndex = Number.isInteger(this.selectedCell?.stepIndex) ? this.selectedCell.stepIndex : 0;
+    this.selectTimelineCell(hit.rowToken, stepIndex, { focusCell: true });
+    this.onLaneSettingChange?.("audition-note", {
+      ...this.selectedAuditionDetail(hit.rowToken),
+      rowToken: hit.rowToken,
+      source: "octave-timeline-keyboard"
+    });
+    return true;
+  }
+
   paintTimelineRange(previousRowToken, previousStepIndex, rowToken, stepIndex) {
     const edit = this.timelinePointerEdit;
     if (!edit) {
@@ -2000,6 +2020,24 @@ export class InstrumentGridControl {
     };
   }
 
+  timelineCanvasViewport() {
+    const scrollLeft = this.gridOutput?.scrollLeft || 0;
+    const width = this.gridOutput?.clientWidth || 0;
+    const stickyHeight = this.timelineScrollProxy?.getBoundingClientRect?.().height || 0;
+    let scrollTop = 0;
+    if (this.gridOutput && this.timelineCanvas) {
+      const gridRect = this.gridOutput.getBoundingClientRect();
+      const canvasRect = this.timelineCanvas.getBoundingClientRect();
+      scrollTop = Math.max(0, gridRect.top + stickyHeight - canvasRect.top);
+    }
+    return {
+      height: Math.max(0, (this.gridOutput?.clientHeight || 0) - stickyHeight),
+      scrollLeft,
+      scrollTop,
+      width
+    };
+  }
+
   restoreTimelineScrollState(scrollState) {
     this.applyTimelineScrollState(scrollState);
     this.window.requestAnimationFrame?.(() => this.applyTimelineScrollState(scrollState));
@@ -2027,6 +2065,8 @@ export class InstrumentGridControl {
       this.syncingTimelineScroll = false;
     }
     this.gridOutput.dataset.timelineScrollLeft = String(Math.round(this.gridOutput.scrollLeft));
+    this.gridOutput.dataset.timelineScrollTop = String(Math.round(this.gridOutput.scrollTop));
+    this.renderCanvasTimeline();
   }
 
   syncTimelineScrollFromProxy() {
@@ -2036,7 +2076,9 @@ export class InstrumentGridControl {
     this.syncingTimelineScroll = true;
     this.gridOutput.scrollLeft = this.timelineScrollProxy.scrollLeft;
     this.gridOutput.dataset.timelineScrollLeft = String(Math.round(this.gridOutput.scrollLeft));
+    this.gridOutput.dataset.timelineScrollTop = String(Math.round(this.gridOutput.scrollTop));
     this.syncingTimelineScroll = false;
+    this.renderCanvasTimeline();
   }
 
   createLaneHeaderCell(lane) {
@@ -2314,10 +2356,14 @@ export class InstrumentGridControl {
     const button = document.createElement("button");
     button.className = "midi-studio-v2__lane-icon-button midi-studio-v2__lane-delete-button";
     button.type = "button";
+    button.dataset.deleteIcon = "trashcan";
     button.dataset.deleteInstrumentRow = lane;
     button.setAttribute("aria-label", `Delete instrument row ${laneLabel(lane)}`);
     button.title = `Delete instrument row ${laneLabel(lane)}`;
-    button.textContent = "x";
+    const icon = document.createElement("span");
+    icon.className = "midi-studio-v2__trashcan-icon";
+    icon.setAttribute("aria-hidden", "true");
+    button.append(icon);
     this.preventPointerFocusScroll(button);
     button.addEventListener("click", () => {
       this.runInstrumentControlAction(() => this.requestDeleteInstrumentRow(lane));
@@ -2476,28 +2522,49 @@ export class InstrumentGridControl {
 
   collapseInstrumentPanel() {
     const section = this.instrumentList?.closest(".accordion-v2") || null;
-    const header = section?.querySelector(".accordion-v2__header") || null;
-    const content = section?.querySelector(".accordion-v2__content") || null;
-    if (!section || !header || !content) {
-      return;
-    }
-    section.classList.remove("is-open");
-    section.dataset.accordionV2Open = "false";
-    header.setAttribute("aria-expanded", "false");
-    content.hidden = true;
+    this.setAccordionSectionOpen(section, false);
+  }
+
+  toggleInstrumentPanel() {
+    const section = this.instrumentList?.closest(".accordion-v2") || null;
+    this.setAccordionSectionOpen(section, !section?.classList.contains("is-open"));
   }
 
   collapseTimelineInstrumentPanel() {
     const section = this.quickInstrumentList?.closest(".accordion-v2") || null;
+    this.setAccordionSectionOpen(section, false);
+  }
+
+  toggleTimelineInstrumentPanel() {
+    const section = this.quickInstrumentList?.closest(".accordion-v2") || null;
+    this.setAccordionSectionOpen(section, !section?.classList.contains("is-open"));
+  }
+
+  setAccordionSectionOpen(section, isOpen) {
     const header = section?.querySelector(".accordion-v2__header") || null;
     const content = section?.querySelector(".accordion-v2__content") || null;
     if (!section || !header || !content) {
-      return;
+      return false;
     }
-    section.classList.remove("is-open");
-    section.dataset.accordionV2Open = "false";
-    header.setAttribute("aria-expanded", "false");
-    content.hidden = true;
+    section.classList.toggle("is-open", isOpen);
+    section.dataset.accordionV2Open = String(isOpen);
+    header.setAttribute("aria-expanded", String(isOpen));
+    content.hidden = !isOpen;
+    const icon = header.querySelector(".accordion-v2__icon");
+    if (icon) {
+      icon.dataset.accordionV2IconState = isOpen ? "open" : "closed";
+      icon.textContent = isOpen ? "X" : "+";
+    }
+    header.querySelectorAll("[data-accordion-v2-toggle-button]").forEach((button) => {
+      button.dataset.accordionV2IconState = isOpen ? "open" : "closed";
+      button.textContent = isOpen ? "X" : "+";
+      const label = button.dataset[isOpen ? "accordionV2OpenLabel" : "accordionV2ClosedLabel"];
+      if (label) {
+        button.setAttribute("aria-label", label);
+        button.title = label;
+      }
+    });
+    return true;
   }
 
   requestDeleteInstrumentRow(lane) {

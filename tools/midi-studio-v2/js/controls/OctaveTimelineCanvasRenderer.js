@@ -39,10 +39,14 @@ export class OctaveTimelineCanvasRenderer {
       playheadStep: 0,
       referenceCells: [],
       rows: [],
+      scrollLeft: 0,
+      scrollTop: 0,
       selectedCell: null,
       selectedLane: "",
       selectedSection: null,
-      totalSteps: 0
+      totalSteps: 0,
+      viewportHeight: 0,
+      viewportWidth: 0
     };
   }
 
@@ -124,8 +128,12 @@ export class OctaveTimelineCanvasRenderer {
   updateDataset() {
     const metrics = this.metrics();
     const playheadCell = this.state.referenceCells[this.state.playheadStep] || null;
+    const frozenHeaderVisible = Number(this.state.scrollTop || 0) > 0;
     this.canvas.dataset.canvasBacked = "true";
     this.canvas.dataset.cellSize = String(metrics.cellSize);
+    this.canvas.dataset.frozenHeader = String(frozenHeaderVisible);
+    this.canvas.dataset.frozenHeaderScrollLeft = String(Math.round(Number(this.state.scrollLeft || 0)));
+    this.canvas.dataset.frozenHeaderScrollTop = String(Math.round(Number(this.state.scrollTop || 0)));
     this.canvas.dataset.playheadStep = String(this.state.playheadStep);
     this.canvas.dataset.timelineRows = String(this.state.rows.length);
     this.canvas.dataset.timelineSteps = String(this.state.totalSteps);
@@ -164,6 +172,7 @@ export class OctaveTimelineCanvasRenderer {
     this.drawPaintPreview(metrics);
     this.drawSelectedCell(metrics);
     this.drawPlayhead(metrics);
+    this.drawFrozenHeaders(metrics);
     this.renderFrame += 1;
     this.canvas.dataset.renderFrame = String(this.renderFrame);
   }
@@ -228,6 +237,63 @@ export class OctaveTimelineCanvasRenderer {
     this.context.textAlign = "center";
     this.context.textBaseline = "middle";
     this.context.fillText(text, x, y);
+  }
+
+  drawFrozenHeaders(metrics) {
+    const scrollTop = clamp(Number(this.state.scrollTop || 0), 0, Math.max(0, metrics.height - metrics.headerHeight));
+    if (scrollTop <= 0) {
+      return;
+    }
+    const scrollLeft = clamp(Number(this.state.scrollLeft || 0), 0, Math.max(0, metrics.width - 1));
+    const viewportWidth = Math.max(metrics.axisWidth + metrics.cellSize, Number(this.state.viewportWidth || metrics.width));
+    const left = scrollLeft;
+    const right = Math.min(metrics.width, scrollLeft + viewportWidth);
+    const firstStep = Math.max(0, Math.floor((left - metrics.axisWidth) / metrics.cellSize));
+    const lastStep = Math.min(this.state.totalSteps - 1, Math.ceil((right - metrics.axisWidth) / metrics.cellSize));
+    this.context.save();
+    this.context.fillStyle = "#3600af";
+    this.context.fillRect(left, scrollTop, Math.max(0, right - left), metrics.headerHeight);
+    this.drawHeaderText("Bar", left + metrics.axisWidth / 2, scrollTop + metrics.headerRowHeight / 2);
+    this.drawHeaderText("Beat", left + metrics.axisWidth / 2, scrollTop + metrics.headerRowHeight + metrics.headerRowHeight / 2);
+    for (let stepIndex = firstStep; stepIndex <= lastStep; stepIndex += 1) {
+      const cell = this.state.referenceCells[stepIndex] || null;
+      if (!cell) {
+        continue;
+      }
+      const x = metrics.axisWidth + stepIndex * metrics.cellSize;
+      if (x + metrics.cellSize < left || x > right) {
+        continue;
+      }
+      if (cell.beat === 1 && cell.subdivisionStep === 1) {
+        this.context.fillStyle = "rgba(14, 165, 233, 0.44)";
+        this.context.fillRect(x, scrollTop, metrics.cellSize, metrics.headerRowHeight);
+      }
+      const section = this.sectionForStep(stepIndex);
+      if (section?.startStep === stepIndex) {
+        this.context.fillStyle = sectionTone(section.colorIndex);
+        this.context.globalAlpha = 0.62;
+        this.context.fillRect(x, scrollTop, metrics.cellSize, metrics.headerRowHeight);
+        this.context.globalAlpha = 1;
+      }
+      this.drawHeaderText(String(cell.bar), x + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight / 2);
+      this.drawHeaderText(String(cell.beat), x + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight + metrics.headerRowHeight / 2);
+    }
+    const step = clamp(this.state.playheadStep, 0, Math.max(0, this.state.totalSteps - 1));
+    const playheadX = metrics.axisWidth + step * metrics.cellSize;
+    const playheadCell = this.state.referenceCells[step] || null;
+    if (playheadCell && playheadX + metrics.cellSize >= left && playheadX <= right) {
+      this.context.fillStyle = "rgba(249, 115, 22, 0.9)";
+      this.context.fillRect(playheadX, scrollTop, metrics.cellSize, metrics.headerHeight);
+      this.drawHeaderText(String(playheadCell.bar), playheadX + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight / 2);
+      this.drawHeaderText(String(playheadCell.beat), playheadX + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight + metrics.headerRowHeight / 2);
+    }
+    this.context.strokeStyle = "rgba(203, 213, 225, 0.7)";
+    this.context.lineWidth = 1;
+    this.context.beginPath();
+    this.context.moveTo(left, scrollTop + metrics.headerHeight + 0.5);
+    this.context.lineTo(right, scrollTop + metrics.headerHeight + 0.5);
+    this.context.stroke();
+    this.context.restore();
   }
 
   drawKeyboardAxis(metrics) {
@@ -427,6 +493,27 @@ export class OctaveTimelineCanvasRenderer {
     };
   }
 
+  keyboardKeyFromPoint(clientX, clientY) {
+    const rect = this.canvas.getBoundingClientRect();
+    const metrics = this.metrics();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    if (x < 0 || x > metrics.axisWidth || y < metrics.headerHeight || y > metrics.height) {
+      return null;
+    }
+    const rowIndex = Math.floor((y - metrics.headerHeight) / metrics.cellSize);
+    const row = this.state.rows[rowIndex] || null;
+    if (!row) {
+      return null;
+    }
+    return {
+      keyKind: keyKind(row),
+      rowIndex,
+      rowLabel: row.label,
+      rowToken: row.value
+    };
+  }
+
   cellCenter(rowToken, stepIndex) {
     const rowIndex = this.state.rows.findIndex((row) => row.value === rowToken);
     if (rowIndex < 0 || stepIndex < 0 || stepIndex >= this.state.totalSteps) {
@@ -446,6 +533,9 @@ export class OctaveTimelineCanvasRenderer {
       activePreviewLanes: this.state.activePreviewLanes.slice(),
       axisWidth: metrics.axisWidth,
       cellSize: metrics.cellSize,
+      frozenHeaderScrollLeft: Number(this.state.scrollLeft || 0),
+      frozenHeaderScrollTop: Number(this.state.scrollTop || 0),
+      frozenHeaderVisible: Number(this.state.scrollTop || 0) > 0,
       headerHeight: metrics.headerHeight,
       height: metrics.height,
       noteCount: this.state.notes.length,

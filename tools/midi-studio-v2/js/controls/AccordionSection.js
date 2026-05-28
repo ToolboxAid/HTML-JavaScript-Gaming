@@ -4,6 +4,7 @@ export class AccordionSection {
     this.header = section?.querySelector(".accordion-v2__header") || null;
     this.content = section?.querySelector(".accordion-v2__content") || null;
     this.icon = this.header?.querySelector(".accordion-v2__icon") || null;
+    this.toggleButtons = Array.from(this.header?.querySelectorAll("[data-accordion-v2-toggle-button]") || []);
   }
 
   mount() {
@@ -40,7 +41,16 @@ export class AccordionSection {
     this.content.hidden = !isOpen;
     if (this.icon) {
       this.icon.dataset.accordionV2IconState = isOpen ? "open" : "closed";
-      this.icon.textContent = isOpen ? "-" : "+";
+      this.icon.textContent = isOpen ? "X" : "+";
     }
+    this.toggleButtons.forEach((button) => {
+      button.dataset.accordionV2IconState = isOpen ? "open" : "closed";
+      button.textContent = isOpen ? "X" : "+";
+      const label = button.dataset[isOpen ? "accordionV2OpenLabel" : "accordionV2ClosedLabel"];
+      if (label) {
+        button.setAttribute("aria-label", label);
+        button.title = label;
+      }
+    });
   }
 }

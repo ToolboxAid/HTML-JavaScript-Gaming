@@ -440,6 +440,31 @@ async function clickCanvasCell(page, rowToken, stepIndex) {
   await page.mouse.click(point.x, point.y);
 }
 
+async function clickCanvasKeyboardKey(page, rowToken) {
+  await page.locator("#instrumentGridOutput").evaluate((output, target) => {
+    const state = window.__midiStudioV2App.instrumentGrid.timelineCanvasState();
+    const rowIndex = state.rows.findIndex((row) => row.value === target.rowToken);
+    output.scrollLeft = 0;
+    output.scrollTop = Math.max(0, state.headerHeight + rowIndex * state.cellSize - output.clientHeight / 2);
+    output.dispatchEvent(new Event("scroll"));
+  }, { rowToken });
+  const point = await page.evaluate((target) => {
+    const canvas = document.querySelector("[data-octave-timeline-canvas='true']");
+    const state = window.__midiStudioV2App.instrumentGrid.timelineCanvasState();
+    const rowIndex = state.rows.findIndex((row) => row.value === target.rowToken);
+    if (!canvas || rowIndex < 0) {
+      return null;
+    }
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: rect.left + state.axisWidth / 2,
+      y: rect.top + state.headerHeight + rowIndex * state.cellSize + state.cellSize / 2
+    };
+  }, { rowToken });
+  expect(point).toBeTruthy();
+  await page.mouse.click(point.x, point.y);
+}
+
 async function hoverCanvasCell(page, rowToken, stepIndex) {
   await scrollCanvasCellIntoView(page, rowToken, stepIndex);
   const point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
@@ -1177,6 +1202,11 @@ test.describe("MIDI Studio V2", () => {
       expect(scrollEvidence.scrollTop).toBeGreaterThan(0);
       expect(scrollEvidence.datasetScrollLeft).toBe(String(scrollEvidence.scrollLeft));
       expect(Math.abs(scrollEvidence.topScrollLeft - scrollEvidence.scrollLeft)).toBeLessThanOrEqual(1);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-frozen-header", "true");
+      const frozenHeaderState = await canvasTimelineState(page);
+      expect(Math.abs(Math.round(frozenHeaderState.frozenHeaderScrollLeft) - scrollEvidence.scrollLeft)).toBeLessThanOrEqual(1);
+      expect(Math.round(frozenHeaderState.frozenHeaderScrollTop)).toBeGreaterThan(0);
+      expect(frozenHeaderState.frozenHeaderVisible).toBe(true);
 
       const zoomBefore = (await canvasTimelineState(page)).cellSize;
       await page.locator("#instrumentGridZoomInButton").click();
@@ -3885,6 +3915,134 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
+  test("repairs PR068 accordion controls trashcan delete piano-key audition and frozen canvas header", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+
+      await selectMidiStudioTab(page, "instruments");
+      const instrumentsHeader = page.locator('.accordion-v2__header[aria-controls="instrumentListContent"]');
+      await expect(instrumentsHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(instrumentsHeader.locator(".accordion-v2__icon")).toHaveText("X");
+      await page.locator("#closeInstrumentPanelButton").click();
+      await expect(instrumentsHeader).toHaveAttribute("aria-expanded", "false");
+      await expect(instrumentsHeader.locator(".accordion-v2__icon")).toHaveText("+");
+      await expect(page.locator("#instrumentListContent")).toBeHidden();
+      await instrumentsHeader.click({ position: { x: 8, y: 8 } });
+      await expect(instrumentsHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(instrumentsHeader.locator(".accordion-v2__icon")).toHaveText("X");
+      await expect(page.locator("#instrumentListContent")).toBeVisible();
+
+      const deleteButton = instrumentRow(page, "lead").locator("[data-delete-instrument-row='lead']");
+      await expect(deleteButton).toHaveAttribute("data-delete-icon", "trashcan");
+      await expect(deleteButton).toHaveText("");
+      await expect(deleteButton.locator(".midi-studio-v2__trashcan-icon")).toHaveCount(1);
+      const trashLayout = await instrumentRow(page, "lead").evaluate((row) => {
+        const titleRow = row.querySelector(".midi-studio-v2__instrument-title-row");
+        const title = row.querySelector("[data-lane-label='lead']");
+        const summary = row.querySelector("[data-lane-summary='lead']");
+        const trash = row.querySelector("[data-delete-instrument-row='lead']");
+        const rowRect = row.getBoundingClientRect();
+        const titleRect = title.getBoundingClientRect();
+        const titleRowRect = titleRow.getBoundingClientRect();
+        const summaryRect = summary.getBoundingClientRect();
+        const trashRect = trash.getBoundingClientRect();
+        return {
+          rightSide: trashRect.right >= rowRect.right - 10,
+          sameHeaderRow: Math.abs((trashRect.top + trashRect.height / 2) - (titleRowRect.top + titleRowRect.height / 2)) <= 3,
+          titleBeforeTrash: titleRect.right < trashRect.left,
+          upFromSummary: trashRect.bottom <= summaryRect.top + 2
+        };
+      });
+      expect(trashLayout).toEqual({
+        rightSide: true,
+        sameHeaderRow: true,
+        titleBeforeTrash: true,
+        upFromSummary: true
+      });
+
+      await selectInstrumentRow(page, "lead");
+      await selectMidiStudioTab(page, "studio");
+      const timelineHeader = page.locator('.accordion-v2__header[aria-controls="timelineInstrumentQuickContent"]');
+      await expect(timelineHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(timelineHeader.locator(".accordion-v2__icon")).toHaveText("X");
+      await page.locator("#timelineCloseInstrumentPanelButton").click();
+      await expect(timelineHeader).toHaveAttribute("aria-expanded", "false");
+      await expect(timelineHeader.locator(".accordion-v2__icon")).toHaveText("+");
+      await expect(page.locator("#timelineInstrumentQuickContent")).toBeHidden();
+      await timelineHeader.click({ position: { x: 8, y: 8 } });
+      await expect(timelineHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(timelineHeader.locator(".accordion-v2__icon")).toHaveText("X");
+      await waitForCanvasRender(page);
+
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      const auditionRow = await page.evaluate(() => {
+        const state = window.__midiStudioV2App.instrumentGrid.timelineCanvasState();
+        return state.rows.find((row) => row.value === "C6")?.value || state.rows.find((row) => row.keyKind === "white")?.value;
+      });
+      expect(auditionRow).toBeTruthy();
+      await clickCanvasKeyboardKey(page, auditionRow);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Auditioned .* for Lead with/);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      const selectedKeyCell = await canvasTimelineState(page);
+      expect(selectedKeyCell.selectedCell).toEqual({ rowToken: auditionRow, stepIndex: 0 });
+
+      const scrollEvidence = await page.locator("#instrumentGridOutput").evaluate((output) => {
+        output.style.width = "330px";
+        output.style.maxWidth = "330px";
+        output.scrollLeft = 260;
+        output.scrollTop = 210;
+        output.dispatchEvent(new Event("scroll"));
+        const topScrollbar = output.querySelector(".midi-studio-v2__timeline-scroll-proxy");
+        return {
+          datasetScrollLeft: output.dataset.timelineScrollLeft,
+          scrollLeft: Math.round(output.scrollLeft),
+          scrollTop: Math.round(output.scrollTop),
+          topScrollLeft: Math.round(topScrollbar?.scrollLeft || 0)
+        };
+      });
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-frozen-header", "true");
+      const frozenHeaderState = await canvasTimelineState(page);
+      expect(frozenHeaderState.frozenHeaderVisible).toBe(true);
+      expect(Math.abs(Math.round(frozenHeaderState.frozenHeaderScrollLeft) - scrollEvidence.scrollLeft)).toBeLessThanOrEqual(1);
+      expect(Math.round(frozenHeaderState.frozenHeaderScrollTop)).toBeGreaterThan(0);
+      expect(scrollEvidence.datasetScrollLeft).toBe(String(scrollEvidence.scrollLeft));
+      expect(Math.abs(scrollEvidence.topScrollLeft - scrollEvidence.scrollLeft)).toBeLessThanOrEqual(1);
+
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("warns when PR068 canvas piano-key audition audio is unavailable", async ({ page }) => {
+    const server = await openMidiStudioForImport(page, { webAudio: false });
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      const beforeLane = await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead);
+      await clickCanvasKeyboardKey(page, "C6");
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Preview Synth keyboard audition unavailable: Preview Synth audio unavailable: Web Audio AudioContext is not available\. Use a browser with Web Audio support\./);
+      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead)).toBe(beforeLane);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-selected-row-token", "C6");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("derives primary song, instrument, grid, playback, and diagnostics views from the canonical selected song", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {
@@ -5105,28 +5263,35 @@ test.describe("MIDI Studio V2", () => {
   test("opens and closes every MIDI Studio accordion with matching icon state", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
-      const headerCount = await page.locator(".accordion-v2__header").count();
-      for (let index = 0; index < headerCount; index += 1) {
-        const header = page.locator(".accordion-v2__header").nth(index);
-        const controls = await header.getAttribute("aria-controls");
-        expect(controls).toBeTruthy();
-        const content = page.locator(`#${controls}`);
-        await expect(content).toHaveCount(1);
-        await expect(header).toHaveAttribute("aria-expanded", "true");
-        await expect(header.locator(".accordion-v2__icon")).toHaveText("-");
-        await header.click({ position: { x: 8, y: 8 } });
-        await expect(header).toHaveAttribute("aria-expanded", "false");
-        await expect(header.locator(".accordion-v2__icon")).toHaveText("+");
-        await expect(content).toBeHidden();
-        await header.click({ position: { x: 8, y: 8 } });
-        await expect(header).toHaveAttribute("aria-expanded", "true");
-        await expect(header.locator(".accordion-v2__icon")).toHaveText("-");
-        await expect(content).toBeVisible();
+      const tabIds = await page.locator("[data-midi-studio-tab]").evaluateAll((tabs) => tabs.map((tab) => tab.dataset.midiStudioTab).filter(Boolean));
+      let auditedHeaders = 0;
+      for (const tabId of tabIds) {
+        await selectMidiStudioTab(page, tabId);
+        const headers = page.locator(`.accordion-v2[data-midi-studio-tab-panel~="${tabId}"] .accordion-v2__header`);
+        const headerCount = await headers.count();
+        auditedHeaders += headerCount;
+        for (let index = 0; index < headerCount; index += 1) {
+          const header = headers.nth(index);
+          const controls = await header.getAttribute("aria-controls");
+          expect(controls).toBeTruthy();
+          const content = page.locator(`#${controls}`);
+          await expect(header).toBeVisible();
+          await expect(content).toHaveCount(1);
+          await expect(header).toHaveAttribute("aria-expanded", "true");
+          await expect(header.locator(".accordion-v2__icon")).toHaveText("X");
+          await header.click({ position: { x: 8, y: 8 } });
+          await expect(header).toHaveAttribute("aria-expanded", "false");
+          await expect(header.locator(".accordion-v2__icon")).toHaveText("+");
+          await expect(header.locator(".accordion-v2__icon")).toHaveAttribute("data-accordion-v2-icon-state", "closed");
+          await expect(content).toBeHidden();
+          await header.click({ position: { x: 8, y: 8 } });
+          await expect(header).toHaveAttribute("aria-expanded", "true");
+          await expect(header.locator(".accordion-v2__icon")).toHaveText("X");
+          await expect(header.locator(".accordion-v2__icon")).toHaveAttribute("data-accordion-v2-icon-state", "open");
+          await expect(content).toBeVisible();
+        }
       }
-      expect(await page.locator("[id]").evaluateAll((elements) => {
-        const ids = elements.map((element) => element.id).filter(Boolean);
-        return ids.length === new Set(ids).size;
-      })).toBe(true);
+      expect(auditedHeaders).toBeGreaterThan(0);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

@@ -503,7 +503,13 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__timeline-instruments {
 .midi-studio-v2__instrument-title-row {
   align-items: center;
   display: flex;
+  gap: 0.3rem;
   min-width: 0;
+}
+
+.midi-studio-v2__instrument-title-row .midi-studio-v2__lane-delete-button {
+  margin-left: auto;
+  transform: translateY(-1px);
 }
 
 .midi-studio-v2__instrument-row-summary {
@@ -1115,6 +1121,39 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 .midi-studio-v2__lane-delete-button {
   border-color: rgba(248, 113, 113, 0.75);
   color: #fecaca;
+  position: relative;
+}
+
+.midi-studio-v2__trashcan-icon {
+  box-sizing: border-box;
+  color: currentColor;
+  display: inline-block;
+  height: 0.78rem;
+  position: relative;
+  width: 0.66rem;
+}
+
+.midi-studio-v2__trashcan-icon::before {
+  background: currentColor;
+  border-radius: 1px;
+  content: "";
+  height: 0.11rem;
+  left: 0.03rem;
+  position: absolute;
+  right: 0.03rem;
+  top: 0.1rem;
+}
+
+.midi-studio-v2__trashcan-icon::after {
+  border: 1.5px solid currentColor;
+  border-radius: 0 0 2px 2px;
+  border-top: 0;
+  bottom: 0.05rem;
+  content: "";
+  left: 0.12rem;
+  position: absolute;
+  right: 0.12rem;
+  top: 0.28rem;
 }
 
 .midi-studio-v2__lane-slider {
