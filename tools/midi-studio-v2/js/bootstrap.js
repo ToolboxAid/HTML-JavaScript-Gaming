@@ -10,6 +10,7 @@ import { PlaybackControl } from "./controls/PlaybackControl.js";
 import { RenderedExportActionsControl } from "./controls/RenderedExportActionsControl.js";
 import { SongDetailsControl } from "./controls/SongDetailsControl.js";
 import { SongListControl } from "./controls/SongListControl.js";
+import { SongSetupControl } from "./controls/SongSetupControl.js";
 import { SongSheetControl } from "./controls/SongSheetControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { StudioTabsControl } from "./controls/StudioTabsControl.js";
@@ -126,6 +127,7 @@ window.addEventListener("DOMContentLoaded", () => {
     serializer: new MidiStudioStateSerializer(),
     shell: new ToolShellControl(),
     songList: new SongListControl({ list: requireElement("#songList") }),
+    songSetup: new SongSetupControl({ addSongButton: requireElement("#addSongButton") }),
     songSheet: new SongSheetControl({
       introInput: requireElement("#songSheetIntroInput"),
       keyInput: requireElement("#songSheetKeyInput"),
@@ -139,6 +141,7 @@ window.addEventListener("DOMContentLoaded", () => {
     statusLog,
     studioTabs: new StudioTabsControl({
       buttons: Array.from(document.querySelectorAll("[data-midi-studio-tab]")),
+      defaultTab: "song-setup",
       panels: Array.from(document.querySelectorAll("[data-midi-studio-tab-panel]"))
     }),
     windowRef: window

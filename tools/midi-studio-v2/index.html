@@ -70,8 +70,8 @@
     </nav>
 
     <nav class="midi-studio-v2__tabs" aria-label="MIDI Studio sections" role="tablist">
-      <button class="is-active" type="button" role="tab" aria-selected="true" data-midi-studio-tab="studio">Studio</button>
-      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="song-setup">Song Setup</button>
+      <button class="is-active" type="button" role="tab" aria-selected="true" data-midi-studio-tab="song-setup">Song Setup</button>
+      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="studio">Octave Timeline</button>
       <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="instruments">Instruments</button>
       <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="auto-create-parts">Auto-Create Parts</button>
       <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="midi-import">MIDI Import</button>
@@ -144,16 +144,17 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup diagnostics">
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songDetailsContent">
-            <span>Selected Song Details</span>
+            <span>Song Setup</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="songDetailsContent" class="accordion-v2__content midi-studio-v2__selected-song-details">
-            <dl id="songDetails" class="midi-studio-v2__details"></dl>
-            <hr class="midi-studio-v2__details-divider">
-            <section id="songSheetContent" class="midi-studio-v2__stack midi-studio-v2__song-sheet-panel" aria-label="Song Sheet">
-              <h3>Song Sheet</h3>
+            <div class="midi-studio-v2__song-setup-header">
+              <h3 id="songSheetHeading">Song Sheet</h3>
+              <button id="addSongButton" type="button">Add Song</button>
+            </div>
+            <section id="songSheetContent" class="midi-studio-v2__stack midi-studio-v2__song-sheet-panel" aria-labelledby="songSheetHeading">
               <div class="midi-studio-v2__song-sheet-grid">
                 <label class="tool-starter__field" for="songSheetTempoInput">
                   <span>Tempo/BPM</span>
@@ -195,6 +196,7 @@
                 <button id="parseSongSheetButton" type="button">Parse Guided Song Sheet</button>
               </div>
             </section>
+            <dl id="songDetails" class="midi-studio-v2__details" hidden></dl>
           </div>
         </section>
 
@@ -318,7 +320,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup diagnostics">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="directorContent">
             <span>Game Music Director</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -328,7 +330,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup diagnostics">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
           <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="renderedTargetsContent">
             <span>Rendered Export Targets</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -371,7 +373,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio diagnostics">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio song-setup diagnostics">
           <div class="accordion-v2__header tool-starter__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
             <span>Status</span>
             <div class="tool-starter__status-header-actions">

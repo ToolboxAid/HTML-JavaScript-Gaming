@@ -173,9 +173,13 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__tabs button.is-active {
   margin: 0;
 }
 
+.midi-studio-v2__details[hidden] {
+  display: none;
+}
+
 .midi-studio-v2__selected-song-details {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.4rem;
 }
 
 .midi-studio-v2__editable-details {
@@ -200,16 +204,25 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__tabs button.is-active {
   width: auto;
 }
 
-.midi-studio-v2__details-divider {
-  border: 0;
-  border-top: 1px solid var(--tool-starter-line);
-  margin: 0.2rem 0;
-  width: 100%;
+.midi-studio-v2__song-setup-header {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  min-width: 0;
 }
 
-.midi-studio-v2__song-sheet-panel h3 {
+.midi-studio-v2__song-setup-header h3 {
   font-size: 0.9rem;
   margin: 0;
+}
+
+.midi-studio-v2__song-setup-header button {
+  flex: 0 0 auto;
+}
+
+.midi-studio-v2__song-sheet-panel {
+  gap: 0.45rem;
 }
 
 .midi-studio-v2__midi-import-panel h3 {
@@ -278,7 +291,7 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__tabs button.is-active {
 
 .midi-studio-v2__song-sheet-grid {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.45rem 0.55rem;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 }
 
@@ -292,7 +305,7 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__tabs button.is-active {
 .midi-studio-v2__midi-import-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .midi-studio-v2__details div,

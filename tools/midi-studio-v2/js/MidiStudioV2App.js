@@ -24,6 +24,7 @@ export class MidiStudioV2App {
     serializer,
     shell,
     songList,
+    songSetup,
     songSheet,
     songSheetParser,
     statusLog,
@@ -54,6 +55,7 @@ export class MidiStudioV2App {
     this.serializer = serializer;
     this.shell = shell;
     this.songList = songList;
+    this.songSetup = songSetup;
     this.songSheet = songSheet;
     this.songSheetParser = songSheetParser;
     this.statusLog = statusLog;
@@ -67,8 +69,12 @@ export class MidiStudioV2App {
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
+    this.songSetup.mount({ onAddSong: () => this.addSong() });
     this.details.mount({ onChange: (field, value) => this.handleSongDetailsChange(field, value) });
-    this.songSheet.mount({ onParse: (sourceText) => this.parseSongSheet(sourceText) });
+    this.songSheet.mount({
+      onFieldChange: (field, value) => this.handleSongSheetFieldChange(field, value),
+      onParse: (sourceText) => this.parseSongSheet(sourceText)
+    });
     this.instrumentGrid.mount({
       onGenerate: (lane, input) => this.generateInstrumentLane(lane, input),
       onLaneSettingChange: (kind, detail) => this.handlePreviewLaneSettingChange(kind, detail),
@@ -187,7 +193,7 @@ export class MidiStudioV2App {
     this.render();
     this.applySelectedSongArrangement("active manifest song");
     this.statusLog.ok(`Loaded ${this.payload.songs.length} MIDI song${this.payload.songs.length === 1 ? "" : "s"} from ${sourceLabel} via ${normalized.sourceKind}.`);
-    this.statusLog.info("Next: select a MIDI Studio song, review the Studio tab timeline, then press Play to audition the imported arrangement.");
+    this.statusLog.info("Next: select a MIDI Studio song, review the Octave Timeline tab, then press Play to audition the imported arrangement.");
     return true;
   }
 
@@ -244,6 +250,23 @@ export class MidiStudioV2App {
     }
     this.details.showJson(song);
     this.statusLog.info(`Edited selected song detail: ${field}.`);
+    this.updateAudioDiagnostics();
+  }
+
+  handleSongSheetFieldChange(field, value) {
+    if (field !== "key" && field !== "style") {
+      return;
+    }
+    const song = this.selectedSong();
+    const arrangement = song?.studioArrangement || null;
+    if (!arrangement) {
+      this.statusLog.warn(`Song Sheet ${field} was not applied because no editable arrangement is selected.`);
+      return;
+    }
+    arrangement[field] = String(value || "").trim();
+    this.details.showJson(song);
+    this.markDirty({ changedKeys: ["data.songs.studioArrangement"], reason: "midi-studio-song-setup-edited" });
+    this.statusLog.info(`Updated Song Sheet ${field} for ${song.name}.`);
     this.updateAudioDiagnostics();
   }
 
@@ -353,6 +376,88 @@ export class MidiStudioV2App {
     this.applySelectedSongArrangement("selected song");
     this.statusLog.ok(`Selected MIDI song: ${this.selectedSong()?.name || songId}.`);
     this.updateAudioDiagnostics();
+  }
+
+  addSong() {
+    this.stopPlayback({ log: false });
+    if (!this.payload) {
+      this.payload = {
+        activeSongId: "",
+        directorMode: { enabled: false },
+        runtimePreference: "live-midi",
+        songs: [],
+        version: 1
+      };
+    }
+    const song = this.createAddedSong();
+    this.payload.songs.push(song);
+    this.payload.activeSongId = song.id;
+    this.importedSongBaselines.set(song.id, deepClone(song));
+    this.render();
+    this.applySelectedSongArrangement("Add Song");
+    this.markDirty({ changedKeys: ["data.songs"], reason: "midi-studio-song-added" });
+    this.statusLog.ok(`Added MIDI song: ${song.name}. Canonical model now has ${this.payload.songs.length} song${this.payload.songs.length === 1 ? "" : "s"}.`);
+    this.updateAudioDiagnostics();
+  }
+
+  createAddedSong() {
+    const source = this.selectedSong();
+    const draftNumber = this.nextSongDraftNumber();
+    return {
+      defaultRuntimeFormat: source?.defaultRuntimeFormat || "ogg",
+      director: {
+        mood: "draft",
+        intensity: "medium",
+        usage: ["song-setup"],
+        notes: "Created in MIDI Studio V2 Song Setup."
+      },
+      id: `new-song-${draftNumber}`,
+      instrumentSet: source?.instrumentSet || "General MIDI",
+      loop: source?.loop ? deepClone(source.loop) : { enabled: false, endSeconds: "", startSeconds: "" },
+      name: `New Song ${draftNumber}`,
+      rendered: { mp3: "", ogg: "", wav: "" },
+      sourceMidi: "",
+      studioArrangement: source?.studioArrangement ? deepClone(source.studioArrangement) : this.defaultAddedSongArrangement(),
+      tags: ["draft"]
+    };
+  }
+
+  nextSongDraftNumber() {
+    const existingIds = new Set((this.payload?.songs || []).map((song) => song.id));
+    let draftNumber = (this.payload?.songs?.length || 0) + 1;
+    while (existingIds.has(`new-song-${draftNumber}`)) {
+      draftNumber += 1;
+    }
+    return draftNumber;
+  }
+
+  defaultAddedSongArrangement() {
+    return {
+      beatsPerBar: "4",
+      key: "C major",
+      lanes: {
+        bass: "C2 - G2 - | C2 - G2 -",
+        chords: "C - G - | C - G -",
+        drums: "kick hat snare hat | kick hat snare hat",
+        lead: "E4 - G4 - | E4 - G4 -",
+        pad: "C - G - | C - G -"
+      },
+      previewInstruments: {
+        bass: "synth-bass",
+        chords: "warm-pad",
+        drums: "basic-drums",
+        lead: "retro-pulse-lead",
+        pad: "ambient-pad"
+      },
+      sections: "draft:2",
+      songSheet: {
+        intro: "C G",
+        loop: "C G"
+      },
+      style: "retro-arcade",
+      subdivision: "1",
+      tempo: "120"
+    };
   }
 
   async playSelectedSong() {

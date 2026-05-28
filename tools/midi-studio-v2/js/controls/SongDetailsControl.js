@@ -63,7 +63,7 @@ export class SongDetailsControl {
       return;
     }
     this.syncSourceFields(song);
-    this.renderEditableDetails(song);
+    this.renderCurrentDetails(song);
     this.renderDefinitionList(this.renderedTargets, [
       ["WAV", song.rendered.wav || "No rendered WAV target declared."],
       ["MP3", song.rendered.mp3 || "No rendered MP3 target declared."],
@@ -74,12 +74,27 @@ export class SongDetailsControl {
 
   renderEmptyDetails(payload) {
     this.details.replaceChildren();
+    this.details.classList.remove("midi-studio-v2__editable-details");
+    if (this.details.hidden) {
+      this.renderDefinitionList(this.renderedTargets, [["WAV", "No rendered WAV target selected."], ["MP3", "No rendered MP3 target selected."], ["OGG", "No rendered OGG target selected."]]);
+      this.inspector.textContent = JSON.stringify(payload || {}, null, 2);
+      return;
+    }
     const empty = document.createElement("p");
     empty.className = "tool-starter__hint";
     empty.textContent = "No song selected.";
     this.details.append(empty);
     this.renderDefinitionList(this.renderedTargets, [["WAV", "No rendered WAV target selected."], ["MP3", "No rendered MP3 target selected."], ["OGG", "No rendered OGG target selected."]]);
     this.inspector.textContent = JSON.stringify(payload || {}, null, 2);
+  }
+
+  renderCurrentDetails(song) {
+    if (this.details.hidden) {
+      this.details.replaceChildren();
+      this.details.classList.remove("midi-studio-v2__editable-details");
+      return;
+    }
+    this.renderEditableDetails(song);
   }
 
   renderEditableDetails(song) {

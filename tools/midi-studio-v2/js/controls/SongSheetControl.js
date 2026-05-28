@@ -28,8 +28,10 @@ export class SongSheetControl {
     this.tempoInput = tempoInput;
   }
 
-  mount({ onParse }) {
+  mount({ onFieldChange = () => {}, onParse }) {
     this.parseButton.addEventListener("click", () => onParse(this.composeGuidedSheet()));
+    this.keyInput.addEventListener("change", () => onFieldChange("key", this.keyInput.value));
+    this.styleInput.addEventListener("change", () => onFieldChange("style", this.styleInput.value));
   }
 
   applyGuidedDefaults({ intro, key, loop, style, tempo }) {
