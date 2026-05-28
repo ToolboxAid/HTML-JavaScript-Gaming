@@ -71,6 +71,9 @@ export class SongSheetControl {
   }
 
   render(result = null) {
+    if (!this.summary) {
+      return;
+    }
     this.renderDefinitionList(songSheetRows(result));
   }
 

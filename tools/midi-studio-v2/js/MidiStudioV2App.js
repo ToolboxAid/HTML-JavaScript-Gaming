@@ -35,8 +35,7 @@ export class MidiStudioV2App {
     this.directorPanel = directorPanel;
     this.instrumentGrid = instrumentGrid;
     this.instrumentGridParser = instrumentGridParser;
-    this.lastInstrumentGridResult = null;
-    this.lastSongSheetResult = null;
+    this.instrumentGridResults = new WeakMap();
     this.manifestLoader = manifestLoader;
     this.midiSourceDetails = midiSourceDetails;
     this.midiSourceInspection = midiSourceInspection;
@@ -45,7 +44,6 @@ export class MidiStudioV2App {
     this.playbackControl = playbackControl;
     this.previewSynth = previewSynth;
     this.renderedExportActions = renderedExportActions;
-    this.selectedSongId = "";
     this.serializer = serializer;
     this.shell = shell;
     this.songList = songList;
@@ -141,7 +139,6 @@ export class MidiStudioV2App {
 
   renderEmpty() {
     this.payload = null;
-    this.selectedSongId = "";
     this.songList.render([], "");
     this.details.render(null, null);
     this.directorPanel.render(null, {});
@@ -149,8 +146,7 @@ export class MidiStudioV2App {
     this.midiSourceDetails.setEnabled(false);
     this.songSheet.render(null);
     this.instrumentGrid.render(null);
-    this.lastInstrumentGridResult = null;
-    this.lastSongSheetResult = null;
+    this.instrumentGridResults = new WeakMap();
     this.playbackControl.setSelected(null);
     this.actionNav.setNowPlaying(null);
     this.actionNav.setToolActionsEnabled(false);
@@ -173,7 +169,6 @@ export class MidiStudioV2App {
       return false;
     }
     this.payload = normalized.payload;
-    this.selectedSongId = this.payload.activeSongId;
     this.render();
     this.applySelectedSongArrangement("active manifest song");
     this.statusLog.ok(`Loaded ${this.payload.songs.length} MIDI song${this.payload.songs.length === 1 ? "" : "s"} from ${sourceLabel} via ${normalized.sourceKind}.`);
@@ -251,13 +246,61 @@ export class MidiStudioV2App {
     return (this.payload?.songs || []).find((song) => song.id === this.selectedSongId) || null;
   }
 
+  selectedSongState() {
+    const song = this.selectedSong();
+    return {
+      arrangement: song?.studioArrangement || null,
+      gridResult: this.currentInstrumentGridResult(),
+      payload: this.payload,
+      song,
+      songId: this.selectedSongId
+    };
+  }
+
+  get selectedSongId() {
+    return this.payload?.activeSongId || "";
+  }
+
+  set selectedSongId(songId) {
+    if (this.payload) {
+      this.payload.activeSongId = String(songId || "");
+    }
+  }
+
+  currentInstrumentGridResult() {
+    const song = this.selectedSong();
+    return song ? this.instrumentGridResults.get(song) || null : null;
+  }
+
+  get lastInstrumentGridResult() {
+    return this.currentInstrumentGridResult();
+  }
+
+  setCurrentInstrumentGridResult(result) {
+    const song = this.selectedSong();
+    if (!song) {
+      return;
+    }
+    if (result?.ok) {
+      this.instrumentGridResults.set(song, result);
+      return;
+    }
+    this.instrumentGridResults.delete(song);
+  }
+
+  clearCurrentInstrumentGridResult() {
+    const song = this.selectedSong();
+    if (song) {
+      this.instrumentGridResults.delete(song);
+    }
+  }
+
   selectSong(songId) {
     if (!this.payload?.songs.some((song) => song.id === songId)) {
       this.statusLog.fail(`Song selection failed: ${songId || "(missing song id)"} is not in the active MIDI payload.`);
       return;
     }
     this.stopPlayback({ log: false });
-    this.selectedSongId = songId;
     this.payload.activeSongId = songId;
     this.render();
     this.applySelectedSongArrangement("selected song");
@@ -288,7 +331,7 @@ export class MidiStudioV2App {
 
   async playSelectedArrangement(song) {
     this.playback.stop();
-    if (!this.lastInstrumentGridResult?.ok) {
+    if (!this.currentInstrumentGridResult()?.ok) {
       const arranged = this.applySelectedSongArrangement("play request");
       if (!arranged) {
         this.playbackControl.setStopped(song);
@@ -296,7 +339,8 @@ export class MidiStudioV2App {
         return;
       }
     }
-    const section = this.instrumentGrid.selectedSection() || this.lastInstrumentGridResult?.sections?.[0] || null;
+    const gridResult = this.currentInstrumentGridResult();
+    const section = this.instrumentGrid.selectedSection() || gridResult?.sections?.[0] || null;
     if (!section) {
       this.playbackControl.setStopped(song);
       this.statusLog.fail(`Playable arrangement section not found for ${song.name}.`);
@@ -363,7 +407,6 @@ export class MidiStudioV2App {
       this.payload.songs.push(song);
       this.payload.activeSongId = song.id;
     }
-    this.selectedSongId = song.id;
     this.render();
     this.midiSourceDetails.render(result);
     this.applySelectedSongArrangement("local MIDI import");
@@ -490,12 +533,11 @@ export class MidiStudioV2App {
     const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
     this.songSheet.render(result);
     if (!result.ok) {
-      this.lastSongSheetResult = null;
       this.statusLog.fail(`Song Sheet rejected: ${result.message}`);
       this.updateAudioDiagnostics();
       return;
     }
-    this.lastSongSheetResult = result;
+    this.syncSelectedArrangementFromSongSheetResult(result);
     this.instrumentGrid.setPreviewTempoBpm(result.tempo);
     if (result.warnings.length) {
       this.statusLog.warn(`Song Sheet parsed with warnings: ${result.warningSummary}`);
@@ -542,12 +584,13 @@ export class MidiStudioV2App {
   normalizeInstrumentGrid(input) {
     const result = this.instrumentGridParser.parse(input);
     this.instrumentGrid.render(result);
-    this.lastInstrumentGridResult = result.ok ? result : null;
+    this.setCurrentInstrumentGridResult(result.ok ? result : null);
     if (!result.ok) {
       this.statusLog.fail(`Instrument grid rejected: ${result.message}`);
       this.updateAudioDiagnostics();
       return;
     }
+    this.syncSelectedArrangementFromGridInput(input);
     if (result.warnings.length) {
       this.statusLog.warn(`Instrument grid normalized with warnings: ${result.warningSummary}`);
     }
@@ -565,7 +608,7 @@ export class MidiStudioV2App {
     this.instrumentGrid.applyGeneratedLane(generated);
     const normalized = this.instrumentGridParser.parse(this.instrumentGrid.readInput());
     this.instrumentGrid.render(normalized);
-    this.lastInstrumentGridResult = normalized.ok ? normalized : null;
+    this.setCurrentInstrumentGridResult(normalized.ok ? normalized : null);
     if (generated.warnings.length) {
       this.statusLog.warn(`Instrument grid generation warnings: ${generated.warningSummary}`);
     }
@@ -577,6 +620,7 @@ export class MidiStudioV2App {
       this.updateAudioDiagnostics();
       return;
     }
+    this.syncSelectedArrangementFromGridInput(this.instrumentGrid.readInput());
     if (normalized.warnings.length) {
       this.statusLog.warn(`Instrument grid normalized with warnings: ${normalized.warningSummary}`);
     }
@@ -591,7 +635,7 @@ export class MidiStudioV2App {
       this.updateAudioDiagnostics();
       return;
     }
-    this.lastInstrumentGridResult = result;
+    this.setCurrentInstrumentGridResult(result);
     if (["add-lane", "delete-lane", "delete-selected-note", "duplicate-selected-note", "paint-notes", "toggle-note"].includes(detail.action)) {
       this.instrumentGrid.render(result);
     } else {
@@ -626,6 +670,21 @@ export class MidiStudioV2App {
     song.studioArrangement.subdivision = String(input.subdivision || "1");
     song.studioArrangement.lanes = { ...(input.lanes || {}) };
     song.studioArrangement.previewInstruments = { ...(input.previewLaneSettings?.instruments || {}) };
+    this.details.showJson(song);
+  }
+
+  syncSelectedArrangementFromSongSheetResult(result) {
+    const song = this.selectedSong();
+    if (!song?.studioArrangement || !result?.ok) {
+      return;
+    }
+    song.studioArrangement.key = String(result.key || "");
+    song.studioArrangement.style = String(result.style || "");
+    song.studioArrangement.tempo = String(result.tempo || "");
+    song.studioArrangement.songSheet = {
+      intro: this.songSheet.introInput.value.trim(),
+      loop: this.songSheet.loopInput.value.trim()
+    };
     this.details.showJson(song);
   }
 
@@ -678,7 +737,7 @@ export class MidiStudioV2App {
   async startPreviewSynth({ endStep, label, loop, mode, startStep }) {
     const result = await this.previewSynth.playGridRange({
       endStep,
-      grid: this.lastInstrumentGridResult,
+      grid: this.currentInstrumentGridResult(),
       label,
       laneSettings: this.instrumentGrid.previewLaneSettings(),
       loop,
@@ -784,7 +843,7 @@ export class MidiStudioV2App {
   }
 
   previewTempoBpm() {
-    const parsedTempo = Number(this.lastSongSheetResult?.tempo);
+    const parsedTempo = Number(this.selectedSong()?.studioArrangement?.tempo);
     return Number.isFinite(parsedTempo) && parsedTempo > 0 ? parsedTempo : 120;
   }
 
@@ -808,14 +867,12 @@ export class MidiStudioV2App {
     const arrangement = song?.studioArrangement || null;
     if (!song) {
       this.instrumentGrid.render(null);
-      this.lastInstrumentGridResult = null;
-      this.lastSongSheetResult = null;
+      this.clearCurrentInstrumentGridResult();
       return false;
     }
     if (!arrangement) {
       this.instrumentGrid.render(null);
-      this.lastInstrumentGridResult = null;
-      this.lastSongSheetResult = null;
+      this.clearCurrentInstrumentGridResult();
       this.statusLog.warn(`No editable studio arrangement is declared for ${song.name}. Import a manifest song with music.songs[].studioArrangement before using Play as an audible Preview Synth workflow.`);
       this.updateAudioDiagnostics();
       return false;
@@ -874,12 +931,13 @@ export class MidiStudioV2App {
   }
 
   playableEventSummary() {
-    const section = this.instrumentGrid.selectedSection() || this.lastInstrumentGridResult?.sections?.[0] || null;
-    if (!this.lastInstrumentGridResult?.ok || !section) {
+    const gridResult = this.currentInstrumentGridResult();
+    const section = this.instrumentGrid.selectedSection() || gridResult?.sections?.[0] || null;
+    if (!gridResult?.ok || !section) {
       return { activeLanes: [], count: 0, warnings: [] };
     }
     const playable = this.previewSynth.playableEventsForRange(
-      this.lastInstrumentGridResult,
+      gridResult,
       section.startStep,
       section.endStep,
       this.instrumentGrid.previewLaneSettings()

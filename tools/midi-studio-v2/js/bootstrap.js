@@ -29,6 +29,10 @@ function requireElement(selector) {
   return element;
 }
 
+function optionalElement(selector) {
+  return document.querySelector(selector);
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   const statusLog = new StatusLogControl({
     clearButton: requireElement("#clearStatusButton"),
@@ -124,7 +128,7 @@ window.addEventListener("DOMContentLoaded", () => {
       loopInput: requireElement("#songSheetLoopInput"),
       parseButton: requireElement("#parseSongSheetButton"),
       styleInput: requireElement("#songSheetStyleInput"),
-      summary: requireElement("#songSheetSummary"),
+      summary: optionalElement("#songSheetSummary"),
       tempoInput: requireElement("#songSheetTempoInput")
     }),
     songSheetParser: new SongSheetParser(),

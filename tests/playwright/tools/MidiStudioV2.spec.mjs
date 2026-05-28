@@ -8,6 +8,7 @@ const uatManifestPath = path.resolve("tests/fixtures/midi-studio-v2/uat-midi-stu
 const roadmapPath = path.resolve("docs/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md");
 const implementationAuditPath = path.resolve("docs/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit.md");
 const implementationAuditValidationPath = path.resolve("docs/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit_validation.md");
+const canonicalSongModelAuditPath = path.resolve("docs/dev/reports/PR_26146_045-midi-studio-v2-duplicate-data-audit.md");
 
 const validManifest = {
   schema: "html-js-gaming.game-manifest",
@@ -1519,7 +1520,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator('[data-midi-studio-tab="song-setup"]')).toHaveAttribute("aria-selected", "true");
       await expect(page.locator("#songDetailsContent")).toBeVisible();
       await expect(page.locator("#songDetailsContent #songSheetContent")).toHaveCount(1);
-      await expect(page.locator("#songDetailsContent #songSheetSummary")).toHaveCount(1);
+      await expect(page.locator("#songDetailsContent #songSheetSummary")).toHaveCount(0);
       await expect(page.locator("#songSheetSummaryContent")).toHaveCount(0);
       await expect(page.locator("#songDetails input[data-song-detail-field='name']")).toHaveValue("Camptown Races UAT Reel");
       await expect(page.locator("#songDetails input[data-song-detail-field='tempo']")).toHaveValue("144");
@@ -1564,6 +1565,102 @@ test.describe("MIDI Studio V2", () => {
         style: "chip",
         tempo: "156"
       });
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("derives primary song, instrument, grid, playback, and diagnostics views from the canonical selected song", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await expect(page.locator("#songSheetSummary")).toHaveCount(0);
+      await expect(page.locator("#songSheetSummaryContent")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__advanced-song-sheet")).toHaveCount(0);
+      await expect(page.locator("#songSheetInput")).toHaveCount(0);
+
+      const initialState = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const state = app.selectedSongState();
+        return {
+          activeSongId: app.payload.activeSongId,
+          gridSongId: state.songId,
+          hasOwnSelectedSongId: Object.hasOwn(app, "selectedSongId"),
+          instrumentCount: Object.keys(state.arrangement.lanes).length,
+          selectedSongId: app.selectedSongId,
+          title: state.song.name,
+          timelineCount: state.gridResult.timeline.length
+        };
+      });
+      expect(initialState).toEqual(expect.objectContaining({
+        activeSongId: "camptown-races-uat-reel",
+        gridSongId: "camptown-races-uat-reel",
+        hasOwnSelectedSongId: false,
+        selectedSongId: "camptown-races-uat-reel",
+        title: "Camptown Races UAT Reel"
+      }));
+      expect(initialState.instrumentCount).toBeGreaterThan(0);
+      expect(initialState.timelineCount).toBeGreaterThan(0);
+      await selectMidiStudioTab(page, "song-setup");
+      await expect(page.locator("#songDetails input[data-song-detail-field='name']")).toHaveValue("Camptown Races UAT Reel");
+      await expect(page.locator("#songDetails input[data-song-detail-field='tempo']")).toHaveValue("144");
+      await expect(page.locator("#songDetails input[data-song-detail-field='key']")).toHaveValue("G major");
+      await expect(page.locator("#songDetails input[data-song-detail-field='style']")).toHaveValue("public-domain-reel");
+      await expect(page.locator(".midi-studio-v2__instrument-row")).toHaveCount(initialState.instrumentCount);
+      await expect(octaveCell(page, "G4", 0)).toHaveAttribute("data-note-lanes", /lead/);
+
+      expect(await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        app.selectSong("frog-hop-nursery-rhyme");
+        return {
+          activeSongId: app.payload.activeSongId,
+          nowPlaying: document.querySelector("#nowPlayingLabel").textContent,
+          selectedName: app.selectedSong()?.name || ""
+        };
+      })).toEqual({
+        activeSongId: "frog-hop-nursery-rhyme",
+        nowPlaying: "Selected: Frog Hop Nursery Rhyme UAT",
+        selectedName: "Frog Hop Nursery Rhyme UAT"
+      });
+      await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Frog Hop Nursery Rhyme UAT");
+      await expect(page.locator("#songDetails input[data-song-detail-field='name']")).toHaveValue("Frog Hop Nursery Rhyme UAT");
+      await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("hop:2, home:2");
+      await expect(octaveCell(page, "C5", 0)).toHaveAttribute("data-note-lanes", /lead/);
+      await expect(octaveCell(page, "G4", 0)).not.toHaveAttribute("data-note-lanes", /lead/);
+      const frogState = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const state = app.selectedSongState();
+        return {
+          activeSongId: app.payload.activeSongId,
+          detailTitle: document.querySelector("#songDetails input[data-song-detail-field='name']").value,
+          instrumentRows: document.querySelectorAll(".midi-studio-v2__instrument-row").length,
+          selectedSongId: app.selectedSongId,
+          stateSongId: state.songId,
+          timelineLeadZero: state.gridResult.timeline.some((event) => event.lane === "lead" && event.stepIndex === 0 && event.value === "C5")
+        };
+      });
+      expect(frogState).toEqual({
+        activeSongId: "frog-hop-nursery-rhyme",
+        detailTitle: "Frog Hop Nursery Rhyme UAT",
+        instrumentRows: Object.keys(await page.evaluate(() => window.__midiStudioV2App.selectedSongState().arrangement.lanes)).length,
+        selectedSongId: "frog-hop-nursery-rhyme",
+        stateSongId: "frog-hop-nursery-rhyme",
+        timelineLeadZero: true
+      });
+
+      const diagnostics = await audioDiagnosticsRows(page);
+      expect(diagnostics["Selected song"]).toBe("Frog Hop Nursery Rhyme UAT");
+      await expect(page.locator("#audioDiagnostics input, #audioDiagnostics textarea, #audioDiagnostics select, #audioDiagnostics button")).toHaveCount(0);
+      expect(await page.evaluate(() => window.__midiStudioV2App.playableEventSummary().count)).toBeGreaterThan(0);
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Frog Hop Nursery Rhyme UAT");
+
+      await selectMidiStudioTab(page, "diagnostics");
+      await page.locator("#toolExportToolStateButton").click();
+      await expect(page.locator("#inspectorOutput")).toContainText('"activeSongId": "frog-hop-nursery-rhyme"');
+      expect(await fs.readFile(canonicalSongModelAuditPath, "utf8")).toContain("Canonical Model Fields");
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
