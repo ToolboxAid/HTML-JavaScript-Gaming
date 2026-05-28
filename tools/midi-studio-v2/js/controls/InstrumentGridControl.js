@@ -240,6 +240,7 @@ export class InstrumentGridControl {
     padInput,
     playLoopButton,
     playSectionButton,
+    sectionAvailability,
     sectionPresetButtons,
     sectionSelect,
     selectionDetails,
@@ -279,6 +280,7 @@ export class InstrumentGridControl {
     this.previewLaneControls = {};
     this.previewLaneState = clonePreviewLaneState();
     this.previewTempoBpm = 120;
+    this.sectionAvailability = sectionAvailability;
     this.sectionPresetButtons = sectionPresetButtons;
     this.sectionSelect = sectionSelect;
     this.selectionDetails = selectionDetails;
@@ -550,11 +552,35 @@ export class InstrumentGridControl {
         select.value = "";
       });
       this.transportState.textContent = "No section selected. Normalize grid data before testing section timing.";
+      this.updateSectionPresetAvailability(sections);
       return;
     }
     this.sectionSelect.value = sections.some((section) => section.label === previousSection) ? previousSection : sections[0].label;
     this.loopStartSelect.value = sections.some((section) => section.label === previousLoopStart) ? previousLoopStart : sections[0].label;
     this.loopEndSelect.value = sections.some((section) => section.label === previousLoopEnd) ? previousLoopEnd : sections[sections.length - 1].label;
+    this.updateSectionPresetAvailability(sections);
+  }
+
+  updateSectionPresetAvailability(sections) {
+    const availableLabels = new Set(sections.map((section) => section.label.toLowerCase()));
+    const unavailable = [];
+    this.sectionPresetButtons.forEach((button) => {
+      const label = String(button.dataset.sectionPreset || "").toLowerCase();
+      const available = availableLabels.has(label);
+      button.disabled = !available;
+      button.classList.toggle("is-unavailable", !available);
+      button.setAttribute("aria-disabled", String(!available));
+      button.title = available ? `Select ${button.textContent.trim()}` : `${button.textContent.trim()} section not available for this song`;
+      if (!available) {
+        unavailable.push(button.textContent.trim());
+      }
+    });
+    if (!this.sectionAvailability) {
+      return;
+    }
+    this.sectionAvailability.textContent = unavailable.length
+      ? `Section not available: ${unavailable.join(", ")}. Choose a listed custom section.`
+      : "Quick sections available.";
   }
 
   setTransportEnabled(enabled) {
@@ -1962,7 +1988,8 @@ export class InstrumentGridControl {
   selectPresetSection(sectionLabel, onTransport) {
     const section = this.sectionByLabel(sectionLabel);
     if (!section) {
-      onTransport("invalid-section", { label: this.displaySectionLabel(sectionLabel) });
+      this.transportState.textContent = `Section not available: ${this.displaySectionLabel(sectionLabel)}. Choose a listed custom section.`;
+      this.updateSectionPresetAvailability(this.currentResult?.sections || []);
       return;
     }
     this.sectionSelect.value = section.label;

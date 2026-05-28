@@ -25,8 +25,6 @@ function editableRows(song) {
     { field: "loopStartSeconds", label: "Loop start", step: "0.1", type: "number", value: song.loop.startSeconds },
     { field: "loopEndSeconds", label: "Loop end", step: "0.1", type: "number", value: song.loop.endSeconds },
     { field: "defaultRuntimeFormat", label: "Runtime format", type: "text", value: song.defaultRuntimeFormat },
-    { field: "sourceMidi", label: "Source MIDI", type: "text", value: song.sourceMidi },
-    { field: "instrumentSet", label: "Instrument set", type: "text", value: song.instrumentSet },
     { field: "tags", label: "Tags", type: "text", value: song.tags.join(", ") },
     { field: "id", label: "Song ID", readonly: true, type: "text", value: song.id }
   ];

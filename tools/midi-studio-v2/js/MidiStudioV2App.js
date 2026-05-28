@@ -39,6 +39,8 @@ export class MidiStudioV2App {
     this.manifestLoader = manifestLoader;
     this.midiSourceDetails = midiSourceDetails;
     this.midiSourceInspection = midiSourceInspection;
+    this.missingSectionWarnings = new Set();
+    this.missingSectionWarningKey = "";
     this.payload = null;
     this.playback = playback;
     this.playbackControl = playbackControl;
@@ -281,6 +283,7 @@ export class MidiStudioV2App {
     if (!song) {
       return;
     }
+    this.resetMissingSectionWarnings(result);
     if (result?.ok) {
       this.instrumentGridResults.set(song, result);
       return;
@@ -292,6 +295,16 @@ export class MidiStudioV2App {
     const song = this.selectedSong();
     if (song) {
       this.instrumentGridResults.delete(song);
+    }
+    this.resetMissingSectionWarnings(null);
+  }
+
+  resetMissingSectionWarnings(result) {
+    const labels = result?.ok ? result.sections.map((section) => section.label).join("|") : "";
+    const key = `${this.selectedSongId}:${labels}`;
+    if (key !== this.missingSectionWarningKey) {
+      this.missingSectionWarnings.clear();
+      this.missingSectionWarningKey = key;
     }
   }
 
@@ -690,7 +703,12 @@ export class MidiStudioV2App {
 
   async handleInstrumentGridTransport(action, detail = {}) {
     if (action === "invalid-section") {
-      this.statusLog.warn(`section ${detail.label} does not exist. Normalize a section map containing that label or choose a listed custom section.`);
+      const label = String(detail.label || "(none)");
+      const warningKey = `${this.missingSectionWarningKey}:${label.toLowerCase()}`;
+      if (!this.missingSectionWarnings.has(warningKey)) {
+        this.missingSectionWarnings.add(warningKey);
+        this.statusLog.warn(`section ${label} does not exist. Normalize a section map containing that label or choose a listed custom section.`);
+      }
       return;
     }
     if (action === "invalid-loop") {

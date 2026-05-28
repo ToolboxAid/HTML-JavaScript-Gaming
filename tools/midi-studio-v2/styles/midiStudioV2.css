@@ -307,6 +307,16 @@
   padding: 0.12rem 0.35rem;
 }
 
+.midi-studio-v2__section-preset.is-unavailable {
+  opacity: 0.55;
+}
+
+.midi-studio-v2__section-availability {
+  color: var(--tool-starter-muted);
+  font-size: 0.8rem;
+  margin: -0.1rem 0 0;
+}
+
 .midi-studio-v2__transport-panel {
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;

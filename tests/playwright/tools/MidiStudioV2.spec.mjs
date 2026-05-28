@@ -1318,15 +1318,18 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
 
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded 3 MIDI songs from Import JSON Manifest:.*uat-midi-studio-v2\.game\.manifest\.json via manifest\.music\./);
-      await expect(page.locator('[data-midi-studio-tab="midi-import"]')).toHaveCount(0);
+      await expect(page.locator('[data-midi-studio-tab="midi-import"]')).toHaveCount(1);
       await expect(page.locator('[data-midi-studio-tab="export"]')).toHaveCount(0);
       await expect(page.locator(".midi-studio-v2__advanced-song-sheet")).toHaveCount(0);
       await expect(page.locator("#songSheetInput")).toHaveCount(0);
       await expect(page.locator("#parseRawSongSheetButton")).toHaveCount(0);
       await expect(page.locator("#midiSourceFileInput")).toHaveAttribute("accept", /\.mid,.midi/);
+      await selectMidiStudioTab(page, "midi-import");
+      await expect(page.locator("#midiImportContent")).toBeVisible();
+      await expect(page.locator("#songDetailsContent #midiImportContent")).toHaveCount(0);
+      await expect(page.locator("#midiSourceDetails")).toContainText("No MIDI source inspected.");
       await selectMidiStudioTab(page, "song-setup");
-      await expect(page.locator("#songDetailsContent #midiImportContent")).toBeVisible();
-      await expect(page.locator("#songDetailsContent #midiSourceDetails")).toContainText("No MIDI source inspected.");
+      await expect(page.locator("#midiImportContent")).toBeHidden();
       await expect(page.locator("#statusLog")).not.toHaveValue(/HTTP 404/);
       await expect(page.locator("#songList [data-song-id]")).toHaveCount(3);
       await expect(page.locator("#songList")).toContainText("Camptown Races UAT Reel");
@@ -1468,13 +1471,16 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("imports a local MIDI source from Selected Song Details without default HTTP 404 noise", async ({ page }) => {
+  test("imports a local MIDI source from the MIDI Import tab without default HTTP 404 noise", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {
-      await expect(page.locator('[data-midi-studio-tab="midi-import"]')).toHaveCount(0);
+      await expect(page.locator('[data-midi-studio-tab="midi-import"]')).toHaveCount(1);
       await expect(page.locator('[data-midi-studio-tab="export"]')).toHaveCount(0);
-      await selectMidiStudioTab(page, "song-setup");
-      await expect(page.locator("#songDetailsContent #midiImportContent")).toBeVisible();
+      await selectMidiStudioTab(page, "midi-import");
+      await expect(page.locator("#midiImportContent")).toBeVisible();
+      await expect(page.locator("#songDetailsContent #midiImportContent")).toHaveCount(0);
+      await expect(page.locator("#songDetails input[data-song-detail-field='sourceMidi']")).toHaveCount(0);
+      await expect(page.locator("#songDetails input[data-song-detail-field='instrumentSet']")).toHaveCount(0);
       await expect(page.locator("#midiSourceFileInput")).toHaveAttribute("accept", /\.mid,.midi/);
       await expect(page.locator("#statusLog")).not.toHaveValue(/HTTP 404/);
 
@@ -1490,19 +1496,21 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songList")).toContainText("Local Import");
       await expect(page.locator("#songSourceField")).toHaveValue("local-import.midi");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported MIDI source local-import\.midi: format 1, 2 tracks\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN MIDI note conversion to editable timeline rows is not implemented yet\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Normalized 1 MIDI note into editable octave timeline data\./);
       await expect(page.locator("#statusLog")).not.toHaveValue(/HTTP 404/);
       expect(await page.evaluate(() => {
         const song = window.__midiStudioV2App.selectedSong();
         return {
           activeSongId: window.__midiStudioV2App.payload.activeSongId,
           hasArrangement: Boolean(song.studioArrangement),
+          importedNoteCount: song.studioArrangement?.importedNoteCount,
           name: song.name,
           sourceMidi: song.sourceMidi
         };
       })).toEqual({
         activeSongId: "local-import",
-        hasArrangement: false,
+        hasArrangement: true,
+        importedNoteCount: 1,
         name: "Local Import",
         sourceMidi: "local-import.midi"
       });
@@ -1529,8 +1537,13 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songDetails input[data-song-detail-field='loopEnabled']")).toBeChecked();
       await expect(page.locator("#songDetails input[data-song-detail-field='loopStartSeconds']")).toHaveValue("0");
       await expect(page.locator("#songDetails input[data-song-detail-field='loopEndSeconds']")).toHaveValue("14");
-      await expect(page.locator("#songDetails input[data-song-detail-field='sourceMidi']")).toHaveValue("assets/music/midi/camptown-races-uat-reel.mid");
+      await expect(page.locator("#songDetails input[data-song-detail-field='sourceMidi']")).toHaveCount(0);
+      await expect(page.locator("#songDetails input[data-song-detail-field='instrumentSet']")).toHaveCount(0);
       await expect(page.locator("#songDetails input[data-song-detail-field='tags']")).toHaveValue("uat, upbeat, traditional, public-domain");
+      await selectMidiStudioTab(page, "midi-import");
+      await expect(page.locator("#songSourceField")).toHaveValue("assets/music/midi/camptown-races-uat-reel.mid");
+      await expect(page.locator("#instrumentSetField")).toHaveValue("Preview Synth public-domain UAT band");
+      await selectMidiStudioTab(page, "song-setup");
 
       await page.locator("#songDetails input[data-song-detail-field='name']").fill("Edited UAT Reel");
       await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Edited UAT Reel");
@@ -2303,6 +2316,8 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator(".midi-studio-v2__grid-cell--bar")).toHaveCount(5);
       await expect(page.locator(".midi-studio-v2__grid-cell--ruler").first()).toContainText("1");
       await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "intro");
+      await expect(page.locator("#instrumentGridSectionAvailability")).toHaveText("Quick sections available.");
+      await expect(page.locator(".midi-studio-v2__section-preset:disabled")).toHaveCount(0);
       await expect(page.locator("#instrumentGridSectionSelect")).toContainText("bridge");
       await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
       await page.locator("#instrumentGridLoopEndSelect").selectOption("boss");
@@ -2497,8 +2512,18 @@ test.describe("MIDI Studio V2", () => {
     try {
       await fillInstrumentGrid(page);
       await page.locator("#normalizeInstrumentGridButton").click();
-      await page.locator('[data-section-preset="bridge"]').click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN section Bridge does not exist\. Normalize a section map containing that label or choose a listed custom section\./);
+      await expect(page.locator('[data-section-preset="bridge"]')).toBeDisabled();
+      await expect(page.locator('[data-section-preset="bridge"]')).toHaveClass(/is-unavailable/);
+      await expect(page.locator("#instrumentGridSectionAvailability")).toContainText("Section not available: Bridge, Boss, Victory.");
+      const warningCountBefore = await page.locator("#statusLog").evaluate((log) => (log.value.match(/WARN section Bridge does not exist/g) || []).length);
+      await page.locator('[data-section-preset="bridge"]').evaluate((button) => {
+        button.click();
+        button.click();
+        button.click();
+      });
+      await expect(page.locator("#instrumentGridTransportState")).not.toContainText("Section not available: Bridge");
+      const warningCountAfter = await page.locator("#statusLog").evaluate((log) => (log.value.match(/WARN section Bridge does not exist/g) || []).length);
+      expect(warningCountAfter).toBe(warningCountBefore);
       await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
       await page.locator("#instrumentGridLoopEndSelect").selectOption("intro");
       await page.locator("#playLoopButton").click();

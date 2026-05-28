@@ -84,25 +84,30 @@
           </button>
           <div id="songListContent" class="accordion-v2__content">
             <div id="songList" class="midi-studio-v2__song-list" role="listbox" aria-label="MIDI songs"></div>
-            <section id="midiImportContent" class="midi-studio-v2__stack midi-studio-v2__midi-import-panel" aria-label="MIDI Import">
-              <h3>MIDI Import</h3>
-              <div class="midi-studio-v2__midi-import-grid">
-                <div class="tool-starter__field tool-starter__field--not-editable">
-                  <span>.mid instruction source</span>
-                  <input id="songSourceField" type="text" readonly value="No song selected">
-                </div>
-                <div class="tool-starter__field tool-starter__field--not-editable">
-                  <span>Instrument set</span>
-                  <input id="instrumentSetField" type="text" readonly value="No song selected">
-                </div>
+          </div>
+        </section>
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="midi-import">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="midiImportContent">
+            <span>MIDI Import</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="midiImportContent" class="accordion-v2__content midi-studio-v2__stack midi-studio-v2__midi-import-panel">
+            <div class="midi-studio-v2__midi-import-grid">
+              <div class="tool-starter__field tool-starter__field--not-editable">
+                <span>.mid instruction source</span>
+                <input id="songSourceField" type="text" readonly value="No song selected">
               </div>
-              <div class="midi-studio-v2__midi-import-actions">
-                <button id="importMidiSourceButton" type="button">Import MIDI Source</button>
-                <button id="inspectMidiSourceButton" type="button" disabled>Inspect MIDI Source</button>
-                <input id="midiSourceFileInput" type="file" accept=".mid,.midi,audio/midi,audio/x-midi" hidden>
+              <div class="tool-starter__field tool-starter__field--not-editable">
+                <span>Instrument set</span>
+                <input id="instrumentSetField" type="text" readonly value="No song selected">
               </div>
-              <dl id="midiSourceDetails" class="midi-studio-v2__details"></dl>
-            </section>
+            </div>
+            <div class="midi-studio-v2__midi-import-actions">
+              <button id="importMidiSourceButton" type="button">Import MIDI Source</button>
+              <button id="inspectMidiSourceButton" type="button" disabled>Inspect MIDI Source</button>
+              <input id="midiSourceFileInput" type="file" accept=".mid,.midi,audio/midi,audio/x-midi" hidden>
+            </div>
+            <dl id="midiSourceDetails" class="midi-studio-v2__details"></dl>
           </div>
         </section>
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio instruments">
@@ -272,6 +277,7 @@
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="boss">Boss</button>
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="victory">Victory</button>
               </div>
+              <p id="instrumentGridSectionAvailability" class="midi-studio-v2__section-availability" aria-live="polite"></p>
               <div class="midi-studio-v2__transport-fields">
                 <label class="tool-starter__field" for="instrumentGridSectionSelect">
                   <span>Custom section</span>
