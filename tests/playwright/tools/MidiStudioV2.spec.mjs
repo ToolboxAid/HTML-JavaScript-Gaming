@@ -1041,20 +1041,27 @@ test.describe("MIDI Studio V2", () => {
         const blackLabelRect = blackLabel.getBoundingClientRect();
         const whiteCellRect = whiteCell.getBoundingClientRect();
         const blackCellRect = blackCell.getBoundingClientRect();
+        const labelWidth = firstLabel.getBoundingClientRect().width;
+        const blackKeyRight = Number.parseFloat(blackKeyStyle.right);
+        const blackKeyWidth = Number.parseFloat(blackKeyStyle.width);
         return {
           alternatingRowsDiffer: getComputedStyle(firstRow).backgroundColor !== getComputedStyle(secondRow).backgroundColor,
+          blackBedBackground: blackLabelStyle.backgroundImage || blackLabelStyle.backgroundColor,
           blackBackground: blackKeyStyle.backgroundImage || blackKeyStyle.backgroundColor,
           blackClass: blackLabel.className,
           blackColor: blackLabelStyle.color,
           blackJustifyItems: blackLabelStyle.justifyItems,
-          blackKeyLeft: Number.parseFloat(blackKeyStyle.left),
+          blackKeyInsetLeft: labelWidth - blackKeyWidth - blackKeyRight,
+          blackKeyRight,
           blackKeyTop: Number.parseFloat(blackKeyStyle.top),
-          blackKeyWidth: Number.parseFloat(blackKeyStyle.width),
+          blackKeyWidth,
           blackKind: blackLabel.dataset.keyKind,
           blackLabelHeight: blackLabelRect.height,
+          blackLabelRight: blackLabelRect.right,
           blackLabelText: blackLabel.textContent,
           blackTextColor: blackTextStyle.color,
           blackTextLeft: blackText.getBoundingClientRect().left,
+          blackTextRight: blackText.getBoundingClientRect().right,
           blackTextVisible: blackText.getBoundingClientRect().width > 0,
           blackTextAlign: blackLabelStyle.textAlign,
           borderRightWidth: getComputedStyle(firstNote).borderRightWidth,
@@ -1091,7 +1098,7 @@ test.describe("MIDI Studio V2", () => {
           whiteRowHeightDelta: Math.abs(whiteLabelRect.height - whiteCellRect.height),
           blackRowDelta: Math.abs(blackLabelRect.top - blackCellRect.top),
           blackRowHeightDelta: Math.abs(blackLabelRect.height - blackCellRect.height),
-          labelWidth: firstLabel.getBoundingClientRect().width,
+          labelWidth,
           topScrollbarHeight: topScrollbar.getBoundingClientRect().height
         };
       });
@@ -1115,6 +1122,7 @@ test.describe("MIDI Studio V2", () => {
       expect(gridLayout.whiteLabelText).toBe("C5");
       expect(gridLayout.blackLabelText).toBe("C#5");
       expect(gridLayout.whiteBackground).not.toBe(gridLayout.blackBackground);
+      expect(gridLayout.blackBedBackground).toBe(gridLayout.whiteBackground);
       expect(gridLayout.whiteColor).not.toBe(gridLayout.blackColor);
       expect(gridLayout.whiteTextVisible).toBe(true);
       expect(gridLayout.blackTextVisible).toBe(true);
@@ -1133,11 +1141,13 @@ test.describe("MIDI Studio V2", () => {
       expect(gridLayout.whiteKeyLeft).toBe(0);
       expect(gridLayout.whiteKeyTop).toBe(0);
       expect(Math.abs(gridLayout.whiteKeyWidth - gridLayout.labelWidth)).toBeLessThanOrEqual(1);
-      expect(gridLayout.blackKeyLeft).toBeGreaterThan(0);
+      expect(gridLayout.blackKeyRight).toBe(0);
+      expect(gridLayout.blackKeyInsetLeft).toBeGreaterThan(0);
       expect(gridLayout.blackKeyTop).toBeLessThan(0);
       expect(gridLayout.blackKeyWidth).toBeLessThan(gridLayout.whiteKeyWidth);
       expect(gridLayout.whiteTextLeft).toBeGreaterThanOrEqual(gridLayout.whiteKeyLeft);
-      expect(gridLayout.blackTextLeft).toBeGreaterThan(gridLayout.blackKeyLeft);
+      expect(gridLayout.blackTextLeft).toBeGreaterThan(gridLayout.blackKeyInsetLeft);
+      expect(gridLayout.blackTextRight).toBeLessThanOrEqual(gridLayout.blackLabelRight);
       expect(gridLayout.whiteRowDelta).toBeLessThanOrEqual(1);
       expect(gridLayout.blackRowDelta).toBeLessThanOrEqual(1);
       expect(gridLayout.whiteRowHeightDelta).toBeLessThanOrEqual(1);

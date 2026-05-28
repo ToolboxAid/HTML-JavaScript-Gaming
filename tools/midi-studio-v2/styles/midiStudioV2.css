@@ -795,7 +795,7 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 }
 
 .midi-studio-v2__octave-row-label--black-key {
-  background: #f8fafc;
+  background: linear-gradient(90deg, #ffffff 0%, #f8fafc 78%, #dbeafe 100%);
   border-right-color: #020617;
   color: #f8fafc;
   justify-items: start;
@@ -803,18 +803,21 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 }
 
 .midi-studio-v2__octave-row-label--black-key .midi-studio-v2__octave-row-label-text {
-  padding-left: 0.95rem;
+  box-sizing: border-box;
+  justify-self: end;
+  padding-left: 0.4rem;
   text-shadow: 0 1px 1px rgba(2, 6, 23, 0.9);
+  width: 64%;
 }
 
 .midi-studio-v2__octave-row-label--black-key::before {
   background: linear-gradient(90deg, #020617 0%, #020617 68%, #1e293b 100%);
   border: 1px solid #020617;
-  border-left: 0;
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px 0 0 4px;
   box-shadow: 0 2px 4px rgba(2, 6, 23, 0.38), inset -1.15rem 0 0 rgba(2, 6, 23, 0.96), inset 0 -1px 0 rgba(248, 250, 252, 0.18);
   bottom: -12%;
-  left: 0.58rem;
+  left: auto;
+  right: 0;
   top: -12%;
   width: 64%;
 }
