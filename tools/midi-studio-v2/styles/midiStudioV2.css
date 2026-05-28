@@ -439,14 +439,27 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 
 .midi-studio-v2__octave-row-label {
   align-content: center;
+  background: var(--tool-starter-surface);
   height: var(--midi-studio-v2-octave-cell-size);
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 0.7rem;
+  isolation: isolate;
   justify-items: start;
   min-height: var(--midi-studio-v2-octave-cell-size);
+  overflow: hidden;
   padding: 0 0.45rem;
   text-align: left;
   text-transform: none;
+}
+
+.midi-studio-v2__octave-row-label::before {
+  content: "";
+  inset-block: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  z-index: 0;
 }
 
 .midi-studio-v2__timeline-scroll-proxy {
@@ -758,13 +771,26 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   box-shadow: inset -0.28rem 0 0 rgba(148, 163, 184, 0.28), inset 0 -1px 0 rgba(15, 23, 42, 0.16);
 }
 
+.midi-studio-v2__octave-row-label--white-key::before {
+  background: linear-gradient(90deg, #ffffff 0%, #f8fafc 72%, #dbeafe 100%);
+  box-shadow: inset -0.28rem 0 0 rgba(148, 163, 184, 0.28), inset 0 -1px 0 rgba(15, 23, 42, 0.16);
+  width: 100%;
+}
+
 .midi-studio-v2__octave-row-label--black-key {
-  background: linear-gradient(90deg, #020617 0%, #020617 68%, #1e293b 100%);
+  background: color-mix(in srgb, var(--tool-starter-surface) 78%, #020617 22%);
   border-right-color: #020617;
   color: #f8fafc;
   justify-items: start;
-  padding-left: 0.45rem;
+  padding-left: 0.95rem;
+}
+
+.midi-studio-v2__octave-row-label--black-key::before {
+  background: linear-gradient(90deg, #020617 0%, #020617 68%, #1e293b 100%);
+  border-radius: 0 0 4px 0;
   box-shadow: inset -1.15rem 0 0 rgba(2, 6, 23, 0.96), inset 0 -1px 0 rgba(248, 250, 252, 0.18);
+  left: 0.65rem;
+  width: 68%;
 }
 
 .midi-studio-v2__octave-row-label--percussion-key {

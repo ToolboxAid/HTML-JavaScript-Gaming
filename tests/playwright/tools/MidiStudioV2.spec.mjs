@@ -977,6 +977,22 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentGridSnapIndicator")).toContainText("Snap:");
       await expect(page.locator("#instrumentGridZoomOutButton")).toHaveAttribute("aria-label", "Zoom out octave grid");
       await expect(page.locator("#instrumentGridZoomInButton")).toHaveAttribute("aria-label", "Zoom in octave grid");
+      await expect(page.locator("#instrumentGridHeading")).toHaveCount(1);
+      await expect(page.locator("#instrumentGridOutput")).toHaveCount(1);
+      await expect(page.locator(".midi-studio-v2__octave-timeline")).toHaveCount(1);
+      await expect(page.locator("#instrumentGridOutput")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__octave-timeline")).toBeVisible();
+      expect(await page.locator("#instrumentGridOutput").evaluate((element) => element.dataset.midiStudioTabPanel)).toBe("studio");
+      await selectMidiStudioTab(page, "auto-create-parts");
+      await expect(page.locator("#instrumentGridOutput")).toBeHidden();
+      await expect(page.locator(".midi-studio-v2__octave-timeline")).toBeHidden();
+      await expect(page.locator(".midi-studio-v2__timeline-title")).toBeHidden();
+      await selectMidiStudioTab(page, "instruments");
+      await expect(page.locator("#instrumentGridOutput")).toBeHidden();
+      await expect(page.locator(".midi-studio-v2__octave-timeline")).toBeHidden();
+      await selectMidiStudioTab(page, "studio");
+      await expect(page.locator("#instrumentGridOutput")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__octave-timeline")).toBeVisible();
       const zoomControlsLayout = await page.locator(".midi-studio-v2__timeline-title").evaluate((header) => {
         const snap = header.querySelector("#instrumentGridSnapIndicator").getBoundingClientRect();
         const zoomOut = header.querySelector("#instrumentGridZoomOutButton").getBoundingClientRect();
@@ -1015,6 +1031,8 @@ test.describe("MIDI Studio V2", () => {
         const beatHeaderStyle = getComputedStyle(element.querySelector('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="1"]'));
         const barAxisStyle = getComputedStyle(element.querySelector(".midi-studio-v2__timing-header-row-1.midi-studio-v2__timing-axis-header"));
         const beatAxisStyle = getComputedStyle(element.querySelector(".midi-studio-v2__timing-header-row-2.midi-studio-v2__timing-axis-header"));
+        const whiteKeyStyle = getComputedStyle(whiteLabel, "::before");
+        const blackKeyStyle = getComputedStyle(blackLabel, "::before");
         const whiteLabelRect = whiteLabel.getBoundingClientRect();
         const blackLabelRect = blackLabel.getBoundingClientRect();
         const whiteCellRect = whiteCell.getBoundingClientRect();
@@ -1025,6 +1043,8 @@ test.describe("MIDI Studio V2", () => {
           blackClass: blackLabel.className,
           blackColor: blackLabelStyle.color,
           blackJustifyItems: blackLabelStyle.justifyItems,
+          blackKeyLeft: Number.parseFloat(blackKeyStyle.left),
+          blackKeyWidth: Number.parseFloat(blackKeyStyle.width),
           blackKind: blackLabel.dataset.keyKind,
           blackLabelHeight: blackLabelRect.height,
           blackLabelText: blackLabel.textContent,
@@ -1049,6 +1069,8 @@ test.describe("MIDI Studio V2", () => {
           whiteClass: whiteLabel.className,
           whiteColor: whiteLabelStyle.color,
           whiteJustifyItems: whiteLabelStyle.justifyItems,
+          whiteKeyLeft: Number.parseFloat(whiteKeyStyle.left),
+          whiteKeyWidth: Number.parseFloat(whiteKeyStyle.width),
           whiteKind: whiteLabel.dataset.keyKind,
           whiteLabelHeight: whiteLabelRect.height,
           whiteLabelText: whiteLabel.textContent,
@@ -1092,6 +1114,10 @@ test.describe("MIDI Studio V2", () => {
       expect(gridLayout.blackTextAlign).toBe("left");
       expect(gridLayout.whiteJustifyItems).toBe("start");
       expect(gridLayout.blackJustifyItems).toBe("start");
+      expect(gridLayout.whiteKeyLeft).toBe(0);
+      expect(Math.abs(gridLayout.whiteKeyWidth - gridLayout.labelWidth)).toBeLessThanOrEqual(1);
+      expect(gridLayout.blackKeyLeft).toBeGreaterThan(0);
+      expect(gridLayout.blackKeyWidth).toBeLessThan(gridLayout.whiteKeyWidth);
       expect(gridLayout.whiteRowDelta).toBeLessThanOrEqual(1);
       expect(gridLayout.blackRowDelta).toBeLessThanOrEqual(1);
       expect(gridLayout.whiteRowHeightDelta).toBeLessThanOrEqual(1);

@@ -192,9 +192,9 @@
           </div>
         </section>
 
-        <section class="midi-studio-v2__timeline-editor-panel" data-midi-studio-tab-panel="studio instruments auto-create-parts" aria-labelledby="instrumentGridHeading">
+        <section class="midi-studio-v2__timeline-editor-panel" data-midi-studio-tab-panel="studio auto-create-parts" aria-labelledby="instrumentGridHeading">
           <div id="instrumentGridContent" class="midi-studio-v2__stack">
-            <div class="midi-studio-v2__timeline-title">
+            <div class="midi-studio-v2__timeline-title" data-midi-studio-tab-panel="studio">
               <h2 id="instrumentGridHeading">Octave Timeline</h2>
               <p>Edit Notes Here</p>
               <div class="midi-studio-v2__timeline-title-actions">
@@ -233,7 +233,7 @@
                 </select>
               </label>
             </div>
-            <div id="instrumentGridOutput" class="midi-studio-v2__instrument-grid-output" aria-label="Octave timeline note editor"></div>
+            <div id="instrumentGridOutput" class="midi-studio-v2__instrument-grid-output" aria-label="Octave timeline note editor" data-midi-studio-tab-panel="studio"></div>
             <details class="midi-studio-v2__advanced-lane-source" data-midi-studio-tab-panel="auto-create-parts">
               <summary>Advanced lane source text</summary>
               <div class="midi-studio-v2__grid-lane-inputs midi-studio-v2__grid-lane-inputs--source" aria-label="Advanced pipe-delimited lane source inputs">
@@ -266,7 +266,7 @@
               <button id="generateBasicDrumsButton" type="button">Generate Basic Drums</button>
               <button id="normalizeInstrumentGridButton" type="button">Normalize Grid</button>
             </div>
-            <div class="midi-studio-v2__transport-panel" aria-label="Instrument grid Preview Synth and timing preview" data-midi-studio-tab-panel="studio instruments auto-create-parts">
+            <div class="midi-studio-v2__transport-panel" aria-label="Instrument grid Preview Synth and timing preview" data-midi-studio-tab-panel="studio auto-create-parts">
               <div class="midi-studio-v2__section-presets" aria-label="Section shortcuts">
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="intro">Intro</button>
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="loop">Loop</button>
