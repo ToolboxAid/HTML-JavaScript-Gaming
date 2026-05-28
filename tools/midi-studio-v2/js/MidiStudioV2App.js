@@ -834,7 +834,7 @@ export class MidiStudioV2App {
       return;
     }
     this.setCurrentInstrumentGridResult(result);
-    if (["add-lane", "delete-lane", "delete-selected-note", "duplicate-selected-note", "paint-notes", "toggle-note"].includes(detail.action)) {
+    if (["add-lane", "delete-lane"].includes(detail.action)) {
       this.instrumentGrid.render(result);
     } else {
       this.instrumentGrid.syncEditedGridResult(result);
@@ -851,11 +851,43 @@ export class MidiStudioV2App {
       this.statusLog.ok(`Duplicated selected ${detail.rowToken || "note"} for ${detail.laneLabel || "instrument"}; playback data updated.`);
     } else if (detail.action === "paint-notes") {
       this.statusLog.ok(`Painted ${detail.rowToken || "notes"} for ${detail.laneLabel || "instrument"} across the timeline; playback data updated.`);
+    } else if (detail.action === "erase-notes") {
+      this.statusLog.ok(`Erased ${detail.rowToken || "notes"} for ${detail.laneLabel || "instrument"} across the timeline; playback data updated.`);
     } else if (detail.action === "toggle-note") {
       this.statusLog.ok(`Toggled ${detail.rowToken || detail.note || "note"} for ${detail.laneLabel || "instrument"}; visible timeline playback data updated.`);
     } else {
       this.statusLog.ok(`Edited ${detail.laneLabel || "instrument"} note cell; playback data updated.`);
     }
+    if (detail.audition) {
+      void this.auditionEditedTimelineCell(result, detail);
+    }
+    this.updateAudioDiagnostics();
+  }
+
+  async auditionEditedTimelineCell(result, detail = {}) {
+    const stepIndex = Number(detail.auditionStepIndex);
+    if (!result?.ok || !Number.isInteger(stepIndex)) {
+      return;
+    }
+    const audition = await this.previewSynth.playGridRange({
+      endStep: stepIndex,
+      grid: result,
+      label: `${detail.rowToken || "note"} step ${stepIndex + 1}`,
+      laneSettings: this.instrumentGrid.previewLaneSettings(),
+      loop: false,
+      mode: "note audition",
+      startStep: stepIndex,
+      tempoBpm: this.previewTempoBpm()
+    });
+    if (!audition.ok) {
+      this.statusLog.warn(`Preview Synth note audition unavailable: ${audition.message} Editing was kept.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
+    if (audition.warnings?.length) {
+      this.statusLog.warn(`Preview Synth note audition warnings: ${audition.warnings.join("; ")}`);
+    }
+    this.statusLog.info(`Auditioned edited ${detail.rowToken || "note"} for ${detail.laneLabel || "instrument"}.`);
     this.updateAudioDiagnostics();
   }
 

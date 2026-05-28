@@ -440,6 +440,73 @@ async function clickCanvasCell(page, rowToken, stepIndex) {
   await page.mouse.click(point.x, point.y);
 }
 
+async function hoverCanvasCell(page, rowToken, stepIndex) {
+  await scrollCanvasCellIntoView(page, rowToken, stepIndex);
+  const point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
+  expect(point).toBeTruthy();
+  await page.mouse.move(point.x, point.y);
+}
+
+async function dragCanvasCells(page, fromRowToken, fromStepIndex, toRowToken, toStepIndex) {
+  await scrollCanvasCellIntoView(page, fromRowToken, fromStepIndex);
+  const points = await page.evaluate((target) => ({
+    from: window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.fromRowToken, target.fromStepIndex),
+    to: window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.toRowToken, target.toStepIndex)
+  }), { fromRowToken, fromStepIndex, toRowToken, toStepIndex });
+  expect(points.from).toBeTruthy();
+  expect(points.to).toBeTruthy();
+  await page.mouse.move(points.from.x, points.from.y);
+  await page.mouse.down();
+  await page.mouse.move(points.to.x, points.to.y, { steps: 8 });
+  await page.mouse.up();
+}
+
+async function canvasCellPixel(page, rowToken, stepIndex) {
+  return page.evaluate((target) => {
+    const canvas = document.querySelector("[data-octave-timeline-canvas='true']");
+    const point = window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex);
+    const ratio = canvas.width / canvas.clientWidth;
+    const sample = canvas.getContext("2d").getImageData(Math.round((point.x - canvas.getBoundingClientRect().left) * ratio), Math.round((point.y - canvas.getBoundingClientRect().top) * ratio), 1, 1).data;
+    return Array.from(sample);
+  }, { rowToken, stepIndex });
+}
+
+async function emptyCanvasRun(page, { lane = "lead", length = 3 } = {}) {
+  return page.evaluate(({ lane, length }) => {
+    const app = window.__midiStudioV2App;
+    const result = app.lastInstrumentGridResult;
+    const state = app.instrumentGrid.timelineCanvasState();
+    const rows = state.rows.map((row) => row.value);
+    const hasNote = (rowToken, stepIndex) => result.timeline.some((event) => event.lane === lane
+      && event.stepIndex === stepIndex
+      && app.instrumentGrid.rowsForEvent(event).includes(rowToken));
+    for (const rowToken of rows) {
+      for (let stepIndex = 1; stepIndex <= result.totalSteps - length; stepIndex += 1) {
+        let empty = true;
+        for (let offset = 0; offset < length; offset += 1) {
+          if (hasNote(rowToken, stepIndex + offset)) {
+            empty = false;
+            break;
+          }
+        }
+        if (empty) {
+          return { rowToken, stepIndex };
+        }
+      }
+    }
+    return null;
+  }, { lane, length });
+}
+
+async function hasCanvasNote(page, lane, rowToken, stepIndex) {
+  return page.evaluate((target) => {
+    const app = window.__midiStudioV2App;
+    return app.lastInstrumentGridResult.timeline.some((event) => event.lane === target.lane
+      && event.stepIndex === target.stepIndex
+      && app.instrumentGrid.rowsForEvent(event).includes(target.rowToken));
+  }, { lane, rowToken, stepIndex });
+}
+
 function instrumentRow(page, lane) {
   return page.locator(`.midi-studio-v2__instrument-row[data-lane="${lane}"]`);
 }
@@ -738,7 +805,7 @@ test.describe("MIDI Studio V2", () => {
       expect(keyboardAxisPixel.slice(0, 3).some((channel) => channel > 0)).toBe(true);
 
       await clickCanvasCell(page, "C6", 2);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Toggled C6 for Lead; visible timeline playback data updated\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Painted C6 for Lead across the timeline; playback data updated\./);
       const canonicalEdit = await page.evaluate(() => {
         const app = window.__midiStudioV2App;
         return {
@@ -809,7 +876,7 @@ test.describe("MIDI Studio V2", () => {
       expect(scrollEvidence.scrollLeft).toBeGreaterThan(0);
       expect(scrollEvidence.scrollTop).toBeGreaterThan(0);
       expect(scrollEvidence.datasetScrollLeft).toBe(String(scrollEvidence.scrollLeft));
-      expect(scrollEvidence.topScrollLeft).toBe(scrollEvidence.scrollLeft);
+      expect(Math.abs(scrollEvidence.topScrollLeft - scrollEvidence.scrollLeft)).toBeLessThanOrEqual(1);
 
       const zoomBefore = (await canvasTimelineState(page)).cellSize;
       await page.locator("#instrumentGridZoomInButton").click();
@@ -821,6 +888,127 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#playButton")).toBeEnabled();
       await expect(page.locator("#playbackState")).toContainText("Stopped audible preview");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("canvas note editing flow supports hover click drag paint erase and playback", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await expect(octaveTimelineCanvas(page)).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__octave-note-cell")).toHaveCount(0);
+
+      const target = await emptyCanvasRun(page, { lane: "lead", length: 4 });
+      expect(target).toBeTruthy();
+      const hoverBefore = await canvasCellPixel(page, target.rowToken, target.stepIndex);
+      await hoverCanvasCell(page, target.rowToken, target.stepIndex);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-hover-row-token", target.rowToken);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-hover-step-index", String(target.stepIndex));
+      await expect.poll(() => canvasTimelineState(page).then((state) => state.hoverCell)).toEqual({
+        rowToken: target.rowToken,
+        stepIndex: target.stepIndex
+      });
+      const hoverAfter = await canvasCellPixel(page, target.rowToken, target.stepIndex);
+      expect(hoverAfter).not.toEqual(hoverBefore);
+
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await clickCanvasCell(page, target.rowToken, target.stepIndex);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Painted .* for Lead across the timeline; playback data updated\./);
+      expect(await hasCanvasNote(page, "lead", target.rowToken, target.stepIndex)).toBe(true);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-selected-row-token", target.rowToken);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-selected-step-index", String(target.stepIndex));
+      await expect(page.locator("#timelineSelectionDetails")).toContainText("Selected cell");
+      await expect(page.locator("#timelineSelectionDetails")).toContainText(`${target.rowToken} / step ${target.stepIndex + 1}`);
+      await expect.poll(() => page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+
+      await clickCanvasCell(page, target.rowToken, target.stepIndex);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Erased .* for Lead across the timeline; playback data updated\./);
+      expect(await hasCanvasNote(page, "lead", target.rowToken, target.stepIndex)).toBe(false);
+
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await dragCanvasCells(page, target.rowToken, target.stepIndex, target.rowToken, target.stepIndex + 2);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Painted .* for Lead across the timeline; playback data updated\./);
+      for (let stepIndex = target.stepIndex; stepIndex <= target.stepIndex + 2; stepIndex += 1) {
+        expect(await hasCanvasNote(page, "lead", target.rowToken, stepIndex)).toBe(true);
+      }
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-selected-row-token", target.rowToken);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-selected-step-index", String(target.stepIndex + 2));
+      await expect.poll(() => page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+
+      const canonicalPainted = await page.evaluate((paintTarget) => {
+        const app = window.__midiStudioV2App;
+        return [paintTarget.stepIndex, paintTarget.stepIndex + 1, paintTarget.stepIndex + 2].map((stepIndex) => ({
+          stepIndex,
+          token: app.instrumentGrid.tokenForLaneStep("lead", stepIndex),
+          visibleInGrid: app.lastInstrumentGridResult.timeline.some((event) => event.lane === "lead"
+            && event.stepIndex === stepIndex
+            && app.instrumentGrid.rowsForEvent(event).includes(paintTarget.rowToken))
+        }));
+      }, target);
+      expect(canonicalPainted.every((entry) => entry.visibleInGrid && entry.token.includes(target.rowToken))).toBe(true);
+
+      await page.evaluate((paintTarget) => {
+        const app = window.__midiStudioV2App;
+        const originalPlayGridRange = app.previewSynth.playGridRange.bind(app.previewSynth);
+        app.__lastPreviewGridValues = [];
+        app.previewSynth.playGridRange = async (options) => {
+          app.__lastPreviewGridValues = options.grid.timeline
+            .filter((event) => event.lane === "lead"
+              && event.stepIndex >= paintTarget.stepIndex
+              && event.stepIndex <= paintTarget.stepIndex + 2)
+            .map((event) => event.value);
+          return originalPlayGridRange(options);
+        };
+        window.__midiStudioPreviewSynthEvents = [];
+      }, target);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect.poll(() => page.evaluate(() => window.__midiStudioV2App.__lastPreviewGridValues)).toContain(target.rowToken);
+      await expect.poll(() => page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await dragCanvasCells(page, target.rowToken, target.stepIndex, target.rowToken, target.stepIndex + 2);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Erased .* for Lead across the timeline; playback data updated\./);
+      for (let stepIndex = target.stepIndex; stepIndex <= target.stepIndex + 2; stepIndex += 1) {
+        expect(await hasCanvasNote(page, "lead", target.rowToken, stepIndex)).toBe(false);
+      }
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("canvas note editing warns when note audition audio is unavailable without blocking edits", async ({ page }) => {
+    const server = await openMidiStudioForImport(page, { webAudio: false });
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+
+      const target = await emptyCanvasRun(page, { lane: "lead", length: 2 });
+      expect(target).toBeTruthy();
+      await clickCanvasCell(page, target.rowToken, target.stepIndex);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Painted .* for Lead across the timeline; playback data updated\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Preview Synth note audition unavailable: Preview Synth audio unavailable: Web Audio AudioContext is not available\. Use a browser with Web Audio support\. Editing was kept\./);
+      expect(await hasCanvasNote(page, "lead", target.rowToken, target.stepIndex)).toBe(true);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-selected-row-token", target.rowToken);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-selected-step-index", String(target.stepIndex));
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

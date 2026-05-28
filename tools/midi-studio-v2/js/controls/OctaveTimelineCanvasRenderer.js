@@ -34,6 +34,8 @@ export class OctaveTimelineCanvasRenderer {
       loopBounds: null,
       notes: [],
       paintPreviewKeys: [],
+      paintPreviewMode: "paint",
+      hoverCell: null,
       playheadStep: 0,
       referenceCells: [],
       rows: [],
@@ -51,6 +53,7 @@ export class OctaveTimelineCanvasRenderer {
       activePreviewLanes: Array.isArray(state.activePreviewLanes) ? state.activePreviewLanes : [],
       notes: Array.isArray(state.notes) ? state.notes : [],
       paintPreviewKeys: Array.isArray(state.paintPreviewKeys) ? state.paintPreviewKeys : [],
+      paintPreviewMode: state.paintPreviewMode === "erase" ? "erase" : "paint",
       referenceCells: Array.isArray(state.referenceCells) ? state.referenceCells : [],
       rows: Array.isArray(state.rows) ? state.rows : []
     };
@@ -77,8 +80,19 @@ export class OctaveTimelineCanvasRenderer {
     this.requestRender();
   }
 
+  setHoverCell(hoverCell) {
+    this.state.hoverCell = hoverCell || null;
+    this.updateDataset();
+    this.requestRender();
+  }
+
   setPaintPreview(paintPreviewKeys = []) {
     this.state.paintPreviewKeys = paintPreviewKeys;
+    this.requestRender();
+  }
+
+  setPaintPreviewMode(mode) {
+    this.state.paintPreviewMode = mode === "erase" ? "erase" : "paint";
     this.requestRender();
   }
 
@@ -116,6 +130,10 @@ export class OctaveTimelineCanvasRenderer {
     this.canvas.dataset.timelineRows = String(this.state.rows.length);
     this.canvas.dataset.timelineSteps = String(this.state.totalSteps);
     this.canvas.dataset.selectedLane = this.state.selectedLane || "";
+    this.canvas.dataset.selectedRowToken = this.state.selectedCell?.rowToken || "";
+    this.canvas.dataset.selectedStepIndex = Number.isInteger(this.state.selectedCell?.stepIndex) ? String(this.state.selectedCell.stepIndex) : "";
+    this.canvas.dataset.hoverRowToken = this.state.hoverCell?.rowToken || "";
+    this.canvas.dataset.hoverStepIndex = Number.isInteger(this.state.hoverCell?.stepIndex) ? String(this.state.hoverCell.stepIndex) : "";
     this.canvas.dataset.playheadBar = playheadCell ? String(playheadCell.bar) : "";
     this.canvas.dataset.playheadBeat = playheadCell ? String(playheadCell.beat) : "";
     this.canvas.dataset.playheadSection = playheadCell?.section || "";
@@ -142,6 +160,7 @@ export class OctaveTimelineCanvasRenderer {
     this.drawKeyboardAxis(metrics);
     this.drawGridLines(metrics);
     this.drawNotes(metrics);
+    this.drawHoverCell(metrics);
     this.drawPaintPreview(metrics);
     this.drawSelectedCell(metrics);
     this.drawPlayhead(metrics);
@@ -306,7 +325,9 @@ export class OctaveTimelineCanvasRenderer {
       return;
     }
     const rowIndexByToken = new Map(this.state.rows.map((row, index) => [row.value, index]));
-    this.context.fillStyle = "rgba(34, 197, 94, 0.22)";
+    this.context.fillStyle = this.state.paintPreviewMode === "erase" ? "rgba(248, 113, 113, 0.26)" : "rgba(34, 197, 94, 0.22)";
+    this.context.strokeStyle = this.state.paintPreviewMode === "erase" ? "rgba(254, 202, 202, 0.88)" : "rgba(134, 239, 172, 0.8)";
+    this.context.lineWidth = 1.5;
     this.state.paintPreviewKeys.forEach((key) => {
       const [rowToken, rawStep] = String(key).split(":");
       const rowIndex = rowIndexByToken.get(rowToken);
@@ -314,8 +335,29 @@ export class OctaveTimelineCanvasRenderer {
       if (!Number.isInteger(rowIndex) || !Number.isInteger(stepIndex)) {
         return;
       }
-      this.context.fillRect(metrics.axisWidth + stepIndex * metrics.cellSize, metrics.headerHeight + rowIndex * metrics.cellSize, metrics.cellSize, metrics.cellSize);
+      const x = metrics.axisWidth + stepIndex * metrics.cellSize;
+      const y = metrics.headerHeight + rowIndex * metrics.cellSize;
+      this.context.fillRect(x, y, metrics.cellSize, metrics.cellSize);
+      this.context.strokeRect(x + 1, y + 1, metrics.cellSize - 2, metrics.cellSize - 2);
     });
+  }
+
+  drawHoverCell(metrics) {
+    const hover = this.state.hoverCell;
+    if (!hover) {
+      return;
+    }
+    const rowIndex = this.state.rows.findIndex((row) => row.value === hover.rowToken);
+    if (rowIndex < 0 || hover.stepIndex < 0 || hover.stepIndex >= this.state.totalSteps) {
+      return;
+    }
+    const x = metrics.axisWidth + hover.stepIndex * metrics.cellSize;
+    const y = metrics.headerHeight + rowIndex * metrics.cellSize;
+    this.context.fillStyle = "rgba(125, 211, 252, 0.16)";
+    this.context.fillRect(x, y, metrics.cellSize, metrics.cellSize);
+    this.context.strokeStyle = "rgba(186, 230, 253, 0.9)";
+    this.context.lineWidth = 1.5;
+    this.context.strokeRect(x + 1, y + 1, metrics.cellSize - 2, metrics.cellSize - 2);
   }
 
   drawSelectedCell(metrics) {
@@ -407,6 +449,7 @@ export class OctaveTimelineCanvasRenderer {
       headerHeight: metrics.headerHeight,
       height: metrics.height,
       noteCount: this.state.notes.length,
+      hoverCell: this.state.hoverCell,
       playheadStep: this.state.playheadStep,
       renderFrame: this.renderFrame,
       rows: this.state.rows.map((row) => ({ keyKind: keyKind(row), label: row.label, value: row.value })),

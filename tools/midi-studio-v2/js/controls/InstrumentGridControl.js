@@ -305,6 +305,7 @@ export class InstrumentGridControl {
     this.timelineCanvas = null;
     this.timelineCanvasRenderer = null;
     this.timelineCanvasRows = [];
+    this.hoveredCell = null;
     this.lastTimelinePointerHit = null;
     this.removedFixedLanes = new Set();
     this.selectedCell = null;
@@ -616,6 +617,8 @@ export class InstrumentGridControl {
     canvas.setAttribute("aria-label", "Canvas-backed octave timeline editor");
     canvas.setAttribute("role", "application");
     canvas.tabIndex = 0;
+    canvas.addEventListener("pointermove", (event) => this.updateTimelineHover(event));
+    canvas.addEventListener("pointerleave", () => this.clearTimelineHover());
     canvas.addEventListener("pointerdown", (event) => this.beginTimelinePointerEdit(event));
     canvas.addEventListener("click", (event) => {
       if (this.suppressNextCellClick) {
@@ -658,6 +661,8 @@ export class InstrumentGridControl {
       loopBounds: this.loopBounds,
       notes: this.canvasNotesForResult(result, rows),
       paintPreviewKeys: this.timelinePointerEdit ? Array.from(this.timelinePointerEdit.paintedKeys) : [],
+      paintPreviewMode: this.timelinePointerEdit?.mode || "paint",
+      hoverCell: this.hoveredCell,
       playheadStep: this.playheadStep,
       referenceCells,
       rows,
@@ -952,17 +957,21 @@ export class InstrumentGridControl {
     const { rowToken, stepIndex } = hit;
     this.lastTimelinePointerHit = hit;
     event.preventDefault();
+    this.suppressNextCellClick = true;
     this.selectTimelineCell(rowToken, stepIndex, { focusCell: true });
+    const mode = this.timelineCellHasSelectedLaneNote(rowToken, stepIndex) ? "erase" : "paint";
     this.timelinePointerEdit = {
       changed: false,
       lastKey: this.cellKey(rowToken, stepIndex),
       lastRowToken: rowToken,
       lastStepIndex: stepIndex,
+      mode,
       paintedKeys: new Set(),
       pointerId: event.pointerId,
       startRowToken: rowToken,
       startStepIndex: stepIndex
     };
+    this.applyTimelinePointerCell(rowToken, stepIndex);
     const onPointerMove = (moveEvent) => this.handleTimelinePointerMove(moveEvent);
     const onPointerUp = () => {
       this.window.removeEventListener("pointermove", onPointerMove);
@@ -973,6 +982,28 @@ export class InstrumentGridControl {
     this.timelinePointerEdit.onPointerUp = onPointerUp;
     this.window.addEventListener("pointermove", onPointerMove);
     this.window.addEventListener("pointerup", onPointerUp, { once: true });
+  }
+
+  updateTimelineHover(event) {
+    if (!this.timelineCanvasRenderer || this.timelinePointerEdit) {
+      return;
+    }
+    const hit = this.timelineCanvasRenderer.cellFromPoint(event.clientX, event.clientY) || null;
+    const currentKey = this.hoveredCell ? this.cellKey(this.hoveredCell.rowToken, this.hoveredCell.stepIndex) : "";
+    const nextKey = hit ? this.cellKey(hit.rowToken, hit.stepIndex) : "";
+    if (currentKey === nextKey) {
+      return;
+    }
+    this.hoveredCell = hit ? { rowToken: hit.rowToken, stepIndex: hit.stepIndex } : null;
+    this.timelineCanvasRenderer.setHoverCell(this.hoveredCell);
+  }
+
+  clearTimelineHover() {
+    if (!this.hoveredCell) {
+      return;
+    }
+    this.hoveredCell = null;
+    this.timelineCanvasRenderer?.setHoverCell(null);
   }
 
   handleTimelinePointerMove(event) {
@@ -993,7 +1024,6 @@ export class InstrumentGridControl {
       return;
     }
     this.paintTimelineRange(edit.lastRowToken, edit.lastStepIndex, rowToken, stepIndex);
-    edit.changed = true;
     edit.lastKey = key;
     edit.lastRowToken = rowToken;
     edit.lastStepIndex = stepIndex;
@@ -1009,26 +1039,37 @@ export class InstrumentGridControl {
     if (!edit) {
       return;
     }
-    this.paintTimelineCell(edit.startRowToken, edit.startStepIndex);
-    if (previousRowToken === rowToken) {
-      const start = Math.min(previousStepIndex, stepIndex);
-      const end = Math.max(previousStepIndex, stepIndex);
-      for (let nextStep = start; nextStep <= end; nextStep += 1) {
-        this.paintTimelineCell(rowToken, nextStep);
-      }
+    const rows = this.timelineCanvasRows.length ? this.timelineCanvasRows : this.octaveRowsFor(this.currentResult);
+    const previousRowIndex = rows.findIndex((row) => row.value === previousRowToken);
+    const rowIndex = rows.findIndex((row) => row.value === rowToken);
+    if (previousRowIndex < 0 || rowIndex < 0) {
+      this.applyTimelinePointerCell(rowToken, stepIndex);
       return;
     }
-    this.paintTimelineCell(rowToken, stepIndex);
+    const rowDelta = rowIndex - previousRowIndex;
+    const stepDelta = stepIndex - previousStepIndex;
+    const distance = Math.max(Math.abs(rowDelta), Math.abs(stepDelta), 1);
+    for (let index = 0; index <= distance; index += 1) {
+      const nextRowIndex = Math.round(previousRowIndex + (rowDelta * index) / distance);
+      const nextStepIndex = Math.round(previousStepIndex + (stepDelta * index) / distance);
+      const nextRow = rows[nextRowIndex];
+      if (nextRow) {
+        this.applyTimelinePointerCell(nextRow.value, nextStepIndex);
+      }
+    }
   }
 
-  paintTimelineCell(rowToken, stepIndex) {
+  applyTimelinePointerCell(rowToken, stepIndex) {
     const edit = this.timelinePointerEdit;
     const key = this.cellKey(rowToken, stepIndex);
     if (edit?.paintedKeys.has(key)) {
       return;
     }
-    if (this.setTimelineCellActive(rowToken, stepIndex, true)) {
+    const active = edit?.mode !== "erase";
+    if (this.setTimelineCellActive(rowToken, stepIndex, active)) {
+      edit.changed = true;
       edit?.paintedKeys.add(key);
+      this.timelineCanvasRenderer?.setPaintPreviewMode(edit?.mode || "paint");
       this.timelineCanvasRenderer?.setPaintPreview(Array.from(edit?.paintedKeys || []));
     }
   }
@@ -1040,15 +1081,18 @@ export class InstrumentGridControl {
     }
     this.timelineCanvasRenderer?.setPaintPreview([]);
     this.timelinePointerEdit = null;
-    if (!edit.changed) {
-      return;
-    }
-    this.suppressNextCellClick = true;
     this.window.setTimeout(() => {
       this.suppressNextCellClick = false;
     }, 0);
+    if (!edit.changed) {
+      return;
+    }
     this.onNoteEdit?.(this.readInput(), {
-      action: "paint-notes",
+      action: edit.mode === "erase" ? "erase-notes" : "paint-notes",
+      audition: edit.mode !== "erase",
+      auditionRowToken: edit.lastRowToken,
+      auditionStepIndex: edit.lastStepIndex,
+      editMode: edit.mode,
       lane: this.selectedLane,
       laneLabel: laneLabel(this.selectedLane),
       rowToken: edit.startRowToken,
@@ -1085,15 +1129,25 @@ export class InstrumentGridControl {
       return;
     }
     this.selectTimelineCell(rowToken, stepIndex, { focusCell: true });
+    const wasActive = this.timelineCellHasSelectedLaneNote(rowToken, stepIndex);
     const nextToken = this.toggleTimelineCellValue(rowToken, stepIndex);
+    const isActive = !wasActive;
     this.onNoteEdit?.(this.readInput(), {
       action: "toggle-note",
+      audition: isActive,
+      auditionRowToken: rowToken,
+      auditionStepIndex: stepIndex,
+      editMode: isActive ? "paint" : "erase",
       lane: this.selectedLane,
       laneLabel: laneLabel(this.selectedLane),
       note: nextToken,
       rowToken,
       stepIndex
     });
+  }
+
+  timelineCellHasSelectedLaneNote(rowToken, stepIndex) {
+    return this.rowsForSelectedToken(this.tokenForLaneStep(this.selectedLane, stepIndex)).includes(rowToken);
   }
 
   toggleTimelineCellValue(rowToken, stepIndex) {
