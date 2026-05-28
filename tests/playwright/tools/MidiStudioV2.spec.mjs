@@ -298,6 +298,50 @@ async function openMidiStudioForImport(page, audioOptions = {}) {
   return server;
 }
 
+async function openMidiStudioFromWorkspace(page, manifestPayload, audioOptions = {}) {
+  const server = await startRepoServer();
+  const hostContextId = "midi-studio-v2-workspace-context";
+  await installMockAudio(page, audioOptions);
+  await page.addInitScript(({ hostContextId: contextId, manifest }) => {
+    const toolId = "midi-studio-v2";
+    const toolSettings = manifest.tools?.[toolId] || {};
+    const payload = {
+      schema: "html-js-gaming.midi-studio-v2",
+      toolId,
+      version: manifest.music?.version || 1,
+      runtimePreference: manifest.music?.runtimePreference || "rendered",
+      activeSongId: toolSettings.activeSongId || manifest.music?.activeSongId || manifest.music?.songs?.[0]?.id || "",
+      directorMode: toolSettings.directorMode || manifest.music?.directorMode || {},
+      songs: manifest.music?.songs || []
+    };
+    window.sessionStorage.setItem(contextId, JSON.stringify({
+      ...manifest,
+      tools: {
+        ...(manifest.tools || {}),
+        [toolId]: payload
+      }
+    }));
+    window.sessionStorage.setItem(`workspace.tools.${toolId}`, JSON.stringify({
+      schema: { name: "workspace-tool-state", version: 1 },
+      workspace: {
+        hostContextId: contextId,
+        source: "workspace-manager-v2",
+        toolId
+      },
+      data: payload,
+      dirty: {
+        isDirty: false,
+        reason: "clean",
+        changedAt: "",
+        changedKeys: []
+      }
+    }));
+  }, { hostContextId, manifest: manifestPayload });
+  await workspaceV2CoverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}&workspaceMode=uat`, { waitUntil: "domcontentloaded" });
+  return server;
+}
+
 async function selectMidiStudioTab(page, tabId) {
   const tab = page.locator(`[data-midi-studio-tab="${tabId}"]`);
   if (await tab.getAttribute("aria-selected") === "true") {
@@ -1022,6 +1066,52 @@ test.describe("MIDI Studio V2", () => {
       await expect(octaveCell(page, "C6", 2)).not.toHaveAttribute("data-note-lanes", /lead/);
       await expect(page.locator("#projectDirtyState")).toHaveText("Saved");
       expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead)).toBe(originalLeadLane);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("separates Workspace launch save ownership from Tool Mode standalone save", async ({ page }) => {
+    const manifest = JSON.parse(await fs.readFile(uatManifestPath, "utf8"));
+    const server = await openMidiStudioFromWorkspace(page, manifest);
+    try {
+      await expect(page.locator("#launchModeIndicator")).toHaveText("Workspace Mode");
+      await expect(page.locator("body")).toHaveAttribute("data-midi-studio-launch-mode", "workspace");
+      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
+      await expect(page.locator("#returnToWorkspaceButton")).toBeVisible();
+      await expect(page.locator("#saveProjectButton")).toBeHidden();
+      await expect(page.locator("#toolImportManifestButton")).toBeHidden();
+      await expect(page.locator("#renderedExportSaveButton")).toBeHidden();
+      await expect(page.locator("#workspaceImportManifestButton")).toBeHidden();
+      await expect(page.locator("#workspaceCopyManifestButton")).toBeHidden();
+      await expect(page.locator("#workspaceExportManifestButton")).toBeHidden();
+
+      await selectInstrumentRow(page, "lead");
+      await octaveCell(page, "C6", 2).click();
+      await expect(octaveCell(page, "C6", 2)).toHaveAttribute("data-note-lanes", /lead/);
+      const workspaceState = await page.evaluate(() => {
+        const session = JSON.parse(window.sessionStorage.getItem("workspace.tools.midi-studio-v2"));
+        const context = JSON.parse(window.sessionStorage.getItem("midi-studio-v2-workspace-context"));
+        const sessionSong = session.data.songs.find((song) => song.id === session.data.activeSongId);
+        const contextSong = context.tools["midi-studio-v2"].songs.find((song) => song.id === context.tools["midi-studio-v2"].activeSongId);
+        return {
+          contextLead: contextSong.studioArrangement.lanes.lead,
+          dirty: session.dirty,
+          sessionLead: sessionSong.studioArrangement.lanes.lead
+        };
+      });
+      expect(workspaceState.sessionLead).toContain("C6");
+      expect(workspaceState.contextLead).toContain("C6");
+      expect(workspaceState.dirty).toMatchObject({
+        isDirty: true,
+        reason: "midi-studio-note-grid-edited"
+      });
+      expect(workspaceState.dirty.changedKeys).toEqual(expect.arrayContaining(["data.songs.studioArrangement"]));
+
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html.*hostContextId=midi-studio-v2-workspace-context/);
+      await expect(page).toHaveURL(/workspace=uat/);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -1780,6 +1870,8 @@ test.describe("MIDI Studio V2", () => {
     const server = await openMidiStudio(page);
     try {
       await expect(page.locator("body")).toHaveAttribute("data-tool-id", "midi-studio-v2");
+      await expect(page.locator("body")).toHaveAttribute("data-midi-studio-launch-mode", "tool");
+      await expect(page.locator("#launchModeIndicator")).toHaveText("Tool Mode");
       await expect(page.locator("[data-midi-studio-header]")).toContainText("MIDI Studio V2");
       await expect(page.locator("#songList [data-song-id]")).toHaveCount(3);
       await expect(page.locator('[data-song-id="theme-main"]')).toHaveAttribute("aria-pressed", "true");
@@ -1796,11 +1888,13 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#exportMp3Button")).toHaveCount(0);
       await expect(page.locator("#exportOggButton")).toHaveCount(0);
       await expect(page.locator(".midi-studio-v2__tool-menu #toolImportManifestButton")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__tool-menu #saveProjectButton")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #loadExampleAndPlayButton")).toHaveCount(0);
       await expect(page.locator(".midi-studio-v2__tool-menu #stopAllAudioButton")).toBeVisible();
-      await expect(page.locator('.midi-studio-v2__tool-menu label[for="renderedExportTargetTypeSelect"]')).toContainText("Type");
+      await expect(page.locator('.midi-studio-v2__tool-menu label[for="renderedExportTargetTypeSelect"]')).toContainText("Output Type");
       await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportTargetTypeSelect")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toHaveText("Save Output");
       await expect(page.locator("#midiSourceDetails")).toContainText("No MIDI source inspected.");
       await expect(page.locator("#audioDiagnosticsContent")).toBeHidden();
       await expect(page.locator("#playbackState")).toContainText("Audible preview ready: Main Theme.");
@@ -1925,7 +2019,7 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("exports through Type dropdown and Save without claiming files were written", async ({ page }) => {
+  test("exports output through Type dropdown and Save Output without claiming project save", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       await expect(page.locator("#exportWavButton")).toHaveCount(0);
@@ -1934,6 +2028,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#renderedExportTargetTypeSelect")).toBeVisible();
       await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
       await expect(page.locator("#renderedExportSaveButton")).toBeVisible();
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save Output");
       const exportControlsFit = await page.locator(".midi-studio-v2__tool-menu").evaluate((menu) => {
         const label = menu.querySelector('label[for="renderedExportTargetTypeSelect"]').getBoundingClientRect();
         const typeSelect = menu.querySelector("#renderedExportTargetTypeSelect").getBoundingClientRect();
@@ -1955,6 +2050,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for WAV\. Planned target: assets\/music\/rendered\/theme-main\.wav\./);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for MP3\. Planned target: assets\/music\/rendered\/theme-main\.mp3\./);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for OGG\. Planned target: assets\/music\/rendered\/theme-main\.ogg\./);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/Save Project completed/);
       await page.locator('[data-song-id="source-only"]').click();
       await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
       await page.locator("#renderedExportSaveButton").click();

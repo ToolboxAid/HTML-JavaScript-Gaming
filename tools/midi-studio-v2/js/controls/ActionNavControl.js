@@ -1,6 +1,7 @@
 export class ActionNavControl {
   constructor({
     locationRef = window.location,
+    launchModeIndicator,
     nowPlayingLabel,
     projectDirtyState,
     returnToWorkspaceButton,
@@ -19,6 +20,7 @@ export class ActionNavControl {
     workspaceNav
   }) {
     this.location = locationRef;
+    this.launchModeIndicator = launchModeIndicator;
     this.nowPlayingLabel = nowPlayingLabel;
     this.projectDirtyState = projectDirtyState;
     this.returnToWorkspaceButton = returnToWorkspaceButton;
@@ -74,6 +76,11 @@ export class ActionNavControl {
     this.workspaceCopyManifestButton.hidden = isWorkspaceManagerLaunch;
     this.workspaceExportManifestButton.hidden = isWorkspaceManagerLaunch;
     this.returnToWorkspaceButton.hidden = !isWorkspaceManagerLaunch;
+    if (this.launchModeIndicator) {
+      this.launchModeIndicator.textContent = isWorkspace ? "Workspace Mode" : "Tool Mode";
+      this.launchModeIndicator.dataset.midiStudioLaunchMode = isWorkspace ? "workspace" : "tool";
+    }
+    this.window.document.body.dataset.midiStudioLaunchMode = isWorkspace ? "workspace" : "tool";
   }
 
   setToolActionsEnabled(isEnabled) {

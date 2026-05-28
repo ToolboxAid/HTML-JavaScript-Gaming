@@ -49,14 +49,14 @@
       <span id="projectDirtyState" class="midi-studio-v2__dirty-state" data-midi-studio-dirty-state="clean">Saved</span>
       <div class="midi-studio-v2__export-save-controls">
         <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
-          <span>Type</span>
+          <span>Output Type</span>
           <select id="renderedExportTargetTypeSelect">
             <option value="wav">WAV</option>
             <option value="mp3">MP3</option>
             <option value="ogg">OGG</option>
           </select>
         </label>
-        <button id="renderedExportSaveButton" type="button">Save</button>
+        <button id="renderedExportSaveButton" type="button">Save Output</button>
       </div>
       <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
       <input id="toolImportManifestInput" type="file" accept="application/json,.json" hidden>
@@ -68,6 +68,10 @@
       <button id="workspaceExportManifestButton" type="button">Export manifest</button>
       <button id="returnToWorkspaceButton" type="button" hidden>Return to Workspace</button>
     </nav>
+
+    <div class="midi-studio-v2__mode-bar">
+      <span id="launchModeIndicator" class="midi-studio-v2__mode-indicator">Tool Mode</span>
+    </div>
 
     <nav class="midi-studio-v2__tabs" aria-label="MIDI Studio sections" role="tablist">
       <button class="is-active" type="button" role="tab" aria-selected="true" data-midi-studio-tab="studio">Studio</button>
