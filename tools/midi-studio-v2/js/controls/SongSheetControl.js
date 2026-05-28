@@ -158,7 +158,10 @@ export class SongSheetControl {
       const term = document.createElement("dt");
       const description = document.createElement("dd");
       const token = fieldToken(label);
+      row.className = "midi-studio-v2__field-card midi-studio-v2__song-sheet-display-field";
       row.dataset.songSheetSummaryField = token;
+      row.dataset.midiStudioFieldState = "readonly";
+      row.setAttribute("aria-readonly", "true");
       term.textContent = label;
       description.textContent = value === undefined || value === null || value === "" ? "not declared" : String(value);
       description.dataset.songSheetReadonly = token;

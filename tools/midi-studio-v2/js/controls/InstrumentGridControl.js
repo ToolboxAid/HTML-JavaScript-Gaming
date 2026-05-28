@@ -1027,13 +1027,16 @@ export class InstrumentGridControl {
     const displayName = this.createDisplayNameInput(lane);
     const typeSelect = this.createInstrumentTypeSelect(lane);
     const instrumentSelect = this.createInstrumentSelect(lane);
+    const previewMapping = this.createInstrumentDisplayOutput("audible-preview", this.previewMappingForLane(lane));
     this.selectedEditorControls.displayName = displayName;
     this.selectedEditorControls.instrumentType = typeSelect;
     this.selectedEditorControls.instrument = instrumentSelect;
+    this.selectedEditorControls.previewMapping = previewMapping;
     return this.createInstrumentEditorBucket("Identity", "identity", [
       this.createEditorField("Instrument display name", displayName),
       this.createEditorField("GM Type", typeSelect),
-      this.createEditorField("GM Instrument", instrumentSelect)
+      this.createEditorField("GM Instrument", instrumentSelect),
+      this.createEditorField("Audible preview", previewMapping)
     ]);
   }
 
@@ -1132,10 +1135,32 @@ export class InstrumentGridControl {
   createEditorField(labelText, control) {
     const label = document.createElement("label");
     const text = document.createElement("span");
-    label.className = "tool-starter__field midi-studio-v2__instrument-editor-field";
+    const controlElement = this.primaryEditorControl(control);
+    label.className = "tool-starter__field midi-studio-v2__field-card midi-studio-v2__instrument-editor-field";
+    label.dataset.midiStudioFieldState = this.editorFieldState(controlElement);
     text.textContent = labelText;
     label.append(text, control);
     return label;
+  }
+
+  primaryEditorControl(control) {
+    if (control?.matches?.("input, select, textarea, output")) {
+      return control;
+    }
+    return control?.querySelector?.("input, select, textarea, output") || null;
+  }
+
+  editorFieldState(control) {
+    if (!control) {
+      return "readonly";
+    }
+    if (control.dataset?.midiStudioFutureControl !== undefined || control.dataset?.midiStudioUnwired) {
+      return "unwired";
+    }
+    if (control.disabled || control.readOnly || control.tagName === "OUTPUT") {
+      return "readonly";
+    }
+    return "editable";
   }
 
   createOctaveRangeField(lowInput, highInput) {
@@ -1165,6 +1190,31 @@ export class InstrumentGridControl {
       });
     });
     return input;
+  }
+
+  createInstrumentDisplayOutput(kind, value) {
+    const output = document.createElement("output");
+    output.dataset.instrumentDerivedField = kind;
+    output.value = value;
+    output.textContent = value;
+    output.setAttribute("aria-readonly", "true");
+    return output;
+  }
+
+  previewMappingForLane(lane) {
+    const state = this.previewLaneState[lane] || {};
+    return audiblePreviewLabel(state.instrument) || "No audible preview selected";
+  }
+
+  updateSelectedInstrumentDisplayFields(lane) {
+    if (this.selectedEditorControls?.lane !== lane) {
+      return;
+    }
+    if (this.selectedEditorControls.previewMapping) {
+      const value = this.previewMappingForLane(lane);
+      this.selectedEditorControls.previewMapping.value = value;
+      this.selectedEditorControls.previewMapping.textContent = value;
+    }
   }
 
   createInstrumentNumberInput(lane, kind, { ariaLabel, datasetName, max, min, step, value }) {
@@ -1981,6 +2031,7 @@ export class InstrumentGridControl {
         this.populateInstrumentOptions(lane, this.selectedEditorControls.instrument);
       }
       this.updateLaneTitle(lane);
+      this.updateSelectedInstrumentDisplayFields(lane);
       this.syncQuickInstrumentControls();
       this.renderAuditionKeyboard();
       this.renderSelectionDetails();
@@ -2018,6 +2069,7 @@ export class InstrumentGridControl {
         editorControls.instrumentType.value = nextType;
       }
       this.updateLaneTitle(lane);
+      this.updateSelectedInstrumentDisplayFields(lane);
       this.syncQuickInstrumentControls();
       this.renderAuditionKeyboard();
       this.renderSelectionDetails();
@@ -2366,6 +2418,7 @@ export class InstrumentGridControl {
             this.selectedEditorControls.octaveHigh.value = String(highOctave);
           }
         }
+        this.updateSelectedInstrumentDisplayFields(lane);
       }
     }
     this.syncQuickInstrumentControls();

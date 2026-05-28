@@ -3051,6 +3051,134 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
+  test("keeps PR064 Song Sheet and Instrument Settings fields in responsive editable/read-only grids", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      await page.locator("#songSheetSectionsInput").fill("intro: C F\nbridge: Dm G\nloop: F G C C");
+      await page.locator("#songSheetLoopSectionsInput").fill("bridge, loop");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars'] dd")).toHaveText("8");
+      const songSheetLayout = await page.locator("#songSheetContent").evaluate((content) => {
+        const columnCount = (element) => getComputedStyle(element).gridTemplateColumns.split(" ").filter(Boolean).length;
+        const fieldRows = (fields) => new Set(fields.map((field) => Math.round(field.getBoundingClientRect().top))).size;
+        const editableGrid = content.querySelector(".midi-studio-v2__song-sheet-grid");
+        const summary = content.querySelector("#songSheetSummary");
+        const editableFields = Array.from(editableGrid.querySelectorAll("[data-midi-studio-field-state='editable']"));
+        const readonlyFields = Array.from(summary.querySelectorAll("[data-midi-studio-field-state='readonly']"));
+        return {
+          editableBackgrounds: editableFields.map((field) => getComputedStyle(field).backgroundColor),
+          editableBorderStyles: editableFields.map((field) => getComputedStyle(field).borderStyle),
+          editableColumns: columnCount(editableGrid),
+          editableControls: editableGrid.querySelectorAll("textarea:not([readonly]):not([disabled])").length,
+          editableFieldRows: fieldRows(editableFields),
+          readonlyAria: readonlyFields.every((field) => field.getAttribute("aria-readonly") === "true"),
+          readonlyBorderStyles: readonlyFields.map((field) => getComputedStyle(field).borderStyle),
+          readonlyControls: summary.querySelectorAll("input, select, textarea").length,
+          readonlyFields: readonlyFields.length,
+          summaryColumns: columnCount(summary),
+          summaryFieldRows: fieldRows(readonlyFields)
+        };
+      });
+      expect(songSheetLayout.editableColumns).toBeGreaterThan(1);
+      expect(songSheetLayout.summaryColumns).toBeGreaterThan(1);
+      expect(songSheetLayout.editableFieldRows).toBe(1);
+      expect(songSheetLayout.summaryFieldRows).toBeLessThan(songSheetLayout.readonlyFields);
+      expect(songSheetLayout.editableControls).toBe(2);
+      expect(songSheetLayout.readonlyControls).toBe(0);
+      expect(songSheetLayout.readonlyFields).toBeGreaterThanOrEqual(6);
+      expect(songSheetLayout.readonlyAria).toBe(true);
+      expect(songSheetLayout.editableBorderStyles.every((style) => style === "solid")).toBe(true);
+      expect(songSheetLayout.readonlyBorderStyles.every((style) => style === "dashed")).toBe(true);
+      expect(new Set(songSheetLayout.editableBackgrounds).size).toBe(1);
+
+      const songSheetCanonical = await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.songSheet);
+      expect(songSheetCanonical).toEqual({
+        loopSections: "bridge, loop",
+        sections: "intro: C F\nbridge: Dm G\nloop: F G C C"
+      });
+
+      await selectMidiStudioTab(page, "instruments");
+      const editor = page.locator("#selectedInstrumentEditor");
+      await expect(editor).toHaveAttribute("data-selected-instrument-id", "lead");
+      const instrumentLayout = await editor.evaluate((instrumentEditor) => {
+        const columnCount = (element) => getComputedStyle(element).gridTemplateColumns.split(" ").filter(Boolean).length;
+        const buckets = Array.from(instrumentEditor.querySelectorAll(".midi-studio-v2__instrument-editor-bucket"));
+        const bucketRows = new Set(buckets.map((bucket) => Math.round(bucket.getBoundingClientRect().top))).size;
+        const identityBucket = instrumentEditor.querySelector("[data-instrument-editor-bucket='identity']");
+        const editableFields = Array.from(instrumentEditor.querySelectorAll("[data-midi-studio-field-state='editable']"));
+        const readonlyFields = Array.from(instrumentEditor.querySelectorAll("[data-midi-studio-field-state='readonly']"));
+        const unwiredFields = Array.from(instrumentEditor.querySelectorAll("[data-midi-studio-field-state='unwired']"));
+        const readonlyOutput = instrumentEditor.querySelector("[data-instrument-derived-field='audible-preview']");
+        return {
+          bucketRows,
+          buckets: buckets.length,
+          editorColumns: columnCount(instrumentEditor),
+          editableBorderStyles: editableFields.map((field) => getComputedStyle(field).borderStyle),
+          editableControls: editableFields.map((field) => field.querySelector("input, select, textarea")?.disabled === false),
+          identityColumns: columnCount(identityBucket),
+          readonlyBorderStyles: readonlyFields.map((field) => getComputedStyle(field).borderStyle),
+          readonlyOutputText: readonlyOutput?.textContent || "",
+          readonlyOutputs: readonlyFields.filter((field) => field.querySelector("output[aria-readonly='true']")).length,
+          unwiredControls: unwiredFields.map((field) => {
+            const control = field.querySelector("[data-midi-studio-future-control]");
+            return {
+              borderStyle: getComputedStyle(field).borderStyle,
+              controlClass: control?.classList.contains("midi-studio-v2__unwired-control") || false,
+              disabled: control?.disabled || false,
+              status: control?.dataset.midiStudioUnwired || "",
+              title: control?.title || ""
+            };
+          }),
+          unwiredFields: unwiredFields.length
+        };
+      });
+      expect(instrumentLayout.editorColumns).toBeGreaterThan(1);
+      expect(instrumentLayout.identityColumns).toBeGreaterThan(1);
+      expect(instrumentLayout.bucketRows).toBeLessThan(instrumentLayout.buckets);
+      expect(instrumentLayout.editableControls.every(Boolean)).toBe(true);
+      expect(instrumentLayout.editableBorderStyles.every((style) => style === "solid")).toBe(true);
+      expect(instrumentLayout.readonlyOutputs).toBeGreaterThanOrEqual(1);
+      expect(instrumentLayout.readonlyOutputText).toContain("Lead");
+      expect(instrumentLayout.readonlyBorderStyles.every((style) => style === "dashed")).toBe(true);
+      expect(instrumentLayout.unwiredFields).toBeGreaterThanOrEqual(8);
+      expect(instrumentLayout.unwiredControls.every((control) => control.borderStyle === "solid" && control.controlClass && control.disabled && control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
+
+      await page.locator("#previewDisplayNameLeadInput").fill("Lead Grid Voice");
+      await setInputValue(page, "#previewVolumeLeadInput", "0.75");
+      await instrumentTypeSelect(page, "lead").selectOption("Bass");
+      await instrumentSelect(page, "lead").selectOption("gm-electric-bass-finger");
+      await expect(editor.locator("[data-instrument-derived-field='audible-preview']")).toHaveText("Synth Bass 1");
+      expect(await page.evaluate(() => {
+        const settings = window.__midiStudioV2App.selectedSong().studioArrangement.previewLaneSettings;
+        return {
+          displayName: settings.displayNames.lead,
+          instrument: settings.instruments.lead,
+          instrumentType: settings.instrumentTypes.lead,
+          volume: settings.volumes.lead
+        };
+      })).toEqual({
+        displayName: "Lead Grid Voice",
+        instrument: "gm-electric-bass-finger",
+        instrumentType: "Bass",
+        volume: 0.75
+      });
+
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("derives primary song, instrument, grid, playback, and diagnostics views from the canonical selected song", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {
