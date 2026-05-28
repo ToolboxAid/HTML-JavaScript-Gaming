@@ -10,11 +10,22 @@ export class RenderedExportActionsControl {
   }
 
   mount({ onExport }) {
+    this.updateSaveButtonLabel();
     this.markRenderedExportControlsUnwired();
+    this.exportTargetTypeSelect.addEventListener("change", () => this.updateSaveButtonLabel());
     this.saveButton.addEventListener("click", (event) => {
       event.stopPropagation();
       onExport(this.exportTargetTypeSelect.value);
     });
+  }
+
+  updateSaveButtonLabel() {
+    const format = String(this.exportTargetTypeSelect.value || "wav").trim().toUpperCase() || "WAV";
+    const label = `Save ${format}`;
+    this.saveButton.textContent = label;
+    if (this.saveButton.dataset.midiStudioUnwired) {
+      this.saveButton.setAttribute("aria-label", `${label} (${this.saveButton.dataset.midiStudioUnwiredStatus || "Not implemented"})`);
+    }
   }
 
   markRenderedExportControlsUnwired() {

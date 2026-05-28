@@ -228,7 +228,7 @@
                     <option value="ogg">OGG</option>
                   </select>
                 </label>
-                <button id="renderedExportSaveButton" type="button">Save/Export</button>
+                <button id="renderedExportSaveButton" type="button">Save WAV</button>
               </div>
             </section>
             <section id="exportRenderSourceSection" class="midi-studio-v2__export-section" aria-labelledby="exportRenderSourceHeading">
@@ -290,6 +290,24 @@
           </button>
           <div id="songSectionsLoopContent" class="accordion-v2__content midi-studio-v2__selected-song-details">
             <dl id="songSectionsLoopDetails" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="editingHistoryContent">
+            <span>Editing History</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="editingHistoryContent" class="accordion-v2__content midi-studio-v2__future-panel" aria-label="Future editing history controls">
+            <h3>Editing History</h3>
+            <div class="midi-studio-v2__future-controls">
+              <button id="futureUndoButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Undo editing history is planned but not implemented yet.">Undo</button>
+              <button id="futureRedoButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Redo editing history is planned but not implemented yet.">Redo</button>
+              <button id="futureSnapshotsButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Snapshots are planned but not implemented yet.">Snapshots</button>
+              <button id="futureRevisionHistoryButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Revision History is planned but not implemented yet.">Revision History</button>
+              <button id="futureRevertToSavedButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Revert To Saved is planned but not implemented yet.">Revert To Saved</button>
+              <button id="futureAutosaveButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Autosave is planned but not implemented yet.">Autosave</button>
+            </div>
           </div>
         </section>
 

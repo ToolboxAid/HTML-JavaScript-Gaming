@@ -2374,7 +2374,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#exportWorkflowContent")).toBeVisible();
       await expect(page.locator("#renderedTargetsContent")).toBeVisible();
       await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
-      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save/Export");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
       await expect(page.locator("#renderedExportTargetTypeSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
       await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
       await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("title", /Not implemented: Rendered audio export generation is not implemented yet/);
@@ -2478,7 +2478,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#futureExportOptionsSection")).toContainText("Future Rendering Options");
       await expect(page.locator("#exportStatusSection")).toContainText("Export Status");
       await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
-      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save/Export");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
       const exportControlOwners = await page.locator("#renderedExportTargetTypeSelect, #renderedExportSaveButton").evaluateAll((controls) => controls.map((control) => control.closest("[data-midi-studio-tab-panel]")?.dataset.midiStudioTabPanel));
       expect(exportControlOwners).toEqual(["export", "export"]);
 
@@ -2527,6 +2527,7 @@ test.describe("MIDI Studio V2", () => {
       ]));
 
       await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save MP3");
       await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for MP3\. Planned target: assets\/music\/rendered\/custom-main\.mp3\./);
       await expect(page.locator("#statusLog")).not.toHaveValue(/created .*custom-main\.mp3|wrote .*custom-main\.mp3|saved .*custom-main\.mp3/i);
@@ -2560,6 +2561,59 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI song for WAV export\. Load or select a song before exporting\./);
       await expect(page.locator("#exportStatusDetails")).toContainText("FAIL: Missing MIDI song for WAV export. Load or select a song before exporting.");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps JSON wording and Song Setup editing history placeholders honest", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await expect(page.locator("#toolImportManifestButton")).toHaveText("Import JSON Manifest");
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#toolExportToolStateButton")).toHaveText("Export JSON");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save MP3");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
+      await expect(page.locator("body")).not.toContainText(/\bExport WAV\b|\bExport MP3\b|\bExport OGG\b/);
+
+      await selectMidiStudioTab(page, "song-setup");
+      await expect(page.locator("#editingHistoryContent")).toBeVisible();
+      await expect(page.locator('[data-midi-studio-tab-panel="song-setup"] #editingHistoryContent')).toHaveCount(1);
+      await expect(page.locator('[data-midi-studio-tab-panel="export"] #editingHistoryContent, [data-midi-studio-tab-panel="diagnostics"] #editingHistoryContent, [data-midi-studio-tab-panel="instruments"] #editingHistoryContent, [data-midi-studio-tab-panel="midi-import"] #editingHistoryContent')).toHaveCount(0);
+      const songBeforeHistoryClicks = await page.evaluate(() => JSON.stringify(window.__midiStudioV2App.selectedSong()));
+      const historyControls = await page.locator("#editingHistoryContent [data-midi-studio-future-control]").evaluateAll((controls) => controls.map((control) => ({
+        disabled: control.disabled,
+        status: control.dataset.midiStudioUnwired,
+        text: control.textContent.trim(),
+        title: control.title
+      })));
+      expect(historyControls).toEqual([
+        expect.objectContaining({ disabled: true, status: "not-implemented", text: "Undo" }),
+        expect.objectContaining({ disabled: true, status: "not-implemented", text: "Redo" }),
+        expect.objectContaining({ disabled: true, status: "not-implemented", text: "Snapshots" }),
+        expect.objectContaining({ disabled: true, status: "not-implemented", text: "Revision History" }),
+        expect.objectContaining({ disabled: true, status: "not-implemented", text: "Revert To Saved" }),
+        expect.objectContaining({ disabled: true, status: "not-implemented", text: "Autosave" })
+      ]);
+      expect(historyControls.every((control) => control.title.includes("Not implemented:"))).toBe(true);
+      await page.locator("#editingHistoryContent [data-midi-studio-future-control]").evaluateAll((controls) => {
+        controls.forEach((control) => control.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+      });
+      expect(await page.evaluate(() => JSON.stringify(window.__midiStudioV2App.selectedSong()))).toBe(songBeforeHistoryClicks);
+
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -2726,7 +2780,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator('label[for="renderedExportTargetTypeSelect"]')).toContainText("Output Type");
       await expect(page.locator("#renderedExportTargetTypeSelect")).toBeVisible();
       await expect(page.locator("#renderedExportSaveButton")).toBeVisible();
-      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save/Export");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
       await selectMidiStudioTab(page, "song-setup");
       const navAndTabPresentation = await page.evaluate(() => {
         const readActionButton = (selector) => {
@@ -2920,7 +2974,7 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("exports output through Export tab Type dropdown and Save/Export without claiming project save", async ({ page }) => {
+  test("saves output through Export tab Type dropdown without claiming project save", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       await expect(page.locator("#exportWavButton")).toHaveCount(0);
@@ -2932,7 +2986,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#renderedExportTargetTypeSelect")).toBeVisible();
       await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
       await expect(page.locator("#renderedExportSaveButton")).toBeVisible();
-      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save/Export");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
       const exportControlsFit = await page.locator("#exportWorkflowContent").evaluate((panel) => {
         const label = panel.querySelector('label[for="renderedExportTargetTypeSelect"]').getBoundingClientRect();
         const typeSelect = panel.querySelector("#renderedExportTargetTypeSelect").getBoundingClientRect();
@@ -2946,10 +3000,13 @@ test.describe("MIDI Studio V2", () => {
       expect(exportControlsFit.fit).toBe(true);
       expect(exportControlsFit.sameRow).toBe(true);
       await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
       await page.locator("#renderedExportSaveButton").click();
       await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save MP3");
       await page.locator("#renderedExportSaveButton").click();
       await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
       await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for WAV\. Planned target: assets\/music\/rendered\/theme-main\.wav\./);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for MP3\. Planned target: assets\/music\/rendered\/theme-main\.mp3\./);
@@ -2980,7 +3037,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(outputTypeSelect).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
       await expect(saveOutputButton).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
       await expect(saveOutputButton).toHaveAttribute("title", /Not implemented: Rendered audio export generation is not implemented yet/);
-      await expect(saveOutputButton).toHaveAttribute("aria-label", /Save\/Export \(Not implemented\)/);
+      await expect(saveOutputButton).toHaveAttribute("aria-label", /Save WAV \(Not implemented\)/);
       await expect(outputTypeSelect).toHaveAttribute("title", /Not implemented: Rendered audio export generation is not implemented yet/);
       expect(await controlColors(page, "#renderedExportSaveButton")).toMatchObject({
         borderTopColor: "rgb(248, 113, 113)",
