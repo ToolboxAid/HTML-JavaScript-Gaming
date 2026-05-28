@@ -80,7 +80,7 @@
 
     <main class="tool-starter midi-studio-v2 app-shell tool-shell-common__fullscreen-root tool-shell-common__fullscreen-layout" data-tool-id="midi-studio-v2">
       <aside class="tool-starter__panel tool-starter__panel--left tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-left" aria-label="MIDI song setup">
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio song-setup midi-import">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songListContent">
             <span>Songs</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -134,12 +134,6 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="playbackContent" class="accordion-v2__content">
-            <div class="midi-studio-v2__playback-controls">
-              <label class="tool-starter__toggle" for="loopToggle">
-                <input id="loopToggle" type="checkbox">
-                <span>Loop</span>
-              </label>
-            </div>
             <p id="playbackState" class="tool-starter__hint">No song selected.</p>
           </div>
         </section>
@@ -296,7 +290,13 @@
               <button id="generateBasicDrumsButton" type="button">Generate Basic Drums</button>
               <button id="normalizeInstrumentGridButton" type="button">Normalize Grid</button>
             </div>
-            <div class="midi-studio-v2__transport-panel" aria-label="Instrument grid Preview Synth and timing preview" data-midi-studio-tab-panel="studio auto-create-parts">
+            <div class="midi-studio-v2__transport-panel" aria-label="Instrument grid Preview Synth and timing preview" data-midi-studio-tab-panel="studio">
+              <div class="midi-studio-v2__playback-controls">
+                <label class="tool-starter__toggle" for="loopToggle">
+                  <input id="loopToggle" type="checkbox">
+                  <span>Loop</span>
+                </label>
+              </div>
               <div class="midi-studio-v2__section-presets" aria-label="Section shortcuts">
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="intro">Intro</button>
                 <button class="midi-studio-v2__section-preset" type="button" data-section-preset="loop">Loop</button>
@@ -332,7 +332,7 @@
       </section>
 
       <aside class="tool-starter__panel tool-starter__panel--right tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" aria-label="MIDI output">
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio instruments">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="timelineSelectionContent">
             <span>Selection</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -395,7 +395,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio song-setup diagnostics">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
           <div class="accordion-v2__header tool-starter__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
             <span>Status</span>
             <div class="tool-starter__status-header-actions">

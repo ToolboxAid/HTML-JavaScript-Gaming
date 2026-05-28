@@ -1886,7 +1886,7 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("restores Song Setup editable buckets without duplicating diagnostics", async ({ page }) => {
+  test("consolidates existing tab buckets without duplicate editable fields", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {
       await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
@@ -1898,13 +1898,21 @@ test.describe("MIDI Studio V2", () => {
         { id: "song-setup", text: "Song Setup" },
         { id: "studio", text: "Octave Timeline" }
       ]);
+      expect(tabs).toHaveLength(6);
+      expect(tabs.map((tab) => tab.text)).toEqual([
+        "Song Setup",
+        "Octave Timeline",
+        "Instruments",
+        "Auto-Create Parts",
+        "MIDI Import",
+        "Diagnostics"
+      ]);
       expect(tabs.map((tab) => tab.text)).not.toContain("Studio");
       await expect(page.locator('[data-midi-studio-tab="song-setup"]')).toHaveAttribute("aria-selected", "true");
       await expect(page.locator('.accordion-v2__header[aria-controls="songListContent"]')).toContainText("Songs");
       await expect(page.locator('.accordion-v2__header[aria-controls="songDetailsContent"]')).toContainText("Song Details");
       await expect(page.locator('.accordion-v2__header[aria-controls="songSheetContent"]')).toContainText("Song Sheet");
       await expect(page.locator('.accordion-v2__header[aria-controls="songSectionsLoopContent"]')).toContainText("Sections / Loop");
-      await expect(page.locator('.accordion-v2__header[aria-controls="statusLogContent"]')).toContainText("Status");
       await expect(page.locator("#songDetailsContent")).toBeVisible();
       await expect(page.locator("#songSheetContent")).toBeVisible();
       await expect(page.locator("#songSectionsLoopContent")).toBeVisible();
@@ -1932,6 +1940,8 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#audioDiagnosticsContent")).toBeHidden();
       await expect(page.locator("#instrumentGridSummaryContent")).toBeHidden();
       await expect(page.locator("#midiImportContent")).toBeHidden();
+      await expect(page.locator("#instrumentListContent")).toBeHidden();
+      await expect(page.locator("#statusLogContent")).toBeHidden();
       await expect(page.locator("#songDetailsContent #midiImportContent")).toHaveCount(0);
       await expect(page.locator("#songDetails [data-song-detail-field='sourceMidi']")).toHaveCount(0);
       await expect(page.locator("#songDetails [data-song-detail-field='instrumentSet']")).toHaveCount(0);
@@ -1981,10 +1991,80 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songDetails [data-song-detail-field='usage']")).toHaveValue("uat, frog-hop, nursery-rhyme");
 
       await selectMidiStudioTab(page, "instruments");
+      await expect(page.locator("#instrumentListContent")).toBeVisible();
+      await expect(instrumentTypeSelect(page, "lead")).toBeVisible();
+      await expect(instrumentSelect(page, "lead")).toBeVisible();
+      await expect(page.locator("#addInstrumentRowButton")).toBeVisible();
+      await expect(instrumentToggle(page, "lead", "mute")).toBeVisible();
+      await expect(instrumentToggle(page, "lead", "solo")).toBeVisible();
+      await expect(instrumentRow(page, "lead").locator("[data-toggle-instrument-visibility='lead']")).toBeVisible();
+      await expect(instrumentRow(page, "lead").locator("[data-delete-instrument-row='lead']")).toBeVisible();
+      await expect(page.locator("#songListContent")).toBeHidden();
+      await expect(page.locator("#songDetailsContent")).toBeHidden();
+      await expect(page.locator("#songSheetContent")).toBeHidden();
+      await expect(page.locator("#midiImportContent")).toBeHidden();
+      await expect(page.locator("#instrumentGridOutput")).toBeHidden();
+      await expect(page.locator("#timelineSelectionContent")).toBeHidden();
+      await expect(page.locator("#audioDiagnosticsContent")).toBeHidden();
       await selectInstrumentRow(page, "lead");
+
+      await selectMidiStudioTab(page, "auto-create-parts");
+      await expect(page.locator("#generateBassFromChordsButton")).toBeVisible();
+      await expect(page.locator("#generatePadFromChordsButton")).toBeVisible();
+      await expect(page.locator("#generateArpeggioFromChordsButton")).toBeVisible();
+      await expect(page.locator("#generateBasicDrumsButton")).toBeVisible();
+      await expect(page.locator("#normalizeInstrumentGridButton")).toBeVisible();
+      await expect(page.locator("#instrumentGridSectionsInput")).toBeVisible();
+      await expect(page.locator("#instrumentGridOutput")).toBeHidden();
+      await expect(page.locator("#loopToggle")).toBeHidden();
+      await expect(page.locator("#songDetailsContent")).toBeHidden();
+      await expect(page.locator("#instrumentListContent")).toBeHidden();
+      await expect(page.locator("#midiImportContent")).toBeHidden();
+
+      await selectMidiStudioTab(page, "midi-import");
+      await expect(page.locator("#midiImportContent")).toBeVisible();
+      await expect(page.locator("#songSourceField")).toBeVisible();
+      await expect(page.locator("#instrumentSetField")).toBeVisible();
+      await expect(page.locator("#importMidiSourceButton")).toBeVisible();
+      await expect(page.locator("#inspectMidiSourceButton")).toBeVisible();
+      await expect(page.locator("#midiSourceDetails")).toBeVisible();
+      await expect(page.locator("#songListContent")).toBeHidden();
+      await expect(page.locator("#songDetailsContent")).toBeHidden();
+      await expect(page.locator("#songSheetContent")).toBeHidden();
+      await expect(page.locator("#instrumentListContent")).toBeHidden();
+      await expect(page.locator("#audioDiagnosticsContent")).toBeHidden();
+
+      await selectMidiStudioTab(page, "diagnostics");
+      await expect(page.locator("#inspectorContent")).toBeVisible();
+      await expect(page.locator("#instrumentGridSummaryContent")).toBeVisible();
+      await expect(page.locator("#audioDiagnosticsContent")).toBeVisible();
+      await expect(page.locator("#playbackContent")).toBeVisible();
+      await expect(page.locator("#renderedTargetsContent")).toBeVisible();
+      await expect(page.locator("#directorContent")).toBeVisible();
+      await expect(page.locator("#statusLogContent")).toBeVisible();
+      await expect(page.locator("#songListContent")).toBeHidden();
+      await expect(page.locator("#songDetailsContent")).toBeHidden();
+      await expect(page.locator("#songSheetContent")).toBeHidden();
+      await expect(page.locator("#midiImportContent")).toBeHidden();
+      await expect(page.locator("#instrumentListContent")).toBeHidden();
+      await expect(page.locator("#loopToggle")).toBeHidden();
+      const diagnosticEditableControls = await page.locator('[data-midi-studio-tab-panel="diagnostics"] input:not([type="hidden"]), [data-midi-studio-tab-panel="diagnostics"] select, [data-midi-studio-tab-panel="diagnostics"] textarea:not([readonly])').count();
+      expect(diagnosticEditableControls).toBe(0);
+      await expect(page.locator("#toolCopyJsonButton")).toBeVisible();
+      await expect(page.locator("#clearStatusButton")).toBeVisible();
+
       await selectMidiStudioTab(page, "studio");
       await waitForCanvasRender(page);
       await expect(octaveTimelineCanvas(page)).toBeVisible();
+      await expect(page.locator("#instrumentGridOutput")).toBeVisible();
+      await expect(page.locator("#timelineSelectionContent")).toBeVisible();
+      await expect(page.locator("#loopToggle")).toBeVisible();
+      await expect(page.locator("#songListContent")).toBeHidden();
+      await expect(page.locator("#songDetailsContent")).toBeHidden();
+      await expect(page.locator("#songSheetContent")).toBeHidden();
+      await expect(page.locator("#instrumentListContent")).toBeHidden();
+      await expect(page.locator("#midiImportContent")).toBeHidden();
+      await expect(page.locator("#instrumentGridSummaryContent")).toBeHidden();
       await clickCanvasCell(page, "C6", 2);
       expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead)).toContain("C6");
       await page.locator("#playButton").click();
