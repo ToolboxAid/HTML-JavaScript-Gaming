@@ -78,11 +78,16 @@
             <div id="songList" class="midi-studio-v2__song-list" role="listbox" aria-label="MIDI songs"></div>
           </div>
         </section>
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="timelineInstrumentQuickContent">
+        <section class="accordion-v2 tool-starter__accordion is-open midi-studio-v2__timeline-instrument-accordion" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio">
+          <div class="accordion-v2__header midi-studio-v2__instrument-accordion-header midi-studio-v2__timeline-instrument-accordion-header" aria-expanded="true" aria-controls="timelineInstrumentQuickContent">
             <span>Instruments</span>
+            <span class="midi-studio-v2__instrument-header-actions">
+              <button id="duplicateInstrumentRowButton" class="midi-studio-v2__instrument-header-button midi-studio-v2__duplicate-instrument-button" type="button" aria-label="Duplicate selected instrument" title="Duplicate selected instrument"></button>
+              <button id="timelineAddInstrumentRowButton" class="midi-studio-v2__instrument-header-button" type="button" aria-label="Add instrument" title="Add instrument">Add</button>
+              <button id="timelineCloseInstrumentPanelButton" class="midi-studio-v2__instrument-header-button" type="button" aria-label="Collapse Octave Timeline Instruments panel" title="Collapse Instruments panel">X</button>
+            </span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
+          </div>
           <div id="timelineInstrumentQuickContent" class="accordion-v2__content midi-studio-v2__timeline-instruments">
             <div id="timelineInstrumentQuickList" class="midi-studio-v2__timeline-instrument-list" aria-label="Octave Timeline quick instrument controls"></div>
           </div>

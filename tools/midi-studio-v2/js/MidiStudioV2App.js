@@ -948,7 +948,7 @@ export class MidiStudioV2App {
       return;
     }
     this.setCurrentInstrumentGridResult(result);
-    if (["add-lane", "delete-lane"].includes(detail.action)) {
+    if (["add-lane", "delete-lane", "duplicate-lane"].includes(detail.action)) {
       this.instrumentGrid.render(result);
     } else {
       this.instrumentGrid.syncEditedGridResult(result);
@@ -957,6 +957,8 @@ export class MidiStudioV2App {
     this.markDirty({ changedKeys: ["data.songs.studioArrangement"], reason: "midi-studio-note-grid-edited" });
     if (detail.action === "add-lane") {
       this.statusLog.ok(`Added instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
+    } else if (detail.action === "duplicate-lane") {
+      this.statusLog.ok(`Duplicated instrument row ${detail.sourceLaneLabel || detail.sourceLane || "instrument"} as ${detail.laneLabel || detail.lane}; playback data updated.`);
     } else if (detail.action === "delete-lane") {
       this.statusLog.ok(`Deleted instrument row ${detail.laneLabel || detail.lane}; playback data updated.`);
     } else if (detail.action === "delete-selected-note") {

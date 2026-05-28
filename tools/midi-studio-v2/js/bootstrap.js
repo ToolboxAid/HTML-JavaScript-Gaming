@@ -89,6 +89,7 @@ window.addEventListener("DOMContentLoaded", () => {
       chordsInput: requireElement("#instrumentGridChordsInput"),
       closeInstrumentPanelButton: requireElement("#closeInstrumentPanelButton"),
       drumsInput: requireElement("#instrumentGridDrumsInput"),
+      duplicateInstrumentButton: requireElement("#duplicateInstrumentRowButton"),
       generateArpeggioButton: requireElement("#generateArpeggioFromChordsButton"),
       generateBassButton: requireElement("#generateBassFromChordsButton"),
       generateDrumsButton: requireElement("#generateBasicDrumsButton"),
@@ -117,6 +118,8 @@ window.addEventListener("DOMContentLoaded", () => {
       stopTimingPreviewButton: requireElement("#stopTimingPreviewButton"),
       subdivisionInput: requireElement("#instrumentGridSubdivisionInput"),
       summary: requireElement("#instrumentGridSummary"),
+      timelineAddInstrumentButton: requireElement("#timelineAddInstrumentRowButton"),
+      timelineCloseInstrumentPanelButton: requireElement("#timelineCloseInstrumentPanelButton"),
       transportState: requireElement("#instrumentGridTransportState"),
       windowRef: window
     }),

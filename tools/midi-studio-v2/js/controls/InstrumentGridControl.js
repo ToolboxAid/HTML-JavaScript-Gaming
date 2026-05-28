@@ -247,6 +247,7 @@ export class InstrumentGridControl {
     chordsInput,
     closeInstrumentPanelButton,
     drumsInput,
+    duplicateInstrumentButton,
     generateArpeggioButton,
     generateBassButton,
     generateDrumsButton,
@@ -275,6 +276,8 @@ export class InstrumentGridControl {
     stopTimingPreviewButton,
     subdivisionInput,
     summary,
+    timelineAddInstrumentButton,
+    timelineCloseInstrumentPanelButton,
     transportState,
     windowRef = window
   }) {
@@ -285,6 +288,7 @@ export class InstrumentGridControl {
     this.chordsInput = chordsInput;
     this.closeInstrumentPanelButton = closeInstrumentPanelButton;
     this.drumsInput = drumsInput;
+    this.duplicateInstrumentButton = duplicateInstrumentButton;
     this.generateArpeggioButton = generateArpeggioButton;
     this.generateBassButton = generateBassButton;
     this.generateDrumsButton = generateDrumsButton;
@@ -320,6 +324,8 @@ export class InstrumentGridControl {
     this.stopTimingPreviewButton = stopTimingPreviewButton;
     this.subdivisionInput = subdivisionInput;
     this.summary = summary;
+    this.timelineAddInstrumentButton = timelineAddInstrumentButton;
+    this.timelineCloseInstrumentPanelButton = timelineCloseInstrumentPanelButton;
     this.transportState = transportState;
     this.window = windowRef;
     this.currentResult = null;
@@ -384,7 +390,10 @@ export class InstrumentGridControl {
     this.instrumentGridZoomInButton?.addEventListener("click", () => this.adjustOctaveGridZoom(OCTAVE_GRID_ZOOM.step));
     this.instrumentGridZoomOutButton?.addEventListener("click", () => this.adjustOctaveGridZoom(-OCTAVE_GRID_ZOOM.step));
     this.addInstrumentButton?.addEventListener("click", () => this.addInstrumentRow());
+    this.timelineAddInstrumentButton?.addEventListener("click", () => this.addInstrumentRow());
+    this.duplicateInstrumentButton?.addEventListener("click", () => this.duplicateSelectedInstrument());
     this.closeInstrumentPanelButton?.addEventListener("click", () => this.collapseInstrumentPanel());
+    this.timelineCloseInstrumentPanelButton?.addEventListener("click", () => this.collapseTimelineInstrumentPanel());
     this.setTransportEnabled(false);
     this.populateSectionControls([]);
     this.updateSnapIndicator();
@@ -1043,19 +1052,13 @@ export class InstrumentGridControl {
   createMixBucket(lane) {
     const volume = this.createLaneSlider(lane, "volume");
     const pan = this.createLaneSlider(lane, "pan");
-    const mute = this.createLaneToggle(lane, "mute");
-    const solo = this.createLaneToggle(lane, "solo");
     volume.input.hidden = false;
     pan.input.hidden = false;
     this.selectedEditorControls.volume = volume.input;
     this.selectedEditorControls.pan = pan.input;
-    this.selectedEditorControls.mute = mute.input;
-    this.selectedEditorControls.solo = solo.input;
     return this.createInstrumentEditorBucket("Mix", "mix", [
       this.createEditorField("Volume", volume.input),
-      this.createEditorField("Pan/Balance", pan.input),
-      this.createEditorField("Mute default", mute.label),
-      this.createEditorField("Solo default", solo.label)
+      this.createEditorField("Pan/Balance", pan.input)
     ]);
   }
 
@@ -2287,8 +2290,42 @@ export class InstrumentGridControl {
     this.emitGridStructureChange("add-lane", lane);
   }
 
+  duplicateSelectedInstrument() {
+    const sourceLane = this.selectedLane;
+    const lanes = this.readInput().lanes;
+    if (!sourceLane || !Object.hasOwn(lanes, sourceLane)) {
+      return false;
+    }
+    const lane = this.nextDuplicateInstrumentLaneName(sourceLane);
+    const sourceState = this.previewLaneState[sourceLane] || defaultPreviewLaneState(sourceLane);
+    this.extraLaneSources[lane] = String(lanes[sourceLane] || "");
+    this.previewLaneState[lane] = {
+      ...sourceState,
+      displayName: this.nextDuplicateInstrumentDisplayName(sourceLane)
+    };
+    this.selectedLane = lane;
+    this.emitGridStructureChange("duplicate-lane", lane, {
+      sourceLane,
+      sourceLaneLabel: laneLabel(sourceLane)
+    });
+    return true;
+  }
+
   collapseInstrumentPanel() {
     const section = this.instrumentList?.closest(".accordion-v2") || null;
+    const header = section?.querySelector(".accordion-v2__header") || null;
+    const content = section?.querySelector(".accordion-v2__content") || null;
+    if (!section || !header || !content) {
+      return;
+    }
+    section.classList.remove("is-open");
+    section.dataset.accordionV2Open = "false";
+    header.setAttribute("aria-expanded", "false");
+    content.hidden = true;
+  }
+
+  collapseTimelineInstrumentPanel() {
+    const section = this.quickInstrumentList?.closest(".accordion-v2") || null;
     const header = section?.querySelector(".accordion-v2__header") || null;
     const content = section?.querySelector(".accordion-v2__content") || null;
     if (!section || !header || !content) {
@@ -2318,8 +2355,8 @@ export class InstrumentGridControl {
     this.emitGridStructureChange("delete-lane", lane);
   }
 
-  emitGridStructureChange(action, lane) {
-    this.onNoteEdit?.(this.readInput(), { action, lane, laneLabel: laneLabel(lane) });
+  emitGridStructureChange(action, lane, detail = {}) {
+    this.onNoteEdit?.(this.readInput(), { action, lane, laneLabel: laneLabel(lane), ...detail });
   }
 
   nextInstrumentLaneName() {
@@ -2331,6 +2368,31 @@ export class InstrumentGridControl {
       lane = `instrument-${index}`;
     }
     return lane;
+  }
+
+  nextDuplicateInstrumentLaneName(sourceLane) {
+    const existing = new Set(Object.keys(this.readInput().lanes));
+    const base = `${String(sourceLane || "instrument").trim() || "instrument"}-copy`;
+    let index = 1;
+    let lane = base;
+    while (existing.has(lane)) {
+      index += 1;
+      lane = `${base}-${index}`;
+    }
+    return lane;
+  }
+
+  nextDuplicateInstrumentDisplayName(sourceLane) {
+    const sourceName = String(this.displayNameForLane(sourceLane) || laneLabel(sourceLane)).trim() || "Instrument";
+    const existing = new Set(Object.keys(this.previewLaneState).map((lane) => this.displayNameForLane(lane).toLowerCase()));
+    const base = `${sourceName} Copy`;
+    let index = 1;
+    let displayName = base;
+    while (existing.has(displayName.toLowerCase())) {
+      index += 1;
+      displayName = `${base} ${index}`;
+    }
+    return displayName;
   }
 
   toggleLaneSlider(lane, kind) {

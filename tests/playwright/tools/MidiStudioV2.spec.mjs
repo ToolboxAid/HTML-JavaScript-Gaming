@@ -585,6 +585,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       addSongButton: { canonical: "music.songs[] / tools.midi-studio-v2.activeSongId", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       clearStatusButton: { canonical: "diagnostic status log", kind: "action", owner: "Diagnostics", wired: "wired" },
       closeInstrumentPanelButton: { canonical: "accordion view state", kind: "view-state", owner: "Instruments", wired: "wired" },
+      duplicateInstrumentRowButton: { canonical: "music.songs[].studioArrangement.lanes / previewLaneSettings", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
       futureAutosaveButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
       futureEnableMidiInputButton: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
       futureMidiDeviceSelect: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
@@ -643,6 +644,8 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       toolCopyJsonButton: { canonical: "serialized midi-studio-v2 tool state", kind: "action", owner: "Diagnostics", wired: "wired" },
       toolExportToolStateButton: { canonical: "serialized midi-studio-v2 tool state", kind: "action", owner: "Export", wired: "wired" },
       toolImportManifestButton: { canonical: "imported game manifest / midi-studio-v2 payload", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
+      timelineAddInstrumentRowButton: { canonical: "music.songs[].studioArrangement.lanes / previewLaneSettings", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
+      timelineCloseInstrumentPanelButton: { canonical: "accordion view state", kind: "view-state", owner: "Octave Timeline", wired: "wired" },
       workspaceCopyManifestButton: { canonical: "workspace manifest proxy", kind: "unwired", owner: "Workspace NAV", wired: "unwired" },
       workspaceExportManifestButton: { canonical: "workspace manifest proxy", kind: "unwired", owner: "Workspace NAV", wired: "unwired" },
       workspaceImportManifestButton: { canonical: "workspace manifest proxy", kind: "unwired", owner: "Workspace NAV", wired: "unwired" }
@@ -3040,10 +3043,9 @@ test.describe("MIDI Studio V2", () => {
       await instrumentSelect(page, "bass").selectOption("gm-electric-bass-finger");
       await setInputValue(page, "#previewVolumeBassInput", "0.65");
       await setInputValue(page, "#previewPanBassInput", "-0.4");
-      await setCheckboxValue(page, "#previewMuteBassToggle", true);
-      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.previewLaneSettings.muted.bass)).toBe(true);
-      await setCheckboxValue(page, "#previewMuteBassToggle", false);
-      await setCheckboxValue(page, "#previewSoloBassToggle", true);
+      await expect(editor).not.toContainText("Mute default");
+      await expect(editor).not.toContainText("Solo default");
+      await expect(editor.locator("#previewMuteBassToggle, #previewSoloBassToggle")).toHaveCount(0);
       await setInputValue(page, "#previewOctaveLowBassInput", "2");
       await setInputValue(page, "#previewOctaveHighBassInput", "4");
       await setInputValue(page, "#previewTransposeBassInput", "12");
@@ -3058,11 +3060,9 @@ test.describe("MIDI Studio V2", () => {
           duration: settings.durations.bass,
           instrument: settings.instruments.bass,
           instrumentType: settings.instrumentTypes.bass,
-          muted: settings.muted.bass,
           octaveRange: settings.octaveRanges.bass,
           pan: settings.pans.bass,
           selectedInstrumentId: app.instrumentGrid.selectedInstrumentId,
-          soloed: settings.soloed.bass,
           transpose: settings.transposes.bass,
           velocity: settings.velocities.bass,
           volume: settings.volumes.bass
@@ -3072,11 +3072,9 @@ test.describe("MIDI Studio V2", () => {
         duration: 1.5,
         instrument: "gm-electric-bass-finger",
         instrumentType: "Bass",
-        muted: false,
         octaveRange: { high: 4, low: 2 },
         pan: -0.4,
         selectedInstrumentId: "bass",
-        soloed: true,
         transpose: 12,
         velocity: 96,
         volume: 0.65
@@ -3518,10 +3516,8 @@ test.describe("MIDI Studio V2", () => {
         "music.songs[].studioArrangement.previewLaneSettings.durations",
         "music.songs[].studioArrangement.previewLaneSettings.instruments",
         "music.songs[].studioArrangement.previewLaneSettings.instrumentTypes",
-        "music.songs[].studioArrangement.previewLaneSettings.muted",
         "music.songs[].studioArrangement.previewLaneSettings.octaveRanges",
         "music.songs[].studioArrangement.previewLaneSettings.pans",
-        "music.songs[].studioArrangement.previewLaneSettings.soloed",
         "music.songs[].studioArrangement.previewLaneSettings.transposes",
         "music.songs[].studioArrangement.previewLaneSettings.velocities",
         "music.songs[].studioArrangement.previewLaneSettings.volumes",
@@ -3560,19 +3556,17 @@ test.describe("MIDI Studio V2", () => {
 
       await selectMidiStudioTab(page, "instruments");
       await setInputValue(page, "#previewVolumeLeadInput", "0.8");
-      await setCheckboxValue(page, "#previewMuteLeadToggle", true);
-      await setCheckboxValue(page, "#previewSoloLeadToggle", true);
       expect(await page.evaluate(() => {
         const settings = window.__midiStudioV2App.selectedSong().studioArrangement.previewLaneSettings;
         return {
-          muted: settings.muted.lead,
-          soloed: settings.soloed.lead,
           volume: settings.volumes.lead
         };
-      })).toEqual({ muted: true, soloed: true, volume: 0.8 });
+      })).toEqual({ volume: 0.8 });
 
       await selectMidiStudioTab(page, "studio");
       await waitForCanvasRender(page);
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-mute='lead']").click();
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-solo='lead']").click();
       await expect(timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-mute='lead']")).toHaveAttribute("aria-pressed", "true");
       await expect(timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-solo='lead']")).toHaveAttribute("aria-pressed", "true");
       await timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-mute='lead']").click();
@@ -3589,6 +3583,142 @@ test.describe("MIDI Studio V2", () => {
       expect(editableTarget).toBeTruthy();
       await clickCanvasCell(page, editableTarget.rowToken, editableTarget.stepIndex);
       expect(await hasCanvasNote(page, "lead", editableTarget.rowToken, editableTarget.stepIndex)).toBe(true);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps PR066 timeline Instruments compact and duplicates selected instruments", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+      await page.locator("#previewDisplayNameLeadInput").fill("Lead Copy Source");
+      await instrumentTypeSelect(page, "lead").selectOption("Bass");
+      await instrumentSelect(page, "lead").selectOption("gm-electric-bass-finger");
+      await setInputValue(page, "#previewVolumeLeadInput", "0.6");
+      await setInputValue(page, "#previewPanLeadInput", "-0.3");
+      await expect(page.locator("#selectedInstrumentEditor")).not.toContainText("Mute default");
+      await expect(page.locator("#selectedInstrumentEditor")).not.toContainText("Solo default");
+      await expect(page.locator("#selectedInstrumentEditor [id^='previewMute'], #selectedInstrumentEditor [id^='previewSolo']")).toHaveCount(0);
+
+      const beforeDuplicate = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const settings = song.studioArrangement.previewLaneSettings;
+        return {
+          leadLane: song.studioArrangement.lanes.lead,
+          settings: {
+            displayName: settings.displayNames.lead,
+            instrument: settings.instruments.lead,
+            instrumentType: settings.instrumentTypes.lead,
+            pan: settings.pans.lead,
+            volume: settings.volumes.lead
+          }
+        };
+      });
+      expect(beforeDuplicate.settings).toEqual({
+        displayName: "Lead Copy Source",
+        instrument: "gm-electric-bass-finger",
+        instrumentType: "Bass",
+        pan: -0.3,
+        volume: 0.6
+      });
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await expect(page.locator(".midi-studio-v2__timeline-instrument-accordion")).toBeVisible();
+      const timelineInstrumentLayout = await page.locator(".midi-studio-v2__timeline-instrument-accordion").evaluate((section) => {
+        const content = section.querySelector("#timelineInstrumentQuickContent");
+        const rows = Array.from(section.querySelectorAll(".midi-studio-v2__quick-instrument-row"));
+        const header = section.querySelector(".midi-studio-v2__timeline-instrument-accordion-header");
+        const duplicate = header.querySelector("#duplicateInstrumentRowButton");
+        const add = header.querySelector("#timelineAddInstrumentRowButton");
+        const close = header.querySelector("#timelineCloseInstrumentPanelButton");
+        const duplicateRect = duplicate.getBoundingClientRect();
+        const addRect = add.getBoundingClientRect();
+        const closeRect = close.getBoundingClientRect();
+        const rowRects = rows.map((row) => row.getBoundingClientRect());
+        return {
+          addAfterDuplicate: addRect.left > duplicateRect.right,
+          closeAfterAdd: closeRect.left > addRect.right,
+          contentMarginBottom: getComputedStyle(content).marginBottom,
+          contentMarginTop: getComputedStyle(content).marginTop,
+          duplicateText: duplicate.textContent.trim(),
+          rowHeights: rowRects.map((rect) => rect.height),
+          sectionMarginBottom: getComputedStyle(section).marginBottom,
+          sectionMarginTop: getComputedStyle(section).marginTop
+        };
+      });
+      expect(timelineInstrumentLayout.sectionMarginTop).toBe("10px");
+      expect(timelineInstrumentLayout.sectionMarginBottom).toBe("10px");
+      expect(timelineInstrumentLayout.contentMarginTop).toBe("10px");
+      expect(timelineInstrumentLayout.contentMarginBottom).toBe("10px");
+      expect(timelineInstrumentLayout.duplicateText).toBe("");
+      expect(timelineInstrumentLayout.addAfterDuplicate).toBe(true);
+      expect(timelineInstrumentLayout.closeAfterAdd).toBe(true);
+      expect(timelineInstrumentLayout.rowHeights.every((height) => height <= 28)).toBe(true);
+      await expect(page.locator("#duplicateInstrumentRowButton")).toHaveAttribute("aria-label", "Duplicate selected instrument");
+      await expect(page.locator("#duplicateInstrumentRowButton")).toHaveAttribute("title", "Duplicate selected instrument");
+
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-mute='lead']").click();
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-timeline-quick-solo='lead']").click();
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-toggle-instrument-visibility='lead']").click();
+      await page.locator("#duplicateInstrumentRowButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated instrument row Lead as Lead Copy; playback data updated\./);
+
+      const duplicateState = await page.evaluate((leadLaneSource) => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const settings = song.studioArrangement.previewLaneSettings;
+        const selected = app.instrumentGrid.selectedInstrumentId;
+        return {
+          copiedLaneData: song.studioArrangement.lanes[selected] === leadLaneSource,
+          duplicateDisplayName: settings.displayNames[selected],
+          duplicateInstrument: settings.instruments[selected],
+          duplicateInstrumentType: settings.instrumentTypes[selected],
+          duplicatePan: settings.pans[selected],
+          duplicateVisible: settings.visible[selected],
+          duplicateMuted: settings.muted[selected],
+          duplicateSoloed: settings.soloed[selected],
+          duplicateVolume: settings.volumes[selected],
+          hasUniqueId: selected !== "lead" && Object.hasOwn(song.studioArrangement.lanes, selected),
+          selected
+        };
+      }, beforeDuplicate.leadLane);
+      expect(duplicateState).toEqual({
+        copiedLaneData: true,
+        duplicateDisplayName: "Lead Copy Source Copy",
+        duplicateInstrument: "gm-electric-bass-finger",
+        duplicateInstrumentType: "Bass",
+        duplicatePan: -0.3,
+        duplicateVisible: false,
+        duplicateMuted: true,
+        duplicateSoloed: true,
+        duplicateVolume: 0.6,
+        hasUniqueId: true,
+        selected: "lead-copy"
+      });
+      await expect(timelineQuickInstrumentRow(page, "lead-copy")).toHaveClass(/is-selected/);
+
+      await selectMidiStudioTab(page, "instruments");
+      await expect(instrumentRow(page, "lead-copy")).toHaveClass(/is-selected/);
+      await expect(page.locator("#selectedInstrumentEditor")).not.toContainText("Mute default");
+      await expect(page.locator("#selectedInstrumentEditor")).not.toContainText("Solo default");
+
+      await selectMidiStudioTab(page, "studio");
+      await timelineQuickInstrumentRow(page, "lead-copy").locator("[data-timeline-quick-mute='lead-copy']").click();
+      await timelineQuickInstrumentRow(page, "lead-copy").locator("[data-toggle-instrument-visibility='lead-copy']").click();
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();

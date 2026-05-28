@@ -335,26 +335,49 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
   justify-content: flex-start;
 }
 
+.midi-studio-v2__timeline-instrument-accordion {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+body[data-tool-id="midi-studio-v2"] .tool-starter__panel--left > .midi-studio-v2__timeline-instrument-accordion {
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
 .midi-studio-v2__timeline-instruments {
+  align-content: start;
   display: grid;
-  gap: 0.35rem;
+  gap: 0.2rem;
+  grid-auto-rows: max-content;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+body[data-tool-id="midi-studio-v2"] .midi-studio-v2__timeline-instruments {
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .midi-studio-v2__timeline-instrument-list {
+  align-content: start;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.16rem;
+  grid-auto-rows: max-content;
 }
 
 .midi-studio-v2__quick-instrument-row {
   align-items: center;
   border: 1px solid var(--tool-starter-line);
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   display: grid;
-  gap: 0.35rem;
-  grid-template-columns: minmax(7rem, 1fr) auto;
+  gap: 0.18rem;
+  grid-template-columns: minmax(5.6rem, 1fr) auto;
   min-width: 0;
-  padding: 0.22rem 0.3rem;
+  padding: 0.14rem 0.2rem;
 }
 
 .midi-studio-v2__quick-instrument-row.is-selected,
@@ -364,7 +387,7 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
 }
 
 .midi-studio-v2__quick-instrument-title {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 900;
   min-width: 0;
   overflow: hidden;
@@ -376,12 +399,24 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
   align-items: center;
   display: inline-flex;
   flex: 0 0 auto;
-  gap: 0.2rem;
+  gap: 0.12rem;
   white-space: nowrap;
 }
 
 .midi-studio-v2__quick-instrument-button {
+  align-items: center;
+  display: inline-flex;
   flex: 0 0 auto;
+  height: 1.08rem;
+  justify-content: center;
+  line-height: 0;
+  min-height: 1.08rem;
+  min-width: 1.12rem;
+  width: 1.12rem;
+}
+
+.midi-studio-v2__timeline-instrument-accordion-header {
+  min-height: 2rem;
 }
 
 .midi-studio-v2__instrument-accordion-header {
@@ -403,6 +438,35 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
   font-weight: 900;
   min-height: 1.45rem;
   padding: 0.08rem 0.45rem;
+}
+
+.midi-studio-v2__duplicate-instrument-button {
+  color: #bae6fd;
+  font-size: 0;
+  min-width: 1.55rem;
+  padding: 0;
+  position: relative;
+}
+
+.midi-studio-v2__duplicate-instrument-button::before,
+.midi-studio-v2__duplicate-instrument-button::after {
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  content: "";
+  height: 0.62rem;
+  position: absolute;
+  width: 0.62rem;
+}
+
+.midi-studio-v2__duplicate-instrument-button::before {
+  left: 0.36rem;
+  top: 0.34rem;
+}
+
+.midi-studio-v2__duplicate-instrument-button::after {
+  background: rgba(8, 17, 31, 0.72);
+  left: 0.56rem;
+  top: 0.52rem;
 }
 
 .midi-studio-v2__instrument-row {
@@ -889,6 +953,15 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   opacity: 0;
   position: absolute;
   width: 100%;
+}
+
+.midi-studio-v2__quick-instrument-button.midi-studio-v2__lane-toggle,
+.midi-studio-v2__quick-instrument-button.midi-studio-v2__lane-icon-button {
+  height: 1.08rem;
+  line-height: 0;
+  min-height: 1.08rem;
+  min-width: 1.12rem;
+  width: 1.12rem;
 }
 
 .midi-studio-v2__lane-toggle-icon {
