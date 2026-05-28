@@ -1055,6 +1055,11 @@ export class MidiStudioV2App {
       this.updateAudioDiagnostics();
       return;
     }
+    if (kind === "audition-middle-c") {
+      await this.auditionMiddleC(detail);
+      this.updateAudioDiagnostics();
+      return;
+    }
     if (kind === "mute") {
       this.statusLog[detail.enabled ? "warn" : "info"](`Lane ${detail.enabled ? "muted" : "unmuted"}: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();
@@ -1101,6 +1106,42 @@ export class MidiStudioV2App {
     }
     const previewLabel = result.mappedPreviewInstrumentLabel || detail.previewInstrumentLabel || result.instrumentLabel || detail.instrumentLabel;
     this.statusLog.info(`Auditioned ${detail.instrumentLabel} for ${detail.laneLabel} with ${previewLabel}.`);
+  }
+
+  async auditionMiddleC(detail) {
+    if (!detail.instrumentValue) {
+      this.statusLog.warn(`Missing preview instrument selection for ${detail.laneLabel}. Choose a Preview Synth instrument before auditioning middle C.`);
+      return;
+    }
+    const audition = await this.previewSynth.playGridRange({
+      endStep: 0,
+      grid: {
+        ok: true,
+        subdivision: 1,
+        timeline: [{
+          durationBeats: 0.25,
+          kind: "note",
+          lane: detail.lane,
+          stepIndex: 0,
+          value: "C4"
+        }]
+      },
+      label: "middle C",
+      laneSettings: this.instrumentGrid.previewLaneSettings(),
+      loop: false,
+      mode: "middle C audition",
+      startStep: 0,
+      tempoBpm: this.previewTempoBpm()
+    });
+    if (!audition.ok) {
+      this.statusLog.warn(`Preview Synth middle C audition unavailable: ${audition.message}`);
+      return;
+    }
+    if (detail.instrumentWarning) {
+      this.statusLog.warn(`Preview Synth mapping: ${detail.instrumentWarning}`);
+    }
+    const previewLabel = detail.previewInstrumentLabel || detail.instrumentLabel;
+    this.statusLog.info(`Auditioned middle C for ${detail.laneLabel} with ${previewLabel}.`);
   }
 
   previewTempoBpm() {

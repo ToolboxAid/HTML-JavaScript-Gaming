@@ -2104,14 +2104,15 @@ test.describe("MIDI Studio V2", () => {
         { id: "song-setup", text: "Song Setup" },
         { id: "studio", text: "Octave Timeline" }
       ]);
-      expect(tabs).toHaveLength(6);
+      expect(tabs).toHaveLength(7);
       expect(tabs.map((tab) => tab.text)).toEqual([
         "Song Setup",
         "Octave Timeline",
         "Instruments",
         "Auto-Create Parts",
         "MIDI Import",
-        "Diagnostics"
+        "Diagnostics",
+        "Export"
       ]);
       expect(tabs.map((tab) => tab.text)).not.toContain("Studio");
       await expect(page.locator('[data-midi-studio-tab="song-setup"]')).toHaveAttribute("aria-selected", "true");
@@ -2245,7 +2246,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentGridSummaryContent")).toBeVisible();
       await expect(page.locator("#audioDiagnosticsContent")).toBeVisible();
       await expect(page.locator("#playbackContent")).toBeVisible();
-      await expect(page.locator("#renderedTargetsContent")).toBeVisible();
+      await expect(page.locator("#renderedTargetsContent")).toBeHidden();
       await expect(page.locator("#directorContent")).toBeVisible();
       await expect(page.locator("#statusLogContent")).toBeVisible();
       await expect(page.locator("#songListContent")).toBeHidden();
@@ -2258,6 +2259,14 @@ test.describe("MIDI Studio V2", () => {
       expect(diagnosticEditableControls).toBe(0);
       await expect(page.locator("#toolCopyJsonButton")).toBeVisible();
       await expect(page.locator("#clearStatusButton")).toBeVisible();
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#exportWorkflowContent")).toBeVisible();
+      await expect(page.locator("#renderedTargetsContent")).toBeVisible();
+      await expect(page.locator("#renderedExportTargetTypeSelect")).toBeVisible();
+      await expect(page.locator("#renderedExportSaveButton")).toBeVisible();
+      await expect(page.locator("#inspectorContent")).toBeHidden();
+      await expect(page.locator("#instrumentGridSummaryContent")).toBeHidden();
 
       await selectMidiStudioTab(page, "studio");
       await waitForCanvasRender(page);
@@ -2273,6 +2282,178 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentGridSummaryContent")).toBeHidden();
       await clickCanvasCell(page, "C6", 2);
       expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead)).toContain("C6");
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("enforces SSoT export ownership and future control honesty", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      const tabs = await page.locator("[data-midi-studio-tab]").evaluateAll((tabButtons) => tabButtons.map((tab) => ({
+        id: tab.dataset.midiStudioTab,
+        text: tab.textContent.trim()
+      })));
+      expect(tabs).toEqual([
+        { id: "song-setup", text: "Song Setup" },
+        { id: "studio", text: "Octave Timeline" },
+        { id: "instruments", text: "Instruments" },
+        { id: "auto-create-parts", text: "Auto-Create Parts" },
+        { id: "midi-import", text: "MIDI Import" },
+        { id: "diagnostics", text: "Diagnostics" },
+        { id: "export", text: "Export" }
+      ]);
+      await expect(page.locator('.midi-studio-v2__tool-menu #renderedExportTargetTypeSelect')).toHaveCount(0);
+      await expect(page.locator('.midi-studio-v2__tool-menu #renderedExportSaveButton')).toHaveCount(0);
+      await expect(page.locator('.midi-studio-v2__tool-menu #toolExportToolStateButton')).toHaveCount(0);
+
+      const ownedControlSelectors = {
+        exportType: "#renderedExportTargetTypeSelect",
+        saveExport: "#renderedExportSaveButton",
+        toolStateExport: "#toolExportToolStateButton",
+        instrumentType: "#previewInstrumentTypeLeadSelect",
+        instrumentPatch: "#previewInstrumentLeadSelect",
+        volume: "#previewVolumeLeadInput",
+        pan: "#previewPanLeadInput",
+        songName: "#songDetails [data-song-detail-field='name']",
+        songId: "#songDetails [data-song-detail-field='id']",
+        songTempo: "#songSheetTempoInput",
+        songKey: "#songSheetKeyInput",
+        songStyle: "#songSheetStyleInput",
+        songNotes: "#songDetails [data-song-detail-field='notes']"
+      };
+      const ownership = await page.evaluate((selectors) => Object.fromEntries(Object.entries(selectors).map(([name, selector]) => {
+        const elements = Array.from(document.querySelectorAll(selector));
+        return [name, {
+          count: elements.length,
+          panels: elements.map((element) => element.closest("[data-midi-studio-tab-panel]")?.dataset.midiStudioTabPanel || "")
+        }];
+      })), ownedControlSelectors);
+      expect(ownership.exportType).toEqual({ count: 1, panels: ["export"] });
+      expect(ownership.saveExport).toEqual({ count: 1, panels: ["export"] });
+      expect(ownership.toolStateExport).toEqual({ count: 1, panels: ["export"] });
+      expect(ownership.instrumentType).toEqual({ count: 1, panels: ["instruments"] });
+      expect(ownership.instrumentPatch).toEqual({ count: 1, panels: ["instruments"] });
+      expect(ownership.volume).toEqual({ count: 1, panels: ["instruments"] });
+      expect(ownership.pan).toEqual({ count: 1, panels: ["instruments"] });
+      expect(ownership.songName).toEqual({ count: 1, panels: ["song-setup"] });
+      expect(ownership.songId).toEqual({ count: 1, panels: ["song-setup"] });
+      expect(ownership.songTempo).toEqual({ count: 1, panels: ["song-setup"] });
+      expect(ownership.songKey).toEqual({ count: 1, panels: ["song-setup"] });
+      expect(ownership.songStyle).toEqual({ count: 1, panels: ["song-setup"] });
+      expect(ownership.songNotes).toEqual({ count: 1, panels: ["song-setup"] });
+
+      await page.locator("#songDetails [data-song-detail-field='name']").fill("SSoT Edited Reel");
+      await page.locator("#songSheetTempoInput").fill("150");
+      await page.locator("#songSheetKeyInput").selectOption("C major");
+      await page.locator("#songSheetStyleInput").selectOption("chip");
+      expect(await page.evaluate(() => {
+        const song = window.__midiStudioV2App.selectedSong();
+        return {
+          key: song.studioArrangement.key,
+          name: song.name,
+          style: song.studioArrangement.style,
+          tempo: song.studioArrangement.tempo
+        };
+      })).toEqual({
+        key: "C major",
+        name: "SSoT Edited Reel",
+        style: "chip",
+        tempo: "150"
+      });
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#exportWorkflowContent")).toBeVisible();
+      await expect(page.locator("#renderedTargetsContent")).toBeVisible();
+      await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save/Export");
+      await expect(page.locator("#renderedExportTargetTypeSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("title", /Not implemented: Rendered audio export generation is not implemented yet/);
+      const exportFutureControls = await page.locator('[data-midi-studio-tab-panel="export"] [data-midi-studio-future-control]').evaluateAll((controls) => controls.map((control) => ({
+        disabled: control.disabled,
+        status: control.dataset.midiStudioUnwired,
+        text: control.textContent.trim(),
+        title: control.title
+      })));
+      expect(exportFutureControls).toHaveLength(6);
+      expect(exportFutureControls.every((control) => control.disabled && control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
+      expect(exportFutureControls.map((control) => control.text)).toEqual(expect.arrayContaining([
+        "SoundFont",
+        "Render Quality",
+        "Sample Rate",
+        "Normalize Volume",
+        "Export Stems",
+        "Loop Export"
+      ]));
+
+      await selectMidiStudioTab(page, "midi-import");
+      const midiInputFutureControls = await page.locator("#futureEnableMidiInputButton, #futureMidiDeviceSelect, #futureRecordMidiButton").evaluateAll((controls) => controls.map((control) => ({
+        disabled: control.disabled,
+        panel: control.closest("[data-midi-studio-tab-panel]")?.dataset.midiStudioTabPanel,
+        status: control.dataset.midiStudioUnwired,
+        title: control.title
+      })));
+      expect(midiInputFutureControls).toEqual([
+        expect.objectContaining({ disabled: true, panel: "midi-import", status: "not-implemented" }),
+        expect.objectContaining({ disabled: true, panel: "midi-import", status: "not-implemented" }),
+        expect.objectContaining({ disabled: true, panel: "midi-import", status: "not-implemented" })
+      ]);
+      expect(midiInputFutureControls.every((control) => control.title.includes("Not implemented:"))).toBe(true);
+
+      await selectMidiStudioTab(page, "diagnostics");
+      await expect(page.locator("#inspectorContent")).toBeVisible();
+      await expect(page.locator("#renderedTargetsContent")).toBeHidden();
+      await expect(page.locator("#exportWorkflowContent")).toBeHidden();
+      expect(await page.locator('[data-midi-studio-tab-panel="diagnostics"] input:not([type="hidden"]):not([readonly]), [data-midi-studio-tab-panel="diagnostics"] select, [data-midi-studio-tab-panel="diagnostics"] textarea:not([readonly])').count()).toBe(0);
+
+      await selectMidiStudioTab(page, "instruments");
+      await expect(page.locator("#instrumentSettingsContent")).toBeVisible();
+      await expect(page.locator("#playMiddleCButton")).toBeVisible();
+      await expect(page.locator("#playMiddleCButton")).not.toHaveAttribute("data-midi-studio-unwired");
+      await expect(page.locator("#previewVolumeLeadInput")).toBeVisible();
+      await expect(page.locator("#previewPanLeadInput")).toBeVisible();
+      const instrumentFutureControls = await page.locator('[data-midi-studio-tab-panel="instruments"] [data-midi-studio-future-control]').evaluateAll((controls) => controls.map((control) => ({
+        disabled: control.disabled,
+        status: control.dataset.midiStudioUnwired,
+        text: control.textContent.trim(),
+        title: control.title
+      })));
+      expect(instrumentFutureControls).toHaveLength(11);
+      expect(instrumentFutureControls.every((control) => control.disabled && control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
+      expect(instrumentFutureControls.map((control) => control.text)).toEqual(expect.arrayContaining([
+        "Effects",
+        "Reverb",
+        "Chorus",
+        "Delay",
+        "Filter",
+        "Brightness/Tone",
+        "Octave Range",
+        "Transpose",
+        "Velocity",
+        "Duration",
+        "Instrument Settings"
+      ]));
+      await selectInstrumentRow(page, "lead");
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await page.locator("#playMiddleCButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/Auditioned middle C for Lead/);
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await clickCanvasCell(page, "C6", 2);
+      expect(await hasCanvasNote(page, "lead", "C6", 2)).toBe(true);
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();
@@ -2371,7 +2552,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Frog Hop Nursery Rhyme UAT");
 
-      await selectMidiStudioTab(page, "diagnostics");
+      await selectMidiStudioTab(page, "export");
       await page.locator("#toolExportToolStateButton").click();
       await expect(page.locator("#inspectorOutput")).toContainText('"activeSongId": "frog-hop-nursery-rhyme"');
       expect(await fs.readFile(canonicalSongModelAuditPath, "utf8")).toContain("Canonical Model Fields");
@@ -2438,10 +2619,15 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator(".midi-studio-v2__tool-menu #saveProjectButton")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #loadExampleAndPlayButton")).toHaveCount(0);
       await expect(page.locator(".midi-studio-v2__tool-menu #stopAllAudioButton")).toBeVisible();
-      await expect(page.locator('.midi-studio-v2__tool-menu label[for="renderedExportTargetTypeSelect"]')).toContainText("Output Type");
-      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportTargetTypeSelect")).toBeVisible();
-      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toBeVisible();
-      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toHaveText("Save Output");
+      await expect(page.locator('.midi-studio-v2__tool-menu label[for="renderedExportTargetTypeSelect"]')).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportTargetTypeSelect")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toHaveCount(0);
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator('label[for="renderedExportTargetTypeSelect"]')).toContainText("Output Type");
+      await expect(page.locator("#renderedExportTargetTypeSelect")).toBeVisible();
+      await expect(page.locator("#renderedExportSaveButton")).toBeVisible();
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save/Export");
+      await selectMidiStudioTab(page, "song-setup");
       const navAndTabPresentation = await page.evaluate(() => {
         const readActionButton = (selector) => {
           const style = getComputedStyle(document.querySelector(selector));
@@ -2634,21 +2820,24 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("exports output through Type dropdown and Save Output without claiming project save", async ({ page }) => {
+  test("exports output through Export tab Type dropdown and Save/Export without claiming project save", async ({ page }) => {
     const server = await openMidiStudio(page);
     try {
       await expect(page.locator("#exportWavButton")).toHaveCount(0);
       await expect(page.locator("#exportMp3Button")).toHaveCount(0);
       await expect(page.locator("#exportOggButton")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportTargetTypeSelect")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toHaveCount(0);
+      await selectMidiStudioTab(page, "export");
       await expect(page.locator("#renderedExportTargetTypeSelect")).toBeVisible();
       await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
       await expect(page.locator("#renderedExportSaveButton")).toBeVisible();
-      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save Output");
-      const exportControlsFit = await page.locator(".midi-studio-v2__tool-menu").evaluate((menu) => {
-        const label = menu.querySelector('label[for="renderedExportTargetTypeSelect"]').getBoundingClientRect();
-        const typeSelect = menu.querySelector("#renderedExportTargetTypeSelect").getBoundingClientRect();
-        const saveButton = menu.querySelector("#renderedExportSaveButton").getBoundingClientRect();
-        const menuRect = menu.getBoundingClientRect();
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save/Export");
+      const exportControlsFit = await page.locator("#exportWorkflowContent").evaluate((panel) => {
+        const label = panel.querySelector('label[for="renderedExportTargetTypeSelect"]').getBoundingClientRect();
+        const typeSelect = panel.querySelector("#renderedExportTargetTypeSelect").getBoundingClientRect();
+        const saveButton = panel.querySelector("#renderedExportSaveButton").getBoundingClientRect();
+        const menuRect = panel.getBoundingClientRect();
         return {
           fit: typeSelect.left >= menuRect.left - 1 && saveButton.right <= menuRect.right + 1,
           sameRow: label.right <= saveButton.left && label.bottom >= saveButton.top && saveButton.bottom >= label.top
@@ -2679,6 +2868,7 @@ test.describe("MIDI Studio V2", () => {
   test("marks unwired visible controls red with tooltips while working controls stay normal", async ({ page }) => {
     let server = await openMidiStudio(page);
     try {
+      await selectMidiStudioTab(page, "export");
       const outputLabel = page.locator('label[for="renderedExportTargetTypeSelect"]');
       const outputTypeSelect = page.locator("#renderedExportTargetTypeSelect");
       const saveOutputButton = page.locator("#renderedExportSaveButton");
@@ -2690,7 +2880,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(outputTypeSelect).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
       await expect(saveOutputButton).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
       await expect(saveOutputButton).toHaveAttribute("title", /Not implemented: Rendered audio export generation is not implemented yet/);
-      await expect(saveOutputButton).toHaveAttribute("aria-label", /Save Output \(Not implemented\)/);
+      await expect(saveOutputButton).toHaveAttribute("aria-label", /Save\/Export \(Not implemented\)/);
       await expect(outputTypeSelect).toHaveAttribute("title", /Not implemented: Rendered audio export generation is not implemented yet/);
       expect(await controlColors(page, "#renderedExportSaveButton")).toMatchObject({
         borderTopColor: "rgb(248, 113, 113)",
@@ -3743,6 +3933,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSourceField")).toHaveValue("No song selected");
       await expect(page.locator("#renderedTargets")).toContainText("No rendered WAV target selected.");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL MIDI Studio V2 payload rejected before render .* music\.songs\[0\]\.id is required\./);
+      await selectMidiStudioTab(page, "export");
       await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
       await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI song for WAV export\. Load or select a song before exporting\./);

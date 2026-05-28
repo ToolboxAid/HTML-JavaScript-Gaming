@@ -1,6 +1,6 @@
 import { setUnwiredControlState } from "./UnwiredControlState.js";
 
-const RENDERED_EXPORT_NOT_IMPLEMENTED = "Rendered audio export generation is not implemented yet; use Rendered Export Targets diagnostics until export rendering is added.";
+const RENDERED_EXPORT_NOT_IMPLEMENTED = "Rendered audio export generation is not implemented yet; use the Export tab rendered target paths until export rendering is added.";
 
 export class RenderedExportActionsControl {
   constructor({ exportTargetTypeLabel, exportTargetTypeSelect, saveButton }) {

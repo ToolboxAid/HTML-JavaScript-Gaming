@@ -4,6 +4,7 @@ import { AccordionSection } from "./controls/AccordionSection.js";
 import { ActionNavControl } from "./controls/ActionNavControl.js";
 import { AudioDiagnosticsControl } from "./controls/AudioDiagnosticsControl.js";
 import { DirectorPanelControl } from "./controls/DirectorPanelControl.js";
+import { FutureControlsControl } from "./controls/FutureControlsControl.js";
 import { InstrumentGridControl } from "./controls/InstrumentGridControl.js";
 import { MidiSourceDetailsControl } from "./controls/MidiSourceDetailsControl.js";
 import { PlaybackControl } from "./controls/PlaybackControl.js";
@@ -39,6 +40,10 @@ window.addEventListener("DOMContentLoaded", () => {
     clearButton: requireElement("#clearStatusButton"),
     log: requireElement("#statusLog")
   });
+  const futureControls = new FutureControlsControl({
+    controls: Array.from(document.querySelectorAll("[data-midi-studio-future-control]"))
+  });
+  futureControls.mount();
   const app = new MidiStudioV2App({
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     actionNav: new ActionNavControl({
@@ -90,6 +95,7 @@ window.addEventListener("DOMContentLoaded", () => {
       loopStartSelect: requireElement("#instrumentGridLoopStartSelect"),
       normalizeButton: requireElement("#normalizeInstrumentGridButton"),
       padInput: requireElement("#instrumentGridPadInput"),
+      playMiddleCButton: requireElement("#playMiddleCButton"),
       playLoopButton: requireElement("#playLoopButton"),
       playSectionButton: requireElement("#playSectionButton"),
       sectionAvailability: requireElement("#instrumentGridSectionAvailability"),

@@ -47,18 +47,6 @@
       <button id="saveProjectButton" type="button" disabled>Save Project</button>
       <button id="resetSongEditsButton" type="button" disabled>Reset Song Edits</button>
       <span id="projectDirtyState" class="midi-studio-v2__dirty-state" data-midi-studio-dirty-state="clean">Saved</span>
-      <div class="midi-studio-v2__export-save-controls">
-        <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
-          <span>Output Type</span>
-          <select id="renderedExportTargetTypeSelect">
-            <option value="wav">WAV</option>
-            <option value="mp3">MP3</option>
-            <option value="ogg">OGG</option>
-          </select>
-        </label>
-        <button id="renderedExportSaveButton" type="button">Save Output</button>
-      </div>
-      <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
       <input id="toolImportManifestInput" type="file" accept="application/json,.json" hidden>
     </nav>
 
@@ -76,6 +64,7 @@
       <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="auto-create-parts">Auto-Create Parts</button>
       <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="midi-import">MIDI Import</button>
       <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="diagnostics">Diagnostics</button>
+      <button type="button" role="tab" aria-selected="false" data-midi-studio-tab="export">Export</button>
     </nav>
 
     <main class="tool-starter midi-studio-v2 app-shell tool-shell-common__fullscreen-root tool-shell-common__fullscreen-layout" data-tool-id="midi-studio-v2">
@@ -111,6 +100,16 @@
               <input id="midiSourceFileInput" type="file" accept=".mid,.midi,audio/midi,audio/x-midi" hidden>
             </div>
             <dl id="midiSourceDetails" class="midi-studio-v2__details"></dl>
+            <div class="midi-studio-v2__future-panel" aria-label="Future MIDI input controls">
+              <h3>Future MIDI Input</h3>
+              <div class="midi-studio-v2__future-controls">
+                <button id="futureEnableMidiInputButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Browser MIDI input is planned for a future MIDI Studio V2 pass.">Enable MIDI Input</button>
+                <select id="futureMidiDeviceSelect" disabled data-midi-studio-future-control data-midi-studio-future-detail="MIDI device selection is not implemented yet.">
+                  <option>Select MIDI Device</option>
+                </select>
+                <button id="futureRecordMidiButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="MIDI recording is not implemented yet.">Record MIDI</button>
+              </div>
+            </div>
           </div>
         </section>
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="instruments">
@@ -178,6 +177,73 @@
                     <option value="victory-fanfare">victory-fanfare</option>
                   </select>
                 </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="instruments">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="instrumentSettingsContent">
+            <span>Instrument Settings</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="instrumentSettingsContent" class="accordion-v2__content midi-studio-v2__stack">
+            <div class="midi-studio-v2__instrument-audition">
+              <button id="playMiddleCButton" type="button">Play C</button>
+              <p class="tool-starter__hint">Selected instrument audition.</p>
+            </div>
+            <div class="midi-studio-v2__future-panel" aria-label="Future instrument settings">
+              <h3>Future Instrument Settings</h3>
+              <div class="midi-studio-v2__future-controls">
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Instrument effects are planned but not implemented yet.">Effects</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Reverb settings are planned but not implemented yet.">Reverb</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Chorus settings are planned but not implemented yet.">Chorus</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Delay settings are planned but not implemented yet.">Delay</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Filter settings are planned but not implemented yet.">Filter</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Brightness and tone controls are planned but not implemented yet.">Brightness/Tone</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Octave range limits are planned but not implemented yet.">Octave Range</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Transpose controls are planned but not implemented yet.">Transpose</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Velocity controls are planned but not implemented yet.">Velocity</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Duration controls are planned but not implemented yet.">Duration</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Advanced instrument settings are planned but not implemented yet.">Instrument Settings</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="export">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="exportWorkflowContent">
+            <span>Export Workflow</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="exportWorkflowContent" class="accordion-v2__content midi-studio-v2__stack">
+            <div class="midi-studio-v2__export-save-controls">
+              <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
+                <span>Output Type</span>
+                <select id="renderedExportTargetTypeSelect">
+                  <option value="wav">WAV</option>
+                  <option value="mp3">MP3</option>
+                  <option value="ogg">OGG</option>
+                </select>
+              </label>
+              <button id="renderedExportSaveButton" type="button">Save/Export</button>
+            </div>
+            <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
+            <div class="midi-studio-v2__future-panel" aria-label="Future export settings">
+              <h3>Future Export Settings</h3>
+              <div class="midi-studio-v2__future-controls">
+                <select id="futureSoundFontSelect" disabled data-midi-studio-future-control data-midi-studio-future-detail="SoundFont rendering is planned but not implemented yet.">
+                  <option>SoundFont</option>
+                </select>
+                <select id="futureRenderQualitySelect" disabled data-midi-studio-future-control data-midi-studio-future-detail="Render quality selection is planned but not implemented yet.">
+                  <option>Render Quality</option>
+                </select>
+                <select id="futureSampleRateSelect" disabled data-midi-studio-future-control data-midi-studio-future-detail="Sample rate selection is planned but not implemented yet.">
+                  <option>Sample Rate</option>
+                </select>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Normalize Volume is planned but not implemented yet.">Normalize Volume</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Export Stems is planned but not implemented yet.">Export Stems</button>
+                <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Loop Export is planned but not implemented yet.">Loop Export</button>
               </div>
             </div>
           </div>
@@ -352,7 +418,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="export">
           <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="renderedTargetsContent">
             <span>Rendered Export Targets</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
