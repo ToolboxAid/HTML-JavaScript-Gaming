@@ -925,6 +925,37 @@ test.describe("MIDI Studio V2", () => {
       await expect(octaveCell(page, "C6", 2)).toHaveText("");
       await expect(octaveCell(page, "C6", 2)).toHaveAttribute("data-note-lanes", /lead/);
       await expect(octaveCell(page, "C6", 2)).toHaveClass(/midi-studio-v2__grid-cell--note-selected/);
+      const gridEffects = await page.locator("#instrumentGridOutput").evaluate((element) => {
+        const surfaceSelectors = [
+          ".midi-studio-v2__octave-timeline",
+          ".midi-studio-v2__note-table",
+          ".midi-studio-v2__note-table-cell",
+          ".midi-studio-v2__grid-cell--note-selected",
+          ".midi-studio-v2__grid-cell--lane-selected"
+        ];
+        const nodes = surfaceSelectors.flatMap((selector) => Array.from(element.querySelectorAll(selector)));
+        const firstNoteCell = element.querySelector(".midi-studio-v2__note-table-cell");
+        const firstNoteCellStyle = getComputedStyle(firstNoteCell);
+        return {
+          borderBottomWidth: firstNoteCellStyle.borderBottomWidth,
+          borderRightWidth: firstNoteCellStyle.borderRightWidth,
+          effects: nodes.map((node) => {
+            const style = getComputedStyle(node);
+            return {
+              boxShadow: style.boxShadow,
+              outlineStyle: style.outlineStyle,
+              outlineWidth: style.outlineWidth
+            };
+          })
+        };
+      });
+      expect(gridEffects.effects.length).toBeGreaterThan(0);
+      expect(gridEffects.effects.every((effect) => effect.boxShadow === "none")).toBe(true);
+      expect(gridEffects.effects.every((effect) => effect.outlineStyle === "none" || effect.outlineWidth === "0px")).toBe(true);
+      expect(Number.parseFloat(gridEffects.borderBottomWidth)).toBeGreaterThanOrEqual(0.8);
+      expect(Number.parseFloat(gridEffects.borderBottomWidth)).toBeLessThanOrEqual(1);
+      expect(Number.parseFloat(gridEffects.borderRightWidth)).toBeGreaterThanOrEqual(0.8);
+      expect(Number.parseFloat(gridEffects.borderRightWidth)).toBeLessThanOrEqual(1);
       await octaveCell(page, "C6", 2).click();
       await expect(octaveCell(page, "C6", 2)).not.toHaveAttribute("data-note-lanes", /lead/);
       await octaveCell(page, "C6", 2).click();
