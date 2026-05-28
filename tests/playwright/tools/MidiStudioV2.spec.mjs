@@ -2466,6 +2466,106 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
+  test("keeps Export tab usable while rendered audio export remains planned", async ({ page }) => {
+    let server = await openMidiStudio(page);
+    try {
+      await expect(page.locator('.midi-studio-v2__tool-menu #renderedExportTargetTypeSelect')).toHaveCount(0);
+      await expect(page.locator('.midi-studio-v2__tool-menu #renderedExportSaveButton')).toHaveCount(0);
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#exportOutputTypeSection")).toContainText("Output Type");
+      await expect(page.locator("#exportRenderSourceSection")).toContainText("Render Source");
+      await expect(page.locator('.accordion-v2__header[aria-controls="renderedTargetsContent"]')).toContainText("Output Targets");
+      await expect(page.locator("#futureExportOptionsSection")).toContainText("Future Rendering Options");
+      await expect(page.locator("#exportStatusSection")).toContainText("Export Status");
+      await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText(["WAV", "MP3", "OGG"]);
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save/Export");
+      const exportControlOwners = await page.locator("#renderedExportTargetTypeSelect, #renderedExportSaveButton").evaluateAll((controls) => controls.map((control) => control.closest("[data-midi-studio-tab-panel]")?.dataset.midiStudioTabPanel));
+      expect(exportControlOwners).toEqual(["export", "export"]);
+
+      await expect(page.locator("#exportRenderSource")).toContainText("Main Theme");
+      await expect(page.locator("#exportRenderSource")).toContainText("canonical song model / octave timeline data");
+      await expect(page.locator("#exportRenderSource")).toContainText("Playable event count");
+      expect(await page.locator("#exportRenderSource dd").nth(1).textContent()).toMatch(/^\d+$/);
+      expect(Number.isFinite(await page.evaluate(() => window.__midiStudioV2App.playableEventSummary().count))).toBe(true);
+
+      const targetOwnership = await page.locator("#renderedTargetWavInput, #renderedTargetMp3Input, #renderedTargetOggInput").evaluateAll((inputs) => inputs.map((input) => ({
+        disabled: input.disabled,
+        id: input.id,
+        panel: input.closest("[data-midi-studio-tab-panel]")?.dataset.midiStudioTabPanel,
+        value: input.value
+      })));
+      expect(targetOwnership).toEqual([
+        { disabled: false, id: "renderedTargetWavInput", panel: "export", value: "assets/music/rendered/theme-main.wav" },
+        { disabled: false, id: "renderedTargetMp3Input", panel: "export", value: "assets/music/rendered/theme-main.mp3" },
+        { disabled: false, id: "renderedTargetOggInput", panel: "export", value: "assets/music/rendered/theme-main.ogg" }
+      ]);
+      await page.locator("#renderedTargetMp3Input").fill("assets/music/rendered/custom-main.mp3");
+      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().rendered.mp3)).toBe("assets/music/rendered/custom-main.mp3");
+
+      await selectMidiStudioTab(page, "diagnostics");
+      await expect(page.locator("#renderedTargetDiagnosticsContent")).toBeVisible();
+      await expect(page.locator("#renderedTargetDiagnostics")).toContainText("assets/music/rendered/custom-main.mp3");
+      await expect(page.locator("#renderedTargetDiagnostics input, #renderedTargetDiagnostics textarea, #renderedTargetDiagnostics select")).toHaveCount(0);
+      await expect(page.locator("#renderedTargetsContent")).toBeHidden();
+
+      await selectMidiStudioTab(page, "export");
+      const futureControls = await page.locator("#futureExportOptionsSection [data-midi-studio-future-control]").evaluateAll((controls) => controls.map((control) => ({
+        disabled: control.disabled,
+        status: control.dataset.midiStudioUnwired,
+        text: control.textContent.trim(),
+        title: control.title
+      })));
+      expect(futureControls).toHaveLength(6);
+      expect(futureControls.every((control) => control.disabled && control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
+      expect(futureControls.map((control) => control.text)).toEqual(expect.arrayContaining([
+        "SoundFont",
+        "Render Quality",
+        "Sample Rate",
+        "Normalize Volume",
+        "Export Stems",
+        "Loop Export"
+      ]));
+
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented for MP3\. Planned target: assets\/music\/rendered\/custom-main\.mp3\./);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/created .*custom-main\.mp3|wrote .*custom-main\.mp3|saved .*custom-main\.mp3/i);
+      await expect(page.locator("#exportStatusDetails")).toContainText("WARN: Export rendering not implemented for MP3. Planned target: assets/music/rendered/custom-main.mp3.");
+      expect(await controlColors(page, "#renderedExportSaveButton")).toMatchObject({
+        borderTopColor: "rgb(248, 113, 113)",
+        color: "rgb(254, 202, 202)"
+      });
+
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+
+    server = await openMidiStudio(page, {
+      music: {
+        version: 1,
+        songs: [{ name: "Broken Song" }]
+      }
+    });
+    try {
+      await selectMidiStudioTab(page, "export");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing MIDI song for WAV export\. Load or select a song before exporting\./);
+      await expect(page.locator("#exportStatusDetails")).toContainText("FAIL: Missing MIDI song for WAV export. Load or select a song before exporting.");
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("derives primary song, instrument, grid, playback, and diagnostics views from the canonical selected song", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {
@@ -2610,7 +2710,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#playButton")).toHaveText("Play");
       await expect(page.locator("#inspectMidiSourceButton")).toBeEnabled();
       const renderedHeader = page.locator('.accordion-v2__header[aria-controls="renderedTargetsContent"]');
-      await expect(renderedHeader).toContainText("Rendered Export Targets");
+      await expect(renderedHeader).toContainText("Output Targets");
       await expect(renderedHeader.locator("#exportWavButton")).toHaveCount(0);
       await expect(page.locator("#exportWavButton")).toHaveCount(0);
       await expect(page.locator("#exportMp3Button")).toHaveCount(0);

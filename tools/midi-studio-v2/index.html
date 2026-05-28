@@ -217,20 +217,26 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="exportWorkflowContent" class="accordion-v2__content midi-studio-v2__stack">
-            <div class="midi-studio-v2__export-save-controls">
-              <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
-                <span>Output Type</span>
-                <select id="renderedExportTargetTypeSelect">
-                  <option value="wav">WAV</option>
-                  <option value="mp3">MP3</option>
-                  <option value="ogg">OGG</option>
-                </select>
-              </label>
-              <button id="renderedExportSaveButton" type="button">Save/Export</button>
-            </div>
-            <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
-            <div class="midi-studio-v2__future-panel" aria-label="Future export settings">
-              <h3>Future Export Settings</h3>
+            <section id="exportOutputTypeSection" class="midi-studio-v2__export-section" aria-labelledby="exportOutputTypeHeading">
+              <h3 id="exportOutputTypeHeading">Output Type</h3>
+              <div class="midi-studio-v2__export-save-controls">
+                <label class="midi-studio-v2__compact-field" for="renderedExportTargetTypeSelect">
+                  <span>Output Type</span>
+                  <select id="renderedExportTargetTypeSelect">
+                    <option value="wav">WAV</option>
+                    <option value="mp3">MP3</option>
+                    <option value="ogg">OGG</option>
+                  </select>
+                </label>
+                <button id="renderedExportSaveButton" type="button">Save/Export</button>
+              </div>
+            </section>
+            <section id="exportRenderSourceSection" class="midi-studio-v2__export-section" aria-labelledby="exportRenderSourceHeading">
+              <h3 id="exportRenderSourceHeading">Render Source</h3>
+              <dl id="exportRenderSource" class="midi-studio-v2__details"></dl>
+            </section>
+            <section id="futureExportOptionsSection" class="midi-studio-v2__export-section midi-studio-v2__future-panel" aria-labelledby="futureExportOptionsHeading">
+              <h3 id="futureExportOptionsHeading">Future Rendering Options</h3>
               <div class="midi-studio-v2__future-controls">
                 <select id="futureSoundFontSelect" disabled data-midi-studio-future-control data-midi-studio-future-detail="SoundFont rendering is planned but not implemented yet.">
                   <option>SoundFont</option>
@@ -245,7 +251,12 @@
                 <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Export Stems is planned but not implemented yet.">Export Stems</button>
                 <button type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Loop Export is planned but not implemented yet.">Loop Export</button>
               </div>
-            </div>
+            </section>
+            <section id="exportStatusSection" class="midi-studio-v2__export-section" aria-labelledby="exportStatusHeading">
+              <h3 id="exportStatusHeading">Export Status</h3>
+              <dl id="exportStatusDetails" class="midi-studio-v2__details"></dl>
+              <button id="toolExportToolStateButton" type="button" disabled>Export JSON</button>
+            </section>
           </div>
         </section>
 
@@ -420,11 +431,21 @@
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="export">
           <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="renderedTargetsContent">
-            <span>Rendered Export Targets</span>
+            <span>Output Targets</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="renderedTargetsContent" class="accordion-v2__content">
             <dl id="renderedTargets" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
+          <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="renderedTargetDiagnosticsContent">
+            <span>Rendered Target Diagnostics</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="renderedTargetDiagnosticsContent" class="accordion-v2__content">
+            <dl id="renderedTargetDiagnostics" class="midi-studio-v2__details"></dl>
           </div>
         </section>
 

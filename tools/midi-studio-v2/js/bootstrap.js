@@ -4,6 +4,7 @@ import { AccordionSection } from "./controls/AccordionSection.js";
 import { ActionNavControl } from "./controls/ActionNavControl.js";
 import { AudioDiagnosticsControl } from "./controls/AudioDiagnosticsControl.js";
 import { DirectorPanelControl } from "./controls/DirectorPanelControl.js";
+import { ExportPanelControl } from "./controls/ExportPanelControl.js";
 import { FutureControlsControl } from "./controls/FutureControlsControl.js";
 import { InstrumentGridControl } from "./controls/InstrumentGridControl.js";
 import { MidiSourceDetailsControl } from "./controls/MidiSourceDetailsControl.js";
@@ -73,6 +74,12 @@ window.addEventListener("DOMContentLoaded", () => {
       sourceField: requireElement("#songSourceField")
     }),
     directorPanel: new DirectorPanelControl({ panel: requireElement("#directorPanel") }),
+    exportPanel: new ExportPanelControl({
+      diagnosticTargets: requireElement("#renderedTargetDiagnostics"),
+      renderedTargets: requireElement("#renderedTargets"),
+      sourceDetails: requireElement("#exportRenderSource"),
+      statusDetails: requireElement("#exportStatusDetails")
+    }),
     instrumentGrid: new InstrumentGridControl({
       addInstrumentButton: requireElement("#addInstrumentRowButton"),
       bassInput: requireElement("#instrumentGridBassInput"),

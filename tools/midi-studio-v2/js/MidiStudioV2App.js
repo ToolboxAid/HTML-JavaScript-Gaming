@@ -12,6 +12,7 @@ export class MidiStudioV2App {
     audioDiagnostics,
     details,
     directorPanel,
+    exportPanel,
     instrumentGrid,
     instrumentGridParser,
     manifestLoader,
@@ -36,6 +37,7 @@ export class MidiStudioV2App {
     this.audioDiagnostics = audioDiagnostics;
     this.details = details;
     this.directorPanel = directorPanel;
+    this.exportPanel = exportPanel;
     this.instrumentGrid = instrumentGrid;
     this.instrumentGridParser = instrumentGridParser;
     this.instrumentGridResults = new WeakMap();
@@ -71,6 +73,7 @@ export class MidiStudioV2App {
     this.songList.mount({ onSelect: (songId) => this.selectSong(songId) });
     this.songSetup.mount({ onAddSong: () => this.addSong() });
     this.details.mount({ onChange: (field, value) => this.handleSongDetailsChange(field, value) });
+    this.exportPanel.mount({ onTargetChange: (format, value) => this.handleRenderedTargetChange(format, value) });
     this.songSheet.mount({
       onFieldChange: (field, value) => this.handleSongSheetFieldChange(field, value),
       onParse: (sourceText) => this.parseSongSheet(sourceText)
@@ -159,6 +162,7 @@ export class MidiStudioV2App {
     this.setDirtyState(false);
     this.songList.render([], "");
     this.details.render(null, null);
+    this.exportPanel.render(null, { playable: { count: 0 } });
     this.directorPanel.render(null, {});
     this.midiSourceDetails.render(null);
     this.midiSourceDetails.setEnabled(false);
@@ -201,6 +205,7 @@ export class MidiStudioV2App {
     const song = this.selectedSong();
     this.songList.render(this.payload?.songs || [], this.selectedSongId);
     this.details.render(song, this.payload);
+    this.exportPanel.render(song, { playable: this.playableEventSummary() });
     this.directorPanel.render(song, this.payload?.directorMode || {});
     this.midiSourceDetails.render(null);
     this.midiSourceDetails.setEnabled(Boolean(song));
@@ -262,6 +267,25 @@ export class MidiStudioV2App {
     this.markDirty({ changedKeys: ["data.songs"], reason: "midi-studio-song-details-edited" });
     this.statusLog.info(`Edited selected song detail: ${field}.`);
     this.updateAudioDiagnostics();
+  }
+
+  handleRenderedTargetChange(format, value) {
+    const song = this.selectedSong();
+    if (!song) {
+      return;
+    }
+    const normalizedFormat = String(format || "").trim().toLowerCase();
+    if (!["wav", "mp3", "ogg"].includes(normalizedFormat)) {
+      return;
+    }
+    song.rendered = {
+      ...(song.rendered || {}),
+      [normalizedFormat]: String(value || "").trim()
+    };
+    this.details.showJson(song);
+    this.exportPanel.renderDiagnostics(song);
+    this.markDirty({ changedKeys: ["data.songs.rendered"], reason: "midi-studio-rendered-target-edited" });
+    this.statusLog.info(`Edited rendered ${normalizedFormat.toUpperCase()} target for ${song.name}.`);
   }
 
   updateSelectedSongId(value) {
@@ -1153,15 +1177,21 @@ export class MidiStudioV2App {
     const song = this.selectedSong();
     const label = String(format || "").toUpperCase();
     if (!song) {
-      this.statusLog.fail(`Missing MIDI song for ${label} export. Load or select a song before exporting.`);
+      const message = `Missing MIDI song for ${label} export. Load or select a song before exporting.`;
+      this.statusLog.fail(message);
+      this.exportPanel.setStatus({ level: "FAIL", message });
       return;
     }
     const target = String(song.rendered?.[format] || "").trim();
     if (!target) {
-      this.statusLog.fail(`Missing rendered ${label} export target for ${song.name}. Add music.songs[].rendered.${format} before exporting.`);
+      const message = `Missing rendered ${label} export target for ${song.name}. Add music.songs[].rendered.${format} before exporting.`;
+      this.statusLog.fail(message);
+      this.exportPanel.setStatus({ level: "FAIL", message });
       return;
     }
-    this.statusLog.warn(`Export rendering not implemented for ${label}. Planned target: ${target}.`);
+    const message = `Export rendering not implemented for ${label}. Planned target: ${target}.`;
+    this.statusLog.warn(message);
+    this.exportPanel.setStatus({ level: "WARN", message });
   }
 
   applySelectedSongArrangement(sourceLabel) {
@@ -1258,6 +1288,8 @@ export class MidiStudioV2App {
     const snapshot = this.previewSynth.getSnapshot();
     const laneDiagnostics = this.instrumentGrid.previewLaneDiagnostics();
     const playable = this.playableEventSummary();
+    this.exportPanel.renderSource(this.selectedSong(), playable);
+    this.exportPanel.renderDiagnostics(this.selectedSong());
     const selectedSection = this.instrumentGrid.selectedSection();
     const packSummary = Object.entries(laneDiagnostics.instrumentLabels)
       .map(([lane, label]) => `${lane}: ${label || "missing"}`)
