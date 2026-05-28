@@ -1011,6 +1011,10 @@ test.describe("MIDI Studio V2", () => {
         const outputStyle = getComputedStyle(element);
         const whiteLabelStyle = getComputedStyle(whiteLabel);
         const blackLabelStyle = getComputedStyle(blackLabel);
+        const barHeaderStyle = getComputedStyle(element.querySelector('.midi-studio-v2__timing-header-row-1.midi-studio-v2__note-table-column-header[data-step-index="1"]'));
+        const beatHeaderStyle = getComputedStyle(element.querySelector('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="1"]'));
+        const barAxisStyle = getComputedStyle(element.querySelector(".midi-studio-v2__timing-header-row-1.midi-studio-v2__timing-axis-header"));
+        const beatAxisStyle = getComputedStyle(element.querySelector(".midi-studio-v2__timing-header-row-2.midi-studio-v2__timing-axis-header"));
         const whiteLabelRect = whiteLabel.getBoundingClientRect();
         const blackLabelRect = blackLabel.getBoundingClientRect();
         const whiteCellRect = whiteCell.getBoundingClientRect();
@@ -1020,9 +1024,11 @@ test.describe("MIDI Studio V2", () => {
           blackBackground: blackLabelStyle.backgroundImage || blackLabelStyle.backgroundColor,
           blackClass: blackLabel.className,
           blackColor: blackLabelStyle.color,
+          blackJustifyItems: blackLabelStyle.justifyItems,
           blackKind: blackLabel.dataset.keyKind,
           blackLabelHeight: blackLabelRect.height,
           blackLabelText: blackLabel.textContent,
+          blackTextAlign: blackLabelStyle.textAlign,
           borderRightWidth: getComputedStyle(firstNote).borderRightWidth,
           canScrollVertically: element.scrollHeight > element.clientHeight,
           cellCssWidth: getComputedStyle(firstNote).width,
@@ -1031,14 +1037,22 @@ test.describe("MIDI Studio V2", () => {
           columnTemplate: getComputedStyle(grid).gridTemplateColumns,
           containsGrid: grid?.parentElement === element,
           expectedViewportHeight: window.innerHeight * 0.5,
+          headerBackgrounds: [
+            barHeaderStyle.backgroundColor,
+            beatHeaderStyle.backgroundColor,
+            barAxisStyle.backgroundColor,
+            beatAxisStyle.backgroundColor
+          ],
           overflowY: outputStyle.overflowY,
           viewportHeight: element.getBoundingClientRect().height,
           whiteBackground: whiteLabelStyle.backgroundImage || whiteLabelStyle.backgroundColor,
           whiteClass: whiteLabel.className,
           whiteColor: whiteLabelStyle.color,
+          whiteJustifyItems: whiteLabelStyle.justifyItems,
           whiteKind: whiteLabel.dataset.keyKind,
           whiteLabelHeight: whiteLabelRect.height,
           whiteLabelText: whiteLabel.textContent,
+          whiteTextAlign: whiteLabelStyle.textAlign,
           whiteRowDelta: Math.abs(whiteLabelRect.top - whiteCellRect.top),
           whiteRowHeightDelta: Math.abs(whiteLabelRect.height - whiteCellRect.height),
           blackRowDelta: Math.abs(blackLabelRect.top - blackCellRect.top),
@@ -1068,6 +1082,16 @@ test.describe("MIDI Studio V2", () => {
       expect(gridLayout.blackLabelText).toBe("C#5");
       expect(gridLayout.whiteBackground).not.toBe(gridLayout.blackBackground);
       expect(gridLayout.whiteColor).not.toBe(gridLayout.blackColor);
+      expect(gridLayout.headerBackgrounds).toEqual([
+        "rgb(54, 0, 175)",
+        "rgb(54, 0, 175)",
+        "rgb(54, 0, 175)",
+        "rgb(54, 0, 175)"
+      ]);
+      expect(gridLayout.whiteTextAlign).toBe("left");
+      expect(gridLayout.blackTextAlign).toBe("left");
+      expect(gridLayout.whiteJustifyItems).toBe("start");
+      expect(gridLayout.blackJustifyItems).toBe("start");
       expect(gridLayout.whiteRowDelta).toBeLessThanOrEqual(1);
       expect(gridLayout.blackRowDelta).toBeLessThanOrEqual(1);
       expect(gridLayout.whiteRowHeightDelta).toBeLessThanOrEqual(1);
@@ -2105,8 +2129,24 @@ test.describe("MIDI Studio V2", () => {
         sections: "intro:1, loop:1, bridge:1, boss:1, victory:1"
       });
       await page.locator("#normalizeInstrumentGridButton").click();
-      await expect(page.locator("#instrumentGridOutput")).toContainText("Bar 1");
-      await expect(page.locator("#instrumentGridOutput")).toContainText("Bar 5");
+      await expect(page.locator('.midi-studio-v2__grid-cell--bar-header[data-step-index="0"]')).toHaveText("1");
+      await expect(page.locator('.midi-studio-v2__grid-cell--bar-header[data-step-index="16"]')).toHaveText("5");
+      const sectionButtonLayout = await page.locator(".midi-studio-v2__section-preset").evaluateAll((buttons) => buttons.map((button) => {
+        const style = getComputedStyle(button);
+        return {
+          marginBottom: Number.parseFloat(style.marginBottom),
+          marginLeft: Number.parseFloat(style.marginLeft),
+          marginRight: Number.parseFloat(style.marginRight),
+          marginTop: Number.parseFloat(style.marginTop),
+          paddingBottom: Number.parseFloat(style.paddingBottom),
+          paddingLeft: Number.parseFloat(style.paddingLeft),
+          paddingRight: Number.parseFloat(style.paddingRight),
+          paddingTop: Number.parseFloat(style.paddingTop)
+        };
+      }));
+      expect(sectionButtonLayout).toHaveLength(5);
+      expect(sectionButtonLayout.every((button) => button.marginBottom === 0 && button.marginLeft === 0 && button.marginRight === 0 && button.marginTop === 0)).toBe(true);
+      expect(sectionButtonLayout.every((button) => button.paddingBottom <= 4 && button.paddingTop <= 4 && button.paddingLeft <= 8 && button.paddingRight <= 8)).toBe(true);
       await expect(page.locator(".midi-studio-v2__grid-cell--bar")).toHaveCount(5);
       await expect(page.locator(".midi-studio-v2__grid-cell--ruler").first()).toContainText("1");
       await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "intro");
@@ -2114,6 +2154,48 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
       await page.locator("#instrumentGridLoopEndSelect").selectOption("boss");
       expect(await page.locator(".midi-studio-v2__grid-cell--loop-region").count()).toBeGreaterThan(0);
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Loop region set: loop -> boss");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Loop region set: loop -> boss\./);
+      await page.locator("#instrumentGridSectionSelect").selectOption("bridge");
+      const bridgeRegion = await page.locator(".midi-studio-v2__grid-cell--section-region").evaluateAll((cells) => ({
+        count: cells.length,
+        sections: Array.from(new Set(cells.map((cell) => cell.dataset.section)))
+      }));
+      expect(bridgeRegion.count).toBeGreaterThan(0);
+      expect(bridgeRegion.sections).toEqual(["bridge"]);
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Selected section: bridge");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Timing section selected: bridge\./);
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing section: bridge");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Playing section: bridge\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section bridge with \d+ playable events\./);
+      expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot())).toMatchObject({
+        lastPlayback: {
+          label: "bridge",
+          mode: "section"
+        },
+        loopActive: false,
+        playing: true
+      });
+      await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "bridge");
+      await page.locator("#stopTimingPreviewButton").click();
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await page.locator("#playLoopButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop: loop to boss");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Playing loop: loop to boss\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for loop loop to boss with \d+ playable events\./);
+      expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot())).toMatchObject({
+        lastPlayback: {
+          label: "loop to boss",
+          mode: "loop"
+        },
+        loopActive: true,
+        playing: true
+      });
+      await expect(page.locator(".midi-studio-v2__grid-cell--beat-header.midi-studio-v2__grid-cell--playhead-active")).toHaveAttribute("data-section", "loop");
+      await page.locator("#stopTimingPreviewButton").click();
       await page.locator('[data-section-preset="boss"]').click();
       await expect(page.locator("#instrumentGridSectionSelect")).toHaveValue("boss");
       await page.locator("#jumpToSectionButton").click();
@@ -2263,11 +2345,11 @@ test.describe("MIDI Studio V2", () => {
       await fillInstrumentGrid(page);
       await page.locator("#normalizeInstrumentGridButton").click();
       await page.locator('[data-section-preset="bridge"]').click();
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid section not found: Bridge\. Normalize a section map containing that label or choose a listed custom section\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN section Bridge does not exist\. Normalize a section map containing that label or choose a listed custom section\./);
       await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
       await page.locator("#instrumentGridLoopEndSelect").selectOption("intro");
       await page.locator("#playLoopButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Instrument grid loop rejected: Invalid loop region: loop starts after intro\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Loop region unavailable: Invalid loop region: loop starts after intro\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

@@ -325,8 +325,9 @@ export class InstrumentGridControl {
     this.sectionPresetButtons.forEach((button) => {
       button.addEventListener("click", () => this.selectPresetSection(button.dataset.sectionPreset, onTransport));
     });
+    this.sectionSelect.addEventListener("change", () => this.handleSectionSelectionChange(onTransport));
     [this.loopStartSelect, this.loopEndSelect].forEach((select) => {
-      select.addEventListener("change", () => this.updateLoopRegion());
+      select.addEventListener("change", () => this.handleLoopRegionChange(onTransport));
     });
     [this.sectionsInput, this.beatsInput, this.subdivisionInput].forEach((input) => {
       input.addEventListener("input", () => this.updateSnapIndicator());
@@ -516,6 +517,7 @@ export class InstrumentGridControl {
     this.renderGrid(result);
     this.setPlayheadStep(this.playheadStep);
     this.updateLoopRegion();
+    this.updateSelectedSectionRegion();
     this.applySelectedLaneHighlight();
     this.restoreTimelineScrollState(timelineScrollState);
     this.renderSelectionDetails();
@@ -1962,8 +1964,32 @@ export class InstrumentGridControl {
     }
     this.sectionSelect.value = section.label;
     this.setPlayheadStep(section.startStep);
+    this.updateSelectedSectionRegion();
     this.transportState.textContent = `Selected section: ${section.label}`;
     onTransport("select-section", { section });
+  }
+
+  handleSectionSelectionChange(onTransport) {
+    const section = this.sectionByLabel(this.sectionSelect.value);
+    if (!section) {
+      this.updateSelectedSectionRegion();
+      onTransport("invalid-section", { label: this.sectionSelect.value || "(none)" });
+      return;
+    }
+    this.setPlayheadStep(section.startStep);
+    this.updateSelectedSectionRegion();
+    this.transportState.textContent = `Selected section: ${section.label}`;
+    onTransport("select-section", { section });
+  }
+
+  handleLoopRegionChange(onTransport) {
+    const bounds = this.updateLoopRegion();
+    if (!bounds.ok) {
+      onTransport("invalid-loop", { message: bounds.message });
+      return;
+    }
+    this.transportState.textContent = `Loop region set: ${bounds.startSection.label} -> ${bounds.endSection.label}`;
+    onTransport("set-loop-region", { endSection: bounds.endSection, startSection: bounds.startSection });
   }
 
   jumpToSelectedSection(onTransport) {
@@ -1974,6 +2000,7 @@ export class InstrumentGridControl {
     }
     this.stopTimer();
     this.setPlayheadStep(section.startStep);
+    this.updateSelectedSectionRegion();
     this.transportState.textContent = `Jumped to section: ${section.label}`;
     onTransport("jump-section", { section });
   }
@@ -2023,7 +2050,7 @@ export class InstrumentGridControl {
   startTimingPreview({ endStep, label, mode, startStep }) {
     this.stopTimer();
     this.setPlayheadStep(startStep);
-    this.transportState.textContent = `${mode === "loop" ? "Playing loop" : "Playing section"} Preview Synth timing preview: ${label}`;
+    this.transportState.textContent = mode === "loop" ? `Playing loop: ${label}` : `Playing section: ${label}`;
     const intervalMs = this.previewStepDurationMs();
     this.playTimer = this.window.setInterval(() => {
       const nextStep = this.playheadStep + 1;
@@ -2107,6 +2134,23 @@ export class InstrumentGridControl {
       }
     });
     return bounds;
+  }
+
+  updateSelectedSectionRegion() {
+    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--section-region").forEach((cell) => {
+      cell.classList.remove("midi-studio-v2__grid-cell--section-region");
+    });
+    const section = this.sectionByLabel(this.sectionSelect.value);
+    if (!section) {
+      return null;
+    }
+    this.gridOutput.querySelectorAll("[data-step-index]").forEach((cell) => {
+      const stepIndex = Number(cell.dataset.stepIndex);
+      if (stepIndex >= section.startStep && stepIndex <= section.endStep) {
+        cell.classList.add("midi-studio-v2__grid-cell--section-region");
+      }
+    });
+    return section;
   }
 
   selectedLoopBounds() {

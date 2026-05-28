@@ -631,11 +631,11 @@ export class MidiStudioV2App {
 
   async handleInstrumentGridTransport(action, detail = {}) {
     if (action === "invalid-section") {
-      this.statusLog.fail(`Instrument grid section not found: ${detail.label}. Normalize a section map containing that label or choose a listed custom section.`);
+      this.statusLog.warn(`section ${detail.label} does not exist. Normalize a section map containing that label or choose a listed custom section.`);
       return;
     }
     if (action === "invalid-loop") {
-      this.statusLog.fail(`Instrument grid loop rejected: ${detail.message}`);
+      this.statusLog.warn(`Loop region unavailable: ${detail.message}`);
       return;
     }
     if (action === "play-section") {
@@ -662,6 +662,10 @@ export class MidiStudioV2App {
     }
     if (action === "select-section") {
       this.statusLog.info(`Timing section selected: ${detail.section.label}.`);
+      return;
+    }
+    if (action === "set-loop-region") {
+      this.statusLog.info(`Loop region set: ${detail.startSection.label} -> ${detail.endSection.label}.`);
       return;
     }
     if (action === "stop-preview") {
@@ -698,6 +702,7 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Preview Synth warnings: ${result.warnings.join("; ")}`);
     }
     this.instrumentGrid.setPreviewPlaybackLanes(result.activeLanes);
+    this.statusLog.info(`Playing ${mode}: ${label}.`);
     this.statusLog.ok(`Preview Synth started for ${mode} ${label} with ${result.eventCount} playable event${result.eventCount === 1 ? "" : "s"}.`);
     this.statusLog.warn("Preview Synth is an approximate Web Audio audition; SoundFont and real instrument playback are not implemented.");
     this.updateAudioDiagnostics();
