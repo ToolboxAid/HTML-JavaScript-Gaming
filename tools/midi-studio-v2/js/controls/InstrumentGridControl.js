@@ -68,6 +68,12 @@ const INSTRUMENT_TYPE_GROUPS = [
 const REST_TOKENS = new Set(["", "-", ".", "rest"]);
 const PERCUSSION_ROWS = ["crash", "ride", "hat", "clap", "snare", "tom", "perc", "kick"];
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const OCTAVE_GRID_ZOOM = {
+  default: 22,
+  max: 38,
+  min: 12,
+  step: 4
+};
 const FLAT_TO_SHARP = {
   Ab: "G#",
   Bb: "A#",
@@ -223,6 +229,8 @@ export class InstrumentGridControl {
     generatePadButton,
     gridOutput,
     instrumentList,
+    instrumentGridZoomInButton,
+    instrumentGridZoomOutButton,
     jumpToSectionButton,
     laneTypeSelect,
     leadInput,
@@ -257,6 +265,8 @@ export class InstrumentGridControl {
     this.gridOutput = gridOutput;
     this.extraLaneSources = {};
     this.instrumentList = instrumentList;
+    this.instrumentGridZoomInButton = instrumentGridZoomInButton;
+    this.instrumentGridZoomOutButton = instrumentGridZoomOutButton;
     this.jumpToSectionButton = jumpToSectionButton;
     this.laneTypeSelect = laneTypeSelect;
     this.leadInput = leadInput;
@@ -285,6 +295,7 @@ export class InstrumentGridControl {
     this.playTimer = null;
     this.playheadStep = 0;
     this.lastPlayheadHighlightStep = null;
+    this.octaveCellSize = OCTAVE_GRID_ZOOM.default;
     this.syncingTimelineScroll = false;
     this.timelineScrollProxy = null;
     this.timelineScrollProxySpacer = null;
@@ -322,11 +333,14 @@ export class InstrumentGridControl {
       input.addEventListener("change", () => this.updateSnapIndicator());
     });
     this.gridOutput.addEventListener("scroll", () => this.syncTimelineScrollState());
+    this.instrumentGridZoomInButton?.addEventListener("click", () => this.adjustOctaveGridZoom(OCTAVE_GRID_ZOOM.step));
+    this.instrumentGridZoomOutButton?.addEventListener("click", () => this.adjustOctaveGridZoom(-OCTAVE_GRID_ZOOM.step));
     this.addInstrumentButton?.addEventListener("click", () => this.addInstrumentRow());
     this.closeInstrumentPanelButton?.addEventListener("click", () => this.collapseInstrumentPanel());
     this.setTransportEnabled(false);
     this.populateSectionControls([]);
     this.updateSnapIndicator();
+    this.applyOctaveGridZoom();
     this.selectLane(this.selectedLane);
     this.renderSelectionDetails();
   }
@@ -561,7 +575,7 @@ export class InstrumentGridControl {
     grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table midi-studio-v2__octave-timeline";
     grid.setAttribute("role", "table");
     grid.setAttribute("aria-label", "Octave timeline editor");
-    grid.style.gridTemplateColumns = `4.25rem repeat(${result.totalSteps}, 1px)`;
+    grid.style.gridTemplateColumns = `4.25rem repeat(${result.totalSteps}, var(--midi-studio-v2-octave-cell-size))`;
     this.renderNoteTableHeader(grid, result);
     octaveRows.forEach((row, rowIndex) => {
       grid.append(this.createOctaveRowHeader(row, rowIndex));
@@ -575,7 +589,32 @@ export class InstrumentGridControl {
     this.gridOutput.append(grid);
     this.updateTimelineScrollProxyWidth();
     this.window.requestAnimationFrame?.(() => this.updateTimelineScrollProxyWidth());
+    this.applyOctaveGridZoom();
     this.applySelectedLaneHighlight();
+  }
+
+  adjustOctaveGridZoom(delta) {
+    const nextSize = Math.max(OCTAVE_GRID_ZOOM.min, Math.min(OCTAVE_GRID_ZOOM.max, this.octaveCellSize + delta));
+    if (nextSize === this.octaveCellSize) {
+      this.applyOctaveGridZoom();
+      return;
+    }
+    const scrollState = this.captureTimelineScrollState();
+    this.octaveCellSize = nextSize;
+    this.applyOctaveGridZoom();
+    this.updateTimelineScrollProxyWidth();
+    this.restoreTimelineScrollState(scrollState);
+  }
+
+  applyOctaveGridZoom() {
+    const size = `${this.octaveCellSize}px`;
+    this.gridOutput?.style.setProperty("--midi-studio-v2-octave-cell-size", size);
+    if (this.instrumentGridZoomOutButton) {
+      this.instrumentGridZoomOutButton.disabled = this.octaveCellSize <= OCTAVE_GRID_ZOOM.min;
+    }
+    if (this.instrumentGridZoomInButton) {
+      this.instrumentGridZoomInButton.disabled = this.octaveCellSize >= OCTAVE_GRID_ZOOM.max;
+    }
   }
 
   createTimelineScrollProxy() {

@@ -197,7 +197,11 @@
             <div class="midi-studio-v2__timeline-title">
               <h2 id="instrumentGridHeading">Octave Timeline</h2>
               <p>Edit Notes Here</p>
-              <span id="instrumentGridSnapIndicator" class="midi-studio-v2__snap-indicator">Snap: not set</span>
+              <div class="midi-studio-v2__timeline-title-actions">
+                <span id="instrumentGridSnapIndicator" class="midi-studio-v2__snap-indicator">Snap: not set</span>
+                <button id="instrumentGridZoomOutButton" class="midi-studio-v2__zoom-button" type="button" aria-label="Zoom out octave grid" title="Zoom out octave grid">-</button>
+                <button id="instrumentGridZoomInButton" class="midi-studio-v2__zoom-button" type="button" aria-label="Zoom in octave grid" title="Zoom in octave grid">+</button>
+              </div>
             </div>
             <div class="midi-studio-v2__grid-settings" data-midi-studio-tab-panel="auto-create-parts">
               <label class="tool-starter__field" for="instrumentGridSectionsInput">

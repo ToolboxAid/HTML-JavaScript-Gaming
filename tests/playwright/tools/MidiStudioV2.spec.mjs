@@ -974,6 +974,27 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="1"]')).toHaveText("2");
       await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="2"]')).toHaveText("3");
       await expect(page.locator('.midi-studio-v2__timing-header-row-2.midi-studio-v2__note-table-column-header[data-step-index="3"]')).toHaveText("4");
+      await expect(page.locator("#instrumentGridSnapIndicator")).toContainText("Snap:");
+      await expect(page.locator("#instrumentGridZoomOutButton")).toHaveAttribute("aria-label", "Zoom out octave grid");
+      await expect(page.locator("#instrumentGridZoomInButton")).toHaveAttribute("aria-label", "Zoom in octave grid");
+      const zoomControlsLayout = await page.locator(".midi-studio-v2__timeline-title").evaluate((header) => {
+        const snap = header.querySelector("#instrumentGridSnapIndicator").getBoundingClientRect();
+        const zoomOut = header.querySelector("#instrumentGridZoomOutButton").getBoundingClientRect();
+        const zoomIn = header.querySelector("#instrumentGridZoomInButton").getBoundingClientRect();
+        return {
+          zoomInAfterZoomOut: zoomIn.left > zoomOut.right,
+          zoomOutAfterSnap: zoomOut.left > snap.right,
+          zoomText: [
+            header.querySelector("#instrumentGridZoomOutButton").textContent,
+            header.querySelector("#instrumentGridZoomInButton").textContent
+          ]
+        };
+      });
+      expect(zoomControlsLayout).toEqual({
+        zoomInAfterZoomOut: true,
+        zoomOutAfterSnap: true,
+        zoomText: ["-", "+"]
+      });
 
       const output = page.locator("#instrumentGridOutput");
       const gridLayout = await output.evaluate((element) => {
@@ -987,6 +1008,7 @@ test.describe("MIDI Studio V2", () => {
           alternatingRowsDiffer: getComputedStyle(firstRow).backgroundColor !== getComputedStyle(secondRow).backgroundColor,
           borderRightWidth: getComputedStyle(firstNote).borderRightWidth,
           cellCssWidth: getComputedStyle(firstNote).width,
+          cellHeight: firstNote.getBoundingClientRect().height,
           columnWidth: firstNote.getBoundingClientRect().width,
           columnTemplate: getComputedStyle(grid).gridTemplateColumns,
           containsGrid: grid?.parentElement === element,
@@ -998,12 +1020,44 @@ test.describe("MIDI Studio V2", () => {
       expect(gridLayout.alternatingRowsDiffer).toBe(true);
       expect(Number.parseFloat(gridLayout.borderRightWidth)).toBeGreaterThanOrEqual(0.8);
       expect(Number.parseFloat(gridLayout.borderRightWidth)).toBeLessThanOrEqual(1);
-      expect(Number.parseFloat(gridLayout.cellCssWidth)).toBeGreaterThanOrEqual(0.8);
-      expect(Number.parseFloat(gridLayout.cellCssWidth)).toBeLessThanOrEqual(1);
-      expect(gridLayout.columnWidth).toBeLessThanOrEqual(1);
-      expect(gridLayout.columnTemplate).toContain("1px");
+      expect(gridLayout.columnWidth).toBeGreaterThan(1);
+      expect(Math.abs(gridLayout.columnWidth - gridLayout.cellHeight)).toBeLessThanOrEqual(1);
+      expect(Number.parseFloat(gridLayout.cellCssWidth)).toBeGreaterThan(1);
+      expect(gridLayout.columnTemplate).toContain("22px");
       expect(gridLayout.labelWidth).toBeGreaterThan(40);
       expect(gridLayout.topScrollbarHeight).toBeGreaterThanOrEqual(12);
+
+      await page.locator("#instrumentGridZoomInButton").click();
+      const zoomedInLayout = await output.evaluate((element) => {
+        const firstNote = element.querySelector('.midi-studio-v2__octave-note-cell[data-step-index="0"]');
+        const header = element.querySelector('.midi-studio-v2__grid-cell--beat-header[data-step-index="6"]').getBoundingClientRect();
+        const bodyCell = element.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="C5"][data-step-index="6"]').getBoundingClientRect();
+        return {
+          bodyHeaderDelta: Math.abs(header.left - bodyCell.left),
+          height: firstNote.getBoundingClientRect().height,
+          width: firstNote.getBoundingClientRect().width
+        };
+      });
+      expect(zoomedInLayout.width).toBeGreaterThan(gridLayout.columnWidth);
+      expect(Math.abs(zoomedInLayout.width - zoomedInLayout.height)).toBeLessThanOrEqual(1);
+      expect(zoomedInLayout.bodyHeaderDelta).toBeLessThanOrEqual(1);
+
+      await page.locator("#instrumentGridZoomOutButton").click();
+      await page.locator("#instrumentGridZoomOutButton").click();
+      const zoomedOutLayout = await output.evaluate((element) => {
+        const firstNote = element.querySelector('.midi-studio-v2__octave-note-cell[data-step-index="0"]');
+        const header = element.querySelector('.midi-studio-v2__grid-cell--beat-header[data-step-index="6"]').getBoundingClientRect();
+        const bodyCell = element.querySelector('.midi-studio-v2__octave-note-cell[data-row-token="C5"][data-step-index="6"]').getBoundingClientRect();
+        return {
+          bodyHeaderDelta: Math.abs(header.left - bodyCell.left),
+          height: firstNote.getBoundingClientRect().height,
+          width: firstNote.getBoundingClientRect().width
+        };
+      });
+      expect(zoomedOutLayout.width).toBeLessThan(zoomedInLayout.width);
+      expect(zoomedOutLayout.width).toBeGreaterThan(1);
+      expect(Math.abs(zoomedOutLayout.width - zoomedOutLayout.height)).toBeLessThanOrEqual(1);
+      expect(zoomedOutLayout.bodyHeaderDelta).toBeLessThanOrEqual(1);
 
       await output.evaluate((element) => {
         element.style.maxWidth = "80px";
@@ -1106,8 +1160,7 @@ test.describe("MIDI Studio V2", () => {
         };
       });
       expect(activeHighlight.content).not.toBe("none");
-      expect(Number.parseFloat(activeHighlight.width)).toBeGreaterThanOrEqual(0.8);
-      expect(Number.parseFloat(activeHighlight.width)).toBeLessThanOrEqual(1);
+      expect(Number.parseFloat(activeHighlight.width)).toBeGreaterThan(1);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

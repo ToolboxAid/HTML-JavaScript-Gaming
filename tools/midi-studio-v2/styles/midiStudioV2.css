@@ -108,6 +108,14 @@
   justify-content: space-between;
 }
 
+.midi-studio-v2__timeline-title-actions {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-left: auto;
+  min-width: 0;
+}
+
 .midi-studio-v2__timeline-title p {
   color: var(--tool-starter-muted);
   font-size: 0.85rem;
@@ -320,6 +328,7 @@
 .midi-studio-v2__instrument-grid-output {
   max-width: 100%;
   overflow: auto;
+  --midi-studio-v2-octave-cell-size: 22px;
   --midi-studio-v2-top-scrollbar-height: 16px;
 }
 
@@ -646,13 +655,14 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   font-weight: 800;
   gap: 0;
   line-height: 1;
-  min-height: 1.55rem;
-  min-width: 1px;
+  height: var(--midi-studio-v2-octave-cell-size);
+  min-height: var(--midi-studio-v2-octave-cell-size);
+  min-width: var(--midi-studio-v2-octave-cell-size);
   overflow: hidden;
   padding: 0;
   position: relative;
   white-space: normal;
-  width: 1px;
+  width: var(--midi-studio-v2-octave-cell-size);
   word-break: break-word;
 }
 
@@ -678,14 +688,14 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
 
 .midi-studio-v2__octave-note-cell.midi-studio-v2__grid-cell--event::before {
   background: rgba(221, 214, 254, 0.78);
-  border-radius: 0;
+  border-radius: 0.18rem;
   content: "";
   display: block;
   height: 0.72rem;
   justify-self: stretch;
-  margin: 0;
-  min-width: 1px;
-  width: 1px;
+  margin: 0 0.12rem;
+  min-width: 0;
+  width: auto;
 }
 
 .midi-studio-v2__note-block {
@@ -814,8 +824,20 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   color: var(--tool-starter-muted);
   font-size: 0.78rem;
   font-weight: 600;
-  margin-left: auto;
   text-transform: none;
+}
+
+.midi-studio-v2__zoom-button {
+  align-items: center;
+  border-radius: 6px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 1.45rem;
+  min-width: 1.55rem;
+  padding: 0;
 }
 
 .midi-studio-v2__section-tone-0 {

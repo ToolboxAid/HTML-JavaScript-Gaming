@@ -72,6 +72,8 @@ window.addEventListener("DOMContentLoaded", () => {
       generatePadButton: requireElement("#generatePadFromChordsButton"),
       gridOutput: requireElement("#instrumentGridOutput"),
       instrumentList: requireElement("#instrumentList"),
+      instrumentGridZoomInButton: requireElement("#instrumentGridZoomInButton"),
+      instrumentGridZoomOutButton: requireElement("#instrumentGridZoomOutButton"),
       jumpToSectionButton: requireElement("#jumpToSectionButton"),
       laneTypeSelect: requireElement("#instrumentGridLaneTypeSelect"),
       leadInput: requireElement("#instrumentGridLeadInput"),
