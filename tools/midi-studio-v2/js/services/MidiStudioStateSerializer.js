@@ -60,6 +60,17 @@ function legacySongSheetSections(songSheet) {
   return rows.join("\n");
 }
 
+function normalizeSongSheetApplyTargets(value, lanes = {}) {
+  const targets = isPlainObject(value) ? value : {};
+  const hasDrums = Object.keys(lanes).some((lane) => lane === "drums" || lane.toLowerCase().includes("drum"));
+  return {
+    bass: targets.bass !== false,
+    chordsPad: targets.chordsPad !== false,
+    drums: targets.drums === undefined ? hasDrums : targets.drums === true,
+    lead: targets.lead === true
+  };
+}
+
 function normalizeStudioArrangement(value) {
   if (!isPlainObject(value)) {
     return null;
@@ -88,7 +99,7 @@ function normalizeStudioArrangement(value) {
     previewInstruments: normalizedPreviewInstruments,
     sections: text(value.sections),
     songSheet: {
-      loopSections: text(songSheet.loopSections || (songSheet.loop ? "loop" : "")),
+      applyTargets: normalizeSongSheetApplyTargets(songSheet.applyTargets, normalizedLanes),
       sequence: text(songSheet.sequence),
       sections: text(songSheet.sections) || legacySongSheetSections(songSheet)
     },

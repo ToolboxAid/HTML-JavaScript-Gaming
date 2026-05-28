@@ -374,14 +374,6 @@ export class MidiStudioV2App {
     return rows.join("\n");
   }
 
-  loopSectionsFromArrangement(arrangement) {
-    const songSheet = arrangement?.songSheet || {};
-    if (songSheet.loopSections) {
-      return String(songSheet.loopSections || "");
-    }
-    return songSheet.loop ? "loop" : "";
-  }
-
   songSheetSequenceFromArrangement(arrangement) {
     const songSheet = arrangement?.songSheet || {};
     if (songSheet.sequence) {
@@ -401,24 +393,22 @@ export class MidiStudioV2App {
       .join(", ");
   }
 
-  applySongSheetLoopSections(result, loopSections = []) {
-    if (!result?.ok) {
-      return result;
-    }
-    const loopLabels = new Set((loopSections || []).map((label) => String(label || "").trim().toLowerCase()).filter(Boolean));
-    const sections = result.sections.map((section) => ({
-      ...section,
-      loop: loopLabels.size ? loopLabels.has(section.label.toLowerCase()) : section.loop
-    }));
+  songSheetApplyTargetsFromArrangement(arrangement) {
+    const targets = arrangement?.songSheet?.applyTargets || {};
     return {
-      ...result,
-      sections,
-      sectionSummary: sections.map((section) => `${section.label}: ${section.bars} bars, ${section.chords.length} chords${section.loop ? ", loop" : ""}`).join("; ")
+      bass: targets.bass !== false,
+      chordsPad: targets.chordsPad !== false,
+      drums: targets.drums === undefined ? this.hasDrumsInstrument(arrangement) : targets.drums === true,
+      lead: targets.lead === true
     };
   }
 
+  hasDrumsInstrument(arrangement) {
+    return Object.keys(arrangement?.lanes || {}).some((lane) => lane === "drums" || lane.toLowerCase().includes("drum"));
+  }
+
   handleSongSheetFieldChange(field, value) {
-    if (field !== "sections" && field !== "loopSections" && field !== "sequence") {
+    if (field !== "sections" && field !== "sequence" && field !== "applyTargets") {
       return;
     }
     const song = this.selectedSong();
@@ -429,7 +419,7 @@ export class MidiStudioV2App {
     }
     arrangement.songSheet = {
       ...(arrangement.songSheet || {}),
-      [field]: String(value || "").trim()
+      [field]: field === "applyTargets" ? { ...(value || {}) } : String(value || "").trim()
     };
     this.details.showJson(song);
     this.parseSongSheet(this.songSheet.composeGuidedSheet());
@@ -440,9 +430,10 @@ export class MidiStudioV2App {
 
   syncSongSheetFields(arrangement) {
     this.songSheet.applyGuidedDefaults({
+      applyTargets: this.songSheetApplyTargetsFromArrangement(arrangement),
       sections: this.songSheetStructureFromArrangement(arrangement),
       key: arrangement.key,
-      loopSections: this.loopSectionsFromArrangement(arrangement),
+      hasDrums: this.hasDrumsInstrument(arrangement),
       sequence: this.songSheetSequenceFromArrangement(arrangement),
       style: arrangement.style,
       tempo: arrangement.tempo
@@ -641,7 +632,12 @@ export class MidiStudioV2App {
       },
       sections: "draft:2",
       songSheet: {
-        loopSections: "draft",
+        applyTargets: {
+          bass: true,
+          chordsPad: true,
+          drums: true,
+          lead: false
+        },
         sequence: "draft",
         sections: "draft: C G"
       },
@@ -823,7 +819,12 @@ export class MidiStudioV2App {
       previewLaneSettings: { instruments: previewInstruments },
       sections: `import:${barCount}`,
       songSheet: {
-        loopSections: "",
+        applyTargets: {
+          bass: true,
+          chordsPad: true,
+          drums: Object.keys(lanes).some((lane) => lane === "drums" || lane.toLowerCase().includes("drum")),
+          lead: false
+        },
         sequence: "import",
         sections: "import: C"
       },
@@ -877,8 +878,7 @@ export class MidiStudioV2App {
   }
 
   parseSongSheet(request, { updateGrid = true } = {}) {
-    const parsedResult = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
-    const result = this.applySongSheetLoopSections(parsedResult, request?.loopSections || []);
+    const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
     this.songSheet.render(result);
     if (!result.ok) {
       this.statusLog.fail(`Song Sheet rejected: ${result.message}`);
@@ -892,12 +892,12 @@ export class MidiStudioV2App {
     }
     this.statusLog.ok(`Song Sheet parsed: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.bars} bars, ${result.chordCount} chords.`);
     if (updateGrid) {
-      this.applySongSheetToGrid(result);
+      this.applySongSheetToGrid(result, request?.applyTargets || this.songSheet.applyTargets());
     }
     this.updateAudioDiagnostics();
   }
 
-  applySongSheetToGrid(result) {
+  applySongSheetToGrid(result, targets = {}) {
     const playableSections = result.sections.filter((section) => section.bars > 0);
     if (!playableSections.length || !result.chordCount) {
       this.statusLog.warn("Song Sheet did not update the note grid because no playable chord sections were found.");
@@ -908,26 +908,76 @@ export class MidiStudioV2App {
     const chords = playableSections
       .flatMap((section) => section.chords.map((chord) => Array.from({ length: Number(beatsPerBar) }, () => chord).join(" ")))
       .join(" | ");
+    const currentInput = this.instrumentGrid.readInput();
+    const lanes = { ...(currentInput.lanes || {}) };
+    const barCount = playableSections.reduce((total, section) => total + section.bars, 0);
+    const restLane = Array.from({ length: barCount }, () => Array.from({ length: Number(beatsPerBar) }, () => "-").join(" ")).join(" | ");
+    const laneMatchesBarCount = (source) => String(source || "").split("|").filter((bar) => bar.trim()).length === barCount;
+    const normalizedTargets = {
+      bass: targets.bass !== false,
+      chordsPad: targets.chordsPad !== false,
+      drums: targets.drums === true,
+      lead: targets.lead === true
+    };
+    if (normalizedTargets.chordsPad) {
+      lanes.chords = chords;
+    }
+    Object.keys(lanes).forEach((lane) => {
+      const isTargeted = (lane === "chords" || lane === "pad") && normalizedTargets.chordsPad
+        || lane === "bass" && normalizedTargets.bass
+        || lane === "drums" && normalizedTargets.drums
+        || lane === "lead" && normalizedTargets.lead;
+      if (!isTargeted && !laneMatchesBarCount(lanes[lane])) {
+        lanes[lane] = restLane;
+      }
+    });
     this.instrumentGrid.applyGridDefaults({
-      bass: "",
+      bass: lanes.bass || "",
       beatsPerBar,
-      chords,
-      drums: "",
-      lead: "",
-      pad: "",
+      chords: lanes.chords || "",
+      drums: lanes.drums || "",
+      lanes,
+      lead: lanes.lead || "",
+      pad: lanes.pad || "",
       previewInstruments: this.instrumentGrid.previewLaneSettings().instruments,
       previewLaneSettings: this.instrumentGrid.previewLaneSettings(),
       sections,
       subdivision: "1"
     });
-    ["bass", "pad", "lead", "drums"].forEach((lane) => {
-      const generated = this.instrumentGridParser.generateLane(this.instrumentGrid.readInput(), lane);
+    const generatedTargets = [];
+    if (normalizedTargets.bass) {
+      generatedTargets.push("bass");
+    }
+    if (normalizedTargets.chordsPad) {
+      generatedTargets.push("pad");
+    }
+    if (normalizedTargets.drums) {
+      generatedTargets.push("drums");
+    }
+    if (normalizedTargets.lead) {
+      generatedTargets.push("lead");
+    }
+    generatedTargets.forEach((lane) => {
+      const generationInput = this.instrumentGrid.readInput();
+      const generated = this.instrumentGridParser.generateLane({
+        ...generationInput,
+        lanes: {
+          ...(generationInput.lanes || {}),
+          chords
+        }
+      }, lane);
       if (generated.ok) {
         this.instrumentGrid.applyGeneratedLane(generated);
       }
     });
     this.normalizeInstrumentGrid(this.instrumentGrid.readInput());
-    this.statusLog.ok("Song Sheet updated the editable note grid.");
+    const targetLabels = [
+      normalizedTargets.chordsPad ? "Chords/Pad" : "",
+      normalizedTargets.bass ? "Bass" : "",
+      normalizedTargets.drums ? "Drums" : "",
+      normalizedTargets.lead ? "Lead" : ""
+    ].filter(Boolean);
+    this.statusLog.ok(`Song Sheet updated the editable note grid for ${targetLabels.join(", ") || "section colors only"}.`);
   }
 
   normalizeInstrumentGrid(input) {
@@ -1095,7 +1145,7 @@ export class MidiStudioV2App {
     song.studioArrangement.style = String(result.style || "");
     song.studioArrangement.tempo = String(result.tempo || "");
     song.studioArrangement.songSheet = {
-      loopSections: this.songSheet.loopSectionsInput.value.trim(),
+      applyTargets: this.songSheet.applyTargets(),
       sequence: this.songSheet.sequenceInput.value.trim(),
       sections: this.songSheet.sectionsInput.value.trim()
     };
@@ -1396,8 +1446,9 @@ export class MidiStudioV2App {
       return false;
     }
     this.songSheet.applyGuidedDefaults({
+      applyTargets: this.songSheetApplyTargetsFromArrangement(arrangement),
       key: arrangement.key,
-      loopSections: this.loopSectionsFromArrangement(arrangement),
+      hasDrums: this.hasDrumsInstrument(arrangement),
       sequence: this.songSheetSequenceFromArrangement(arrangement),
       sections: this.songSheetStructureFromArrangement(arrangement) || `main: ${arrangement.lanes.chords || ""}`.trim(),
       style: arrangement.style,

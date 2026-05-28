@@ -268,20 +268,74 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="songSheetContent" class="accordion-v2__content midi-studio-v2__stack midi-studio-v2__song-sheet-panel" aria-label="Song Sheet">
-            <div class="midi-studio-v2__song-sheet-grid">
-              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionsInput">
-                <span>Musical Sections</span>
-                <textarea id="songSheetSectionsInput" rows="4" placeholder="Intro: C F&#10;Verse: Am F&#10;Chorus: G C"></textarea>
+            <input id="songSheetSectionsInput" type="hidden">
+            <input id="songSheetSequenceInput" type="hidden">
+            <div class="midi-studio-v2__song-sheet-grid midi-studio-v2__song-sheet-section-fields" aria-label="Musical section definitions">
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionIntroInput">
+                <span>Intro</span>
+                <textarea id="songSheetSectionIntroInput" rows="2" data-song-sheet-section-name="Intro" placeholder="C F"></textarea>
               </label>
-              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSequenceInput">
-                <span>Sequence</span>
-                <textarea id="songSheetSequenceInput" rows="2" placeholder="Intro, Verse, Chorus, Verse, Chorus, Bridge, Chorus, Outro"></textarea>
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionVerseInput">
+                <span>Verse</span>
+                <textarea id="songSheetSectionVerseInput" rows="2" data-song-sheet-section-name="Verse" placeholder="Am F"></textarea>
               </label>
-              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetLoopSectionsInput">
-                <span>Loop sections</span>
-                <textarea id="songSheetLoopSectionsInput" rows="2" placeholder="Chorus"></textarea>
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionChorusInput">
+                <span>Chorus</span>
+                <textarea id="songSheetSectionChorusInput" rows="2" data-song-sheet-section-name="Chorus" placeholder="G C"></textarea>
+              </label>
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionBridgeInput">
+                <span>Bridge</span>
+                <textarea id="songSheetSectionBridgeInput" rows="2" data-song-sheet-section-name="Bridge" placeholder="Dm G"></textarea>
+              </label>
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionOutroInput">
+                <span>Outro</span>
+                <textarea id="songSheetSectionOutroInput" rows="2" data-song-sheet-section-name="Outro" placeholder="C"></textarea>
+              </label>
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetCustomSectionsInput">
+                <span>Custom sections</span>
+                <textarea id="songSheetCustomSectionsInput" rows="2" placeholder="Solo: Dm G&#10;Break: F G"></textarea>
               </label>
             </div>
+            <div class="midi-studio-v2__song-sequence-builder" aria-label="Song Sequence builder">
+              <div class="midi-studio-v2__sequence-list-panel">
+                <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="readonly" for="songSheetAvailableSectionsList">
+                  <span>Available Sections</span>
+                  <select id="songSheetAvailableSectionsList" size="6" aria-label="Available populated musical sections"></select>
+                </label>
+                <button id="songSheetAddSectionToSequenceButton" type="button">Add</button>
+              </div>
+              <div class="midi-studio-v2__sequence-list-panel">
+                <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSequenceList">
+                  <span>Song Sequence</span>
+                  <select id="songSheetSequenceList" size="6" aria-label="Song sequence"></select>
+                </label>
+                <div class="midi-studio-v2__sequence-actions">
+                  <button id="songSheetSequenceMoveUpButton" type="button">Move Up</button>
+                  <button id="songSheetSequenceMoveDownButton" type="button">Move Down</button>
+                  <button id="songSheetSequenceRemoveButton" type="button">Remove</button>
+                </div>
+              </div>
+              <button id="songSheetDragDropSequenceButton" class="midi-studio-v2__unwired-control" type="button" disabled title="Not implemented: drag/drop sequence editing is planned.">Drag/drop sequence</button>
+            </div>
+            <fieldset class="midi-studio-v2__song-sheet-apply-targets" aria-label="Apply Song Sheet To">
+              <legend>Apply Song Sheet To</legend>
+              <label>
+                <input id="songSheetApplyChordsPadInput" type="checkbox" value="chordsPad">
+                <span>Chords/Pad</span>
+              </label>
+              <label>
+                <input id="songSheetApplyBassInput" type="checkbox" value="bass">
+                <span>Bass</span>
+              </label>
+              <label>
+                <input id="songSheetApplyDrumsInput" type="checkbox" value="drums">
+                <span>Drums</span>
+              </label>
+              <label>
+                <input id="songSheetApplyLeadInput" type="checkbox" value="lead">
+                <span>Lead</span>
+              </label>
+            </fieldset>
             <div class="midi-studio-v2__song-sheet-actions">
               <button id="parseSongSheetButton" type="button">Parse Guided Song Sheet</button>
             </div>

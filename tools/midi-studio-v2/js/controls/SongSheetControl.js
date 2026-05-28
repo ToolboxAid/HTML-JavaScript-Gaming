@@ -1,3 +1,5 @@
+const NAMED_SECTION_LABELS = ["Intro", "Verse", "Chorus", "Bridge", "Outro"];
+
 function fieldToken(label) {
   return String(label || "")
     .trim()
@@ -13,8 +15,34 @@ function splitList(value) {
     .filter(Boolean);
 }
 
-function sequenceFromSectionRows(rows = []) {
-  return rows.map((row) => row.label).join(", ");
+function normalizedLabelKey(label) {
+  return String(label || "").trim().toLowerCase();
+}
+
+function sectionRowsFromText(sourceText = "") {
+  const rows = [];
+  String(sourceText || "")
+    .split(/[\n;]+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .forEach((entry) => {
+      const bracketMatch = entry.match(/^\[([^\]]+)\]\s*(.*)$/);
+      const separatorIndex = entry.indexOf(":");
+      const label = bracketMatch
+        ? bracketMatch[1].trim()
+        : separatorIndex >= 0
+          ? entry.slice(0, separatorIndex).trim()
+          : "";
+      const chords = bracketMatch
+        ? bracketMatch[2].trim()
+        : separatorIndex >= 0
+          ? entry.slice(separatorIndex + 1).trim()
+          : entry.trim();
+      if (label) {
+        rows.push({ chords, label });
+      }
+    });
+  return rows;
 }
 
 function songSheetRows(result) {
@@ -25,7 +53,6 @@ function songSheetRows(result) {
       ["Bars", "not parsed"],
       ["Chord count", "not parsed"],
       ["Estimated duration", "not parsed"],
-      ["Loop sections", "not parsed"],
       ["Warnings", result?.message || "No Song Sheet parsed."]
     ];
   }
@@ -35,21 +62,52 @@ function songSheetRows(result) {
     ["Bars", result.bars],
     ["Chord count", result.chordCount],
     ["Estimated duration", `${result.estimatedDurationSeconds} seconds`],
-    ["Loop sections", result.sections.filter((section) => section.loop).map((section) => section.label).join(", ") || "none"],
     ["Warnings", result.warningSummary]
   ];
 }
 
 export class SongSheetControl {
-  constructor({ keyInput, loopSectionsInput, parseButton, sectionsInput, sequenceInput, styleInput, summary, tempoInput }) {
+  constructor({
+    addSequenceButton,
+    applyBassInput,
+    applyChordsPadInput,
+    applyDrumsInput,
+    applyLeadInput,
+    availableSectionsList,
+    customSectionsInput,
+    keyInput,
+    moveSequenceDownButton,
+    moveSequenceUpButton,
+    namedSectionInputs,
+    parseButton,
+    removeSequenceButton,
+    sectionsInput,
+    sequenceInput,
+    sequenceList,
+    styleInput,
+    summary,
+    tempoInput
+  }) {
+    this.addSequenceButton = addSequenceButton;
+    this.applyBassInput = applyBassInput;
+    this.applyChordsPadInput = applyChordsPadInput;
+    this.applyDrumsInput = applyDrumsInput;
+    this.applyLeadInput = applyLeadInput;
+    this.availableSectionsList = availableSectionsList;
+    this.customSectionsInput = customSectionsInput;
     this.keyInput = keyInput;
-    this.loopSectionsInput = loopSectionsInput;
+    this.moveSequenceDownButton = moveSequenceDownButton;
+    this.moveSequenceUpButton = moveSequenceUpButton;
+    this.namedSectionInputs = namedSectionInputs || {};
     this.parseButton = parseButton;
-    this.sequenceInput = sequenceInput;
+    this.removeSequenceButton = removeSequenceButton;
     this.sectionsInput = sectionsInput;
+    this.sequenceInput = sequenceInput;
+    this.sequenceList = sequenceList;
     this.styleInput = styleInput;
     this.summary = summary;
     this.tempoInput = tempoInput;
+    this.userEditedSequence = false;
   }
 
   mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse }) {
@@ -57,28 +115,89 @@ export class SongSheetControl {
     this.tempoInput.addEventListener("input", () => onMetadataChange("tempo", this.tempoInput.value));
     this.keyInput.addEventListener("change", () => onMetadataChange("key", this.keyInput.value));
     this.styleInput.addEventListener("change", () => onMetadataChange("style", this.styleInput.value));
-    this.sectionsInput.addEventListener("input", () => onFieldChange("sections", this.sectionsInput.value));
-    this.sequenceInput.addEventListener("input", () => onFieldChange("sequence", this.sequenceInput.value));
-    this.loopSectionsInput.addEventListener("input", () => onFieldChange("loopSections", this.loopSectionsInput.value));
+
+    Object.values(this.namedSectionInputs).forEach((input) => {
+      input.addEventListener("input", () => {
+        this.refreshSectionBuilder();
+        onFieldChange("sections", this.sectionsInput.value);
+      });
+    });
+    this.customSectionsInput.addEventListener("input", () => {
+      this.refreshSectionBuilder();
+      onFieldChange("sections", this.sectionsInput.value);
+    });
+
+    this.addSequenceButton.addEventListener("click", () => {
+      const selected = this.availableSectionsList.selectedOptions[0];
+      if (!selected) {
+        return;
+      }
+      this.appendSequenceLabel(selected.value);
+      this.userEditedSequence = true;
+      this.syncSequenceState();
+      onFieldChange("sequence", this.sequenceInput.value);
+    });
+    this.sequenceList.addEventListener("change", () => this.syncSequenceState());
+    this.moveSequenceUpButton.addEventListener("click", () => {
+      this.moveSelectedSequenceItem(-1);
+      onFieldChange("sequence", this.sequenceInput.value);
+    });
+    this.moveSequenceDownButton.addEventListener("click", () => {
+      this.moveSelectedSequenceItem(1);
+      onFieldChange("sequence", this.sequenceInput.value);
+    });
+    this.removeSequenceButton.addEventListener("click", () => {
+      this.removeSelectedSequenceItem();
+      onFieldChange("sequence", this.sequenceInput.value);
+    });
+
+    [this.applyChordsPadInput, this.applyBassInput, this.applyDrumsInput, this.applyLeadInput].forEach((input) => {
+      input.addEventListener("change", () => onFieldChange("applyTargets", this.applyTargets()));
+    });
+    this.setApplyTargets(null, { hasDrums: true });
+    this.refreshSectionBuilder({ preserveSequence: false });
   }
 
-  applyGuidedDefaults({ intro, key, loop, loopSections, sections, sequence, style, tempo }) {
+  applyGuidedDefaults({ applyTargets, hasDrums = false, intro, key, loop, sections, sequence, style, tempo }) {
     this.tempoInput.value = tempo || "";
     this.keyInput.value = key || "";
     this.styleInput.value = style || "";
-    this.sectionsInput.value = sections || this.sectionsTextFromLegacy({ intro, loop });
-    const structured = this.structuredSections();
-    this.sequenceInput.value = sequence || (structured.ok ? sequenceFromSectionRows(structured.rows) : "");
-    this.loopSectionsInput.value = loopSections || (loop ? "loop" : "");
+    this.applySectionText(sections || this.sectionsTextFromLegacy({ intro, loop }));
+    this.userEditedSequence = Boolean(sequence);
+    this.refreshSectionBuilder({ preserveSequence: false });
+    const sequenceLabels = splitList(sequence);
+    if (sequenceLabels.length) {
+      this.setSequenceLabels(sequenceLabels);
+    } else {
+      this.setSequenceLabels(this.availableSections().map((section) => section.label));
+    }
+    this.setApplyTargets(applyTargets, { hasDrums });
+    this.syncSequenceState();
+  }
+
+  applySectionText(sourceText = "") {
+    const rows = sectionRowsFromText(sourceText);
+    const usedNamedKeys = new Set();
+    NAMED_SECTION_LABELS.forEach((label) => {
+      const match = rows.find((row) => normalizedLabelKey(row.label) === normalizedLabelKey(label));
+      this.namedSectionInputs[label].value = match?.chords || "";
+      if (match) {
+        usedNamedKeys.add(normalizedLabelKey(match.label));
+      }
+    });
+    this.customSectionsInput.value = rows
+      .filter((row) => !usedNamedKeys.has(normalizedLabelKey(row.label)))
+      .map((row) => `${row.label}: ${row.chords}`)
+      .join("\n");
   }
 
   sectionsTextFromLegacy({ intro, loop } = {}) {
     const rows = [];
     if (String(intro || "").trim()) {
-      rows.push(`intro: ${String(intro).trim()}`);
+      rows.push(`Intro: ${String(intro).trim()}`);
     }
     if (String(loop || "").trim()) {
-      rows.push(`loop: ${String(loop).trim()}`);
+      rows.push(`Loop: ${String(loop).trim()}`);
     }
     return rows.join("\n");
   }
@@ -104,76 +223,178 @@ export class SongSheetControl {
     if (!sections.ok) {
       return sections;
     }
-    const lines = [`tempo=${tempo}`, `key=${key}`];
-    if (style) {
-      lines.push(`style=${style}`);
-    }
     const sequence = this.sequenceLabels(sections.rows);
     if (!sequence.ok) {
       return sequence;
     }
-    if (sequence.labels.length) {
-      lines.push(`sequence=${sequence.labels.join(", ")}`);
+    const lines = [`tempo=${tempo}`, `key=${key}`];
+    if (style) {
+      lines.push(`style=${style}`);
     }
+    lines.push(`sequence=${sequence.labels.join(", ")}`);
     sections.rows.forEach((section) => {
       lines.push("", `[${section.label}]`, section.chords);
     });
     return {
-      loopSections: this.loopSectionLabels(),
-      loopSectionsText: this.loopSectionsInput.value.trim(),
+      applyTargets: this.applyTargets(),
       ok: true,
       sequence: sequence.labels,
-      sequenceText: this.sequenceInput.value.trim(),
+      sequenceText: sequence.labels.join(", "),
       sectionsText: this.sectionsInput.value.trim(),
       sourceText: lines.join("\n")
     };
   }
 
   structuredSections() {
-    const entries = String(this.sectionsInput.value || "")
-      .split(/[\n;]+/)
-      .map((entry) => entry.trim())
-      .filter(Boolean);
-    if (!entries.length) {
-      return { ok: false, message: "Song Sheet Sections must include at least one section line." };
+    const rows = this.availableSections();
+    if (!rows.length) {
+      return { ok: false, message: "Song Sheet must include at least one populated musical section." };
     }
-    const rows = [];
-    for (const entry of entries) {
-      const bracketMatch = entry.match(/^\[([^\]]+)\]\s*(.*)$/);
-      const separatorIndex = entry.indexOf(":");
-      const label = bracketMatch
-        ? bracketMatch[1].trim()
-        : separatorIndex >= 0
-          ? entry.slice(0, separatorIndex).trim()
-          : `section${rows.length + 1}`;
-      const chords = bracketMatch
-        ? bracketMatch[2].trim()
-        : separatorIndex >= 0
-          ? entry.slice(separatorIndex + 1).trim()
-          : entry;
-      if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(label)) {
-        return { ok: false, message: `Malformed section label in Song Sheet Sections: ${label || "(empty)"}` };
-      }
-      rows.push({ chords, label });
+    const duplicate = rows.find((row, index) => rows.findIndex((entry) => normalizedLabelKey(entry.label) === normalizedLabelKey(row.label)) !== index);
+    if (duplicate) {
+      return { ok: false, message: `Duplicate musical section definition: ${duplicate.label}` };
+    }
+    const malformed = rows.find((row) => !/^[A-Za-z][A-Za-z0-9_-]*$/.test(row.label));
+    if (malformed) {
+      return { ok: false, message: `Malformed section label in Song Sheet Sections: ${malformed.label || "(empty)"}` };
     }
     return { ok: true, rows };
   }
 
-  sequenceLabels(sectionRows = []) {
-    const labels = splitList(this.sequenceInput.value);
-    if (!labels.length) {
-      return { labels: sectionRows.map((section) => section.label), ok: true };
-    }
-    const defined = new Set(sectionRows.map((section) => section.label.toLowerCase()));
-    const missing = labels.find((label) => !defined.has(label.toLowerCase()));
-    if (missing) {
-      return { ok: false, message: `Song Sheet Sequence references missing musical section: ${missing}` };
-    }
-    return { labels, ok: true };
+  availableSections() {
+    const rows = [];
+    NAMED_SECTION_LABELS.forEach((label) => {
+      const chords = String(this.namedSectionInputs[label]?.value || "").trim();
+      if (chords) {
+        rows.push({ chords, label });
+      }
+    });
+    sectionRowsFromText(this.customSectionsInput.value)
+      .filter((section) => section.chords.trim())
+      .forEach((section) => rows.push(section));
+    return rows;
   }
 
-  loopSectionLabels() {
-    return splitList(this.loopSectionsInput.value).map((label) => label.toLowerCase());
+  refreshSectionBuilder({ preserveSequence = true } = {}) {
+    const rows = this.availableSections();
+    this.sectionsInput.value = this.sectionsTextFromRows(rows);
+    this.renderAvailableSections(rows);
+    const availableKeys = new Set(rows.map((section) => normalizedLabelKey(section.label)));
+    let labels = preserveSequence ? this.sequenceItems().filter((label) => availableKeys.has(normalizedLabelKey(label))) : [];
+    if (!this.userEditedSequence && !labels.length) {
+      labels = rows.map((section) => section.label);
+    }
+    this.setSequenceLabels(labels);
+    this.syncSequenceState();
+  }
+
+  renderAvailableSections(rows) {
+    const current = this.availableSectionsList.value;
+    this.availableSectionsList.replaceChildren();
+    rows.forEach((section) => {
+      const option = document.createElement("option");
+      option.value = section.label;
+      option.textContent = section.label;
+      option.dataset.songSheetAvailableSection = section.label;
+      option.dataset.songSheetSectionChords = section.chords;
+      this.availableSectionsList.append(option);
+    });
+    if (rows.some((section) => section.label === current)) {
+      this.availableSectionsList.value = current;
+    } else if (rows.length) {
+      this.availableSectionsList.selectedIndex = 0;
+    }
+    this.addSequenceButton.disabled = rows.length === 0;
+  }
+
+  sectionsTextFromRows(rows) {
+    return rows.map((section) => `${section.label}: ${section.chords}`).join("\n");
+  }
+
+  sequenceLabels(sectionRows = []) {
+    const labels = this.sequenceItems();
+    const resolved = labels.length ? labels : sectionRows.map((section) => section.label);
+    if (!resolved.length) {
+      return { ok: false, message: "Song Sequence must include at least one populated musical section." };
+    }
+    const defined = new Set(sectionRows.map((section) => normalizedLabelKey(section.label)));
+    const missing = resolved.find((label) => !defined.has(normalizedLabelKey(label)));
+    if (missing) {
+      return { ok: false, message: `Song Sequence references missing or empty musical section: ${missing}` };
+    }
+    return { labels: resolved, ok: true };
+  }
+
+  appendSequenceLabel(label) {
+    const option = document.createElement("option");
+    option.value = label;
+    option.textContent = label;
+    option.dataset.songSheetSequenceSection = label;
+    this.sequenceList.append(option);
+    this.sequenceList.selectedIndex = this.sequenceList.options.length - 1;
+  }
+
+  moveSelectedSequenceItem(direction) {
+    const index = this.sequenceList.selectedIndex;
+    const nextIndex = index + direction;
+    if (index < 0 || nextIndex < 0 || nextIndex >= this.sequenceList.options.length) {
+      return;
+    }
+    const option = this.sequenceList.options[index];
+    const reference = direction < 0 ? this.sequenceList.options[nextIndex] : this.sequenceList.options[nextIndex].nextSibling;
+    this.sequenceList.insertBefore(option, reference);
+    this.sequenceList.selectedIndex = nextIndex;
+    this.userEditedSequence = true;
+    this.syncSequenceState();
+  }
+
+  removeSelectedSequenceItem() {
+    const index = this.sequenceList.selectedIndex;
+    if (index < 0) {
+      return;
+    }
+    this.sequenceList.options[index].remove();
+    this.sequenceList.selectedIndex = Math.min(index, this.sequenceList.options.length - 1);
+    this.userEditedSequence = true;
+    this.syncSequenceState();
+  }
+
+  setSequenceLabels(labels) {
+    this.sequenceList.replaceChildren();
+    labels.forEach((label) => this.appendSequenceLabel(label));
+    if (this.sequenceList.options.length) {
+      this.sequenceList.selectedIndex = 0;
+    }
+    this.syncSequenceState();
+  }
+
+  sequenceItems() {
+    return Array.from(this.sequenceList.options).map((option) => option.value);
+  }
+
+  syncSequenceState() {
+    this.sequenceInput.value = this.sequenceItems().join(", ");
+    const hasSelection = this.sequenceList.selectedIndex >= 0;
+    this.moveSequenceUpButton.disabled = !hasSelection || this.sequenceList.selectedIndex <= 0;
+    this.moveSequenceDownButton.disabled = !hasSelection || this.sequenceList.selectedIndex >= this.sequenceList.options.length - 1;
+    this.removeSequenceButton.disabled = !hasSelection;
+  }
+
+  setApplyTargets(targets = null, { hasDrums = false } = {}) {
+    const normalized = targets && typeof targets === "object" ? targets : {};
+    this.applyChordsPadInput.checked = normalized.chordsPad !== false;
+    this.applyBassInput.checked = normalized.bass !== false;
+    this.applyDrumsInput.checked = normalized.drums === undefined ? hasDrums : normalized.drums === true;
+    this.applyLeadInput.checked = normalized.lead === true;
+  }
+
+  applyTargets() {
+    return {
+      bass: this.applyBassInput.checked,
+      chordsPad: this.applyChordsPadInput.checked,
+      drums: this.applyDrumsInput.checked,
+      lead: this.applyLeadInput.checked
+    };
   }
 
   render(result = null) {

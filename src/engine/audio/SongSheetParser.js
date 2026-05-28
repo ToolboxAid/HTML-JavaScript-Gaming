@@ -31,7 +31,6 @@ export class SongSheetParser {
           chords: [],
           label,
           lineNumber,
-          loop: label.toLowerCase() === "loop",
           timeline: []
         };
         sectionDefinitions.push(activeSection);
@@ -79,11 +78,15 @@ export class SongSheetParser {
     sectionDefinitions.forEach((section) => {
       section.bars = section.chords.length;
       if (!section.chords.length) {
-        warnings.push(`Section ${section.label} is empty.`);
+        warnings.push(`Empty musical section ${section.label} was skipped.`);
       }
     });
-    const sectionLookup = new Map(sectionDefinitions.map((section) => [section.label.toLowerCase(), section]));
-    const sequence = metadata.sequence.length ? metadata.sequence : sectionDefinitions.map((section) => section.label);
+    const populatedDefinitions = sectionDefinitions.filter((section) => section.chords.length);
+    if (!populatedDefinitions.length) {
+      return { ok: false, message: "Song Sheet must include at least one populated musical section." };
+    }
+    const sectionLookup = new Map(populatedDefinitions.map((section) => [section.label.toLowerCase(), section]));
+    const sequence = metadata.sequence.length ? metadata.sequence : populatedDefinitions.map((section) => section.label);
     const missingSequenceLabel = sequence.find((label) => !sectionLookup.has(label.toLowerCase()));
     if (missingSequenceLabel) {
       return { ok: false, message: `Song Sheet Sequence references missing musical section: ${missingSequenceLabel}` };
@@ -108,7 +111,7 @@ export class SongSheetParser {
       ok: true,
       sections,
       sectionDefinitions,
-      sectionSummary: sections.map((section) => `${section.label}: ${section.bars} bars, ${section.chords.length} chords${section.loop ? ", loop" : ""}`).join("; "),
+      sectionSummary: sections.map((section) => `${section.label}: ${section.bars} bars, ${section.chords.length} chords`).join("; "),
       sequence,
       style: metadata.style || "not declared",
       tempo: metadata.tempo,

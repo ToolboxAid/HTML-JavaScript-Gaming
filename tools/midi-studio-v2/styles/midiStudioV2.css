@@ -659,6 +659,65 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__timeline-instruments {
   resize: vertical;
 }
 
+.midi-studio-v2__song-sheet-section-fields textarea {
+  min-height: 3.4rem;
+}
+
+.midi-studio-v2__song-sequence-builder {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+.midi-studio-v2__sequence-list-panel {
+  align-items: stretch;
+  display: grid;
+  gap: 0.35rem;
+  grid-template-rows: 1fr auto;
+  min-width: 0;
+}
+
+.midi-studio-v2__sequence-list-panel .tool-starter__field {
+  grid-template-columns: 1fr;
+}
+
+.midi-studio-v2__sequence-list-panel select {
+  min-height: 7.5rem;
+}
+
+.midi-studio-v2__sequence-actions,
+.midi-studio-v2__song-sheet-apply-targets {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.midi-studio-v2__song-sheet-apply-targets {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  margin: 0;
+  padding: 0.5rem;
+}
+
+.midi-studio-v2__song-sheet-apply-targets legend {
+  color: var(--tool-starter-muted);
+  font-size: 0.78rem;
+  padding: 0 0.2rem;
+}
+
+.midi-studio-v2__song-sheet-apply-targets label {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+.midi-studio-v2__song-sheet-apply-targets input {
+  min-height: auto;
+  width: auto;
+}
+
 .midi-studio-v2__song-sheet-display-field {
   align-content: start;
   min-height: 4rem;

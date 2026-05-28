@@ -359,16 +359,94 @@ async function selectMidiStudioTab(page, tabId) {
   await expect(tab).toHaveAttribute("aria-selected", "true");
 }
 
+function parseGuidedSectionRows(sourceText) {
+  return String(sourceText || "")
+    .split(/[\n;]+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry, index) => {
+      const bracketMatch = entry.match(/^\[([^\]]+)\]\s*(.*)$/);
+      const separatorIndex = entry.indexOf(":");
+      return {
+        chords: bracketMatch
+          ? bracketMatch[2].trim()
+          : separatorIndex >= 0
+            ? entry.slice(separatorIndex + 1).trim()
+            : entry,
+        label: bracketMatch
+          ? bracketMatch[1].trim()
+          : separatorIndex >= 0
+          ? entry.slice(0, separatorIndex).trim()
+            : `Section ${index + 1}`
+      };
+    });
+}
+
+async function fillSongSheetSectionBuilder(page, sourceText) {
+  const rows = parseGuidedSectionRows(sourceText);
+  const namedFields = {
+    bridge: "#songSheetSectionBridgeInput",
+    chorus: "#songSheetSectionChorusInput",
+    intro: "#songSheetSectionIntroInput",
+    outro: "#songSheetSectionOutroInput",
+    verse: "#songSheetSectionVerseInput"
+  };
+  for (const selector of Object.values(namedFields)) {
+    await page.locator(selector).fill("");
+  }
+  const customRows = [];
+  for (const row of rows) {
+    const selector = namedFields[row.label.toLowerCase()];
+    if (selector) {
+      await page.locator(selector).fill(row.chords);
+    } else {
+      customRows.push(`${row.label}: ${row.chords}`);
+    }
+  }
+  await page.locator("#songSheetCustomSectionsInput").fill(customRows.join("\n"));
+}
+
+async function clearSongSheetSequence(page) {
+  while (await page.locator("#songSheetSequenceList option").count()) {
+    await page.locator("#songSheetSequenceList").selectOption({ index: 0 });
+    await page.locator("#songSheetSequenceRemoveButton").click();
+  }
+}
+
+async function addSongSheetSequenceLabels(page, labels) {
+  await clearSongSheetSequence(page);
+  for (const label of labels) {
+    await page.locator("#songSheetAvailableSectionsList").selectOption(label);
+    await page.locator("#songSheetAddSectionToSequenceButton").click();
+  }
+}
+
 async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop = "Am F C G", loopSections = "loop", sections = null, sequence = null, style = "retro-arcade", tempo = "132" } = {}) {
   await selectMidiStudioTab(page, "song-setup");
   await page.locator("#songSheetTempoInput").fill(tempo);
   await page.locator("#songSheetKeyInput").selectOption(key);
   await page.locator("#songSheetStyleInput").selectOption(style);
-  await page.locator("#songSheetSectionsInput").fill(sections || `intro: ${intro}\nloop: ${loop}`);
-  if (sequence !== null) {
-    await page.locator("#songSheetSequenceInput").fill(sequence);
+  const sourceSections = sections || `intro: ${intro}\nloop: ${loop}`;
+  await fillSongSheetSectionBuilder(page, sourceSections);
+  const sequenceLabels = sequence !== null
+    ? String(sequence).split(/[\n,;]+/).map((entry) => entry.trim()).filter(Boolean)
+    : parseGuidedSectionRows(sourceSections)
+      .filter((row) => row.chords.trim())
+      .map((row) => row.label.toLowerCase() === "intro"
+        ? "Intro"
+        : row.label.toLowerCase() === "verse"
+          ? "Verse"
+          : row.label.toLowerCase() === "chorus"
+            ? "Chorus"
+            : row.label.toLowerCase() === "bridge"
+              ? "Bridge"
+              : row.label.toLowerCase() === "outro"
+                ? "Outro"
+                : row.label);
+  if (sequenceLabels.length) {
+    await addSongSheetSequenceLabels(page, sequenceLabels);
   }
-  await page.locator("#songSheetLoopSectionsInput").fill(loopSections);
+  void loopSections;
 }
 
 async function fillInstrumentGrid(page, {
@@ -661,9 +739,25 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       resetSongEditsButton: { canonical: "music.songs[] reset baseline", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
       returnToWorkspaceButton: { canonical: "workspace navigation", kind: "action", owner: "Workspace NAV", wired: "wired" },
       saveProjectButton: { canonical: "serialized midi-studio-v2 tool state", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
+      songSheetAddSectionToSequenceButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      songSheetApplyBassInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.bass", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetApplyChordsPadInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.chordsPad", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetApplyDrumsInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.drums", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetApplyLeadInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.lead", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetAvailableSectionsList: { canonical: "derived from populated Song Sheet section inputs", kind: "readonly", owner: "Song Setup", wired: "wired" },
+      songSheetCustomSectionsInput: { canonical: "music.songs[].studioArrangement.songSheet.sections", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetDragDropSequenceButton: { canonical: "future Song Sequence drag/drop", kind: "unwired", owner: "Song Setup", wired: "unwired" },
       songSheetKeyInput: { canonical: "music.songs[].studioArrangement.key", kind: "canonical", owner: "Song Setup", wired: "wired" },
-      songSheetLoopSectionsInput: { canonical: "music.songs[].studioArrangement.songSheet.loopSections", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSectionBridgeInput: { canonical: "music.songs[].studioArrangement.songSheet.sections.Bridge", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSectionChorusInput: { canonical: "music.songs[].studioArrangement.songSheet.sections.Chorus", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSectionIntroInput: { canonical: "music.songs[].studioArrangement.songSheet.sections.Intro", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSectionOutroInput: { canonical: "music.songs[].studioArrangement.songSheet.sections.Outro", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSectionVerseInput: { canonical: "music.songs[].studioArrangement.songSheet.sections.Verse", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetSequenceInput: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSequenceList: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetSequenceMoveDownButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      songSheetSequenceMoveUpButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      songSheetSequenceRemoveButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       songSheetSectionsInput: { canonical: "music.songs[].studioArrangement.songSheet.sections", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetStyleInput: { canonical: "music.songs[].studioArrangement.style", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetTempoInput: { canonical: "music.songs[].studioArrangement.tempo", kind: "canonical", owner: "Song Setup", wired: "wired" },
@@ -4061,7 +4155,7 @@ test.describe("MIDI Studio V2", () => {
       await waitForCanvasRender(page);
 
       const sectionState = await canvasTimelineState(page);
-      expect(sectionState.sections.map((section) => section.label)).toEqual(["intro", "loop", "bridge"]);
+      expect(sectionState.sections.map((section) => section.label)).toEqual(["Intro", "loop", "Bridge"]);
       expect(new Set(sectionState.sections.map((section) => section.color)).size).toBe(3);
 
       const canvasSectionPixels = await page.evaluate(() => {
@@ -4076,13 +4170,13 @@ test.describe("MIDI Studio V2", () => {
           return Array.from(context.getImageData(x, y, 1, 1).data).slice(0, 3);
         };
         return {
-          bridge: sampleBody("bridge"),
-          intro: sampleBody("intro"),
+          bridgeNamed: sampleBody("Bridge"),
+          intro: sampleBody("Intro"),
           loop: sampleBody("loop")
         };
       });
       expect(canvasSectionPixels.intro).not.toEqual(canvasSectionPixels.loop);
-      expect(canvasSectionPixels.loop).not.toEqual(canvasSectionPixels.bridge);
+      expect(canvasSectionPixels.loop).not.toEqual(canvasSectionPixels.bridgeNamed);
 
       const buttonState = await page.locator(".midi-studio-v2__section-preset").evaluateAll((buttons) => Object.fromEntries(buttons.map((button) => [
         button.dataset.sectionPreset,
@@ -4097,7 +4191,7 @@ test.describe("MIDI Studio V2", () => {
       ])));
       const colorsBySection = Object.fromEntries(sectionState.sections.map((section) => [section.label, section.color]));
       expect(buttonState.intro).toEqual(expect.objectContaining({
-        color: colorsBySection.intro,
+        color: colorsBySection.Intro,
         disabled: false,
         unwired: false
       }));
@@ -4107,7 +4201,7 @@ test.describe("MIDI Studio V2", () => {
         unwired: false
       }));
       expect(buttonState.bridge).toEqual(expect.objectContaining({
-        color: colorsBySection.bridge,
+        color: colorsBySection.Bridge,
         disabled: false,
         unwired: false
       }));
@@ -4119,28 +4213,28 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("[data-section-preset='boss']")).toHaveClass(/midi-studio-v2__unwired-control/);
 
       await page.locator("[data-section-preset='intro']").click();
-      await expect(page.locator("#instrumentGridSectionSelect")).toHaveValue("intro");
+      await expect(page.locator("#instrumentGridSectionSelect")).toHaveValue("Intro");
       await expect(page.locator("[data-section-preset='intro']")).toHaveAttribute("data-section-selected", "true");
-      await expect(page.locator("#instrumentGridOutput")).toHaveAttribute("data-playhead-section", "intro");
+      await expect(page.locator("#instrumentGridOutput")).toHaveAttribute("data-playhead-section", "Intro");
       expect((await canvasTimelineState(page)).selectedSection).toEqual(expect.objectContaining({
-        color: colorsBySection.intro,
-        label: "intro"
+        color: colorsBySection.Intro,
+        label: "Intro"
       }));
 
       await page.locator("#playSectionButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section intro with \d+ playable events\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for section Intro with \d+ playable events\./);
       await expect(page.locator("[data-section-preset='intro']")).toHaveClass(/is-selected-section/);
       await page.locator("#stopTimingPreviewButton").click();
 
       await page.locator("#instrumentGridLoopStartSelect").selectOption("loop");
-      await page.locator("#instrumentGridLoopEndSelect").selectOption("bridge");
+      await page.locator("#instrumentGridLoopEndSelect").selectOption("Bridge");
       await expect(page.locator("[data-section-preset='loop']")).toHaveAttribute("data-section-loop", "true");
       await expect(page.locator("[data-section-preset='bridge']")).toHaveAttribute("data-section-loop", "true");
       await page.locator("#playLoopButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for loop loop to bridge with \d+ playable events\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth started for loop loop to Bridge with \d+ playable events\./);
       const loopState = await canvasTimelineState(page);
       expect(loopState.loopBounds).toEqual(expect.objectContaining({
-        endLabel: "bridge",
+        endLabel: "Bridge",
         startLabel: "loop"
       }));
       await page.locator("#stopTimingPreviewButton").click();
@@ -4201,13 +4295,12 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("skyBattle-Flying");
 
       const sequence = "Intro, Verse, Chorus, Verse, Chorus, Bridge, Chorus, Outro";
-      await page.locator("#songSheetSectionsInput").fill("Intro: C F\nVerse: Am F\nChorus: G C\nBridge: Dm G\nOutro: C");
-      await page.locator("#songSheetSequenceInput").fill(sequence);
-      await page.locator("#songSheetLoopSectionsInput").fill("Chorus");
+      await fillSongSheetSectionBuilder(page, "Intro: C F\nVerse: Am F\nChorus: G C\nBridge: Dm G\nOutro: C");
+      await addSongSheetSequenceLabels(page, sequence.split(", "));
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sequence'] dd")).toHaveText(sequence);
       await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("Verse: 2 bars, 2 chords");
-      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("Chorus: 2 bars, 2 chords, loop");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("Chorus: 2 bars, 2 chords");
       await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars'] dd")).toHaveText("15");
       await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='chord-count'] dd")).toHaveText("15");
 
@@ -4274,6 +4367,122 @@ test.describe("MIDI Studio V2", () => {
         title: "Victory section not available for this song",
         unwired: true
       }));
+
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("builds PR071 song sheet sequences from populated sections and selected targets", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      await expect(page.locator("#songSheetLoopSectionsInput")).toHaveCount(0);
+      await fillSongSheetSectionBuilder(page, "Intro: C F\nVerse: Am F\nChorus: G C\nBridge:\nOutro: C\nSolo: Dm G");
+
+      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText(["Intro", "Verse", "Chorus", "Outro", "Solo"]);
+      await expect(page.locator("#songSheetAvailableSectionsList option", { hasText: "Bridge" })).toHaveCount(0);
+
+      await clearSongSheetSequence(page);
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Intro");
+      await page.locator("#songSheetAddSectionToSequenceButton").click();
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Verse");
+      await page.locator("#songSheetAddSectionToSequenceButton").click();
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Chorus");
+      await page.locator("#songSheetAddSectionToSequenceButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus"]);
+
+      await page.locator("#songSheetSequenceList").selectOption({ index: 2 });
+      await page.locator("#songSheetSequenceMoveUpButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Chorus", "Verse"]);
+      await page.locator("#songSheetSequenceMoveDownButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus"]);
+
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Solo");
+      await page.locator("#songSheetAddSectionToSequenceButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus", "Solo"]);
+      await page.locator("#songSheetSequenceList").selectOption({ index: 3 });
+      await page.locator("#songSheetSequenceRemoveButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus"]);
+
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Verse");
+      await page.locator("#songSheetAddSectionToSequenceButton").click();
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Chorus");
+      await page.locator("#songSheetAddSectionToSequenceButton").click();
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Outro");
+      await page.locator("#songSheetAddSectionToSequenceButton").click();
+      const sequence = "Intro, Verse, Chorus, Verse, Chorus, Outro";
+      await expect(page.locator("#songSheetSequenceInput")).toHaveValue(sequence);
+
+      await expect(page.locator("#songSheetApplyChordsPadInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyBassInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyDrumsInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyLeadInput")).not.toBeChecked();
+      await expect(page.locator("#songSheetDragDropSequenceButton")).toHaveClass(/midi-studio-v2__unwired-control/);
+      await expect(page.locator("#songSheetDragDropSequenceButton")).toHaveAttribute("title", /Not implemented/);
+
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sequence'] dd")).toHaveText(sequence);
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("Intro: 2 bars, 2 chords");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).not.toContainText("Bridge");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars'] dd")).toHaveText("11");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='chord-count'] dd")).toHaveText("11");
+
+      const canonical = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const gridResult = app.currentInstrumentGridResult();
+        return {
+          applyTargets: song.studioArrangement.songSheet.applyTargets,
+          bassEvents: gridResult.timeline.filter((event) => event.lane === "bass").length,
+          chordEvents: gridResult.timeline.filter((event) => event.lane === "chords").length,
+          drumEvents: gridResult.timeline.filter((event) => event.lane === "drums").length,
+          json: document.querySelector("#inspectorOutput").textContent,
+          leadEvents: gridResult.timeline.filter((event) => event.lane === "lead").length,
+          sectionColors: gridResult.sections.map((section) => ({ colorIndex: section.colorIndex, label: section.label })),
+          sectionLabels: gridResult.sections.map((section) => section.label),
+          sections: song.studioArrangement.sections,
+          sequence: song.studioArrangement.songSheet.sequence,
+          songSheetSections: song.studioArrangement.songSheet.sections
+        };
+      });
+      expect(canonical).toEqual(expect.objectContaining({
+        applyTargets: {
+          bass: true,
+          chordsPad: true,
+          drums: true,
+          lead: false
+        },
+        sectionLabels: ["Intro", "Verse", "Chorus", "Verse", "Chorus", "Outro"],
+        sections: "Intro:2, Verse:2, Chorus:2, Verse:2, Chorus:2, Outro:1",
+        sequence,
+        songSheetSections: "Intro: C F\nVerse: Am F\nChorus: G C\nOutro: C\nSolo: Dm G"
+      }));
+      expect(canonical.chordEvents).toBeGreaterThan(0);
+      expect(canonical.bassEvents).toBeGreaterThan(0);
+      expect(canonical.drumEvents).toBeGreaterThan(0);
+      expect(canonical.leadEvents).toBe(0);
+      expect(canonical.json).toContain('"sequence": "Intro, Verse, Chorus, Verse, Chorus, Outro"');
+      expect(canonical.json).toContain('"applyTargets"');
+      expect(canonical.sectionColors[1].colorIndex).toBe(canonical.sectionColors[3].colorIndex);
+      expect(canonical.sectionColors[2].colorIndex).toBe(canonical.sectionColors[4].colorIndex);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      const canvasState = await canvasTimelineState(page);
+      expect(canvasState.sections.map((section) => section.label)).toEqual(canonical.sectionLabels);
+      expect(canvasState.sections[1].color).toBe(canvasState.sections[3].color);
+      expect(canvasState.sections[2].color).toBe(canvasState.sections[4].color);
 
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
