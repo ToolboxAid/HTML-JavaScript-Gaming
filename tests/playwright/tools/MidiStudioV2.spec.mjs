@@ -359,13 +359,13 @@ async function selectMidiStudioTab(page, tabId) {
   await expect(tab).toHaveAttribute("aria-selected", "true");
 }
 
-async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop = "Am F C G", style = "retro-arcade", tempo = "132" } = {}) {
+async function fillGuidedSongSheet(page, { intro = "Am F", key = "A minor", loop = "Am F C G", loopSections = "loop", sections = null, style = "retro-arcade", tempo = "132" } = {}) {
   await selectMidiStudioTab(page, "song-setup");
   await page.locator("#songSheetTempoInput").fill(tempo);
   await page.locator("#songSheetKeyInput").selectOption(key);
   await page.locator("#songSheetStyleInput").selectOption(style);
-  await page.locator("#songSheetIntroInput").fill(intro);
-  await page.locator("#songSheetLoopInput").fill(loop);
+  await page.locator("#songSheetSectionsInput").fill(sections || `intro: ${intro}\nloop: ${loop}`);
+  await page.locator("#songSheetLoopSectionsInput").fill(loopSections);
 }
 
 async function fillInstrumentGrid(page, {
@@ -2167,7 +2167,9 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songDetails [data-song-detail-field='tags']")).toHaveCount(0);
       await expect(page.locator("#songDetails [data-song-detail-field='usage']")).toHaveCount(0);
       await expect(page.locator("#songDetails [data-song-detail-field='notes']")).toHaveValue("Traditional Camptown Races style public-domain test arrangement with lead, bass, chords/pad, and drums.");
-      await expect(page.locator("#songSectionsLoopDetails [data-song-detail-field='sections']")).toHaveValue("verse:2, chorus:2");
+      await expect(page.locator("#songSectionsLoopDetails [data-song-detail-field='sections']")).toHaveCount(0);
+      await expect(page.locator("#songSheetSectionsInput")).toHaveValue(/intro: G C G D/);
+      await expect(page.locator("#songSheetLoopSectionsInput")).toHaveValue("loop");
       await expect(page.locator("#songSectionsLoopDetails [data-song-detail-field='loopEnabled']")).toBeChecked();
       await expect(page.locator("#directorContent")).toBeHidden();
       await expect(page.locator("#renderedTargetsContent")).toBeHidden();
@@ -2225,9 +2227,12 @@ test.describe("MIDI Studio V2", () => {
       await expect(instrumentTypeSelect(page, "lead")).toBeVisible();
       await expect(instrumentSelect(page, "lead")).toBeVisible();
       await expect(page.locator("#addInstrumentRowButton")).toBeVisible();
-      await expect(instrumentToggle(page, "lead", "mute")).toBeVisible();
-      await expect(instrumentToggle(page, "lead", "solo")).toBeVisible();
-      await expect(instrumentRow(page, "lead").locator("[data-toggle-instrument-visibility='lead']")).toBeVisible();
+      await selectInstrumentRow(page, "lead");
+      await expect(page.locator("#selectedInstrumentEditor .midi-studio-v2__lane-toggle--mute")).toBeVisible();
+      await expect(page.locator("#selectedInstrumentEditor .midi-studio-v2__lane-toggle--solo")).toBeVisible();
+      await expect(page.locator("#selectedInstrumentEditor #previewVolumeLeadInput")).toBeVisible();
+      await expect(page.locator("#selectedInstrumentEditor #previewPanLeadInput")).toBeVisible();
+      await expect(timelineQuickInstrumentRow(page, "lead").locator("[data-toggle-instrument-visibility='lead']")).toHaveCount(1);
       await expect(instrumentRow(page, "lead").locator("[data-delete-instrument-row='lead']")).toBeVisible();
       await expect(page.locator("#songListContent")).toBeHidden();
       await expect(page.locator("#songDetailsContent")).toBeHidden();
@@ -2303,8 +2308,10 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#instrumentListContent")).toBeHidden();
       await expect(page.locator("#midiImportContent")).toBeHidden();
       await expect(page.locator("#instrumentGridSummaryContent")).toBeHidden();
-      await clickCanvasCell(page, "C6", 2);
-      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead)).toContain("C6");
+      const editableTarget = await emptyCanvasRun(page, { lane: "lead", length: 1 });
+      expect(editableTarget).toBeTruthy();
+      await clickCanvasCell(page, editableTarget.rowToken, editableTarget.stepIndex);
+      expect(await page.evaluate((target) => window.__midiStudioV2App.selectedSong().studioArrangement.lanes.lead.includes(target.rowToken), editableTarget)).toBe(true);
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();
@@ -2669,10 +2676,10 @@ test.describe("MIDI Studio V2", () => {
         name: "New Song 4"
       });
 
-      await page.locator("#songSheetIntroInput").fill("C Am F G");
-      await page.locator("#songSheetLoopInput").fill("F G C C");
-      await expect(page.locator("#songSheetIntroInput")).toHaveValue("C Am F G");
-      await expect(page.locator("#songSheetLoopInput")).toHaveValue("F G C C");
+      await page.locator("#songSheetSectionsInput").fill("intro: C Am F G\nloop: F G C C");
+      await page.locator("#songSheetLoopSectionsInput").fill("loop");
+      await expect(page.locator("#songSheetSectionsInput")).toHaveValue("intro: C Am F G\nloop: F G C C");
+      await expect(page.locator("#songSheetLoopSectionsInput")).toHaveValue("loop");
       const songSheetLayout = await page.locator("#songSheetContent .midi-studio-v2__song-sheet-grid").evaluate((grid) => ({
         columns: getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length,
         disabledFields: Array.from(grid.querySelectorAll("input, textarea, select")).filter((field) => field.disabled || field.readOnly).length
@@ -2839,6 +2846,97 @@ test.describe("MIDI Studio V2", () => {
       await selectMidiStudioTab(page, "studio");
       await expect(timelineQuickInstrumentRow(page, "lead")).toHaveClass(/is-selected/);
 
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps PR062 Song Sheet structure-only under Song Details metadata SSoT", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      await expect(page.locator("#songDetailsContent #songSheetTempoInput")).toBeVisible();
+      await expect(page.locator("#songDetailsContent #songSheetKeyInput")).toBeVisible();
+      await expect(page.locator("#songDetailsContent #songSheetStyleInput")).toBeVisible();
+      await expect(page.locator("#songSheetContent #songSheetTempoInput, #songSheetContent #songSheetKeyInput, #songSheetContent #songSheetStyleInput")).toHaveCount(0);
+      await expect(page.locator("#songSheetContent")).not.toContainText("Tempo/BPM");
+      await expect(page.locator("#songSheetContent")).not.toContainText(/^Key$/);
+      await expect(page.locator("#songSheetContent")).not.toContainText(/^Style$/);
+
+      await expect(page.locator("#songSheetSectionsInput")).toBeVisible();
+      await expect(page.locator("#songSheetLoopSectionsInput")).toBeVisible();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("Sections");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars']")).toContainText("Bars");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='chord-count']")).toContainText("Chord count");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='estimated-duration']")).toContainText("Estimated duration");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='loop-sections']")).toContainText("Loop sections");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='warnings']")).toContainText("Warnings");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars'] input, #songSheetSummary [data-song-sheet-summary-field='chord-count'] input, #songSheetSummary [data-song-sheet-summary-field='estimated-duration'] input")).toHaveCount(0);
+      await expect(page.locator("[data-song-sheet-summary-field='bars'] [data-song-sheet-computed='true']")).toHaveCount(1);
+      await expect(page.locator("[data-song-sheet-summary-field='chord-count'] [data-song-sheet-computed='true']")).toHaveCount(1);
+      await expect(page.locator("[data-song-sheet-summary-field='estimated-duration'] [data-song-sheet-computed='true']")).toHaveCount(1);
+      await expect(page.locator("[data-song-sheet-summary-field='warnings'] [data-song-sheet-diagnostics='true']")).toHaveCount(1);
+
+      await page.locator("#songSheetTempoInput").fill("150");
+      await page.locator("#songSheetKeyInput").selectOption("C major");
+      await page.locator("#songSheetStyleInput").selectOption("chip");
+      expect(await page.evaluate(() => {
+        const arrangement = window.__midiStudioV2App.selectedSong().studioArrangement;
+        return {
+          key: arrangement.key,
+          style: arrangement.style,
+          tempo: arrangement.tempo
+        };
+      })).toEqual({ key: "C major", style: "chip", tempo: "150" });
+
+      await page.locator("#songSheetSectionsInput").fill("intro: C F\nbridge: Dm G\nloop: F G C C");
+      await page.locator("#songSheetLoopSectionsInput").fill("bridge, loop");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("intro: 2 bars, 2 chords");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("bridge: 2 bars, 2 chords, loop");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections']")).toContainText("loop: 4 bars, 4 chords, loop");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars'] dd")).toHaveText("8");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='chord-count'] dd")).toHaveText("8");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='estimated-duration'] dd")).toHaveText("12.8 seconds");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='loop-sections'] dd")).toHaveText("bridge, loop");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='warnings'] dd")).toHaveText("none");
+
+      const canonical = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const gridResult = app.currentInstrumentGridResult();
+        return {
+          chords: song.studioArrangement.lanes.chords,
+          json: document.querySelector("#inspectorOutput").textContent,
+          sectionLabels: gridResult.sections.map((section) => section.label),
+          sections: song.studioArrangement.sections,
+          songSheet: song.studioArrangement.songSheet
+        };
+      });
+      expect(canonical.songSheet).toEqual({
+        loopSections: "bridge, loop",
+        sections: "intro: C F\nbridge: Dm G\nloop: F G C C"
+      });
+      expect(canonical.sections).toBe("intro:2, bridge:2, loop:4");
+      expect(canonical.chords).toContain("Dm Dm Dm Dm");
+      expect(canonical.sectionLabels).toEqual(["intro", "bridge", "loop"]);
+      expect(canonical.json).toContain('"loopSections": "bridge, loop"');
+      expect(canonical.json).toContain('"sections": "intro: C F\\nbridge: Dm G\\nloop: F G C C"');
+      await expect(page.locator("#songSectionsLoopDetails [data-song-detail-field='sections']")).toHaveCount(0);
+      await expect(page.locator("#instrumentGridSectionsInput")).toHaveJSProperty("readOnly", true);
+      await expect(page.locator('[data-midi-studio-tab-panel]:not([data-midi-studio-tab-panel="song-setup"]) #songSheetSectionsInput, [data-midi-studio-tab-panel]:not([data-midi-studio-tab-panel="song-setup"]) #songSheetLoopSectionsInput')).toHaveCount(0);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      expect(await page.evaluate(() => window.__midiStudioV2App.currentInstrumentGridResult().sections.map((section) => section.label))).toEqual(["intro", "bridge", "loop"]);
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();
@@ -3453,9 +3551,18 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetSummary")).toContainText("loop: 4 bars, 4 chords, loop");
       await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("intro:2, loop:4");
       await expect(page.locator("#instrumentGridChordsInput")).toHaveValue("Am Am Am Am | F F F F | Am Am Am Am | F F F F | C C C C | G G G G");
-      await expect(spreadsheetCell(page, "chords", 0)).toHaveText("Am");
-      await expect(spreadsheetCell(page, "chords", 8)).toHaveText("Am");
-      await expect(spreadsheetCell(page, "bass", 0)).toContainText("A2");
+      expect(await page.evaluate(() => {
+        const result = window.__midiStudioV2App.currentInstrumentGridResult();
+        return {
+          bassHasA2: result.timeline.some((event) => event.lane === "bass" && event.stepIndex === 0 && event.value === "A2"),
+          chordStep0: result.timeline.find((event) => event.lane === "chords" && event.stepIndex === 0)?.value,
+          chordStep8: result.timeline.find((event) => event.lane === "chords" && event.stepIndex === 8)?.value
+        };
+      })).toEqual({
+        bassHasA2: true,
+        chordStep0: "Am",
+        chordStep8: "Am"
+      });
       expect(await page.locator("#songSheetSummary div").evaluateAll((rows) => Object.fromEntries(rows.map((row) => [
         row.querySelector("dt")?.textContent || "",
         row.querySelector("dd")?.textContent || ""
@@ -3463,10 +3570,7 @@ test.describe("MIDI Studio V2", () => {
         "Bars": "6",
         "Chord count": "6",
         "Estimated duration": "10.909 seconds",
-        "Key": "A minor",
         "Loop sections": "loop",
-        "Style": "retro-arcade",
-        "Tempo": "132",
         "Warnings": "none"
       });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet parsed: 2 sections, 6 bars, 6 chords\./);
@@ -3493,10 +3597,10 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetSummary")).toContainText("loop: 2 bars, 2 chords, loop");
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Song Sheet parsed with warnings: Invalid chord "Hm" in section loop/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet parsed: 2 sections, 2 bars, 2 chords\./);
-      await page.locator("#songSheetLoopInput").fill("");
+      await page.locator("#songSheetSectionsInput").fill("intro: Am F\nloop:");
       await page.locator("#parseSongSheetButton").click();
       await expect(page.locator("#songSheetSummary")).toContainText("Section loop is empty.");
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Song Sheet parsed with warnings: Section intro is empty\.; Section loop is empty\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Song Sheet parsed with warnings: Section loop is empty\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
@@ -3508,15 +3612,15 @@ test.describe("MIDI Studio V2", () => {
     try {
       await fillGuidedSongSheet(page, { tempo: "-1" });
       await page.locator("#parseSongSheetButton").click();
-      await expect(page.locator("#songSheetSummary")).toContainText("Invalid tempo/BPM. Enter a positive number before parsing the guided Song Sheet.");
+      await expect(page.locator("#songSheetSummary")).toContainText("Invalid tempo/BPM. Enter a positive number in Song Details before parsing the Song Sheet.");
       await expect(page.locator("#songSheetSummary")).not.toContainText("intro:");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Invalid tempo\/BPM\. Enter a positive number before parsing the guided Song Sheet\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Invalid tempo\/BPM\. Enter a positive number in Song Details before parsing the Song Sheet\./);
       await page.locator("#songSheetTempoInput").fill("132");
       await page.locator("#songSheetKeyInput").selectOption("");
       await page.locator("#parseSongSheetButton").click();
-      await expect(page.locator("#songSheetSummary")).toContainText("Missing key. Enter a key before parsing the guided Song Sheet.");
+      await expect(page.locator("#songSheetSummary")).toContainText("Missing key. Enter a key in Song Details before parsing the Song Sheet.");
       await expect(page.locator("#songSheetSummary")).not.toContainText("loop:");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Missing key\. Enter a key before parsing the guided Song Sheet\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Missing key\. Enter a key in Song Details before parsing the Song Sheet\./);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

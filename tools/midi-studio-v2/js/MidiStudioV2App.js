@@ -90,6 +90,7 @@ export class MidiStudioV2App {
     this.exportPanel.mount({ onTargetChange: (format, value) => this.handleRenderedTargetChange(format, value) });
     this.songSheet.mount({
       onFieldChange: (field, value) => this.handleSongSheetFieldChange(field, value),
+      onMetadataChange: (field, value) => this.handleSongDetailsChange(field, value),
       onParse: (sourceText) => this.parseSongSheet(sourceText)
     });
     this.instrumentGrid.mount({
@@ -345,8 +346,47 @@ export class MidiStudioV2App {
     return true;
   }
 
+  songSheetStructureFromArrangement(arrangement) {
+    const songSheet = arrangement?.songSheet || {};
+    if (songSheet.sections) {
+      return String(songSheet.sections || "");
+    }
+    const rows = [];
+    if (songSheet.intro) {
+      rows.push(`intro: ${String(songSheet.intro).trim()}`);
+    }
+    if (songSheet.loop) {
+      rows.push(`loop: ${String(songSheet.loop).trim()}`);
+    }
+    return rows.join("\n");
+  }
+
+  loopSectionsFromArrangement(arrangement) {
+    const songSheet = arrangement?.songSheet || {};
+    if (songSheet.loopSections) {
+      return String(songSheet.loopSections || "");
+    }
+    return songSheet.loop ? "loop" : "";
+  }
+
+  applySongSheetLoopSections(result, loopSections = []) {
+    if (!result?.ok) {
+      return result;
+    }
+    const loopLabels = new Set((loopSections || []).map((label) => String(label || "").trim().toLowerCase()).filter(Boolean));
+    const sections = result.sections.map((section) => ({
+      ...section,
+      loop: loopLabels.size ? loopLabels.has(section.label.toLowerCase()) : section.loop
+    }));
+    return {
+      ...result,
+      sections,
+      sectionSummary: sections.map((section) => `${section.label}: ${section.bars} bars, ${section.chords.length} chords${section.loop ? ", loop" : ""}`).join("; ")
+    };
+  }
+
   handleSongSheetFieldChange(field, value) {
-    if (field !== "key" && field !== "style" && field !== "tempo") {
+    if (field !== "sections" && field !== "loopSections") {
       return;
     }
     const song = this.selectedSong();
@@ -355,18 +395,22 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Song Sheet ${field} was not applied because no editable arrangement is selected.`);
       return;
     }
-    arrangement[field] = String(value || "").trim();
+    arrangement.songSheet = {
+      ...(arrangement.songSheet || {}),
+      [field]: String(value || "").trim()
+    };
     this.details.showJson(song);
-    this.markDirty({ changedKeys: ["data.songs.studioArrangement"], reason: "midi-studio-song-setup-edited" });
+    this.parseSongSheet(this.songSheet.composeGuidedSheet());
+    this.markDirty({ changedKeys: ["data.songs.studioArrangement.songSheet"], reason: "midi-studio-song-sheet-structure-edited" });
     this.statusLog.info(`Updated Song Sheet ${field} for ${song.name}.`);
     this.updateAudioDiagnostics();
   }
 
   syncSongSheetFields(arrangement) {
     this.songSheet.applyGuidedDefaults({
-      intro: this.songSheet.introInput.value,
+      sections: this.songSheetStructureFromArrangement(arrangement),
       key: arrangement.key,
-      loop: this.songSheet.loopInput.value,
+      loopSections: this.loopSectionsFromArrangement(arrangement),
       style: arrangement.style,
       tempo: arrangement.tempo
     });
@@ -563,8 +607,8 @@ export class MidiStudioV2App {
       },
       sections: "draft:2",
       songSheet: {
-        intro: "C G",
-        loop: "C G"
+        loopSections: "draft",
+        sections: "draft: C G"
       },
       style: "retro-arcade",
       subdivision: "1",
@@ -743,8 +787,8 @@ export class MidiStudioV2App {
       previewLaneSettings: { instruments: previewInstruments },
       sections: `import:${barCount}`,
       songSheet: {
-        intro: "C",
-        loop: "C"
+        loopSections: "",
+        sections: "import: C"
       },
       style: "midi-import",
       subdivision: "1",
@@ -796,7 +840,8 @@ export class MidiStudioV2App {
   }
 
   parseSongSheet(request, { updateGrid = true } = {}) {
-    const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
+    const parsedResult = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
+    const result = this.applySongSheetLoopSections(parsedResult, request?.loopSections || []);
     this.songSheet.render(result);
     if (!result.ok) {
       this.statusLog.fail(`Song Sheet rejected: ${result.message}`);
@@ -1009,8 +1054,8 @@ export class MidiStudioV2App {
     song.studioArrangement.style = String(result.style || "");
     song.studioArrangement.tempo = String(result.tempo || "");
     song.studioArrangement.songSheet = {
-      intro: this.songSheet.introInput.value.trim(),
-      loop: this.songSheet.loopInput.value.trim()
+      loopSections: this.songSheet.loopSectionsInput.value.trim(),
+      sections: this.songSheet.sectionsInput.value.trim()
     };
     this.details.showJson(song);
   }
@@ -1294,9 +1339,9 @@ export class MidiStudioV2App {
       return false;
     }
     this.songSheet.applyGuidedDefaults({
-      intro: arrangement.songSheet?.intro || arrangement.lanes.chords,
       key: arrangement.key,
-      loop: arrangement.songSheet?.loop || arrangement.lanes.chords,
+      loopSections: this.loopSectionsFromArrangement(arrangement),
+      sections: this.songSheetStructureFromArrangement(arrangement) || `main: ${arrangement.lanes.chords || ""}`.trim(),
       style: arrangement.style,
       tempo: arrangement.tempo
     });

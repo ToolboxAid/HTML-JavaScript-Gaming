@@ -26,9 +26,7 @@ function editableRows(song) {
 }
 
 function sectionsLoopRows(song) {
-  const arrangement = song.studioArrangement || {};
   return [
-    { field: "sections", label: "Sections", type: "text", value: arrangement.sections },
     { checked: song.loop.enabled, field: "loopEnabled", label: "Loop enabled", type: "checkbox" },
     { field: "loopStartSeconds", label: "Loop start", step: "0.1", type: "number", value: song.loop.startSeconds },
     { field: "loopEndSeconds", label: "Loop end", step: "0.1", type: "number", value: song.loop.endSeconds }

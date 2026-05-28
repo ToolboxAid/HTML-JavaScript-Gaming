@@ -146,10 +146,10 @@ window.addEventListener("DOMContentLoaded", () => {
     songList: new SongListControl({ list: requireElement("#songList") }),
     songSetup: new SongSetupControl({ addSongButton: requireElement("#addSongButton") }),
     songSheet: new SongSheetControl({
-      introInput: requireElement("#songSheetIntroInput"),
       keyInput: requireElement("#songSheetKeyInput"),
-      loopInput: requireElement("#songSheetLoopInput"),
+      loopSectionsInput: requireElement("#songSheetLoopSectionsInput"),
       parseButton: requireElement("#parseSongSheetButton"),
+      sectionsInput: requireElement("#songSheetSectionsInput"),
       styleInput: requireElement("#songSheetStyleInput"),
       summary: optionalElement("#songSheetSummary"),
       tempoInput: requireElement("#songSheetTempoInput")

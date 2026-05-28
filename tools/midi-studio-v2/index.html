@@ -251,13 +251,13 @@
           </button>
           <div id="songSheetContent" class="accordion-v2__content midi-studio-v2__stack midi-studio-v2__song-sheet-panel" aria-label="Song Sheet">
             <div class="midi-studio-v2__song-sheet-grid">
-              <label class="tool-starter__field" for="songSheetIntroInput">
-                <span>Intro chord progression</span>
-                <input id="songSheetIntroInput" type="text" placeholder="Am F">
+              <label class="tool-starter__field" for="songSheetSectionsInput">
+                <span>Sections</span>
+                <textarea id="songSheetSectionsInput" rows="4" placeholder="intro: Am F&#10;loop: Am F C G"></textarea>
               </label>
-              <label class="tool-starter__field" for="songSheetLoopInput">
-                <span>Loop chord progression</span>
-                <input id="songSheetLoopInput" type="text" placeholder="Am F C G">
+              <label class="tool-starter__field" for="songSheetLoopSectionsInput">
+                <span>Loop sections</span>
+                <textarea id="songSheetLoopSectionsInput" rows="2" placeholder="loop"></textarea>
               </label>
             </div>
             <div class="midi-studio-v2__song-sheet-actions">
@@ -312,8 +312,8 @@
             </section>
             <div class="midi-studio-v2__grid-settings" data-midi-studio-tab-panel="auto-create-parts">
               <label class="tool-starter__field" for="instrumentGridSectionsInput">
-                <span>Sections</span>
-                <input id="instrumentGridSectionsInput" type="text" placeholder="intro:1, loop:1">
+                <span>Grid sections from Song Sheet</span>
+                <input id="instrumentGridSectionsInput" type="text" readonly aria-readonly="true" placeholder="intro:1, loop:1">
               </label>
               <label class="tool-starter__field" for="instrumentGridBeatsInput">
                 <span>Beats/bar</span>

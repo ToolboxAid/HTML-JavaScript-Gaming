@@ -465,6 +465,11 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
   grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
 }
 
+.midi-studio-v2__song-sheet-grid textarea {
+  min-height: 4.75rem;
+  resize: vertical;
+}
+
 .midi-studio-v2__midi-import-grid {
   display: grid;
   gap: 0.65rem;

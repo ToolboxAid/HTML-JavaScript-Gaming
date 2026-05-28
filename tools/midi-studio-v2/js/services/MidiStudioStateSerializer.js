@@ -49,6 +49,17 @@ function normalizeLoop(value) {
   };
 }
 
+function legacySongSheetSections(songSheet) {
+  const rows = [];
+  if (text(songSheet.intro)) {
+    rows.push(`intro: ${text(songSheet.intro)}`);
+  }
+  if (text(songSheet.loop)) {
+    rows.push(`loop: ${text(songSheet.loop)}`);
+  }
+  return rows.join("\n");
+}
+
 function normalizeStudioArrangement(value) {
   if (!isPlainObject(value)) {
     return null;
@@ -77,8 +88,8 @@ function normalizeStudioArrangement(value) {
     previewInstruments: normalizedPreviewInstruments,
     sections: text(value.sections),
     songSheet: {
-      intro: text(songSheet.intro),
-      loop: text(songSheet.loop)
+      loopSections: text(songSheet.loopSections || (songSheet.loop ? "loop" : "")),
+      sections: text(songSheet.sections) || legacySongSheetSections(songSheet)
     },
     style: text(value.style),
     subdivision: text(value.subdivision || "1"),
