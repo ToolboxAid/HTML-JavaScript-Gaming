@@ -1076,10 +1076,14 @@ test.describe("MIDI Studio V2", () => {
     const manifest = JSON.parse(await fs.readFile(uatManifestPath, "utf8"));
     const server = await openMidiStudioFromWorkspace(page, manifest);
     try {
-      await expect(page.locator("#launchModeIndicator")).toHaveText("Workspace Mode");
+      await expect(page.locator("#launchModeIndicator")).toHaveCount(0);
+      await expect(page.getByText("Tool Mode", { exact: true })).toHaveCount(0);
+      await expect(page.getByText("Workspace Mode", { exact: true })).toHaveCount(0);
       await expect(page.locator("body")).toHaveAttribute("data-midi-studio-launch-mode", "workspace");
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
+      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
       await expect(page.locator("#returnToWorkspaceButton")).toBeVisible();
+      await expect(page.locator('[data-launch-mode-nav="workspace"] button:not([hidden])')).toHaveText(["Return to Workspace"]);
       await expect(page.locator("#saveProjectButton")).toBeHidden();
       await expect(page.locator("#toolImportManifestButton")).toBeHidden();
       await expect(page.locator("#renderedExportSaveButton")).toBeHidden();
@@ -1871,7 +1875,11 @@ test.describe("MIDI Studio V2", () => {
     try {
       await expect(page.locator("body")).toHaveAttribute("data-tool-id", "midi-studio-v2");
       await expect(page.locator("body")).toHaveAttribute("data-midi-studio-launch-mode", "tool");
-      await expect(page.locator("#launchModeIndicator")).toHaveText("Tool Mode");
+      await expect(page.locator("#launchModeIndicator")).toHaveCount(0);
+      await expect(page.getByText("Tool Mode", { exact: true })).toHaveCount(0);
+      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
+      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
+      await expect(page.locator("#returnToWorkspaceButton")).toBeHidden();
       await expect(page.locator("[data-midi-studio-header]")).toContainText("MIDI Studio V2");
       await expect(page.locator("#songList [data-song-id]")).toHaveCount(3);
       await expect(page.locator('[data-song-id="theme-main"]')).toHaveAttribute("aria-pressed", "true");
@@ -1895,6 +1903,74 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportTargetTypeSelect")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toBeVisible();
       await expect(page.locator(".midi-studio-v2__tool-menu #renderedExportSaveButton")).toHaveText("Save Output");
+      const navAndTabPresentation = await page.evaluate(() => {
+        const readActionButton = (selector) => {
+          const style = getComputedStyle(document.querySelector(selector));
+          return {
+            borderRadius: style.borderRadius,
+            fontFamily: style.fontFamily,
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            paddingBottom: style.paddingBottom,
+            paddingLeft: style.paddingLeft,
+            paddingRight: style.paddingRight,
+            paddingTop: style.paddingTop
+          };
+        };
+        const readTab = (tab) => {
+          const style = getComputedStyle(tab);
+          return {
+            backgroundColor: style.backgroundColor,
+            borderTopLeftRadius: style.borderTopLeftRadius,
+            borderTopRightRadius: style.borderTopRightRadius,
+            color: style.color,
+            cursor: style.cursor,
+            fontFamily: style.fontFamily,
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight
+          };
+        };
+        const tabs = Array.from(document.querySelectorAll(".midi-studio-v2__tabs [role='tab']"));
+        const activeTab = tabs.find((tab) => tab.classList.contains("is-active"));
+        const inactiveTab = tabs.find((tab) => !tab.classList.contains("is-active"));
+        return {
+          activeTab: readTab(activeTab),
+          importButton: readActionButton("#toolImportManifestButton"),
+          inactiveTab: readTab(inactiveTab),
+          stopAllButton: readActionButton("#stopAllAudioButton"),
+          tabLabels: tabs.map((tab) => tab.textContent.trim())
+        };
+      });
+      expect(navAndTabPresentation.importButton).toEqual(navAndTabPresentation.stopAllButton);
+      expect(navAndTabPresentation.activeTab).toMatchObject({
+        cursor: "pointer",
+        fontFamily: navAndTabPresentation.stopAllButton.fontFamily,
+        fontSize: navAndTabPresentation.stopAllButton.fontSize,
+        fontWeight: navAndTabPresentation.stopAllButton.fontWeight
+      });
+      expect(navAndTabPresentation.inactiveTab).toMatchObject({
+        cursor: "pointer",
+        fontFamily: navAndTabPresentation.stopAllButton.fontFamily,
+        fontSize: navAndTabPresentation.stopAllButton.fontSize,
+        fontWeight: navAndTabPresentation.stopAllButton.fontWeight
+      });
+      expect(navAndTabPresentation.activeTab.backgroundColor).not.toBe(navAndTabPresentation.inactiveTab.backgroundColor);
+      expect(navAndTabPresentation.activeTab.borderTopLeftRadius).not.toBe("0px");
+      expect(navAndTabPresentation.activeTab.borderTopRightRadius).not.toBe("0px");
+      expect(navAndTabPresentation.tabLabels).toEqual([
+        "Studio",
+        "Song Setup",
+        "Instruments",
+        "Auto-Create Parts",
+        "MIDI Import",
+        "Diagnostics"
+      ]);
+      await selectMidiStudioTab(page, "midi-import");
+      await expect(page.locator('[data-midi-studio-tab="midi-import"]')).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#midiImportContent")).toBeVisible();
+      await selectMidiStudioTab(page, "studio");
+      await expect(page.locator('[data-midi-studio-tab="studio"]')).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#instrumentGridOutput")).toBeVisible();
       await expect(page.locator("#midiSourceDetails")).toContainText("No MIDI source inspected.");
       await expect(page.locator("#audioDiagnosticsContent")).toBeHidden();
       await expect(page.locator("#playbackState")).toContainText("Audible preview ready: Main Theme.");

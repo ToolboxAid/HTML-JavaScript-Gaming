@@ -41,7 +41,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const app = new MidiStudioV2App({
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     actionNav: new ActionNavControl({
-      launchModeIndicator: requireElement("#launchModeIndicator"),
       nowPlayingLabel: requireElement("#nowPlayingLabel"),
       projectDirtyState: requireElement("#projectDirtyState"),
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
