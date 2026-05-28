@@ -411,6 +411,21 @@ body[data-tool-id="midi-studio-v2"] #instrumentGridContent {
   align-items: stretch;
 }
 
+.midi-studio-v2__octave-timeline-canvas {
+  background: #111827;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  box-sizing: border-box;
+  cursor: crosshair;
+  display: block;
+  image-rendering: crisp-edges;
+  outline-offset: -3px;
+}
+
+.midi-studio-v2__octave-timeline-canvas:focus {
+  outline: 2px solid #7dd3fc;
+}
+
 .midi-studio-v2__note-table {
   align-items: stretch;
   border-radius: 6px;

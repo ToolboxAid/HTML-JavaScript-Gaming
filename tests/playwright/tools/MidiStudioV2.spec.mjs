@@ -403,6 +403,35 @@ function octaveNoteBlock(page, lane) {
   return page.locator(`.midi-studio-v2__octave-note-cell[data-note-lanes~="${lane}"]`);
 }
 
+function octaveTimelineCanvas(page) {
+  return page.locator("[data-octave-timeline-canvas='true']");
+}
+
+async function canvasTimelineState(page) {
+  return page.evaluate(() => window.__midiStudioV2App.instrumentGrid.timelineCanvasState());
+}
+
+async function waitForCanvasRender(page) {
+  await page.waitForFunction(() => Number(document.querySelector("[data-octave-timeline-canvas='true']")?.dataset.renderFrame || 0) > 0);
+}
+
+async function scrollCanvasCellIntoView(page, rowToken, stepIndex) {
+  await page.locator("#instrumentGridOutput").evaluate((output, target) => {
+    const state = window.__midiStudioV2App.instrumentGrid.timelineCanvasState();
+    const rowIndex = state.rows.findIndex((row) => row.value === target.rowToken);
+    output.scrollLeft = Math.max(0, state.axisWidth + target.stepIndex * state.cellSize - output.clientWidth / 2);
+    output.scrollTop = Math.max(0, state.headerHeight + rowIndex * state.cellSize - output.clientHeight / 2);
+    output.dispatchEvent(new Event("scroll"));
+  }, { rowToken, stepIndex });
+}
+
+async function clickCanvasCell(page, rowToken, stepIndex) {
+  await scrollCanvasCellIntoView(page, rowToken, stepIndex);
+  const point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
+  expect(point).toBeTruthy();
+  await page.mouse.click(point.x, point.y);
+}
+
 function instrumentRow(page, lane) {
   return page.locator(`.midi-studio-v2__instrument-row[data-lane="${lane}"]`);
 }
@@ -629,6 +658,136 @@ test.describe("MIDI Studio V2", () => {
       expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
       await page.locator("#stopButton").click();
       await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("canvas octave timeline edits canonical data and drives playback without DOM grid repaint", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await expect(page.locator('[data-midi-studio-tab="studio"]')).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#instrumentGridHeading")).toHaveText("Octave Timeline");
+      await expect(page.locator("#instrumentGridOutput")).toHaveAttribute("data-timeline-renderer", "canvas");
+      await expect(octaveTimelineCanvas(page)).toBeVisible();
+      await expect(page.locator(".midi-studio-v2__octave-note-cell")).toHaveCount(0);
+      await expect(page.locator(".midi-studio-v2__grid-cell--timing-header")).toHaveCount(0);
+      await expect(instrumentTypeSelect(page, "lead")).toHaveJSProperty("tagName", "SELECT");
+      await expect(instrumentSelect(page, "lead")).toHaveJSProperty("tagName", "SELECT");
+      await expect(page.locator("#playButton")).toHaveJSProperty("tagName", "BUTTON");
+      await expect(page.locator("#toolImportManifestInput")).toHaveJSProperty("tagName", "INPUT");
+
+      await selectInstrumentRow(page, "lead");
+      await waitForCanvasRender(page);
+      const initialCanvasState = await canvasTimelineState(page);
+      expect(initialCanvasState.rows.some((row) => row.value === "C6")).toBe(true);
+      expect(initialCanvasState.rows.some((row) => row.keyKind === "black")).toBe(true);
+      expect(initialCanvasState.rows.some((row) => row.keyKind === "white")).toBe(true);
+      expect(initialCanvasState.totalSteps).toBeGreaterThan(0);
+      expect(initialCanvasState.noteCount).toBeGreaterThan(0);
+
+      const keyboardAxisPixel = await page.evaluate(() => {
+        const canvas = document.querySelector("[data-octave-timeline-canvas='true']");
+        const state = window.__midiStudioV2App.instrumentGrid.timelineCanvasState();
+        const rowIndex = state.rows.findIndex((row) => row.value === "C6");
+        const ratio = canvas.width / canvas.clientWidth;
+        const sample = canvas.getContext("2d").getImageData(
+          Math.round(10 * ratio),
+          Math.round((state.headerHeight + rowIndex * state.cellSize + state.cellSize / 2) * ratio),
+          1,
+          1
+        ).data;
+        return Array.from(sample);
+      });
+      expect(keyboardAxisPixel[3]).toBeGreaterThan(0);
+      expect(keyboardAxisPixel.slice(0, 3).some((channel) => channel > 0)).toBe(true);
+
+      await clickCanvasCell(page, "C6", 2);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Toggled C6 for Lead; visible timeline playback data updated\./);
+      const canonicalEdit = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        return {
+          gridHasEdit: app.lastInstrumentGridResult.timeline.some((event) => event.lane === "lead" && event.stepIndex === 2 && event.value === "C6"),
+          leadLane: app.selectedSong().studioArrangement.lanes.lead,
+          selectedCell: app.instrumentGrid.timelineCanvasState().selectedCell
+        };
+      });
+      expect(canonicalEdit.gridHasEdit).toBe(true);
+      expect(canonicalEdit.leadLane).toContain("C6");
+      expect(canonicalEdit.selectedCell).toEqual({ rowToken: "C6", stepIndex: 2 });
+
+      await page.locator("#instrumentGridOutput").evaluate((output) => {
+        window.__midiStudioGridClassMutations = [];
+        window.__midiStudioGridClassObserver = new MutationObserver((records) => {
+          records.forEach((record) => {
+            window.__midiStudioGridClassMutations.push(record.target.className || "");
+          });
+        });
+        window.__midiStudioGridClassObserver.observe(output, {
+          attributeFilter: ["class"],
+          attributes: true,
+          subtree: true
+        });
+      });
+      await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const originalPlayGridRange = app.previewSynth.playGridRange.bind(app.previewSynth);
+        app.__lastPreviewGridValues = [];
+        app.previewSynth.playGridRange = async (options) => {
+          app.__lastPreviewGridValues = options.grid.timeline
+            .filter((event) => event.lane === "lead")
+            .map((event) => event.value);
+          return originalPlayGridRange(options);
+        };
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await page.locator("#playButton").click();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      expect(await page.evaluate(() => window.__midiStudioV2App.__lastPreviewGridValues)).toContain("C6");
+      expect(await page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+      await page.waitForFunction(() => window.__midiStudioV2App.instrumentGrid.playheadStep > 0);
+      const playbackCanvasState = await canvasTimelineState(page);
+      expect(playbackCanvasState.playheadStep).toBeGreaterThan(0);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-playhead-step", String(playbackCanvasState.playheadStep));
+      await expect(page.locator(".midi-studio-v2__grid-cell--playhead-active")).toHaveCount(0);
+      expect(await page.evaluate(() => window.__midiStudioGridClassMutations.filter((className) => String(className).includes("midi-studio-v2__grid-cell")).length)).toBe(0);
+
+      const scrollEvidence = await page.locator("#instrumentGridOutput").evaluate((output) => {
+        output.style.width = "320px";
+        output.style.maxWidth = "320px";
+        output.scrollLeft = 240;
+        output.scrollTop = 190;
+        output.dispatchEvent(new Event("scroll"));
+        const topScrollbar = output.querySelector(".midi-studio-v2__timeline-scroll-proxy");
+        return {
+          canScrollHorizontal: output.scrollWidth > output.clientWidth,
+          canScrollVertical: output.scrollHeight > output.clientHeight,
+          datasetScrollLeft: output.dataset.timelineScrollLeft,
+          scrollLeft: Math.round(output.scrollLeft),
+          scrollTop: Math.round(output.scrollTop),
+          topScrollLeft: Math.round(topScrollbar?.scrollLeft || 0)
+        };
+      });
+      expect(scrollEvidence.canScrollHorizontal).toBe(true);
+      expect(scrollEvidence.canScrollVertical).toBe(true);
+      expect(scrollEvidence.scrollLeft).toBeGreaterThan(0);
+      expect(scrollEvidence.scrollTop).toBeGreaterThan(0);
+      expect(scrollEvidence.datasetScrollLeft).toBe(String(scrollEvidence.scrollLeft));
+      expect(scrollEvidence.topScrollLeft).toBe(scrollEvidence.scrollLeft);
+
+      const zoomBefore = (await canvasTimelineState(page)).cellSize;
+      await page.locator("#instrumentGridZoomInButton").click();
+      await expect.poll(() => canvasTimelineState(page).then((state) => state.cellSize)).toBeGreaterThan(zoomBefore);
+      await page.locator("#instrumentGridZoomOutButton").click();
+      await expect.poll(() => canvasTimelineState(page).then((state) => state.cellSize)).toBe(zoomBefore);
+
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#playbackState")).toContainText("Stopped audible preview");
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

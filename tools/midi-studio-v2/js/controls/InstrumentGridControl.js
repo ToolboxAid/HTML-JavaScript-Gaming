@@ -1,4 +1,5 @@
 import { PREVIEW_INSTRUMENT_PACKS, previewInstrumentById } from "../../../../src/engine/audio/PreviewInstrumentPacks.js";
+import { OctaveTimelineCanvasRenderer } from "./OctaveTimelineCanvasRenderer.js";
 
 function summaryRows(result) {
   if (!result?.ok) {
@@ -301,8 +302,13 @@ export class InstrumentGridControl {
     this.syncingTimelineScroll = false;
     this.timelineScrollProxy = null;
     this.timelineScrollProxySpacer = null;
+    this.timelineCanvas = null;
+    this.timelineCanvasRenderer = null;
+    this.timelineCanvasRows = [];
+    this.lastTimelinePointerHit = null;
     this.removedFixedLanes = new Set();
     this.selectedCell = null;
+    this.selectedSectionBounds = null;
     this.selectedLane = "lead";
     this.suppressNextCellClick = false;
     this.timelinePointerEdit = null;
@@ -502,6 +508,10 @@ export class InstrumentGridControl {
     this.lastPlayheadHighlightStep = null;
     this.timelineScrollProxy = null;
     this.timelineScrollProxySpacer = null;
+    this.timelineCanvas = null;
+    this.timelineCanvasRenderer = null;
+    this.timelineCanvasRows = [];
+    this.lastTimelinePointerHit = null;
     if (!result?.ok) {
       this.renderInstrumentList([]);
       this.populateSectionControls([]);
@@ -531,6 +541,7 @@ export class InstrumentGridControl {
     }
     this.currentResult = result;
     this.renderDefinitionList(summaryRows(result));
+    this.renderCanvasTimeline(result);
   }
 
   populateSectionControls(sections) {
@@ -598,27 +609,95 @@ export class InstrumentGridControl {
   }
 
   renderGrid(result) {
-    const grid = document.createElement("div");
     const octaveRows = this.octaveRowsFor(result);
-    grid.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table midi-studio-v2__octave-timeline";
-    grid.setAttribute("role", "table");
-    grid.setAttribute("aria-label", "Octave timeline editor");
-    grid.style.gridTemplateColumns = `5.25rem repeat(${result.totalSteps}, var(--midi-studio-v2-octave-cell-size))`;
-    this.renderNoteTableHeader(grid, result);
-    octaveRows.forEach((row, rowIndex) => {
-      grid.append(this.createOctaveRowHeader(row, rowIndex));
-      this.referenceCells(result).forEach((cell, stepIndex) => {
-        const outputCell = this.createOctaveTimelineCell({ result, row, rowIndex, stepIndex });
-        this.applyTimingDataset(outputCell, cell, stepIndex);
-        grid.append(outputCell);
-      });
+    const canvas = document.createElement("canvas");
+    canvas.className = "midi-studio-v2__instrument-grid midi-studio-v2__note-table midi-studio-v2__octave-timeline midi-studio-v2__octave-timeline-canvas";
+    canvas.dataset.octaveTimelineCanvas = "true";
+    canvas.setAttribute("aria-label", "Canvas-backed octave timeline editor");
+    canvas.setAttribute("role", "application");
+    canvas.tabIndex = 0;
+    canvas.addEventListener("pointerdown", (event) => this.beginTimelinePointerEdit(event));
+    canvas.addEventListener("click", (event) => {
+      if (this.suppressNextCellClick) {
+        this.suppressNextCellClick = false;
+        return;
+      }
+      const hit = this.timelineCanvasRenderer?.cellFromPoint(event.clientX, event.clientY) || this.lastTimelinePointerHit || null;
+      if (hit) {
+        this.toggleTimelineCell(hit.rowToken, hit.stepIndex);
+      }
     });
+    canvas.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" || !this.selectedCell) {
+        return;
+      }
+      event.preventDefault();
+      this.toggleTimelineCell(this.selectedCell.rowToken, this.selectedCell.stepIndex);
+    });
+    this.timelineCanvas = canvas;
+    this.timelineCanvasRows = octaveRows;
+    this.timelineCanvasRenderer = new OctaveTimelineCanvasRenderer({ canvas, windowRef: this.window });
     this.gridOutput.append(this.createTimelineScrollProxy());
-    this.gridOutput.append(grid);
+    this.gridOutput.append(canvas);
+    this.renderCanvasTimeline(result);
     this.updateTimelineScrollProxyWidth();
     this.window.requestAnimationFrame?.(() => this.updateTimelineScrollProxyWidth());
     this.applyOctaveGridZoom();
     this.applySelectedLaneHighlight();
+  }
+
+  renderCanvasTimeline(result = this.currentResult) {
+    if (!this.timelineCanvasRenderer || !result?.ok) {
+      return;
+    }
+    const rows = this.timelineCanvasRows.length ? this.timelineCanvasRows : this.octaveRowsFor(result);
+    const referenceCells = this.referenceCells(result);
+    this.timelineCanvasRenderer.setState({
+      activePreviewLanes: this.activePreviewLanes,
+      cellSize: this.octaveCellSize,
+      loopBounds: this.loopBounds,
+      notes: this.canvasNotesForResult(result, rows),
+      paintPreviewKeys: this.timelinePointerEdit ? Array.from(this.timelinePointerEdit.paintedKeys) : [],
+      playheadStep: this.playheadStep,
+      referenceCells,
+      rows,
+      sections: result.sections,
+      selectedCell: this.selectedCell,
+      selectedLane: this.selectedLane,
+      selectedSection: this.selectedSectionBounds,
+      totalSteps: result.totalSteps
+    });
+    this.gridOutput.dataset.timelineRenderer = "canvas";
+    this.gridOutput.dataset.timelineRows = String(rows.length);
+    this.gridOutput.dataset.timelineSteps = String(result.totalSteps);
+    this.gridOutput.dataset.timelineCellSize = String(this.octaveCellSize);
+  }
+
+  canvasNotesForResult(result, rows) {
+    const visibleRows = new Set(rows.map((row) => row.value));
+    return (result.timeline || []).flatMap((event) => {
+      if (this.previewLaneState[event.lane]?.visible === false) {
+        return [];
+      }
+      return this.rowsForEvent(event)
+        .filter((rowToken) => visibleRows.has(rowToken))
+        .map((rowToken) => ({
+          kind: event.kind,
+          lane: event.lane,
+          rowToken,
+          source: event.source,
+          stepIndex: event.stepIndex,
+          value: event.value
+        }));
+    });
+  }
+
+  timelineCanvasState() {
+    return this.timelineCanvasRenderer?.snapshot() || null;
+  }
+
+  timelineCanvasCellCenter(rowToken, stepIndex) {
+    return this.timelineCanvasRenderer?.cellCenter(rowToken, stepIndex) || null;
   }
 
   adjustOctaveGridZoom(delta) {
@@ -630,6 +709,7 @@ export class InstrumentGridControl {
     const scrollState = this.captureTimelineScrollState();
     this.octaveCellSize = nextSize;
     this.applyOctaveGridZoom();
+    this.renderCanvasTimeline();
     this.updateTimelineScrollProxyWidth();
     this.restoreTimelineScrollState(scrollState);
   }
@@ -643,6 +723,7 @@ export class InstrumentGridControl {
     if (this.instrumentGridZoomInButton) {
       this.instrumentGridZoomInButton.disabled = this.octaveCellSize >= OCTAVE_GRID_ZOOM.max;
     }
+    this.gridOutput?.setAttribute("data-timeline-cell-size", String(this.octaveCellSize));
   }
 
   createTimelineScrollProxy() {
@@ -666,53 +747,10 @@ export class InstrumentGridControl {
       return;
     }
     const grid = this.gridOutput.querySelector(".midi-studio-v2__octave-timeline");
-    const scrollWidth = Math.max(grid?.scrollWidth || 0, this.gridOutput.clientWidth || 0);
+    const logicalWidth = Number(grid?.dataset.logicalWidth || 0);
+    const scrollWidth = Math.max(logicalWidth || grid?.scrollWidth || 0, this.gridOutput.clientWidth || 0);
     this.timelineScrollProxySpacer.style.width = `${scrollWidth}px`;
     this.timelineScrollProxy.scrollLeft = this.gridOutput.scrollLeft;
-  }
-
-  renderNoteTableHeader(grid, result) {
-    const barHeader = this.appendCell(grid, "Bar", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__timing-axis-header midi-studio-v2__timing-header-row-1");
-    barHeader.setAttribute("role", "columnheader");
-    const rulerCells = this.referenceCells(result);
-    rulerCells.forEach((cell, stepIndex) => {
-      const classes = [
-        "midi-studio-v2__grid-cell",
-        "midi-studio-v2__grid-cell--bar-header",
-        "midi-studio-v2__grid-cell--ruler",
-        "midi-studio-v2__grid-cell--timing-header",
-        "midi-studio-v2__note-table-column-header",
-        "midi-studio-v2__timing-header-row-1"
-      ];
-      if (cell.beat === 1 && cell.subdivisionStep === 1) {
-        classes.push("midi-studio-v2__grid-cell--bar");
-      }
-      const section = result.sections.find((entry) => entry.label === cell.section);
-      if (section && section.startStep === stepIndex) {
-        classes.push("midi-studio-v2__grid-cell--section", `midi-studio-v2__section-tone-${section.colorIndex}`);
-      }
-      const outputCell = this.appendCell(grid, "", classes.join(" "));
-      outputCell.setAttribute("role", "columnheader");
-      outputCell.setAttribute("aria-label", `Bar ${cell.bar}, section ${cell.section}`);
-      outputCell.textContent = String(cell.bar);
-      this.applyTimingDataset(outputCell, cell, stepIndex);
-    });
-    const beatHeader = this.appendCell(grid, "Beat", "midi-studio-v2__grid-cell midi-studio-v2__grid-cell--label midi-studio-v2__grid-cell--instrument-column midi-studio-v2__timing-axis-header midi-studio-v2__timing-header-row-2");
-    beatHeader.setAttribute("role", "columnheader");
-    rulerCells.forEach((cell, stepIndex) => {
-      const outputCell = this.appendCell(grid, String(cell.beat), [
-        "midi-studio-v2__grid-cell",
-        "midi-studio-v2__grid-cell--beat",
-        "midi-studio-v2__grid-cell--ruler",
-        "midi-studio-v2__grid-cell--timing-header",
-        "midi-studio-v2__grid-cell--beat-header",
-        "midi-studio-v2__note-table-column-header",
-        "midi-studio-v2__timing-header-row-2"
-      ].join(" "));
-      outputCell.setAttribute("role", "columnheader");
-      outputCell.setAttribute("aria-label", `Beat ${cell.beat}${result.subdivision > 1 ? `, subdivision ${cell.subdivisionStep}` : ""}, section ${cell.section}`);
-      this.applyTimingDataset(outputCell, cell, stepIndex);
-    });
   }
 
   referenceCells(result) {
@@ -838,109 +876,6 @@ export class InstrumentGridControl {
     this.render(this.currentResult);
   }
 
-  createOctaveRowHeader(row, rowIndex) {
-    const keyKind = this.octaveRowKeyKind(row);
-    const header = document.createElement("div");
-    header.className = [
-      "midi-studio-v2__grid-cell",
-      "midi-studio-v2__grid-cell--label",
-      "midi-studio-v2__grid-cell--instrument-column",
-      "midi-studio-v2__octave-row-label",
-      `midi-studio-v2__octave-row-label--${keyKind}-key`,
-      rowIndex % 2 === 1 ? "midi-studio-v2__octave-row-label--alternate" : ""
-    ].filter(Boolean).join(" ");
-    header.setAttribute("role", "rowheader");
-    header.dataset.octaveRow = row.value;
-    header.dataset.octave = row.octave;
-    header.dataset.keyKind = keyKind;
-    header.dataset.octaveRowIndex = String(rowIndex);
-    const label = document.createElement("span");
-    label.className = "midi-studio-v2__octave-row-label-text";
-    label.textContent = row.label;
-    header.append(label);
-    return header;
-  }
-
-  octaveRowKeyKind(row) {
-    if (row.octave === "percussion") {
-      return "percussion";
-    }
-    return /#|b/.test(row.value) ? "black" : "white";
-  }
-
-  createOctaveTimelineCell({ result, row, rowIndex, stepIndex }) {
-    const events = this.orderedEventsForCell(this.visibleEventsForCell({ result, row, stepIndex }));
-    const cell = document.createElement("div");
-    cell.className = this.octaveCellClass(events, row.value, rowIndex, stepIndex).join(" ");
-    cell.dataset.octaveRow = row.value;
-    cell.dataset.octaveRowIndex = String(rowIndex);
-    cell.dataset.rowToken = row.value;
-    cell.dataset.stepIndex = String(stepIndex);
-    if (this.isSelectedTimelineCell(row.value, stepIndex)) {
-      cell.dataset.selectedNoteCell = "true";
-      cell.setAttribute("aria-selected", "true");
-    }
-    if (events.length) {
-      cell.dataset.noteLanes = Array.from(new Set(events.map((event) => event.lane))).join(" ");
-      cell.dataset.noteValues = events.map((event) => event.value).join(" ");
-    }
-    cell.role = "button";
-    cell.tabIndex = 0;
-    cell.setAttribute("aria-label", `${row.label} at step ${stepIndex + 1}`);
-    cell.addEventListener("pointerdown", (event) => this.beginTimelinePointerEdit(event, row.value, stepIndex));
-    cell.addEventListener("click", () => {
-      if (this.suppressNextCellClick) {
-        this.suppressNextCellClick = false;
-        return;
-      }
-      this.toggleTimelineCell(row.value, stepIndex);
-    });
-    cell.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter") {
-        return;
-      }
-      event.preventDefault();
-      this.toggleTimelineCell(row.value, stepIndex);
-    });
-    return cell;
-  }
-
-  octaveCellClass(events, rowToken, rowIndex, stepIndex) {
-    const classes = ["midi-studio-v2__grid-cell", "midi-studio-v2__spreadsheet-note-cell", "midi-studio-v2__note-table-cell", "midi-studio-v2__octave-note-cell"];
-    if (rowIndex % 2 === 1) {
-      classes.push("midi-studio-v2__octave-note-cell--alternate");
-    }
-    if (events.length) {
-      classes.push("midi-studio-v2__grid-cell--event");
-    }
-    if (this.isSelectedTimelineCell(rowToken, stepIndex)) {
-      classes.push("midi-studio-v2__grid-cell--note-selected");
-    }
-    if (events.some((event) => event.lane === this.selectedLane)) {
-      classes.push("midi-studio-v2__grid-cell--lane-selected");
-    } else if (events.length) {
-      classes.push("midi-studio-v2__grid-cell--lane-dimmed");
-    }
-    return classes;
-  }
-
-  orderedEventsForCell(events) {
-    return events.slice().sort((left, right) => {
-      const leftSelected = left.lane === this.selectedLane ? 1 : 0;
-      const rightSelected = right.lane === this.selectedLane ? 1 : 0;
-      return leftSelected - rightSelected;
-    });
-  }
-
-  visibleEventsForCell({ result, row, stepIndex }) {
-    return (result.timeline || []).filter((event) => {
-      if (event.stepIndex !== stepIndex || this.previewLaneState[event.lane]?.visible === false) {
-        return false;
-      }
-      return this.rowsForEvent(event).includes(row.value);
-    });
-  }
-
   rowsForEvent(event) {
     if (event.kind === "drum") {
       return [String(event.value || "").toLowerCase()];
@@ -1005,10 +940,17 @@ export class InstrumentGridControl {
     return this.selectedLane === "drums" || state.instrumentType === "Percussive";
   }
 
-  beginTimelinePointerEdit(event, rowToken, stepIndex) {
+  beginTimelinePointerEdit(event) {
     if (event.button !== 0 || !this.currentResult?.ok) {
       return;
     }
+    const hit = this.timelineCanvasRenderer?.cellFromPoint(event.clientX, event.clientY) || null;
+    if (!hit) {
+      this.lastTimelinePointerHit = null;
+      return;
+    }
+    const { rowToken, stepIndex } = hit;
+    this.lastTimelinePointerHit = hit;
     event.preventDefault();
     this.selectTimelineCell(rowToken, stepIndex, { focusCell: true });
     this.timelinePointerEdit = {
@@ -1042,8 +984,7 @@ export class InstrumentGridControl {
     if (!target) {
       return;
     }
-    const rowToken = target.dataset.rowToken;
-    const stepIndex = Number(target.dataset.stepIndex);
+    const { rowToken, stepIndex } = target;
     if (!rowToken || !Number.isInteger(stepIndex)) {
       return;
     }
@@ -1060,8 +1001,7 @@ export class InstrumentGridControl {
   }
 
   timelineCellFromPoint(event) {
-    const element = this.window.document.elementFromPoint(event.clientX, event.clientY);
-    return element?.closest?.(".midi-studio-v2__octave-note-cell") || null;
+    return this.timelineCanvasRenderer?.cellFromPoint(event.clientX, event.clientY) || null;
   }
 
   paintTimelineRange(previousRowToken, previousStepIndex, rowToken, stepIndex) {
@@ -1089,7 +1029,7 @@ export class InstrumentGridControl {
     }
     if (this.setTimelineCellActive(rowToken, stepIndex, true)) {
       edit?.paintedKeys.add(key);
-      this.gridOutput.querySelector(`.midi-studio-v2__octave-note-cell[data-row-token="${CSS.escape(rowToken)}"][data-step-index="${stepIndex}"]`)?.classList.add("midi-studio-v2__grid-cell--paint-preview");
+      this.timelineCanvasRenderer?.setPaintPreview(Array.from(edit?.paintedKeys || []));
     }
   }
 
@@ -1098,9 +1038,7 @@ export class InstrumentGridControl {
     if (!edit) {
       return;
     }
-    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--paint-preview").forEach((cell) => {
-      cell.classList.remove("midi-studio-v2__grid-cell--paint-preview");
-    });
+    this.timelineCanvasRenderer?.setPaintPreview([]);
     this.timelinePointerEdit = null;
     if (!edit.changed) {
       return;
@@ -1122,10 +1060,6 @@ export class InstrumentGridControl {
     return `${rowToken}:${stepIndex}`;
   }
 
-  isSelectedTimelineCell(rowToken, stepIndex) {
-    return this.selectedCell?.rowToken === rowToken && this.selectedCell?.stepIndex === stepIndex;
-  }
-
   selectTimelineCell(rowToken, stepIndex, { focusCell = false } = {}) {
     this.selectedCell = { rowToken, stepIndex };
     this.applySelectedCellHighlight();
@@ -1136,25 +1070,14 @@ export class InstrumentGridControl {
   }
 
   selectedTimelineCellElement() {
-    if (!this.selectedCell) {
-      return null;
-    }
-    return this.gridOutput.querySelector(`.midi-studio-v2__octave-note-cell[data-row-token="${CSS.escape(this.selectedCell.rowToken)}"][data-step-index="${this.selectedCell.stepIndex}"]`);
+    return this.selectedCell ? this.timelineCanvas : null;
   }
 
   applySelectedCellHighlight() {
-    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--note-selected").forEach((cell) => {
-      cell.classList.remove("midi-studio-v2__grid-cell--note-selected");
-      cell.removeAttribute("data-selected-note-cell");
-      cell.removeAttribute("aria-selected");
-    });
-    const selected = this.selectedTimelineCellElement();
-    if (!selected) {
+    if (!this.timelineCanvasRenderer) {
       return;
     }
-    selected.classList.add("midi-studio-v2__grid-cell--note-selected");
-    selected.dataset.selectedNoteCell = "true";
-    selected.setAttribute("aria-selected", "true");
+    this.timelineCanvasRenderer.setSelectedCell(this.selectedCell);
   }
 
   toggleTimelineCell(rowToken, stepIndex) {
@@ -1899,22 +1822,6 @@ export class InstrumentGridControl {
     return bars.join(" | ");
   }
 
-  applyTimingDataset(element, cell, stepIndex) {
-    element.dataset.bar = String(cell.bar);
-    element.dataset.beat = String(cell.beat);
-    element.dataset.section = cell.section;
-    element.dataset.stepIndex = String(stepIndex);
-    element.dataset.subdivisionStep = String(cell.subdivisionStep);
-  }
-
-  appendCell(grid, text, className) {
-    const cell = document.createElement("div");
-    cell.className = className;
-    cell.textContent = text;
-    grid.append(cell);
-    return cell;
-  }
-
   selectLane(lane) {
     if (!lane) {
       return;
@@ -1941,6 +1848,7 @@ export class InstrumentGridControl {
       controls.row?.classList.toggle("is-selected", entryLane === this.selectedLane);
       controls.row?.setAttribute("aria-selected", String(entryLane === this.selectedLane));
     });
+    this.renderCanvasTimeline();
     this.renderSelectionDetails();
   }
 
@@ -2116,14 +2024,13 @@ export class InstrumentGridControl {
 
   setPreviewPlaybackLanes(lanes = []) {
     this.activePreviewLanes = Array.from(new Set(lanes));
+    this.timelineCanvasRenderer?.setActivePreviewLanes(this.activePreviewLanes);
     this.setPlayheadStep(this.playheadStep);
   }
 
   clearPreviewPlaybackLanes() {
     this.activePreviewLanes = [];
-    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--lane-active").forEach((cell) => {
-      cell.classList.remove("midi-studio-v2__grid-cell--lane-active");
-    });
+    this.timelineCanvasRenderer?.setActivePreviewLanes([]);
   }
 
   setPlayheadStep(stepIndex) {
@@ -2134,52 +2041,37 @@ export class InstrumentGridControl {
       return;
     }
     const nextStep = Math.max(0, Math.min(stepIndex, result.totalSteps - 1));
-    const previousStep = this.lastPlayheadHighlightStep;
     this.playheadStep = nextStep;
-    if (previousStep !== null && previousStep !== nextStep) {
-      this.gridOutput.querySelectorAll(`.midi-studio-v2__grid-cell--timing-header[data-step-index="${previousStep}"]`).forEach((cell) => {
-        cell.classList.remove("midi-studio-v2__grid-cell--playhead-active");
-      });
-    }
-    this.gridOutput.querySelectorAll(`.midi-studio-v2__grid-cell--timing-header[data-step-index="${nextStep}"]`).forEach((cell) => {
-      cell.classList.add("midi-studio-v2__grid-cell--playhead-active");
-    });
+    this.timelineCanvasRenderer?.setPlayheadStep(nextStep);
+    const activeCell = this.referenceCells(result)[nextStep] || null;
+    this.gridOutput.dataset.playheadStep = String(nextStep);
+    this.gridOutput.dataset.playheadBar = activeCell ? String(activeCell.bar) : "";
+    this.gridOutput.dataset.playheadBeat = activeCell ? String(activeCell.beat) : "";
+    this.gridOutput.dataset.playheadSection = activeCell?.section || "";
     this.lastPlayheadHighlightStep = nextStep;
   }
 
   updateLoopRegion() {
     const bounds = this.selectedLoopBounds();
-    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--loop-region").forEach((cell) => {
-      cell.classList.remove("midi-studio-v2__grid-cell--loop-region");
-    });
     if (!bounds.ok) {
       this.loopBounds = null;
+      this.renderCanvasTimeline();
       return bounds;
     }
     this.loopBounds = bounds;
-    this.gridOutput.querySelectorAll("[data-step-index]").forEach((cell) => {
-      const stepIndex = Number(cell.dataset.stepIndex);
-      if (stepIndex >= bounds.startSection.startStep && stepIndex <= bounds.endSection.endStep) {
-        cell.classList.add("midi-studio-v2__grid-cell--loop-region");
-      }
-    });
+    this.renderCanvasTimeline();
     return bounds;
   }
 
   updateSelectedSectionRegion() {
-    this.gridOutput.querySelectorAll(".midi-studio-v2__grid-cell--section-region").forEach((cell) => {
-      cell.classList.remove("midi-studio-v2__grid-cell--section-region");
-    });
     const section = this.sectionByLabel(this.sectionSelect.value);
     if (!section) {
+      this.selectedSectionBounds = null;
+      this.renderCanvasTimeline();
       return null;
     }
-    this.gridOutput.querySelectorAll("[data-step-index]").forEach((cell) => {
-      const stepIndex = Number(cell.dataset.stepIndex);
-      if (stepIndex >= section.startStep && stepIndex <= section.endStep) {
-        cell.classList.add("midi-studio-v2__grid-cell--section-region");
-      }
-    });
+    this.selectedSectionBounds = section;
+    this.renderCanvasTimeline();
     return section;
   }
 
