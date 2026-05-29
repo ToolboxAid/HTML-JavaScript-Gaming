@@ -4208,7 +4208,7 @@ test.describe("MIDI Studio V2", () => {
       }));
       expect(buttonState.boss).toEqual(expect.objectContaining({
         disabled: true,
-        title: "Boss section not available for this song",
+        title: expect.stringMatching(/Incomplete: Boss is not defined/),
         unwired: true
       }));
       await expect(page.locator("[data-section-preset='boss']")).toHaveClass(/midi-studio-v2__unwired-control/);
@@ -4360,12 +4360,12 @@ test.describe("MIDI Studio V2", () => {
       }));
       expect(buttonState.boss).toEqual(expect.objectContaining({
         disabled: true,
-        title: "Boss section not available for this song",
+        title: expect.stringMatching(/Incomplete: Boss is not defined/),
         unwired: true
       }));
       expect(buttonState.victory).toEqual(expect.objectContaining({
         disabled: true,
-        title: "Victory section not available for this song",
+        title: expect.stringMatching(/Incomplete: Victory is not defined/),
         unwired: true
       }));
 
@@ -4691,6 +4691,158 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#stopButton").click();
       await expect(page.locator("#stopButton")).toBeDisabled();
       await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR076-079 export, section clarity, playback completion, loop state, and warnings ownership", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save MP3");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
+      await expect(page.locator("#exportWorkflowContent")).not.toContainText("Export WAV");
+      await expect(page.locator("#exportWorkflowContent")).not.toContainText("Export MP3");
+      await expect(page.locator("#exportWorkflowContent")).not.toContainText("Export OGG");
+      await expect(page.locator("#toolImportManifestButton")).toHaveText("Import JSON Manifest");
+      await expect(page.locator("#toolExportToolStateButton")).toHaveText("Export JSON");
+      for (const selector of ["#futureSoundFontSelect", "#futureRenderQualitySelect", "#futureSampleRateSelect"]) {
+        await expect(page.locator(selector)).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+        await expect(page.locator(selector)).toHaveAttribute("title", /Not implemented:/);
+      }
+      await expect(page.locator("#exportStatusDetails")).toContainText("Export tab owns rendered audio output workflow");
+      await expect(page.locator("#exportStatusDetails")).toContainText("SoundFont");
+      await setInputValue(page, "#renderedTargetOggInput", "assets/music/rendered/camptown-races-uat-reel.ogg");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect(page.locator("#exportStatusDetails")).toContainText("WARN: Export rendering not implemented for OGG.");
+
+      await selectMidiStudioTab(page, "song-setup");
+      await page.locator("#songSheetTempoInput").fill("600");
+      await fillSongSheetSectionBuilder(page, "Intro: C\nVerse: Am\nChorus: F\nBridge:\nOutro: G");
+      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText(["Intro", "Verse", "Chorus", "Outro"]);
+      await expect(page.locator("#songSheetAvailableSectionsList option", { hasText: "Bridge" })).toHaveCount(0);
+      await clearSongSheetSequence(page);
+      await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus", "Verse", "Outro"]);
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus", "Verse", "Outro"]);
+      await expect(page.locator("#songSheetSequenceCount")).toHaveText("5 items");
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sequence'] dd")).toHaveText("Intro, Verse, Chorus, Verse, Outro");
+      await expect(page.locator("#songSheetContent [data-song-sheet-summary-field='warnings']")).toHaveCount(0);
+      await expect(page.locator("#songSheetWarningsContent")).toBeVisible();
+      await expect(page.locator("#songSheetWarningsDetails [data-song-sheet-warning-field='song-sheet-warnings']")).toContainText("none");
+      await expect(page.locator("#songSheetWarningsDetails [data-song-sheet-warning-field='validation-warnings']")).toContainText("none");
+
+      const sequenceColors = await page.locator("#songSheetSequenceList option").evaluateAll((options) => options.map((option) => ({
+        colorIndex: option.dataset.songSheetSectionColorIndex,
+        label: option.value
+      })));
+      expect(sequenceColors.map((entry) => entry.label)).toEqual(["Intro", "Verse", "Chorus", "Verse", "Outro"]);
+      expect(sequenceColors[1].colorIndex).toBe(sequenceColors[3].colorIndex);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      const canvasSections = await canvasTimelineState(page);
+      expect(canvasSections.sectionHeaderLabels).toEqual(["Intro", "Verse", "Chorus", "Verse", "Outro"]);
+      expect(canvasSections.sections.map((section) => section.label)).toEqual(["Intro", "Verse", "Chorus", "Verse", "Outro"]);
+      expect(canvasSections.sections[1].color).toBe(canvasSections.sections[3].color);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-section-header-labels", "Intro|Verse|Chorus|Verse|Outro");
+
+      const sectionButtons = await page.locator(".midi-studio-v2__section-preset").evaluateAll((buttons) => Object.fromEntries(buttons.map((button) => [
+        button.dataset.sectionPreset,
+        {
+          color: button.dataset.sectionColor || "",
+          disabled: button.disabled,
+          title: button.title,
+          unwired: button.dataset.midiStudioUnwired || ""
+        }
+      ])));
+      expect(sectionButtons.verse).toEqual(expect.objectContaining({
+        color: canvasSections.sections[1].color,
+        disabled: false,
+        unwired: ""
+      }));
+      expect(sectionButtons.boss).toEqual(expect.objectContaining({
+        disabled: true,
+        unwired: "incomplete"
+      }));
+      await expect(page.locator('[data-section-preset="boss"]')).toHaveAttribute("title", /Incomplete: Boss is not defined/);
+
+      await page.locator('[data-section-preset="intro"]').click();
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing section: Intro");
+      await expect.poll(async () => page.locator("#instrumentGridTransportState").textContent(), { timeout: 4000 }).toContain("Timing preview complete: Intro");
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      expect(await page.evaluate(() => window.__midiStudioV2App.previewSynth.getSnapshot().playing)).toBe(false);
+
+      await page.locator("#instrumentGridLoopStartSelect").selectOption("Intro");
+      await page.locator("#instrumentGridLoopEndSelect").selectOption("Intro");
+      await page.locator("#playLoopButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop: Intro to Intro");
+      const loopSteps = await page.evaluate(async () => {
+        const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+        const values = [window.__midiStudioV2App.instrumentGrid.playheadStep];
+        for (let index = 0; index < 8; index += 1) {
+          await sleep(90);
+          values.push(window.__midiStudioV2App.instrumentGrid.playheadStep);
+        }
+        return values;
+      });
+      expect(new Set(loopSteps).size).toBeGreaterThan(1);
+      expect(loopSteps).toContain(0);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-playhead-section", "Intro");
+      await page.locator("#stopTimingPreviewButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Preview Synth timing preview stopped.");
+
+      await page.locator("#loopToggle").setChecked(false);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await expect.poll(async () => page.locator("#playButton").isEnabled(), { timeout: 4000 }).toBe(true);
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Preview Synth section playback complete: Intro\./);
+
+      await page.locator("#loopToggle").setChecked(true);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.waitForFunction(() => window.__midiStudioV2App.instrumentGrid.playheadStep > 0);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await selectMidiStudioTab(page, "song-setup");
+      await expect(page.locator("#songSheetDragDropSequenceButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(page.locator("#songSheetDragDropSequenceButton")).toHaveAttribute("title", /Not implemented:/);
+
+      const controls = [];
+      for (const tabId of ["song-setup", "studio", "instruments", "auto-create-parts", "midi-import", "diagnostics", "export"]) {
+        await selectMidiStudioTab(page, tabId);
+        if (tabId === "studio") {
+          await waitForCanvasRender(page);
+        }
+        controls.push(...await visibleMidiStudioControlOwnership(page, tabId));
+      }
+      const editableOwnersByCanonical = new Map();
+      controls
+        .filter((control) => control.editable && control.kind === "canonical")
+        .forEach((control) => {
+          const owners = editableOwnersByCanonical.get(control.canonical) || new Set();
+          owners.add(control.owner);
+          editableOwnersByCanonical.set(control.canonical, owners);
+        });
+      const duplicateEditableOwners = Array.from(editableOwnersByCanonical.entries())
+        .filter(([, owners]) => owners.size > 1)
+        .map(([canonical, owners]) => ({ canonical, owners: Array.from(owners).sort() }));
+      expect(duplicateEditableOwners).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

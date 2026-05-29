@@ -179,7 +179,8 @@ window.addEventListener("DOMContentLoaded", () => {
       sectionsInput: requireElement("#songSheetSectionsInput"),
       styleInput: requireElement("#songSheetStyleInput"),
       summary: optionalElement("#songSheetSummary"),
-      tempoInput: requireElement("#songSheetTempoInput")
+      tempoInput: requireElement("#songSheetTempoInput"),
+      warnings: optionalElement("#songSheetWarningsDetails")
     }),
     songSheetParser: new SongSheetParser(),
     statusLog,

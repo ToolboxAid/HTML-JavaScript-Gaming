@@ -322,7 +322,7 @@
                   <button id="songSheetSequenceRemoveButton" type="button">Remove</button>
                 </div>
               </div>
-              <button id="songSheetDragDropSequenceButton" class="midi-studio-v2__unwired-control" type="button" disabled title="Not implemented: drag/drop sequence editing is planned.">Drag/drop sequence</button>
+              <button id="songSheetDragDropSequenceButton" class="midi-studio-v2__unwired-control" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Drag/drop Song Sequence editing is planned but not implemented yet.">Drag/drop sequence</button>
             </div>
             <fieldset class="midi-studio-v2__song-sheet-apply-targets" aria-label="Apply Song Sheet To">
               <legend>Apply Song Sheet To</legend>
@@ -503,6 +503,16 @@
       </section>
 
       <aside class="tool-starter__panel tool-starter__panel--right tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" aria-label="MIDI output">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="song-setup">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="songSheetWarningsContent">
+            <span>Warnings</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="songSheetWarningsContent" class="accordion-v2__content">
+            <dl id="songSheetWarningsDetails" class="midi-studio-v2__details" aria-label="Song Sheet warnings"></dl>
+          </div>
+        </section>
+
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="timelineSelectionContent">
             <span>Selection</span>

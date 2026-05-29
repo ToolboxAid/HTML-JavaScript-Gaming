@@ -63,8 +63,7 @@ function songSheetRows(result) {
       ["Sequence", "not parsed"],
       ["Bars", "not parsed"],
       ["Chord count", "not parsed"],
-      ["Estimated duration", "not parsed"],
-      ["Warnings", result?.message || "No Song Sheet parsed."]
+      ["Estimated duration", "not parsed"]
     ];
   }
   return [
@@ -72,8 +71,27 @@ function songSheetRows(result) {
     ["Sequence", result.sequence?.length ? result.sequence.join(", ") : result.sections.map((section) => section.label).join(", ")],
     ["Bars", result.bars],
     ["Chord count", result.chordCount],
-    ["Estimated duration", `${result.estimatedDurationSeconds} seconds`],
-    ["Warnings", result.warningSummary]
+    ["Estimated duration", `${result.estimatedDurationSeconds} seconds`]
+  ];
+}
+
+function warningRows(result) {
+  if (!result?.ok) {
+    const message = result?.message || "No Song Sheet parsed.";
+    return [
+      ["Parse warnings", "none"],
+      ["Section warnings", "none"],
+      ["Song Sheet warnings", "none"],
+      ["Validation warnings", message]
+    ];
+  }
+  const warnings = Array.isArray(result.warnings) ? result.warnings : [];
+  const sectionWarnings = warnings.filter((warning) => /^Section\s/i.test(String(warning)));
+  return [
+    ["Parse warnings", result.warningSummary || "none"],
+    ["Section warnings", sectionWarnings.length ? sectionWarnings.join("; ") : "none"],
+    ["Song Sheet warnings", result.warningSummary || "none"],
+    ["Validation warnings", "none"]
   ];
 }
 
@@ -100,7 +118,8 @@ export class SongSheetControl {
     sequenceList,
     styleInput,
     summary,
-    tempoInput
+    tempoInput,
+    warnings
   }) {
     this.addSequenceButton = addSequenceButton;
     this.applyBassInput = applyBassInput;
@@ -124,6 +143,7 @@ export class SongSheetControl {
     this.styleInput = styleInput;
     this.summary = summary;
     this.tempoInput = tempoInput;
+    this.warnings = warnings;
     this.userEditedSequence = false;
   }
 
@@ -485,21 +505,27 @@ export class SongSheetControl {
   }
 
   render(result = null) {
-    if (!this.summary) {
-      return;
+    if (this.summary) {
+      this.renderDefinitionList(this.summary, songSheetRows(result), "summary");
     }
-    this.renderDefinitionList(songSheetRows(result));
+    if (this.warnings) {
+      this.renderDefinitionList(this.warnings, warningRows(result), "warning");
+    }
   }
 
-  renderDefinitionList(rows) {
-    this.summary.replaceChildren();
+  renderDefinitionList(target, rows, kind = "summary") {
+    target.replaceChildren();
     rows.forEach(([label, value]) => {
       const row = document.createElement("div");
       const term = document.createElement("dt");
       const description = document.createElement("dd");
       const token = fieldToken(label);
       row.className = "midi-studio-v2__field-card midi-studio-v2__song-sheet-display-field";
-      row.dataset.songSheetSummaryField = token;
+      if (kind === "warning") {
+        row.dataset.songSheetWarningField = token;
+      } else {
+        row.dataset.songSheetSummaryField = token;
+      }
       row.dataset.midiStudioFieldState = "readonly";
       row.setAttribute("aria-readonly", "true");
       term.textContent = label;
@@ -508,11 +534,11 @@ export class SongSheetControl {
       if (["bars", "chord-count", "estimated-duration"].includes(token)) {
         description.dataset.songSheetComputed = "true";
       }
-      if (token === "warnings") {
+      if (kind === "warning" || token === "warnings") {
         description.dataset.songSheetDiagnostics = "true";
       }
       row.append(term, description);
-      this.summary.append(row);
+      target.append(row);
     });
   }
 }

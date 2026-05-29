@@ -810,10 +810,10 @@ export class InstrumentGridControl {
       const available = Boolean(section);
       button.disabled = !available;
       button.classList.toggle("is-unavailable", !available);
-      button.classList.toggle("midi-studio-v2__unwired-control", !available);
       button.classList.toggle("is-section-colored", available);
       button.setAttribute("aria-disabled", String(!available));
       if (available) {
+        setUnwiredControlState(button, { active: false });
         const color = sectionTone(section.colorIndex);
         button.style.setProperty("--midi-studio-v2-section-color", color);
         button.dataset.sectionColor = color;
@@ -821,11 +821,15 @@ export class InstrumentGridControl {
         button.dataset.sectionEndStep = String(section.endStep);
         button.title = `Select ${section.label} section`;
       } else {
+        setUnwiredControlState(button, {
+          active: true,
+          detail: `${button.textContent.trim()} is not defined in the current Song Sheet sequence.`,
+          status: "Incomplete"
+        });
         button.style.removeProperty("--midi-studio-v2-section-color");
         delete button.dataset.sectionColor;
         delete button.dataset.sectionStartStep;
         delete button.dataset.sectionEndStep;
-        button.title = `${button.textContent.trim()} section not available for this song`;
       }
       if (!available) {
         unavailable.push(button.textContent.trim());
@@ -3190,7 +3194,13 @@ export class InstrumentGridControl {
     if (canStart === false) {
       return;
     }
-    this.startTimingPreview({ endStep: section.endStep, label: section.label, mode: "section", startStep: section.startStep });
+    this.startTimingPreview({
+      endStep: section.endStep,
+      label: section.label,
+      mode: "section",
+      onComplete: () => onTransport("preview-complete", { label: section.label, mode: "section" }),
+      startStep: section.startStep
+    });
   }
 
   async playSelectedLoop(onTransport) {
@@ -3225,7 +3235,7 @@ export class InstrumentGridControl {
     this.transportState.textContent = "Preview Synth timing preview stopped.";
   }
 
-  startTimingPreview({ endStep, label, mode, startStep }) {
+  startTimingPreview({ endStep, label, mode, onComplete = null, startStep }) {
     this.stopTimer();
     this.setPlayheadStep(startStep);
     this.transportState.textContent = mode === "loop" ? `Playing loop: ${label}` : `Playing section: ${label}`;
@@ -3239,6 +3249,7 @@ export class InstrumentGridControl {
         }
         this.stopTimer({ clearPreviewLanes: true });
         this.transportState.textContent = `Timing preview complete: ${label}`;
+        onComplete?.({ label, mode });
         return;
       }
       this.setPlayheadStep(nextStep);

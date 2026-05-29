@@ -104,7 +104,9 @@ export class ExportPanelControl {
   setStatus({ level = "INFO", message = "No export attempted." } = {}) {
     this.statusDetails.dataset.exportStatusLevel = level.toLowerCase();
     this.renderDefinitionList(this.statusDetails, [
+      ["Owner", "Export tab owns rendered audio output workflow"],
       ["Renderer", "Not implemented"],
+      ["SoundFont", "Planned; not implemented"],
       ["Status", `${level}: ${message}`]
     ]);
   }

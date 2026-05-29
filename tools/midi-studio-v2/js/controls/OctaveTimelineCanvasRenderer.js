@@ -152,6 +152,7 @@ export class OctaveTimelineCanvasRenderer {
     this.canvas.dataset.playheadBar = playheadCell ? String(playheadCell.bar) : "";
     this.canvas.dataset.playheadBeat = playheadCell ? String(playheadCell.beat) : "";
     this.canvas.dataset.playheadSection = playheadCell?.section || "";
+    this.canvas.dataset.sectionHeaderLabels = this.state.sections.map((section) => section.label).join("|");
   }
 
   requestRender() {
@@ -258,16 +259,21 @@ export class OctaveTimelineCanvasRenderer {
         this.context.fillStyle = "rgba(14, 165, 233, 0.44)";
         this.context.fillRect(x, 0, metrics.cellSize, metrics.headerRowHeight);
       }
-      this.drawHeaderText(String(cell.bar), x + metrics.cellSize / 2, metrics.headerRowHeight / 2);
+      const sectionLabel = section && section.startStep === stepIndex ? section.label : "";
+      this.drawHeaderText(sectionLabel || String(cell.bar), x + metrics.cellSize / 2, metrics.headerRowHeight / 2, metrics.cellSize - 3);
       this.drawHeaderText(String(cell.beat), x + metrics.cellSize / 2, metrics.headerRowHeight + metrics.headerRowHeight / 2);
     });
   }
 
-  drawHeaderText(text, x, y) {
+  drawHeaderText(text, x, y, maxWidth = null) {
     this.context.fillStyle = "#ffffff";
     this.context.font = "700 10px system-ui, sans-serif";
     this.context.textAlign = "center";
     this.context.textBaseline = "middle";
+    if (Number.isFinite(maxWidth) && maxWidth > 0) {
+      this.context.fillText(text, x, y, maxWidth);
+      return;
+    }
     this.context.fillText(text, x, y);
   }
 
@@ -307,7 +313,8 @@ export class OctaveTimelineCanvasRenderer {
         this.context.fillStyle = "rgba(14, 165, 233, 0.44)";
         this.context.fillRect(x, scrollTop, metrics.cellSize, metrics.headerRowHeight);
       }
-      this.drawHeaderText(String(cell.bar), x + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight / 2);
+      const sectionLabel = section && section.startStep === stepIndex ? section.label : "";
+      this.drawHeaderText(sectionLabel || String(cell.bar), x + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight / 2, metrics.cellSize - 3);
       this.drawHeaderText(String(cell.beat), x + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight + metrics.headerRowHeight / 2);
     }
     const step = clamp(this.state.playheadStep, 0, Math.max(0, this.state.totalSteps - 1));
@@ -595,6 +602,7 @@ export class OctaveTimelineCanvasRenderer {
         label: this.state.selectedSection.label,
         startStep: this.state.selectedSection.startStep
       } : null,
+      sectionHeaderLabels: this.state.sections.map((section) => section.label),
       sections: this.state.sections.map((section) => ({
         color: sectionTone(section.colorIndex),
         colorIndex: section.colorIndex,

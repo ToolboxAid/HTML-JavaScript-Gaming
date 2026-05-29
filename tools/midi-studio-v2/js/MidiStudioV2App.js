@@ -69,6 +69,7 @@ export class MidiStudioV2App {
     this.missingSectionWarnings = new Set();
     this.missingSectionWarningKey = "";
     this.payload = null;
+    this.playbackCompletionTimer = null;
     this.playback = playback;
     this.playbackControl = playbackControl;
     this.previewSynth = previewSynth;
@@ -649,6 +650,7 @@ export class MidiStudioV2App {
 
   async playSelectedSong() {
     const song = this.selectedSong();
+    this.clearPlaybackCompletionTimer();
     if (song?.studioArrangement) {
       return this.playSelectedArrangement(song);
     }
@@ -670,6 +672,7 @@ export class MidiStudioV2App {
 
   async playSelectedArrangement(song) {
     this.playback.stop();
+    this.clearPlaybackCompletionTimer();
     if (!this.currentInstrumentGridResult()?.ok) {
       const arranged = this.applySelectedSongArrangement("play request");
       if (!arranged) {
@@ -701,7 +704,8 @@ export class MidiStudioV2App {
     this.instrumentGrid.startTimingPreview({
       endStep: section.endStep,
       label: section.label,
-      mode: "section",
+      mode: this.playbackControl.loopEnabled() ? "loop" : "section",
+      onComplete: () => this.handlePreviewPlaybackComplete({ label: section.label, mode: "section" }),
       startStep: section.startStep
     });
     this.playbackControl.setPlaying(song);
@@ -1197,10 +1201,32 @@ export class MidiStudioV2App {
       return;
     }
     if (action === "stop-preview") {
+      this.clearPlaybackCompletionTimer();
       const stoppedCount = this.previewSynth.stop();
       this.statusLog.ok(`Preview playback stopped. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"}.`);
       this.updateAudioDiagnostics();
+      return;
     }
+    if (action === "preview-complete") {
+      this.handlePreviewPlaybackComplete(detail);
+    }
+  }
+
+  clearPlaybackCompletionTimer() {
+    if (this.playbackCompletionTimer) {
+      this.window.clearTimeout(this.playbackCompletionTimer);
+      this.playbackCompletionTimer = null;
+    }
+  }
+
+  handlePreviewPlaybackComplete({ label = "section", mode = "section" } = {}) {
+    this.clearPlaybackCompletionTimer();
+    const stoppedCount = this.previewSynth.stop();
+    this.instrumentGrid.clearPreviewPlaybackLanes();
+    this.playbackControl.setStopped(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
+    this.actionNav.setNowPlaying(this.selectedSong());
+    this.statusLog.ok(`Preview Synth ${mode} playback complete: ${label}. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"}.`);
+    this.updateAudioDiagnostics();
   }
 
   async startPreviewSynth({ endStep, label, loop, mode, startStep }) {
@@ -1480,6 +1506,7 @@ export class MidiStudioV2App {
   }
 
   stopPlayback({ log = true } = {}) {
+    this.clearPlaybackCompletionTimer();
     this.playback.stop();
     const stoppedCount = this.previewSynth.stop();
     this.instrumentGrid.stopPreviewUi();
@@ -1492,6 +1519,7 @@ export class MidiStudioV2App {
   }
 
   stopAllAudio() {
+    this.clearPlaybackCompletionTimer();
     this.playback.stop();
     const stoppedCount = this.previewSynth.stop();
     this.instrumentGrid.stopPreviewUi();
