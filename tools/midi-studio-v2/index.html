@@ -297,21 +297,28 @@
               </label>
             </div>
             <div class="midi-studio-v2__song-sequence-builder" aria-label="Song Sequence builder">
-              <div class="midi-studio-v2__sequence-list-panel">
+              <div class="midi-studio-v2__sequence-list-panel midi-studio-v2__sequence-list-panel--available">
                 <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="readonly" for="songSheetAvailableSectionsList">
-                  <span>Available Sections</span>
+                  <span class="midi-studio-v2__sequence-list-heading">
+                    <span>Available Sections</span>
+                    <span id="songSheetAvailableCount" class="midi-studio-v2__sequence-count">0 populated</span>
+                  </span>
                   <select id="songSheetAvailableSectionsList" size="6" aria-label="Available populated musical sections"></select>
                 </label>
                 <button id="songSheetAddSectionToSequenceButton" type="button">Add</button>
               </div>
-              <div class="midi-studio-v2__sequence-list-panel">
+              <div class="midi-studio-v2__sequence-list-panel midi-studio-v2__sequence-list-panel--sequence">
                 <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSequenceList">
-                  <span>Song Sequence</span>
+                  <span class="midi-studio-v2__sequence-list-heading">
+                    <span>Song Sequence</span>
+                    <span id="songSheetSequenceCount" class="midi-studio-v2__sequence-count">0 items</span>
+                  </span>
                   <select id="songSheetSequenceList" size="6" aria-label="Song sequence"></select>
                 </label>
                 <div class="midi-studio-v2__sequence-actions">
                   <button id="songSheetSequenceMoveUpButton" type="button">Move Up</button>
                   <button id="songSheetSequenceMoveDownButton" type="button">Move Down</button>
+                  <button id="songSheetDuplicateSequenceButton" type="button">Duplicate</button>
                   <button id="songSheetSequenceRemoveButton" type="button">Remove</button>
                 </div>
               </div>

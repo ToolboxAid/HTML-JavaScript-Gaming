@@ -663,7 +663,9 @@ export class InstrumentGridControl {
     const lane = this.selectedLane;
     const state = this.previewLaneState[lane] || {};
     const instrumentValue = state.instrument || "";
+    const [octaveLow, octaveHigh] = lane ? this.octaveRangeForLane(lane) : ["", ""];
     return {
+      duration: Number(state.duration ?? 1),
       instrumentLabel: instrumentLabel(instrumentValue),
       instrumentType: state.instrumentType || instrumentTypeGroup(instrumentValue),
       instrumentValue,
@@ -671,7 +673,12 @@ export class InstrumentGridControl {
       lane,
       laneLabel: laneLabel(lane),
       note,
-      previewInstrumentLabel: audiblePreviewLabel(instrumentValue)
+      octaveRange: { high: octaveHigh, low: octaveLow },
+      pan: Number(state.pan ?? 0),
+      previewInstrumentLabel: audiblePreviewLabel(instrumentValue),
+      transpose: Number(state.transpose ?? 0),
+      velocity: Number(state.velocity ?? 100),
+      volume: Number(state.volume ?? 1)
     };
   }
 
@@ -1406,6 +1413,7 @@ export class InstrumentGridControl {
         }
       }
       this.render(this.currentResult);
+      this.renderAuditionKeyboard();
       this.onLaneSettingChange?.("octave-range", {
         lane,
         laneLabel: laneLabel(lane),
@@ -1425,6 +1433,8 @@ export class InstrumentGridControl {
       ? finiteNumber(value, 1)
       : Math.round(finiteNumber(value, kind === "velocity" ? 100 : 0));
     state[kind] = Math.max(range.min, Math.min(range.max, parsed));
+    this.renderAuditionKeyboard();
+    this.renderSelectionDetails();
     this.onLaneSettingChange?.(kind, {
       lane,
       laneLabel: laneLabel(lane),
@@ -2364,6 +2374,8 @@ export class InstrumentGridControl {
         this.previewLaneState[lane].pan = value;
       }
       this.syncLaneHeaderControls();
+      this.renderAuditionKeyboard();
+      this.renderSelectionDetails();
       this.onLaneSettingChange?.(kind, {
         lane,
         laneLabel: laneLabel(lane),
@@ -2910,6 +2922,10 @@ export class InstrumentGridControl {
     this.auditionKeyboard.dataset.selectedLane = lane;
     this.auditionKeyboard.dataset.octaveMin = String(lowOctave);
     this.auditionKeyboard.dataset.octaveMax = String(highOctave);
+    this.auditionKeyboard.dataset.pan = String(state.pan ?? 0);
+    this.auditionKeyboard.dataset.transpose = String(state.transpose ?? 0);
+    this.auditionKeyboard.dataset.velocity = String(state.velocity ?? 100);
+    this.auditionKeyboard.dataset.volume = String(state.volume ?? 1);
     this.auditionKeyboard.setAttribute("aria-label", `${laneLabel(lane)} audition keyboard, octaves ${lowOctave} through ${highOctave}`);
     for (let octave = lowOctave; octave <= highOctave; octave += 1) {
       NOTE_NAMES.forEach((noteName) => {
@@ -2917,7 +2933,12 @@ export class InstrumentGridControl {
         const key = document.createElement("button");
         key.className = "midi-studio-v2__audition-key";
         key.type = "button";
+        key.dataset.auditionLane = lane;
         key.dataset.auditionNote = note;
+        key.dataset.auditionPan = String(state.pan ?? 0);
+        key.dataset.auditionTranspose = String(state.transpose ?? 0);
+        key.dataset.auditionVelocity = String(state.velocity ?? 100);
+        key.dataset.auditionVolume = String(state.volume ?? 1);
         key.dataset.keyKind = noteName.includes("#") ? "black" : "white";
         key.setAttribute("aria-label", `Audition ${note} on ${laneLabel(lane)}`);
         key.title = `Audition ${note}`;

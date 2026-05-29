@@ -1,3 +1,5 @@
+import { sectionTone, sectionToneRgba } from "../sectionColors.js";
+
 const NAMED_SECTION_LABELS = ["Intro", "Verse", "Chorus", "Bridge", "Outro"];
 
 function fieldToken(label) {
@@ -13,6 +15,15 @@ function splitList(value) {
     .split(/[\n,;]+/)
     .map((entry) => entry.trim())
     .filter(Boolean);
+}
+
+function chordTokenCount(value) {
+  return String(value || "")
+    .replace(/[|,;]/g, " ")
+    .split(/\s+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .length;
 }
 
 function normalizedLabelKey(label) {
@@ -73,14 +84,17 @@ export class SongSheetControl {
     applyChordsPadInput,
     applyDrumsInput,
     applyLeadInput,
+    availableCount,
     availableSectionsList,
     customSectionsInput,
+    duplicateSequenceButton,
     keyInput,
     moveSequenceDownButton,
     moveSequenceUpButton,
     namedSectionInputs,
     parseButton,
     removeSequenceButton,
+    sequenceCount,
     sectionsInput,
     sequenceInput,
     sequenceList,
@@ -93,14 +107,17 @@ export class SongSheetControl {
     this.applyChordsPadInput = applyChordsPadInput;
     this.applyDrumsInput = applyDrumsInput;
     this.applyLeadInput = applyLeadInput;
+    this.availableCount = availableCount;
     this.availableSectionsList = availableSectionsList;
     this.customSectionsInput = customSectionsInput;
+    this.duplicateSequenceButton = duplicateSequenceButton;
     this.keyInput = keyInput;
     this.moveSequenceDownButton = moveSequenceDownButton;
     this.moveSequenceUpButton = moveSequenceUpButton;
     this.namedSectionInputs = namedSectionInputs || {};
     this.parseButton = parseButton;
     this.removeSequenceButton = removeSequenceButton;
+    this.sequenceCount = sequenceCount;
     this.sectionsInput = sectionsInput;
     this.sequenceInput = sequenceInput;
     this.sequenceList = sequenceList;
@@ -144,6 +161,10 @@ export class SongSheetControl {
     });
     this.moveSequenceDownButton.addEventListener("click", () => {
       this.moveSelectedSequenceItem(1);
+      onFieldChange("sequence", this.sequenceInput.value);
+    });
+    this.duplicateSequenceButton.addEventListener("click", () => {
+      this.duplicateSelectedSequenceItem();
       onFieldChange("sequence", this.sequenceInput.value);
     });
     this.removeSequenceButton.addEventListener("click", () => {
@@ -297,6 +318,7 @@ export class SongSheetControl {
       option.textContent = section.label;
       option.dataset.songSheetAvailableSection = section.label;
       option.dataset.songSheetSectionChords = section.chords;
+      option.dataset.songSheetSectionChordCount = String(chordTokenCount(section.chords));
       this.availableSectionsList.append(option);
     });
     if (rows.some((section) => section.label === current)) {
@@ -305,6 +327,8 @@ export class SongSheetControl {
       this.availableSectionsList.selectedIndex = 0;
     }
     this.addSequenceButton.disabled = rows.length === 0;
+    this.updateAvailableCount(rows.length);
+    this.applySequenceOptionColors();
   }
 
   sectionsTextFromRows(rows) {
@@ -326,12 +350,17 @@ export class SongSheetControl {
   }
 
   appendSequenceLabel(label) {
+    const option = this.createSequenceOption(label);
+    this.sequenceList.append(option);
+    this.sequenceList.selectedIndex = this.sequenceList.options.length - 1;
+  }
+
+  createSequenceOption(label) {
     const option = document.createElement("option");
     option.value = label;
     option.textContent = label;
     option.dataset.songSheetSequenceSection = label;
-    this.sequenceList.append(option);
-    this.sequenceList.selectedIndex = this.sequenceList.options.length - 1;
+    return option;
   }
 
   moveSelectedSequenceItem(direction) {
@@ -359,6 +388,19 @@ export class SongSheetControl {
     this.syncSequenceState();
   }
 
+  duplicateSelectedSequenceItem() {
+    const index = this.sequenceList.selectedIndex;
+    if (index < 0) {
+      return;
+    }
+    const source = this.sequenceList.options[index];
+    const duplicate = this.createSequenceOption(source.value);
+    this.sequenceList.insertBefore(duplicate, this.sequenceList.options[index + 1] || null);
+    this.sequenceList.selectedIndex = index + 1;
+    this.userEditedSequence = true;
+    this.syncSequenceState();
+  }
+
   setSequenceLabels(labels) {
     this.sequenceList.replaceChildren();
     labels.forEach((label) => this.appendSequenceLabel(label));
@@ -377,7 +419,52 @@ export class SongSheetControl {
     const hasSelection = this.sequenceList.selectedIndex >= 0;
     this.moveSequenceUpButton.disabled = !hasSelection || this.sequenceList.selectedIndex <= 0;
     this.moveSequenceDownButton.disabled = !hasSelection || this.sequenceList.selectedIndex >= this.sequenceList.options.length - 1;
+    this.duplicateSequenceButton.disabled = !hasSelection;
     this.removeSequenceButton.disabled = !hasSelection;
+    this.updateSequenceCount(this.sequenceList.options.length);
+    this.applySequenceOptionColors();
+  }
+
+  updateAvailableCount(count) {
+    if (!this.availableCount) {
+      return;
+    }
+    this.availableCount.textContent = `${count} populated`;
+    this.availableCount.dataset.songSheetAvailableCount = String(count);
+  }
+
+  updateSequenceCount(count) {
+    if (!this.sequenceCount) {
+      return;
+    }
+    this.sequenceCount.textContent = `${count} item${count === 1 ? "" : "s"}`;
+    this.sequenceCount.dataset.songSheetSequenceCount = String(count);
+  }
+
+  sectionColorIndexMap() {
+    const map = new Map();
+    let nextIndex = 0;
+    [...this.sequenceItems(), ...this.availableSections().map((section) => section.label)].forEach((label) => {
+      const key = normalizedLabelKey(label);
+      if (!key || map.has(key)) {
+        return;
+      }
+      map.set(key, nextIndex % 5);
+      nextIndex += 1;
+    });
+    return map;
+  }
+
+  applySequenceOptionColors() {
+    const colors = this.sectionColorIndexMap();
+    const applyColor = (option) => {
+      const colorIndex = colors.get(normalizedLabelKey(option.value)) ?? 0;
+      option.dataset.songSheetSectionColorIndex = String(colorIndex);
+      option.style.backgroundColor = sectionToneRgba(colorIndex, 0.22);
+      option.style.color = sectionTone(colorIndex);
+    };
+    Array.from(this.availableSectionsList.options).forEach(applyColor);
+    Array.from(this.sequenceList.options).forEach(applyColor);
   }
 
   setApplyTargets(targets = null, { hasDrums = false } = {}) {

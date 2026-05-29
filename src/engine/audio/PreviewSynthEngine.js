@@ -59,6 +59,15 @@ function chordNotes(chordName) {
   return tones ? tones.map((tone) => `${tone}4`) : [];
 }
 
+function finiteNumber(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function clampNumber(value, min, max, fallback) {
+  return Math.max(min, Math.min(max, finiteNumber(value, fallback)));
+}
+
 export class PreviewSynthEngine {
   constructor({ windowRef = globalThis } = {}) {
     this.context = null;
@@ -238,14 +247,39 @@ export class PreviewSynthEngine {
           warningKeys.add(key);
         }
       }
-      if (this.canScheduleEvent(event, instrument)) {
-        events.push({ ...event, previewInstrument: instrument });
+      const adjustedEvent = this.eventWithLaneSettings(event, laneSettings);
+      const adjustedInstrument = this.instrumentWithLaneSettings(instrument, event.lane, laneSettings);
+      if (this.canScheduleEvent(adjustedEvent, adjustedInstrument)) {
+        events.push({ ...adjustedEvent, previewInstrument: adjustedInstrument });
       }
     });
     return {
       activeLanes: Array.from(new Set(events.map((event) => event.lane))),
       events,
       warnings
+    };
+  }
+
+  instrumentWithLaneSettings(instrument, lane, laneSettings = {}) {
+    const baseVolume = finiteNumber(instrument?.volume, null);
+    const fallbackVolume = instrument?.synthRole === "percussion" ? 0.16 : instrument?.synthRole === "pad" ? 0.1 : 0.11;
+    const laneVolume = clampNumber(laneSettings.volumes?.[lane], 0, 1, 1);
+    const velocityScale = clampNumber(laneSettings.velocities?.[lane], 1, 127, 100) / 100;
+    const transpose = clampNumber(laneSettings.transposes?.[lane], -24, 24, 0);
+    const pan = clampNumber(laneSettings.pans?.[lane], -1, 1, 0);
+    return {
+      ...instrument,
+      pan,
+      transposeSemitones: finiteNumber(instrument?.transposeSemitones, 0) + transpose,
+      volumeOverride: Math.max(0, (baseVolume ?? fallbackVolume) * laneVolume * velocityScale)
+    };
+  }
+
+  eventWithLaneSettings(event, laneSettings = {}) {
+    const durationScale = clampNumber(laneSettings.durations?.[event.lane], 0.1, 8, 1);
+    return {
+      ...event,
+      durationBeats: Math.max(0.05, finiteNumber(event.durationBeats, 1) * durationScale)
     };
   }
 
@@ -359,7 +393,10 @@ export class PreviewSynthEngine {
 
   volumeForEvent(event, instrument = null) {
     const fallbackVolume = event.kind === "chord" ? 0.1 : event.kind === "drum" ? 0.16 : 0.11;
-    const volume = Number(instrument?.volume || fallbackVolume);
+    if (Number.isFinite(Number(instrument?.volumeOverride))) {
+      return Math.max(0, Math.min(1, Number(instrument.volumeOverride)));
+    }
+    const volume = Number(instrument?.volume ?? fallbackVolume);
     if (event.kind === "drum") {
       return Math.max(volume, 0.16);
     }
