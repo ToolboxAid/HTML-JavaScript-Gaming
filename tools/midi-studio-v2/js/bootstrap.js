@@ -152,6 +152,7 @@ window.addEventListener("DOMContentLoaded", () => {
     songList: new SongListControl({ list: requireElement("#songList") }),
     songSetup: new SongSetupControl({ addSongButton: requireElement("#addSongButton") }),
     songSheet: new SongSheetControl({
+      addCustomSectionButton: requireElement("#songSheetAddCustomSectionButton"),
       addSequenceButton: requireElement("#songSheetAddSectionToSequenceButton"),
       applyBassInput: requireElement("#songSheetApplyBassInput"),
       applyChordsPadInput: requireElement("#songSheetApplyChordsPadInput"),

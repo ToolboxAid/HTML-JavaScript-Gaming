@@ -26,6 +26,12 @@ function chordTokenCount(value) {
     .length;
 }
 
+function sectionMetricsLabel(section, count = chordTokenCount(section.chords)) {
+  const barText = `${count} bar${count === 1 ? "" : "s"}`;
+  const chordText = `${count} chord${count === 1 ? "" : "s"}`;
+  return `${section.label} - ${barText} / ${chordText}`;
+}
+
 function normalizedLabelKey(label) {
   return String(label || "").trim().toLowerCase();
 }
@@ -97,6 +103,7 @@ function warningRows(result) {
 
 export class SongSheetControl {
   constructor({
+    addCustomSectionButton,
     addSequenceButton,
     applyBassInput,
     applyChordsPadInput,
@@ -121,6 +128,7 @@ export class SongSheetControl {
     tempoInput,
     warnings
   }) {
+    this.addCustomSectionButton = addCustomSectionButton;
     this.addSequenceButton = addSequenceButton;
     this.applyBassInput = applyBassInput;
     this.applyChordsPadInput = applyChordsPadInput;
@@ -161,6 +169,10 @@ export class SongSheetControl {
     });
     this.customSectionsInput.addEventListener("input", () => {
       this.refreshSectionBuilder();
+      onFieldChange("sections", this.sectionsInput.value);
+    });
+    this.addCustomSectionButton.addEventListener("click", () => {
+      this.addCustomSection();
       onFieldChange("sections", this.sectionsInput.value);
     });
 
@@ -316,6 +328,27 @@ export class SongSheetControl {
     return rows;
   }
 
+  addCustomSection() {
+    const label = this.nextCustomSectionLabel();
+    const prefix = this.customSectionsInput.value.trim() ? `${this.customSectionsInput.value.trimEnd()}\n` : "";
+    this.customSectionsInput.value = `${prefix}${label}: `;
+    this.refreshSectionBuilder();
+    this.customSectionsInput.focus();
+    this.customSectionsInput.setSelectionRange(this.customSectionsInput.value.length, this.customSectionsInput.value.length);
+  }
+
+  nextCustomSectionLabel() {
+    const labels = new Set([
+      ...NAMED_SECTION_LABELS.map(normalizedLabelKey),
+      ...sectionRowsFromText(this.customSectionsInput.value).map((section) => normalizedLabelKey(section.label))
+    ]);
+    let index = 1;
+    while (labels.has(normalizedLabelKey(`Custom${index}`))) {
+      index += 1;
+    }
+    return `Custom${index}`;
+  }
+
   refreshSectionBuilder({ preserveSequence = true } = {}) {
     const rows = this.availableSections();
     this.sectionsInput.value = this.sectionsTextFromRows(rows);
@@ -335,10 +368,13 @@ export class SongSheetControl {
     rows.forEach((section) => {
       const option = document.createElement("option");
       option.value = section.label;
-      option.textContent = section.label;
+      const chordCount = chordTokenCount(section.chords);
+      option.textContent = sectionMetricsLabel(section, chordCount);
       option.dataset.songSheetAvailableSection = section.label;
+      option.dataset.songSheetSectionBarCount = String(chordCount);
       option.dataset.songSheetSectionChords = section.chords;
-      option.dataset.songSheetSectionChordCount = String(chordTokenCount(section.chords));
+      option.dataset.songSheetSectionChordCount = String(chordCount);
+      option.title = option.textContent;
       this.availableSectionsList.append(option);
     });
     if (rows.some((section) => section.label === current)) {

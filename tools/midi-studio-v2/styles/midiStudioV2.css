@@ -663,6 +663,11 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__timeline-instruments {
   min-height: 3.4rem;
 }
 
+.midi-studio-v2__song-sheet-add-custom {
+  align-self: end;
+  min-height: 2.25rem;
+}
+
 .midi-studio-v2__song-sequence-builder {
   display: grid;
   gap: 0.5rem;

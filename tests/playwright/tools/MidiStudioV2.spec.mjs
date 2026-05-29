@@ -740,6 +740,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       returnToWorkspaceButton: { canonical: "workspace navigation", kind: "action", owner: "Workspace NAV", wired: "wired" },
       saveProjectButton: { canonical: "serialized midi-studio-v2 tool state", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
       songSheetAddSectionToSequenceButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      songSheetAddCustomSectionButton: { canonical: "music.songs[].studioArrangement.songSheet.sections", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       songSheetApplyBassInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.bass", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetApplyChordsPadInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.chordsPad", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetApplyDrumsInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.drums", kind: "canonical", owner: "Song Setup", wired: "wired" },
@@ -4391,7 +4392,13 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetLoopSectionsInput")).toHaveCount(0);
       await fillSongSheetSectionBuilder(page, "Intro: C F\nVerse: Am F\nChorus: G C\nBridge:\nOutro: C\nSolo: Dm G");
 
-      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText(["Intro", "Verse", "Chorus", "Outro", "Solo"]);
+      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText([
+        "Intro - 2 bars / 2 chords",
+        "Verse - 2 bars / 2 chords",
+        "Chorus - 2 bars / 2 chords",
+        "Outro - 1 bar / 1 chord",
+        "Solo - 2 bars / 2 chords"
+      ]);
       await expect(page.locator("#songSheetAvailableSectionsList option", { hasText: "Bridge" })).toHaveCount(0);
 
       await clearSongSheetSequence(page);
@@ -4508,7 +4515,13 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetAvailableCount")).toHaveText("5 populated");
       await expect(page.locator("#songSheetAvailableCount")).toHaveAttribute("data-song-sheet-available-count", "5");
       await expect(page.locator("#songSheetSequenceCount")).toHaveAttribute("data-song-sheet-sequence-count", "0");
-      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText(["Intro", "Verse", "Chorus", "Outro", "Solo"]);
+      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText([
+        "Intro - 2 bars / 2 chords",
+        "Verse - 2 bars / 2 chords",
+        "Chorus - 2 bars / 2 chords",
+        "Outro - 1 bar / 1 chord",
+        "Solo - 2 bars / 2 chords"
+      ]);
       await expect(page.locator("#songSheetAvailableSectionsList option", { hasText: "Bridge" })).toHaveCount(0);
 
       const sequencePanelStyles = await page.locator(".midi-studio-v2__sequence-list-panel").evaluateAll((panels) => panels.map((panel) => {
@@ -4727,7 +4740,12 @@ test.describe("MIDI Studio V2", () => {
       await selectMidiStudioTab(page, "song-setup");
       await page.locator("#songSheetTempoInput").fill("600");
       await fillSongSheetSectionBuilder(page, "Intro: C\nVerse: Am\nChorus: F\nBridge:\nOutro: G");
-      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText(["Intro", "Verse", "Chorus", "Outro"]);
+      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText([
+        "Intro - 1 bar / 1 chord",
+        "Verse - 1 bar / 1 chord",
+        "Chorus - 1 bar / 1 chord",
+        "Outro - 1 bar / 1 chord"
+      ]);
       await expect(page.locator("#songSheetAvailableSectionsList option", { hasText: "Bridge" })).toHaveCount(0);
       await clearSongSheetSequence(page);
       await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus", "Verse", "Outro"]);
@@ -4843,6 +4861,149 @@ test.describe("MIDI Studio V2", () => {
         .filter(([, owners]) => owners.size > 1)
         .map(([canonical, owners]) => ({ canonical, owners: Array.from(owners).sort() }));
       expect(duplicateEditableOwners).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR072-080 song architecture lane decisions", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      const classificationInput = page.locator("#songDetails [data-song-detail-field='classification']");
+      await expect(classificationInput).toHaveAttribute("type", "text");
+      await expect(page.locator("[data-song-detail-help='classification']")).toHaveAttribute("title", /Underwater/);
+      await expect(page.locator("[data-song-detail-help='classification']")).toHaveAttribute("title", /Chase/);
+      await classificationInput.fill("Underwater");
+      await page.locator("#songDetails [data-song-detail-field='name']").fill("Forest Theme");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveJSProperty("readOnly", true);
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("forestTheme-Underwater");
+      await expect(page.locator("#songDetails [data-song-detail-field='tags']")).toHaveCount(0);
+      await expect(page.locator("#songDetails [data-song-detail-field='usage']")).toHaveCount(0);
+
+      await fillSongSheetSectionBuilder(page, "Intro: G C G D\nVerse: G Em C D\nChorus: C G Am F\nBridge:\nOutro: G");
+      await page.locator("#songSheetAddCustomSectionButton").click();
+      await expect(page.locator("#songSheetCustomSectionsInput")).toHaveValue(/Custom1: $/);
+      await page.locator("#songSheetCustomSectionsInput").fill("Custom1: F G");
+      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText([
+        "Intro - 4 bars / 4 chords",
+        "Verse - 4 bars / 4 chords",
+        "Chorus - 4 bars / 4 chords",
+        "Outro - 1 bar / 1 chord",
+        "Custom1 - 2 bars / 2 chords"
+      ]);
+      await expect(page.locator("#songSheetAvailableSectionsList option", { hasText: "Bridge" })).toHaveCount(0);
+      const availableSections = await page.locator("#songSheetAvailableSectionsList option").evaluateAll((options) => options.map((option) => ({
+        barCount: option.dataset.songSheetSectionBarCount,
+        chordCount: option.dataset.songSheetSectionChordCount,
+        colorIndex: option.dataset.songSheetSectionColorIndex,
+        label: option.value,
+        text: option.textContent
+      })));
+      expect(availableSections.find((section) => section.label === "Intro")).toEqual(expect.objectContaining({
+        barCount: "4",
+        chordCount: "4",
+        colorIndex: "0",
+        text: "Intro - 4 bars / 4 chords"
+      }));
+      expect(availableSections.find((section) => section.label === "Custom1")).toEqual(expect.objectContaining({
+        barCount: "2",
+        chordCount: "2"
+      }));
+
+      await expect(page.locator("#songSheetApplyChordsPadInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyBassInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyDrumsInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyLeadInput")).not.toBeChecked();
+      await clearSongSheetSequence(page);
+      await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus"]);
+      await page.locator("#songSheetSequenceList").selectOption({ index: 1 });
+      await page.locator("#songSheetDuplicateSequenceButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Verse", "Chorus"]);
+      await page.locator("#songSheetSequenceMoveDownButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus", "Verse"]);
+      await page.locator("#songSheetSequenceMoveUpButton").click();
+      await page.locator("#songSheetSequenceRemoveButton").click();
+      await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus", "Custom1", "Outro"]);
+      const sequence = "Intro, Verse, Chorus, Custom1, Outro";
+      await expect(page.locator("#songSheetSequenceInput")).toHaveValue(sequence);
+      await expect(page.locator("#songSheetDragDropSequenceButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sequence'] dd")).toHaveText(sequence);
+      await expect(page.locator("#songSheetContent [data-song-sheet-warning-field]")).toHaveCount(0);
+      await expect(page.locator("#songSheetWarningsDetails [data-song-sheet-warning-field='song-sheet-warnings']")).toContainText("none");
+      const canonical = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const gridResult = app.currentInstrumentGridResult();
+        return {
+          applyTargets: song.studioArrangement.songSheet.applyTargets,
+          chordEvents: gridResult.timeline.filter((event) => event.lane === "chords").length,
+          leadEvents: gridResult.timeline.filter((event) => event.lane === "lead").length,
+          sectionColors: gridResult.sections.map((section) => ({ colorIndex: section.colorIndex, label: section.label })),
+          sectionLabels: gridResult.sections.map((section) => section.label),
+          sections: song.studioArrangement.sections,
+          sequence: song.studioArrangement.songSheet.sequence,
+          songSheetSections: song.studioArrangement.songSheet.sections
+        };
+      });
+      expect(canonical).toEqual(expect.objectContaining({
+        applyTargets: {
+          bass: true,
+          chordsPad: true,
+          drums: true,
+          lead: false
+        },
+        sectionLabels: ["Intro", "Verse", "Chorus", "Custom1", "Outro"],
+        sections: "Intro:4, Verse:4, Chorus:4, Custom1:2, Outro:1",
+        sequence,
+        songSheetSections: "Intro: G C G D\nVerse: G Em C D\nChorus: C G Am F\nOutro: G\nCustom1: F G"
+      }));
+      expect(canonical.chordEvents).toBeGreaterThan(0);
+      expect(canonical.leadEvents).toBe(0);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      const canvasState = await canvasTimelineState(page);
+      expect(canvasState.sections.map((section) => section.label)).toEqual(canonical.sectionLabels);
+      expect(canvasState.sections.map((section) => section.colorIndex)).toEqual(canonical.sectionColors.map((section) => section.colorIndex));
+      await timelineQuickInstrumentRow(page, "bass").locator("[data-quick-instrument-label='bass']").click();
+      expect(await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.selectedInstrumentId)).toBe("bass");
+      await selectMidiStudioTab(page, "instruments");
+      await expect(instrumentRow(page, "bass")).toHaveClass(/is-selected/);
+      await expect(page.locator("#instrumentAuditionKeyboard")).not.toHaveAttribute("data-midi-studio-unwired");
+
+      await selectMidiStudioTab(page, "export");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save MP3");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
+      await expect(page.locator("#futureSoundFontSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(page.locator("#futureUndoButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+
+      await selectMidiStudioTab(page, "song-setup");
+      const warningsHeader = page.locator('.accordion-v2__header[aria-controls="songSheetWarningsContent"]');
+      await warningsHeader.click();
+      await expect(warningsHeader).toHaveAttribute("aria-expanded", "false");
+      await expect(page.locator("#songSheetWarningsContent")).toBeHidden();
+      await warningsHeader.click();
+      await expect(warningsHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(page.locator("#songSheetWarningsContent")).toBeVisible();
+
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

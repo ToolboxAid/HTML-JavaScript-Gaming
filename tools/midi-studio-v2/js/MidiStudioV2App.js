@@ -575,6 +575,7 @@ export class MidiStudioV2App {
   createAddedSong() {
     const source = this.selectedSong();
     const draftNumber = this.nextSongDraftNumber();
+    const name = `New Song ${draftNumber}`;
     return {
       defaultRuntimeFormat: source?.defaultRuntimeFormat || "ogg",
       director: {
@@ -584,10 +585,10 @@ export class MidiStudioV2App {
         notes: "Created in MIDI Studio V2 Song Setup."
       },
       classification: "",
-      id: `new-song-${draftNumber}`,
+      id: this.uniqueDerivedSongId(name, { classification: "" }),
       instrumentSet: source?.instrumentSet || "General MIDI",
       loop: source?.loop ? deepClone(source.loop) : { enabled: false, endSeconds: "", startSeconds: "" },
-      name: `New Song ${draftNumber}`,
+      name,
       rendered: { mp3: "", ogg: "", wav: "" },
       sourceMidi: "",
       studioArrangement: source?.studioArrangement ? deepClone(source.studioArrangement) : this.defaultAddedSongArrangement(),
@@ -598,7 +599,7 @@ export class MidiStudioV2App {
   nextSongDraftNumber() {
     const existingIds = new Set((this.payload?.songs || []).map((song) => song.id));
     let draftNumber = (this.payload?.songs?.length || 0) + 1;
-    while (existingIds.has(`new-song-${draftNumber}`)) {
+    while (existingIds.has(camelCaseSongId(`New Song ${draftNumber}`))) {
       draftNumber += 1;
     }
     return draftNumber;
