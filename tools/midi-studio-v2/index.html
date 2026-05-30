@@ -206,6 +206,18 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="instrumentSettingsContent" class="accordion-v2__content midi-studio-v2__stack">
+            <div class="midi-studio-v2__instrument-preset-library" aria-label="Instrument preset library">
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="instrumentPresetSelect">
+                <span>Instrument Presets</span>
+                <select id="instrumentPresetSelect" size="3" aria-label="Saved instrument presets"></select>
+                <output id="instrumentPresetSummary" class="midi-studio-v2__section-library-summary" data-instrument-preset-count="0">0 saved instrument presets</output>
+              </label>
+              <div class="midi-studio-v2__reuse-actions">
+                <button id="saveInstrumentPresetButton" type="button">Save Instrument Preset</button>
+                <button id="loadInstrumentPresetButton" type="button">Load Instrument Preset</button>
+                <button id="duplicateInstrumentPresetButton" type="button">Duplicate Instrument Preset</button>
+              </div>
+            </div>
             <div id="selectedInstrumentEditor" class="midi-studio-v2__instrument-editor" aria-label="Selected instrument editor"></div>
             <div class="midi-studio-v2__instrument-audition">
               <div id="instrumentAuditionKeyboard" class="midi-studio-v2__audition-keyboard" aria-label="Selected instrument audition keyboard"></div>
@@ -284,6 +296,28 @@
                 <output id="songSheetTemplatePreview" data-song-sheet-template-preview>Intro template: C F G C</output>
               </label>
               <button id="songSheetApplySectionTemplateButton" type="button">Apply Template</button>
+            </div>
+            <div class="midi-studio-v2__song-sheet-reuse-tools" aria-label="Reusable Song Sheet content">
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionLibrarySelect">
+                <span>Section Library</span>
+                <select id="songSheetSectionLibrarySelect" size="3" aria-label="Saved reusable section assets"></select>
+                <output id="songSheetSectionLibrarySummary" class="midi-studio-v2__section-library-summary" data-song-sheet-section-library-count="0">0 saved section assets</output>
+              </label>
+              <div class="midi-studio-v2__reuse-actions">
+                <button id="songSheetSaveSectionButton" type="button">Save Section</button>
+                <button id="songSheetLoadSectionButton" type="button">Load Section</button>
+                <button id="songSheetDuplicateSectionButton" type="button">Duplicate Section</button>
+              </div>
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetArrangementTemplateSelect">
+                <span>Arrangement Template</span>
+                <select id="songSheetArrangementTemplateSelect" aria-label="Song Sequence arrangement template">
+                  <option value="intro-verse-chorus-outro">Intro Verse Chorus Outro</option>
+                  <option value="intro-verse-chorus-verse-chorus-outro">Intro Verse Chorus Verse Chorus Outro</option>
+                  <option value="intro-verse-chorus-bridge-chorus-outro">Intro Verse Chorus Bridge Chorus Outro</option>
+                </select>
+                <output id="songSheetArrangementTemplateSummary" class="midi-studio-v2__section-library-summary" data-song-sheet-arrangement-template="intro-verse-chorus-outro">Intro, Verse, Chorus, Outro</output>
+              </label>
+              <button id="songSheetApplyArrangementTemplateButton" type="button">Apply Arrangement Template</button>
             </div>
             <div class="midi-studio-v2__song-sheet-grid midi-studio-v2__song-sheet-section-fields" aria-label="Musical section definitions">
               <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionIntroInput">

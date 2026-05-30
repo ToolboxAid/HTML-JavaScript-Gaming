@@ -278,6 +278,7 @@ export class InstrumentGridControl {
     closeInstrumentPanelButton,
     drumsInput,
     duplicateInstrumentButton,
+    duplicateInstrumentPresetButton,
     generateArpeggioButton,
     generateBassButton,
     generateDrumsButton,
@@ -285,11 +286,14 @@ export class InstrumentGridControl {
     gridOutput,
     instrumentEditor,
     instrumentList,
+    instrumentPresetSelect,
+    instrumentPresetSummary,
     instrumentGridZoomInButton,
     instrumentGridZoomOutButton,
     jumpToSectionButton,
     laneTypeSelect,
     leadInput,
+    loadInstrumentPresetButton,
     loopEndSelect,
     loopStartSelect,
     moveInstrumentDownButton,
@@ -300,6 +304,7 @@ export class InstrumentGridControl {
     playSectionButton,
     playSequenceButton,
     quickInstrumentList,
+    saveInstrumentPresetButton,
     sectionAvailability,
     sectionPresetButtons,
     sectionSelect,
@@ -322,6 +327,7 @@ export class InstrumentGridControl {
     this.closeInstrumentPanelButton = closeInstrumentPanelButton;
     this.drumsInput = drumsInput;
     this.duplicateInstrumentButton = duplicateInstrumentButton;
+    this.duplicateInstrumentPresetButton = duplicateInstrumentPresetButton;
     this.generateArpeggioButton = generateArpeggioButton;
     this.generateBassButton = generateBassButton;
     this.generateDrumsButton = generateDrumsButton;
@@ -331,11 +337,14 @@ export class InstrumentGridControl {
     this.extraLaneSources = {};
     this.instrumentEditor = instrumentEditor;
     this.instrumentList = instrumentList;
+    this.instrumentPresetSelect = instrumentPresetSelect;
+    this.instrumentPresetSummary = instrumentPresetSummary;
     this.instrumentGridZoomInButton = instrumentGridZoomInButton;
     this.instrumentGridZoomOutButton = instrumentGridZoomOutButton;
     this.jumpToSectionButton = jumpToSectionButton;
     this.laneTypeSelect = laneTypeSelect;
     this.leadInput = leadInput;
+    this.loadInstrumentPresetButton = loadInstrumentPresetButton;
     this.loopEndSelect = loopEndSelect;
     this.loopStartSelect = loopStartSelect;
     this.moveInstrumentDownButton = moveInstrumentDownButton;
@@ -349,6 +358,7 @@ export class InstrumentGridControl {
     this.previewLaneState = clonePreviewLaneState();
     this.previewTempoBpm = 120;
     this.quickInstrumentList = quickInstrumentList;
+    this.saveInstrumentPresetButton = saveInstrumentPresetButton;
     this.quickLaneControls = {};
     this.selectedEditorControls = null;
     this.sectionAvailability = sectionAvailability;
@@ -382,6 +392,7 @@ export class InstrumentGridControl {
     this.timelineCanvasRenderer = null;
     this.timelineCanvasRows = [];
     this.hoveredCell = null;
+    this.instrumentPresetAssets = [];
     this.instrumentWorkflowStatus = "Instrument selection ready.";
     this.lastTimelinePointerHit = null;
     this.removedFixedLanes = new Set();
@@ -442,6 +453,10 @@ export class InstrumentGridControl {
     this.duplicateInstrumentButton?.addEventListener("click", () => this.duplicateSelectedInstrument());
     this.moveInstrumentUpButton?.addEventListener("click", () => this.moveSelectedInstrument(-1));
     this.moveInstrumentDownButton?.addEventListener("click", () => this.moveSelectedInstrument(1));
+    this.instrumentPresetSelect?.addEventListener("change", () => this.renderInstrumentPresetSummary());
+    this.saveInstrumentPresetButton?.addEventListener("click", () => this.saveSelectedInstrumentPreset());
+    this.loadInstrumentPresetButton?.addEventListener("click", () => this.loadSelectedInstrumentPreset());
+    this.duplicateInstrumentPresetButton?.addEventListener("click", () => this.duplicateSelectedInstrumentPreset());
     this.closeInstrumentPanelButton?.addEventListener("click", () => this.toggleInstrumentPanel());
     this.timelineCloseInstrumentPanelButton?.addEventListener("click", () => this.toggleTimelineInstrumentPanel());
     this.setTransportEnabled(false);
@@ -453,6 +468,7 @@ export class InstrumentGridControl {
     this.renderSelectedInstrumentEditor();
     this.renderAuditionKeyboard();
     this.renderSelectionDetails();
+    this.renderInstrumentPresetLibrary();
   }
 
   readInput() {
@@ -564,6 +580,143 @@ export class InstrumentGridControl {
       }
     });
     this.syncLaneHeaderControls();
+  }
+
+  selectedInstrumentPreset() {
+    const id = this.instrumentPresetSelect?.value || "";
+    return this.instrumentPresetAssets.find((preset) => preset.id === id) || null;
+  }
+
+  saveSelectedInstrumentPreset() {
+    const lane = this.selectedLane;
+    const state = this.previewLaneState[lane];
+    if (!lane || !state) {
+      this.renderInstrumentPresetSummary("Select an instrument before saving a preset.");
+      return { ok: false };
+    }
+    const preset = {
+      id: this.nextInstrumentPresetId(lane),
+      label: this.displayNameForLane(lane),
+      lane,
+      settings: clonePlainObject(state)
+    };
+    this.instrumentPresetAssets.push(preset);
+    this.setInstrumentWorkflowStatus(`Saved instrument preset ${preset.label} from ${laneLabel(lane)}.`);
+    this.renderInstrumentPresetLibrary(preset.id, `Saved instrument preset: ${preset.label}`);
+    return { ok: true, preset };
+  }
+
+  loadSelectedInstrumentPreset() {
+    const preset = this.selectedInstrumentPreset();
+    const lane = this.selectedLane;
+    if (!preset || !lane || !this.previewLaneState[lane]) {
+      this.renderInstrumentPresetSummary("Choose a preset and selected instrument before loading.");
+      return { ok: false };
+    }
+    this.previewLaneState[lane] = {
+      ...defaultPreviewLaneState(lane),
+      ...clonePlainObject(preset.settings)
+    };
+    this.setInstrumentWorkflowStatus(`Loaded instrument preset ${preset.label} into ${laneLabel(lane)}; selectedInstrumentId synchronized to ${lane}.`);
+    this.syncLaneHeaderControls();
+    this.renderSelectedInstrumentEditor();
+    this.renderAuditionKeyboard();
+    this.renderSelectionDetails();
+    this.renderInstrumentPresetLibrary(preset.id, `Loaded instrument preset: ${preset.label}`);
+    this.onLaneSettingChange?.("instrument-preset-load", {
+      lane,
+      laneLabel: laneLabel(lane),
+      presetLabel: preset.label
+    });
+    return { ok: true, preset };
+  }
+
+  duplicateSelectedInstrumentPreset() {
+    const preset = this.selectedInstrumentPreset();
+    if (!preset) {
+      this.renderInstrumentPresetSummary("Choose a preset before duplicating.");
+      return { ok: false };
+    }
+    const duplicate = {
+      id: this.nextInstrumentPresetId(preset.lane),
+      label: this.nextInstrumentPresetLabel(preset.label),
+      lane: preset.lane,
+      settings: clonePlainObject(preset.settings)
+    };
+    this.instrumentPresetAssets.push(duplicate);
+    this.setInstrumentWorkflowStatus(`Duplicated instrument preset ${preset.label} as ${duplicate.label}.`);
+    this.renderInstrumentPresetLibrary(duplicate.id, `Duplicated instrument preset: ${duplicate.label}`);
+    return { ok: true, preset: duplicate };
+  }
+
+  nextInstrumentPresetId(lane) {
+    const base = laneId(lane) || "instrument";
+    let index = this.instrumentPresetAssets.length + 1;
+    let id = `${base}-preset-${index}`;
+    const ids = new Set(this.instrumentPresetAssets.map((preset) => preset.id));
+    while (ids.has(id)) {
+      index += 1;
+      id = `${base}-preset-${index}`;
+    }
+    return id;
+  }
+
+  nextInstrumentPresetLabel(label) {
+    const base = `${String(label || "Instrument Preset").replace(/\s+Copy\s+\d+$/i, "")} Copy`;
+    const labels = new Set(this.instrumentPresetAssets.map((preset) => preset.label.toLowerCase()));
+    let index = 1;
+    let candidate = `${base} ${index}`;
+    while (labels.has(candidate.toLowerCase())) {
+      index += 1;
+      candidate = `${base} ${index}`;
+    }
+    return candidate;
+  }
+
+  renderInstrumentPresetLibrary(selectedId = this.instrumentPresetSelect?.value || "", message = "") {
+    if (!this.instrumentPresetSelect) {
+      return;
+    }
+    this.instrumentPresetSelect.replaceChildren();
+    this.instrumentPresetAssets.forEach((preset) => {
+      const option = document.createElement("option");
+      option.value = preset.id;
+      option.textContent = preset.label;
+      option.dataset.instrumentPresetLane = preset.lane;
+      option.dataset.instrumentPresetInstrument = preset.settings?.instrument || "";
+      option.dataset.instrumentPresetType = preset.settings?.instrumentType || "";
+      this.instrumentPresetSelect.append(option);
+    });
+    if (selectedId && this.instrumentPresetAssets.some((preset) => preset.id === selectedId)) {
+      this.instrumentPresetSelect.value = selectedId;
+    } else if (this.instrumentPresetSelect.options.length) {
+      this.instrumentPresetSelect.selectedIndex = 0;
+    }
+    this.renderInstrumentPresetSummary(message);
+  }
+
+  renderInstrumentPresetSummary(message = "") {
+    if (!this.instrumentPresetSummary) {
+      return;
+    }
+    const count = this.instrumentPresetAssets.length;
+    const preset = this.selectedInstrumentPreset();
+    const summary = message || (preset
+      ? `${count} saved instrument preset${count === 1 ? "" : "s"}; selected ${preset.label}`
+      : `${count} saved instrument preset${count === 1 ? "" : "s"}`);
+    this.instrumentPresetSummary.value = summary;
+    this.instrumentPresetSummary.textContent = summary;
+    this.instrumentPresetSummary.dataset.instrumentPresetCount = String(count);
+    this.instrumentPresetSummary.dataset.selectedInstrumentPreset = preset?.label || "";
+    if (this.saveInstrumentPresetButton) {
+      this.saveInstrumentPresetButton.disabled = !this.selectedLane || !this.previewLaneState[this.selectedLane];
+    }
+    if (this.loadInstrumentPresetButton) {
+      this.loadInstrumentPresetButton.disabled = count === 0;
+    }
+    if (this.duplicateInstrumentPresetButton) {
+      this.duplicateInstrumentPresetButton.disabled = count === 0;
+    }
   }
 
   clearLaneToggles() {
@@ -2975,6 +3128,7 @@ export class InstrumentGridControl {
     }
     this.syncQuickInstrumentControls();
     this.renderAuditionKeyboard();
+    this.renderInstrumentPresetSummary();
   }
 
   setInstrumentWorkflowStatus(message) {

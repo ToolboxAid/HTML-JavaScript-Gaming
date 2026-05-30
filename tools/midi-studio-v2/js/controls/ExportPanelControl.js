@@ -38,6 +38,44 @@ function sequenceLength(song) {
   return Array.isArray(song?.studioArrangement?.sections) ? song.studioArrangement.sections.length : 0;
 }
 
+function sequenceLabels(song) {
+  const sequence = String(song?.studioArrangement?.songSheet?.sequence || "");
+  return sequence.split(/[\n,;]+/).map((entry) => entry.trim()).filter(Boolean);
+}
+
+function sequenceSummary(song) {
+  const labels = sequenceLabels(song);
+  if (labels.length) {
+    return `${labels.length} sequence item${labels.length === 1 ? "" : "s"}: ${labels.join(", ")}`;
+  }
+  const count = sequenceLength(song);
+  return `${count} sequence item${count === 1 ? "" : "s"}`;
+}
+
+function sectionRows(song) {
+  const source = String(song?.studioArrangement?.songSheet?.sections || "");
+  return source
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const separator = line.indexOf(":");
+      if (separator < 0) {
+        return null;
+      }
+      const label = line.slice(0, separator).trim();
+      const chords = line.slice(separator + 1).trim();
+      return label && chords ? { chords, label } : null;
+    })
+    .filter(Boolean);
+}
+
+function sectionSummary(song) {
+  const rows = sectionRows(song);
+  const barCount = rows.reduce((total, section) => total + section.chords.split(/\s+/).filter(Boolean).length, 0);
+  return `${rows.length} populated section${rows.length === 1 ? "" : "s"} / ${barCount} bar${barCount === 1 ? "" : "s"}`;
+}
+
 function instrumentCount(song) {
   return Object.keys(song?.studioArrangement?.lanes || {}).length;
 }
@@ -85,9 +123,12 @@ export class ExportPanelControl {
 
   renderSource(song, playable = { count: 0 }) {
     this.renderDefinitionList(this.sourceDetails, [
+      ["Song name", song?.name || "No song selected"],
       ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
+      ["Sequence summary", sequenceSummary(song)],
+      ["Section summary", sectionSummary(song)],
       ["Sequence length", sequenceLength(song)],
       ["Note count", noteCount(playable)],
       ["Instrument count", instrumentCount(song)],
@@ -130,9 +171,12 @@ export class ExportPanelControl {
       return;
     }
     this.renderDefinitionList(this.diagnosticTargets, [
+      ["Song name", song?.name || "No song selected"],
       ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
+      ["Sequence summary", sequenceSummary(song)],
+      ["Section summary", sectionSummary(song)],
       ["Sequence length", sequenceLength(song)],
       ["Note count", noteCount(playable)],
       ["Instrument count", instrumentCount(song)],
@@ -178,9 +222,12 @@ export class ExportPanelControl {
   setStatus({ level = "INFO", message = "No export attempted.", playable = { count: 0 }, song = null } = {}) {
     this.statusDetails.dataset.exportStatusLevel = level.toLowerCase();
     this.renderDefinitionList(this.statusDetails, [
+      ["Song name", song?.name || "No song selected"],
       ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
+      ["Sequence summary", sequenceSummary(song)],
+      ["Section summary", sectionSummary(song)],
       ["Sequence length", sequenceLength(song)],
       ["Note count", noteCount(playable)],
       ["Instrument count", instrumentCount(song)],

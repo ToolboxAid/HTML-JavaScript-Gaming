@@ -1559,6 +1559,12 @@ export class MidiStudioV2App {
       this.updateAudioDiagnostics();
       return;
     }
+    if (kind === "instrument-preset-load") {
+      this.persistInstrumentSettings("preset-load");
+      this.statusLog.ok(`Instrument preset loaded for ${detail.laneLabel}: ${detail.presetLabel}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
     if (kind === "select") {
       this.statusLog.info(`Selected instrument lane: ${detail.laneLabel}.`);
       this.updateAudioDiagnostics();

@@ -9,6 +9,11 @@ const SECTION_TEMPLATES = {
   Bridge: "Dm G Em Am",
   Outro: "F G C"
 };
+const ARRANGEMENT_TEMPLATES = {
+  "intro-verse-chorus-outro": ["Intro", "Verse", "Chorus", "Outro"],
+  "intro-verse-chorus-verse-chorus-outro": ["Intro", "Verse", "Chorus", "Verse", "Chorus", "Outro"],
+  "intro-verse-chorus-bridge-chorus-outro": ["Intro", "Verse", "Chorus", "Bridge", "Chorus", "Outro"]
+};
 const DEFAULT_CLASSIFICATION_WORKFLOW = {
   generationHints: "Use balanced Chords/Pad and Bass first; enable Drums or Lead when the arrangement needs motion.",
   instrumentSuggestions: "Warm Pad, Synth Bass, Basic Drums, Retro Lead",
@@ -239,26 +244,34 @@ export class SongSheetControl {
   constructor({
     addCustomSectionButton,
     addSequenceButton,
+    applyArrangementTemplateButton,
     applyBassInput,
     applyChordsPadInput,
     applyDrumsInput,
     applyLeadInput,
     applyTemplateButton,
+    arrangementTemplateSelect,
+    arrangementTemplateSummary,
     availableCount,
     availableSectionsList,
     classificationGuide,
     customSectionMetrics,
     customSectionsInput,
+    duplicateSectionButton,
     duplicateSequenceButton,
     keyInput,
+    loadSectionButton,
     moveSequenceDownButton,
     moveSequenceUpButton,
     namedSectionInputs,
     parseButton,
     regenerateButton,
     removeSequenceButton,
+    saveSectionButton,
     sequenceCount,
     sequenceSummary,
+    sectionLibrarySelect,
+    sectionLibrarySummary,
     sectionMetricOutputs,
     sectionsInput,
     sequenceInput,
@@ -272,26 +285,34 @@ export class SongSheetControl {
   }) {
     this.addCustomSectionButton = addCustomSectionButton;
     this.addSequenceButton = addSequenceButton;
+    this.applyArrangementTemplateButton = applyArrangementTemplateButton;
     this.applyBassInput = applyBassInput;
     this.applyChordsPadInput = applyChordsPadInput;
     this.applyDrumsInput = applyDrumsInput;
     this.applyLeadInput = applyLeadInput;
     this.applyTemplateButton = applyTemplateButton;
+    this.arrangementTemplateSelect = arrangementTemplateSelect;
+    this.arrangementTemplateSummary = arrangementTemplateSummary;
     this.availableCount = availableCount;
     this.availableSectionsList = availableSectionsList;
     this.classificationGuide = classificationGuide;
     this.customSectionMetrics = customSectionMetrics;
     this.customSectionsInput = customSectionsInput;
+    this.duplicateSectionButton = duplicateSectionButton;
     this.duplicateSequenceButton = duplicateSequenceButton;
     this.keyInput = keyInput;
+    this.loadSectionButton = loadSectionButton;
     this.moveSequenceDownButton = moveSequenceDownButton;
     this.moveSequenceUpButton = moveSequenceUpButton;
     this.namedSectionInputs = namedSectionInputs || {};
     this.parseButton = parseButton;
     this.regenerateButton = regenerateButton;
     this.removeSequenceButton = removeSequenceButton;
+    this.saveSectionButton = saveSectionButton;
     this.sequenceCount = sequenceCount;
     this.sequenceSummary = sequenceSummary;
+    this.sectionLibrarySelect = sectionLibrarySelect;
+    this.sectionLibrarySummary = sectionLibrarySummary;
     this.sectionMetricOutputs = sectionMetricOutputs || {};
     this.sectionsInput = sectionsInput;
     this.sequenceInput = sequenceInput;
@@ -305,11 +326,13 @@ export class SongSheetControl {
     this.defaultRegenerateLabel = regenerateButton?.textContent || "Regenerate Arrangement";
     this.classificationWorkflow = classificationWorkflowFor("");
     this.regenerationPending = false;
+    this.sectionLibraryAssets = [];
     this.userEditedSequence = false;
   }
 
   mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse, onRegenerate = onParse, onSequenceSelect = () => {}, onTemplateApply = () => {} }) {
     this.initializeTemplateLibrary();
+    this.initializeArrangementTemplates();
     this.parseButton.addEventListener("click", () => {
       this.setRegenerationPending(false);
       onParse(this.composeGuidedSheet());
@@ -348,6 +371,39 @@ export class SongSheetControl {
       this.setRegenerationPending(false);
       onTemplateApply(applied);
       onFieldChange("sections", this.sectionsInput.value);
+    });
+    this.sectionLibrarySelect?.addEventListener("change", () => this.renderSectionLibrarySummary());
+    this.saveSectionButton?.addEventListener("click", () => {
+      const saved = this.saveSelectedSectionAsset();
+      if (saved.ok) {
+        this.setRegenerationPending(false);
+      }
+    });
+    this.loadSectionButton?.addEventListener("click", () => {
+      const loaded = this.loadSelectedSectionAsset();
+      if (!loaded.ok) {
+        return;
+      }
+      this.setRegenerationPending(false);
+      onFieldChange("sections", this.sectionsInput.value);
+    });
+    this.duplicateSectionButton?.addEventListener("click", () => {
+      const duplicated = this.duplicateSelectedSectionAsset();
+      if (!duplicated.ok) {
+        return;
+      }
+      this.setRegenerationPending(false);
+      onFieldChange("sections", this.sectionsInput.value);
+    });
+    this.arrangementTemplateSelect?.addEventListener("change", () => this.renderArrangementTemplateSummary());
+    this.applyArrangementTemplateButton?.addEventListener("click", () => {
+      const applied = this.applySelectedArrangementTemplate();
+      if (!applied.ok) {
+        return;
+      }
+      this.setRegenerationPending(false);
+      onSequenceSelect(this.selectedSequenceDetail());
+      onFieldChange("sequence", this.sequenceInput.value);
     });
 
     this.addSequenceButton.addEventListener("click", () => {
@@ -399,6 +455,8 @@ export class SongSheetControl {
     this.setApplyTargets(null, { hasDrums: true });
     this.applyClassificationWorkflow("");
     this.refreshSectionBuilder({ preserveSequence: false });
+    this.renderSectionLibrary();
+    this.renderArrangementTemplateSummary();
   }
 
   applyClassificationWorkflow(classification) {
@@ -466,6 +524,219 @@ export class SongSheetControl {
     this.refreshSectionBuilder();
     input.focus();
     return { chords, insertedIntoPopulated: Boolean(existing), label, ok: true };
+  }
+
+  initializeArrangementTemplates() {
+    if (!this.arrangementTemplateSelect) {
+      return;
+    }
+    Array.from(this.arrangementTemplateSelect.options).forEach((option) => {
+      const labels = ARRANGEMENT_TEMPLATES[option.value] || [];
+      option.dataset.songSheetArrangementTemplate = option.value;
+      option.dataset.songSheetArrangementSequence = labels.join(", ");
+    });
+  }
+
+  selectedArrangementTemplate() {
+    const value = this.arrangementTemplateSelect?.value || Object.keys(ARRANGEMENT_TEMPLATES)[0];
+    return {
+      labels: ARRANGEMENT_TEMPLATES[value] || [],
+      value
+    };
+  }
+
+  renderArrangementTemplateSummary(message = "") {
+    if (!this.arrangementTemplateSummary) {
+      return;
+    }
+    const template = this.selectedArrangementTemplate();
+    const available = new Set(this.availableSections().map((section) => normalizedLabelKey(section.label)));
+    const missing = template.labels.filter((label) => !available.has(normalizedLabelKey(label)));
+    const summary = message || (missing.length
+      ? `Needs populated sections: ${missing.join(", ")}`
+      : template.labels.join(", "));
+    this.arrangementTemplateSummary.value = summary;
+    this.arrangementTemplateSummary.textContent = summary;
+    this.arrangementTemplateSummary.dataset.songSheetArrangementTemplate = template.value;
+    this.arrangementTemplateSummary.dataset.songSheetArrangementSequence = template.labels.join(", ");
+    this.arrangementTemplateSummary.dataset.songSheetArrangementMissing = missing.join(", ");
+    if (this.applyArrangementTemplateButton) {
+      this.applyArrangementTemplateButton.disabled = missing.length > 0 || template.labels.length === 0;
+      this.applyArrangementTemplateButton.dataset.songSheetArrangementTemplateReady = String(!this.applyArrangementTemplateButton.disabled);
+    }
+  }
+
+  applySelectedArrangementTemplate() {
+    const template = this.selectedArrangementTemplate();
+    const available = new Set(this.availableSections().map((section) => normalizedLabelKey(section.label)));
+    const missing = template.labels.filter((label) => !available.has(normalizedLabelKey(label)));
+    if (!template.labels.length || missing.length) {
+      this.renderArrangementTemplateSummary(`Cannot apply template; populate ${missing.join(", ") || "required sections"}.`);
+      return { ok: false };
+    }
+    this.setSequenceLabels(template.labels);
+    this.userEditedSequence = true;
+    this.syncSequenceState();
+    this.renderArrangementTemplateSummary(`Applied: ${template.labels.join(", ")}`);
+    return { labels: template.labels, ok: true, value: template.value };
+  }
+
+  selectedAvailableSection() {
+    const selected = this.availableSectionsList?.selectedOptions?.[0] || this.availableSectionsList?.options?.[0] || null;
+    if (!selected) {
+      return null;
+    }
+    return {
+      chords: selected.dataset.songSheetSectionChords || "",
+      label: selected.value
+    };
+  }
+
+  selectedSectionAsset() {
+    const id = this.sectionLibrarySelect?.value || "";
+    return this.sectionLibraryAssets.find((asset) => asset.id === id) || null;
+  }
+
+  saveSelectedSectionAsset() {
+    const section = this.selectedAvailableSection();
+    if (!section?.label || !section.chords) {
+      this.renderSectionLibrarySummary("Choose a populated Available Section before saving.");
+      return { ok: false };
+    }
+    const asset = {
+      chords: section.chords,
+      id: this.nextSectionAssetId(section.label),
+      label: section.label
+    };
+    this.sectionLibraryAssets.push(asset);
+    this.renderSectionLibrary(asset.id, `Saved section asset: ${asset.label}`);
+    return { asset, ok: true };
+  }
+
+  loadSelectedSectionAsset() {
+    const asset = this.selectedSectionAsset();
+    if (!asset) {
+      this.renderSectionLibrarySummary("Choose a saved section asset before loading.");
+      return { ok: false };
+    }
+    this.applySectionAssetToEditor(asset);
+    this.refreshSectionBuilder();
+    this.renderSectionLibrary(asset.id, `Loaded section asset: ${asset.label}`);
+    return { asset, ok: true };
+  }
+
+  duplicateSelectedSectionAsset() {
+    const asset = this.selectedSectionAsset();
+    if (!asset) {
+      this.renderSectionLibrarySummary("Choose a saved section asset before duplicating.");
+      return { ok: false };
+    }
+    const label = this.nextReusableSectionLabel(asset.label);
+    const duplicate = {
+      chords: asset.chords,
+      id: this.nextSectionAssetId(label),
+      label
+    };
+    this.upsertCustomSection(label, asset.chords);
+    this.sectionLibraryAssets.push(duplicate);
+    this.refreshSectionBuilder();
+    this.renderSectionLibrary(duplicate.id, `Duplicated section asset: ${label}`);
+    return { asset: duplicate, ok: true };
+  }
+
+  applySectionAssetToEditor(asset) {
+    const namedLabel = NAMED_SECTION_LABELS.find((label) => normalizedLabelKey(label) === normalizedLabelKey(asset.label));
+    if (namedLabel) {
+      this.namedSectionInputs[namedLabel].value = asset.chords;
+      return;
+    }
+    this.upsertCustomSection(asset.label, asset.chords);
+  }
+
+  upsertCustomSection(label, chords) {
+    const normalized = normalizedLabelKey(label);
+    const rows = sectionRowsFromText(this.customSectionsInput.value);
+    const index = rows.findIndex((section) => normalizedLabelKey(section.label) === normalized);
+    if (index >= 0) {
+      rows[index] = { chords, label };
+    } else {
+      rows.push({ chords, label });
+    }
+    this.customSectionsInput.value = this.sectionsTextFromRows(rows);
+  }
+
+  nextReusableSectionLabel(label) {
+    const base = `${String(label || "Section").replace(/[^A-Za-z0-9_-]+/g, "") || "Section"}Copy`;
+    const labels = new Set([
+      ...this.availableSections().map((section) => normalizedLabelKey(section.label)),
+      ...this.sectionLibraryAssets.map((asset) => normalizedLabelKey(asset.label))
+    ]);
+    let index = 1;
+    let candidate = `${base}${index}`;
+    while (labels.has(normalizedLabelKey(candidate))) {
+      index += 1;
+      candidate = `${base}${index}`;
+    }
+    return candidate;
+  }
+
+  nextSectionAssetId(label) {
+    const base = fieldToken(label) || "section";
+    let index = this.sectionLibraryAssets.length + 1;
+    let id = `${base}-${index}`;
+    const ids = new Set(this.sectionLibraryAssets.map((asset) => asset.id));
+    while (ids.has(id)) {
+      index += 1;
+      id = `${base}-${index}`;
+    }
+    return id;
+  }
+
+  renderSectionLibrary(selectedId = this.sectionLibrarySelect?.value || "", message = "") {
+    if (!this.sectionLibrarySelect) {
+      return;
+    }
+    this.sectionLibrarySelect.replaceChildren();
+    this.sectionLibraryAssets.forEach((asset) => {
+      const option = document.createElement("option");
+      const chordCount = chordTokenCount(asset.chords);
+      option.value = asset.id;
+      option.textContent = `${asset.label} - ${chordCount} bar${chordCount === 1 ? "" : "s"}`;
+      option.dataset.songSheetSectionAssetLabel = asset.label;
+      option.dataset.songSheetSectionAssetChords = asset.chords;
+      option.dataset.songSheetSectionAssetBarCount = String(chordCount);
+      this.sectionLibrarySelect.append(option);
+    });
+    if (selectedId && this.sectionLibraryAssets.some((asset) => asset.id === selectedId)) {
+      this.sectionLibrarySelect.value = selectedId;
+    } else if (this.sectionLibrarySelect.options.length) {
+      this.sectionLibrarySelect.selectedIndex = 0;
+    }
+    this.renderSectionLibrarySummary(message);
+  }
+
+  renderSectionLibrarySummary(message = "") {
+    if (!this.sectionLibrarySummary) {
+      return;
+    }
+    const count = this.sectionLibraryAssets.length;
+    const selected = this.selectedSectionAsset();
+    const summary = message || (selected
+      ? `${count} saved section asset${count === 1 ? "" : "s"}; selected ${selected.label}`
+      : `${count} saved section asset${count === 1 ? "" : "s"}`);
+    this.sectionLibrarySummary.value = summary;
+    this.sectionLibrarySummary.textContent = summary;
+    this.sectionLibrarySummary.dataset.songSheetSectionLibraryCount = String(count);
+    this.sectionLibrarySummary.dataset.songSheetSelectedSectionAsset = selected?.label || "";
+    if (this.saveSectionButton) {
+      this.saveSectionButton.disabled = this.availableSections().length === 0;
+    }
+    if (this.loadSectionButton) {
+      this.loadSectionButton.disabled = count === 0;
+    }
+    if (this.duplicateSectionButton) {
+      this.duplicateSectionButton.disabled = count === 0;
+    }
   }
 
   setRegenerationPending(isPending) {
@@ -628,6 +899,8 @@ export class SongSheetControl {
       labels = rows.map((section) => section.label);
     }
     this.setSequenceLabels(labels);
+    this.renderSectionLibrary();
+    this.renderArrangementTemplateSummary();
     this.syncSequenceState();
   }
 

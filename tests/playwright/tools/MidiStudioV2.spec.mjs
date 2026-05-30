@@ -719,6 +719,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       clearStatusButton: { canonical: "diagnostic status log", kind: "action", owner: "Diagnostics", wired: "wired" },
       closeInstrumentPanelButton: { canonical: "accordion view state", kind: "view-state", owner: "Instruments", wired: "wired" },
       duplicateInstrumentRowButton: { canonical: "music.songs[].studioArrangement.lanes / previewLaneSettings", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
+      duplicateInstrumentPresetButton: { canonical: "Instruments tab instrument preset library", kind: "workflow-state", owner: "Instruments", wired: "wired" },
       futureAutosaveButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
       futureEnableMidiInputButton: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
       futureMidiDeviceSelect: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
@@ -752,7 +753,10 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       instrumentGridZoomInButton: { canonical: "octave timeline view zoom state", kind: "view-state", owner: "Octave Timeline", wired: "wired" },
       instrumentGridZoomOutButton: { canonical: "octave timeline view zoom state", kind: "view-state", owner: "Octave Timeline", wired: "wired" },
       instrumentSetField: { canonical: "music.songs[].instrumentSet", kind: "readonly", owner: "MIDI Import", wired: "wired" },
+      instrumentPresetSelect: { canonical: "Instruments tab instrument preset library", kind: "workflow-state", owner: "Instruments", wired: "wired" },
+      instrumentPresetSummary: { canonical: "derived from Instruments tab instrument preset library", kind: "readonly", owner: "Instruments", wired: "wired" },
       jumpToSectionButton: { canonical: "timing preview section state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      loadInstrumentPresetButton: { canonical: "Instruments tab instrument preset library", kind: "workflow-state", owner: "Instruments", wired: "wired" },
       loopToggle: { canonical: "playback loop state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       moveInstrumentDownButton: { canonical: "music.songs[].studioArrangement.lanes order", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
       moveInstrumentUpButton: { canonical: "music.songs[].studioArrangement.lanes order", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
@@ -767,20 +771,27 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       renderedExportTargetTypeSelect: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
       resetSongEditsButton: { canonical: "music.songs[] reset baseline", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
       returnToWorkspaceButton: { canonical: "workspace navigation", kind: "action", owner: "Workspace NAV", wired: "wired" },
+      saveInstrumentPresetButton: { canonical: "Instruments tab instrument preset library", kind: "workflow-state", owner: "Instruments", wired: "wired" },
       saveProjectButton: { canonical: "serialized midi-studio-v2 tool state", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
       songSheetAddSectionToSequenceButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       songSheetAddCustomSectionButton: { canonical: "music.songs[].studioArrangement.songSheet.sections", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      songSheetApplyArrangementTemplateButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       songSheetApplyBassInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.bass", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetApplyChordsPadInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.chordsPad", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetApplyDrumsInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.drums", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetApplyLeadInput: { canonical: "music.songs[].studioArrangement.songSheet.applyTargets.lead", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetAvailableSectionsList: { canonical: "derived from populated Song Sheet section inputs", kind: "readonly", owner: "Song Setup", wired: "wired" },
+      songSheetArrangementTemplateSelect: { canonical: "Song Sheet arrangement template library", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
+      songSheetArrangementTemplateSummary: { canonical: "derived from Song Sheet arrangement template library", kind: "readonly", owner: "Song Setup", wired: "wired" },
       songSheetClassificationGuide: { canonical: "derived from music.songs[].classification defaults", kind: "readonly", owner: "Song Setup", wired: "wired" },
       songSheetCustomSectionsInput: { canonical: "music.songs[].studioArrangement.songSheet.sections", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetCustomSectionMetrics: { canonical: "derived from populated custom Song Sheet sections", kind: "readonly", owner: "Song Setup", wired: "wired" },
       songSheetDragDropSequenceButton: { canonical: "future Song Sequence drag/drop", kind: "unwired", owner: "Song Setup", wired: "unwired" },
+      songSheetDuplicateSectionButton: { canonical: "Song Sheet reusable section library", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
       songSheetDuplicateSequenceButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       songSheetKeyInput: { canonical: "music.songs[].studioArrangement.key", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      songSheetLoadSectionButton: { canonical: "Song Sheet reusable section library", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
+      songSheetSaveSectionButton: { canonical: "Song Sheet reusable section library", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
       songSheetSectionBridgeInput: { canonical: "music.songs[].studioArrangement.songSheet.sections.Bridge", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetSectionBridgeMetrics: { canonical: "derived from Song Sheet section Bridge", kind: "readonly", owner: "Song Setup", wired: "wired" },
       songSheetSectionChorusInput: { canonical: "music.songs[].studioArrangement.songSheet.sections.Chorus", kind: "canonical", owner: "Song Setup", wired: "wired" },
@@ -791,6 +802,8 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       songSheetSectionOutroMetrics: { canonical: "derived from Song Sheet section Outro", kind: "readonly", owner: "Song Setup", wired: "wired" },
       songSheetSectionVerseInput: { canonical: "music.songs[].studioArrangement.songSheet.sections.Verse", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetSectionVerseMetrics: { canonical: "derived from Song Sheet section Verse", kind: "readonly", owner: "Song Setup", wired: "wired" },
+      songSheetSectionLibrarySelect: { canonical: "Song Sheet reusable section library", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
+      songSheetSectionLibrarySummary: { canonical: "derived from Song Sheet reusable section library", kind: "readonly", owner: "Song Setup", wired: "wired" },
       songSheetSequenceInput: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetSequenceList: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical", owner: "Song Setup", wired: "wired" },
       songSheetSequenceMoveDownButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
@@ -5503,6 +5516,111 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#stopTimingPreviewButton").click();
       await expect(page.locator("#instrumentGridTransportState")).toContainText("Preview Synth timing preview stopped.");
 
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR101-104 reusable sections instrument presets arrangement templates and export readiness", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      await page.locator("#songDetails [data-song-detail-field='classification']").fill("Loop");
+      await page.locator("#songSheetSectionIntroInput").fill("C F");
+      await page.locator("#songSheetSectionVerseInput").fill("G Em C D");
+      await page.locator("#songSheetSectionChorusInput").fill("C G Am F");
+      await page.locator("#songSheetSectionBridgeInput").fill("Dm G Em Am");
+      await page.locator("#songSheetSectionOutroInput").fill("F G C");
+
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Verse");
+      await page.locator("#songSheetSaveSectionButton").click();
+      await expect(page.locator("#songSheetSectionLibrarySummary")).toContainText("Saved section asset: Verse");
+      await expect(page.locator("#songSheetSectionLibrarySummary")).toHaveAttribute("data-song-sheet-section-library-count", "1");
+      await expect(page.locator("#songSheetSectionLibrarySelect option")).toHaveCount(1);
+
+      await page.locator("#songSheetSectionVerseInput").fill("");
+      await expect(page.locator("#songSheetAvailableSectionsList")).not.toContainText("Verse - 4 bars");
+      await page.locator("#songSheetLoadSectionButton").click();
+      await expect(page.locator("#songSheetSectionVerseInput")).toHaveValue("G Em C D");
+      await expect(page.locator("#songSheetSectionLibrarySummary")).toContainText("Loaded section asset: Verse");
+
+      await page.locator("#songSheetDuplicateSectionButton").click();
+      await expect(page.locator("#songSheetCustomSectionsInput")).toHaveValue(/VerseCopy1: G Em C D/);
+      await expect(page.locator("#songSheetAvailableSectionsList")).toContainText("VerseCopy1 - 4 bars");
+      await expect(page.locator("#songSheetSectionLibrarySummary")).toHaveAttribute("data-song-sheet-section-library-count", "2");
+
+      await page.locator("#songSheetArrangementTemplateSelect").selectOption("intro-verse-chorus-bridge-chorus-outro");
+      await expect(page.locator("#songSheetArrangementTemplateSummary")).toContainText("Intro, Verse, Chorus, Bridge, Chorus, Outro");
+      await page.locator("#songSheetApplyArrangementTemplateButton").click();
+      await expect(page.locator("#songSheetSequenceInput")).toHaveValue("Intro, Verse, Chorus, Bridge, Chorus, Outro");
+      await expect(page.locator("#songSheetSequenceSummary")).toContainText("6 sections");
+      await expect(page.locator("#songSheetSequenceSummary")).toContainText("21 bars");
+      expect(await page.locator("#songSheetSequenceList option").evaluateAll((options) => options.map((option) => option.value))).toEqual([
+        "Intro",
+        "Verse",
+        "Chorus",
+        "Bridge",
+        "Chorus",
+        "Outro"
+      ]);
+
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='generated-bars'] dd")).toHaveText("21");
+      await expect.poll(async () => Number(await page.locator("#songSheetSummary [data-song-sheet-summary-field='generated-notes'] dd").textContent())).toBeGreaterThan(0);
+
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+      const savedLeadInstrument = await instrumentSelect(page, "lead").inputValue();
+      await page.locator("#saveInstrumentPresetButton").click();
+      await expect(page.locator("#instrumentPresetSummary")).toContainText("Saved instrument preset");
+      await expect(page.locator("#instrumentPresetSummary")).toHaveAttribute("data-instrument-preset-count", "1");
+      await instrumentTypeSelect(page, "lead").selectOption("Piano");
+      await expect(instrumentSelect(page, "lead")).not.toHaveValue(savedLeadInstrument);
+      await page.locator("#loadInstrumentPresetButton").click();
+      await expect(instrumentSelect(page, "lead")).toHaveValue(savedLeadInstrument);
+      await expect(page.locator("#instrumentPresetSummary")).toContainText("Loaded instrument preset");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Instrument preset loaded for Lead/);
+      await page.locator("#duplicateInstrumentPresetButton").click();
+      await expect(page.locator("#instrumentPresetSummary")).toHaveAttribute("data-instrument-preset-count", "2");
+
+      const canonical = await page.evaluate(() => {
+        const song = window.__midiStudioV2App.selectedSong();
+        return {
+          leadInstrument: song.studioArrangement.previewLaneSettings.instruments.lead,
+          sections: song.studioArrangement.songSheet.sections,
+          sequence: song.studioArrangement.songSheet.sequence
+        };
+      });
+      expect(canonical.sequence).toBe("Intro, Verse, Chorus, Bridge, Chorus, Outro");
+      expect(canonical.sections).toContain("VerseCopy1: G Em C D");
+      expect(canonical.leadInstrument).toBe(savedLeadInstrument);
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#exportRenderSource [data-export-field='song-name'] dd")).toContainText("Camptown Races UAT Reel");
+      await expect(page.locator("#exportRenderSource [data-export-field='classification'] dd")).toContainText("Loop");
+      await expect(page.locator("#exportRenderSource [data-export-field='generated-id'] dd")).toContainText("camptownRacesUatReel-Loop");
+      await expect(page.locator("#exportRenderSource [data-export-field='sequence-summary'] dd")).toContainText("6 sequence items");
+      await expect(page.locator("#exportRenderSource [data-export-field='section-summary'] dd")).toContainText("7 populated sections / 25 bars");
+      await expect(page.locator("#exportRenderSource [data-export-field='instrument-count'] dd")).toContainText("6");
+      await expect.poll(async () => Number(await page.locator("#exportRenderSource [data-export-field='note-count'] dd").textContent())).toBeGreaterThan(0);
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save MP3");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
+      await expect(page.locator("#futureSoundFontSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+
+      await selectMidiStudioTab(page, "studio");
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();
