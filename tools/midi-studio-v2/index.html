@@ -270,6 +270,20 @@
           <div id="songSheetContent" class="accordion-v2__content midi-studio-v2__stack midi-studio-v2__song-sheet-panel" aria-label="Song Sheet">
             <input id="songSheetSectionsInput" type="hidden">
             <input id="songSheetSequenceInput" type="hidden">
+            <div class="midi-studio-v2__song-sheet-template-library" aria-label="Section template library">
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetTemplateSectionSelect">
+                <span>Section Template</span>
+                <select id="songSheetTemplateSectionSelect" aria-label="Built-in section template">
+                  <option value="Intro">Intro</option>
+                  <option value="Verse">Verse</option>
+                  <option value="Chorus">Chorus</option>
+                  <option value="Bridge">Bridge</option>
+                  <option value="Outro">Outro</option>
+                </select>
+                <output id="songSheetTemplatePreview" data-song-sheet-template-preview>Intro template: C F G C</output>
+              </label>
+              <button id="songSheetApplySectionTemplateButton" type="button">Apply Template</button>
+            </div>
             <div class="midi-studio-v2__song-sheet-grid midi-studio-v2__song-sheet-section-fields" aria-label="Musical section definitions">
               <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetSectionIntroInput">
                 <span>Intro</span>

@@ -158,6 +158,7 @@ window.addEventListener("DOMContentLoaded", () => {
       applyChordsPadInput: requireElement("#songSheetApplyChordsPadInput"),
       applyDrumsInput: requireElement("#songSheetApplyDrumsInput"),
       applyLeadInput: requireElement("#songSheetApplyLeadInput"),
+      applyTemplateButton: requireElement("#songSheetApplySectionTemplateButton"),
       availableCount: requireElement("#songSheetAvailableCount"),
       availableSectionsList: requireElement("#songSheetAvailableSectionsList"),
       customSectionsInput: requireElement("#songSheetCustomSectionsInput"),
@@ -188,6 +189,8 @@ window.addEventListener("DOMContentLoaded", () => {
       sectionsInput: requireElement("#songSheetSectionsInput"),
       styleInput: requireElement("#songSheetStyleInput"),
       summary: optionalElement("#songSheetSummary"),
+      templatePreview: requireElement("#songSheetTemplatePreview"),
+      templateSectionSelect: requireElement("#songSheetTemplateSectionSelect"),
       tempoInput: requireElement("#songSheetTempoInput"),
       customSectionMetrics: requireElement("#songSheetCustomSectionMetrics"),
       warnings: optionalElement("#songSheetWarningsDetails")

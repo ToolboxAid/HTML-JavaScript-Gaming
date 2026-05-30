@@ -1,6 +1,13 @@
 import { sectionTone, sectionToneRgba } from "../sectionColors.js";
 
 const NAMED_SECTION_LABELS = ["Intro", "Verse", "Chorus", "Bridge", "Outro"];
+const SECTION_TEMPLATES = {
+  Intro: "C F G C",
+  Verse: "C Am F G",
+  Chorus: "F G C C",
+  Bridge: "Dm G Em Am",
+  Outro: "F G C"
+};
 
 function fieldToken(label) {
   return String(label || "")
@@ -100,6 +107,9 @@ function songSheetRows(result, generationSummary = null) {
       ["Generation targets", "not generated"],
       ["Lane mapping", "not generated"],
       ["Manual lanes preserved", "not generated"],
+      ["Generated notes before regeneration", "not checked"],
+      ["Manual notes before regeneration", "not checked"],
+      ["Regeneration protection", "not checked"],
       ["Target lanes affected", "not generated"]
     ];
   }
@@ -116,6 +126,9 @@ function songSheetRows(result, generationSummary = null) {
     ["Generation targets", summary.generationTargets || "not generated"],
     ["Lane mapping", summary.laneMapping || "not generated"],
     ["Manual lanes preserved", summary.manualLanesPreserved || "not generated"],
+    ["Generated notes before regeneration", summary.generatedNotesBeforeRegeneration ?? "not checked"],
+    ["Manual notes before regeneration", summary.manualNotesBeforeRegeneration ?? "not checked"],
+    ["Regeneration protection", summary.regenerationProtection || "not checked"],
     ["Target lanes affected", summary.targetLanesAffected || "not generated"]
   ];
 }
@@ -148,6 +161,7 @@ export class SongSheetControl {
     applyChordsPadInput,
     applyDrumsInput,
     applyLeadInput,
+    applyTemplateButton,
     availableCount,
     availableSectionsList,
     customSectionMetrics,
@@ -167,6 +181,8 @@ export class SongSheetControl {
     sequenceList,
     styleInput,
     summary,
+    templatePreview,
+    templateSectionSelect,
     tempoInput,
     warnings
   }) {
@@ -176,6 +192,7 @@ export class SongSheetControl {
     this.applyChordsPadInput = applyChordsPadInput;
     this.applyDrumsInput = applyDrumsInput;
     this.applyLeadInput = applyLeadInput;
+    this.applyTemplateButton = applyTemplateButton;
     this.availableCount = availableCount;
     this.availableSectionsList = availableSectionsList;
     this.customSectionMetrics = customSectionMetrics;
@@ -195,13 +212,21 @@ export class SongSheetControl {
     this.sequenceList = sequenceList;
     this.styleInput = styleInput;
     this.summary = summary;
+    this.templatePreview = templatePreview;
+    this.templateSectionSelect = templateSectionSelect;
     this.tempoInput = tempoInput;
     this.warnings = warnings;
+    this.defaultRegenerateLabel = regenerateButton?.textContent || "Regenerate Arrangement";
+    this.regenerationPending = false;
     this.userEditedSequence = false;
   }
 
-  mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse, onRegenerate = onParse }) {
-    this.parseButton.addEventListener("click", () => onParse(this.composeGuidedSheet()));
+  mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse, onRegenerate = onParse, onTemplateApply = () => {} }) {
+    this.initializeTemplateLibrary();
+    this.parseButton.addEventListener("click", () => {
+      this.setRegenerationPending(false);
+      onParse(this.composeGuidedSheet());
+    });
     this.regenerateButton.addEventListener("click", () => onRegenerate(this.composeGuidedSheet()));
     this.tempoInput.addEventListener("input", () => {
       this.renderSectionMetrics(this.availableSections());
@@ -212,16 +237,29 @@ export class SongSheetControl {
 
     Object.values(this.namedSectionInputs).forEach((input) => {
       input.addEventListener("input", () => {
+        this.setRegenerationPending(false);
         this.refreshSectionBuilder();
         onFieldChange("sections", this.sectionsInput.value);
       });
     });
     this.customSectionsInput.addEventListener("input", () => {
+      this.setRegenerationPending(false);
       this.refreshSectionBuilder();
       onFieldChange("sections", this.sectionsInput.value);
     });
     this.addCustomSectionButton.addEventListener("click", () => {
+      this.setRegenerationPending(false);
       this.addCustomSection();
+      onFieldChange("sections", this.sectionsInput.value);
+    });
+    this.templateSectionSelect?.addEventListener("change", () => this.updateTemplatePreview());
+    this.applyTemplateButton?.addEventListener("click", () => {
+      const applied = this.applySelectedSectionTemplate();
+      if (!applied.ok) {
+        return;
+      }
+      this.setRegenerationPending(false);
+      onTemplateApply(applied);
       onFieldChange("sections", this.sectionsInput.value);
     });
 
@@ -230,6 +268,7 @@ export class SongSheetControl {
       if (!selected) {
         return;
       }
+      this.setRegenerationPending(false);
       this.appendSequenceLabel(selected.value);
       this.userEditedSequence = true;
       this.syncSequenceState();
@@ -237,27 +276,81 @@ export class SongSheetControl {
     });
     this.sequenceList.addEventListener("change", () => this.syncSequenceState());
     this.moveSequenceUpButton.addEventListener("click", () => {
+      this.setRegenerationPending(false);
       this.moveSelectedSequenceItem(-1);
       onFieldChange("sequence", this.sequenceInput.value);
     });
     this.moveSequenceDownButton.addEventListener("click", () => {
+      this.setRegenerationPending(false);
       this.moveSelectedSequenceItem(1);
       onFieldChange("sequence", this.sequenceInput.value);
     });
     this.duplicateSequenceButton.addEventListener("click", () => {
+      this.setRegenerationPending(false);
       this.duplicateSelectedSequenceItem();
       onFieldChange("sequence", this.sequenceInput.value);
     });
     this.removeSequenceButton.addEventListener("click", () => {
+      this.setRegenerationPending(false);
       this.removeSelectedSequenceItem();
       onFieldChange("sequence", this.sequenceInput.value);
     });
 
     [this.applyChordsPadInput, this.applyBassInput, this.applyDrumsInput, this.applyLeadInput].forEach((input) => {
-      input.addEventListener("change", () => onFieldChange("applyTargets", this.applyTargets()));
+      input.addEventListener("change", () => {
+        this.setRegenerationPending(false);
+        onFieldChange("applyTargets", this.applyTargets());
+      });
     });
     this.setApplyTargets(null, { hasDrums: true });
     this.refreshSectionBuilder({ preserveSequence: false });
+  }
+
+  initializeTemplateLibrary() {
+    if (!this.templateSectionSelect) {
+      return;
+    }
+    Array.from(this.templateSectionSelect.options).forEach((option) => {
+      const label = option.value || option.textContent;
+      option.dataset.songSheetTemplateSection = label;
+      option.dataset.songSheetTemplateChords = SECTION_TEMPLATES[label] || "";
+    });
+    this.updateTemplatePreview();
+  }
+
+  updateTemplatePreview() {
+    if (!this.templatePreview || !this.templateSectionSelect) {
+      return;
+    }
+    const label = this.templateSectionSelect.value || NAMED_SECTION_LABELS[0];
+    const chords = SECTION_TEMPLATES[label] || "";
+    this.templatePreview.textContent = `${label} template: ${chords || "not available"}`;
+    this.templatePreview.dataset.songSheetTemplatePreview = label;
+    this.templatePreview.dataset.songSheetTemplateChords = chords;
+  }
+
+  applySelectedSectionTemplate() {
+    const label = this.templateSectionSelect?.value || NAMED_SECTION_LABELS[0];
+    const chords = SECTION_TEMPLATES[label] || "";
+    const input = this.namedSectionInputs[label];
+    if (!input || !chords) {
+      return { ok: false, message: `No section template is available for ${label || "(none)"}.` };
+    }
+    input.value = chords;
+    this.refreshSectionBuilder();
+    input.focus();
+    return { chords, label, ok: true };
+  }
+
+  setRegenerationPending(isPending) {
+    this.regenerationPending = isPending === true;
+    if (!this.regenerateButton) {
+      return;
+    }
+    this.regenerateButton.dataset.regenerationPending = String(this.regenerationPending);
+    this.regenerateButton.textContent = this.regenerationPending
+      ? "Confirm Regenerate Arrangement"
+      : this.defaultRegenerateLabel;
   }
 
   applyGuidedDefaults({ applyTargets, hasDrums = false, intro, key, loop, sections, sequence, style, tempo }) {

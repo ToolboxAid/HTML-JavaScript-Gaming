@@ -69,6 +69,8 @@ export class MidiStudioV2App {
     this.missingSectionWarnings = new Set();
     this.missingSectionWarningKey = "";
     this.lastSongSheetGenerationSummary = null;
+    this.lastRegenerationProtectionSummary = null;
+    this.pendingRegenerationSignature = "";
     this.payload = null;
     this.playbackCompletionTimer = null;
     this.playback = playback;
@@ -99,7 +101,8 @@ export class MidiStudioV2App {
       onFieldChange: (field, value) => this.handleSongSheetFieldChange(field, value),
       onMetadataChange: (field, value) => this.handleSongDetailsChange(field, value),
       onParse: (sourceText) => this.parseSongSheet(sourceText),
-      onRegenerate: (sourceText) => this.regenerateSongSheetArrangement(sourceText)
+      onRegenerate: (sourceText) => this.regenerateSongSheetArrangement(sourceText),
+      onTemplateApply: (detail) => this.handleSectionTemplateApplied(detail)
     });
     this.instrumentGrid.mount({
       onGenerate: (lane, input) => this.generateInstrumentLane(lane, input),
@@ -334,9 +337,16 @@ export class MidiStudioV2App {
       [normalizedFormat]: String(value || "").trim()
     };
     this.details.showJson(song);
+    this.exportPanel.renderSource(song, this.playableEventSummary());
     this.exportPanel.renderDiagnostics(song);
+    this.exportPanel.setStatus(this.exportPanel.exportReadiness(song, { playable: this.playableEventSummary() }));
     this.markDirty({ changedKeys: ["data.songs.rendered"], reason: "midi-studio-rendered-target-edited" });
     this.statusLog.info(`Edited rendered ${normalizedFormat.toUpperCase()} target for ${song.name}.`);
+  }
+
+  handleSectionTemplateApplied({ label, chords } = {}) {
+    const song = this.selectedSong();
+    this.statusLog.info(`Applied ${label || "section"} template as editable starting chords${song ? ` for ${song.name}` : ""}: ${chords || "not declared"}.`);
   }
 
   updateSelectedSongId(value) {
@@ -414,6 +424,9 @@ export class MidiStudioV2App {
     if (field !== "sections" && field !== "sequence" && field !== "applyTargets") {
       return;
     }
+    this.pendingRegenerationSignature = "";
+    this.lastRegenerationProtectionSummary = null;
+    this.songSheet.setRegenerationPending(false);
     const song = this.selectedSong();
     const arrangement = song?.studioArrangement || null;
     if (!arrangement) {
@@ -885,6 +898,11 @@ export class MidiStudioV2App {
   }
 
   parseSongSheet(request, { generationAction = "parse", updateGrid = true } = {}) {
+    if (generationAction !== "regenerate") {
+      this.pendingRegenerationSignature = "";
+      this.lastRegenerationProtectionSummary = null;
+      this.songSheet.setRegenerationPending(false);
+    }
     const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
     this.songSheet.render(result);
     if (!result.ok) {
@@ -908,8 +926,94 @@ export class MidiStudioV2App {
   }
 
   regenerateSongSheetArrangement(request) {
+    const result = request?.ok === false ? request : this.songSheetParser.parse(request?.sourceText || request);
+    this.songSheet.render(result);
+    if (!result.ok) {
+      this.pendingRegenerationSignature = "";
+      this.lastRegenerationProtectionSummary = null;
+      this.songSheet.setRegenerationPending(false);
+      this.statusLog.fail(`Song Sheet rejected: ${result.message}`);
+      this.updateAudioDiagnostics();
+      return result;
+    }
+    const protection = this.regenerationProtectionSummary(request);
+    const signature = this.regenerationRequestSignature(request);
+    const needsConfirmation = protection.manualNoteCount > 0;
+    const isConfirmed = needsConfirmation && this.pendingRegenerationSignature === signature;
+    this.lastRegenerationProtectionSummary = protection;
+    if (needsConfirmation && !isConfirmed) {
+      this.pendingRegenerationSignature = signature;
+      this.songSheet.setRegenerationPending(true);
+      this.songSheet.render(result, this.regenerationProtectionDisplaySummary(result, protection));
+      this.statusLog.warn(protection.message);
+      this.updateAudioDiagnostics();
+      return result;
+    }
+    this.pendingRegenerationSignature = "";
+    this.songSheet.setRegenerationPending(false);
     this.statusLog.info("Regenerate Arrangement requested from the populated Song Sheet sequence and selected targets.");
-    return this.parseSongSheet(request, { generationAction: "regenerate", updateGrid: true });
+    const applied = this.parseSongSheet(request, { generationAction: "regenerate", updateGrid: true });
+    this.lastRegenerationProtectionSummary = null;
+    return applied;
+  }
+
+  regenerationRequestSignature(request) {
+    const targets = request?.applyTargets || this.songSheet.applyTargets();
+    const normalizedTargets = {
+      bass: targets.bass !== false,
+      chordsPad: targets.chordsPad !== false,
+      drums: targets.drums === true,
+      lead: targets.lead === true
+    };
+    return JSON.stringify({
+      sourceText: request?.sourceText || String(request || ""),
+      targets: normalizedTargets
+    });
+  }
+
+  regenerationProtectionSummary(request) {
+    const plan = this.songSheetGenerationPlan(request?.applyTargets || this.songSheet.applyTargets());
+    const generatedLaneSet = new Set(plan.generatedTargets);
+    const result = this.instrumentGridParser.parse(this.instrumentGrid.readInput());
+    let generatedNoteCount = 0;
+    let manualNoteCount = 0;
+    if (result.ok) {
+      result.timeline
+        .filter((event) => generatedLaneSet.has(event.lane))
+        .forEach((event) => {
+          if (event.source === "generated") {
+            generatedNoteCount += 1;
+          } else if (event.source === "manual") {
+            manualNoteCount += 1;
+          }
+        });
+    }
+    const targetLanes = plan.generatedTargets.join(", ") || "none";
+    const targetText = targetLanes === "none" ? "no generated target lanes" : `target lanes ${targetLanes}`;
+    const message = manualNoteCount > 0
+      ? `Regeneration may overwrite ${manualNoteCount} manual note${manualNoteCount === 1 ? "" : "s"} in ${targetText}. Generated notes before regeneration: ${generatedNoteCount}. Click Regenerate Arrangement again to confirm.`
+      : `Regeneration ready: ${generatedNoteCount} generated note${generatedNoteCount === 1 ? "" : "s"} and 0 manual notes in ${targetText}.`;
+    return {
+      generatedNoteCount,
+      manualNoteCount,
+      message,
+      targetLanes
+    };
+  }
+
+  regenerationProtectionDisplaySummary(result, protection) {
+    const plan = this.songSheetGenerationPlan(this.songSheet.applyTargets());
+    return {
+      ...(this.lastSongSheetGenerationSummary || {}),
+      barsGenerated: result.bars,
+      generatedNotesBeforeRegeneration: protection.generatedNoteCount,
+      generationTargets: plan.generationTargets,
+      laneMapping: plan.laneMapping,
+      manualNotesBeforeRegeneration: protection.manualNoteCount,
+      regenerationProtection: protection.message,
+      sectionsUsed: result.sections.map((section) => section.label).join(", "),
+      targetLanesAffected: plan.targetLabels.join(", ") || "section colors only"
+    };
   }
 
   songSheetGenerationPlan(targets = {}) {
@@ -1010,12 +1114,16 @@ export class MidiStudioV2App {
       preservedLanes.length ? `kept ${preservedLanes.join(", ")}` : "",
       restAlignedLanes.length ? `aligned ${restAlignedLanes.join(", ")} to rests` : ""
     ].filter(Boolean).join("; ") || "none";
+    const protection = action === "regenerate" ? this.lastRegenerationProtectionSummary : null;
     this.lastSongSheetGenerationSummary = {
       barsGenerated: barCount,
+      generatedNotesBeforeRegeneration: protection?.generatedNoteCount,
       generationTargets: generationPlan.generationTargets,
       laneMapping: generationPlan.laneMapping,
+      manualNotesBeforeRegeneration: protection?.manualNoteCount,
       manualLanesPreserved: manualPreservation,
       notesGenerated,
+      regenerationProtection: protection?.message || (action === "regenerate" ? "No manual target-lane notes detected before regeneration." : ""),
       sectionsUsed: playableSections.map((section) => section.label).join(", "),
       targetLanesAffected: generationPlan.targetLabels.join(", ") || "section colors only"
     };
@@ -1513,19 +1621,19 @@ export class MidiStudioV2App {
     if (!song) {
       const message = `Missing MIDI song for ${label} export. Load or select a song before exporting.`;
       this.statusLog.fail(message);
-      this.exportPanel.setStatus({ level: "FAIL", message });
+      this.exportPanel.setStatus({ level: "FAIL", message, song });
       return;
     }
     const target = String(song.rendered?.[format] || "").trim();
     if (!target) {
       const message = `Missing rendered ${label} export target for ${song.name}. Add music.songs[].rendered.${format} before exporting.`;
       this.statusLog.fail(message);
-      this.exportPanel.setStatus({ level: "FAIL", message });
+      this.exportPanel.setStatus({ level: "FAIL", message, song });
       return;
     }
     const message = `Export rendering not implemented for ${label}. Planned target: ${target}.`;
     this.statusLog.warn(message);
-    this.exportPanel.setStatus({ level: "WARN", message });
+    this.exportPanel.setStatus({ level: "WARN", message, song });
   }
 
   applySelectedSongArrangement(sourceLabel) {
@@ -1629,6 +1737,7 @@ export class MidiStudioV2App {
     const playable = this.playableEventSummary();
     this.exportPanel.renderSource(this.selectedSong(), playable);
     this.exportPanel.renderDiagnostics(this.selectedSong());
+    this.exportPanel.setStatus(this.exportPanel.exportReadiness(this.selectedSong(), { playable }));
     const selectedSection = this.instrumentGrid.selectedSection();
     const packSummary = Object.entries(laneDiagnostics.instrumentLabels)
       .map(([lane, label]) => `${lane}: ${label || "missing"}`)

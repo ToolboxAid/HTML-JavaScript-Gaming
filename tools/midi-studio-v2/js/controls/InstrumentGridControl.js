@@ -380,6 +380,7 @@ export class InstrumentGridControl {
     this.timelineCanvasRenderer = null;
     this.timelineCanvasRows = [];
     this.hoveredCell = null;
+    this.instrumentWorkflowStatus = "Instrument selection ready.";
     this.lastTimelinePointerHit = null;
     this.removedFixedLanes = new Set();
     this.selectedCell = null;
@@ -1056,6 +1057,8 @@ export class InstrumentGridControl {
       return;
     }
     this.instrumentList.replaceChildren();
+    this.instrumentList.dataset.selectedInstrumentId = this.selectedLane || "";
+    this.instrumentList.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
     this.previewLaneControls = {};
     if (!lanes.length) {
       const empty = document.createElement("p");
@@ -1075,6 +1078,8 @@ export class InstrumentGridControl {
       return;
     }
     this.quickInstrumentList.replaceChildren();
+    this.quickInstrumentList.dataset.selectedInstrumentId = this.selectedLane || "";
+    this.quickInstrumentList.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
     this.quickLaneControls = {};
     if (!lanes.length) {
       const empty = document.createElement("p");
@@ -2556,6 +2561,7 @@ export class InstrumentGridControl {
     this.deleteBlockedLane = null;
     this.recentlyDuplicatedLane = lane;
     this.selectedLane = lane;
+    this.setInstrumentWorkflowStatus(`Duplicated ${laneLabel(sourceLane)} as ${identity.displayName}; selectedInstrumentId synchronized to ${lane}.`);
     this.emitGridStructureChange("duplicate-lane", lane, {
       duplicateDisplayName: identity.displayName,
       sourceLane,
@@ -2578,6 +2584,7 @@ export class InstrumentGridControl {
     this.pendingDeleteLane = null;
     this.deleteBlockedLane = null;
     this.recentlyDuplicatedLane = null;
+    this.setInstrumentWorkflowStatus(`Moved ${laneLabel(lane)} ${direction < 0 ? "up" : "down"}; selectedInstrumentId remains ${lane}.`);
     this.emitGridStructureChange(direction < 0 ? "move-lane-up" : "move-lane-down", lane, {
       direction: direction < 0 ? "up" : "down"
     });
@@ -2875,7 +2882,31 @@ export class InstrumentGridControl {
     this.renderAuditionKeyboard();
   }
 
+  setInstrumentWorkflowStatus(message) {
+    this.instrumentWorkflowStatus = String(message || "Instrument selection ready.");
+    if (this.instrumentList) {
+      this.instrumentList.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
+      this.instrumentList.dataset.selectedInstrumentId = this.selectedLane || "";
+    }
+    if (this.quickInstrumentList) {
+      this.quickInstrumentList.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
+      this.quickInstrumentList.dataset.selectedInstrumentId = this.selectedLane || "";
+    }
+    if (this.auditionKeyboard) {
+      this.auditionKeyboard.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
+      this.auditionKeyboard.dataset.selectedInstrumentId = this.selectedLane || "";
+    }
+  }
+
   syncQuickInstrumentControls() {
+    if (this.instrumentList) {
+      this.instrumentList.dataset.selectedInstrumentId = this.selectedLane || "";
+      this.instrumentList.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
+    }
+    if (this.quickInstrumentList) {
+      this.quickInstrumentList.dataset.selectedInstrumentId = this.selectedLane || "";
+      this.quickInstrumentList.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
+    }
     Object.entries(this.quickLaneControls || {}).forEach(([lane, controls]) => {
       const state = this.previewLaneState[lane];
       if (!state) {
@@ -2929,11 +2960,15 @@ export class InstrumentGridControl {
     const state = this.previewLaneState[lane];
     if (!lane || !state) {
       this.auditionKeyboard.dataset.selectedLane = "";
+      this.auditionKeyboard.dataset.selectedInstrumentId = "";
+      this.auditionKeyboard.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
       this.auditionKeyboard.textContent = "No instrument selected.";
       return;
     }
     const [lowOctave, highOctave] = this.auditionOctaveRange();
     this.auditionKeyboard.dataset.selectedLane = lane;
+    this.auditionKeyboard.dataset.selectedInstrumentId = lane;
+    this.auditionKeyboard.dataset.instrumentWorkflowStatus = this.instrumentWorkflowStatus;
     this.auditionKeyboard.dataset.octaveMin = String(lowOctave);
     this.auditionKeyboard.dataset.octaveMax = String(highOctave);
     this.auditionKeyboard.dataset.pan = String(state.pan ?? 0);
@@ -3060,6 +3095,7 @@ export class InstrumentGridControl {
     this.selectedLane = lane;
     this.pendingDeleteLane = null;
     this.deleteBlockedLane = null;
+    this.setInstrumentWorkflowStatus(`Selected ${laneLabel(lane)}; selectedInstrumentId synchronized to ${lane}.`);
     if (this.currentResult?.ok) {
       this.render(this.currentResult);
       return;

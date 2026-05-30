@@ -15,6 +15,20 @@ function missingTargetLabel(label) {
   return `No rendered ${label} target selected.`;
 }
 
+function fieldToken(label) {
+  return String(label || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function targetFormatSummary(song) {
+  return EXPORT_FORMATS
+    .map(({ key, label }) => `${label}: ${String(song?.rendered?.[key] || "").trim() ? "ready" : "missing"}`)
+    .join("; ");
+}
+
 export class ExportPanelControl {
   constructor({ diagnosticTargets, renderedTargets, sourceDetails, statusDetails }) {
     this.diagnosticTargets = diagnosticTargets;
@@ -49,15 +63,15 @@ export class ExportPanelControl {
     this.renderSource(song, playable);
     this.renderTargets(song);
     this.renderDiagnostics(song);
-    this.setStatus({
-      level: song ? "INFO" : "FAIL",
-      message: song ? "No export attempted. Rendered audio export is not implemented." : "No MIDI song selected."
-    });
+    this.setStatus(this.exportReadiness(song, { playable }));
   }
 
   renderSource(song, playable = { count: 0 }) {
     this.renderDefinitionList(this.sourceDetails, [
       ["Selected song", song?.name || "No song selected"],
+      ["Classification", song?.classification || "not declared"],
+      ["Generated ID", song?.id || "not declared"],
+      ["Target output formats", targetFormatSummary(song)],
       ["Playable event count", Number(playable.count || 0)],
       ["Runtime source", song ? "canonical song model / octave timeline data" : "No octave timeline source selected"]
     ]);
@@ -95,15 +109,56 @@ export class ExportPanelControl {
     if (!this.diagnosticTargets) {
       return;
     }
-    this.renderDefinitionList(this.diagnosticTargets, EXPORT_FORMATS.map(({ key, label }) => [
-      `${label} target`,
-      song?.rendered?.[key] || missingTargetLabel(label)
-    ]));
+    this.renderDefinitionList(this.diagnosticTargets, [
+      ["Selected song", song?.name || "No song selected"],
+      ["Classification", song?.classification || "not declared"],
+      ["Generated ID", song?.id || "not declared"],
+      ["Target output formats", targetFormatSummary(song)],
+      ...EXPORT_FORMATS.map(({ key, label }) => [
+        `${label} target`,
+        song?.rendered?.[key] || missingTargetLabel(label)
+      ])
+    ]);
   }
 
-  setStatus({ level = "INFO", message = "No export attempted." } = {}) {
+  exportReadiness(song, { playable = { count: 0 } } = {}) {
+    if (!song) {
+      return { level: "FAIL", message: "No MIDI song selected.", playable, song };
+    }
+    const missingTargets = EXPORT_FORMATS
+      .filter(({ key }) => !String(song.rendered?.[key] || "").trim())
+      .map(({ label }) => label);
+    if (Number(playable.count || 0) <= 0) {
+      return {
+        level: "WARN",
+        message: `Selected song ${song.name} has no playable timeline events for rendered export readiness.`,
+        playable,
+        song
+      };
+    }
+    if (missingTargets.length) {
+      return {
+        level: "WARN",
+        message: `Export source is ready, but target paths are missing for ${missingTargets.join(", ")}. Rendered audio save actions remain visible; rendering is not implemented.`,
+        playable,
+        song
+      };
+    }
+    return {
+      level: "INFO",
+      message: "Export source and target formats are declared. Rendered audio save actions remain visible; rendering is not implemented.",
+      playable,
+      song
+    };
+  }
+
+  setStatus({ level = "INFO", message = "No export attempted.", song = null } = {}) {
     this.statusDetails.dataset.exportStatusLevel = level.toLowerCase();
     this.renderDefinitionList(this.statusDetails, [
+      ["Selected song", song?.name || "No song selected"],
+      ["Classification", song?.classification || "not declared"],
+      ["Generated ID", song?.id || "not declared"],
+      ["Target output formats", targetFormatSummary(song)],
       ["Owner", "Export tab owns rendered audio output workflow"],
       ["Renderer", "Not implemented"],
       ["SoundFont", "Planned; not implemented"],
@@ -117,6 +172,7 @@ export class ExportPanelControl {
       const row = document.createElement("div");
       const term = document.createElement("dt");
       const description = document.createElement("dd");
+      row.dataset.exportField = fieldToken(label);
       term.textContent = label;
       description.textContent = displayValue(value);
       row.append(term, description);
