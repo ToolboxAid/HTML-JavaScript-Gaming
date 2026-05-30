@@ -611,6 +611,7 @@ export class MidiStudioV2App {
     this.payload.activeSongId = songId;
     this.render();
     this.applySelectedSongArrangement("selected song");
+    this.details.showJson(this.selectedSong());
     this.statusLog.ok(`Selected MIDI song: ${this.selectedSong()?.name || songId}.`);
     this.updateAudioDiagnostics();
   }

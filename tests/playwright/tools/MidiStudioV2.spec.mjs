@@ -515,10 +515,41 @@ async function scrollCanvasCellIntoView(page, rowToken, stepIndex) {
 }
 
 async function clickCanvasCell(page, rowToken, stepIndex) {
+  await page.locator("#instrumentGridOutput").evaluate((output) => {
+    const top = output.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, Math.max(0, top - 160));
+  });
   await scrollCanvasCellIntoView(page, rowToken, stepIndex);
-  const point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
+  let point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
   expect(point).toBeTruthy();
-  await page.mouse.click(point.x, point.y);
+  const viewport = page.viewportSize();
+  if (viewport && (point.y < 12 || point.y > viewport.height - 12)) {
+    await page.evaluate((targetY) => {
+      window.scrollBy(0, targetY - window.innerHeight / 2);
+    }, point.y);
+    point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
+  }
+  expect(point).toBeTruthy();
+  await octaveTimelineCanvas(page).dispatchEvent("pointerdown", {
+    bubbles: true,
+    button: 0,
+    buttons: 1,
+    clientX: point.x,
+    clientY: point.y,
+    pointerId: 1,
+    pointerType: "mouse"
+  });
+  await page.evaluate((target) => {
+    window.dispatchEvent(new PointerEvent("pointerup", {
+      bubbles: true,
+      button: 0,
+      buttons: 0,
+      clientX: target.x,
+      clientY: target.y,
+      pointerId: 1,
+      pointerType: "mouse"
+    }));
+  }, point);
 }
 
 async function clickCanvasSectionHeader(page, label, occurrenceIndex = 0) {
@@ -574,24 +605,90 @@ async function clickCanvasKeyboardKey(page, rowToken) {
 }
 
 async function hoverCanvasCell(page, rowToken, stepIndex) {
+  await page.locator("#instrumentGridOutput").evaluate((output) => {
+    const top = output.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, Math.max(0, top - 160));
+  });
   await scrollCanvasCellIntoView(page, rowToken, stepIndex);
-  const point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
+  let point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
   expect(point).toBeTruthy();
-  await page.mouse.move(point.x, point.y);
+  const viewport = page.viewportSize();
+  if (viewport && (point.y < 12 || point.y > viewport.height - 12)) {
+    await page.evaluate((targetY) => {
+      window.scrollBy(0, targetY - window.innerHeight / 2);
+    }, point.y);
+    point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.rowToken, target.stepIndex), { rowToken, stepIndex });
+  }
+  expect(point).toBeTruthy();
+  await page.mouse.move(point.x, point.y, { steps: 3 });
+  await octaveTimelineCanvas(page).dispatchEvent("pointermove", {
+    bubbles: true,
+    clientX: point.x,
+    clientY: point.y,
+    pointerId: 1,
+    pointerType: "mouse"
+  });
 }
 
 async function dragCanvasCells(page, fromRowToken, fromStepIndex, toRowToken, toStepIndex) {
+  await page.locator("#instrumentGridOutput").evaluate((output) => {
+    const top = output.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, Math.max(0, top - 160));
+  });
   await scrollCanvasCellIntoView(page, fromRowToken, fromStepIndex);
-  const points = await page.evaluate((target) => ({
+  let points = await page.evaluate((target) => ({
     from: window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.fromRowToken, target.fromStepIndex),
     to: window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.toRowToken, target.toStepIndex)
   }), { fromRowToken, fromStepIndex, toRowToken, toStepIndex });
   expect(points.from).toBeTruthy();
   expect(points.to).toBeTruthy();
-  await page.mouse.move(points.from.x, points.from.y);
-  await page.mouse.down();
-  await page.mouse.move(points.to.x, points.to.y, { steps: 8 });
-  await page.mouse.up();
+  const viewport = page.viewportSize();
+  if (viewport && (points.from.y < 12 || points.from.y > viewport.height - 12 || points.to.y < 12 || points.to.y > viewport.height - 12)) {
+    await page.evaluate((targetY) => {
+      window.scrollBy(0, targetY - window.innerHeight / 2);
+    }, points.from.y);
+    points = await page.evaluate((target) => ({
+      from: window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.fromRowToken, target.fromStepIndex),
+      to: window.__midiStudioV2App.instrumentGrid.timelineCanvasCellCenter(target.toRowToken, target.toStepIndex)
+    }), { fromRowToken, fromStepIndex, toRowToken, toStepIndex });
+  }
+  expect(points.from).toBeTruthy();
+  expect(points.to).toBeTruthy();
+  await octaveTimelineCanvas(page).dispatchEvent("pointermove", {
+    bubbles: true,
+    clientX: points.from.x,
+    clientY: points.from.y,
+    pointerId: 1,
+    pointerType: "mouse"
+  });
+  await octaveTimelineCanvas(page).dispatchEvent("pointerdown", {
+    bubbles: true,
+    button: 0,
+    buttons: 1,
+    clientX: points.from.x,
+    clientY: points.from.y,
+    pointerId: 1,
+    pointerType: "mouse"
+  });
+  await page.evaluate((target) => {
+    window.dispatchEvent(new PointerEvent("pointermove", {
+      bubbles: true,
+      buttons: 1,
+      clientX: target.x,
+      clientY: target.y,
+      pointerId: 1,
+      pointerType: "mouse"
+    }));
+    window.dispatchEvent(new PointerEvent("pointerup", {
+      bubbles: true,
+      button: 0,
+      buttons: 0,
+      clientX: target.x,
+      clientY: target.y,
+      pointerId: 1,
+      pointerType: "mouse"
+    }));
+  }, points.to);
 }
 
 async function canvasCellPixel(page, rowToken, stepIndex) {
@@ -843,7 +940,9 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       stopTimingPreviewButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       toolCopyJsonButton: { canonical: "serialized midi-studio-v2 tool state", kind: "action", owner: "Diagnostics", wired: "wired" },
       toolExportToolStateButton: { canonical: "serialized midi-studio-v2 tool state", kind: "action", owner: "Export", wired: "wired" },
+      toolImportManifestInput: { canonical: "imported game manifest / midi-studio-v2 payload", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
       toolImportManifestButton: { canonical: "imported game manifest / midi-studio-v2 payload", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
+      midiSourceFileInput: { canonical: "local MIDI source inspection file", kind: "workflow-state", owner: "MIDI Import", wired: "wired" },
       timelineAddInstrumentRowButton: { canonical: "music.songs[].studioArrangement.lanes / previewLaneSettings", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
       timelineCloseInstrumentPanelButton: { canonical: "accordion view state", kind: "view-state", owner: "Octave Timeline", wired: "wired" },
       workspaceCopyManifestButton: { canonical: "workspace manifest proxy", kind: "unwired", owner: "Workspace NAV", wired: "unwired" },
@@ -1053,6 +1152,65 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
         };
       });
   }, activeTabId);
+}
+
+async function expectMidiStudioVisibleControlAudit(page, tabIds) {
+  const controls = [];
+  for (const tabId of tabIds) {
+    await selectMidiStudioTab(page, tabId);
+    if (tabId === "studio") {
+      await waitForCanvasRender(page);
+    }
+    controls.push(...await visibleMidiStudioControlOwnership(page, tabId));
+  }
+
+  expect(controls.length).toBeGreaterThan(100);
+  expect(controls.filter((control) => control.kind === "unclassified" || control.wired === "unknown")).toEqual([]);
+  expect(controls.filter((control) => control.unwired && (!control.unwiredClass || !control.title))).toEqual([]);
+  expect(controls.filter((control) => control.wired === "wired" && control.unwiredClass)).toEqual([]);
+
+  const editableCanonicalOwners = new Map();
+  controls
+    .filter((control) => control.editable && control.kind === "canonical")
+    .forEach((control) => {
+      const owners = editableCanonicalOwners.get(control.canonical) || new Set();
+      owners.add(control.owner);
+      editableCanonicalOwners.set(control.canonical, owners);
+    });
+  expect(Array.from(editableCanonicalOwners, ([canonical, owners]) => ({
+    canonical,
+    owners: Array.from(owners)
+  })).filter((entry) => entry.owners.length > 1)).toEqual([]);
+  return controls;
+}
+
+async function expectMidiStudioAccordionAudit(page, tabIds) {
+  let auditedHeaders = 0;
+  for (const tabId of tabIds) {
+    await selectMidiStudioTab(page, tabId);
+    const headers = page.locator(`.accordion-v2[data-midi-studio-tab-panel~="${tabId}"] .accordion-v2__header`);
+    const headerCount = await headers.count();
+    auditedHeaders += headerCount;
+    for (let index = 0; index < headerCount; index += 1) {
+      const header = headers.nth(index);
+      const controls = await header.getAttribute("aria-controls");
+      expect(controls).toBeTruthy();
+      const content = page.locator(`#${controls}`);
+      await expect(header).toHaveAttribute("aria-expanded", "true");
+      await expect(header.locator(".accordion-v2__icon")).toHaveText("X");
+      await header.click({ position: { x: 8, y: 8 } });
+      await expect(header).toHaveAttribute("aria-expanded", "false");
+      await expect(header.locator(".accordion-v2__icon")).toHaveText("+");
+      await expect(header.locator(".accordion-v2__icon")).toHaveAttribute("data-accordion-v2-icon-state", "closed");
+      await expect(content).toBeHidden();
+      await header.click({ position: { x: 8, y: 8 } });
+      await expect(header).toHaveAttribute("aria-expanded", "true");
+      await expect(header.locator(".accordion-v2__icon")).toHaveText("X");
+      await expect(header.locator(".accordion-v2__icon")).toHaveAttribute("data-accordion-v2-icon-state", "open");
+      await expect(content).toBeVisible();
+    }
+  }
+  expect(auditedHeaders).toBeGreaterThan(0);
 }
 
 async function prepareInstrumentScrollSentinel(page) {
@@ -6006,6 +6164,10 @@ test.describe("MIDI Studio V2", () => {
       });
       await expect(page.locator("#midiSourceDetails")).toContainText("PASS Valid Standard MIDI File header");
       await expect(page.locator("#midiSourceDetails")).toContainText("PASS Local MIDI notes can populate the canonical studio arrangement");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Imported MIDI source uat-sprint-local-import\.midi/);
+      await selectMidiStudioTab(page, "song-setup");
+      await page.evaluate(() => window.__midiStudioV2App.selectSong("skyBattle-Flying"));
+      await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Sky Battle");
 
       await selectMidiStudioTab(page, "diagnostics");
       await expect(page.locator('.accordion-v2__header[aria-controls="inspectorContent"]')).toContainText("JSON Details");
@@ -6574,6 +6736,381 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html.*hostContextId=midi-studio-v2-workspace-context/);
       await expect(page).toHaveURL(/workspace=uat/);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR141-160 complete UAT workflow visible controls persistence diagnostics export and playback", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const midiTabIds = ["song-setup", "studio", "instruments", "auto-create-parts", "midi-import", "diagnostics", "export"];
+    const server = await openMidiStudioForImport(page);
+    try {
+      expect(await page.evaluate(() => ({
+        localToolState: window.localStorage.getItem("workspace.tools.midi-studio-v2"),
+        workspaceToolState: window.sessionStorage.getItem("workspace.tools.midi-studio-v2")
+      }))).toEqual({ localToolState: null, workspaceToolState: null });
+
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/PASS Import JSON PASS: canonical payload loaded/);
+      await selectMidiStudioTab(page, "song-setup");
+
+      await page.locator("#songDetails [data-song-detail-field='name']").fill("Sky Battle");
+      await page.locator("#songDetails [data-song-detail-field='classification']").fill("Flying");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("skyBattle-Flying");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveJSProperty("readOnly", true);
+      await expect(page.locator("[data-song-detail-help='classification']")).toHaveAttribute("title", /Underwater.*Flying.*Chase/);
+      await expect(page.locator("#generatedIdPreview")).toHaveAttribute("data-generated-id-preview", "skyBattle-Flying");
+      await expect(page.locator("#classificationLibrarySummary")).toHaveAttribute("data-classification-is-common", "true");
+      await expect(page.locator("#songSheetClassificationGuide")).toContainText("Flying defaults");
+      await page.locator("#songDetailNotes [data-song-detail-field='notes']").fill("UAT sprint note.");
+      await page.locator("#songSheetTempoInput").fill("180");
+      await page.locator("#songSheetKeyInput").selectOption("E minor");
+      await page.locator("#songSheetStyleInput").selectOption("chip");
+
+      await page.locator("#gameUsageMenuInput").setChecked(true);
+      await page.locator("#gameUsageLoopInput").setChecked(true);
+      await page.locator("#gameUsageCustomInput").fill("Town, Dungeon");
+      await expect(page.locator("#gameUsageSummary")).toContainText("Menu, Loop, Town, Dungeon");
+      await expect(page.locator("#futureGameUsageRuntimeSyncButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+
+      await fillSongSheetSectionBuilder(page, "Intro: G C\nVerse: G Em C D\nChorus: C G\nBridge:\nOutro: G\nCustomCue: Dm G");
+      await expect(page.locator("#songSheetAvailableSectionsList option", { hasText: "Bridge" })).toHaveCount(0);
+      await page.locator("#songSheetAddCustomSectionButton").click();
+      await page.locator("#songSheetCustomSectionsInput").fill("CustomCue: Dm G\nCustom1: F G");
+      await page.locator("#songSheetSectionBridgeInput").fill("Dm G");
+      await expect(page.locator("#songSheetAvailableSectionsList option")).toContainText([
+        "Intro - 2 bars / 2 chords",
+        "Verse - 4 bars / 4 chords",
+        "Chorus - 2 bars / 2 chords",
+        "Bridge - 2 bars / 2 chords",
+        "Outro - 1 bar / 1 chord",
+        "CustomCue - 2 bars / 2 chords",
+        "Custom1 - 2 bars / 2 chords"
+      ]);
+      await expect(page.locator("#songSheetSectionVerseMetrics")).toHaveAttribute("data-song-sheet-section-duration-seconds", /\d+/);
+
+      await page.locator("#songSheetTemplateSectionSelect").selectOption("Bridge");
+      await page.locator("#songSheetApplySectionTemplateButton").click();
+      await expect(page.locator("#songSheetSectionBridgeInput")).toHaveValue(/Dm G Em C G D/);
+      await page.locator("#songSheetAvailableSectionsList").selectOption("Intro");
+      await page.locator("#songSheetSaveSectionButton").click();
+      await expect(page.locator("#songSheetSectionLibrarySummary")).toContainText("Saved section asset: Intro");
+      await page.locator("#songSheetLoadSectionButton").click();
+      await expect(page.locator("#songSheetSectionLibrarySummary")).toContainText("Loaded section asset: Intro");
+      await page.locator("#songSheetDuplicateSectionButton").click();
+      await expect(page.locator("#songSheetSectionLibrarySummary")).toHaveAttribute("data-song-sheet-section-library-count", "2");
+
+      await page.locator("#songSheetArrangementTemplateSelect").selectOption("intro-verse-chorus-bridge-chorus-outro");
+      await page.locator("#songSheetApplyArrangementTemplateButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus", "Bridge", "Chorus", "Outro"]);
+      await page.locator("#songSheetSequenceList").selectOption({ index: 1 });
+      await page.locator("#songSheetDuplicateSequenceButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Verse", "Chorus", "Bridge", "Chorus", "Outro"]);
+      await page.locator("#songSheetSequenceMoveDownButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus", "Verse", "Bridge", "Chorus", "Outro"]);
+      await page.locator("#songSheetSequenceMoveUpButton").click();
+      await page.locator("#songSheetSequenceRemoveButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus", "Bridge", "Chorus", "Outro"]);
+      await expect(page.locator("#songSheetSequenceSummary")).toHaveAttribute("data-song-sheet-sequence-section-count", "6");
+
+      await page.locator("#songSheetSequenceList").evaluate((list) => {
+        const option = document.createElement("option");
+        option.value = "MissingCue";
+        option.textContent = "MissingCue";
+        list.append(option);
+        list.selectedIndex = list.options.length - 1;
+        list.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Song Sheet rejected: Song Sequence references missing or empty musical section: MissingCue/);
+      await page.locator("#songSheetApplyArrangementTemplateButton").click();
+      await page.locator("#songSheetApplyChordsPadInput").setChecked(true);
+      await page.locator("#songSheetApplyBassInput").setChecked(true);
+      await page.locator("#songSheetApplyDrumsInput").setChecked(false);
+      await page.locator("#songSheetApplyLeadInput").setChecked(true);
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sequence'] dd")).toHaveText("Intro, Verse, Chorus, Bridge, Chorus, Outro");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='generation-targets'] dd")).toHaveText("Chords/Pad, Bass, Lead");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='generated-notes'] dd")).not.toHaveText("not generated");
+      await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("Intro:2, Verse:4, Chorus:2, Bridge:6, Chorus:2, Outro:1");
+      await expect(page.locator("#inspectorOutput")).toContainText('"id": "skyBattle-Flying"');
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-section-header-labels", "Intro|Verse|Chorus|Bridge|Chorus|Outro");
+      expect((await canvasTimelineState(page)).sections.every((section) => /^#/.test(section.color))).toBe(true);
+      await clickCanvasSectionHeader(page, "Bridge", 0);
+      await expect(page.locator("#songSheetSequenceList")).toHaveAttribute("data-song-sheet-selected-section", "Bridge");
+      await page.locator("#instrumentGridSectionSelect").selectOption("Verse");
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing section: Verse");
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-playback-section", "Verse");
+      await page.locator("#stopTimingPreviewButton").click();
+      await page.locator("#playSequenceButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing sequence: Song Sequence");
+      await expect(page.locator("#instrumentGridOutput")).toHaveAttribute("data-preview-playback-mode", "sequence");
+      await page.locator("#stopTimingPreviewButton").click();
+
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-quick-instrument-label='lead']").click();
+      const editTarget = await emptyCanvasRun(page, { lane: "lead", length: 3 });
+      expect(editTarget).toBeTruthy();
+      await hoverCanvasCell(page, editTarget.rowToken, editTarget.stepIndex);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-hover-row-token", editTarget.rowToken);
+      await dragCanvasCells(page, editTarget.rowToken, editTarget.stepIndex, editTarget.rowToken, editTarget.stepIndex + 2);
+      for (let stepIndex = editTarget.stepIndex; stepIndex <= editTarget.stepIndex + 2; stepIndex += 1) {
+        expect(await hasCanvasNote(page, "lead", editTarget.rowToken, stepIndex)).toBe(true);
+      }
+      await dragCanvasCells(page, editTarget.rowToken, editTarget.stepIndex, editTarget.rowToken, editTarget.stepIndex + 2);
+      for (let stepIndex = editTarget.stepIndex; stepIndex <= editTarget.stepIndex + 2; stepIndex += 1) {
+        expect(await hasCanvasNote(page, "lead", editTarget.rowToken, stepIndex)).toBe(false);
+      }
+      await clickCanvasCell(page, editTarget.rowToken, editTarget.stepIndex);
+      expect(await hasCanvasNote(page, "lead", editTarget.rowToken, editTarget.stepIndex)).toBe(true);
+      await clickCanvasKeyboardKey(page, "C5");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Auditioned C5 for Lead/);
+      await page.locator("#instrumentGridOutput").evaluate((output) => {
+        output.style.width = "320px";
+        output.style.maxWidth = "320px";
+        output.scrollLeft = 240;
+        output.scrollTop = 190;
+        output.dispatchEvent(new Event("scroll"));
+      });
+      const scrollState = await canvasTimelineState(page);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-frozen-header", "true");
+      expect(scrollState.frozenHeaderVisible).toBe(true);
+      expect(Math.round(scrollState.frozenHeaderScrollTop)).toBeGreaterThan(0);
+
+      await selectMidiStudioTab(page, "song-setup");
+      await page.locator("#regenerateArrangementButton").click();
+      await expect(page.locator("#regenerateArrangementButton")).toHaveText("Confirm Regenerate Arrangement");
+      await expect(page.locator("#songSheetSummary")).toContainText("Regeneration may overwrite");
+      await page.locator("#regenerateArrangementButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Regenerated arrangement/);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-quick-instrument-label='lead']").click();
+      await selectMidiStudioTab(page, "instruments");
+      await expect(page.locator("#instrumentList")).toHaveAttribute("data-selected-instrument-id", "lead");
+      await setInputValue(page, "#previewVolumeLeadInput", "0.7");
+      await setInputValue(page, "#previewPanLeadInput", "-0.2");
+      await setInputValue(page, "#previewTransposeLeadInput", "5");
+      await expect(page.locator("[data-audition-range-summary]")).toHaveText(/C\d to B\d/);
+      await expect(page.locator("[data-audition-range-summary]")).toHaveAttribute("data-octave-min", "3");
+      await page.locator("#instrumentAuditionKeyboard [data-audition-note='C5']").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Auditioned C5 for Lead/);
+      await page.locator("#saveInstrumentPresetButton").click();
+      await expect(page.locator("#instrumentPresetSummary")).toContainText("Saved instrument preset");
+      await page.locator("#duplicateInstrumentPresetButton").click();
+      await expect(page.locator("#instrumentPresetSummary")).toHaveAttribute("data-instrument-preset-count", "2");
+      await page.locator("#loadInstrumentPresetButton").click();
+      await expect(page.locator("#instrumentPresetSummary")).toContainText("Loaded instrument preset");
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#duplicateInstrumentRowButton").click();
+      await expect(timelineQuickInstrumentRow(page, "lead-1")).toHaveClass(/is-selected/);
+      await page.locator("#moveInstrumentUpButton").click();
+      await expect(page.locator("#timelineInstrumentQuickList")).toHaveAttribute("data-instrument-workflow-status", /Moved Lead 1 up/);
+      await page.locator("#moveInstrumentDownButton").click();
+      await selectMidiStudioTab(page, "instruments");
+      await instrumentRow(page, "lead-1").locator("[data-delete-instrument-row='lead-1']").click();
+      await expect(page.locator("[data-delete-confirmation-lane='lead-1']")).toBeVisible();
+      await page.locator("[data-confirm-delete-instrument-row='lead-1']").click();
+      await expect(instrumentRow(page, "lead-1")).toHaveCount(0);
+
+      await selectMidiStudioTab(page, "song-setup");
+      await page.locator("#saveSongButton").click();
+      await expect(page.locator("#songLibrarySummary")).toContainText("Saved song asset");
+      await page.locator("#saveSongButton").click();
+      await expect(page.locator("#songLibrarySummary")).toContainText("duplicate generated IDs are prevented");
+      await page.locator("#duplicateSongButton").click();
+      await expect(page.locator("#songLibrarySummary")).toContainText("Duplicated song into canonical songs");
+      await page.locator("#songLibrarySelect").selectOption({ index: 0 });
+      await page.locator("#loadSongButton").click();
+      await expect(page.locator("#songLibrarySummary")).toContainText("Loaded song asset into canonical songs");
+
+      await selectMidiStudioTab(page, "midi-import");
+      await expect(page.locator("#midiSourceDetails")).toContainText("Local MIDI file import is separate from JSON manifest import");
+      await expect(page.locator("#midiSourceDetails")).not.toContainText("missing MIDI path");
+      await expect(page.locator("#futureMidiCanonicalConversionButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await page.locator("#midiSourceFileInput").setInputFiles({
+        buffer: validMidiBytes,
+        mimeType: "audio/midi",
+        name: "uat-sprint-local-import.midi"
+      });
+      await expect(page.locator("#midiSourceDetails")).toContainText("PASS Valid Standard MIDI File header");
+      await expect(page.locator("#midiSourceDetails")).toContainText("PASS Local MIDI notes can populate the canonical studio arrangement");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Imported MIDI source uat-sprint-local-import\.midi/);
+      await selectMidiStudioTab(page, "song-setup");
+      const selectedSkyBattle = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.payload.songs.find((candidate) => candidate.name === "Sky Battle" && candidate.classification === "Flying");
+        if (song) {
+          app.selectSong(song.id);
+        }
+        return {
+          id: song?.id || "",
+          name: app.selectedSong()?.name || ""
+        };
+      });
+      expect(selectedSkyBattle).toEqual(expect.objectContaining({
+        name: "Sky Battle"
+      }));
+      await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Sky Battle");
+
+      await selectMidiStudioTab(page, "diagnostics");
+      await expect(page.locator("#inspectorOutput")).toContainText(`"id": "${selectedSkyBattle.id}"`);
+      await expect(page.locator("#diagnosticsManifestReadinessDetails [data-export-field='game-usage-assignment'] dd")).toContainText("Menu: Sky Battle");
+      await expect(page.locator("#renderedTargetDiagnostics [data-export-field='status'] dd")).toContainText(/WARN|INFO|PASS/);
+      const diagnosticEditableControls = await page.locator('[data-midi-studio-tab-panel="diagnostics"] input:not([type="hidden"]):not([readonly]), [data-midi-studio-tab-panel="diagnostics"] select:not([disabled]), [data-midi-studio-tab-panel="diagnostics"] textarea:not([readonly])').count();
+      expect(diagnosticEditableControls).toBe(0);
+      await page.locator("#toolCopyJsonButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/MIDI Studio V2 toolState/);
+
+      await selectMidiStudioTab(page, "export");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save MP3");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
+      await expect(page.locator("#exportRenderSource [data-export-field='selected-song'] dd")).toHaveText("Sky Battle");
+      await expect(page.locator("#exportRenderSource [data-export-field='generated-id'] dd")).toHaveText(selectedSkyBattle.id);
+      await expect(page.locator("#exportManifestReadinessDetails [data-export-field='game-usage-assignment'] dd")).toContainText("Menu: Sky Battle");
+      await expect(page.locator("#futureSoundFontSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented|FAIL Missing rendered/);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/created .*\.ogg|wrote .*\.ogg|saved .*\.ogg/i);
+      await page.locator("#toolExportToolStateButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/PASS Export JSON PASS: MIDI Studio V2 toolState preview contains/);
+      const exportedToolState = JSON.parse(await page.locator("#inspectorOutput").textContent());
+      const exportedSong = exportedToolState.payload.songs.find((song) => song.id === selectedSkyBattle.id);
+      expect(exportedSong).toEqual(expect.objectContaining({
+        classification: "Flying",
+        id: selectedSkyBattle.id,
+        name: "Sky Battle"
+      }));
+      expect(exportedSong.director.usage).toEqual(expect.arrayContaining(["Menu", "Loop", "Town", "Dungeon"]));
+      expect(exportedSong.studioArrangement.previewLaneSettings.volumes.lead).toBe(0.7);
+      expect(exportedSong.studioArrangement.previewLaneSettings.pans.lead).toBe(-0.2);
+      expect(exportedSong.studioArrangement.previewLaneSettings.transposes.lead).toBe(5);
+
+      await page.evaluate(() => {
+        window.localStorage.removeItem("workspace.tools.midi-studio-v2");
+        window.sessionStorage.removeItem("workspace.tools.midi-studio-v2");
+      });
+      await page.locator("#toolImportManifestInput").setInputFiles({
+        buffer: Buffer.from(JSON.stringify(exportedToolState)),
+        mimeType: "application/json",
+        name: "pr141-160-roundtrip.tool-state.json"
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(/via toolState\.payload/);
+      const roundTrip = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        return {
+          classification: song.classification,
+          generatedId: song.id,
+          localToolState: window.localStorage.getItem("workspace.tools.midi-studio-v2"),
+          noteSettings: song.studioArrangement.previewLaneSettings,
+          sequence: song.studioArrangement.songSheet.sequence,
+          usage: song.director.usage
+        };
+      });
+      expect(roundTrip).toEqual(expect.objectContaining({
+        classification: "Flying",
+        generatedId: selectedSkyBattle.id,
+        localToolState: null,
+        sequence: "Intro, Verse, Chorus, Bridge, Chorus, Outro"
+      }));
+      expect(roundTrip.usage).toEqual(expect.arrayContaining(["Menu", "Loop", "Town", "Dungeon"]));
+
+      const controls = await expectMidiStudioVisibleControlAudit(page, midiTabIds);
+      expect(controls.filter((control) => control.wired === "unwired").length).toBeGreaterThan(0);
+      await expectMidiStudioAccordionAudit(page, midiTabIds);
+
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#loopToggle").setChecked(false);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playbackState")).toContainText("Playing audible preview");
+      await expect.poll(async () => (await page.locator("#playbackState").textContent()) || "", { timeout: 4000 }).toContain("Completed audible preview");
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await page.locator("#loopToggle").setChecked(true);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playbackState")).toContainText("(looping)");
+      const loopStartStep = await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.playheadStep);
+      await page.waitForFunction((startStep) => window.__midiStudioV2App.instrumentGrid.playheadStep !== startStep, loopStartStep);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playbackState")).toContainText("Stopped audible preview");
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR141-160 workspace launch split and canonical payload handoff", async ({ page }) => {
+    const manifest = JSON.parse(await fs.readFile(uatManifestPath, "utf8"));
+    let server = await openMidiStudioFromWorkspace(page, manifest);
+    try {
+      await expect(page.locator("body")).toHaveAttribute("data-midi-studio-launch-mode", "workspace");
+      await expect(page.locator("#returnToWorkspaceButton")).toBeVisible();
+      await expect(page.locator("#saveProjectButton")).toBeHidden();
+      await expect(page.locator("#toolImportManifestButton")).toBeHidden();
+      await expect(page.locator("#toolExportToolStateButton")).toBeHidden();
+      await selectMidiStudioTab(page, "song-setup");
+      await page.locator("#songDetails [data-song-detail-field='name']").fill("Workspace Loop");
+      await page.locator("#songDetails [data-song-detail-field='classification']").fill("Loop");
+      await fillSongSheetSectionBuilder(page, "Intro: C G\nVerse: G Am\nChorus: F C\nBridge:\nOutro: C");
+      await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus", "Outro"]);
+      await page.locator("#parseSongSheetButton").click();
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-quick-instrument-label='lead']").click();
+      const target = await emptyCanvasRun(page, { lane: "lead", length: 1 });
+      expect(target).toBeTruthy();
+      await clickCanvasCell(page, target.rowToken, target.stepIndex);
+      const workspaceState = await page.evaluate((expected) => {
+        const toolKey = "workspace.tools.midi-studio-v2";
+        const params = new URLSearchParams(window.location.search);
+        const hostContextId = params.get("hostContextId");
+        const session = JSON.parse(window.sessionStorage.getItem(toolKey));
+        const context = JSON.parse(window.sessionStorage.getItem(hostContextId));
+        const sessionSong = session.data.songs.find((song) => song.id === session.data.activeSongId);
+        const contextSong = context.tools["midi-studio-v2"].songs.find((song) => song.id === context.tools["midi-studio-v2"].activeSongId);
+        return {
+          contextGeneratedId: contextSong.id,
+          contextLeadHasNote: String(contextSong.studioArrangement.lanes.lead || "").includes(expected.rowToken),
+          dirty: session.dirty,
+          sessionGeneratedId: sessionSong.id,
+          sessionLeadHasNote: String(sessionSong.studioArrangement.lanes.lead || "").includes(expected.rowToken)
+        };
+      }, target);
+      expect(workspaceState).toEqual(expect.objectContaining({
+        contextGeneratedId: "workspaceLoop-Loop",
+        contextLeadHasNote: true,
+        sessionGeneratedId: "workspaceLoop-Loop",
+        sessionLeadHasNote: true
+      }));
+      expect(workspaceState.dirty).toMatchObject({ isDirty: true });
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+
+    server = await openMidiStudioForImport(page);
+    try {
+      await expect(page.locator("body")).toHaveAttribute("data-midi-studio-launch-mode", "tool");
+      await expect(page.locator("#returnToWorkspaceButton")).toBeHidden();
+      await expect(page.locator("#toolImportManifestButton")).toBeVisible();
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#toolExportToolStateButton")).toBeVisible();
+      await page.locator("#toolExportToolStateButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/PASS Export JSON PASS/);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
