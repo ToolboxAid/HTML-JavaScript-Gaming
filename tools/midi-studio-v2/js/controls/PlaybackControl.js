@@ -34,11 +34,18 @@ export class PlaybackControl {
     this.stateOutput.textContent = song ? `Audible preview ready: ${song.name}.` : "No song selected.";
   }
 
-  setPlaying(song) {
+  setPlaying(song, { loop = false } = {}) {
     this.playButton.disabled = true;
     this.stopButton.disabled = false;
     this.applyPlayButtonStatus(false);
-    this.stateOutput.textContent = `Playing audible preview: ${song.name}`;
+    this.stateOutput.textContent = `Playing audible preview: ${song.name}${loop ? " (looping)" : ""}`;
+  }
+
+  setCompleted(song, playbackStatus = {}) {
+    this.playButton.disabled = !song;
+    this.stopButton.disabled = true;
+    this.applyPlayButtonStatus(Boolean(song), playbackStatus);
+    this.stateOutput.textContent = song ? `Completed audible preview: ${song.name}.` : "No song selected.";
   }
 
   setStopped(song, playbackStatus = {}) {

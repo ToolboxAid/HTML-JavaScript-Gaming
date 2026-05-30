@@ -97,6 +97,9 @@ function songSheetRows(result, generationSummary = null) {
       ["Sections used", "not generated"],
       ["Bars generated", "not generated"],
       ["Notes generated", "not generated"],
+      ["Generation targets", "not generated"],
+      ["Lane mapping", "not generated"],
+      ["Manual lanes preserved", "not generated"],
       ["Target lanes affected", "not generated"]
     ];
   }
@@ -110,6 +113,9 @@ function songSheetRows(result, generationSummary = null) {
     ["Sections used", summary.sectionsUsed || "not generated"],
     ["Bars generated", summary.barsGenerated ?? "not generated"],
     ["Notes generated", summary.notesGenerated ?? "not generated"],
+    ["Generation targets", summary.generationTargets || "not generated"],
+    ["Lane mapping", summary.laneMapping || "not generated"],
+    ["Manual lanes preserved", summary.manualLanesPreserved || "not generated"],
     ["Target lanes affected", summary.targetLanesAffected || "not generated"]
   ];
 }
@@ -152,6 +158,7 @@ export class SongSheetControl {
     moveSequenceUpButton,
     namedSectionInputs,
     parseButton,
+    regenerateButton,
     removeSequenceButton,
     sequenceCount,
     sectionMetricOutputs,
@@ -179,6 +186,7 @@ export class SongSheetControl {
     this.moveSequenceUpButton = moveSequenceUpButton;
     this.namedSectionInputs = namedSectionInputs || {};
     this.parseButton = parseButton;
+    this.regenerateButton = regenerateButton;
     this.removeSequenceButton = removeSequenceButton;
     this.sequenceCount = sequenceCount;
     this.sectionMetricOutputs = sectionMetricOutputs || {};
@@ -192,8 +200,9 @@ export class SongSheetControl {
     this.userEditedSequence = false;
   }
 
-  mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse }) {
+  mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse, onRegenerate = onParse }) {
     this.parseButton.addEventListener("click", () => onParse(this.composeGuidedSheet()));
+    this.regenerateButton.addEventListener("click", () => onRegenerate(this.composeGuidedSheet()));
     this.tempoInput.addEventListener("input", () => {
       this.renderSectionMetrics(this.availableSections());
       onMetadataChange("tempo", this.tempoInput.value);

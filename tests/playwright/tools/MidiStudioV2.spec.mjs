@@ -761,6 +761,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       playButton: { canonical: "playback from selected canonical song model", kind: "action", owner: "Global NAV", wired: "wired" },
       playLoopButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       playSectionButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      regenerateArrangementButton: { canonical: "music.songs[].studioArrangement generated lanes from Song Sheet sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       renderedExportSaveButton: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
       renderedExportTargetTypeSelect: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
       resetSongEditsButton: { canonical: "music.songs[] reset baseline", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
@@ -5153,6 +5154,96 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
+  test("validates PR085-088 composition mapping regenerate sync audition and playback states", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+      await page.locator("#songSheetTempoInput").fill("960");
+      await fillSongSheetSectionBuilder(page, "Intro: G C\nVerse: G Em\nChorus: C G\nBridge:\nOutro:\nBreak: F");
+      await clearSongSheetSequence(page);
+      await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus"]);
+      await page.locator("#songSheetApplyChordsPadInput").setChecked(true);
+      await page.locator("#songSheetApplyBassInput").setChecked(true);
+      await page.locator("#songSheetApplyDrumsInput").setChecked(false);
+      await page.locator("#songSheetApplyLeadInput").setChecked(false);
+      await page.locator("#parseSongSheetButton").click();
+
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='generation-targets'] dd")).toHaveText("Chords/Pad, Bass");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='lane-mapping'] dd")).toHaveText("Chords/Pad -> chords, pad; Bass -> bass; Drums -> skipped; Lead -> skipped");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='target-lanes-affected'] dd")).toHaveText("Chords/Pad, Bass");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars-generated'] dd")).toHaveText("6");
+
+      await selectMidiStudioTab(page, "auto-create-parts");
+      await page.locator(".midi-studio-v2__advanced-lane-source").evaluate((details) => {
+        details.open = true;
+      });
+      const manualLead = "C5 - - - | D5 - - - | E5 - - - | F5 - - - | G5 - - - | A5 - - -";
+      await page.locator("#instrumentGridLeadInput").fill(manualLead);
+      await page.locator("#normalizeInstrumentGridButton").click();
+      await selectMidiStudioTab(page, "song-setup");
+      await page.locator("#regenerateArrangementButton").click();
+      await expect(page.locator("#instrumentGridLeadInput")).toHaveValue(manualLead);
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='manual-lanes-preserved'] dd")).toContainText("kept lead");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Regenerated arrangement for Chords\/Pad, Bass: 6 bars, \d+ notes\. Manual lanes .*kept lead/);
+
+      await page.locator("#songSheetApplyLeadInput").setChecked(true);
+      await page.locator("#regenerateArrangementButton").click();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='generation-targets'] dd")).toHaveText("Chords/Pad, Bass, Lead");
+      await expect(page.locator("#instrumentGridLeadInput")).not.toHaveValue(manualLead);
+
+      await page.locator("#songSheetSectionIntroInput").fill("G C D");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars-generated'] dd")).toHaveText("7");
+      await expect(page.locator("#instrumentGridSectionsInput")).toHaveValue("Intro:3, Verse:2, Chorus:2");
+
+      const synced = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const gridResult = app.currentInstrumentGridResult();
+        return {
+          applyTargets: song.studioArrangement.songSheet.applyTargets,
+          barCount: gridResult.barCount,
+          leadEvents: gridResult.timeline.filter((event) => event.lane === "lead").length,
+          sections: song.studioArrangement.sections,
+          sequence: song.studioArrangement.songSheet.sequence
+        };
+      });
+      expect(synced).toEqual(expect.objectContaining({
+        applyTargets: { bass: true, chordsPad: true, drums: false, lead: true },
+        barCount: 7,
+        sections: "Intro:3, Verse:2, Chorus:2",
+        sequence: "Intro, Verse, Chorus"
+      }));
+      expect(synced.leadEvents).toBeGreaterThan(0);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      expect((await canvasTimelineState(page)).sections.map((section) => section.label)).toEqual(["Intro", "Verse", "Chorus"]);
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-quick-instrument-label='lead']").click();
+      await clickCanvasKeyboardKey(page, "C5");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Auditioned C5 for Lead/);
+
+      await page.locator("#loopToggle").setChecked(false);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playbackState")).toContainText("Playing audible preview");
+      await expect.poll(async () => (await page.locator("#playbackState").textContent()) || "", { timeout: 4000 }).toContain("Completed audible preview");
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+
+      await page.locator("#loopToggle").setChecked(true);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playbackState")).toContainText("(looping)");
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playbackState")).toContainText("Stopped audible preview");
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("derives primary song, instrument, grid, playback, and diagnostics views from the canonical selected song", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {
@@ -5778,7 +5869,7 @@ test.describe("MIDI Studio V2", () => {
         "Warnings": "none"
       });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet parsed: 2 sections, 6 bars, 6 chords\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet updated the editable note grid\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet updated the editable note grid for /);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

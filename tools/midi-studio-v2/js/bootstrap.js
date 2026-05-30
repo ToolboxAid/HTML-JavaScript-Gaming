@@ -173,6 +173,7 @@ window.addEventListener("DOMContentLoaded", () => {
         Verse: requireElement("#songSheetSectionVerseInput")
       },
       parseButton: requireElement("#parseSongSheetButton"),
+      regenerateButton: requireElement("#regenerateArrangementButton"),
       removeSequenceButton: requireElement("#songSheetSequenceRemoveButton"),
       sequenceCount: requireElement("#songSheetSequenceCount"),
       sequenceInput: requireElement("#songSheetSequenceInput"),
