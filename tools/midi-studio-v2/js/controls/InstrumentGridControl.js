@@ -3318,6 +3318,20 @@ export class InstrumentGridControl {
     });
   }
 
+  selectSequenceSection(label, occurrenceIndex = null) {
+    const section = this.sectionByLabelOccurrence(label, occurrenceIndex);
+    if (!section) {
+      return false;
+    }
+    this.sectionSelect.value = section.label;
+    this.setPlayheadStep(section.startStep);
+    this.selectedSectionBounds = section;
+    this.renderCanvasTimeline();
+    this.syncSectionPresetState();
+    this.transportState.textContent = `Selected section: ${section.label}`;
+    return true;
+  }
+
   handleSectionSelectionChange(onTransport) {
     const section = this.sectionByLabel(this.sectionSelect.value);
     if (!section) {
@@ -3546,6 +3560,20 @@ export class InstrumentGridControl {
   sectionByLabel(label) {
     const normalized = String(label || "").trim().toLowerCase();
     return this.currentResult?.sections.find((section) => section.label.toLowerCase() === normalized) || null;
+  }
+
+  sectionByLabelOccurrence(label, occurrenceIndex = null) {
+    const normalized = String(label || "").trim().toLowerCase();
+    if (!normalized || !this.currentResult?.sections?.length) {
+      return null;
+    }
+    if (Number.isInteger(occurrenceIndex)) {
+      const section = this.currentResult.sections[occurrenceIndex] || null;
+      if (section?.label.toLowerCase() === normalized) {
+        return section;
+      }
+    }
+    return this.sectionByLabel(label);
   }
 
   displaySectionLabel(label) {

@@ -14,7 +14,7 @@ function displayValue(value) {
   return String(value);
 }
 
-const CLASSIFICATION_HELP = "Classification examples: Menu, Intro, Loop, Boss, Victory, Game Over, Ambient, Cutscene, Underwater, Flying, Ice, Lava, Space, Castle, Town, Dungeon, Forest, Night, Stealth, Puzzle, Chase.";
+const CLASSIFICATION_HELP = "Classification examples: Menu, Intro, Loop, Boss, Victory, Game Over, Ambient, Cutscene, Underwater, Flying, Ice, Lava, Space, Castle, Town, Dungeon, Forest, Night, Stealth, Puzzle, Chase. Guidance: Classification remains human-entered; it seeds default section templates, instrument suggestions, and generation hints while the ID stays camelCase(Name)-Classification.";
 
 function editableRows(song) {
   return [

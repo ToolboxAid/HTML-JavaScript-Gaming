@@ -271,6 +271,7 @@
             <input id="songSheetSectionsInput" type="hidden">
             <input id="songSheetSequenceInput" type="hidden">
             <div class="midi-studio-v2__song-sheet-template-library" aria-label="Section template library">
+              <output id="songSheetClassificationGuide" class="midi-studio-v2__classification-guide" data-classification-workflow="General">General game music defaults: Warm Pad, Synth Bass, Basic Drums, Retro Lead. Use balanced Chords/Pad and Bass first; enable Drums or Lead when the arrangement needs motion.</output>
               <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songSheetTemplateSectionSelect">
                 <span>Section Template</span>
                 <select id="songSheetTemplateSectionSelect" aria-label="Built-in section template">
@@ -335,6 +336,7 @@
                     <span id="songSheetSequenceCount" class="midi-studio-v2__sequence-count">0 items</span>
                   </span>
                   <select id="songSheetSequenceList" size="6" aria-label="Song sequence"></select>
+                  <output id="songSheetSequenceSummary" class="midi-studio-v2__sequence-summary" data-song-sheet-sequence-section-count="0" data-song-sheet-sequence-bar-count="0" data-song-sheet-sequence-duration-seconds="0">0 sections / 0 bars / 0 seconds</output>
                 </label>
                 <div class="midi-studio-v2__sequence-actions">
                   <button id="songSheetSequenceMoveUpButton" type="button">Move Up</button>

@@ -162,6 +162,7 @@ window.addEventListener("DOMContentLoaded", () => {
       applyTemplateButton: requireElement("#songSheetApplySectionTemplateButton"),
       availableCount: requireElement("#songSheetAvailableCount"),
       availableSectionsList: requireElement("#songSheetAvailableSectionsList"),
+      classificationGuide: requireElement("#songSheetClassificationGuide"),
       customSectionsInput: requireElement("#songSheetCustomSectionsInput"),
       duplicateSequenceButton: requireElement("#songSheetDuplicateSequenceButton"),
       keyInput: requireElement("#songSheetKeyInput"),
@@ -180,6 +181,7 @@ window.addEventListener("DOMContentLoaded", () => {
       sequenceCount: requireElement("#songSheetSequenceCount"),
       sequenceInput: requireElement("#songSheetSequenceInput"),
       sequenceList: requireElement("#songSheetSequenceList"),
+      sequenceSummary: requireElement("#songSheetSequenceSummary"),
       sectionMetricOutputs: {
         Bridge: requireElement("#songSheetSectionBridgeMetrics"),
         Chorus: requireElement("#songSheetSectionChorusMetrics"),

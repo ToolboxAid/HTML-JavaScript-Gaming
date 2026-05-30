@@ -689,6 +689,26 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__timeline-instruments {
   min-height: 2.25rem;
 }
 
+.midi-studio-v2__classification-guide,
+.midi-studio-v2__sequence-summary {
+  background: color-mix(in srgb, var(--tool-starter-panel-strong) 82%, #22c55e 18%);
+  border: 1px solid rgba(94, 234, 212, 0.38);
+  border-radius: 6px;
+  color: #ccfbf1;
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1.35;
+  min-width: 0;
+  padding: 0.4rem 0.5rem;
+}
+
+.midi-studio-v2__sequence-summary {
+  background: color-mix(in srgb, var(--tool-starter-panel-strong) 82%, #0ea5e9 18%);
+  color: #e0f2fe;
+  margin-top: 0.3rem;
+}
+
 .midi-studio-v2__song-sequence-builder {
   display: grid;
   gap: 0.5rem;
@@ -743,6 +763,11 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__timeline-instruments {
 
 .midi-studio-v2__sequence-list-panel select {
   min-height: 7.5rem;
+}
+
+.midi-studio-v2__sequence-list-panel--sequence select {
+  border-color: color-mix(in srgb, var(--midi-studio-v2-selected-section-color, #7dd3fc) 64%, var(--tool-starter-line) 36%);
+  box-shadow: inset 0.24rem 0 0 var(--midi-studio-v2-selected-section-color, #0ea5e9);
 }
 
 .midi-studio-v2__sequence-actions,

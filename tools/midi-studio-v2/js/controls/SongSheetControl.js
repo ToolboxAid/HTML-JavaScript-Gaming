@@ -1,4 +1,5 @@
 import { sectionTone, sectionToneRgba } from "../sectionColors.js";
+import { setUnwiredControlState } from "./UnwiredControlState.js";
 
 const NAMED_SECTION_LABELS = ["Intro", "Verse", "Chorus", "Bridge", "Outro"];
 const SECTION_TEMPLATES = {
@@ -7,6 +8,68 @@ const SECTION_TEMPLATES = {
   Chorus: "F G C C",
   Bridge: "Dm G Em Am",
   Outro: "F G C"
+};
+const DEFAULT_CLASSIFICATION_WORKFLOW = {
+  generationHints: "Use balanced Chords/Pad and Bass first; enable Drums or Lead when the arrangement needs motion.",
+  instrumentSuggestions: "Warm Pad, Synth Bass, Basic Drums, Retro Lead",
+  sectionTemplates: SECTION_TEMPLATES,
+  summary: "General game music defaults"
+};
+const CLASSIFICATION_WORKFLOWS = {
+  ambient: {
+    generationHints: "Favor Chords/Pad and Bass; keep Drums off unless the cue needs pulse.",
+    instrumentSuggestions: "Warm Pad, Soft Bass, Airy Lead",
+    sectionTemplates: { Intro: "C G Am F", Verse: "Am F C G", Chorus: "F C G Am", Bridge: "Dm Am F G", Outro: "F G C" },
+    summary: "Ambient defaults"
+  },
+  boss: {
+    generationHints: "Enable Bass and Drums for pressure; add Lead for a hook after the first pass.",
+    instrumentSuggestions: "Aggressive Bass, Basic Drums, Brass Hit, Retro Lead",
+    sectionTemplates: { Intro: "Em C D Em", Verse: "Em G D C", Chorus: "C D Em Em", Bridge: "Am C B Em", Outro: "Em D C Em" },
+    summary: "Boss defaults"
+  },
+  chase: {
+    generationHints: "Use short looping sections with Bass and Drums enabled.",
+    instrumentSuggestions: "Synth Bass, Basic Drums, Pulse Lead",
+    sectionTemplates: { Intro: "Am G F E", Verse: "Am Am G E", Chorus: "F G Am Am", Bridge: "Dm E F E", Outro: "Am G Am" },
+    summary: "Chase defaults"
+  },
+  flying: {
+    generationHints: "Use brighter Chords/Pad and Lead; keep Bass supportive.",
+    instrumentSuggestions: "Bright Pad, Air Lead, Light Bass",
+    sectionTemplates: { Intro: "C G D G", Verse: "G D Em C", Chorus: "C G Am D", Bridge: "Em C G D", Outro: "C D G" },
+    summary: "Flying defaults"
+  },
+  loop: {
+    generationHints: "Keep all populated sections short and use sequence duplication for build order.",
+    instrumentSuggestions: "Warm Pad, Synth Bass, Basic Drums, optional Lead",
+    sectionTemplates: { Intro: "C G", Verse: "C Am F G", Chorus: "F G C C", Bridge: "Dm G Em Am", Outro: "G F C" },
+    summary: "Loop defaults"
+  },
+  menu: {
+    generationHints: "Favor Chords/Pad and gentle Bass; keep Lead disabled unless the menu needs a motif.",
+    instrumentSuggestions: "Soft Pad, Light Bass, Bell Lead",
+    sectionTemplates: { Intro: "C F G C", Verse: "C G Am F", Chorus: "F C G C", Bridge: "Dm G C Am", Outro: "F G C" },
+    summary: "Menu defaults"
+  },
+  puzzle: {
+    generationHints: "Use sparse Chords/Pad and Bass; add Lead only for a repeating clue motif.",
+    instrumentSuggestions: "Pluck Lead, Warm Pad, Soft Bass",
+    sectionTemplates: { Intro: "Am C G Am", Verse: "Am Dm G C", Chorus: "F G Em Am", Bridge: "Dm F E Am", Outro: "Am G Am" },
+    summary: "Puzzle defaults"
+  },
+  underwater: {
+    generationHints: "Favor Chords/Pad and slow Bass; keep Drums light or disabled.",
+    instrumentSuggestions: "Warm Pad, Soft Bass, Bell Lead",
+    sectionTemplates: { Intro: "Dm Gm A Dm", Verse: "Dm Bb C Dm", Chorus: "Bb C Dm Dm", Bridge: "Gm Dm A Dm", Outro: "Bb A Dm" },
+    summary: "Underwater defaults"
+  },
+  victory: {
+    generationHints: "Use Chords/Pad, Bass, and Lead for a bright cadence.",
+    instrumentSuggestions: "Brass Lead, Warm Pad, Round Bass",
+    sectionTemplates: { Intro: "C G C", Verse: "C F G C", Chorus: "F G C C", Bridge: "Am F G C", Outro: "F G C" },
+    summary: "Victory defaults"
+  }
 };
 
 function fieldToken(label) {
@@ -67,6 +130,19 @@ function normalizedLabelKey(label) {
   return String(label || "").trim().toLowerCase();
 }
 
+function classificationWorkflowFor(classification) {
+  const key = normalizedLabelKey(classification).replace(/\s+/g, "-");
+  return {
+    ...DEFAULT_CLASSIFICATION_WORKFLOW,
+    ...(CLASSIFICATION_WORKFLOWS[key] || {}),
+    classification: String(classification || "").trim() || "General",
+    sectionTemplates: {
+      ...SECTION_TEMPLATES,
+      ...(CLASSIFICATION_WORKFLOWS[key]?.sectionTemplates || {})
+    }
+  };
+}
+
 function sectionRowsFromText(sourceText = "") {
   const rows = [];
   String(sourceText || "")
@@ -102,6 +178,9 @@ function songSheetRows(result, generationSummary = null) {
       ["Chord count", "not parsed"],
       ["Estimated duration", "not parsed"],
       ["Sections used", "not generated"],
+      ["Generated bars", "not generated"],
+      ["Generated notes", "not generated"],
+      ["Generated instruments", "not generated"],
       ["Bars generated", "not generated"],
       ["Notes generated", "not generated"],
       ["Generation targets", "not generated"],
@@ -121,6 +200,9 @@ function songSheetRows(result, generationSummary = null) {
     ["Chord count", result.chordCount],
     ["Estimated duration", `${result.estimatedDurationSeconds} seconds`],
     ["Sections used", summary.sectionsUsed || "not generated"],
+    ["Generated bars", summary.barsGenerated ?? "not generated"],
+    ["Generated notes", summary.notesGenerated ?? "not generated"],
+    ["Generated instruments", summary.generatedInstruments || "not generated"],
     ["Bars generated", summary.barsGenerated ?? "not generated"],
     ["Notes generated", summary.notesGenerated ?? "not generated"],
     ["Generation targets", summary.generationTargets || "not generated"],
@@ -164,6 +246,7 @@ export class SongSheetControl {
     applyTemplateButton,
     availableCount,
     availableSectionsList,
+    classificationGuide,
     customSectionMetrics,
     customSectionsInput,
     duplicateSequenceButton,
@@ -175,6 +258,7 @@ export class SongSheetControl {
     regenerateButton,
     removeSequenceButton,
     sequenceCount,
+    sequenceSummary,
     sectionMetricOutputs,
     sectionsInput,
     sequenceInput,
@@ -195,6 +279,7 @@ export class SongSheetControl {
     this.applyTemplateButton = applyTemplateButton;
     this.availableCount = availableCount;
     this.availableSectionsList = availableSectionsList;
+    this.classificationGuide = classificationGuide;
     this.customSectionMetrics = customSectionMetrics;
     this.customSectionsInput = customSectionsInput;
     this.duplicateSequenceButton = duplicateSequenceButton;
@@ -206,6 +291,7 @@ export class SongSheetControl {
     this.regenerateButton = regenerateButton;
     this.removeSequenceButton = removeSequenceButton;
     this.sequenceCount = sequenceCount;
+    this.sequenceSummary = sequenceSummary;
     this.sectionMetricOutputs = sectionMetricOutputs || {};
     this.sectionsInput = sectionsInput;
     this.sequenceInput = sequenceInput;
@@ -217,11 +303,12 @@ export class SongSheetControl {
     this.tempoInput = tempoInput;
     this.warnings = warnings;
     this.defaultRegenerateLabel = regenerateButton?.textContent || "Regenerate Arrangement";
+    this.classificationWorkflow = classificationWorkflowFor("");
     this.regenerationPending = false;
     this.userEditedSequence = false;
   }
 
-  mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse, onRegenerate = onParse, onTemplateApply = () => {} }) {
+  mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse, onRegenerate = onParse, onSequenceSelect = () => {}, onTemplateApply = () => {} }) {
     this.initializeTemplateLibrary();
     this.parseButton.addEventListener("click", () => {
       this.setRegenerationPending(false);
@@ -274,25 +361,32 @@ export class SongSheetControl {
       this.syncSequenceState();
       onFieldChange("sequence", this.sequenceInput.value);
     });
-    this.sequenceList.addEventListener("change", () => this.syncSequenceState());
+    this.sequenceList.addEventListener("change", () => {
+      this.syncSequenceState();
+      onSequenceSelect(this.selectedSequenceDetail());
+    });
     this.moveSequenceUpButton.addEventListener("click", () => {
       this.setRegenerationPending(false);
       this.moveSelectedSequenceItem(-1);
+      onSequenceSelect(this.selectedSequenceDetail());
       onFieldChange("sequence", this.sequenceInput.value);
     });
     this.moveSequenceDownButton.addEventListener("click", () => {
       this.setRegenerationPending(false);
       this.moveSelectedSequenceItem(1);
+      onSequenceSelect(this.selectedSequenceDetail());
       onFieldChange("sequence", this.sequenceInput.value);
     });
     this.duplicateSequenceButton.addEventListener("click", () => {
       this.setRegenerationPending(false);
       this.duplicateSelectedSequenceItem();
+      onSequenceSelect(this.selectedSequenceDetail());
       onFieldChange("sequence", this.sequenceInput.value);
     });
     this.removeSequenceButton.addEventListener("click", () => {
       this.setRegenerationPending(false);
       this.removeSelectedSequenceItem();
+      onSequenceSelect(this.selectedSequenceDetail());
       onFieldChange("sequence", this.sequenceInput.value);
     });
 
@@ -303,7 +397,28 @@ export class SongSheetControl {
       });
     });
     this.setApplyTargets(null, { hasDrums: true });
+    this.applyClassificationWorkflow("");
     this.refreshSectionBuilder({ preserveSequence: false });
+  }
+
+  applyClassificationWorkflow(classification) {
+    this.classificationWorkflow = classificationWorkflowFor(classification);
+    this.initializeTemplateLibrary();
+    this.renderClassificationGuide();
+    this.updateTemplatePreview();
+    return this.classificationWorkflow;
+  }
+
+  renderClassificationGuide() {
+    if (!this.classificationGuide) {
+      return;
+    }
+    const workflow = this.classificationWorkflow || classificationWorkflowFor("");
+    this.classificationGuide.value = `${workflow.summary}: ${workflow.instrumentSuggestions}. ${workflow.generationHints}`;
+    this.classificationGuide.textContent = this.classificationGuide.value;
+    this.classificationGuide.dataset.classificationWorkflow = workflow.classification;
+    this.classificationGuide.dataset.classificationInstrumentSuggestions = workflow.instrumentSuggestions;
+    this.classificationGuide.dataset.classificationGenerationHints = workflow.generationHints;
   }
 
   initializeTemplateLibrary() {
@@ -313,9 +428,13 @@ export class SongSheetControl {
     Array.from(this.templateSectionSelect.options).forEach((option) => {
       const label = option.value || option.textContent;
       option.dataset.songSheetTemplateSection = label;
-      option.dataset.songSheetTemplateChords = SECTION_TEMPLATES[label] || "";
+      option.dataset.songSheetTemplateChords = this.templateChordsFor(label);
     });
     this.updateTemplatePreview();
+  }
+
+  templateChordsFor(label) {
+    return this.classificationWorkflow?.sectionTemplates?.[label] || SECTION_TEMPLATES[label] || "";
   }
 
   updateTemplatePreview() {
@@ -323,23 +442,30 @@ export class SongSheetControl {
       return;
     }
     const label = this.templateSectionSelect.value || NAMED_SECTION_LABELS[0];
-    const chords = SECTION_TEMPLATES[label] || "";
+    const chords = this.templateChordsFor(label);
     this.templatePreview.textContent = `${label} template: ${chords || "not available"}`;
     this.templatePreview.dataset.songSheetTemplatePreview = label;
     this.templatePreview.dataset.songSheetTemplateChords = chords;
+    this.templatePreview.dataset.songSheetTemplateClassification = this.classificationWorkflow?.classification || "General";
+    setUnwiredControlState(this.applyTemplateButton, {
+      active: !chords,
+      detail: `${label} template is not complete for ${this.classificationWorkflow?.classification || "General"}.`,
+      status: "Incomplete template"
+    });
   }
 
   applySelectedSectionTemplate() {
     const label = this.templateSectionSelect?.value || NAMED_SECTION_LABELS[0];
-    const chords = SECTION_TEMPLATES[label] || "";
+    const chords = this.templateChordsFor(label);
     const input = this.namedSectionInputs[label];
     if (!input || !chords) {
       return { ok: false, message: `No section template is available for ${label || "(none)"}.` };
     }
-    input.value = chords;
+    const existing = String(input.value || "").trim();
+    input.value = existing ? `${existing} ${chords}` : chords;
     this.refreshSectionBuilder();
     input.focus();
-    return { chords, label, ok: true };
+    return { chords, insertedIntoPopulated: Boolean(existing), label, ok: true };
   }
 
   setRegenerationPending(isPending) {
@@ -649,6 +775,7 @@ export class SongSheetControl {
     this.duplicateSequenceButton.disabled = !hasSelection;
     this.removeSequenceButton.disabled = !hasSelection;
     this.updateSequenceCount(this.sequenceList.options.length);
+    this.updateSequenceSummary();
     this.applySequenceOptionColors();
     this.sequenceList.dataset.songSheetSelectedSection = selected?.value || "";
     this.sequenceList.dataset.songSheetSelectedSectionColorIndex = selected?.dataset.songSheetSectionColorIndex || "";
@@ -675,6 +802,31 @@ export class SongSheetControl {
     }
     this.sequenceCount.textContent = `${count} item${count === 1 ? "" : "s"}`;
     this.sequenceCount.dataset.songSheetSequenceCount = String(count);
+  }
+
+  updateSequenceSummary() {
+    if (!this.sequenceSummary) {
+      return;
+    }
+    const metrics = this.sequenceSummaryMetrics();
+    this.sequenceSummary.value = `${metrics.sectionCount} section${metrics.sectionCount === 1 ? "" : "s"} / ${metrics.barCount} bar${metrics.barCount === 1 ? "" : "s"} / ${formatDuration(metrics.durationSeconds)}`;
+    this.sequenceSummary.textContent = this.sequenceSummary.value;
+    this.sequenceSummary.dataset.songSheetSequenceSectionCount = String(metrics.sectionCount);
+    this.sequenceSummary.dataset.songSheetSequenceBarCount = String(metrics.barCount);
+    this.sequenceSummary.dataset.songSheetSequenceDurationSeconds = String(metrics.durationSeconds);
+  }
+
+  sequenceSummaryMetrics() {
+    const byLabel = new Map(this.availableSections().map((section) => [normalizedLabelKey(section.label), section]));
+    return this.sequenceItems().reduce((metrics, label) => {
+      const section = byLabel.get(normalizedLabelKey(label));
+      const bars = section ? chordTokenCount(section.chords) : 0;
+      metrics.sectionCount += 1;
+      metrics.barCount += bars;
+      metrics.durationSeconds += estimatedSectionSeconds(bars, this.tempoInput.value);
+      metrics.durationSeconds = Number(metrics.durationSeconds.toFixed(3));
+      return metrics;
+    }, { barCount: 0, durationSeconds: 0, sectionCount: 0 });
   }
 
   sectionColorIndexMap() {
@@ -726,6 +878,17 @@ export class SongSheetControl {
     return true;
   }
 
+  selectedSequenceDetail() {
+    const index = this.sequenceList.selectedIndex;
+    const option = index >= 0 ? this.sequenceList.options[index] : null;
+    return {
+      colorIndex: option?.dataset.songSheetSectionColorIndex || "",
+      index,
+      label: option?.value || "",
+      sequence: this.sequenceItems()
+    };
+  }
+
   setApplyTargets(targets = null, { hasDrums = false } = {}) {
     const normalized = targets && typeof targets === "object" ? targets : {};
     this.applyChordsPadInput.checked = normalized.chordsPad !== false;
@@ -770,7 +933,7 @@ export class SongSheetControl {
       term.textContent = label;
       description.textContent = value === undefined || value === null || value === "" ? "not declared" : String(value);
       description.dataset.songSheetReadonly = token;
-      if (["bars", "chord-count", "estimated-duration", "bars-generated", "notes-generated"].includes(token)) {
+      if (["bars", "chord-count", "estimated-duration", "bars-generated", "notes-generated", "generated-bars", "generated-notes", "generated-instruments"].includes(token)) {
         description.dataset.songSheetComputed = "true";
       }
       if (kind === "warning" || token === "warnings") {

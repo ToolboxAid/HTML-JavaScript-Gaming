@@ -158,6 +158,7 @@ export class OctaveTimelineCanvasRenderer {
     this.canvas.dataset.playbackSection = playheadSection?.label || "";
     this.canvas.dataset.playbackSectionColor = playheadSection ? sectionTone(playheadSection.colorIndex) : "";
     this.canvas.dataset.playbackSectionIndex = playheadSectionIndex >= 0 ? String(playheadSectionIndex) : "";
+    this.canvas.dataset.activePlaybackSectionVisible = String(Boolean(playheadSection));
     this.canvas.dataset.generatedNoteCount = String(sourceCounts.generated);
     this.canvas.dataset.manualNoteCount = String(sourceCounts.manual);
     this.canvas.dataset.sectionHeaderLabels = this.state.sections.map((section) => section.label).join("|");
@@ -233,9 +234,9 @@ export class OctaveTimelineCanvasRenderer {
       }
     };
     this.state.sections.forEach((section) => {
-      drawStepRegion(section.startStep, section.endStep, sectionToneRgba(section.colorIndex, 0.13));
+      drawStepRegion(section.startStep, section.endStep, sectionToneRgba(section.colorIndex, 0.18));
       const startX = metrics.axisWidth + section.startStep * metrics.cellSize + 0.5;
-      this.context.strokeStyle = sectionToneRgba(section.colorIndex, 0.72);
+      this.context.strokeStyle = sectionToneRgba(section.colorIndex, 0.86);
       this.context.lineWidth = 2;
       this.context.beginPath();
       this.context.moveTo(startX, metrics.headerHeight);
@@ -246,8 +247,8 @@ export class OctaveTimelineCanvasRenderer {
       drawStepRegion(
         this.state.selectedSection.startStep,
         this.state.selectedSection.endStep,
-        sectionToneRgba(this.state.selectedSection.colorIndex, 0.22),
-        { strokeColor: sectionToneRgba(this.state.selectedSection.colorIndex, 0.9) }
+        sectionToneRgba(this.state.selectedSection.colorIndex, 0.3),
+        { strokeColor: sectionToneRgba(this.state.selectedSection.colorIndex, 0.98) }
       );
     }
     if (this.state.loopBounds?.ok) {
@@ -263,8 +264,8 @@ export class OctaveTimelineCanvasRenderer {
       drawStepRegion(
         playheadSection.startStep,
         playheadSection.endStep,
-        sectionToneRgba(playheadSection.colorIndex, 0.16),
-        { strokeColor: sectionToneRgba(playheadSection.colorIndex, 0.82) }
+        sectionToneRgba(playheadSection.colorIndex, 0.24),
+        { strokeColor: sectionToneRgba(playheadSection.colorIndex, 0.96) }
       );
     }
   }
@@ -302,7 +303,7 @@ export class OctaveTimelineCanvasRenderer {
         return;
       }
       this.context.fillStyle = sectionTone(section.colorIndex);
-      this.context.globalAlpha = 0.18;
+      this.context.globalAlpha = 0.28;
       this.context.fillRect(x, offsetY, width, metrics.headerRowHeight);
       this.context.globalAlpha = 1;
       this.drawHeaderText(section.label, x + width / 2, offsetY + metrics.headerRowHeight / 2, Math.max(12, width - 6));

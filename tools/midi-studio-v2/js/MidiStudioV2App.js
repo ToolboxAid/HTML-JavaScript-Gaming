@@ -102,6 +102,7 @@ export class MidiStudioV2App {
       onMetadataChange: (field, value) => this.handleSongDetailsChange(field, value),
       onParse: (sourceText) => this.parseSongSheet(sourceText),
       onRegenerate: (sourceText) => this.regenerateSongSheetArrangement(sourceText),
+      onSequenceSelect: (detail) => this.handleSongSheetSequenceSelection(detail),
       onTemplateApply: (detail) => this.handleSectionTemplateApplied(detail)
     });
     this.instrumentGrid.mount({
@@ -231,6 +232,7 @@ export class MidiStudioV2App {
     const song = this.selectedSong();
     this.songList.render(this.payload?.songs || [], this.selectedSongId);
     this.details.render(song, this.payload);
+    this.applyClassificationWorkflow(song, { log: false });
     this.exportPanel.render(song, { playable: this.playableEventSummary() });
     this.directorPanel.render(song, this.payload?.directorMode || {});
     this.midiSourceDetails.render(null);
@@ -267,6 +269,7 @@ export class MidiStudioV2App {
       this.songList.render(this.payload?.songs || [], this.selectedSongId);
       this.playbackControl.setSelected(song, this.playbackControlStatus(song));
       this.actionNav.setNowPlaying(song);
+      this.applyClassificationWorkflow(song);
     } else if (field === "tempo" && arrangement) {
       arrangement.tempo = String(value || "").trim();
       this.syncSongSheetFields(arrangement);
@@ -348,6 +351,24 @@ export class MidiStudioV2App {
   handleSectionTemplateApplied({ label, chords } = {}) {
     const song = this.selectedSong();
     this.statusLog.info(`Applied ${label || "section"} template as editable starting chords${song ? ` for ${song.name}` : ""}: ${chords || "not declared"}.`);
+  }
+
+  applyClassificationWorkflow(song, { log = true } = {}) {
+    const workflow = this.songSheet.applyClassificationWorkflow(song?.classification || "");
+    if (log && song) {
+      this.statusLog.info(`Classification ${workflow.classification} loaded ${workflow.summary.toLowerCase()}, instrument suggestions, and generation hints.`);
+    }
+    return workflow;
+  }
+
+  handleSongSheetSequenceSelection({ index = -1, label = "" } = {}) {
+    if (!label) {
+      return;
+    }
+    const selected = this.instrumentGrid.selectSequenceSection(label, index);
+    if (selected) {
+      this.statusLog.info(`Song Sequence selected ${label}; Octave Timeline section highlight synchronized.`);
+    }
   }
 
   updateSelectedSongId(value) {
@@ -446,6 +467,7 @@ export class MidiStudioV2App {
   }
 
   syncSongSheetFields(arrangement) {
+    this.applyClassificationWorkflow(this.selectedSong(), { log: false });
     this.songSheet.applyGuidedDefaults({
       applyTargets: this.songSheetApplyTargetsFromArrangement(arrangement),
       sections: this.songSheetStructureFromArrangement(arrangement),
@@ -1008,6 +1030,7 @@ export class MidiStudioV2App {
       ...(this.lastSongSheetGenerationSummary || {}),
       barsGenerated: result.bars,
       generatedNotesBeforeRegeneration: protection.generatedNoteCount,
+      generatedInstruments: plan.targetLabels.join(", ") || "section colors only",
       generationTargets: plan.generationTargets,
       laneMapping: plan.laneMapping,
       manualNotesBeforeRegeneration: protection.manualNoteCount,
@@ -1119,6 +1142,7 @@ export class MidiStudioV2App {
     this.lastSongSheetGenerationSummary = {
       barsGenerated: barCount,
       generatedNotesBeforeRegeneration: protection?.generatedNoteCount,
+      generatedInstruments: generationPlan.targetLabels.join(", ") || "section colors only",
       generationTargets: generationPlan.generationTargets,
       laneMapping: generationPlan.laneMapping,
       manualNotesBeforeRegeneration: protection?.manualNoteCount,
