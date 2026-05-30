@@ -1,6 +1,6 @@
 # Playwright Discovery Scope Report
 
-Generated: 2026-05-26T22:54:12.026Z
+Generated: 2026-05-30T04:24:21.867Z
 Status: PASS
 Scoped discovery: Yes
 
@@ -8,18 +8,23 @@ Scoped discovery: Yes
 
 | Role | File | Status | Reason |
 | --- | --- | --- | --- |
-| target spec | tests/playwright/tools/AssetManagerV2.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
-| target spec | tests/playwright/tools/CollisionInspectorV2.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
-| target spec | tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
-| target spec | tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
-| target spec | tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
+| target spec | tests/playwright/tools/WorkspaceManagerV2.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
 | required shared helper | tests/helpers/playwrightRepoServer.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
 | required shared helper | tests/helpers/playwrightStorageIsolation.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
 | required shared helper | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
 | required shared helper | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+| required fixture | games/AITargetDummy/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
 | required fixture | games/Asteroids/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
+| required fixture | games/Bouncing-ball/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
+| required fixture | games/Breakout/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
 | required fixture | games/GravityWell/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
+| required fixture | games/InvalidWorkspace/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
+| required fixture | games/Pacman/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
 | required fixture | games/Pong/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
+| required fixture | games/SolarSystem/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
+| required fixture | games/SpaceDuel/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
+| required fixture | games/SpaceInvaders/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
+| required fixture | games/vector-arcade-sample/game.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
 | required fixture | tests/fixtures/workspace-v2/uat.manifest.json | PASS | Explicit fixture was resolved from lane configuration or targeted file references. |
 
 ## Scope Guard

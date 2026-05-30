@@ -1,6 +1,6 @@
 # Playwright Structure Audit
 
-Generated: 2026-05-26T22:54:12.018Z
+Generated: 2026-05-30T04:24:21.853Z
 Status: PASS
 
 ## Lane Directories
@@ -10,7 +10,7 @@ Status: PASS
 | tests/playwright/engine | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 | tests/playwright/games | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 | tests/playwright/integration | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
-| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/AssetManagerV2.spec.mjs, tests/playwright/tools/CollisionInspectorV2.spec.mjs, tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs, tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs, tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs. |
+| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/WorkspaceManagerV2.spec.mjs. |
 
 ## Blocking Findings
 
@@ -30,18 +30,13 @@ No blocking structural findings.
 
 | Lane | File | Referenced Game Fixture(s) | Reason |
 | --- | --- | --- | --- |
-| tools | tests/playwright/tools/AssetManagerV2.spec.mjs | Asteroids, GravityWell, Pong | Tool runtime validation uses repo/game manifests as explicit asset payload fixtures. |
-| tools | tests/playwright/tools/CollisionInspectorV2.spec.mjs | Asteroids | Tool runtime validation uses game manifests as explicit collision payload fixtures. |
+| tools | tests/playwright/tools/WorkspaceManagerV2.spec.mjs | AITargetDummy, Asteroids, Bouncing-ball, Breakout, GravityWell, InvalidWorkspace, MissingGame, Pacman, Pong, SolarSystem, SpaceDuel, SpaceInvaders, Synthetic, vector-arcade-sample | Workspace contract validation uses game manifests as explicit launch/toolState fixtures. |
 
 ## Import Targets
 
 | File | Status | Missing Relative Imports |
 | --- | --- | --- |
-| tests/playwright/tools/AssetManagerV2.spec.mjs | PASS | none |
-| tests/playwright/tools/CollisionInspectorV2.spec.mjs | PASS | none |
-| tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs | PASS | none |
-| tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs | PASS | none |
-| tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs | PASS | none |
+| tests/playwright/tools/WorkspaceManagerV2.spec.mjs | PASS | none |
 | tests/helpers/playwrightRepoServer.mjs | PASS | none |
 | tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
 | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |

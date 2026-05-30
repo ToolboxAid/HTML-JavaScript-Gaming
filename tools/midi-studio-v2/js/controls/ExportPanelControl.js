@@ -84,9 +84,55 @@ function noteCount(playable) {
   return Number(playable?.totalCount ?? playable?.count ?? 0);
 }
 
+function manifestSongs(payload) {
+  return Array.isArray(payload?.songs) ? payload.songs : [];
+}
+
+function classificationSummary(payload) {
+  const counts = new Map();
+  manifestSongs(payload).forEach((song) => {
+    const classification = String(song.classification || "Unclassified").trim() || "Unclassified";
+    counts.set(classification, (counts.get(classification) || 0) + 1);
+  });
+  if (!counts.size) {
+    return "0 classifications";
+  }
+  return Array.from(counts, ([classification, count]) => `${classification}: ${count}`).join("; ");
+}
+
+function manifestSectionSummary(payload) {
+  const rows = manifestSongs(payload).flatMap((song) => sectionRows(song));
+  const barCount = rows.reduce((total, section) => total + section.chords.split(/\s+/).filter(Boolean).length, 0);
+  return `${rows.length} populated section${rows.length === 1 ? "" : "s"} / ${barCount} bar${barCount === 1 ? "" : "s"}`;
+}
+
+function manifestSequenceSummary(payload) {
+  const sequenceCount = manifestSongs(payload).reduce((total, song) => total + sequenceLength(song), 0);
+  return `${sequenceCount} sequence item${sequenceCount === 1 ? "" : "s"} across ${manifestSongs(payload).length} song${manifestSongs(payload).length === 1 ? "" : "s"}`;
+}
+
+function manifestInstrumentSummary(payload) {
+  const laneCount = manifestSongs(payload).reduce((total, song) => total + instrumentCount(song), 0);
+  return `${laneCount} instrument lane${laneCount === 1 ? "" : "s"} across ${manifestSongs(payload).length} song${manifestSongs(payload).length === 1 ? "" : "s"}`;
+}
+
+function manifestExportReadiness(payload, selectedSong, playable) {
+  const songs = manifestSongs(payload);
+  if (!songs.length) {
+    return "No songs loaded for manifest export readiness.";
+  }
+  const missingTargets = songs.filter((song) => EXPORT_FORMATS.some(({ key }) => !String(song.rendered?.[key] || "").trim()));
+  const selectedNoteCount = noteCount(playable);
+  if (missingTargets.length) {
+    return `${songs.length - missingTargets.length}/${songs.length} songs have WAV/MP3/OGG targets; selected song note count ${selectedNoteCount}.`;
+  }
+  return `${songs.length}/${songs.length} songs have WAV/MP3/OGG targets; selected song ${selectedSong?.name || "none"} has ${selectedNoteCount} note${selectedNoteCount === 1 ? "" : "s"}.`;
+}
+
 export class ExportPanelControl {
-  constructor({ diagnosticTargets, renderedTargets, sourceDetails, statusDetails }) {
+  constructor({ diagnosticTargets, manifestDetails, renderedTargets, sourceDetails, statusDetails }) {
     this.diagnosticTargets = diagnosticTargets;
+    this.manifestDetails = manifestDetails;
     this.renderedTargets = renderedTargets;
     this.sourceDetails = sourceDetails;
     this.statusDetails = statusDetails;
@@ -114,11 +160,12 @@ export class ExportPanelControl {
     this.onTargetChange(format, value);
   }
 
-  render(song, { playable = { count: 0 } } = {}) {
+  render(song, { payload = null, playable = { count: 0 } } = {}) {
     this.renderSource(song, playable);
+    this.renderManifestReadiness(payload, song, playable);
     this.renderTargets(song);
     this.renderDiagnostics(song, playable);
-    this.setStatus(this.exportReadiness(song, { playable }));
+    this.setStatus(this.exportReadiness(song, { payload, playable }));
   }
 
   renderSource(song, playable = { count: 0 }) {
@@ -166,6 +213,20 @@ export class ExportPanelControl {
     });
   }
 
+  renderManifestReadiness(payload, song, playable = { count: 0 }) {
+    if (!this.manifestDetails) {
+      return;
+    }
+    this.renderDefinitionList(this.manifestDetails, [
+      ["Song count", manifestSongs(payload).length],
+      ["Classification summary", classificationSummary(payload)],
+      ["Section summary", manifestSectionSummary(payload)],
+      ["Sequence summary", manifestSequenceSummary(payload)],
+      ["Instrument summary", manifestInstrumentSummary(payload)],
+      ["Export readiness", manifestExportReadiness(payload, song, playable)]
+    ]);
+  }
+
   renderDiagnostics(song, playable = { count: 0 }) {
     if (!this.diagnosticTargets) {
       return;
@@ -188,9 +249,9 @@ export class ExportPanelControl {
     ]);
   }
 
-  exportReadiness(song, { playable = { count: 0 } } = {}) {
+  exportReadiness(song, { payload = null, playable = { count: 0 } } = {}) {
     if (!song) {
-      return { level: "FAIL", message: "No MIDI song selected.", playable, song };
+      return { level: "FAIL", message: "No MIDI song selected.", payload, playable, song };
     }
     const missingTargets = EXPORT_FORMATS
       .filter(({ key }) => !String(song.rendered?.[key] || "").trim())
@@ -199,6 +260,7 @@ export class ExportPanelControl {
       return {
         level: "WARN",
         message: `Selected song ${song.name} has no playable timeline events for rendered export readiness. Sequence length ${sequenceLength(song)}; instruments ${instrumentCount(song)}.`,
+        payload,
         playable,
         song
       };
@@ -207,6 +269,7 @@ export class ExportPanelControl {
       return {
         level: "WARN",
         message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s), but target paths are missing for ${missingTargets.join(", ")}. Rendered audio save actions remain visible; rendering is not implemented.`,
+        payload,
         playable,
         song
       };
@@ -214,12 +277,13 @@ export class ExportPanelControl {
     return {
       level: "INFO",
       message: `Export source and target formats are declared for ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Rendered audio save actions remain visible; rendering is not implemented.`,
+      payload,
       playable,
       song
     };
   }
 
-  setStatus({ level = "INFO", message = "No export attempted.", playable = { count: 0 }, song = null } = {}) {
+  setStatus({ level = "INFO", message = "No export attempted.", payload = null, playable = { count: 0 }, song = null } = {}) {
     this.statusDetails.dataset.exportStatusLevel = level.toLowerCase();
     this.renderDefinitionList(this.statusDetails, [
       ["Song name", song?.name || "No song selected"],
@@ -231,6 +295,12 @@ export class ExportPanelControl {
       ["Sequence length", sequenceLength(song)],
       ["Note count", noteCount(playable)],
       ["Instrument count", instrumentCount(song)],
+      ["Song count", manifestSongs(payload).length],
+      ["Classification summary", classificationSummary(payload)],
+      ["Manifest section summary", manifestSectionSummary(payload)],
+      ["Manifest sequence summary", manifestSequenceSummary(payload)],
+      ["Manifest instrument summary", manifestInstrumentSummary(payload)],
+      ["Export readiness", manifestExportReadiness(payload, song, playable)],
       ["Target output formats", targetFormatSummary(song)],
       ["Owner", "Export tab owns rendered audio output workflow"],
       ["Renderer", "Not implemented"],

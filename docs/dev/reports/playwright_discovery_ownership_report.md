@@ -1,17 +1,13 @@
 # Playwright Discovery Ownership Report
 
-Generated: 2026-05-26T22:54:12.025Z
+Generated: 2026-05-30T04:24:21.865Z
 Status: PASS
 
 ## Discovery-Time Ownership
 
 | File | Lane Requested | Detected Ownership | Expected Location | Lane Blocked | Status | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| tests/playwright/tools/AssetManagerV2.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: AssetManagerV2 |
-| tests/playwright/tools/CollisionInspectorV2.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: CollisionInspectorV2 |
-| tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: PaletteManagerV2 |
-| tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: PreviewGeneratorV2 |
-| tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tools lane location |
+| tests/playwright/tools/WorkspaceManagerV2.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: WorkspaceManagerV2 |
 
 ## Shared Helper Naming
 

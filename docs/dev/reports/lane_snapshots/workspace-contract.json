@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "4138c2ded15059b2",
-  "executionGraphHash": "a477efff4cdfa0c0",
+  "executionGraphHash": "904c69a6a7ddcfcb",
   "fixtureGraph": {
     "fixtureHashes": {
       "games/AITargetDummy/game.manifest.json": "2c8db43659b7eed7",
@@ -67,10 +67,10 @@
     ]
   },
   "helperGraphHash": "5d0248502f5b423f",
-  "inputHash": "262c037f816beed6",
+  "inputHash": "7dc33bc619d71aa7",
   "lane": "workspace-contract",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "a5d5b2e8b3ff60ce",
+  "laneDefinitionHash": "1171a3be87ecbb89",
   "manifest": {
     "fileHashes": {
       "games/AITargetDummy/game.manifest.json": "2c8db43659b7eed7",
@@ -90,7 +90,7 @@
       "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/WorkspaceManagerV2.spec.mjs": "7fb6f34b0c9b5fd8"
+      "tests/playwright/tools/WorkspaceManagerV2.spec.mjs": "2062ae864ba307cc"
     },
     "fixtures": [
       "games/AITargetDummy/game.manifest.json",
@@ -119,14 +119,14 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "042915c1cc7d1c2e",
+    "manifestHash": "609f65144d9891aa",
     "manifestPath": "docs/dev/reports/lane_manifests/workspace-contract.json",
     "source": "generated",
     "tests": [
       "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
     ]
   },
-  "manifestHash": "042915c1cc7d1c2e",
+  "manifestHash": "609f65144d9891aa",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "Workspace Manager V2 contract and lifecycle behavior",
@@ -153,8 +153,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "3fc50cc7c32e09db",
-  "snapshotHash": "a7a650fe5abbc266",
+  "snapshotHash": "6b4b9ab45dfac4a4",
   "version": 1,
-  "warmStartHash": "414657ab49deacb3",
-  "generatedAt": "2026-05-26T21:31:25.867Z"
+  "warmStartHash": "008ea1076fee8ae4",
+  "generatedAt": "2026-05-30T04:24:21.882Z"
 }

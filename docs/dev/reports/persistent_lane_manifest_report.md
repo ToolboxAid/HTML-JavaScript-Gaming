@@ -1,6 +1,6 @@
 # Persistent Lane Manifest Report
 
-Generated: 2026-05-26T22:55:37.502Z
+Generated: 2026-05-30T04:24:21.888Z
 Status: PASS
 Manifest directory: docs/dev/reports/lane_manifests
 
@@ -15,13 +15,13 @@ Prevented discovery scans: 0
 
 | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- |
-| engine-src | INVALIDATED | docs/dev/reports/lane_manifests/engine-src.json | eb637dd82e37ab6d | 1b10dc27feffaf1f | Persistent manifest lane definition hash changed for engine-src. |
+| workspace-contract | INVALIDATED | docs/dev/reports/lane_manifests/workspace-contract.json | 7dc33bc619d71aa7 | 609f65144d9891aa | Persistent manifest lane definition hash changed for workspace-contract. |
 
 ## Persisted Manifest Files
 
 | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| engine-src | engine | generated | tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FixedTicker.test.mjs; tests/core/FrameClock.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/render/Renderer.test.mjs | none | none | e2570ebce03c46e3 | 1b10dc27feffaf1f |
+| workspace-contract | tools | generated | tests/playwright/tools/WorkspaceManagerV2.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | games/AITargetDummy/game.manifest.json; games/Asteroids/game.manifest.json; games/Bouncing-ball/game.manifest.json; games/Breakout/game.manifest.json; games/GravityWell/game.manifest.json; games/InvalidWorkspace/game.manifest.json; games/Pacman/game.manifest.json; games/Pong/game.manifest.json; games/SolarSystem/game.manifest.json; games/SpaceDuel/game.manifest.json; games/SpaceInvaders/game.manifest.json; games/vector-arcade-sample/game.manifest.json; tests/fixtures/workspace-v2/uat.manifest.json | 4138c2ded15059b2 | 609f65144d9891aa |
 
 ## Fast-Fail Enforcement
 

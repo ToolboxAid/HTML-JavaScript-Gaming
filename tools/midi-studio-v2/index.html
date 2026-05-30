@@ -76,6 +76,18 @@
           </button>
           <div id="songListContent" class="accordion-v2__content">
             <div id="songList" class="midi-studio-v2__song-list" role="listbox" aria-label="MIDI songs"></div>
+            <div class="midi-studio-v2__song-library" aria-label="Song Library">
+              <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="songLibrarySelect">
+                <span>Song Library</span>
+                <select id="songLibrarySelect" size="3" aria-label="Saved song assets"></select>
+                <output id="songLibrarySummary" class="midi-studio-v2__section-library-summary" data-song-library-count="0">0 saved song assets</output>
+              </label>
+              <div class="midi-studio-v2__reuse-actions">
+                <button id="saveSongButton" type="button">Save Song</button>
+                <button id="loadSongButton" type="button">Load Song</button>
+                <button id="duplicateSongButton" type="button">Duplicate Song</button>
+              </div>
+            </div>
           </div>
         </section>
         <section class="accordion-v2 tool-starter__accordion is-open midi-studio-v2__timeline-instrument-accordion" data-accordion-v2-open="true" data-midi-studio-tab-panel="studio">
@@ -166,6 +178,15 @@
             </div>
             <div class="midi-studio-v2__song-detail-editor" aria-labelledby="songDetailsHeading">
               <dl id="songDetails" class="midi-studio-v2__details"></dl>
+              <div class="midi-studio-v2__classification-library" aria-label="Classification library">
+                <label class="tool-starter__field midi-studio-v2__field-card" data-midi-studio-field-state="editable" for="classificationExampleSelect">
+                  <span>Classification Examples</span>
+                  <select id="classificationExampleSelect" aria-label="Classification examples"></select>
+                  <output id="classificationLibrarySummary" class="midi-studio-v2__section-library-summary" data-classification-library-summary>Classification remains user-entered; examples are starting points.</output>
+                </label>
+                <button id="applyClassificationExampleButton" type="button">Apply Classification Example</button>
+                <output id="generatedIdPreview" class="midi-studio-v2__generated-id-preview" data-generated-id-preview>Generated ID: not declared</output>
+              </div>
               <div class="midi-studio-v2__song-detail-core-fields">
                 <label class="tool-starter__field" for="songSheetTempoInput">
                   <span>Tempo/BPM</span>
@@ -196,6 +217,49 @@
                 </label>
               </div>
               <dl id="songDetailNotes" class="midi-studio-v2__details midi-studio-v2__song-detail-notes" aria-label="Song notes"></dl>
+              <div class="midi-studio-v2__game-usage-assignment" aria-label="Game Usage assignment">
+                <fieldset class="midi-studio-v2__game-usage-options">
+                  <legend>Game Usage Assignment</legend>
+                  <label>
+                    <input id="gameUsageMenuInput" type="checkbox" value="Menu" data-game-usage-option>
+                    <span>Menu</span>
+                  </label>
+                  <label>
+                    <input id="gameUsageIntroInput" type="checkbox" value="Intro" data-game-usage-option>
+                    <span>Intro</span>
+                  </label>
+                  <label>
+                    <input id="gameUsageLoopInput" type="checkbox" value="Loop" data-game-usage-option>
+                    <span>Loop</span>
+                  </label>
+                  <label>
+                    <input id="gameUsageBossInput" type="checkbox" value="Boss" data-game-usage-option>
+                    <span>Boss</span>
+                  </label>
+                  <label>
+                    <input id="gameUsageVictoryInput" type="checkbox" value="Victory" data-game-usage-option>
+                    <span>Victory</span>
+                  </label>
+                  <label>
+                    <input id="gameUsageGameOverInput" type="checkbox" value="Game Over" data-game-usage-option>
+                    <span>Game Over</span>
+                  </label>
+                  <label>
+                    <input id="gameUsageAmbientInput" type="checkbox" value="Ambient" data-game-usage-option>
+                    <span>Ambient</span>
+                  </label>
+                  <label>
+                    <input id="gameUsageCutsceneInput" type="checkbox" value="Cutscene" data-game-usage-option>
+                    <span>Cutscene</span>
+                  </label>
+                  <label class="midi-studio-v2__game-usage-custom" for="gameUsageCustomInput">
+                    <span>Custom</span>
+                    <input id="gameUsageCustomInput" type="text" placeholder="Town, Dungeon">
+                  </label>
+                </fieldset>
+                <output id="gameUsageSummary" class="midi-studio-v2__section-library-summary" data-game-usage-summary>No game usage assigned.</output>
+                <button id="futureGameUsageRuntimeSyncButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Game Usage assignment is saved as song metadata; automatic game-trigger wiring is planned but not implemented yet.">Sync Usage To Game Triggers</button>
+              </div>
             </div>
           </div>
         </section>
@@ -248,6 +312,10 @@
             <section id="exportRenderSourceSection" class="midi-studio-v2__export-section" aria-labelledby="exportRenderSourceHeading">
               <h3 id="exportRenderSourceHeading">Render Source</h3>
               <dl id="exportRenderSource" class="midi-studio-v2__details"></dl>
+            </section>
+            <section id="exportManifestReadinessSection" class="midi-studio-v2__export-section" aria-labelledby="exportManifestReadinessHeading">
+              <h3 id="exportManifestReadinessHeading">Game Manifest Readiness</h3>
+              <dl id="exportManifestReadinessDetails" class="midi-studio-v2__details"></dl>
             </section>
             <section id="futureExportOptionsSection" class="midi-studio-v2__export-section midi-studio-v2__future-panel" aria-labelledby="futureExportOptionsHeading">
               <h3 id="futureExportOptionsHeading">Future Rendering Options</h3>

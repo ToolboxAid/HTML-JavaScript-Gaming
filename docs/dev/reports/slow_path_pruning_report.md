@@ -1,20 +1,20 @@
 # Slow Path Pruning Report
 
-Generated: 2026-05-26T22:55:38.503Z
+Generated: 2026-05-30T04:24:21.890Z
 Status: PASS
 Source timing evidence: docs/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 974ms
+Current measured lane elapsed time: 0ms
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 0
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
 Reused dependency hydration: 0
 Reused snapshots: 0
-Validation cache hits: 16
+Validation cache hits: 1
 
 ## Slow Paths Optimized
 
@@ -35,7 +35,7 @@ Validation cache hits: 16
 
 ## Guardrails
 
-Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+Full samples smoke: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.
 Runtime failures observed: 0
 Runtime schedule status: PASS
 

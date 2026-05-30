@@ -1,6 +1,6 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-05-26T22:55:37.501Z
+Generated: 2026-05-30T04:24:21.886Z
 Status: PASS
 
 ## Runtime Cost Summary
@@ -13,12 +13,12 @@ Prevented graph rebuilds: 0
 Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
 Prevented redundant lane execution: 5
-Baseline Playwright/browser launches: 0
-Scheduled Playwright/browser launches: 0
+Baseline Playwright/browser launches: 1
+Scheduled Playwright/browser launches: 1
 
 ## Scheduled Lane Order
 
-1. engine-src
+1. workspace-contract
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| engine-src | INVALIDATED | INVALIDATED | INVALIDATED | 0 | 0 | C:\nvm4w\nodejs\node.exe scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Engine/src lane validates reusable runtime surfaces through targeted node tests. |
+| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts. |
 
 ## Runtime Savings Observations
 

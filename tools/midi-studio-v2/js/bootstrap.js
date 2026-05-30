@@ -66,7 +66,14 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     audioDiagnostics: new AudioDiagnosticsControl({ details: requireElement("#audioDiagnostics") }),
     details: new SongDetailsControl({
+      applyClassificationExampleButton: requireElement("#applyClassificationExampleButton"),
+      classificationExampleSelect: requireElement("#classificationExampleSelect"),
+      classificationLibrarySummary: requireElement("#classificationLibrarySummary"),
       details: requireElement("#songDetails"),
+      gameUsageCustomInput: requireElement("#gameUsageCustomInput"),
+      gameUsageInputs: Array.from(document.querySelectorAll("[data-game-usage-option]")),
+      gameUsageSummary: requireElement("#gameUsageSummary"),
+      generatedIdPreview: requireElement("#generatedIdPreview"),
       instrumentSetField: requireElement("#instrumentSetField"),
       inspector: requireElement("#inspectorOutput"),
       notesDetails: requireElement("#songDetailNotes"),
@@ -77,6 +84,7 @@ window.addEventListener("DOMContentLoaded", () => {
     directorPanel: new DirectorPanelControl({ panel: requireElement("#directorPanel") }),
     exportPanel: new ExportPanelControl({
       diagnosticTargets: requireElement("#renderedTargetDiagnostics"),
+      manifestDetails: requireElement("#exportManifestReadinessDetails"),
       renderedTargets: requireElement("#renderedTargets"),
       sourceDetails: requireElement("#exportRenderSource"),
       statusDetails: requireElement("#exportStatusDetails")
@@ -155,7 +163,14 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     serializer: new MidiStudioStateSerializer(),
     shell: new ToolShellControl(),
-    songList: new SongListControl({ list: requireElement("#songList") }),
+    songList: new SongListControl({
+      duplicateSongButton: requireElement("#duplicateSongButton"),
+      librarySelect: requireElement("#songLibrarySelect"),
+      librarySummary: requireElement("#songLibrarySummary"),
+      list: requireElement("#songList"),
+      loadSongButton: requireElement("#loadSongButton"),
+      saveSongButton: requireElement("#saveSongButton")
+    }),
     songSetup: new SongSetupControl({ addSongButton: requireElement("#addSongButton") }),
     songSheet: new SongSheetControl({
       addCustomSectionButton: requireElement("#songSheetAddCustomSectionButton"),

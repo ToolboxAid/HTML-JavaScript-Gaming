@@ -716,10 +716,15 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
     const staticControls = {
       addInstrumentRowButton: { canonical: "music.songs[].studioArrangement.lanes / previewLaneSettings", kind: "canonical-action", owner: "Instruments", wired: "wired" },
       addSongButton: { canonical: "music.songs[] / tools.midi-studio-v2.activeSongId", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      applyClassificationExampleButton: { canonical: "music.songs[].classification", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       clearStatusButton: { canonical: "diagnostic status log", kind: "action", owner: "Diagnostics", wired: "wired" },
+      classificationExampleSelect: { canonical: "classification examples library", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
+      classificationLibrarySummary: { canonical: "derived from music.songs[].classification", kind: "readonly", owner: "Song Setup", wired: "wired" },
       closeInstrumentPanelButton: { canonical: "accordion view state", kind: "view-state", owner: "Instruments", wired: "wired" },
       duplicateInstrumentRowButton: { canonical: "music.songs[].studioArrangement.lanes / previewLaneSettings", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
       duplicateInstrumentPresetButton: { canonical: "Instruments tab instrument preset library", kind: "workflow-state", owner: "Instruments", wired: "wired" },
+      duplicateSongButton: { canonical: "music.songs[]", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
+      futureGameUsageRuntimeSyncButton: { canonical: "future game-trigger usage wiring", kind: "unwired", owner: "Song Setup", wired: "unwired" },
       futureAutosaveButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
       futureEnableMidiInputButton: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
       futureMidiDeviceSelect: { canonical: "future MIDI input", kind: "unwired", owner: "MIDI Import", wired: "unwired" },
@@ -732,6 +737,16 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       futureSnapshotsButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
       futureSoundFontSelect: { canonical: "future export rendering", kind: "unwired", owner: "Export", wired: "unwired" },
       futureUndoButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
+      gameUsageAmbientInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      gameUsageBossInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      gameUsageCustomInput: { canonical: "music.songs[].director.usage custom values", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      gameUsageCutsceneInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      gameUsageGameOverInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      gameUsageIntroInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      gameUsageLoopInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      gameUsageMenuInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      gameUsageSummary: { canonical: "derived from music.songs[].director.usage", kind: "readonly", owner: "Song Setup", wired: "wired" },
+      gameUsageVictoryInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
       generateArpeggioFromChordsButton: { canonical: "music.songs[].studioArrangement.lanes.lead", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
       generateBasicDrumsButton: { canonical: "music.songs[].studioArrangement.lanes.drums", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
       generateBassFromChordsButton: { canonical: "music.songs[].studioArrangement.lanes.bass", kind: "canonical-action", owner: "Auto-Create Parts", wired: "wired" },
@@ -757,6 +772,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       instrumentPresetSummary: { canonical: "derived from Instruments tab instrument preset library", kind: "readonly", owner: "Instruments", wired: "wired" },
       jumpToSectionButton: { canonical: "timing preview section state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       loadInstrumentPresetButton: { canonical: "Instruments tab instrument preset library", kind: "workflow-state", owner: "Instruments", wired: "wired" },
+      loadSongButton: { canonical: "music.songs[] from Song Library asset", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       loopToggle: { canonical: "playback loop state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       moveInstrumentDownButton: { canonical: "music.songs[].studioArrangement.lanes order", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
       moveInstrumentUpButton: { canonical: "music.songs[].studioArrangement.lanes order", kind: "canonical-action", owner: "Octave Timeline", wired: "wired" },
@@ -773,6 +789,10 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       returnToWorkspaceButton: { canonical: "workspace navigation", kind: "action", owner: "Workspace NAV", wired: "wired" },
       saveInstrumentPresetButton: { canonical: "Instruments tab instrument preset library", kind: "workflow-state", owner: "Instruments", wired: "wired" },
       saveProjectButton: { canonical: "serialized midi-studio-v2 tool state", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
+      saveSongButton: { canonical: "Song Library asset from selected canonical song", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
+      generatedIdPreview: { canonical: "music.songs[].id derived from name and classification", kind: "readonly", owner: "Song Setup", wired: "wired" },
+      songLibrarySelect: { canonical: "Song Library saved song assets", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
+      songLibrarySummary: { canonical: "derived from Song Library saved song assets", kind: "readonly", owner: "Song Setup", wired: "wired" },
       songSheetAddSectionToSequenceButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       songSheetAddCustomSectionButton: { canonical: "music.songs[].studioArrangement.songSheet.sections", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       songSheetApplyArrangementTemplateButton: { canonical: "music.songs[].studioArrangement.songSheet.sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
@@ -5619,6 +5639,97 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
       await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
       await expect(page.locator("#futureSoundFontSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR105-108 song library classification usage assignment and manifest readiness", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      await page.locator("#classificationExampleSelect").selectOption("Boss");
+      await page.locator("#applyClassificationExampleButton").click();
+      await expect(page.locator("#songDetails [data-song-detail-field='classification']")).toHaveValue("Boss");
+      await expect(page.locator("#generatedIdPreview")).toContainText("camptownRacesUatReel-Boss");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("camptownRacesUatReel-Boss");
+      await expect(page.locator("#classificationLibrarySummary")).toContainText("from the common examples");
+      await expect(page.locator("#songSheetClassificationGuide")).toContainText("Boss defaults");
+
+      await page.locator("#songDetails [data-song-detail-field='classification']").fill("Secret Grove");
+      await expect(page.locator("#generatedIdPreview")).toContainText("camptownRacesUatReel-Secret Grove");
+      await expect(page.locator("#classificationLibrarySummary")).toContainText("custom classification");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("camptownRacesUatReel-Secret Grove");
+
+      await page.locator("#gameUsageMenuInput").check();
+      await page.locator("#gameUsageLoopInput").check();
+      await page.locator("#gameUsageBossInput").check();
+      await page.locator("#gameUsageCustomInput").fill("Town");
+      await expect(page.locator("#gameUsageSummary")).toContainText("Menu, Loop, Boss, Town");
+      await expect(page.locator("#futureGameUsageRuntimeSyncButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+
+      await page.locator("#saveSongButton").click();
+      await expect(page.locator("#songLibrarySummary")).toContainText("Saved song asset");
+      await expect(page.locator("#songLibrarySummary")).toHaveAttribute("data-song-library-count", "1");
+      await expect(page.locator("#songLibrarySelect option")).toHaveCount(1);
+
+      await page.locator("#duplicateSongButton").click();
+      await expect(page.locator("#songList [data-song-id='camptownRacesUatReelCopy1-Secret Grove']")).toContainText("Camptown Races UAT Reel Copy 1");
+      await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Camptown Races UAT Reel Copy 1");
+      await expect(page.locator("#generatedIdPreview")).toContainText("camptownRacesUatReelCopy1-Secret Grove");
+
+      await page.locator("#songLibrarySelect").selectOption({ index: 0 });
+      await page.locator("#loadSongButton").click();
+      await expect(page.locator("#songList [data-song-id='camptownRacesUatReelCopy2-Secret Grove']")).toContainText("Camptown Races UAT Reel Copy 2");
+      await expect(page.locator("#songLibrarySummary")).toContainText("Loaded song asset into canonical songs");
+      await expect(page.locator("#nowPlayingLabel")).toHaveText("Selected: Camptown Races UAT Reel Copy 2");
+      await expect(page.locator("#gameUsageSummary")).toContainText("Menu, Loop, Boss, Town");
+
+      const canonical = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        return {
+          activeSongId: app.payload.activeSongId,
+          classification: song.classification,
+          generatedId: song.id,
+          songCount: app.payload.songs.length,
+          usage: song.director.usage
+        };
+      });
+      expect(canonical).toEqual({
+        activeSongId: "camptownRacesUatReelCopy2-Secret Grove",
+        classification: "Secret Grove",
+        generatedId: "camptownRacesUatReelCopy2-Secret Grove",
+        songCount: 5,
+        usage: ["Menu", "Loop", "Boss", "Town"]
+      });
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#exportManifestReadinessDetails [data-export-field='song-count'] dd")).toHaveText("5");
+      await expect(page.locator("#exportManifestReadinessDetails [data-export-field='classification-summary'] dd")).toContainText("Secret Grove: 3");
+      await expect(page.locator("#exportManifestReadinessDetails [data-export-field='section-summary'] dd")).toContainText("populated sections");
+      await expect(page.locator("#exportManifestReadinessDetails [data-export-field='sequence-summary'] dd")).toContainText("sequence item");
+      await expect(page.locator("#exportManifestReadinessDetails [data-export-field='instrument-summary'] dd")).toContainText("instrument lane");
+      await expect(page.locator("#exportManifestReadinessDetails [data-export-field='export-readiness'] dd")).toContainText("songs have WAV/MP3/OGG targets");
+      await expect(page.locator("#exportRenderSource [data-export-field='generated-id'] dd")).toContainText("camptownRacesUatReelCopy2-Secret Grove");
+      await expect(page.locator("#exportStatusDetails [data-export-field='song-count'] dd")).toHaveText("5");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save MP3");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
 
       await selectMidiStudioTab(page, "studio");
       await page.locator("#playButton").click();

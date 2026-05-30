@@ -10,6 +10,19 @@
   min-height: 8rem;
 }
 
+.midi-studio-v2__song-library {
+  border: 1px solid rgba(125, 211, 252, 0.32);
+  border-radius: 6px;
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.6rem;
+  padding: 0.45rem;
+}
+
+.midi-studio-v2__song-library .tool-starter__field {
+  grid-template-columns: 1fr;
+}
+
 .midi-studio-v2__song-button {
   align-items: flex-start;
   display: grid;
@@ -216,6 +229,76 @@ body[data-tool-id="midi-studio-v2"] .midi-studio-v2__unwired-control:focus-visib
 .midi-studio-v2__song-detail-core-fields {
   display: grid;
   gap: 0.45rem;
+}
+
+.midi-studio-v2__classification-library,
+.midi-studio-v2__game-usage-assignment {
+  border: 1px solid rgba(125, 211, 252, 0.32);
+  border-radius: 6px;
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.5rem;
+}
+
+.midi-studio-v2__classification-library {
+  grid-template-columns: minmax(12rem, 1fr) auto minmax(12rem, 1fr);
+}
+
+.midi-studio-v2__classification-library .tool-starter__field {
+  grid-template-columns: 1fr;
+}
+
+.midi-studio-v2__generated-id-preview {
+  align-self: stretch;
+  background: color-mix(in srgb, var(--tool-starter-panel-strong) 82%, #0ea5e9 18%);
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  border-radius: 6px;
+  color: #e0f2fe;
+  display: grid;
+  font-size: 0.78rem;
+  font-weight: 900;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.55rem;
+  place-items: center start;
+}
+
+.midi-studio-v2__game-usage-options {
+  align-items: center;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.55rem;
+  margin: 0;
+  padding: 0.55rem;
+}
+
+.midi-studio-v2__game-usage-options legend {
+  color: var(--tool-starter-muted);
+  font-size: 0.78rem;
+  padding: 0 0.2rem;
+}
+
+.midi-studio-v2__game-usage-options label {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+.midi-studio-v2__game-usage-options input[type="checkbox"] {
+  min-height: auto;
+  width: auto;
+}
+
+.midi-studio-v2__game-usage-custom {
+  flex: 1 1 11rem;
+}
+
+@media (max-width: 900px) {
+  .midi-studio-v2__classification-library {
+    grid-template-columns: 1fr;
+  }
 }
 
 .midi-studio-v2__song-detail-core-fields {
