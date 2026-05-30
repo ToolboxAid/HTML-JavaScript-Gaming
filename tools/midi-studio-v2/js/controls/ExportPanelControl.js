@@ -3,6 +3,12 @@ const EXPORT_FORMATS = [
   { key: "mp3", label: "MP3" },
   { key: "ogg", label: "OGG" }
 ];
+const DEFAULT_PREVIEW_ENGINE_STATUS = {
+  engine: "fast-js-synth",
+  label: "Fast JS Synth",
+  level: "INFO",
+  message: "Fast JS Synth preview ready."
+};
 const GAME_USAGE_READINESS_LABELS = ["Menu", "Intro", "Loop", "Boss", "Victory", "Game Over", "Ambient", "Cutscene"];
 
 function displayValue(value) {
@@ -28,6 +34,19 @@ function targetFormatSummary(song) {
   return EXPORT_FORMATS
     .map(({ key, label }) => `${label}: ${String(song?.rendered?.[key] || "").trim() ? "ready" : "missing"}`)
     .join("; ");
+}
+
+function normalizePreviewEngineStatus(status = {}) {
+  const engine = String(status.engine || DEFAULT_PREVIEW_ENGINE_STATUS.engine);
+  const label = String(status.label || (engine === "soundfont" ? "SoundFont Preview" : DEFAULT_PREVIEW_ENGINE_STATUS.label));
+  const level = String(status.level || DEFAULT_PREVIEW_ENGINE_STATUS.level).toUpperCase();
+  const message = String(status.message || DEFAULT_PREVIEW_ENGINE_STATUS.message);
+  return { engine, label, level, message };
+}
+
+function previewEngineSummary(status = DEFAULT_PREVIEW_ENGINE_STATUS) {
+  const preview = normalizePreviewEngineStatus(status);
+  return `${preview.label}: ${preview.level} - ${preview.message}`;
 }
 
 function sequenceLength(song) {
@@ -187,6 +206,7 @@ export class ExportPanelControl {
     this.diagnosticTargets = diagnosticTargets;
     this.manifestDetails = manifestDetails;
     this.renderedTargets = renderedTargets;
+    this.previewEngineStatus = normalizePreviewEngineStatus();
     this.sourceDetails = sourceDetails;
     this.statusDetails = statusDetails;
     this.onTargetChange = () => {};
@@ -213,7 +233,14 @@ export class ExportPanelControl {
     this.onTargetChange(format, value);
   }
 
-  render(song, { payload = null, playable = { count: 0 } } = {}) {
+  setPreviewEngineStatus(status = {}) {
+    this.previewEngineStatus = normalizePreviewEngineStatus(status);
+  }
+
+  render(song, { payload = null, playable = { count: 0 }, previewEngineStatus = null } = {}) {
+    if (previewEngineStatus) {
+      this.setPreviewEngineStatus(previewEngineStatus);
+    }
     this.renderSource(song, playable);
     this.renderManifestReadiness(payload, song, playable);
     this.renderTargets(song);
@@ -233,6 +260,8 @@ export class ExportPanelControl {
       ["Note count", noteCount(playable)],
       ["Instrument count", instrumentCount(song)],
       ["Target output formats", targetFormatSummary(song)],
+      ["Preview engine", this.previewEngineStatus.label],
+      ["SoundFont preview", previewEngineSummary(this.previewEngineStatus)],
       ["Playable event count", Number(playable.count || 0)],
       ["Runtime source", song ? "canonical song model / octave timeline data" : "No octave timeline source selected"]
     ]);
@@ -277,7 +306,8 @@ export class ExportPanelControl {
       ["Sequence summary", manifestSequenceSummary(payload)],
       ["Instrument summary", manifestInstrumentSummary(payload)],
       ["Game usage assignment", manifestGameUsageAssignmentSummary(payload)],
-      ["Export readiness", manifestExportReadiness(payload, song, playable)]
+      ["Export readiness", manifestExportReadiness(payload, song, playable)],
+      ["Preview engine readiness", previewEngineSummary(this.previewEngineStatus)]
     ];
     this.renderDefinitionList(this.manifestDetails, rows);
     if (this.diagnosticManifestDetails) {
@@ -303,7 +333,8 @@ export class ExportPanelControl {
       ["Target output formats", targetFormatSummary(song)],
       ["Export readiness", manifestExportReadiness(payload, song, playable)],
       ["Renderer", "Existing rendered asset download"],
-      ["SoundFont", "Planned; not implemented"],
+      ["Preview engine", this.previewEngineStatus.label],
+      ["SoundFont", previewEngineSummary(this.previewEngineStatus)],
       ["Status", `${readiness.level}: ${readiness.message}`],
       ...EXPORT_FORMATS.map(({ key, label }) => [
         `${label} target`,
@@ -322,7 +353,7 @@ export class ExportPanelControl {
     if (Number(playable.count || 0) <= 0) {
       return {
         level: "WARN",
-        message: `Selected song ${song.name} has no playable timeline events for rendered export readiness. Sequence length ${sequenceLength(song)}; instruments ${instrumentCount(song)}.`,
+        message: `Selected song ${song.name} has no playable timeline events for rendered export readiness. Sequence length ${sequenceLength(song)}; instruments ${instrumentCount(song)}. Preview engine ${previewEngineSummary(this.previewEngineStatus)}.`,
         payload,
         playable,
         song
@@ -331,15 +362,15 @@ export class ExportPanelControl {
     if (missingTargets.length) {
       return {
         level: "WARN",
-        message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s), but target paths are missing for ${missingTargets.join(", ")}. Save WAV/MP3/OGG downloads declared rendered targets when files exist.`,
+        message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s), but target paths are missing for ${missingTargets.join(", ")}. Save WAV/MP3/OGG downloads declared rendered targets when files exist. Preview engine ${previewEngineSummary(this.previewEngineStatus)}.`,
         payload,
         playable,
         song
       };
     }
     return {
-      level: "INFO",
-      message: `Export source and target formats are declared for ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Save WAV/MP3/OGG downloads the declared rendered target files.`,
+      level: this.previewEngineStatus.level === "FAIL" || this.previewEngineStatus.level === "WARN" ? "WARN" : "INFO",
+      message: `Export source and target formats are declared for ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Save WAV/MP3/OGG downloads the declared rendered target files. Preview engine ${previewEngineSummary(this.previewEngineStatus)}.`,
       payload,
       playable,
       song
@@ -368,7 +399,8 @@ export class ExportPanelControl {
       ["Target output formats", targetFormatSummary(song)],
       ["Owner", "Export tab owns rendered audio output workflow"],
       ["Renderer", "Existing rendered asset download"],
-      ["SoundFont", "Planned; not implemented"],
+      ["Preview engine", this.previewEngineStatus.label],
+      ["SoundFont", previewEngineSummary(this.previewEngineStatus)],
       ["Status", `${level}: ${message}`]
     ]);
   }

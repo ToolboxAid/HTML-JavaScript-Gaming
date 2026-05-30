@@ -832,7 +832,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       futureRenderQualitySelect: { canonical: "future export rendering", kind: "unwired", owner: "Export", wired: "unwired" },
       futureSampleRateSelect: { canonical: "future export rendering", kind: "unwired", owner: "Export", wired: "unwired" },
       futureSnapshotsButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
-      futureSoundFontSelect: { canonical: "future export rendering", kind: "unwired", owner: "Export", wired: "unwired" },
+      futureSoundFontSelect: { canonical: "Export tab SoundFont asset selection", kind: "workflow-state", owner: "Export", wired: "wired" },
       futureUndoButton: { canonical: "future editing history", kind: "unwired", owner: "Song Setup", wired: "unwired" },
       gameUsageAmbientInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
       gameUsageBossInput: { canonical: "music.songs[].director.usage", kind: "canonical", owner: "Song Setup", wired: "wired" },
@@ -879,6 +879,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       playLoopButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       playSectionButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       playSequenceButton: { canonical: "timing preview playback state from Song Sequence order", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      previewEngineSelect: { canonical: "Export tab preview engine selection", kind: "workflow-state", owner: "Export", wired: "wired" },
       regenerateArrangementButton: { canonical: "music.songs[].studioArrangement generated lanes from Song Sheet sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       renderedExportSaveButton: { canonical: "declared rendered audio target download", kind: "action", owner: "Export", wired: "wired" },
       renderedExportTargetTypeSelect: { canonical: "rendered audio target format selection", kind: "workflow-state", owner: "Export", wired: "wired" },
@@ -933,6 +934,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       songSheetTemplatePreview: { canonical: "built-in Song Sheet section templates", kind: "readonly", owner: "Song Setup", wired: "wired" },
       songSheetTemplateSectionSelect: { canonical: "built-in Song Sheet section templates", kind: "workflow-state", owner: "Song Setup", wired: "wired" },
       songSheetTempoInput: { canonical: "music.songs[].studioArrangement.tempo", kind: "canonical", owner: "Song Setup", wired: "wired" },
+      soundFontPreviewStatus: { canonical: "derived from Export tab preview engine availability", kind: "readonly", owner: "Export", wired: "wired" },
       songSourceField: { canonical: "music.songs[].sourceMidi", kind: "readonly", owner: "MIDI Import", wired: "wired" },
       statusLog: { canonical: "diagnostic status log", kind: "readonly", owner: "Diagnostics", wired: "wired" },
       stopAllAudioButton: { canonical: "preview/playback audio state", kind: "action", owner: "Global NAV", wired: "wired" },
@@ -1103,6 +1105,9 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       if (element.dataset.instrumentDurationLane) {
         return { canonical: "music.songs[].studioArrangement.previewLaneSettings.durations", kind: "canonical", owner: "Instruments", wired: "wired" };
       }
+      if (element.dataset.instrumentEffectLane) {
+        return { canonical: "music.songs[].studioArrangement.previewLaneSettings.effects", kind: "canonical", owner: "Instruments", wired: "wired" };
+      }
       if (element.dataset.instrumentDerivedField) {
         return { canonical: "derived from selected instrument preview mapping", kind: "readonly", owner: "Instruments", wired: "wired" };
       }
@@ -1142,10 +1147,14 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
         "instrumentOctaveHighLane",
         "instrumentTransposeLane",
         "instrumentVelocityLane",
-        "instrumentDurationLane"
+        "instrumentDurationLane",
+        "instrumentEffectLane"
       ];
       for (const key of laneKeys) {
         if (element.dataset[key]) {
+          if (key === "instrumentEffectLane") {
+            return `${ownership.canonical}::${element.dataset.instrumentEffect}:${element.dataset[key]}`;
+          }
           return `${ownership.canonical}::${key}:${element.dataset[key]}`;
         }
       }
@@ -3471,7 +3480,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(editor.locator("[data-instrument-editor-bucket='mix']")).toContainText("Mix");
       await expect(editor.locator("[data-instrument-editor-bucket='playback']")).toContainText("Playback");
       await expect(editor.locator("[data-instrument-editor-bucket='effects']")).toContainText("Effects");
-      await expect(editor.locator("[data-instrument-editor-bucket='advanced']")).toContainText("Advanced");
+      await expect(editor.locator("[data-instrument-editor-bucket='advanced']")).toHaveCount(0);
 
       await page.locator("#previewDisplayNameBassInput").fill("Bass Anchor");
       await instrumentTypeSelect(page, "bass").selectOption("Bass");
@@ -3486,6 +3495,11 @@ test.describe("MIDI Studio V2", () => {
       await setInputValue(page, "#previewTransposeBassInput", "12");
       await setInputValue(page, "#previewVelocityBassInput", "96");
       await setInputValue(page, "#previewDurationBassInput", "1.5");
+      await setInputValue(page, "#previewEffectReverbBassInput", "0.4");
+      await setInputValue(page, "#previewEffectChorusBassInput", "0.25");
+      await setInputValue(page, "#previewEffectDelayBassInput", "0.3");
+      await setInputValue(page, "#previewEffectFilterBassInput", "0.2");
+      await setInputValue(page, "#previewEffectBrightnessToneBassInput", "0.6");
 
       expect(await page.evaluate(() => {
         const app = window.__midiStudioV2App;
@@ -3493,6 +3507,7 @@ test.describe("MIDI Studio V2", () => {
         return {
           displayName: settings.displayNames.bass,
           duration: settings.durations.bass,
+          effects: settings.effects.bass,
           instrument: settings.instruments.bass,
           instrumentType: settings.instrumentTypes.bass,
           octaveRange: settings.octaveRanges.bass,
@@ -3505,6 +3520,13 @@ test.describe("MIDI Studio V2", () => {
       })).toEqual({
         displayName: "Bass Anchor",
         duration: 1.5,
+        effects: {
+          brightnessTone: 0.6,
+          chorus: 0.25,
+          delay: 0.3,
+          filter: 0.2,
+          reverb: 0.4
+        },
         instrument: "gm-electric-bass-finger",
         instrumentType: "Bass",
         octaveRange: { high: 4, low: 2 },
@@ -3524,22 +3546,16 @@ test.describe("MIDI Studio V2", () => {
       await expect(keyboard.locator("[data-audition-note='C1']")).toHaveCount(0);
       await expect(keyboard.locator("[data-audition-note='C4']")).toHaveCount(1);
 
-      const effectControls = await editor.locator("[data-instrument-editor-bucket='effects'] [data-midi-studio-future-control]").evaluateAll((controls) => controls.map((control) => ({
-        label: (control.getAttribute("aria-label") || control.placeholder).replace(/\s*\(Not implemented\)$/, "").trim(),
-        status: control.dataset.midiStudioUnwired,
-        title: control.title
+      const effectControls = await editor.locator("[data-instrument-editor-bucket='effects'] [data-instrument-effect-lane='bass']").evaluateAll((controls) => controls.map((control) => ({
+        effect: control.dataset.instrumentEffect,
+        title: control.title,
+        unwired: control.dataset.midiStudioUnwired || "",
+        value: control.value
       })));
       expect(effectControls).toHaveLength(5);
-      expect(effectControls.map((control) => control.label)).toEqual(["Reverb", "Chorus", "Delay", "Filter", "Brightness/Tone"]);
-      expect(effectControls.every((control) => control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
-      const advancedControls = await editor.locator("[data-instrument-editor-bucket='advanced'] [data-midi-studio-future-control]").evaluateAll((controls) => controls.map((control) => ({
-        label: (control.getAttribute("aria-label") || control.placeholder).replace(/\s*\(Not implemented\)$/, "").trim(),
-        status: control.dataset.midiStudioUnwired,
-        title: control.title
-      })));
-      expect(advancedControls).toHaveLength(3);
-      expect(advancedControls.map((control) => control.label)).toEqual(["MIDI Channel", "GM Program", "Controller Values"]);
-      expect(advancedControls.every((control) => control.status === "not-implemented" && control.title.includes("Not implemented:"))).toBe(true);
+      expect(effectControls.map((control) => control.effect)).toEqual(["reverb", "chorus", "delay", "filter", "brightnessTone"]);
+      expect(effectControls.every((control) => control.unwired === "")).toBe(true);
+      await expect(editor.locator("[data-instrument-editor-bucket='advanced'] [data-midi-studio-future-control]")).toHaveCount(0);
 
       await selectInstrumentRow(page, "lead");
       expect(await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.selectedInstrumentId)).toBe("lead");
@@ -7533,7 +7549,8 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#exportRenderSource [data-export-field='selected-song']")).toHaveCount(0);
       await expect(page.locator("#renderedExportTargetTypeSelect")).not.toHaveAttribute("data-midi-studio-unwired", /.+/);
       await expect(page.locator("#renderedExportSaveButton")).not.toHaveAttribute("data-midi-studio-unwired", /.+/);
-      await expect(page.locator("#futureSoundFontSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(page.locator("#futureSoundFontSelect")).not.toHaveAttribute("data-midi-studio-unwired", /.+/);
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("Fast JS Synth preview ready");
 
       await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
       await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
@@ -7550,6 +7567,110 @@ test.describe("MIDI Studio V2", () => {
       await page.locator("#renderedExportSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered WAV export target for Source Only\. Add music\.songs\[\]\.rendered\.wav before exporting\./);
       await expect(page.locator("#statusLog")).not.toHaveValue(/not implemented for WAV|saved .*\.wav|created .*\.wav/i);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR341-420 endstate preview engine, effects, advanced playback, and SoundFont honesty", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+
+      await setInputValue(page, "#previewVelocityLeadInput", "88");
+      await setInputValue(page, "#previewDurationLeadInput", "1.4");
+      await setInputValue(page, "#previewTransposeLeadInput", "5");
+      await setInputValue(page, "#previewOctaveLowLeadInput", "3");
+      await setInputValue(page, "#previewOctaveHighLeadInput", "6");
+      await setInputValue(page, "#previewEffectReverbLeadInput", "0.55");
+      await setInputValue(page, "#previewEffectChorusLeadInput", "0.35");
+      await setInputValue(page, "#previewEffectDelayLeadInput", "0.25");
+      await setInputValue(page, "#previewEffectFilterLeadInput", "0.15");
+      await setInputValue(page, "#previewEffectBrightnessToneLeadInput", "0.7");
+
+      expect(await page.evaluate(() => {
+        const settings = window.__midiStudioV2App.selectedSong().studioArrangement.previewLaneSettings;
+        return {
+          duration: settings.durations.lead,
+          effects: settings.effects.lead,
+          octaveRange: settings.octaveRanges.lead,
+          transpose: settings.transposes.lead,
+          velocity: settings.velocities.lead
+        };
+      })).toEqual({
+        duration: 1.4,
+        effects: {
+          brightnessTone: 0.7,
+          chorus: 0.35,
+          delay: 0.25,
+          filter: 0.15,
+          reverb: 0.55
+        },
+        octaveRange: { high: 6, low: 3 },
+        transpose: 5,
+        velocity: 88
+      });
+
+      await expect(page.locator("#selectedInstrumentEditor [data-instrument-editor-bucket='effects'] [data-midi-studio-unwired]")).toHaveCount(0);
+      await expect(page.locator("#selectedInstrumentEditor [data-instrument-editor-bucket='advanced']")).toHaveCount(0);
+      await expect(page.locator("#instrumentAuditionKeyboard")).toHaveAttribute("data-effects", /"brightnessTone":0.7/);
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#previewEngineSelect")).toHaveValue("fast-js-synth");
+      await expect(page.locator("#futureSoundFontSelect")).toBeEnabled();
+      await expect(page.locator("#futureSoundFontSelect")).not.toHaveAttribute("data-midi-studio-unwired", /.+/);
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("Fast JS Synth preview ready");
+      await expect(page.locator("#exportRenderSource")).toContainText("Preview engine");
+      await expect(page.locator("#exportRenderSource")).toContainText("Fast JS Synth");
+
+      await page.locator("#previewEngineSelect").selectOption("soundfont");
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("WARN: SoundFont Preview unavailable");
+      await expect(page.locator("#exportStatusDetails")).toContainText("SoundFont Preview");
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN SoundFont Preview unavailable for section/);
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+
+      await selectMidiStudioTab(page, "export");
+      await page.locator("#previewEngineSelect").selectOption("fast-js-synth");
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("INFO: Fast JS Synth preview ready");
+      await selectMidiStudioTab(page, "instruments");
+      await page.locator("[data-audition-note='C5']").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/Auditioned C5 for Lead/);
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#playbackState")).toContainText("Engine: Fast JS Synth");
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await selectMidiStudioTab(page, "export");
+      await page.locator("#toolExportToolStateButton").click();
+      const exportedJson = await page.locator("#inspectorOutput").textContent();
+      const exportedToolState = JSON.parse(exportedJson);
+      const exportedSongs = exportedToolState.data?.songs || exportedToolState.payload?.songs || [];
+      const exportedEffects = exportedSongs
+        .find((song) => song.id === "camptown-races-uat-reel")
+        .studioArrangement.previewLaneSettings.effects.lead;
+      expect(exportedEffects).toMatchObject({ brightnessTone: 0.7, chorus: 0.35, delay: 0.25, filter: 0.15, reverb: 0.55 });
+
+      await page.locator("#toolImportManifestInput").setInputFiles({
+        buffer: Buffer.from(exportedJson),
+        mimeType: "application/json",
+        name: "midi-studio-v2-pr341-roundtrip.json"
+      });
+      expect(await page.evaluate(() => window.__midiStudioV2App.selectedSong().studioArrangement.previewLaneSettings.effects.lead)).toMatchObject({
+        brightnessTone: 0.7,
+        chorus: 0.35,
+        delay: 0.25,
+        filter: 0.15,
+        reverb: 0.55
+      });
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

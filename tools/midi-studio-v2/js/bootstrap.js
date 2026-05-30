@@ -153,6 +153,9 @@ window.addEventListener("DOMContentLoaded", () => {
     playbackControl: new PlaybackControl({
       loopToggle: requireElement("#loopToggle"),
       playButton: requireElement("#playButton"),
+      previewEngineSelect: requireElement("#previewEngineSelect"),
+      soundFontPresetSelect: requireElement("#futureSoundFontSelect"),
+      soundFontStatusOutput: requireElement("#soundFontPreviewStatus"),
       stateOutput: requireElement("#playbackState"),
       stopButton: requireElement("#stopButton")
     }),

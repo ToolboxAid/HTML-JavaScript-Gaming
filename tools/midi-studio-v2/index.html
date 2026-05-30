@@ -310,6 +310,25 @@
                 <button id="renderedExportSaveButton" type="button">Save WAV</button>
               </div>
             </section>
+            <section id="exportPreviewEngineSection" class="midi-studio-v2__export-section" aria-labelledby="exportPreviewEngineHeading">
+              <h3 id="exportPreviewEngineHeading">Preview Engine</h3>
+              <div class="midi-studio-v2__export-save-controls">
+                <label class="midi-studio-v2__compact-field" for="previewEngineSelect">
+                  <span>Preview Engine</span>
+                  <select id="previewEngineSelect">
+                    <option value="fast-js-synth">Fast JS Synth</option>
+                    <option value="soundfont">SoundFont Preview</option>
+                  </select>
+                </label>
+                <label class="midi-studio-v2__compact-field" for="futureSoundFontSelect">
+                  <span>SoundFont Asset</span>
+                  <select id="futureSoundFontSelect">
+                    <option value="">No SoundFont assets configured</option>
+                  </select>
+                </label>
+              </div>
+              <output id="soundFontPreviewStatus" aria-live="polite">Fast JS Synth preview ready.</output>
+            </section>
             <section id="exportRenderSourceSection" class="midi-studio-v2__export-section" aria-labelledby="exportRenderSourceHeading">
               <h3 id="exportRenderSourceHeading">Render Source</h3>
               <dl id="exportRenderSource" class="midi-studio-v2__details"></dl>
@@ -321,9 +340,6 @@
             <section id="futureExportOptionsSection" class="midi-studio-v2__export-section midi-studio-v2__future-panel" aria-labelledby="futureExportOptionsHeading">
               <h3 id="futureExportOptionsHeading">Future Rendering Options</h3>
               <div class="midi-studio-v2__future-controls">
-                <select id="futureSoundFontSelect" disabled data-midi-studio-future-control data-midi-studio-future-detail="SoundFont rendering is planned but not implemented yet.">
-                  <option>SoundFont</option>
-                </select>
                 <select id="futureRenderQualitySelect" disabled data-midi-studio-future-control data-midi-studio-future-detail="Render quality selection is planned but not implemented yet.">
                   <option>Render Quality</option>
                 </select>

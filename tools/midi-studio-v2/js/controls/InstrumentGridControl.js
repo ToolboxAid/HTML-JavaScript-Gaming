@@ -49,6 +49,13 @@ const DEFAULT_PREVIEW_INSTRUMENTS = {
 };
 
 const FIXED_LANES = ["bass", "chords", "drums", "lead", "pad"];
+const EFFECT_FIELDS = {
+  reverb: { label: "Reverb" },
+  chorus: { label: "Chorus" },
+  delay: { label: "Delay" },
+  filter: { label: "Filter" },
+  brightnessTone: { label: "Brightness/Tone" }
+};
 const INSTRUMENT_TYPE_GROUPS = [
   "Piano",
   "Chromatic Percussion",
@@ -187,11 +194,11 @@ function clonePreviewLaneState(lanes = Object.keys(DEFAULT_PREVIEW_INSTRUMENTS))
 
 function defaultEffectsState() {
   return {
-    brightnessTone: null,
-    chorus: null,
-    delay: null,
-    filter: null,
-    reverb: null
+    brightnessTone: 0,
+    chorus: 0,
+    delay: 0,
+    filter: 0,
+    reverb: 0
   };
 }
 
@@ -208,6 +215,22 @@ function clonePlainObject(value) {
     return {};
   }
   return JSON.parse(JSON.stringify(value));
+}
+
+function effectLabel(kind) {
+  return EFFECT_FIELDS[kind]?.label || kind;
+}
+
+function normalizeEffectValue(value) {
+  return Math.max(0, Math.min(1, finiteNumber(value, 0)));
+}
+
+function normalizeEffectsState(value = {}) {
+  const effects = { ...defaultEffectsState(), ...clonePlainObject(value) };
+  Object.keys(EFFECT_FIELDS).forEach((kind) => {
+    effects[kind] = normalizeEffectValue(effects[kind]);
+  });
+  return effects;
 }
 
 function defaultPreviewLaneState(lane) {
@@ -566,7 +589,7 @@ export class InstrumentGridControl {
         state.duration = Math.max(0.1, Math.min(8, finiteNumber(previewLaneSettings.durations[lane], 1)));
       }
       if (hasOwnValue(previewLaneSettings.effects, lane)) {
-        state.effects = { ...defaultEffectsState(), ...clonePlainObject(previewLaneSettings.effects[lane]) };
+        state.effects = normalizeEffectsState(previewLaneSettings.effects[lane]);
       }
       if (hasOwnValue(previewLaneSettings.advanced, lane)) {
         state.advanced = { ...defaultAdvancedState(), ...clonePlainObject(previewLaneSettings.advanced[lane]) };
@@ -779,6 +802,9 @@ export class InstrumentGridControl {
       instrumentLabels,
       instruments: settings.instruments,
       hiddenLanes: Object.entries(settings.visible).filter((entry) => entry[1] === false).map(([lane]) => lane),
+      effectSummary: Object.entries(settings.effects)
+        .map(([lane, effects]) => `${lane}:${Object.entries(effects).map(([kind, value]) => `${kind}=${value}`).join("/")}`)
+        .join(", "),
       mutedLanes: Object.entries(settings.muted).filter((entry) => entry[1]).map(([lane]) => lane),
       panSummary: Object.entries(settings.pans).map(([lane, value]) => `${lane}:${value}`).join(", "),
       soloedLanes: Object.entries(settings.soloed).filter((entry) => entry[1]).map(([lane]) => lane),
@@ -826,6 +852,7 @@ export class InstrumentGridControl {
     const [octaveLow, octaveHigh] = lane ? this.octaveRangeForLane(lane) : ["", ""];
     return {
       duration: Number(state.duration ?? 1),
+      effects: normalizeEffectsState(state.effects),
       instrumentLabel: instrumentLabel(instrumentValue),
       instrumentType: state.instrumentType || instrumentTypeGroup(instrumentValue),
       instrumentValue,
@@ -1340,8 +1367,7 @@ export class InstrumentGridControl {
       this.createIdentityBucket(lane),
       this.createMixBucket(lane),
       this.createPlaybackBucket(lane),
-      this.createEffectsBucket(),
-      this.createAdvancedBucket()
+      this.createEffectsBucket(lane)
     );
   }
 
@@ -1444,22 +1470,14 @@ export class InstrumentGridControl {
     ]);
   }
 
-  createEffectsBucket() {
-    return this.createInstrumentEditorBucket("Effects", "effects", [
-      this.createEditorField("Reverb", this.createUnwiredInstrumentInput("Reverb", "Reverb is planned but not implemented yet.")),
-      this.createEditorField("Chorus", this.createUnwiredInstrumentInput("Chorus", "Chorus is planned but not implemented yet.")),
-      this.createEditorField("Delay", this.createUnwiredInstrumentInput("Delay", "Delay is planned but not implemented yet.")),
-      this.createEditorField("Filter", this.createUnwiredInstrumentInput("Filter", "Filter is planned but not implemented yet.")),
-      this.createEditorField("Brightness/Tone", this.createUnwiredInstrumentInput("Brightness/Tone", "Brightness and tone controls are planned but not implemented yet."))
-    ]);
-  }
-
-  createAdvancedBucket() {
-    return this.createInstrumentEditorBucket("Advanced", "advanced", [
-      this.createEditorField("MIDI Channel", this.createUnwiredInstrumentInput("MIDI Channel", "MIDI channel editing is planned but not implemented yet.")),
-      this.createEditorField("GM Program", this.createUnwiredInstrumentInput("GM Program", "GM program editing is planned but not implemented yet.")),
-      this.createEditorField("Controller Values", this.createUnwiredInstrumentInput("Controller Values", "MIDI controller values are planned but not implemented yet.", "textarea"))
-    ]);
+  createEffectsBucket(lane) {
+    this.selectedEditorControls.effects = {};
+    const fields = Object.entries(EFFECT_FIELDS).map(([kind, config]) => {
+      const input = this.createEffectNumberInput(lane, kind, config.label);
+      this.selectedEditorControls.effects[kind] = input;
+      return this.createEditorField(config.label, input);
+    });
+    return this.createInstrumentEditorBucket("Effects", "effects", fields);
   }
 
   createEditorField(labelText, control) {
@@ -1587,6 +1605,41 @@ export class InstrumentGridControl {
       status: "Not implemented"
     });
     return control;
+  }
+
+  createEffectNumberInput(lane, kind, label) {
+    const input = document.createElement("input");
+    input.id = `previewEffect${kind.charAt(0).toUpperCase()}${kind.slice(1)}${laneId(lane)}Input`;
+    input.type = "number";
+    input.inputMode = "decimal";
+    input.min = "0";
+    input.max = "1";
+    input.step = "0.05";
+    input.value = String(normalizeEffectValue(this.previewLaneState[lane]?.effects?.[kind]));
+    input.dataset.instrumentEffectLane = lane;
+    input.dataset.instrumentEffect = kind;
+    input.setAttribute("aria-label", `${label} ${laneLabel(lane)}`);
+    input.addEventListener("input", () => this.updateEffectSetting(lane, kind, input.value));
+    input.addEventListener("change", () => this.updateEffectSetting(lane, kind, input.value));
+    return input;
+  }
+
+  updateEffectSetting(lane, kind, value) {
+    const state = this.previewLaneState[lane];
+    if (!state || !EFFECT_FIELDS[kind]) {
+      return;
+    }
+    state.effects = normalizeEffectsState(state.effects);
+    state.effects[kind] = normalizeEffectValue(value);
+    this.renderAuditionKeyboard();
+    this.renderSelectionDetails();
+    this.onLaneSettingChange?.("effect", {
+      effectKind: kind,
+      effectLabel: effectLabel(kind),
+      lane,
+      laneLabel: laneLabel(lane),
+      value: state.effects[kind]
+    });
   }
 
   updatePlaybackSetting(lane, kind, value) {
@@ -3220,6 +3273,7 @@ export class InstrumentGridControl {
     this.auditionKeyboard.dataset.transpose = String(state.transpose ?? 0);
     this.auditionKeyboard.dataset.velocity = String(state.velocity ?? 100);
     this.auditionKeyboard.dataset.volume = String(state.volume ?? 1);
+    this.auditionKeyboard.dataset.effects = JSON.stringify(normalizeEffectsState(state.effects));
     this.auditionKeyboard.setAttribute("aria-label", `${laneLabel(lane)} audition keyboard, playable range ${playableRange}`);
     const rangeSummary = document.createElement("output");
     rangeSummary.className = "midi-studio-v2__audition-range-summary";
@@ -3242,6 +3296,7 @@ export class InstrumentGridControl {
         key.dataset.auditionTranspose = String(state.transpose ?? 0);
         key.dataset.auditionVelocity = String(state.velocity ?? 100);
         key.dataset.auditionVolume = String(state.volume ?? 1);
+        key.dataset.auditionEffects = JSON.stringify(normalizeEffectsState(state.effects));
         key.dataset.keyKind = noteName.includes("#") ? "black" : "white";
         key.setAttribute("aria-label", `Audition ${note} on ${laneLabel(lane)} within ${playableRange}`);
         key.title = `Audition ${note}`;

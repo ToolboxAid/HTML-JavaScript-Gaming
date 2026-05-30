@@ -68,6 +68,17 @@ function clampNumber(value, min, max, fallback) {
   return Math.max(min, Math.min(max, finiteNumber(value, fallback)));
 }
 
+function normalizedEffects(laneSettings = {}, lane = "") {
+  const effects = laneSettings.effects?.[lane] || {};
+  return {
+    brightnessTone: clampNumber(effects.brightnessTone, 0, 1, 0),
+    chorus: clampNumber(effects.chorus, 0, 1, 0),
+    delay: clampNumber(effects.delay, 0, 1, 0),
+    filter: clampNumber(effects.filter, 0, 1, 0),
+    reverb: clampNumber(effects.reverb, 0, 1, 0)
+  };
+}
+
 export class PreviewSynthEngine {
   constructor({ windowRef = globalThis } = {}) {
     this.context = null;
@@ -149,7 +160,7 @@ export class PreviewSynthEngine {
     }
   }
 
-  async previewInstrument({ instrumentId, label = "", lane = "" } = {}) {
+  async previewInstrument({ instrumentId, label = "", lane = "", laneSettings = {} } = {}) {
     const contextResult = await this.ensureContext();
     if (!contextResult.ok) {
       return contextResult;
@@ -158,20 +169,21 @@ export class PreviewSynthEngine {
     if (!instrument) {
       return this.fail(`Missing preview instrument selection for ${label || lane || "instrument"}. Choose a Preview Synth instrument before auditioning.`, "missing-instrument");
     }
+    const adjustedInstrument = this.instrumentWithLaneSettings(instrument, lane, laneSettings);
     const event = {
       durationBeats: instrument.synthRole === "pad" ? 0.5 : 0.25,
       kind: instrument.synthRole === "percussion" ? "drum" : "note",
       lane,
-      previewInstrument: instrument,
+      previewInstrument: adjustedInstrument,
       stepIndex: 0,
-      value: this.auditionValueForInstrument(instrument)
+      value: this.auditionValueForInstrument(adjustedInstrument)
     };
     const startTime = contextResult.context.currentTime + 0.01;
     if (event.kind === "drum") {
       this.scheduleDrumHit({ context: contextResult.context, event, startTime });
     } else {
-      const durationSeconds = instrument.synthRole === "pad" ? 0.34 : 0.2;
-      this.frequenciesForEvent(event, instrument).forEach((frequency, index) => {
+      const durationSeconds = (instrument.synthRole === "pad" ? 0.34 : 0.2) * Number(adjustedInstrument.durationScale || 1);
+      this.frequenciesForEvent(event, adjustedInstrument).forEach((frequency, index) => {
         this.scheduleTone({
           context: contextResult.context,
           durationSeconds,
@@ -267,12 +279,33 @@ export class PreviewSynthEngine {
     const velocityScale = clampNumber(laneSettings.velocities?.[lane], 1, 127, 100) / 100;
     const transpose = clampNumber(laneSettings.transposes?.[lane], -24, 24, 0);
     const pan = clampNumber(laneSettings.pans?.[lane], -1, 1, 0);
+    const effects = normalizedEffects(laneSettings, lane);
+    const brightnessGain = 1 + effects.brightnessTone * 0.18;
+    const filterDamping = 1 - effects.filter * 0.22;
+    const ambienceLift = 1 + (effects.chorus + effects.delay + effects.reverb) * 0.04;
+    const waveformOverride = this.waveformWithEffects(instrument?.waveform, effects);
     return {
       ...instrument,
+      effects,
       pan,
+      durationScale: 1 + effects.reverb * 0.18 + effects.delay * 0.12 + effects.chorus * 0.08,
       transposeSemitones: finiteNumber(instrument?.transposeSemitones, 0) + transpose,
-      volumeOverride: Math.max(0, (baseVolume ?? fallbackVolume) * laneVolume * velocityScale)
+      volumeOverride: Math.max(0, (baseVolume ?? fallbackVolume) * laneVolume * velocityScale * brightnessGain * filterDamping * ambienceLift),
+      waveformOverride
     };
+  }
+
+  waveformWithEffects(baseWaveform = "", effects = {}) {
+    if (effects.filter >= 0.7) {
+      return "sine";
+    }
+    if (effects.brightnessTone >= 0.65) {
+      return "sawtooth";
+    }
+    if (effects.chorus >= 0.75) {
+      return "triangle";
+    }
+    return baseWaveform || "";
   }
 
   eventWithLaneSettings(event, laneSettings = {}) {
@@ -386,9 +419,9 @@ export class PreviewSynthEngine {
 
   waveformForEvent(event, instrument = null) {
     if (event.kind === "drum") {
-      return event.value === "kick" || event.value === "tom" ? "sine" : instrument?.waveform || "square";
+      return event.value === "kick" || event.value === "tom" ? "sine" : instrument?.waveformOverride || instrument?.waveform || "square";
     }
-    return instrument?.waveform || "sine";
+    return instrument?.waveformOverride || instrument?.waveform || "sine";
   }
 
   volumeForEvent(event, instrument = null) {

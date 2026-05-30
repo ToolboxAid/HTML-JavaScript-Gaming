@@ -125,6 +125,7 @@ export class MidiStudioV2App {
     });
     this.playbackControl.mount({
       onPlay: () => this.playSelectedSong(),
+      onPreviewEngineChange: () => this.handlePreviewEngineChange(),
       onStop: () => this.stopPlayback()
     });
     this.renderedExportActions.mount({ onExport: (format) => this.exportRenderedTarget(format) });
@@ -196,7 +197,7 @@ export class MidiStudioV2App {
     this.setDirtyState(false);
     this.songList.render([], "", this.songLibraryAssets);
     this.details.render(null, null);
-    this.exportPanel.render(null, { payload: this.payload, playable: { count: 0 } });
+    this.exportPanel.render(null, { payload: this.payload, playable: { count: 0 }, previewEngineStatus: this.refreshPreviewEngineStatus() });
     this.directorPanel.render(null, {});
     this.midiSourceDetails.render(null);
     this.midiSourceDetails.setEnabled(false);
@@ -241,7 +242,7 @@ export class MidiStudioV2App {
     this.songList.render(this.payload?.songs || [], this.selectedSongId, this.songLibraryAssets);
     this.details.render(song, this.payload);
     this.applyClassificationWorkflow(song, { log: false });
-    this.exportPanel.render(song, { payload: this.payload, playable: this.playableEventSummary() });
+    this.exportPanel.render(song, { payload: this.payload, playable: this.playableEventSummary(), previewEngineStatus: this.refreshPreviewEngineStatus() });
     this.directorPanel.render(song, this.payload?.directorMode || {});
     this.midiSourceDetails.render(null);
     this.midiSourceDetails.setEnabled(Boolean(song));
@@ -320,7 +321,7 @@ export class MidiStudioV2App {
       arrangement.sections = String(value || "").trim();
     }
     this.details.showJson(song);
-    this.exportPanel.render(this.selectedSong(), { payload: this.payload, playable: this.playableEventSummary() });
+    this.exportPanel.render(this.selectedSong(), { payload: this.payload, playable: this.playableEventSummary(), previewEngineStatus: this.refreshPreviewEngineStatus() });
     this.markDirty({ changedKeys: ["data.songs"], reason: "midi-studio-song-details-edited" });
     this.statusLog.info(`Edited selected song detail: ${field}.`);
     this.updateAudioDiagnostics();
@@ -358,6 +359,7 @@ export class MidiStudioV2App {
     };
     this.details.showJson(song);
     const playable = this.playableEventSummary();
+    this.refreshPreviewEngineStatus();
     this.exportPanel.renderSource(song, playable);
     this.exportPanel.renderManifestReadiness(this.payload, song, playable);
     this.exportPanel.renderDiagnostics(song, playable, this.payload);
@@ -519,6 +521,78 @@ export class MidiStudioV2App {
       status: "Incomplete",
       unwired: true
     };
+  }
+
+  selectedPreviewEngine() {
+    return this.playbackControl.previewEngine?.() || "fast-js-synth";
+  }
+
+  previewEngineLabel(engine = this.selectedPreviewEngine()) {
+    return engine === "soundfont" ? "SoundFont Preview" : "Fast JS Synth";
+  }
+
+  previewEngineStatus() {
+    const engine = this.selectedPreviewEngine();
+    if (engine !== "soundfont") {
+      return {
+        available: true,
+        engine,
+        label: this.previewEngineLabel(engine),
+        level: "INFO",
+        message: "Fast JS Synth preview ready for selected song, sequence, instruments, notes, volume, pan, transpose, octave, velocity, duration, and practical effects."
+      };
+    }
+    const loaderAvailable = typeof this.window.Soundfont?.instrument === "function"
+      || typeof this.window.MIDI?.loadPlugin === "function";
+    const asset = String(this.playbackControl.soundFontPreset?.() || "").trim();
+    if (loaderAvailable && asset) {
+      return {
+        available: false,
+        engine,
+        label: this.previewEngineLabel(engine),
+        level: "WARN",
+        message: "SoundFont loader was detected, but this MIDI Studio build has no verified SoundFont render bridge. Use Fast JS Synth for playback or add the SoundFont render bridge before claiming SoundFont playback."
+      };
+    }
+    return {
+      available: false,
+      engine,
+      label: this.previewEngineLabel(engine),
+      level: "WARN",
+      message: "SoundFont Preview unavailable: no SoundFont loader/assets are configured. Add a SoundFont loader and asset set in Export settings, or switch Preview Engine to Fast JS Synth."
+    };
+  }
+
+  refreshPreviewEngineStatus() {
+    const status = this.previewEngineStatus();
+    this.playbackControl.setPreviewEngineStatus?.(status);
+    this.exportPanel.setPreviewEngineStatus?.(status);
+    return status;
+  }
+
+  handlePreviewEngineChange() {
+    const status = this.refreshPreviewEngineStatus();
+    if (status.engine === "soundfont" && !status.available) {
+      this.playbackControl.setPreviewUnavailable(this.selectedSong(), status, this.playbackControlStatus(this.selectedSong()));
+    } else {
+      this.playbackControl.setSelected(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
+    }
+    if (status.engine === "soundfont") {
+      this.statusLog.warn(status.message);
+    } else {
+      this.statusLog.info(status.message);
+    }
+    this.updateAudioDiagnostics();
+  }
+
+  reportSoundFontUnavailable(activity) {
+    const status = this.refreshPreviewEngineStatus();
+    const message = `SoundFont Preview unavailable for ${activity}: ${status.message}`;
+    this.statusLog.warn(message);
+    this.playbackControl.setPreviewUnavailable(this.selectedSong(), status, this.playbackControlStatus(this.selectedSong()));
+    this.actionNav.setNowPlaying(this.selectedSong());
+    this.updateAudioDiagnostics();
+    return false;
   }
 
   selectedSongState() {
@@ -822,6 +896,9 @@ export class MidiStudioV2App {
     this.clearPlaybackCompletionTimer();
     if (song?.studioArrangement) {
       return this.playSelectedArrangement(song);
+    }
+    if (this.selectedPreviewEngine() === "soundfont") {
+      return this.reportSoundFontUnavailable(`song playback for ${song?.name || "selected song"}`);
     }
     const result = await this.playback.playRenderedPreview(song, { loop: this.playbackControl.loopEnabled() });
     if (!result.ok) {
@@ -1383,6 +1460,10 @@ export class MidiStudioV2App {
     if (!result?.ok || !Number.isInteger(stepIndex)) {
       return;
     }
+    if (this.selectedPreviewEngine() === "soundfont") {
+      this.reportSoundFontUnavailable("edited note audition");
+      return;
+    }
     this.preparePreviewAudition("edited note");
     const audition = await this.previewSynth.playGridRange({
       endStep: stepIndex,
@@ -1577,6 +1658,9 @@ export class MidiStudioV2App {
   }
 
   async startPreviewSynth({ endStep, label, loop, mode, startStep }) {
+    if (this.selectedPreviewEngine() === "soundfont") {
+      return this.reportSoundFontUnavailable(`${mode} ${label || "(unnamed)"}`);
+    }
     const result = await this.previewSynth.playGridRange({
       endStep,
       grid: this.currentInstrumentGridResult(),
@@ -1605,7 +1689,7 @@ export class MidiStudioV2App {
     this.instrumentGrid.setPreviewPlaybackLanes(result.activeLanes);
     this.statusLog.info(`Playing ${mode}: ${label}.`);
     this.statusLog.ok(`Preview Synth started for ${mode} ${label} with ${result.eventCount} playable event${result.eventCount === 1 ? "" : "s"}.`);
-    this.statusLog.warn("Preview Synth is an approximate Web Audio audition; SoundFont and real instrument playback are not implemented.");
+    this.statusLog.info("Fast JS Synth is an approximate Web Audio audition using selected sequence, notes, instrument settings, and practical effects.");
     this.updateAudioDiagnostics();
     return true;
   }
@@ -1709,6 +1793,12 @@ export class MidiStudioV2App {
       this.updateAudioDiagnostics();
       return;
     }
+    if (kind === "effect") {
+      this.persistInstrumentSettings(`effect-${detail.effectKind}`);
+      this.statusLog.info(`Instrument ${detail.effectLabel} effect set for ${detail.laneLabel}: ${detail.value}.`);
+      this.updateAudioDiagnostics();
+      return;
+    }
     if (kind === "instrument-preset-load") {
       this.persistInstrumentSettings("preset-load");
       this.statusLog.ok(`Instrument preset loaded for ${detail.laneLabel}: ${detail.presetLabel}.`);
@@ -1752,11 +1842,16 @@ export class MidiStudioV2App {
     if (!detail.instrumentValue) {
       return;
     }
+    if (this.selectedPreviewEngine() === "soundfont") {
+      this.reportSoundFontUnavailable("instrument audition");
+      return;
+    }
     this.preparePreviewAudition("instrument");
     const result = await this.previewSynth.previewInstrument({
       instrumentId: detail.instrumentValue,
       label: detail.instrumentLabel,
-      lane: detail.lane
+      lane: detail.lane,
+      laneSettings: this.instrumentGrid.previewLaneSettings()
     });
     if (!result.ok) {
       this.statusLog.warn(result.message);
@@ -1769,6 +1864,10 @@ export class MidiStudioV2App {
   async auditionNote(detail) {
     if (!detail.instrumentValue) {
       this.statusLog.warn(`Missing preview instrument selection for ${detail.laneLabel}. Choose a Preview Synth instrument before auditioning ${detail.note || "a note"}.`);
+      return;
+    }
+    if (this.selectedPreviewEngine() === "soundfont") {
+      this.reportSoundFontUnavailable(`keyboard audition ${detail.note || "note"}`);
       return;
     }
     const note = String(detail.note || "C4").trim() || "C4";
@@ -1834,6 +1933,7 @@ export class MidiStudioV2App {
     const song = this.selectedSong();
     const selectedFormat = String(format || "wav").trim().toLowerCase();
     const label = selectedFormat.toUpperCase();
+    this.refreshPreviewEngineStatus();
     if (!song) {
       const message = `Missing MIDI song for ${label} export. Load or select a song before exporting.`;
       this.statusLog.fail(message);
@@ -1976,6 +2076,7 @@ export class MidiStudioV2App {
     const snapshot = this.previewSynth.getSnapshot();
     const laneDiagnostics = this.instrumentGrid.previewLaneDiagnostics();
     const playable = this.playableEventSummary();
+    const previewStatus = this.refreshPreviewEngineStatus();
     this.exportPanel.renderSource(this.selectedSong(), playable);
     this.exportPanel.renderManifestReadiness(this.payload, this.selectedSong(), playable);
     this.exportPanel.renderDiagnostics(this.selectedSong(), playable, this.payload);
@@ -1995,7 +2096,10 @@ export class MidiStudioV2App {
       ["Soloed lanes", laneDiagnostics.soloedLanes.length ? laneDiagnostics.soloedLanes.join(", ") : "none"],
       ["Lane volumes", laneDiagnostics.volumeSummary || "none"],
       ["Lane pans", laneDiagnostics.panSummary || "none"],
+      ["Lane effects", laneDiagnostics.effectSummary || "none"],
       ["Current preview instrument pack", packSummary || "none"],
+      ["Preview engine", previewStatus.label],
+      ["SoundFont preview", `${previewStatus.level}: ${previewStatus.message}`],
       ["Last playback error", snapshot.lastError || "none"]
     ]);
   }
