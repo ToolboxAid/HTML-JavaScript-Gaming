@@ -110,6 +110,7 @@ window.addEventListener("DOMContentLoaded", () => {
       padInput: requireElement("#instrumentGridPadInput"),
       playLoopButton: requireElement("#playLoopButton"),
       playSectionButton: requireElement("#playSectionButton"),
+      playSequenceButton: requireElement("#playSequenceButton"),
       quickInstrumentList: requireElement("#timelineInstrumentQuickList"),
       sectionAvailability: requireElement("#instrumentGridSectionAvailability"),
       sectionPresetButtons: Array.from(document.querySelectorAll(".midi-studio-v2__section-preset")),

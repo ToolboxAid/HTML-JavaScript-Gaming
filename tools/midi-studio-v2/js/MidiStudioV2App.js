@@ -337,9 +337,10 @@ export class MidiStudioV2App {
       [normalizedFormat]: String(value || "").trim()
     };
     this.details.showJson(song);
-    this.exportPanel.renderSource(song, this.playableEventSummary());
-    this.exportPanel.renderDiagnostics(song);
-    this.exportPanel.setStatus(this.exportPanel.exportReadiness(song, { playable: this.playableEventSummary() }));
+    const playable = this.playableEventSummary();
+    this.exportPanel.renderSource(song, playable);
+    this.exportPanel.renderDiagnostics(song, playable);
+    this.exportPanel.setStatus(this.exportPanel.exportReadiness(song, { playable }));
     this.markDirty({ changedKeys: ["data.songs.rendered"], reason: "midi-studio-rendered-target-edited" });
     this.statusLog.info(`Edited rendered ${normalizedFormat.toUpperCase()} target for ${song.name}.`);
   }
@@ -1321,6 +1322,10 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Loop region unavailable: ${detail.message}`);
       return;
     }
+    if (action === "invalid-sequence") {
+      this.statusLog.warn(`Sequence preview unavailable: ${detail.message}`);
+      return;
+    }
     if (action === "play-section") {
       return this.startPreviewSynth({
         endStep: detail.section.endStep,
@@ -1337,6 +1342,15 @@ export class MidiStudioV2App {
         loop: true,
         mode: "loop",
         startStep: detail.startSection.startStep
+      });
+    }
+    if (action === "play-sequence") {
+      return this.startPreviewSynth({
+        endStep: detail.endStep,
+        label: detail.label || "Song Sequence",
+        loop: false,
+        mode: "sequence",
+        startStep: detail.startStep
       });
     }
     if (action === "jump-section") {
@@ -1621,19 +1635,19 @@ export class MidiStudioV2App {
     if (!song) {
       const message = `Missing MIDI song for ${label} export. Load or select a song before exporting.`;
       this.statusLog.fail(message);
-      this.exportPanel.setStatus({ level: "FAIL", message, song });
+      this.exportPanel.setStatus({ level: "FAIL", message, playable: this.playableEventSummary(), song });
       return;
     }
     const target = String(song.rendered?.[format] || "").trim();
     if (!target) {
       const message = `Missing rendered ${label} export target for ${song.name}. Add music.songs[].rendered.${format} before exporting.`;
       this.statusLog.fail(message);
-      this.exportPanel.setStatus({ level: "FAIL", message, song });
+      this.exportPanel.setStatus({ level: "FAIL", message, playable: this.playableEventSummary(), song });
       return;
     }
     const message = `Export rendering not implemented for ${label}. Planned target: ${target}.`;
     this.statusLog.warn(message);
-    this.exportPanel.setStatus({ level: "WARN", message, song });
+    this.exportPanel.setStatus({ level: "WARN", message, playable: this.playableEventSummary(), song });
   }
 
   applySelectedSongArrangement(sourceLabel) {
@@ -1713,17 +1727,25 @@ export class MidiStudioV2App {
     const gridResult = this.currentInstrumentGridResult();
     const section = this.instrumentGrid.selectedSection() || gridResult?.sections?.[0] || null;
     if (!gridResult?.ok || !section) {
-      return { activeLanes: [], count: 0, warnings: [] };
+      return { activeLanes: [], count: 0, totalCount: 0, warnings: [] };
     }
+    const laneSettings = this.instrumentGrid.previewLaneSettings();
     const playable = this.previewSynth.playableEventsForRange(
       gridResult,
       section.startStep,
       section.endStep,
-      this.instrumentGrid.previewLaneSettings()
+      laneSettings
+    );
+    const totalPlayable = this.previewSynth.playableEventsForRange(
+      gridResult,
+      0,
+      Math.max(0, gridResult.totalSteps - 1),
+      laneSettings
     );
     return {
       activeLanes: playable.activeLanes,
       count: playable.events.length,
+      totalCount: totalPlayable.events.length,
       warnings: playable.warnings
     };
   }
@@ -1736,7 +1758,7 @@ export class MidiStudioV2App {
     const laneDiagnostics = this.instrumentGrid.previewLaneDiagnostics();
     const playable = this.playableEventSummary();
     this.exportPanel.renderSource(this.selectedSong(), playable);
-    this.exportPanel.renderDiagnostics(this.selectedSong());
+    this.exportPanel.renderDiagnostics(this.selectedSong(), playable);
     this.exportPanel.setStatus(this.exportPanel.exportReadiness(this.selectedSong(), { playable }));
     const selectedSection = this.instrumentGrid.selectedSection();
     const packSummary = Object.entries(laneDiagnostics.instrumentLabels)

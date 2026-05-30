@@ -135,6 +135,7 @@ export class OctaveTimelineCanvasRenderer {
     const playheadSection = this.sectionForStep(this.state.playheadStep);
     const playheadSectionIndex = playheadSection ? this.state.sections.indexOf(playheadSection) : -1;
     const frozenHeaderVisible = Number(this.state.scrollTop || 0) > 0;
+    const sourceCounts = this.noteSourceCounts();
     this.canvas.dataset.canvasBacked = "true";
     this.canvas.dataset.cellSize = String(metrics.cellSize);
     this.canvas.dataset.frozenHeader = String(frozenHeaderVisible);
@@ -157,7 +158,20 @@ export class OctaveTimelineCanvasRenderer {
     this.canvas.dataset.playbackSection = playheadSection?.label || "";
     this.canvas.dataset.playbackSectionColor = playheadSection ? sectionTone(playheadSection.colorIndex) : "";
     this.canvas.dataset.playbackSectionIndex = playheadSectionIndex >= 0 ? String(playheadSectionIndex) : "";
+    this.canvas.dataset.generatedNoteCount = String(sourceCounts.generated);
+    this.canvas.dataset.manualNoteCount = String(sourceCounts.manual);
     this.canvas.dataset.sectionHeaderLabels = this.state.sections.map((section) => section.label).join("|");
+  }
+
+  noteSourceCounts() {
+    return this.state.notes.reduce((counts, note) => {
+      if (note.source === "generated") {
+        counts.generated += 1;
+      } else if (note.source === "manual") {
+        counts.manual += 1;
+      }
+      return counts;
+    }, { generated: 0, manual: 0 });
   }
 
   requestRender() {
@@ -439,12 +453,18 @@ export class OctaveTimelineCanvasRenderer {
         const y = metrics.headerHeight + rowIndex * metrics.cellSize;
         const inset = Math.max(2, Math.round(metrics.cellSize * 0.16));
         const height = Math.max(5, metrics.cellSize - inset * 2);
-        this.context.fillStyle = selected ? "#38bdf8" : "#94a3b8";
+        const sourceFill = note.source === "manual" ? "#fbbf24" : note.source === "generated" ? "#22c55e" : "#94a3b8";
+        this.context.fillStyle = selected ? "#38bdf8" : sourceFill;
         if (activeLanes.has(note.lane)) {
           this.context.fillStyle = selected ? "#facc15" : "#cbd5e1";
         }
         this.context.globalAlpha = selected ? 0.95 : 0.58;
         this.context.fillRect(x + inset, y + inset, Math.max(4, metrics.cellSize - inset * 2), height);
+        if (note.source === "manual" || note.source === "generated") {
+          this.context.globalAlpha = 1;
+          this.context.fillStyle = note.source === "manual" ? "#92400e" : "#064e3b";
+          this.context.fillRect(x + inset, y + inset, Math.max(2, metrics.cellSize * 0.16), height);
+        }
         this.context.globalAlpha = 1;
         if (metrics.cellSize >= 24) {
           this.context.fillStyle = selected ? "#04111f" : "#111827";
@@ -669,6 +689,7 @@ export class OctaveTimelineCanvasRenderer {
         startStep: this.state.loopBounds.startSection.startStep
       } : null,
       noteCount: this.state.notes.length,
+      sourceCounts: this.noteSourceCounts(),
       hoverCell: this.state.hoverCell,
       playbackSection: this.sectionForStep(this.state.playheadStep) ? {
         color: sectionTone(this.sectionForStep(this.state.playheadStep).colorIndex),

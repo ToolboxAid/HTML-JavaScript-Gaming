@@ -761,6 +761,7 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       playButton: { canonical: "playback from selected canonical song model", kind: "action", owner: "Global NAV", wired: "wired" },
       playLoopButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       playSectionButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
+      playSequenceButton: { canonical: "timing preview playback state from Song Sequence order", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       regenerateArrangementButton: { canonical: "music.songs[].studioArrangement generated lanes from Song Sheet sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
       renderedExportSaveButton: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
       renderedExportTargetTypeSelect: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
@@ -967,6 +968,9 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       }
       if (element.dataset.instrumentDerivedField) {
         return { canonical: "derived from selected instrument preview mapping", kind: "readonly", owner: "Instruments", wired: "wired" };
+      }
+      if (element.dataset.auditionRangeSummary) {
+        return { canonical: "derived from selected instrument octave range", kind: "readonly", owner: "Instruments", wired: "wired" };
       }
       if (element.dataset.auditionNote) {
         return { canonical: "Preview Synth audition action", kind: "action", owner: "Instruments", wired: "wired" };
@@ -5267,7 +5271,7 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
-  test("validates PR089-092 production templates safe regeneration instruments and export readiness", async ({ page }) => {
+  test("validates PR089-096 production templates arrangement playback instruments and export readiness", async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 900 });
     const server = await openMidiStudioForImport(page);
     try {
@@ -5306,6 +5310,12 @@ test.describe("MIDI Studio V2", () => {
       const manualLead = "F5 F5 F5 F5 | F5 F5 F5 F5 | F5 F5 F5 F5 | F5 F5 F5 F5 | F5 F5 F5 F5 | F5 F5 F5 F5";
       await page.locator("#instrumentGridLeadInput").fill(manualLead);
       await page.locator("#normalizeInstrumentGridButton").click();
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      const manualLeadCounts = page.locator("#timelineInstrumentQuickList [data-arrangement-source-counts='lead']");
+      await expect(manualLeadCounts).toContainText("Generated 0 / Manual 24");
+      await expect(manualLeadCounts).toHaveAttribute("data-generated-count", "0");
+      await expect(manualLeadCounts).toHaveAttribute("data-manual-count", "24");
       await selectMidiStudioTab(page, "song-setup");
       await page.locator("#regenerateArrangementButton").click();
       await expect(page.locator("#regenerateArrangementButton")).toHaveAttribute("data-regeneration-pending", "true");
@@ -5342,6 +5352,38 @@ test.describe("MIDI Studio V2", () => {
 
       await selectMidiStudioTab(page, "studio");
       await waitForCanvasRender(page);
+      const generatedLeadCounts = page.locator("#timelineInstrumentQuickList [data-arrangement-source-counts='lead']");
+      await expect(generatedLeadCounts).toContainText("Generated 24 / Manual 0");
+      await expect(generatedLeadCounts).toHaveAttribute("data-generated-count", "24");
+      await expect(generatedLeadCounts).toHaveAttribute("data-manual-count", "0");
+      const canvasSourceState = await canvasTimelineState(page);
+      expect(canvasSourceState.sourceCounts.generated).toBeGreaterThan(0);
+      expect(canvasSourceState.sourceCounts.generated + canvasSourceState.sourceCounts.manual).toBeGreaterThan(0);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-generated-note-count", /\d+/);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-manual-note-count", /\d+/);
+
+      await page.locator("#instrumentGridSectionSelect").selectOption("Verse");
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing section: Verse");
+      await expect(page.locator("#instrumentGridOutput")).toHaveAttribute("data-preview-playback-mode", "section");
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-playback-section", "Verse");
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-playback-section-color", /#/);
+      await page.locator("#stopTimingPreviewButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Preview Synth timing preview stopped.");
+
+      await page.locator("#playSequenceButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing sequence: Song Sequence");
+      await expect(page.locator("#instrumentGridOutput")).toHaveAttribute("data-preview-playback-mode", "sequence");
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-playback-section", "Verse");
+      await page.locator("#stopTimingPreviewButton").click();
+
+      await page.locator("#instrumentGridLoopStartSelect").selectOption("Verse");
+      await page.locator("#instrumentGridLoopEndSelect").selectOption("Solo");
+      await page.locator("#playLoopButton").click();
+      await expect(page.locator("#instrumentGridTransportState")).toContainText("Playing loop: Verse to Solo");
+      await expect(page.locator("#instrumentGridOutput")).toHaveAttribute("data-preview-playback-mode", "loop");
+      await page.locator("#stopTimingPreviewButton").click();
+
       await page.locator("#duplicateInstrumentRowButton").click();
       await expect(timelineQuickInstrumentRow(page, "lead-1")).toHaveClass(/is-selected/);
       await expect(page.locator("#timelineInstrumentQuickList")).toHaveAttribute("data-selected-instrument-id", "lead-1");
@@ -5352,6 +5394,14 @@ test.describe("MIDI Studio V2", () => {
       await selectMidiStudioTab(page, "instruments");
       await expect(instrumentRow(page, "lead-1")).toHaveClass(/is-selected/);
       await expect(page.locator("#instrumentAuditionKeyboard")).toHaveAttribute("data-selected-instrument-id", "lead-1");
+      await expect(page.locator("#selectedInstrumentEditor [data-instrument-playable-range-lane='lead-1']")).toHaveText("C3 to B6");
+      await expect(page.locator("#instrumentAuditionKeyboard")).toHaveAttribute("data-playable-range", "C3 to B6");
+      await expect(page.locator("#instrumentAuditionKeyboard [data-audition-range-summary='lead-1']")).toHaveText("C3 to B6");
+      await setInputValue(page, "#previewOctaveLowLead1Input", "4");
+      await expect(page.locator("#selectedInstrumentEditor [data-instrument-playable-range-lane='lead-1']")).toHaveText("C4 to B6");
+      await expect(page.locator("#instrumentAuditionKeyboard")).toHaveAttribute("data-playable-range", "C4 to B6");
+      await expect(page.locator("#instrumentAuditionKeyboard [data-audition-note='C3']")).toHaveCount(0);
+      await expect(page.locator("#instrumentAuditionKeyboard [data-audition-note='C4']")).toHaveCount(1);
       await page.locator("#instrumentAuditionKeyboard [data-audition-note='C5']").click();
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Auditioned C5 for Lead 1/);
 
@@ -5359,8 +5409,12 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#exportRenderSource [data-export-field='selected-song'] dd")).toHaveText("Camptown Races UAT Reel");
       await expect(page.locator("#exportRenderSource [data-export-field='classification'] dd")).toHaveText("Loop");
       await expect(page.locator("#exportRenderSource [data-export-field='generated-id'] dd")).toHaveText("camptownRacesUatReel-Loop");
+      await expect(page.locator("#exportRenderSource [data-export-field='sequence-length'] dd")).toHaveText("2");
+      await expect.poll(async () => Number(await page.locator("#exportRenderSource [data-export-field='note-count'] dd").textContent())).toBeGreaterThan(0);
+      await expect.poll(async () => Number(await page.locator("#exportRenderSource [data-export-field='instrument-count'] dd").textContent())).toBeGreaterThan(4);
       await expect(page.locator("#exportRenderSource [data-export-field='target-output-formats'] dd")).toHaveText("WAV: missing; MP3: missing; OGG: missing");
-      await expect(page.locator("#exportStatusDetails [data-export-field='status'] dd")).toContainText("WARN: Export source is ready, but target paths are missing for WAV, MP3, OGG");
+      await expect(page.locator("#exportStatusDetails [data-export-field='status'] dd")).toContainText("WARN: Export source is ready with 2 sequence item(s)");
+      await expect(page.locator("#exportStatusDetails [data-export-field='status'] dd")).toContainText("target paths are missing for WAV, MP3, OGG");
       await expect(page.locator("#futureSoundFontSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
       await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save WAV");
       await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
