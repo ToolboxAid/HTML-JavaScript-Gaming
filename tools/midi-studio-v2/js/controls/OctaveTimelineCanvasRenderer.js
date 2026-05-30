@@ -132,6 +132,8 @@ export class OctaveTimelineCanvasRenderer {
   updateDataset() {
     const metrics = this.metrics();
     const playheadCell = this.state.referenceCells[this.state.playheadStep] || null;
+    const playheadSection = this.sectionForStep(this.state.playheadStep);
+    const playheadSectionIndex = playheadSection ? this.state.sections.indexOf(playheadSection) : -1;
     const frozenHeaderVisible = Number(this.state.scrollTop || 0) > 0;
     this.canvas.dataset.canvasBacked = "true";
     this.canvas.dataset.cellSize = String(metrics.cellSize);
@@ -152,6 +154,9 @@ export class OctaveTimelineCanvasRenderer {
     this.canvas.dataset.playheadBar = playheadCell ? String(playheadCell.bar) : "";
     this.canvas.dataset.playheadBeat = playheadCell ? String(playheadCell.beat) : "";
     this.canvas.dataset.playheadSection = playheadCell?.section || "";
+    this.canvas.dataset.playbackSection = playheadSection?.label || "";
+    this.canvas.dataset.playbackSectionColor = playheadSection ? sectionTone(playheadSection.colorIndex) : "";
+    this.canvas.dataset.playbackSectionIndex = playheadSectionIndex >= 0 ? String(playheadSectionIndex) : "";
     this.canvas.dataset.sectionHeaderLabels = this.state.sections.map((section) => section.label).join("|");
   }
 
@@ -239,6 +244,15 @@ export class OctaveTimelineCanvasRenderer {
         { strokeColor: "rgba(125, 211, 252, 0.86)" }
       );
     }
+    const playheadSection = this.sectionForStep(this.state.playheadStep);
+    if (playheadSection) {
+      drawStepRegion(
+        playheadSection.startStep,
+        playheadSection.endStep,
+        sectionToneRgba(playheadSection.colorIndex, 0.16),
+        { strokeColor: sectionToneRgba(playheadSection.colorIndex, 0.82) }
+      );
+    }
   }
 
   drawHeaders(metrics) {
@@ -262,6 +276,22 @@ export class OctaveTimelineCanvasRenderer {
       const sectionLabel = section && section.startStep === stepIndex ? section.label : "";
       this.drawHeaderText(sectionLabel || String(cell.bar), x + metrics.cellSize / 2, metrics.headerRowHeight / 2, metrics.cellSize - 3);
       this.drawHeaderText(String(cell.beat), x + metrics.cellSize / 2, metrics.headerRowHeight + metrics.headerRowHeight / 2);
+    });
+    this.drawSectionHeaderLabels(metrics);
+  }
+
+  drawSectionHeaderLabels(metrics, offsetY = 0, left = 0, right = metrics.width) {
+    this.state.sections.forEach((section) => {
+      const x = metrics.axisWidth + section.startStep * metrics.cellSize;
+      const width = (section.endStep - section.startStep + 1) * metrics.cellSize;
+      if (x + width < left || x > right) {
+        return;
+      }
+      this.context.fillStyle = sectionTone(section.colorIndex);
+      this.context.globalAlpha = 0.18;
+      this.context.fillRect(x, offsetY, width, metrics.headerRowHeight);
+      this.context.globalAlpha = 1;
+      this.drawHeaderText(section.label, x + width / 2, offsetY + metrics.headerRowHeight / 2, Math.max(12, width - 6));
     });
   }
 
@@ -317,6 +347,7 @@ export class OctaveTimelineCanvasRenderer {
       this.drawHeaderText(sectionLabel || String(cell.bar), x + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight / 2, metrics.cellSize - 3);
       this.drawHeaderText(String(cell.beat), x + metrics.cellSize / 2, scrollTop + metrics.headerRowHeight + metrics.headerRowHeight / 2);
     }
+    this.drawSectionHeaderLabels(metrics, scrollTop, left, right);
     const step = clamp(this.state.playheadStep, 0, Math.max(0, this.state.totalSteps - 1));
     const playheadX = metrics.axisWidth + step * metrics.cellSize;
     const playheadCell = this.state.referenceCells[step] || null;
@@ -536,6 +567,34 @@ export class OctaveTimelineCanvasRenderer {
     };
   }
 
+  sectionHeaderFromPoint(clientX, clientY) {
+    const rect = this.canvas.getBoundingClientRect();
+    const metrics = this.metrics();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const scrollTop = Number(this.state.scrollTop || 0);
+    const inBaseHeader = y >= 0 && y <= metrics.headerRowHeight;
+    const inFrozenHeader = y >= scrollTop && y <= scrollTop + metrics.headerRowHeight;
+    if (x < metrics.axisWidth || (!inBaseHeader && !inFrozenHeader)) {
+      return null;
+    }
+    const stepIndex = Math.floor((x - metrics.axisWidth) / metrics.cellSize);
+    if (stepIndex < 0 || stepIndex >= this.state.totalSteps) {
+      return null;
+    }
+    const section = this.sectionForStep(stepIndex);
+    const sectionIndex = section ? this.state.sections.indexOf(section) : -1;
+    if (!section || sectionIndex < 0) {
+      return null;
+    }
+    return {
+      label: section.label,
+      section,
+      sectionIndex,
+      stepIndex
+    };
+  }
+
   keyboardKeyFromPoint(clientX, clientY) {
     const rect = this.canvas.getBoundingClientRect();
     const metrics = this.metrics();
@@ -570,6 +629,28 @@ export class OctaveTimelineCanvasRenderer {
     };
   }
 
+  sectionHeaderCenter(label, occurrenceIndex = 0) {
+    const normalized = String(label || "").trim().toLowerCase();
+    const entries = this.state.sections
+      .map((section, sectionIndex) => ({ section, sectionIndex }))
+      .filter((entry) => entry.section.label.toLowerCase() === normalized);
+    const byAbsoluteIndex = Number.isInteger(occurrenceIndex)
+      ? entries.find((entry) => entry.sectionIndex === occurrenceIndex)
+      : null;
+    const entry = byAbsoluteIndex || entries[Math.max(0, Number(occurrenceIndex) || 0)] || entries[0] || null;
+    if (!entry) {
+      return null;
+    }
+    const rect = this.canvas.getBoundingClientRect();
+    const metrics = this.metrics();
+    const width = (entry.section.endStep - entry.section.startStep + 1) * metrics.cellSize;
+    return {
+      sectionIndex: entry.sectionIndex,
+      x: rect.left + metrics.axisWidth + entry.section.startStep * metrics.cellSize + width / 2,
+      y: rect.top + Number(this.state.scrollTop || 0) + metrics.headerRowHeight / 2
+    };
+  }
+
   snapshot() {
     const metrics = this.metrics();
     return {
@@ -589,6 +670,12 @@ export class OctaveTimelineCanvasRenderer {
       } : null,
       noteCount: this.state.notes.length,
       hoverCell: this.state.hoverCell,
+      playbackSection: this.sectionForStep(this.state.playheadStep) ? {
+        color: sectionTone(this.sectionForStep(this.state.playheadStep).colorIndex),
+        colorIndex: this.sectionForStep(this.state.playheadStep).colorIndex,
+        index: this.state.sections.indexOf(this.sectionForStep(this.state.playheadStep)),
+        label: this.sectionForStep(this.state.playheadStep).label
+      } : null,
       playheadStep: this.state.playheadStep,
       playheadRenderLoop: "raf",
       renderFrame: this.renderFrame,

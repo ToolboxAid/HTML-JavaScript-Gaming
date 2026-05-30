@@ -26,10 +26,34 @@ function chordTokenCount(value) {
     .length;
 }
 
+function estimatedSectionSeconds(chordCount, tempo) {
+  const numericTempo = Number(tempo);
+  if (!Number.isFinite(numericTempo) || numericTempo <= 0 || !Number.isFinite(chordCount) || chordCount <= 0) {
+    return 0;
+  }
+  return Number(((chordCount * 4 * 60) / numericTempo).toFixed(3));
+}
+
+function formatDuration(seconds) {
+  const value = Number(seconds);
+  if (!Number.isFinite(value) || value <= 0) {
+    return "0 seconds";
+  }
+  return `${value} second${value === 1 ? "" : "s"}`;
+}
+
 function sectionMetricsLabel(section, count = chordTokenCount(section.chords)) {
   const barText = `${count} bar${count === 1 ? "" : "s"}`;
   const chordText = `${count} chord${count === 1 ? "" : "s"}`;
   return `${section.label} - ${barText} / ${chordText}`;
+}
+
+function sectionEditorMetricsLabel(section, tempo) {
+  const count = chordTokenCount(section.chords);
+  if (!count) {
+    return "Empty";
+  }
+  return `${section.chords} | ${count} bar${count === 1 ? "" : "s"} | ${formatDuration(estimatedSectionSeconds(count, tempo))}`;
 }
 
 function normalizedLabelKey(label) {
@@ -62,22 +86,31 @@ function sectionRowsFromText(sourceText = "") {
   return rows;
 }
 
-function songSheetRows(result) {
+function songSheetRows(result, generationSummary = null) {
   if (!result?.ok) {
     return [
       ["Sections", "not parsed"],
       ["Sequence", "not parsed"],
       ["Bars", "not parsed"],
       ["Chord count", "not parsed"],
-      ["Estimated duration", "not parsed"]
+      ["Estimated duration", "not parsed"],
+      ["Sections used", "not generated"],
+      ["Bars generated", "not generated"],
+      ["Notes generated", "not generated"],
+      ["Target lanes affected", "not generated"]
     ];
   }
+  const summary = generationSummary || {};
   return [
     ["Sections", result.sectionSummary],
     ["Sequence", result.sequence?.length ? result.sequence.join(", ") : result.sections.map((section) => section.label).join(", ")],
     ["Bars", result.bars],
     ["Chord count", result.chordCount],
-    ["Estimated duration", `${result.estimatedDurationSeconds} seconds`]
+    ["Estimated duration", `${result.estimatedDurationSeconds} seconds`],
+    ["Sections used", summary.sectionsUsed || "not generated"],
+    ["Bars generated", summary.barsGenerated ?? "not generated"],
+    ["Notes generated", summary.notesGenerated ?? "not generated"],
+    ["Target lanes affected", summary.targetLanesAffected || "not generated"]
   ];
 }
 
@@ -111,6 +144,7 @@ export class SongSheetControl {
     applyLeadInput,
     availableCount,
     availableSectionsList,
+    customSectionMetrics,
     customSectionsInput,
     duplicateSequenceButton,
     keyInput,
@@ -120,6 +154,7 @@ export class SongSheetControl {
     parseButton,
     removeSequenceButton,
     sequenceCount,
+    sectionMetricOutputs,
     sectionsInput,
     sequenceInput,
     sequenceList,
@@ -136,6 +171,7 @@ export class SongSheetControl {
     this.applyLeadInput = applyLeadInput;
     this.availableCount = availableCount;
     this.availableSectionsList = availableSectionsList;
+    this.customSectionMetrics = customSectionMetrics;
     this.customSectionsInput = customSectionsInput;
     this.duplicateSequenceButton = duplicateSequenceButton;
     this.keyInput = keyInput;
@@ -145,6 +181,7 @@ export class SongSheetControl {
     this.parseButton = parseButton;
     this.removeSequenceButton = removeSequenceButton;
     this.sequenceCount = sequenceCount;
+    this.sectionMetricOutputs = sectionMetricOutputs || {};
     this.sectionsInput = sectionsInput;
     this.sequenceInput = sequenceInput;
     this.sequenceList = sequenceList;
@@ -157,7 +194,10 @@ export class SongSheetControl {
 
   mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse }) {
     this.parseButton.addEventListener("click", () => onParse(this.composeGuidedSheet()));
-    this.tempoInput.addEventListener("input", () => onMetadataChange("tempo", this.tempoInput.value));
+    this.tempoInput.addEventListener("input", () => {
+      this.renderSectionMetrics(this.availableSections());
+      onMetadataChange("tempo", this.tempoInput.value);
+    });
     this.keyInput.addEventListener("change", () => onMetadataChange("key", this.keyInput.value));
     this.styleInput.addEventListener("change", () => onMetadataChange("style", this.styleInput.value));
 
@@ -353,6 +393,7 @@ export class SongSheetControl {
     const rows = this.availableSections();
     this.sectionsInput.value = this.sectionsTextFromRows(rows);
     this.renderAvailableSections(rows);
+    this.renderSectionMetrics(rows);
     const availableKeys = new Set(rows.map((section) => normalizedLabelKey(section.label)));
     let labels = preserveSequence ? this.sequenceItems().filter((label) => availableKeys.has(normalizedLabelKey(label))) : [];
     if (!this.userEditedSequence && !labels.length) {
@@ -374,6 +415,7 @@ export class SongSheetControl {
       option.dataset.songSheetSectionBarCount = String(chordCount);
       option.dataset.songSheetSectionChords = section.chords;
       option.dataset.songSheetSectionChordCount = String(chordCount);
+      option.dataset.songSheetSectionDurationSeconds = String(estimatedSectionSeconds(chordCount, this.tempoInput.value));
       option.title = option.textContent;
       this.availableSectionsList.append(option);
     });
@@ -385,6 +427,32 @@ export class SongSheetControl {
     this.addSequenceButton.disabled = rows.length === 0;
     this.updateAvailableCount(rows.length);
     this.applySequenceOptionColors();
+  }
+
+  renderSectionMetrics(rows = this.availableSections()) {
+    const byLabel = new Map(rows.map((section) => [normalizedLabelKey(section.label), section]));
+    NAMED_SECTION_LABELS.forEach((label) => {
+      const output = this.sectionMetricOutputs[label];
+      if (!output) {
+        return;
+      }
+      const section = byLabel.get(normalizedLabelKey(label)) || { chords: "", label };
+      const count = chordTokenCount(section.chords);
+      output.textContent = sectionEditorMetricsLabel(section, this.tempoInput.value);
+      output.dataset.songSheetSectionChordCount = String(count);
+      output.dataset.songSheetSectionBarCount = String(count);
+      output.dataset.songSheetSectionDurationSeconds = String(estimatedSectionSeconds(count, this.tempoInput.value));
+      output.dataset.songSheetSectionPopulated = String(count > 0);
+    });
+    if (this.customSectionMetrics) {
+      const customRows = sectionRowsFromText(this.customSectionsInput.value)
+        .filter((section) => section.chords.trim());
+      this.customSectionMetrics.textContent = customRows.length
+        ? customRows.map((section) => `${section.label}: ${sectionEditorMetricsLabel(section, this.tempoInput.value)}`).join("; ")
+        : "Empty";
+      this.customSectionMetrics.dataset.songSheetCustomSectionCount = String(customRows.length);
+      this.customSectionMetrics.dataset.songSheetSectionPopulated = String(customRows.length > 0);
+    }
   }
 
   sectionsTextFromRows(rows) {
@@ -473,12 +541,22 @@ export class SongSheetControl {
   syncSequenceState() {
     this.sequenceInput.value = this.sequenceItems().join(", ");
     const hasSelection = this.sequenceList.selectedIndex >= 0;
+    const selected = hasSelection ? this.sequenceList.options[this.sequenceList.selectedIndex] : null;
     this.moveSequenceUpButton.disabled = !hasSelection || this.sequenceList.selectedIndex <= 0;
     this.moveSequenceDownButton.disabled = !hasSelection || this.sequenceList.selectedIndex >= this.sequenceList.options.length - 1;
     this.duplicateSequenceButton.disabled = !hasSelection;
     this.removeSequenceButton.disabled = !hasSelection;
     this.updateSequenceCount(this.sequenceList.options.length);
     this.applySequenceOptionColors();
+    this.sequenceList.dataset.songSheetSelectedSection = selected?.value || "";
+    this.sequenceList.dataset.songSheetSelectedSectionColorIndex = selected?.dataset.songSheetSectionColorIndex || "";
+    if (selected?.style.backgroundColor) {
+      this.sequenceList.style.setProperty("--midi-studio-v2-selected-section-bg", selected.style.backgroundColor);
+      this.sequenceList.style.setProperty("--midi-studio-v2-selected-section-color", selected.style.color || "");
+    } else {
+      this.sequenceList.style.removeProperty("--midi-studio-v2-selected-section-bg");
+      this.sequenceList.style.removeProperty("--midi-studio-v2-selected-section-color");
+    }
   }
 
   updateAvailableCount(count) {
@@ -513,14 +591,37 @@ export class SongSheetControl {
 
   applySequenceOptionColors() {
     const colors = this.sectionColorIndexMap();
-    const applyColor = (option) => {
+    const selectedIndex = this.sequenceList.selectedIndex;
+    const applyColor = (option, index = -1) => {
       const colorIndex = colors.get(normalizedLabelKey(option.value)) ?? 0;
       option.dataset.songSheetSectionColorIndex = String(colorIndex);
+      if (option.parentElement === this.sequenceList) {
+        const selected = index === selectedIndex;
+        option.dataset.songSheetSequenceSelected = String(selected);
+        option.classList.toggle("is-selected-sequence-section", selected);
+      }
       option.style.backgroundColor = sectionToneRgba(colorIndex, 0.22);
       option.style.color = sectionTone(colorIndex);
     };
     Array.from(this.availableSectionsList.options).forEach(applyColor);
     Array.from(this.sequenceList.options).forEach(applyColor);
+  }
+
+  selectSequenceItem(label, occurrenceIndex = null) {
+    const options = Array.from(this.sequenceList.options);
+    const normalized = normalizedLabelKey(label);
+    const index = Number.isInteger(occurrenceIndex)
+      ? occurrenceIndex
+      : options.findIndex((option) => normalizedLabelKey(option.value) === normalized);
+    const boundedIndex = index >= 0 && index < options.length && (!normalized || normalizedLabelKey(options[index].value) === normalized)
+      ? index
+      : options.findIndex((option) => normalizedLabelKey(option.value) === normalized);
+    if (boundedIndex < 0) {
+      return false;
+    }
+    this.sequenceList.selectedIndex = boundedIndex;
+    this.syncSequenceState();
+    return true;
   }
 
   setApplyTargets(targets = null, { hasDrums = false } = {}) {
@@ -540,9 +641,9 @@ export class SongSheetControl {
     };
   }
 
-  render(result = null) {
+  render(result = null, generationSummary = null) {
     if (this.summary) {
-      this.renderDefinitionList(this.summary, songSheetRows(result), "summary");
+      this.renderDefinitionList(this.summary, songSheetRows(result, generationSummary), "summary");
     }
     if (this.warnings) {
       this.renderDefinitionList(this.warnings, warningRows(result), "warning");
@@ -567,7 +668,7 @@ export class SongSheetControl {
       term.textContent = label;
       description.textContent = value === undefined || value === null || value === "" ? "not declared" : String(value);
       description.dataset.songSheetReadonly = token;
-      if (["bars", "chord-count", "estimated-duration"].includes(token)) {
+      if (["bars", "chord-count", "estimated-duration", "bars-generated", "notes-generated"].includes(token)) {
         description.dataset.songSheetComputed = "true";
       }
       if (kind === "warning" || token === "warnings") {

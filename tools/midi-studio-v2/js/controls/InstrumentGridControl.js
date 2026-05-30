@@ -400,6 +400,7 @@ export class InstrumentGridControl {
   mount({ onGenerate, onLaneSettingChange, onNormalize, onNoteEdit = () => {}, onTransport }) {
     this.onNoteEdit = onNoteEdit;
     this.onLaneSettingChange = onLaneSettingChange;
+    this.onTransport = onTransport || (() => {});
     this.generateBassButton.addEventListener("click", () => onGenerate("bass", this.readInput()));
     this.generatePadButton.addEventListener("click", () => onGenerate("pad", this.readInput()));
     this.generateArpeggioButton.addEventListener("click", () => onGenerate("lead", this.readInput()));
@@ -894,6 +895,11 @@ export class InstrumentGridControl {
         this.suppressNextCellClick = false;
         return;
       }
+      const sectionHit = this.timelineCanvasRenderer?.sectionHeaderFromPoint(event.clientX, event.clientY) || null;
+      if (sectionHit) {
+        this.selectTimelineHeaderSection(sectionHit, this.onTransport);
+        return;
+      }
       const keyboardHit = this.timelineCanvasRenderer?.keyboardKeyFromPoint(event.clientX, event.clientY) || null;
       if (keyboardHit) {
         this.auditionTimelineKeyboardKey(keyboardHit);
@@ -982,6 +988,10 @@ export class InstrumentGridControl {
 
   timelineCanvasCellCenter(rowToken, stepIndex) {
     return this.timelineCanvasRenderer?.cellCenter(rowToken, stepIndex) || null;
+  }
+
+  timelineCanvasSectionHeaderCenter(label, occurrenceIndex = 0) {
+    return this.timelineCanvasRenderer?.sectionHeaderCenter(label, occurrenceIndex) || null;
   }
 
   adjustOctaveGridZoom(delta) {
@@ -3143,6 +3153,24 @@ export class InstrumentGridControl {
     this.syncSectionPresetState();
     this.transportState.textContent = `Selected section: ${section.label}`;
     onTransport("select-section", { section });
+  }
+
+  selectTimelineHeaderSection(hit, onTransport) {
+    const section = hit?.section;
+    if (!section) {
+      return;
+    }
+    this.sectionSelect.value = section.label;
+    this.setPlayheadStep(section.startStep);
+    this.selectedSectionBounds = section;
+    this.renderCanvasTimeline();
+    this.syncSectionPresetState();
+    this.transportState.textContent = `Selected section: ${section.label}`;
+    onTransport("select-section", {
+      section,
+      sequenceIndex: hit.sectionIndex,
+      source: "timeline-header"
+    });
   }
 
   handleSectionSelectionChange(onTransport) {

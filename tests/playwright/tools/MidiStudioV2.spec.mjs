@@ -521,6 +521,33 @@ async function clickCanvasCell(page, rowToken, stepIndex) {
   await page.mouse.click(point.x, point.y);
 }
 
+async function clickCanvasSectionHeader(page, label, occurrenceIndex = 0) {
+  await page.locator("[data-octave-timeline-canvas='true']").evaluate((canvas) => {
+    const top = canvas.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, Math.max(0, top - 160));
+  });
+  await page.locator("#instrumentGridOutput").evaluate((output, target) => {
+    const point = window.__midiStudioV2App.instrumentGrid.timelineCanvasSectionHeaderCenter(target.label, target.occurrenceIndex);
+    if (!point) {
+      return;
+    }
+    const rect = output.getBoundingClientRect();
+    const desiredX = rect.left + Math.min(rect.width - 24, Math.max(24, rect.width * 0.65));
+    if (point.x < rect.left + 24 || point.x > rect.right - 24) {
+      output.scrollLeft = Math.max(0, output.scrollLeft + point.x - desiredX);
+    }
+  }, { label, occurrenceIndex });
+  await page.waitForFunction((target) => {
+    const output = document.querySelector("#instrumentGridOutput");
+    const point = window.__midiStudioV2App.instrumentGrid.timelineCanvasSectionHeaderCenter(target.label, target.occurrenceIndex);
+    const rect = output?.getBoundingClientRect();
+    return Boolean(point && rect && point.x >= rect.left + 8 && point.x <= rect.right - 8);
+  }, { label, occurrenceIndex });
+  const point = await page.evaluate((target) => window.__midiStudioV2App.instrumentGrid.timelineCanvasSectionHeaderCenter(target.label, target.occurrenceIndex), { label, occurrenceIndex });
+  expect(point).toBeTruthy();
+  await page.mouse.click(point.x, point.y);
+}
+
 async function clickCanvasKeyboardKey(page, rowToken) {
   await page.locator("#instrumentGridOutput").evaluate((output, target) => {
     const state = window.__midiStudioV2App.instrumentGrid.timelineCanvasState();
@@ -4998,6 +5025,122 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#songSheetWarningsContent")).toBeVisible();
 
       await selectMidiStudioTab(page, "studio");
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playButton")).toBeDisabled();
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+      await expect(page.locator("#playButton")).toBeEnabled();
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR081-084 song builder generation and timeline section visibility", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+
+      await fillSongSheetSectionBuilder(page, "Intro: G C\nVerse: G Em C D\nChorus: C G\nBridge:\nOutro: D\nBreak: F G");
+      await expect(page.locator("[data-song-sheet-section-metrics='Intro']")).toContainText("G C");
+      await expect(page.locator("[data-song-sheet-section-metrics='Intro']")).toContainText("2 bars");
+      await expect(page.locator("[data-song-sheet-section-metrics='Intro']")).toHaveAttribute("data-song-sheet-section-duration-seconds", /\d/);
+      await expect(page.locator("[data-song-sheet-section-metrics='Bridge']")).toHaveText("Empty");
+      await expect(page.locator("[data-song-sheet-section-metrics='Bridge']")).toHaveAttribute("data-song-sheet-section-populated", "false");
+      await expect(page.locator("[data-song-sheet-custom-section-metrics]")).toContainText("Break: F G");
+      await expect(page.locator("#songSheetAvailableSectionsList option")).toHaveText([
+        "Intro - 2 bars / 2 chords",
+        "Verse - 4 bars / 4 chords",
+        "Chorus - 2 bars / 2 chords",
+        "Outro - 1 bar / 1 chord",
+        "Break - 2 bars / 2 chords"
+      ]);
+      await expect(page.locator("#songSheetAvailableSectionsList option", { hasText: "Bridge" })).toHaveCount(0);
+
+      await clearSongSheetSequence(page);
+      await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus"]);
+      await page.locator("#songSheetSequenceList").selectOption({ index: 1 });
+      await page.locator("#songSheetDuplicateSequenceButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Verse", "Chorus"]);
+      await page.locator("#songSheetSequenceMoveDownButton").click();
+      await expect(page.locator("#songSheetSequenceList option")).toHaveText(["Intro", "Verse", "Chorus", "Verse"]);
+      await page.locator("#songSheetSequenceMoveUpButton").click();
+      await page.locator("#songSheetSequenceRemoveButton").click();
+      await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus", "Verse", "Outro"]);
+      await page.locator("#songSheetSequenceList").selectOption({ index: 3 });
+      await expect(page.locator("#songSheetSequenceList")).toHaveAttribute("data-song-sheet-selected-section", "Verse");
+      await expect(page.locator("#songSheetSequenceList option").nth(3)).toHaveAttribute("data-song-sheet-sequence-selected", "true");
+      const selectedSequenceColor = await page.locator("#songSheetSequenceList option").nth(3).getAttribute("data-song-sheet-section-color-index");
+      expect(selectedSequenceColor).toBe(await page.locator("#songSheetSequenceList").getAttribute("data-song-sheet-selected-section-color-index"));
+
+      const sequence = "Intro, Verse, Chorus, Verse, Outro";
+      await expect(page.locator("#songSheetApplyChordsPadInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyBassInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyDrumsInput")).toBeChecked();
+      await expect(page.locator("#songSheetApplyLeadInput")).not.toBeChecked();
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sequence'] dd")).toHaveText(sequence);
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='sections-used'] dd")).toHaveText(sequence);
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='bars-generated'] dd")).toHaveText("13");
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='notes-generated'] dd")).toHaveText(/\d+/);
+      await expect(page.locator("#songSheetSummary [data-song-sheet-summary-field='target-lanes-affected'] dd")).toHaveText("Chords/Pad, Bass, Drums");
+
+      const generated = await page.evaluate(() => {
+        const app = window.__midiStudioV2App;
+        const song = app.selectedSong();
+        const gridResult = app.currentInstrumentGridResult();
+        return {
+          bars: gridResult.barCount,
+          chordEvents: gridResult.timeline.filter((event) => event.lane === "chords").length,
+          drumEvents: gridResult.timeline.filter((event) => event.lane === "drums").length,
+          json: document.querySelector("#inspectorOutput").textContent,
+          leadEvents: gridResult.timeline.filter((event) => event.lane === "lead").length,
+          noteSummary: document.querySelector("[data-song-sheet-summary-field='notes-generated'] dd")?.textContent,
+          sectionLabels: gridResult.sections.map((section) => section.label),
+          sections: song.studioArrangement.sections,
+          sequence: song.studioArrangement.songSheet.sequence,
+          songSheetSections: song.studioArrangement.songSheet.sections
+        };
+      });
+      expect(generated).toEqual(expect.objectContaining({
+        bars: 13,
+        sectionLabels: ["Intro", "Verse", "Chorus", "Verse", "Outro"],
+        sections: "Intro:2, Verse:4, Chorus:2, Verse:4, Outro:1",
+        sequence,
+        songSheetSections: "Intro: G C\nVerse: G Em C D\nChorus: C G\nOutro: D\nBreak: F G"
+      }));
+      expect(Number(generated.noteSummary)).toBeGreaterThan(0);
+      expect(generated.chordEvents).toBeGreaterThan(0);
+      expect(generated.drumEvents).toBeGreaterThan(0);
+      expect(generated.leadEvents).toBe(0);
+      expect(generated.json).toContain('"sequence": "Intro, Verse, Chorus, Verse, Outro"');
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      const canvasState = await canvasTimelineState(page);
+      expect(canvasState.sectionHeaderLabels).toEqual(["Intro", "Verse", "Chorus", "Verse", "Outro"]);
+      expect(canvasState.sections.map((section) => section.label)).toEqual(generated.sectionLabels);
+      expect(canvasState.sections[1].color).toBe(canvasState.sections[3].color);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-section-header-labels", "Intro|Verse|Chorus|Verse|Outro");
+      expect(await page.evaluate(() => {
+        const list = document.querySelector("#songSheetSequenceList");
+        list.selectedIndex = 0;
+        list.dispatchEvent(new Event("change", { bubbles: true }));
+        return list.selectedIndex;
+      })).toBe(0);
+      await clickCanvasSectionHeader(page, "Verse", 3);
+      await expect.poll(async () => page.evaluate(() => document.querySelector("#songSheetSequenceList").selectedIndex)).toBe(3);
+      await expect(page.locator("#songSheetSequenceList")).toHaveAttribute("data-song-sheet-selected-section", "Verse");
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-playback-section", "Verse");
+      const selectedTimelineSection = await canvasTimelineState(page);
+      expect(selectedTimelineSection.playbackSection).toEqual(expect.objectContaining({
+        index: 3,
+        label: "Verse"
+      }));
+
       await page.locator("#playButton").click();
       await expect(page.locator("#playButton")).toBeDisabled();
       await expect(page.locator("#stopButton")).toBeEnabled();

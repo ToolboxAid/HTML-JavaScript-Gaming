@@ -177,10 +177,18 @@ window.addEventListener("DOMContentLoaded", () => {
       sequenceCount: requireElement("#songSheetSequenceCount"),
       sequenceInput: requireElement("#songSheetSequenceInput"),
       sequenceList: requireElement("#songSheetSequenceList"),
+      sectionMetricOutputs: {
+        Bridge: requireElement("#songSheetSectionBridgeMetrics"),
+        Chorus: requireElement("#songSheetSectionChorusMetrics"),
+        Intro: requireElement("#songSheetSectionIntroMetrics"),
+        Outro: requireElement("#songSheetSectionOutroMetrics"),
+        Verse: requireElement("#songSheetSectionVerseMetrics")
+      },
       sectionsInput: requireElement("#songSheetSectionsInput"),
       styleInput: requireElement("#songSheetStyleInput"),
       summary: optionalElement("#songSheetSummary"),
       tempoInput: requireElement("#songSheetTempoInput"),
+      customSectionMetrics: requireElement("#songSheetCustomSectionMetrics"),
       warnings: optionalElement("#songSheetWarningsDetails")
     }),
     songSheetParser: new SongSheetParser(),

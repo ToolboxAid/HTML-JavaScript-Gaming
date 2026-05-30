@@ -68,6 +68,7 @@ export class MidiStudioV2App {
     this.midiSourceInspection = midiSourceInspection;
     this.missingSectionWarnings = new Set();
     this.missingSectionWarningKey = "";
+    this.lastSongSheetGenerationSummary = null;
     this.payload = null;
     this.playbackCompletionTimer = null;
     this.playback = playback;
@@ -950,17 +951,28 @@ export class MidiStudioV2App {
       subdivision: "1"
     });
     const generatedTargets = [];
+    const targetLaneKeys = [];
+    const targetLabels = [
+      normalizedTargets.chordsPad ? "Chords/Pad" : "",
+      normalizedTargets.bass ? "Bass" : "",
+      normalizedTargets.drums ? "Drums" : "",
+      normalizedTargets.lead ? "Lead" : ""
+    ].filter(Boolean);
     if (normalizedTargets.bass) {
       generatedTargets.push("bass");
+      targetLaneKeys.push("bass");
     }
     if (normalizedTargets.chordsPad) {
       generatedTargets.push("pad");
+      targetLaneKeys.push("chords", "pad");
     }
     if (normalizedTargets.drums) {
       generatedTargets.push("drums");
+      targetLaneKeys.push("drums");
     }
     if (normalizedTargets.lead) {
       generatedTargets.push("lead");
+      targetLaneKeys.push("lead");
     }
     generatedTargets.forEach((lane) => {
       const generationInput = this.instrumentGrid.readInput();
@@ -975,13 +987,18 @@ export class MidiStudioV2App {
         this.instrumentGrid.applyGeneratedLane(generated);
       }
     });
-    this.normalizeInstrumentGrid(this.instrumentGrid.readInput());
-    const targetLabels = [
-      normalizedTargets.chordsPad ? "Chords/Pad" : "",
-      normalizedTargets.bass ? "Bass" : "",
-      normalizedTargets.drums ? "Drums" : "",
-      normalizedTargets.lead ? "Lead" : ""
-    ].filter(Boolean);
+    const normalized = this.normalizeInstrumentGrid(this.instrumentGrid.readInput());
+    const targetLaneSet = new Set(targetLaneKeys);
+    const notesGenerated = normalized?.ok
+      ? normalized.timeline.filter((event) => targetLaneSet.has(event.lane)).length
+      : 0;
+    this.lastSongSheetGenerationSummary = {
+      barsGenerated: barCount,
+      notesGenerated,
+      sectionsUsed: playableSections.map((section) => section.label).join(", "),
+      targetLanesAffected: targetLabels.join(", ") || "section colors only"
+    };
+    this.songSheet.render(result, this.lastSongSheetGenerationSummary);
     this.statusLog.ok(`Song Sheet updated the editable note grid for ${targetLabels.join(", ") || "section colors only"}.`);
   }
 
@@ -992,7 +1009,7 @@ export class MidiStudioV2App {
     if (!result.ok) {
       this.statusLog.fail(`Instrument grid rejected: ${result.message}`);
       this.updateAudioDiagnostics();
-      return;
+      return result;
     }
     this.syncSelectedArrangementFromGridInput(input);
     if (result.warnings.length) {
@@ -1000,6 +1017,7 @@ export class MidiStudioV2App {
     }
     this.statusLog.ok(`Instrument grid normalized: ${result.sections.length} section${result.sections.length === 1 ? "" : "s"}, ${result.barCount} bars, ${result.eventCount} events.`);
     this.updateAudioDiagnostics();
+    return result;
   }
 
   generateInstrumentLane(lane, input) {
@@ -1194,6 +1212,9 @@ export class MidiStudioV2App {
       return;
     }
     if (action === "select-section") {
+      if (detail.source === "timeline-header") {
+        this.songSheet.selectSequenceItem(detail.section.label, detail.sequenceIndex);
+      }
       this.statusLog.info(`Timing section selected: ${detail.section.label}.`);
       return;
     }
