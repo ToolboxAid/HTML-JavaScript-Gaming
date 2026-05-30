@@ -142,6 +142,7 @@ function installMockAudio(page, { webAudio = true, webAudioResumeError = "" } = 
   return page.addInitScript(({ webAudio, webAudioResumeError }) => {
     window.__midiStudioAudioEvents = [];
     window.__midiStudioPreviewSynthEvents = [];
+    window.__midiStudioSoundFontEvents = [];
     window.Audio = class MockAudio {
       constructor(src) {
         this.currentTime = 0;
@@ -7627,14 +7628,20 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#exportRenderSource")).toContainText("Fast JS Synth");
 
       await page.locator("#previewEngineSelect").selectOption("soundfont");
-      await expect(page.locator("#soundFontPreviewStatus")).toContainText("WARN: SoundFont Preview unavailable");
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("PASS:");
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("loaded");
       await expect(page.locator("#exportStatusDetails")).toContainText("SoundFont Preview");
       await selectMidiStudioTab(page, "studio");
       await waitForCanvasRender(page);
+      await page.evaluate(() => {
+        window.__midiStudioSoundFontEvents = [];
+      });
       await page.locator("#playSectionButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN SoundFont Preview unavailable for section/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK SoundFont Preview started for section/);
+      await expect.poll(() => page.evaluate(() => window.__midiStudioSoundFontEvents.some((event) => event.action === "play-start"))).toBe(true);
+      await expect(page.locator("#stopButton")).toBeEnabled();
+      await page.locator("#stopButton").click();
       await expect(page.locator("#playButton")).toBeEnabled();
-      await expect(page.locator("#stopButton")).toBeDisabled();
 
       await selectMidiStudioTab(page, "export");
       await page.locator("#previewEngineSelect").selectOption("fast-js-synth");
@@ -7671,6 +7678,120 @@ test.describe("MIDI Studio V2", () => {
         filter: 0.15,
         reverb: 0.55
       });
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR421-500 real SoundFont playback, audition, loop, render, and ownership closeout", async ({ page }) => {
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#futureSoundFontSelect")).toBeEnabled();
+      await expect(page.locator("#futureSoundFontSelect option")).toContainText(["MIDI Studio Embedded GM SoundFont"]);
+      await page.locator("#previewEngineSelect").selectOption("soundfont");
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("PASS:");
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("loaded");
+      await expect(page.locator("#exportRenderSource")).toContainText("SoundFont Preview");
+      await expect(page.locator("#exportStatusDetails")).toContainText("SoundFont WAV render pipeline");
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await page.evaluate(() => {
+        window.__midiStudioSoundFontEvents = [];
+      });
+      await page.locator("#playSectionButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK SoundFont Preview started for section/);
+      await expect(page.locator("#playbackState")).toContainText("Engine: SoundFont Preview");
+      await expect.poll(() => page.evaluate(() => window.__midiStudioSoundFontEvents.some((event) => event.action === "play-start"))).toBe(true);
+      await expect.poll(() => page.evaluate(() => window.__midiStudioSoundFontEvents.some((event) => event.action === "oscillator-start" || event.action === "drum-start"))).toBe(true);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+      await expect(page.locator("#stopButton")).toBeDisabled();
+
+      await page.evaluate(() => {
+        window.__midiStudioSoundFontEvents = [];
+      });
+      await page.locator("#loopToggle").setChecked(true);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playbackState")).toContainText("(looping)");
+      await expect.poll(() => page.evaluate(() => window.__midiStudioSoundFontEvents.some((event) => event.action === "play-start" && event.loop === true))).toBe(true);
+      const loopStartStep = await page.evaluate(() => window.__midiStudioV2App.instrumentGrid.playheadStep);
+      await page.waitForFunction((startStep) => window.__midiStudioV2App.instrumentGrid.playheadStep !== startStep, loopStartStep);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+      await page.evaluate(() => {
+        window.__midiStudioSoundFontEvents = [];
+      });
+      await page.locator("#instrumentAuditionKeyboard [data-audition-note='C5']").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Auditioned C5 for Lead with SoundFont Preview/);
+      await expect.poll(() => page.evaluate(() => window.__midiStudioSoundFontEvents.some((event) => event.action === "play-start"))).toBe(true);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await page.evaluate(() => {
+        window.__midiStudioSoundFontEvents = [];
+      });
+      const editTarget = await emptyCanvasRun(page, { lane: "lead", length: 1 });
+      expect(editTarget).toBeTruthy();
+      await clickCanvasCell(page, editTarget.rowToken, editTarget.stepIndex);
+      await expect.poll(() => page.evaluate(() => window.__midiStudioSoundFontEvents.some((event) => event.action === "play-start"))).toBe(true);
+
+      await selectMidiStudioTab(page, "export");
+      await page.evaluate(() => {
+        window.__midiStudioRenderedDownloads = [];
+        window.__midiStudioV2App.triggerRenderedDownload = (blob, filename) => {
+          window.__midiStudioRenderedDownloads.push({ filename, size: blob.size, type: blob.type });
+        };
+      });
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await expect(page.locator("#renderedExportSaveButton")).not.toHaveAttribute("data-midi-studio-unwired", /.+/);
+      await page.locator("#renderedExportSaveButton").click();
+      const renderedDownload = await page.waitForFunction(() => window.__midiStudioRenderedDownloads?.[0] || null);
+      const renderedDownloadValue = await renderedDownload.jsonValue();
+      expect(renderedDownloadValue).toEqual(expect.objectContaining({
+        filename: "camptown-races-uat-reel.wav",
+        type: "audio/wav"
+      }));
+      expect(renderedDownloadValue.size).toBeGreaterThan(44);
+      await expect(page.locator("#statusLog")).toHaveValue(/PASS SoundFont WAV render complete/);
+
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("data-midi-studio-unwired", "encoder-unavailable");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL SoundFont MP3 export requires an encoder that is not available/);
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("data-midi-studio-unwired", "encoder-unavailable");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL SoundFont OGG export requires an encoder that is not available/);
+
+      const controls = [];
+      for (const tabId of ["studio", "instruments", "diagnostics", "export"]) {
+        await selectMidiStudioTab(page, tabId);
+        if (tabId === "studio") {
+          await waitForCanvasRender(page);
+        }
+        controls.push(...await visibleMidiStudioControlOwnership(page, tabId));
+      }
+      const editableCanonicalOwners = new Map();
+      controls
+        .filter((control) => control.editable && control.kind === "canonical")
+        .forEach((control) => {
+          const owners = editableCanonicalOwners.get(control.canonical) || new Set();
+          owners.add(control.owner);
+          editableCanonicalOwners.set(control.canonical, owners);
+        });
+      const duplicateEditableOwners = Array.from(editableCanonicalOwners, ([canonical, owners]) => ({
+        canonical,
+        owners: Array.from(owners)
+      })).filter((entry) => entry.owners.length > 1);
+      expect(duplicateEditableOwners).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

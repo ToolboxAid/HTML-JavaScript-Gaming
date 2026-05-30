@@ -32,7 +32,13 @@ function fieldToken(label) {
 
 function targetFormatSummary(song) {
   return EXPORT_FORMATS
-    .map(({ key, label }) => `${label}: ${String(song?.rendered?.[key] || "").trim() ? "ready" : "missing"}`)
+    .map(({ key, label }) => {
+      const declaredTarget = String(song?.rendered?.[key] || "").trim();
+      if (key === "wav") {
+        return `${label}: SoundFont render ready${declaredTarget ? `; declared target ${declaredTarget}` : ""}`;
+      }
+      return `${label}: encoder unavailable${declaredTarget ? `; declared target ${declaredTarget}` : ""}`;
+    })
     .join("; ");
 }
 
@@ -191,13 +197,9 @@ function manifestExportReadiness(payload, selectedSong, playable) {
   if (!songs.length) {
     return "No songs loaded for manifest export readiness.";
   }
-  const missingTargets = songs.filter((song) => EXPORT_FORMATS.some(({ key }) => !String(song.rendered?.[key] || "").trim()));
   const selectedNoteCount = noteCount(playable);
   const assignmentSummary = manifestGameUsageAssignmentSummary(payload);
-  if (missingTargets.length) {
-    return `${songs.length - missingTargets.length}/${songs.length} songs have WAV/MP3/OGG targets; selected song note count ${selectedNoteCount}; Game Usage ${assignmentSummary}.`;
-  }
-  return `${songs.length}/${songs.length} songs have WAV/MP3/OGG targets; selected song ${selectedSong?.name || "none"} has ${selectedNoteCount} note${selectedNoteCount === 1 ? "" : "s"}; Game Usage ${assignmentSummary}.`;
+  return `${songs.length} song${songs.length === 1 ? "" : "s"} available; WAV SoundFont render path ready when a playable timeline exists; MP3/OGG encoders unavailable and report FAIL when selected; selected song ${selectedSong?.name || "none"} has ${selectedNoteCount} note${selectedNoteCount === 1 ? "" : "s"}; Game Usage ${assignmentSummary}.`;
 }
 
 export class ExportPanelControl {
@@ -332,7 +334,7 @@ export class ExportPanelControl {
       ["Instrument count", instrumentCount(song)],
       ["Target output formats", targetFormatSummary(song)],
       ["Export readiness", manifestExportReadiness(payload, song, playable)],
-      ["Renderer", "Existing rendered asset download"],
+      ["Renderer", "SoundFont WAV render pipeline; MP3/OGG encoders unavailable"],
       ["Preview engine", this.previewEngineStatus.label],
       ["SoundFont", previewEngineSummary(this.previewEngineStatus)],
       ["Status", `${readiness.level}: ${readiness.message}`],
@@ -347,9 +349,6 @@ export class ExportPanelControl {
     if (!song) {
       return { level: "FAIL", message: "No MIDI song selected.", payload, playable, song };
     }
-    const missingTargets = EXPORT_FORMATS
-      .filter(({ key }) => !String(song.rendered?.[key] || "").trim())
-      .map(({ label }) => label);
     if (Number(playable.count || 0) <= 0) {
       return {
         level: "WARN",
@@ -359,18 +358,9 @@ export class ExportPanelControl {
         song
       };
     }
-    if (missingTargets.length) {
-      return {
-        level: "WARN",
-        message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s), but target paths are missing for ${missingTargets.join(", ")}. Save WAV/MP3/OGG downloads declared rendered targets when files exist. Preview engine ${previewEngineSummary(this.previewEngineStatus)}.`,
-        payload,
-        playable,
-        song
-      };
-    }
     return {
       level: this.previewEngineStatus.level === "FAIL" || this.previewEngineStatus.level === "WARN" ? "WARN" : "INFO",
-      message: `Export source and target formats are declared for ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Save WAV/MP3/OGG downloads the declared rendered target files. Preview engine ${previewEngineSummary(this.previewEngineStatus)}.`,
+      message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Save WAV renders from the SoundFont pipeline. Save MP3/OGG reports encoder unavailable until browser encoders are added. Preview engine ${previewEngineSummary(this.previewEngineStatus)}.`,
       payload,
       playable,
       song
@@ -398,7 +388,7 @@ export class ExportPanelControl {
       ["Export readiness", manifestExportReadiness(payload, song, playable)],
       ["Target output formats", targetFormatSummary(song)],
       ["Owner", "Export tab owns rendered audio output workflow"],
-      ["Renderer", "Existing rendered asset download"],
+      ["Renderer", "SoundFont WAV render pipeline; MP3/OGG encoders unavailable"],
       ["Preview engine", this.previewEngineStatus.label],
       ["SoundFont", previewEngineSummary(this.previewEngineStatus)],
       ["Status", `${level}: ${message}`]

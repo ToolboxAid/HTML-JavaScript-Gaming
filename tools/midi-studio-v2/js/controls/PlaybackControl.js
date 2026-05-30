@@ -38,6 +38,24 @@ export class PlaybackControl {
     return String(this.soundFontPresetSelect?.value || "");
   }
 
+  setSoundFontAssets(assets = [], selectedAssetId = "") {
+    if (!this.soundFontPresetSelect) {
+      return;
+    }
+    this.soundFontPresetSelect.replaceChildren();
+    assets.forEach((asset) => {
+      const option = document.createElement("option");
+      option.value = asset.id;
+      option.textContent = asset.label;
+      option.title = asset.description || asset.format || "";
+      this.soundFontPresetSelect.append(option);
+    });
+    if (selectedAssetId && assets.some((asset) => asset.id === selectedAssetId)) {
+      this.soundFontPresetSelect.value = selectedAssetId;
+    }
+    this.soundFontPresetSelect.disabled = !assets.length;
+  }
+
   loopEnabled() {
     return this.loopToggle.checked;
   }

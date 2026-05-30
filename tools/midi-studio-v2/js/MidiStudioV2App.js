@@ -43,6 +43,7 @@ export class MidiStudioV2App {
     renderedExportActions,
     serializer,
     shell,
+    soundFontPreview,
     songList,
     songSetup,
     songSheet,
@@ -79,6 +80,7 @@ export class MidiStudioV2App {
     this.renderedExportActions = renderedExportActions;
     this.serializer = serializer;
     this.shell = shell;
+    this.soundFontPreview = soundFontPreview;
     this.songLibraryAssets = [];
     this.songList = songList;
     this.songSetup = songSetup;
@@ -128,7 +130,11 @@ export class MidiStudioV2App {
       onPreviewEngineChange: () => this.handlePreviewEngineChange(),
       onStop: () => this.stopPlayback()
     });
-    this.renderedExportActions.mount({ onExport: (format) => this.exportRenderedTarget(format) });
+    this.renderedExportActions.mount({
+      onExport: (format) => this.exportRenderedTarget(format),
+      onFormatChange: () => this.updateAudioDiagnostics()
+    });
+    this.initializeSoundFontAssets();
     this.actionNav.mount({
       onStopAllAudio: () => this.stopAllAudio(),
       onToolCopyJson: () => this.copyJson(),
@@ -523,8 +529,21 @@ export class MidiStudioV2App {
     };
   }
 
+  initializeSoundFontAssets() {
+    const assets = this.soundFontPreview?.listAssets?.() || [];
+    this.playbackControl.setSoundFontAssets?.(assets, this.soundFontPreview?.selectedAssetId || assets[0]?.id || "");
+  }
+
   selectedPreviewEngine() {
     return this.playbackControl.previewEngine?.() || "fast-js-synth";
+  }
+
+  selectedSoundFontAssetId() {
+    return this.playbackControl.soundFontPreset?.() || this.soundFontPreview?.selectedAssetId || "";
+  }
+
+  stopPreviewEngines() {
+    return (this.previewSynth?.stop?.() || 0) + (this.soundFontPreview?.stop?.() || 0);
   }
 
   previewEngineLabel(engine = this.selectedPreviewEngine()) {
@@ -542,24 +561,13 @@ export class MidiStudioV2App {
         message: "Fast JS Synth preview ready for selected song, sequence, instruments, notes, volume, pan, transpose, octave, velocity, duration, and practical effects."
       };
     }
-    const loaderAvailable = typeof this.window.Soundfont?.instrument === "function"
-      || typeof this.window.MIDI?.loadPlugin === "function";
     const asset = String(this.playbackControl.soundFontPreset?.() || "").trim();
-    if (loaderAvailable && asset) {
-      return {
-        available: false,
-        engine,
-        label: this.previewEngineLabel(engine),
-        level: "WARN",
-        message: "SoundFont loader was detected, but this MIDI Studio build has no verified SoundFont render bridge. Use Fast JS Synth for playback or add the SoundFont render bridge before claiming SoundFont playback."
-      };
-    }
+    this.soundFontPreview?.selectAsset?.(asset);
+    const status = this.soundFontPreview?.status?.(asset) || {};
     return {
-      available: false,
       engine,
       label: this.previewEngineLabel(engine),
-      level: "WARN",
-      message: "SoundFont Preview unavailable: no SoundFont loader/assets are configured. Add a SoundFont loader and asset set in Export settings, or switch Preview Engine to Fast JS Synth."
+      ...status
     };
   }
 
@@ -572,22 +580,22 @@ export class MidiStudioV2App {
 
   handlePreviewEngineChange() {
     const status = this.refreshPreviewEngineStatus();
-    if (status.engine === "soundfont" && !status.available) {
+    if (status.engine === "soundfont" && status.status === "failed") {
       this.playbackControl.setPreviewUnavailable(this.selectedSong(), status, this.playbackControlStatus(this.selectedSong()));
     } else {
       this.playbackControl.setSelected(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
     }
     if (status.engine === "soundfont") {
-      this.statusLog.warn(status.message);
+      this.statusLog[status.available ? "ok" : "warn"](status.message);
     } else {
       this.statusLog.info(status.message);
     }
     this.updateAudioDiagnostics();
   }
 
-  reportSoundFontUnavailable(activity) {
+  reportPreviewEngineUnavailable(activity) {
     const status = this.refreshPreviewEngineStatus();
-    const message = `SoundFont Preview unavailable for ${activity}: ${status.message}`;
+    const message = `${status.label || this.previewEngineLabel()} unavailable for ${activity}: ${status.message}`;
     this.statusLog.warn(message);
     this.playbackControl.setPreviewUnavailable(this.selectedSong(), status, this.playbackControlStatus(this.selectedSong()));
     this.actionNav.setNowPlaying(this.selectedSong());
@@ -898,7 +906,7 @@ export class MidiStudioV2App {
       return this.playSelectedArrangement(song);
     }
     if (this.selectedPreviewEngine() === "soundfont") {
-      return this.reportSoundFontUnavailable(`song playback for ${song?.name || "selected song"}`);
+      return this.reportPreviewEngineUnavailable(`song playback for ${song?.name || "selected song"} without an editable studio arrangement`);
     }
     const result = await this.playback.playRenderedPreview(song, { loop: this.playbackControl.loopEnabled() });
     if (!result.ok) {
@@ -1460,12 +1468,10 @@ export class MidiStudioV2App {
     if (!result?.ok || !Number.isInteger(stepIndex)) {
       return;
     }
-    if (this.selectedPreviewEngine() === "soundfont") {
-      this.reportSoundFontUnavailable("edited note audition");
-      return;
-    }
     this.preparePreviewAudition("edited note");
-    const audition = await this.previewSynth.playGridRange({
+    const isSoundFont = this.selectedPreviewEngine() === "soundfont";
+    const audition = await (isSoundFont ? this.soundFontPreview : this.previewSynth).playGridRange({
+      assetId: isSoundFont ? this.selectedSoundFontAssetId() : undefined,
       endStep: stepIndex,
       grid: result,
       label: `${detail.rowToken || "note"} step ${stepIndex + 1}`,
@@ -1476,14 +1482,14 @@ export class MidiStudioV2App {
       tempoBpm: this.previewTempoBpm()
     });
     if (!audition.ok) {
-      this.statusLog.warn(`Preview Synth note audition unavailable: ${audition.message} Editing was kept.`);
+      this.statusLog.warn(`${isSoundFont ? "SoundFont Preview" : "Preview Synth"} note audition unavailable: ${audition.message} Editing was kept.`);
       this.updateAudioDiagnostics();
       return;
     }
     if (audition.warnings?.length) {
-      this.statusLog.warn(`Preview Synth note audition warnings: ${audition.warnings.join("; ")}`);
+      this.statusLog.warn(`${isSoundFont ? "SoundFont Preview" : "Preview Synth"} note audition warnings: ${audition.warnings.join("; ")}`);
     }
-    this.statusLog.info(`Auditioned edited ${detail.rowToken || "note"} for ${detail.laneLabel || "instrument"}.`);
+    this.statusLog.info(`Auditioned edited ${detail.rowToken || "note"} for ${detail.laneLabel || "instrument"} with ${isSoundFont ? "SoundFont Preview" : "Fast JS Synth"}.`);
     this.updateAudioDiagnostics();
   }
 
@@ -1621,11 +1627,11 @@ export class MidiStudioV2App {
     if (action === "stop-preview") {
       this.clearPlaybackCompletionTimer();
       this.playback.stop();
-      const stoppedCount = this.previewSynth.stop();
+      const stoppedCount = this.stopPreviewEngines();
       this.instrumentGrid.clearPreviewPlaybackLanes();
       this.playbackControl.setStopped(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
       this.actionNav.setNowPlaying(this.selectedSong());
-      this.statusLog.ok(`Preview playback stopped. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"}.`);
+      this.statusLog.ok(`Preview playback stopped. Cleared ${stoppedCount} scheduled audio node${stoppedCount === 1 ? "" : "s"}.`);
       this.updateAudioDiagnostics();
       return;
     }
@@ -1645,7 +1651,7 @@ export class MidiStudioV2App {
     this.clearPlaybackCompletionTimer();
     const wasPlaying = this.playbackControl.isPlaying();
     this.playback.stop();
-    const stoppedCount = this.previewSynth.stop();
+    const stoppedCount = this.stopPreviewEngines();
     this.instrumentGrid.clearPreviewPlaybackLanes();
     if (wasPlaying) {
       this.playbackControl.setCompleted(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
@@ -1653,15 +1659,15 @@ export class MidiStudioV2App {
       this.playbackControl.setStopped(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
     }
     this.actionNav.setNowPlaying(this.selectedSong());
-    this.statusLog.ok(`Preview Synth ${mode} playback complete: ${label}. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"}.`);
+    this.statusLog.ok(`${this.previewEngineLabel()} ${mode} playback complete: ${label}. Cleared ${stoppedCount} scheduled audio node${stoppedCount === 1 ? "" : "s"}.`);
     this.updateAudioDiagnostics();
   }
 
   async startPreviewSynth({ endStep, label, loop, mode, startStep }) {
-    if (this.selectedPreviewEngine() === "soundfont") {
-      return this.reportSoundFontUnavailable(`${mode} ${label || "(unnamed)"}`);
-    }
-    const result = await this.previewSynth.playGridRange({
+    const isSoundFont = this.selectedPreviewEngine() === "soundfont";
+    const engine = isSoundFont ? this.soundFontPreview : this.previewSynth;
+    const result = await engine.playGridRange({
+      assetId: isSoundFont ? this.selectedSoundFontAssetId() : undefined,
       endStep,
       grid: this.currentInstrumentGridResult(),
       label,
@@ -1674,22 +1680,24 @@ export class MidiStudioV2App {
     if (!result.ok) {
       this.instrumentGrid.clearPreviewPlaybackLanes();
       if (result.warnings?.length) {
-        this.statusLog.warn(`Preview Synth warnings: ${result.warnings.join("; ")}`);
+        this.statusLog.warn(`${isSoundFont ? "SoundFont Preview" : "Preview Synth"} warnings: ${result.warnings.join("; ")}`);
       }
       if (result.reason === "audio-suspended" || result.reason === "audio-resume-failed") {
-        this.statusLog.warn("Browser audio did not unlock for Preview Synth. Start from a direct click/tap and check site audio permissions.");
+        this.statusLog.warn("Browser audio did not unlock for preview playback. Start from a direct click/tap and check site audio permissions.");
       }
       this.statusLog.fail(result.message);
       this.updateAudioDiagnostics();
       return false;
     }
     if (result.warnings.length) {
-      this.statusLog.warn(`Preview Synth warnings: ${result.warnings.join("; ")}`);
+      this.statusLog.warn(`${isSoundFont ? "SoundFont Preview" : "Preview Synth"} warnings: ${result.warnings.join("; ")}`);
     }
     this.instrumentGrid.setPreviewPlaybackLanes(result.activeLanes);
     this.statusLog.info(`Playing ${mode}: ${label}.`);
-    this.statusLog.ok(`Preview Synth started for ${mode} ${label} with ${result.eventCount} playable event${result.eventCount === 1 ? "" : "s"}.`);
-    this.statusLog.info("Fast JS Synth is an approximate Web Audio audition using selected sequence, notes, instrument settings, and practical effects.");
+    this.statusLog.ok(`${isSoundFont ? "SoundFont Preview" : "Preview Synth"} started for ${mode} ${label} with ${result.eventCount} playable event${result.eventCount === 1 ? "" : "s"}.`);
+    this.statusLog.info(isSoundFont
+      ? "SoundFont Preview is using the selected embedded SoundFont asset, sequence, instruments, notes, volume, pan, transpose, octave, velocity, duration, and practical effects."
+      : "Fast JS Synth is an approximate Web Audio audition using selected sequence, notes, instrument settings, and practical effects.");
     this.updateAudioDiagnostics();
     return true;
   }
@@ -1821,20 +1829,21 @@ export class MidiStudioV2App {
 
   preparePreviewAudition(label = "instrument") {
     const snapshot = this.previewSynth.getSnapshot();
+    const soundFontSnapshot = this.soundFontPreview?.getSnapshot?.() || {};
     const wasPlaybackControlActive = this.playbackControl.isPlaying();
-    if (!snapshot.playing && !snapshot.activeNodeCount && !wasPlaybackControlActive) {
+    if (!snapshot.playing && !snapshot.activeNodeCount && !soundFontSnapshot.playing && !soundFontSnapshot.activeNodeCount && !wasPlaybackControlActive) {
       return;
     }
     this.clearPlaybackCompletionTimer();
     this.playback.stop();
-    const stoppedCount = this.previewSynth.stop();
+    const stoppedCount = this.stopPreviewEngines();
     this.instrumentGrid.stopPreviewUi();
     if (wasPlaybackControlActive) {
       this.playbackControl.setStopped(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
       this.actionNav.setNowPlaying(this.selectedSong());
     }
     if (stoppedCount) {
-      this.statusLog.info(`Stopped active Preview Synth playback before ${label} audition.`);
+      this.statusLog.info(`Stopped active preview playback before ${label} audition.`);
     }
   }
 
@@ -1842,12 +1851,10 @@ export class MidiStudioV2App {
     if (!detail.instrumentValue) {
       return;
     }
-    if (this.selectedPreviewEngine() === "soundfont") {
-      this.reportSoundFontUnavailable("instrument audition");
-      return;
-    }
     this.preparePreviewAudition("instrument");
-    const result = await this.previewSynth.previewInstrument({
+    const isSoundFont = this.selectedPreviewEngine() === "soundfont";
+    const result = await (isSoundFont ? this.soundFontPreview : this.previewSynth).previewInstrument({
+      assetId: isSoundFont ? this.selectedSoundFontAssetId() : undefined,
       instrumentId: detail.instrumentValue,
       label: detail.instrumentLabel,
       lane: detail.lane,
@@ -1858,7 +1865,7 @@ export class MidiStudioV2App {
       return;
     }
     const previewLabel = result.mappedPreviewInstrumentLabel || detail.previewInstrumentLabel || result.instrumentLabel || detail.instrumentLabel;
-    this.statusLog.info(`Auditioned ${detail.instrumentLabel} for ${detail.laneLabel} with ${previewLabel}.`);
+    this.statusLog.info(`Auditioned ${detail.instrumentLabel} for ${detail.laneLabel} with ${isSoundFont ? "SoundFont Preview" : previewLabel}.`);
   }
 
   async auditionNote(detail) {
@@ -1866,13 +1873,11 @@ export class MidiStudioV2App {
       this.statusLog.warn(`Missing preview instrument selection for ${detail.laneLabel}. Choose a Preview Synth instrument before auditioning ${detail.note || "a note"}.`);
       return;
     }
-    if (this.selectedPreviewEngine() === "soundfont") {
-      this.reportSoundFontUnavailable(`keyboard audition ${detail.note || "note"}`);
-      return;
-    }
     const note = String(detail.note || "C4").trim() || "C4";
     this.preparePreviewAudition("keyboard");
-    const audition = await this.previewSynth.playGridRange({
+    const isSoundFont = this.selectedPreviewEngine() === "soundfont";
+    const audition = await (isSoundFont ? this.soundFontPreview : this.previewSynth).playGridRange({
+      assetId: isSoundFont ? this.selectedSoundFontAssetId() : undefined,
       endStep: 0,
       grid: {
         ok: true,
@@ -1893,14 +1898,14 @@ export class MidiStudioV2App {
       tempoBpm: this.previewTempoBpm()
     });
     if (!audition.ok) {
-      this.statusLog.warn(`Preview Synth keyboard audition unavailable: ${audition.message}`);
+      this.statusLog.warn(`${isSoundFont ? "SoundFont Preview" : "Preview Synth"} keyboard audition unavailable: ${audition.message}`);
       return;
     }
     if (detail.instrumentWarning) {
-      this.statusLog.warn(`Preview Synth mapping: ${detail.instrumentWarning}`);
+      this.statusLog.warn(`${isSoundFont ? "SoundFont Preview" : "Preview Synth"} mapping: ${detail.instrumentWarning}`);
     }
     const previewLabel = detail.previewInstrumentLabel || detail.instrumentLabel;
-    this.statusLog.info(`Auditioned ${note} for ${detail.laneLabel} with ${previewLabel}.`);
+    this.statusLog.info(`Auditioned ${note} for ${detail.laneLabel} with ${isSoundFont ? "SoundFont Preview" : previewLabel}.`);
   }
 
   previewTempoBpm() {
@@ -1940,30 +1945,42 @@ export class MidiStudioV2App {
       this.exportPanel.setStatus({ level: "FAIL", message, payload: this.payload, playable: this.playableEventSummary(), song });
       return;
     }
-    const target = String(song.rendered?.[selectedFormat] || "").trim();
-    if (!target) {
-      const message = `Missing rendered ${label} export target for ${song.name}. Add music.songs[].rendered.${selectedFormat} before exporting.`;
+    if (!this.currentInstrumentGridResult()?.ok) {
+      this.applySelectedSongArrangement("render request");
+    }
+    const gridResult = this.currentInstrumentGridResult();
+    const section = this.instrumentGrid.selectedSection() || gridResult?.sections?.[0] || null;
+    if (!gridResult?.ok || !section) {
+      const message = `SoundFont ${label} export failed for ${song.name}: no normalized playable timeline section is available. Parse or regenerate the Song Sheet first.`;
       this.statusLog.fail(message);
       this.exportPanel.setStatus({ level: "FAIL", message, payload: this.payload, playable: this.playableEventSummary(), song });
       return;
     }
+    const render = this.soundFontPreview.renderAudio({
+      assetId: this.selectedSoundFontAssetId(),
+      endStep: Number.isFinite(Number(gridResult.totalSteps)) ? Math.max(0, Number(gridResult.totalSteps) - 1) : section.endStep,
+      format: selectedFormat,
+      grid: gridResult,
+      label: song.name,
+      laneSettings: this.instrumentGrid.previewLaneSettings(),
+      startStep: 0,
+      tempoBpm: this.previewTempoBpm()
+    });
+    if (!render.ok) {
+      this.statusLog[render.level === "WARN" ? "warn" : "fail"](render.message);
+      this.exportPanel.setStatus({ level: render.level || "FAIL", message: render.message, payload: this.payload, playable: this.playableEventSummary(), song });
+      return;
+    }
     try {
-      const response = await this.window.fetch(target, { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const blob = await response.blob();
-      if (!blob.size) {
-        throw new Error("empty rendered asset");
-      }
+      const target = String(song.rendered?.[selectedFormat] || "").trim();
       const filename = this.renderedExportFilename(song, selectedFormat, target);
-      this.triggerRenderedDownload(blob, filename);
-      const message = `Rendered ${label} export downloaded from ${target}.`;
+      this.triggerRenderedDownload(render.blob, filename);
+      const message = `${render.message} Saved ${filename}.`;
       this.statusLog.pass(message);
       this.exportPanel.setStatus({ level: "PASS", message, payload: this.payload, playable: this.playableEventSummary(), song });
     } catch (error) {
       const detail = error?.message ? ` (${error.message})` : "";
-      const message = `Rendered ${label} target could not be downloaded from ${target}${detail}. Verify the manifest target path or export JSON instead.`;
+      const message = `SoundFont ${label} render completed but could not start the browser download${detail}. Export JSON remains available.`;
       this.statusLog.fail(message);
       this.exportPanel.setStatus({ level: "FAIL", message, payload: this.payload, playable: this.playableEventSummary(), song });
     }
@@ -2021,12 +2038,12 @@ export class MidiStudioV2App {
   stopPlayback({ log = true } = {}) {
     this.clearPlaybackCompletionTimer();
     this.playback.stop();
-    const stoppedCount = this.previewSynth.stop();
+    const stoppedCount = this.stopPreviewEngines();
     this.instrumentGrid.stopPreviewUi();
     this.playbackControl.setStopped(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
     this.actionNav.setNowPlaying(this.selectedSong());
     if (log) {
-      this.statusLog.ok(`Stop completed. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"} and stopped all MIDI Studio preview audio.`);
+      this.statusLog.ok(`Stop completed. Cleared ${stoppedCount} scheduled audio node${stoppedCount === 1 ? "" : "s"} and stopped all MIDI Studio preview audio.`);
     }
     this.updateAudioDiagnostics();
   }
@@ -2034,11 +2051,11 @@ export class MidiStudioV2App {
   stopAllAudio() {
     this.clearPlaybackCompletionTimer();
     this.playback.stop();
-    const stoppedCount = this.previewSynth.stop();
+    const stoppedCount = this.stopPreviewEngines();
     this.instrumentGrid.stopPreviewUi();
     this.playbackControl.setStopped(this.selectedSong(), this.playbackControlStatus(this.selectedSong()));
     this.actionNav.setNowPlaying(this.selectedSong());
-    this.statusLog.ok(`Stop All Audio completed. Cleared ${stoppedCount} scheduled oscillator${stoppedCount === 1 ? "" : "s"} and reset Preview Synth state.`);
+    this.statusLog.ok(`Stop All Audio completed. Cleared ${stoppedCount} scheduled audio node${stoppedCount === 1 ? "" : "s"} and reset preview state.`);
     this.updateAudioDiagnostics();
   }
 
@@ -2074,6 +2091,7 @@ export class MidiStudioV2App {
       return;
     }
     const snapshot = this.previewSynth.getSnapshot();
+    const soundFontSnapshot = this.soundFontPreview?.getSnapshot?.() || {};
     const laneDiagnostics = this.instrumentGrid.previewLaneDiagnostics();
     const playable = this.playableEventSummary();
     const previewStatus = this.refreshPreviewEngineStatus();
@@ -2099,8 +2117,10 @@ export class MidiStudioV2App {
       ["Lane effects", laneDiagnostics.effectSummary || "none"],
       ["Current preview instrument pack", packSummary || "none"],
       ["Preview engine", previewStatus.label],
+      ["SoundFont asset", soundFontSnapshot.assetLabel || "none"],
+      ["SoundFont status", soundFontSnapshot.status || "unavailable"],
       ["SoundFont preview", `${previewStatus.level}: ${previewStatus.message}`],
-      ["Last playback error", snapshot.lastError || "none"]
+      ["Last playback error", snapshot.lastError || soundFontSnapshot.lastError || "none"]
     ]);
   }
 

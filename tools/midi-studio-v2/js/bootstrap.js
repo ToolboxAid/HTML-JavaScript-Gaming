@@ -19,6 +19,7 @@ import { StudioTabsControl } from "./controls/StudioTabsControl.js";
 import { ToolShellControl } from "./controls/ToolShellControl.js";
 import { InstrumentGridParser } from "../../../src/engine/audio/InstrumentGridParser.js";
 import { PreviewSynthEngine } from "../../../src/engine/audio/PreviewSynthEngine.js";
+import { SoundFontPreviewEngine } from "../../../src/engine/audio/SoundFontPreviewEngine.js";
 import { SongSheetParser } from "../../../src/engine/audio/SongSheetParser.js";
 import { MidiPlaybackService } from "./services/MidiPlaybackService.js";
 import { MidiSourceInspectionService } from "./services/MidiSourceInspectionService.js";
@@ -160,6 +161,7 @@ window.addEventListener("DOMContentLoaded", () => {
       stopButton: requireElement("#stopButton")
     }),
     previewSynth: new PreviewSynthEngine({ windowRef: window }),
+    soundFontPreview: new SoundFontPreviewEngine({ windowRef: window }),
     renderedExportActions: new RenderedExportActionsControl({
       exportTargetTypeLabel: requireElement('label[for="renderedExportTargetTypeSelect"]'),
       exportTargetTypeSelect: requireElement("#renderedExportTargetTypeSelect"),
