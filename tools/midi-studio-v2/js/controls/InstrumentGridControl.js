@@ -3619,6 +3619,7 @@ export class InstrumentGridControl {
       }
       this.setPlayheadStep(nextStep);
     }, intervalMs);
+    this.revealPlaybackStep(startStep);
   }
 
   previewStepDurationMs() {
@@ -3669,6 +3670,27 @@ export class InstrumentGridControl {
     this.gridOutput.dataset.playheadBeat = activeCell ? String(activeCell.beat) : "";
     this.gridOutput.dataset.playheadSection = activeCell?.section || "";
     this.lastPlayheadHighlightStep = nextStep;
+    this.revealPlaybackStep(nextStep);
+  }
+
+  revealPlaybackStep(stepIndex) {
+    if (!this.playTimer || !this.gridOutput || !this.timelineCanvasRenderer) {
+      return;
+    }
+    const snapshot = this.timelineCanvasRenderer.snapshot();
+    const stepX = snapshot.axisWidth + stepIndex * snapshot.cellSize;
+    const left = this.gridOutput.scrollLeft;
+    const right = left + this.gridOutput.clientWidth;
+    const margin = Math.max(snapshot.cellSize * 2, 48);
+    if (stepX >= left + snapshot.axisWidth + margin && stepX + snapshot.cellSize <= right - margin) {
+      return;
+    }
+    const nextLeft = Math.max(0, stepX - snapshot.axisWidth - Math.round(this.gridOutput.clientWidth * 0.25));
+    this.gridOutput.scrollLeft = nextLeft;
+    if (this.timelineScrollProxy) {
+      this.timelineScrollProxy.scrollLeft = nextLeft;
+    }
+    this.syncTimelineScrollState();
   }
 
   updateLoopRegion() {

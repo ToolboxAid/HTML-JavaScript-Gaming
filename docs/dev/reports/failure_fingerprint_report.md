@@ -1,12 +1,12 @@
 # Failure Fingerprint Report
 
-Generated: 2026-05-30T04:24:21.887Z
-Status: PASS
+Generated: 2026-05-30T05:25:56.095Z
+Status: WARN
 
 ## Summary
 
 Deterministic setup failures: 0
-Runtime failures: 0
+Runtime failures: 1
 Flaky/transient failures: 0
 Infrastructure failures: 0
 
@@ -14,7 +14,7 @@ Infrastructure failures: 0
 
 | Fingerprint | Category | Rule | Lane | Source | Retry Allowed | Diagnostic |
 | --- | --- | --- | --- | --- | --- | --- |
-| none | none | none | none | none | No | No failures observed during deterministic classification. |
+| eba5e5e22b8ba063 | runtime failure | runtime-failure | workspace-contract | runtime command | Yes | workspace-contract command failed: C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list |
 
 ## Known Deterministic Fingerprint Rules
 

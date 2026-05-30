@@ -116,6 +116,39 @@ function manifestInstrumentSummary(payload) {
   return `${laneCount} instrument lane${laneCount === 1 ? "" : "s"} across ${manifestSongs(payload).length} song${manifestSongs(payload).length === 1 ? "" : "s"}`;
 }
 
+function gameUsageLabels(song) {
+  const usage = song?.director?.usage;
+  if (!Array.isArray(usage)) {
+    return [];
+  }
+  return usage.map((entry) => String(entry || "").trim()).filter(Boolean);
+}
+
+function selectedGameUsageSummary(song) {
+  const labels = gameUsageLabels(song);
+  return labels.length ? labels.join(", ") : "unassigned";
+}
+
+function manifestGameUsageAssignmentSummary(payload) {
+  const songs = manifestSongs(payload);
+  if (!songs.length) {
+    return "No songs loaded for Game Usage assignment readiness.";
+  }
+  const counts = new Map();
+  let assignedCount = 0;
+  songs.forEach((song) => {
+    const labels = gameUsageLabels(song);
+    if (labels.length) {
+      assignedCount += 1;
+    }
+    labels.forEach((label) => counts.set(label, (counts.get(label) || 0) + 1));
+  });
+  const usageSummary = counts.size
+    ? Array.from(counts, ([label, count]) => `${label}: ${count}`).join("; ")
+    : "no assigned usage labels";
+  return `${assignedCount}/${songs.length} songs assigned; ${usageSummary}`;
+}
+
 function manifestExportReadiness(payload, selectedSong, playable) {
   const songs = manifestSongs(payload);
   if (!songs.length) {
@@ -123,10 +156,11 @@ function manifestExportReadiness(payload, selectedSong, playable) {
   }
   const missingTargets = songs.filter((song) => EXPORT_FORMATS.some(({ key }) => !String(song.rendered?.[key] || "").trim()));
   const selectedNoteCount = noteCount(playable);
+  const assignmentSummary = manifestGameUsageAssignmentSummary(payload);
   if (missingTargets.length) {
-    return `${songs.length - missingTargets.length}/${songs.length} songs have WAV/MP3/OGG targets; selected song note count ${selectedNoteCount}.`;
+    return `${songs.length - missingTargets.length}/${songs.length} songs have WAV/MP3/OGG targets; selected song note count ${selectedNoteCount}; Game Usage ${assignmentSummary}.`;
   }
-  return `${songs.length}/${songs.length} songs have WAV/MP3/OGG targets; selected song ${selectedSong?.name || "none"} has ${selectedNoteCount} note${selectedNoteCount === 1 ? "" : "s"}.`;
+  return `${songs.length}/${songs.length} songs have WAV/MP3/OGG targets; selected song ${selectedSong?.name || "none"} has ${selectedNoteCount} note${selectedNoteCount === 1 ? "" : "s"}; Game Usage ${assignmentSummary}.`;
 }
 
 export class ExportPanelControl {
@@ -174,6 +208,7 @@ export class ExportPanelControl {
       ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
+      ["Game usage assignment", selectedGameUsageSummary(song)],
       ["Sequence summary", sequenceSummary(song)],
       ["Section summary", sectionSummary(song)],
       ["Sequence length", sequenceLength(song)],
@@ -223,6 +258,7 @@ export class ExportPanelControl {
       ["Section summary", manifestSectionSummary(payload)],
       ["Sequence summary", manifestSequenceSummary(payload)],
       ["Instrument summary", manifestInstrumentSummary(payload)],
+      ["Game usage assignment", manifestGameUsageAssignmentSummary(payload)],
       ["Export readiness", manifestExportReadiness(payload, song, playable)]
     ]);
   }
@@ -236,6 +272,7 @@ export class ExportPanelControl {
       ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
+      ["Game usage assignment", selectedGameUsageSummary(song)],
       ["Sequence summary", sequenceSummary(song)],
       ["Section summary", sectionSummary(song)],
       ["Sequence length", sequenceLength(song)],
@@ -290,6 +327,7 @@ export class ExportPanelControl {
       ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
+      ["Game usage assignment", selectedGameUsageSummary(song)],
       ["Sequence summary", sequenceSummary(song)],
       ["Section summary", sectionSummary(song)],
       ["Sequence length", sequenceLength(song)],
@@ -300,6 +338,7 @@ export class ExportPanelControl {
       ["Manifest section summary", manifestSectionSummary(payload)],
       ["Manifest sequence summary", manifestSequenceSummary(payload)],
       ["Manifest instrument summary", manifestInstrumentSummary(payload)],
+      ["Manifest game usage assignment", manifestGameUsageAssignmentSummary(payload)],
       ["Export readiness", manifestExportReadiness(payload, song, playable)],
       ["Target output formats", targetFormatSummary(song)],
       ["Owner", "Export tab owns rendered audio output workflow"],

@@ -126,7 +126,7 @@ function sectionMetricsLabel(section, count = chordTokenCount(section.chords)) {
 function sectionEditorMetricsLabel(section, tempo) {
   const count = chordTokenCount(section.chords);
   if (!count) {
-    return "Empty";
+    return "Empty - add chords to populate Available Sections.";
   }
   return `${section.chords} | ${count} bar${count === 1 ? "" : "s"} | ${formatDuration(estimatedSectionSeconds(count, tempo))}`;
 }
@@ -907,6 +907,15 @@ export class SongSheetControl {
   renderAvailableSections(rows) {
     const current = this.availableSectionsList.value;
     this.availableSectionsList.replaceChildren();
+    if (!rows.length) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "Populate a section to make it available.";
+      option.disabled = true;
+      option.selected = true;
+      option.dataset.songSheetAvailableSectionsEmpty = "true";
+      this.availableSectionsList.append(option);
+    }
     rows.forEach((section) => {
       const option = document.createElement("option");
       option.value = section.label;
@@ -950,7 +959,7 @@ export class SongSheetControl {
         .filter((section) => section.chords.trim());
       this.customSectionMetrics.textContent = customRows.length
         ? customRows.map((section) => `${section.label}: ${sectionEditorMetricsLabel(section, this.tempoInput.value)}`).join("; ")
-        : "Empty";
+        : "Empty - add CustomName: C G to populate Available Sections.";
       this.customSectionMetrics.dataset.songSheetCustomSectionCount = String(customRows.length);
       this.customSectionMetrics.dataset.songSheetSectionPopulated = String(customRows.length > 0);
     }
@@ -1120,6 +1129,11 @@ export class SongSheetControl {
     const colors = this.sectionColorIndexMap();
     const selectedIndex = this.sequenceList.selectedIndex;
     const applyColor = (option, index = -1) => {
+      if (!option.value) {
+        option.style.removeProperty("background-color");
+        option.style.removeProperty("color");
+        return;
+      }
       const colorIndex = colors.get(normalizedLabelKey(option.value)) ?? 0;
       option.dataset.songSheetSectionColorIndex = String(colorIndex);
       if (option.parentElement === this.sequenceList) {
