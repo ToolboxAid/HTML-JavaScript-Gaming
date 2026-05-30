@@ -2402,29 +2402,25 @@ export class InstrumentGridControl {
     instrumentLabelElement.className = "midi-studio-v2__lane-title";
     instrumentLabelElement.dataset.laneLabel = lane;
     instrumentLabelElement.textContent = instrumentLabel(this.previewLaneState[lane]?.instrument) || laneLabel(lane);
-    const typeSelect = this.createInstrumentTypeSelect(lane);
-    const instrumentSelect = this.createInstrumentSelect(lane);
+    const summary = document.createElement("output");
+    summary.className = "midi-studio-v2__instrument-summary";
+    summary.dataset.laneInstrumentSummary = lane;
+    summary.value = this.instrumentSummaryForLane(lane);
+    summary.textContent = this.instrumentSummaryForLane(lane);
+    summary.setAttribute("aria-readonly", "true");
 
     const mute = this.createLaneToggle(lane, "mute");
     const solo = this.createLaneToggle(lane, "solo");
-    const volume = this.createLaneSlider(lane, "volume");
-    const pan = this.createLaneSlider(lane, "pan");
-    const volumeButton = this.createLaneSliderButton(lane, "volume");
-    const panButton = this.createLaneSliderButton(lane, "pan");
     const deleteButton = this.createDeleteLaneButton(lane);
 
     const main = document.createElement("div");
     main.className = "midi-studio-v2__lane-header-main";
     const sourceCounts = this.createArrangementSourceBadge(lane);
-    main.append(instrumentLabelElement, sourceCounts, typeSelect, instrumentSelect);
+    main.append(instrumentLabelElement, summary, sourceCounts);
 
     const toggles = document.createElement("div");
     toggles.className = "midi-studio-v2__lane-control-row";
-    toggles.append(mute.label, solo.label, volumeButton, panButton, deleteButton);
-
-    const sliders = document.createElement("div");
-    sliders.className = "midi-studio-v2__lane-slider-row";
-    sliders.append(volume.input, pan.input);
+    toggles.append(mute.label, solo.label, deleteButton);
 
     cell.addEventListener("click", (event) => {
       if (event.target.closest("input, select, option, button")) {
@@ -2444,19 +2440,14 @@ export class InstrumentGridControl {
     });
     this.previewLaneControls[lane] = {
       deleteButton,
-      instrument: instrumentSelect,
       instrumentLabel: instrumentLabelElement,
-      instrumentType: typeSelect,
       mute: mute.input,
-      pan: pan.input,
-      panButton,
       row: cell,
       solo: solo.input,
       sourceCounts,
-      volume: volume.input,
-      volumeButton
+      summary
     };
-    cell.append(main, toggles, sliders);
+    cell.append(main, toggles);
     return cell;
   }
 
