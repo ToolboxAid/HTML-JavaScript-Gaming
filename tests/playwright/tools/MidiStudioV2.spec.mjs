@@ -880,8 +880,8 @@ async function visibleMidiStudioControlOwnership(page, activeTabId) {
       playSectionButton: { canonical: "timing preview playback state", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       playSequenceButton: { canonical: "timing preview playback state from Song Sequence order", kind: "workflow-state", owner: "Octave Timeline", wired: "wired" },
       regenerateArrangementButton: { canonical: "music.songs[].studioArrangement generated lanes from Song Sheet sequence", kind: "canonical-action", owner: "Song Setup", wired: "wired" },
-      renderedExportSaveButton: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
-      renderedExportTargetTypeSelect: { canonical: "future rendered audio renderer", kind: "unwired", owner: "Export", wired: "unwired" },
+      renderedExportSaveButton: { canonical: "declared rendered audio target download", kind: "action", owner: "Export", wired: "wired" },
+      renderedExportTargetTypeSelect: { canonical: "rendered audio target format selection", kind: "workflow-state", owner: "Export", wired: "wired" },
       resetSongEditsButton: { canonical: "music.songs[] reset baseline", kind: "canonical-action", owner: "Global NAV", wired: "wired" },
       returnToWorkspaceButton: { canonical: "workspace navigation", kind: "action", owner: "Workspace NAV", wired: "wired" },
       saveInstrumentPresetButton: { canonical: "Instruments tab instrument preset library", kind: "workflow-state", owner: "Instruments", wired: "wired" },
@@ -7373,7 +7373,7 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/MIDI Studio V2 toolState/);
 
       await selectMidiStudioTab(page, "export");
-      await expect(page.locator("#exportRenderSource [data-export-field='selected-song'] dd")).toHaveText("Release Candidate Loop");
+      await expect(page.locator("#exportRenderSource [data-export-field='song-name'] dd")).toHaveText("Release Candidate Loop");
       await expect(page.locator("#exportRenderSource [data-export-field='generated-id'] dd")).toHaveText("releaseCandidateLoop-Boss");
       await expect(page.locator("#exportManifestReadinessDetails [data-export-field='game-usage-assignment'] dd")).toContainText("Boss: Release Candidate Loop");
       for (const [format, label] of [["wav", "Save WAV"], ["mp3", "Save MP3"], ["ogg", "Save OGG"]]) {
@@ -7381,9 +7381,9 @@ test.describe("MIDI Studio V2", () => {
         await expect(page.locator("#renderedExportSaveButton")).toHaveText(label);
       }
       await expect(page.locator("#futureSoundFontSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
-      await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+      await expect(page.locator("#renderedExportSaveButton")).not.toHaveAttribute("data-midi-studio-unwired", /.+/);
       await page.locator("#renderedExportSaveButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Export rendering not implemented|FAIL Missing rendered/);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered OGG export target/);
       await expect(page.locator("#statusLog")).not.toHaveValue(/created .*\.ogg|wrote .*\.ogg|saved .*\.ogg/i);
       await page.locator("#toolExportToolStateButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/PASS Export JSON PASS/);
@@ -7507,6 +7507,49 @@ test.describe("MIDI Studio V2", () => {
       await expect(page.locator("#toolExportToolStateButton")).toBeVisible();
       await page.locator("#toolExportToolStateButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/PASS Export JSON PASS/);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR281-340 PROD rendered export save wiring and duplicate export display cleanup", async ({ page }) => {
+    await page.route("**/assets/music/rendered/theme-main.ogg", async (route) => {
+      await route.fulfill({
+        body: Buffer.from("OggS MIDI Studio V2 PROD rendered target fixture"),
+        contentType: "audio/ogg"
+      });
+    });
+    const server = await openMidiStudio(page);
+    try {
+      await selectMidiStudioTab(page, "export");
+      await page.evaluate(() => {
+        window.__midiStudioProdDownloads = [];
+        window.__midiStudioV2App.triggerRenderedDownload = async (blob, filename) => {
+          window.__midiStudioProdDownloads.push({ filename, size: blob.size });
+        };
+      });
+      await expect(page.locator("#exportRenderSource [data-export-field='song-name'] dd")).toHaveText("Main Theme");
+      await expect(page.locator("#exportRenderSource [data-export-field='selected-song']")).toHaveCount(0);
+      await expect(page.locator("#renderedExportTargetTypeSelect")).not.toHaveAttribute("data-midi-studio-unwired", /.+/);
+      await expect(page.locator("#renderedExportSaveButton")).not.toHaveAttribute("data-midi-studio-unwired", /.+/);
+      await expect(page.locator("#futureSoundFontSelect")).toHaveAttribute("data-midi-studio-unwired", "not-implemented");
+
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveText("Save OGG");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect.poll(() => page.evaluate(() => window.__midiStudioProdDownloads)).toEqual([
+        { filename: "theme-main.ogg", size: 48 }
+      ]);
+      await expect(page.locator("#statusLog")).toHaveValue(/PASS Rendered OGG export downloaded from assets\/music\/rendered\/theme-main\.ogg\./);
+      await expect(page.locator("#exportStatusDetails")).toContainText("PASS: Rendered OGG export downloaded from assets/music/rendered/theme-main.ogg.");
+
+      await page.evaluate(() => window.__midiStudioV2App.selectSong("source-only"));
+      await expect(page.locator("#exportRenderSource [data-export-field='song-name'] dd")).toHaveText("Source Only");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Missing rendered WAV export target for Source Only\. Add music\.songs\[\]\.rendered\.wav before exporting\./);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/not implemented for WAV|saved .*\.wav|created .*\.wav/i);
     } finally {
       await workspaceV2CoverageReporter.stop(page);
       await server.close();

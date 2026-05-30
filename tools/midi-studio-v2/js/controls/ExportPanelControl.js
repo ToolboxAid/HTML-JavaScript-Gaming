@@ -224,7 +224,6 @@ export class ExportPanelControl {
   renderSource(song, playable = { count: 0 }) {
     this.renderDefinitionList(this.sourceDetails, [
       ["Song name", song?.name || "No song selected"],
-      ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
       ["Game usage assignment", selectedGameUsageSummary(song)],
@@ -293,7 +292,6 @@ export class ExportPanelControl {
     const readiness = this.exportReadiness(song, { payload, playable });
     this.renderDefinitionList(this.diagnosticTargets, [
       ["Song name", song?.name || "No song selected"],
-      ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
       ["Game usage assignment", selectedGameUsageSummary(song)],
@@ -304,7 +302,7 @@ export class ExportPanelControl {
       ["Instrument count", instrumentCount(song)],
       ["Target output formats", targetFormatSummary(song)],
       ["Export readiness", manifestExportReadiness(payload, song, playable)],
-      ["Renderer", "Not implemented"],
+      ["Renderer", "Existing rendered asset download"],
       ["SoundFont", "Planned; not implemented"],
       ["Status", `${readiness.level}: ${readiness.message}`],
       ...EXPORT_FORMATS.map(({ key, label }) => [
@@ -333,7 +331,7 @@ export class ExportPanelControl {
     if (missingTargets.length) {
       return {
         level: "WARN",
-        message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s), but target paths are missing for ${missingTargets.join(", ")}. Rendered audio save actions remain visible; rendering is not implemented.`,
+        message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s), but target paths are missing for ${missingTargets.join(", ")}. Save WAV/MP3/OGG downloads declared rendered targets when files exist.`,
         payload,
         playable,
         song
@@ -341,7 +339,7 @@ export class ExportPanelControl {
     }
     return {
       level: "INFO",
-      message: `Export source and target formats are declared for ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Rendered audio save actions remain visible; rendering is not implemented.`,
+      message: `Export source and target formats are declared for ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Save WAV/MP3/OGG downloads the declared rendered target files.`,
       payload,
       playable,
       song
@@ -352,7 +350,6 @@ export class ExportPanelControl {
     this.statusDetails.dataset.exportStatusLevel = level.toLowerCase();
     this.renderDefinitionList(this.statusDetails, [
       ["Song name", song?.name || "No song selected"],
-      ["Selected song", song?.name || "No song selected"],
       ["Classification", song?.classification || "not declared"],
       ["Generated ID", song?.id || "not declared"],
       ["Game usage assignment", selectedGameUsageSummary(song)],
@@ -370,7 +367,7 @@ export class ExportPanelControl {
       ["Export readiness", manifestExportReadiness(payload, song, playable)],
       ["Target output formats", targetFormatSummary(song)],
       ["Owner", "Export tab owns rendered audio output workflow"],
-      ["Renderer", "Not implemented"],
+      ["Renderer", "Existing rendered asset download"],
       ["SoundFont", "Planned; not implemented"],
       ["Status", `${level}: ${message}`]
     ]);

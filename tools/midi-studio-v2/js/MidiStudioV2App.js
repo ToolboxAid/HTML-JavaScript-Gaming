@@ -1809,25 +1809,64 @@ export class MidiStudioV2App {
     return Number.isFinite(parsedTempo) && parsedTempo > 0 ? parsedTempo : 120;
   }
 
-  exportRenderedTarget(format) {
+  renderedExportFilename(song, format, target) {
+    const targetName = String(target || "").split(/[\\/]/).pop() || "";
+    if (targetName) {
+      return targetName;
+    }
+    const baseName = song?.id || camelCaseSongId(song?.name || "midi-song");
+    return `${baseName}.${format}`;
+  }
+
+  triggerRenderedDownload(blob, filename) {
+    const url = this.window.URL.createObjectURL(blob);
+    const anchor = this.window.document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.hidden = true;
+    this.window.document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    this.window.setTimeout(() => this.window.URL.revokeObjectURL(url), 0);
+  }
+
+  async exportRenderedTarget(format) {
     const song = this.selectedSong();
-    const label = String(format || "").toUpperCase();
+    const selectedFormat = String(format || "wav").trim().toLowerCase();
+    const label = selectedFormat.toUpperCase();
     if (!song) {
       const message = `Missing MIDI song for ${label} export. Load or select a song before exporting.`;
       this.statusLog.fail(message);
       this.exportPanel.setStatus({ level: "FAIL", message, payload: this.payload, playable: this.playableEventSummary(), song });
       return;
     }
-    const target = String(song.rendered?.[format] || "").trim();
+    const target = String(song.rendered?.[selectedFormat] || "").trim();
     if (!target) {
-      const message = `Missing rendered ${label} export target for ${song.name}. Add music.songs[].rendered.${format} before exporting.`;
+      const message = `Missing rendered ${label} export target for ${song.name}. Add music.songs[].rendered.${selectedFormat} before exporting.`;
       this.statusLog.fail(message);
       this.exportPanel.setStatus({ level: "FAIL", message, payload: this.payload, playable: this.playableEventSummary(), song });
       return;
     }
-    const message = `Export rendering not implemented for ${label}. Planned target: ${target}.`;
-    this.statusLog.warn(message);
-    this.exportPanel.setStatus({ level: "WARN", message, payload: this.payload, playable: this.playableEventSummary(), song });
+    try {
+      const response = await this.window.fetch(target, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const blob = await response.blob();
+      if (!blob.size) {
+        throw new Error("empty rendered asset");
+      }
+      const filename = this.renderedExportFilename(song, selectedFormat, target);
+      this.triggerRenderedDownload(blob, filename);
+      const message = `Rendered ${label} export downloaded from ${target}.`;
+      this.statusLog.pass(message);
+      this.exportPanel.setStatus({ level: "PASS", message, payload: this.payload, playable: this.playableEventSummary(), song });
+    } catch (error) {
+      const detail = error?.message ? ` (${error.message})` : "";
+      const message = `Rendered ${label} target could not be downloaded from ${target}${detail}. Verify the manifest target path or export JSON instead.`;
+      this.statusLog.fail(message);
+      this.exportPanel.setStatus({ level: "FAIL", message, payload: this.payload, playable: this.playableEventSummary(), song });
+    }
   }
 
   applySelectedSongArrangement(sourceLabel) {
