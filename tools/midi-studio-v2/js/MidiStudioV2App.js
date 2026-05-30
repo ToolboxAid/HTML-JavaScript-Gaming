@@ -231,6 +231,7 @@ export class MidiStudioV2App {
     this.render();
     this.applySelectedSongArrangement("active manifest song");
     this.statusLog.ok(`Loaded ${this.payload.songs.length} MIDI song${this.payload.songs.length === 1 ? "" : "s"} from ${sourceLabel} via ${normalized.sourceKind}.`);
+    this.statusLog.pass(`Import JSON PASS: canonical payload loaded with ${this.payload.songs.length} song${this.payload.songs.length === 1 ? "" : "s"}; selected song ${this.selectedSong()?.name || this.selectedSongId || "none"}.`);
     this.statusLog.info("Next: select a MIDI Studio song, review the Octave Timeline tab, then press Play to audition the imported arrangement.");
     return true;
   }
@@ -1987,8 +1988,10 @@ export class MidiStudioV2App {
       return;
     }
     const toolState = this.serializer.createToolState(this.payload);
+    const noteCount = this.editableNoteCount();
     this.details.showJson(toolState);
     this.statusLog.ok("MIDI Studio V2 toolState preview written to JSON Details.");
+    this.statusLog.pass(`Export JSON PASS: MIDI Studio V2 toolState preview contains ${this.payload.songs.length} song${this.payload.songs.length === 1 ? "" : "s"} and ${noteCount} editable note event${noteCount === 1 ? "" : "s"}.`);
   }
 
   saveProject() {
@@ -2004,6 +2007,7 @@ export class MidiStudioV2App {
       this.setDirtyState(false);
       const noteCount = this.editableNoteCount();
       this.statusLog.ok(`Save Project completed: ${this.payload.songs.length} song${this.payload.songs.length === 1 ? "" : "s"} saved with ${noteCount} editable note event${noteCount === 1 ? "" : "s"}.`);
+      this.statusLog.pass(`Save Project PASS: canonical MIDI payload is serialized for Workspace Manager save ownership with ${noteCount} editable note event${noteCount === 1 ? "" : "s"}.`);
     } catch (error) {
       this.statusLog.fail(`Save Project failed: ${error.message}`);
     }

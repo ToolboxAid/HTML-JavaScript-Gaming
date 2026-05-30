@@ -27,6 +27,10 @@ export class StatusLogControl {
     this.write("OK", message);
   }
 
+  pass(message) {
+    this.write("PASS", message);
+  }
+
   warn(message) {
     this.write("WARN", message);
   }

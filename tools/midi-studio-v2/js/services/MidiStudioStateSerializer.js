@@ -77,6 +77,7 @@ function normalizeStudioArrangement(value) {
   }
   const lanes = isPlainObject(value.lanes) ? value.lanes : {};
   const previewInstruments = isPlainObject(value.previewInstruments) ? value.previewInstruments : {};
+  const previewLaneSettings = isPlainObject(value.previewLaneSettings) ? deepClone(value.previewLaneSettings) : {};
   const songSheet = isPlainObject(value.songSheet) ? value.songSheet : {};
   const normalizedLanes = {};
   Object.entries(lanes).forEach(([lane, laneSource]) => {
@@ -92,11 +93,20 @@ function normalizeStudioArrangement(value) {
       normalizedPreviewInstruments[laneName] = text(instrument);
     }
   });
+  const settingsInstruments = isPlainObject(previewLaneSettings.instruments) ? previewLaneSettings.instruments : {};
+  previewLaneSettings.instruments = {};
+  Object.entries({ ...normalizedPreviewInstruments, ...settingsInstruments }).forEach(([lane, instrument]) => {
+    const laneName = text(lane);
+    if (laneName) {
+      previewLaneSettings.instruments[laneName] = text(instrument);
+    }
+  });
   return {
     beatsPerBar: text(value.beatsPerBar || "4"),
     key: text(value.key),
     lanes: normalizedLanes,
     previewInstruments: normalizedPreviewInstruments,
+    previewLaneSettings,
     sections: text(value.sections),
     songSheet: {
       applyTargets: normalizeSongSheetApplyTargets(songSheet.applyTargets, normalizedLanes),
@@ -142,6 +152,8 @@ export class MidiStudioStateSerializer {
     }
     const manifestMusic = isPlainObject(rawValue.music) ? rawValue.music : null;
     const toolPayload = isPlainObject(rawValue.tools?.[TOOL_ID]) ? rawValue.tools[TOOL_ID] : null;
+    const wrappedToolStatePayload = rawValue.toolId === TOOL_ID && isPlainObject(rawValue.payload) ? rawValue.payload : null;
+    const workspaceToolStatePayload = rawValue.workspace?.toolId === TOOL_ID && isPlainObject(rawValue.data) ? rawValue.data : null;
     if (manifestMusic) {
       return {
         ok: true,
@@ -155,6 +167,12 @@ export class MidiStudioStateSerializer {
     }
     if (toolPayload) {
       return { ok: true, payload: deepClone(toolPayload), sourceKind: `tools.${TOOL_ID}` };
+    }
+    if (wrappedToolStatePayload) {
+      return { ok: true, payload: deepClone(wrappedToolStatePayload), sourceKind: "toolState.payload" };
+    }
+    if (workspaceToolStatePayload) {
+      return { ok: true, payload: deepClone(workspaceToolStatePayload), sourceKind: "workspace.toolState.data" };
     }
     if (rawValue.toolId === TOOL_ID || rawValue.schema === "html-js-gaming.midi-studio-v2") {
       return { ok: true, payload: deepClone(rawValue), sourceKind: "toolState" };
