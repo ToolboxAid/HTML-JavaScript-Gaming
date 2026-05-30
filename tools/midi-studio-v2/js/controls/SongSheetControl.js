@@ -330,7 +330,7 @@ export class SongSheetControl {
     this.userEditedSequence = false;
   }
 
-  mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse, onRegenerate = onParse, onSequenceSelect = () => {}, onTemplateApply = () => {} }) {
+  mount({ onFieldChange = () => {}, onMetadataChange = () => {}, onParse, onRegenerate = onParse, onSectionLibraryAction = () => {}, onSequenceSelect = () => {}, onTemplateApply = () => {} }) {
     this.initializeTemplateLibrary();
     this.initializeArrangementTemplates();
     this.parseButton.addEventListener("click", () => {
@@ -375,12 +375,14 @@ export class SongSheetControl {
     this.sectionLibrarySelect?.addEventListener("change", () => this.renderSectionLibrarySummary());
     this.saveSectionButton?.addEventListener("click", () => {
       const saved = this.saveSelectedSectionAsset();
+      onSectionLibraryAction(saved);
       if (saved.ok) {
         this.setRegenerationPending(false);
       }
     });
     this.loadSectionButton?.addEventListener("click", () => {
       const loaded = this.loadSelectedSectionAsset();
+      onSectionLibraryAction(loaded);
       if (!loaded.ok) {
         return;
       }
@@ -389,6 +391,7 @@ export class SongSheetControl {
     });
     this.duplicateSectionButton?.addEventListener("click", () => {
       const duplicated = this.duplicateSelectedSectionAsset();
+      onSectionLibraryAction(duplicated);
       if (!duplicated.ok) {
         return;
       }
@@ -600,8 +603,9 @@ export class SongSheetControl {
   saveSelectedSectionAsset() {
     const section = this.selectedAvailableSection();
     if (!section?.label || !section.chords) {
-      this.renderSectionLibrarySummary("Choose a populated Available Section before saving.");
-      return { ok: false };
+      const message = "Save Section failed: choose a populated Available Section before saving.";
+      this.renderSectionLibrarySummary(message);
+      return { action: "save", message, ok: false };
     }
     const asset = {
       chords: section.chords,
@@ -609,27 +613,41 @@ export class SongSheetControl {
       label: section.label
     };
     this.sectionLibraryAssets.push(asset);
-    this.renderSectionLibrary(asset.id, `Saved section asset: ${asset.label}`);
-    return { asset, ok: true };
+    const message = `Saved section asset: ${asset.label}.`;
+    this.renderSectionLibrary(asset.id, message);
+    return { action: "save", asset, message, ok: true };
   }
 
   loadSelectedSectionAsset() {
     const asset = this.selectedSectionAsset();
     if (!asset) {
-      this.renderSectionLibrarySummary("Choose a saved section asset before loading.");
-      return { ok: false };
+      const message = "Load Section failed: choose a saved section asset before loading.";
+      this.renderSectionLibrarySummary(message);
+      return { action: "load", message, ok: false };
+    }
+    if (!String(asset.chords || "").trim()) {
+      const message = `Load Section failed: ${asset.label || asset.id} is empty and cannot populate the Song Sheet.`;
+      this.renderSectionLibrarySummary(message);
+      return { action: "load", message, ok: false };
     }
     this.applySectionAssetToEditor(asset);
     this.refreshSectionBuilder();
-    this.renderSectionLibrary(asset.id, `Loaded section asset: ${asset.label}`);
-    return { asset, ok: true };
+    const message = `Loaded section asset: ${asset.label}.`;
+    this.renderSectionLibrary(asset.id, message);
+    return { action: "load", asset, message, ok: true };
   }
 
   duplicateSelectedSectionAsset() {
     const asset = this.selectedSectionAsset();
     if (!asset) {
-      this.renderSectionLibrarySummary("Choose a saved section asset before duplicating.");
-      return { ok: false };
+      const message = "Duplicate Section failed: choose a saved section asset before duplicating.";
+      this.renderSectionLibrarySummary(message);
+      return { action: "duplicate", message, ok: false };
+    }
+    if (!String(asset.chords || "").trim()) {
+      const message = `Duplicate Section failed: ${asset.label || asset.id} is empty and cannot be saved as a reusable section.`;
+      this.renderSectionLibrarySummary(message);
+      return { action: "duplicate", message, ok: false };
     }
     const label = this.nextReusableSectionLabel(asset.label);
     const duplicate = {
@@ -640,8 +658,9 @@ export class SongSheetControl {
     this.upsertCustomSection(label, asset.chords);
     this.sectionLibraryAssets.push(duplicate);
     this.refreshSectionBuilder();
-    this.renderSectionLibrary(duplicate.id, `Duplicated section asset: ${label}`);
-    return { asset: duplicate, ok: true };
+    const message = `Duplicated section asset: ${label}.`;
+    this.renderSectionLibrary(duplicate.id, message);
+    return { action: "duplicate", asset: duplicate, message, ok: true };
   }
 
   applySectionAssetToEditor(asset) {

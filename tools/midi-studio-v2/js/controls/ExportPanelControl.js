@@ -3,6 +3,7 @@ const EXPORT_FORMATS = [
   { key: "mp3", label: "MP3" },
   { key: "ogg", label: "OGG" }
 ];
+const GAME_USAGE_READINESS_LABELS = ["Menu", "Intro", "Loop", "Boss", "Victory", "Game Over", "Ambient", "Cutscene"];
 
 function displayValue(value) {
   if (value === undefined || value === null || value === "") {
@@ -129,24 +130,41 @@ function selectedGameUsageSummary(song) {
   return labels.length ? labels.join(", ") : "unassigned";
 }
 
+function songUsageDisplay(song) {
+  return song?.name ? `${song.name} (${song.id || "no id"})` : song?.id || "Unnamed song";
+}
+
 function manifestGameUsageAssignmentSummary(payload) {
   const songs = manifestSongs(payload);
   if (!songs.length) {
     return "No songs loaded for Game Usage assignment readiness.";
   }
-  const counts = new Map();
+  const assignments = new Map(GAME_USAGE_READINESS_LABELS.map((label) => [label, []]));
+  const customAssignments = [];
+  const missingAssignments = [];
   let assignedCount = 0;
   songs.forEach((song) => {
     const labels = gameUsageLabels(song);
     if (labels.length) {
       assignedCount += 1;
+    } else {
+      missingAssignments.push(songUsageDisplay(song));
     }
-    labels.forEach((label) => counts.set(label, (counts.get(label) || 0) + 1));
+    labels.forEach((label) => {
+      const commonLabel = GAME_USAGE_READINESS_LABELS.find((candidate) => candidate.toLowerCase() === label.toLowerCase());
+      if (commonLabel) {
+        assignments.get(commonLabel).push(songUsageDisplay(song));
+      } else {
+        customAssignments.push(`${label}: ${songUsageDisplay(song)}`);
+      }
+    });
   });
-  const usageSummary = counts.size
-    ? Array.from(counts, ([label, count]) => `${label}: ${count}`).join("; ")
-    : "no assigned usage labels";
-  return `${assignedCount}/${songs.length} songs assigned; ${usageSummary}`;
+  const commonSummary = GAME_USAGE_READINESS_LABELS
+    .map((label) => `${label}: ${assignments.get(label).join(", ") || "none"}`)
+    .join("; ");
+  const customSummary = customAssignments.length ? customAssignments.join("; ") : "none";
+  const missingSummary = missingAssignments.length ? missingAssignments.join(", ") : "none";
+  return `${assignedCount}/${songs.length} songs assigned; ${commonSummary}; Custom: ${customSummary}; Missing assignments WARN: ${missingSummary}.`;
 }
 
 function manifestExportReadiness(payload, selectedSong, playable) {
@@ -164,7 +182,8 @@ function manifestExportReadiness(payload, selectedSong, playable) {
 }
 
 export class ExportPanelControl {
-  constructor({ diagnosticTargets, manifestDetails, renderedTargets, sourceDetails, statusDetails }) {
+  constructor({ diagnosticManifestDetails = null, diagnosticTargets, manifestDetails, renderedTargets, sourceDetails, statusDetails }) {
+    this.diagnosticManifestDetails = diagnosticManifestDetails;
     this.diagnosticTargets = diagnosticTargets;
     this.manifestDetails = manifestDetails;
     this.renderedTargets = renderedTargets;
@@ -198,7 +217,7 @@ export class ExportPanelControl {
     this.renderSource(song, playable);
     this.renderManifestReadiness(payload, song, playable);
     this.renderTargets(song);
-    this.renderDiagnostics(song, playable);
+    this.renderDiagnostics(song, playable, payload);
     this.setStatus(this.exportReadiness(song, { payload, playable }));
   }
 
@@ -252,7 +271,7 @@ export class ExportPanelControl {
     if (!this.manifestDetails) {
       return;
     }
-    this.renderDefinitionList(this.manifestDetails, [
+    const rows = [
       ["Song count", manifestSongs(payload).length],
       ["Classification summary", classificationSummary(payload)],
       ["Section summary", manifestSectionSummary(payload)],
@@ -260,13 +279,18 @@ export class ExportPanelControl {
       ["Instrument summary", manifestInstrumentSummary(payload)],
       ["Game usage assignment", manifestGameUsageAssignmentSummary(payload)],
       ["Export readiness", manifestExportReadiness(payload, song, playable)]
-    ]);
+    ];
+    this.renderDefinitionList(this.manifestDetails, rows);
+    if (this.diagnosticManifestDetails) {
+      this.renderDefinitionList(this.diagnosticManifestDetails, rows);
+    }
   }
 
-  renderDiagnostics(song, playable = { count: 0 }) {
+  renderDiagnostics(song, playable = { count: 0 }, payload = null) {
     if (!this.diagnosticTargets) {
       return;
     }
+    const readiness = this.exportReadiness(song, { payload, playable });
     this.renderDefinitionList(this.diagnosticTargets, [
       ["Song name", song?.name || "No song selected"],
       ["Selected song", song?.name || "No song selected"],
@@ -279,6 +303,10 @@ export class ExportPanelControl {
       ["Note count", noteCount(playable)],
       ["Instrument count", instrumentCount(song)],
       ["Target output formats", targetFormatSummary(song)],
+      ["Export readiness", manifestExportReadiness(payload, song, playable)],
+      ["Renderer", "Not implemented"],
+      ["SoundFont", "Planned; not implemented"],
+      ["Status", `${readiness.level}: ${readiness.message}`],
       ...EXPORT_FORMATS.map(({ key, label }) => [
         `${label} target`,
         song?.rendered?.[key] || missingTargetLabel(label)

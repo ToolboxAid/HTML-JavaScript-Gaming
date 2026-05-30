@@ -108,6 +108,7 @@ export class MidiStudioV2App {
       onMetadataChange: (field, value) => this.handleSongDetailsChange(field, value),
       onParse: (sourceText) => this.parseSongSheet(sourceText),
       onRegenerate: (sourceText) => this.regenerateSongSheetArrangement(sourceText),
+      onSectionLibraryAction: (result) => this.handleSongSheetSectionLibraryAction(result),
       onSequenceSelect: (detail) => this.handleSongSheetSequenceSelection(detail),
       onTemplateApply: (detail) => this.handleSectionTemplateApplied(detail)
     });
@@ -358,7 +359,7 @@ export class MidiStudioV2App {
     const playable = this.playableEventSummary();
     this.exportPanel.renderSource(song, playable);
     this.exportPanel.renderManifestReadiness(this.payload, song, playable);
-    this.exportPanel.renderDiagnostics(song, playable);
+    this.exportPanel.renderDiagnostics(song, playable, this.payload);
     this.exportPanel.setStatus(this.exportPanel.exportReadiness(song, { payload: this.payload, playable }));
     this.markDirty({ changedKeys: ["data.songs.rendered"], reason: "midi-studio-rendered-target-edited" });
     this.statusLog.info(`Edited rendered ${normalizedFormat.toUpperCase()} target for ${song.name}.`);
@@ -367,6 +368,15 @@ export class MidiStudioV2App {
   handleSectionTemplateApplied({ label, chords } = {}) {
     const song = this.selectedSong();
     this.statusLog.info(`Applied ${label || "section"} template as editable starting chords${song ? ` for ${song.name}` : ""}: ${chords || "not declared"}.`);
+  }
+
+  handleSongSheetSectionLibraryAction(result = {}) {
+    const message = result.message || "Section Library action completed.";
+    if (result.ok) {
+      this.statusLog.ok(message);
+      return;
+    }
+    this.statusLog.warn(message);
   }
 
   applyClassificationWorkflow(song, { log = true } = {}) {
@@ -640,11 +650,22 @@ export class MidiStudioV2App {
       label: song.name || song.id,
       song: deepClone(song)
     };
+    const existingAsset = this.songLibraryAssets.find((candidate) => candidate.generatedId === asset.generatedId);
+    if (existingAsset) {
+      existingAsset.classification = asset.classification;
+      existingAsset.label = asset.label;
+      existingAsset.song = asset.song;
+      this.songList.render(this.payload?.songs || [], this.selectedSongId, this.songLibraryAssets);
+      this.songList.selectSongLibraryAsset(existingAsset.id);
+      this.songList.setLibrarySummary(`Updated song asset: ${existingAsset.label} (${existingAsset.generatedId}); duplicate generated IDs are prevented.`, this.songLibraryAssets);
+      this.statusLog.ok(`Updated Song Library asset for generated ID ${existingAsset.generatedId}; duplicate generated IDs are prevented.`);
+      return;
+    }
     this.songLibraryAssets.push(asset);
     this.songList.render(this.payload?.songs || [], this.selectedSongId, this.songLibraryAssets);
     this.songList.selectSongLibraryAsset(asset.id);
     this.songList.setLibrarySummary(`Saved song asset: ${asset.label} (${asset.generatedId}).`, this.songLibraryAssets);
-    this.statusLog.ok(`Saved Song Library asset: ${asset.label}.`);
+    this.statusLog.ok(`Saved Song Library asset: ${asset.label} (${asset.generatedId}).`);
   }
 
   loadSongAsset(assetId) {
@@ -654,10 +675,10 @@ export class MidiStudioV2App {
       this.songList.setLibrarySummary("Load Song failed: choose a saved song asset first.", this.songLibraryAssets);
       return;
     }
-    this.insertSongClone(asset.song, { reason: "song-library-load", sourceLabel: asset.label });
+    const song = this.insertSongClone(asset.song, { reason: "song-library-load", sourceLabel: asset.label });
     this.songList.selectSongLibraryAsset(asset.id);
-    this.songList.setLibrarySummary(`Loaded song asset into canonical songs: ${this.selectedSong()?.name || asset.label}.`, this.songLibraryAssets);
-    this.statusLog.ok(`Loaded Song Library asset into canonical song model: ${asset.label}.`);
+    this.songList.setLibrarySummary(`Loaded song asset into canonical songs: ${song?.name || asset.label} (${song?.id || "id unavailable"}).`, this.songLibraryAssets);
+    this.statusLog.ok(`Loaded Song Library asset into canonical song model: ${asset.label} as ${song?.id || "a unique generated ID"}.`);
   }
 
   duplicateSelectedSong() {
@@ -667,9 +688,9 @@ export class MidiStudioV2App {
       this.songList.setLibrarySummary("Duplicate Song failed: no MIDI song is selected.", this.songLibraryAssets);
       return;
     }
-    this.insertSongClone(song, { reason: "song-library-duplicate", sourceLabel: song.name || song.id });
-    this.songList.setLibrarySummary(`Duplicated song into canonical songs: ${this.selectedSong()?.name || "copy"}.`, this.songLibraryAssets);
-    this.statusLog.ok(`Duplicated MIDI song: ${song.name || song.id}.`);
+    const copy = this.insertSongClone(song, { reason: "song-library-duplicate", sourceLabel: song.name || song.id });
+    this.songList.setLibrarySummary(`Duplicated song into canonical songs: ${copy?.name || "copy"} (${copy?.id || "id unavailable"}).`, this.songLibraryAssets);
+    this.statusLog.ok(`Duplicated MIDI song: ${song.name || song.id} as ${copy?.id || "a unique generated ID"}.`);
   }
 
   insertSongClone(sourceSong, { reason, sourceLabel }) {
@@ -1916,7 +1937,7 @@ export class MidiStudioV2App {
     const playable = this.playableEventSummary();
     this.exportPanel.renderSource(this.selectedSong(), playable);
     this.exportPanel.renderManifestReadiness(this.payload, this.selectedSong(), playable);
-    this.exportPanel.renderDiagnostics(this.selectedSong(), playable);
+    this.exportPanel.renderDiagnostics(this.selectedSong(), playable, this.payload);
     this.exportPanel.setStatus(this.exportPanel.exportReadiness(this.selectedSong(), { payload: this.payload, playable }));
     const selectedSection = this.instrumentGrid.selectedSection();
     const packSummary = Object.entries(laneDiagnostics.instrumentLabels)

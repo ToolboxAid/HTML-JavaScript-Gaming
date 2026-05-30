@@ -83,6 +83,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     directorPanel: new DirectorPanelControl({ panel: requireElement("#directorPanel") }),
     exportPanel: new ExportPanelControl({
+      diagnosticManifestDetails: requireElement("#diagnosticsManifestReadinessDetails"),
       diagnosticTargets: requireElement("#renderedTargetDiagnostics"),
       manifestDetails: requireElement("#exportManifestReadinessDetails"),
       renderedTargets: requireElement("#renderedTargets"),

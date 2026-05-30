@@ -136,6 +136,7 @@
                   <option>Select MIDI Device</option>
                 </select>
                 <button id="futureRecordMidiButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="MIDI recording is not implemented yet.">Record MIDI</button>
+                <button id="futureMidiCanonicalConversionButton" type="button" disabled data-midi-studio-future-control data-midi-studio-future-detail="Full MIDI-to-canonical conversion for controller data, velocity, tempo-map edits, and advanced event fidelity is planned; current import normalizes note timing only.">Advanced MIDI-to-Canonical Conversion</button>
               </div>
             </div>
           </div>
@@ -671,16 +672,6 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
-          <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="renderedTargetDiagnosticsContent">
-            <span>Rendered Target Diagnostics</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="renderedTargetDiagnosticsContent" class="accordion-v2__content">
-            <dl id="renderedTargetDiagnostics" class="midi-studio-v2__details"></dl>
-          </div>
-        </section>
-
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
           <div class="accordion-v2__header midi-studio-v2__json-details-header" aria-expanded="true" aria-controls="inspectorContent">
             <span>JSON Details</span>
             <span class="midi-studio-v2__json-header-actions">
@@ -710,6 +701,26 @@
           </button>
           <div id="audioDiagnosticsContent" class="accordion-v2__content">
             <dl id="audioDiagnostics" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
+          <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="diagnosticsManifestReadinessContent">
+            <span>Manifest Readiness</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="diagnosticsManifestReadinessContent" class="accordion-v2__content">
+            <dl id="diagnosticsManifestReadinessDetails" class="midi-studio-v2__details"></dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true" data-midi-studio-tab-panel="diagnostics">
+          <button class="accordion-v2__header midi-studio-v2__rendered-targets-header" type="button" aria-expanded="true" aria-controls="renderedTargetDiagnosticsContent">
+            <span>Export Readiness</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="renderedTargetDiagnosticsContent" class="accordion-v2__content">
+            <dl id="renderedTargetDiagnostics" class="midi-studio-v2__details"></dl>
           </div>
         </section>
 
