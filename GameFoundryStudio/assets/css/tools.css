@@ -139,14 +139,9 @@
 }
 
 .tool-display-mode {
-    grid-column: 2;
-    grid-row: 1;
-    margin: 0 0 12px;
     border: 1px solid rgba(255, 200, 87, .42);
-    border-radius: 16px;
     background: rgba(7, 10, 18, .92);
-    box-shadow: 0 14px 40px rgba(0, 0, 0, .28);
-    overflow: hidden
+    box-shadow: 0 14px 40px rgba(0, 0, 0, .28)
 }
 
 .tool-center-panel {
@@ -177,54 +172,23 @@
     text-transform: uppercase
 }
 
-.accordion-stack {
-    display: grid;
-    gap: 10px;
-    padding: 14px
-}
-
 details.accordion {
     border: 1px solid var(--line);
-    border-radius: 16px;
-    background: rgba(7, 10, 18, .58);
-    overflow: hidden
+    background: rgba(7, 10, 18, .58)
 }
 
 details.accordion summary {
-    cursor: pointer;
-    list-style: none;
-    padding: 13px 14px;
     color: var(--text);
-    font-weight: 850;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px
-}
-
-details.accordion summary::-webkit-details-marker {
-    display: none
+    font-weight: 850
 }
 
 details.accordion summary:after {
-    content: "+";
-    width: 24px;
-    height: 24px;
-    border-radius: 999px;
-    display: inline-grid;
-    place-items: center;
     color: var(--gold);
     border: 1px solid var(--line);
-    background: rgba(255, 255, 255, .04);
-    flex: 0 0 auto
-}
-
-details.accordion[open] summary:after {
-    content: "-"
+    background: rgba(255, 255, 255, .04)
 }
 
 .accordion-body {
-    padding: 0 14px 14px;
     color: var(--muted);
     line-height: 1.5
 }
@@ -251,14 +215,6 @@ details.accordion[open] summary:after {
     color: var(--gold);
     background: rgba(255, 122, 0, .12);
     font-weight: 900
-}
-
-details.tool-display-mode summary:after {
-    content: "-"
-}
-
-details.tool-display-mode[open] summary:after {
-    content: "+"
 }
 
 body.tool-focus-mode .site-header,
