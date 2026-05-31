@@ -1,6 +1,6 @@
 # Slow Path Pruning Report
 
-Generated: 2026-05-31T21:49:52.438Z
+Generated: 2026-05-31T22:24:47.378Z
 Status: PASS
 Source timing evidence: docs/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 

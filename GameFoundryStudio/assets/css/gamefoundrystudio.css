@@ -162,8 +162,6 @@
 .tool-card,
 .game-card,
 .panel,
-.meaning-panel,
-.meaning-center,
 .tool-column,
 .tool-center-panel,
 .control-card,
@@ -665,82 +663,6 @@ details.vertical-accordion[open] summary:after {
   border-color: rgba(32, 214, 255, .35)
 }
 
-.meaning-layout {
-  display: grid;
-  grid-template-columns: minmax(220px, .8fr) minmax(320px, 1.15fr) minmax(220px, .8fr);
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 18px;
-  align-items: stretch
-}
-
-.meaning-panel.left-panel {
-  grid-column: 1;
-  grid-row: 1 / span 2;
-  background: linear-gradient(180deg, var(--meaning-soft), rgba(255, 255, 255, .025))
-}
-
-.meaning-center {
-  grid-column: 2;
-  grid-row: 2;
-  padding: 20px
-}
-
-.meaning-panel.right-panel {
-  grid-column: 3;
-  grid-row: 1 / span 2;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .045), var(--meaning-soft))
-}
-
-.meaning-panel {
-  border-color: var(--meaning-border);
-  border-top: 5px solid var(--meaning-color)
-}
-
-.meaning-panel h2,
-.meaning-center h2 {
-  margin: 0;
-  color: var(--meaning-color)
-}
-
-.meaning-panel-body {
-  padding: 20px
-}
-
-.meaning-panel ul {
-  display: grid;
-  gap: 10px;
-  margin: 14px 0 0;
-  padding-left: 18px;
-  color: var(--muted);
-  line-height: 1.5
-}
-
-.meaning-center p {
-  color: var(--muted);
-  line-height: 1.55
-}
-
-.meaning-tool-list {
-  display: grid;
-  gap: 12px;
-  margin-top: 18px
-}
-
-.meaning-tool-link {
-  border: 1px solid var(--meaning-border);
-  border-radius: 14px;
-  padding: 13px 14px;
-  background: rgba(7, 10, 18, .45);
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center
-}
-
-.meaning-tool-link span {
-  color: var(--muted)
-}
-
 body.tool-focus-mode .site-header,
 body.tool-focus-mode .page-title,
 body.tool-focus-mode .footer {
@@ -760,8 +682,7 @@ body.tool-focus-mode .section {
   padding: 0
 }
 
-body.tool-focus-mode .tool-workspace,
-body.tool-focus-mode .meaning-layout {
+body.tool-focus-mode .tool-workspace {
   height: 100vh;
   grid-template-columns: 280px minmax(0, 1fr) 280px;
   grid-template-rows: auto minmax(0, 1fr);
@@ -770,18 +691,15 @@ body.tool-focus-mode .meaning-layout {
   align-items: stretch
 }
 
-body.tool-focus-mode .tool-workspace.is-left-collapsed,
-body.tool-focus-mode .meaning-layout.is-left-collapsed {
+body.tool-focus-mode .tool-workspace.is-left-collapsed {
   grid-template-columns: 56px minmax(0, 1fr) 280px
 }
 
-body.tool-focus-mode .tool-workspace.is-right-collapsed,
-body.tool-focus-mode .meaning-layout.is-right-collapsed {
+body.tool-focus-mode .tool-workspace.is-right-collapsed {
   grid-template-columns: 280px minmax(0, 1fr) 56px
 }
 
-body.tool-focus-mode .tool-workspace.is-left-collapsed.is-right-collapsed,
-body.tool-focus-mode .meaning-layout.is-left-collapsed.is-right-collapsed {
+body.tool-focus-mode .tool-workspace.is-left-collapsed.is-right-collapsed {
   grid-template-columns: 56px minmax(0, 1fr) 56px
 }
 
@@ -798,27 +716,22 @@ body.tool-focus-mode .tool-display-mode {
 }
 
 body.tool-focus-mode .tool-column,
-body.tool-focus-mode .tool-center-panel,
-body.tool-focus-mode .meaning-panel,
-body.tool-focus-mode .meaning-center {
+body.tool-focus-mode .tool-center-panel {
   height: calc(100vh - 20px);
   overflow: auto
 }
 
-body.tool-focus-mode .tool-column:first-of-type,
-body.tool-focus-mode .meaning-panel.left-panel {
+body.tool-focus-mode .tool-column:first-of-type {
   grid-column: 1;
   grid-row: 1 / span 2
 }
 
-body.tool-focus-mode .tool-center-panel,
-body.tool-focus-mode .meaning-center {
+body.tool-focus-mode .tool-center-panel {
   grid-column: 2;
   grid-row: 2
 }
 
-body.tool-focus-mode .tool-column:last-of-type,
-body.tool-focus-mode .meaning-panel.right-panel {
+body.tool-focus-mode .tool-column:last-of-type {
   grid-column: 3;
   grid-row: 1 / span 2
 }
@@ -837,7 +750,6 @@ body.tool-focus-mode .meaning-panel.right-panel {
     display: none
   }
 
-  .meaning-layout,
   .tool-workspace {
     grid-template-columns: 1fr
   }
@@ -845,15 +757,9 @@ body.tool-focus-mode .meaning-panel.right-panel {
   .tool-display-mode,
   body.tool-focus-mode .tool-display-mode,
   .tool-column:first-of-type,
-  .meaning-panel.left-panel,
-  .meaning-center,
-  .meaning-panel.right-panel,
   .tool-center-panel,
   .tool-column:last-of-type,
   body.tool-focus-mode .tool-column:first-of-type,
-  body.tool-focus-mode .meaning-panel.left-panel,
-  body.tool-focus-mode .meaning-center,
-  body.tool-focus-mode .meaning-panel.right-panel,
   body.tool-focus-mode .tool-center-panel,
   body.tool-focus-mode .tool-column:last-of-type {
     grid-column: auto;
@@ -870,16 +776,13 @@ body.tool-focus-mode .meaning-panel.right-panel {
     overflow: auto
   }
 
-  body.tool-focus-mode .tool-workspace,
-  body.tool-focus-mode .meaning-layout {
+  body.tool-focus-mode .tool-workspace {
     height: auto;
     grid-template-columns: 1fr
   }
 
   body.tool-focus-mode .tool-column,
-  body.tool-focus-mode .tool-center-panel,
-  body.tool-focus-mode .meaning-panel,
-  body.tool-focus-mode .meaning-center {
+  body.tool-focus-mode .tool-center-panel {
     height: auto
   }
 }
