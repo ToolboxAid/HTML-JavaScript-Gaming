@@ -139,8 +139,7 @@
   cursor: pointer
 }
 
-.btn,
-button {
+.btn {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, .04);
   color: var(--text)
@@ -155,21 +154,8 @@ button {
   background: linear-gradient(135deg, #0891b2, #0e7490)
 }
 
-button:disabled,
 .btn[aria-disabled=true] {
   opacity: .45
-}
-
-input,
-select,
-textarea {
-  border: 1px solid var(--line);
-  background: #0c111a;
-  color: var(--text)
-}
-
-label {
-  color: var(--gold)
 }
 
 .card,
@@ -244,12 +230,6 @@ label {
   font-size: clamp(42px, 7vw, 82px);
   line-height: .92;
   margin: 14px 0
-}
-
-.breadcrumb {
-  color: var(--muted);
-  font-size: 14px;
-  margin-bottom: 16px
 }
 
 .kicker {
@@ -425,11 +405,6 @@ label {
 
 .switch input:checked+.slider:before {
   transform: translateX(22px)
-}
-
-progress,
-meter {
-  accent-color: var(--accent)
 }
 
 .control-fieldset {
