@@ -7,15 +7,33 @@
     displayMode.id = "toolDisplayMode";
     displayMode.open = true;
 
+    const basePath = slot.dataset.assetRoot || "../assets/images";
     const summary = document.createElement("summary");
-    summary.textContent = "Tool Display Mode";
+    summary.setAttribute("aria-label", "Tool Display Mode");
+    summary.title = "Tool Display Mode";
+
+    const icon = document.createElement("img");
+    icon.className = "tool-display-mode__icon";
+    icon.src = basePath + "/forge-bot.png";
+    icon.alt = "Tool Display Mode";
+    summary.appendChild(icon);
     displayMode.appendChild(summary);
+
+    const body = document.createElement("div");
+    body.className = "tool-display-mode__body";
+
+    const mascot = document.createElement("img");
+    mascot.className = "tool-display-mode__character";
+    mascot.src = basePath + "/forge-bot.png";
+    mascot.alt = "ForgeBot";
+    body.appendChild(mascot);
+    displayMode.appendChild(body);
     slot.replaceWith(displayMode);
 
 
     async function enterToolMode() {
         document.body.classList.add("tool-focus-mode");
-        displayMode.open = true;
+        displayMode.open = false;
 
         try {
             if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
@@ -28,7 +46,7 @@
 
     async function exitToolMode() {
         document.body.classList.remove("tool-focus-mode");
-        displayMode.open = false;
+        displayMode.open = true;
 
         try {
             if (document.fullscreenElement && document.exitFullscreen) {
@@ -52,7 +70,7 @@
     document.addEventListener("fullscreenchange", function () {
         if (!document.fullscreenElement && document.body.classList.contains("tool-focus-mode")) {
             document.body.classList.remove("tool-focus-mode");
-            displayMode.open = false;
+            displayMode.open = true;
         }
     });
 
