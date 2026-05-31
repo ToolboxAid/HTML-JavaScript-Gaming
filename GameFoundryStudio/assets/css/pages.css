@@ -9,12 +9,6 @@
     align-items: center
 }
 
-.hero h1 {
-    font-size: clamp(42px, 7vw, 82px);
-    line-height: .92;
-    margin: 14px 0
-}
-
 .hero-cta {
     display: flex;
     gap: 12px;
@@ -23,11 +17,6 @@
 }
 
 .hero-art {
-    overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: 24px;
-    background: linear-gradient(145deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .035));
-    box-shadow: var(--shadow);
     padding: 12px;
     display: flex;
     align-items: center;
@@ -39,7 +28,6 @@
     height: 100%;
     object-fit: contain;
     object-position: center;
-    display: block;
     border-radius: 22px
 }
 
@@ -51,13 +39,9 @@
 }
 
 .entry-card {
-    border: 1px solid var(--line);
-    background: rgba(15, 23, 42, .68);
-    border-radius: 20px;
     padding: 18px;
     display: grid;
-    gap: 6px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, .18)
+    gap: 6px
 }
 
 .entry-card span {
@@ -80,29 +64,14 @@
     margin-bottom: 18px
 }
 
-.section h2 {
-    font-size: 34px;
-    margin: 8px 0
-}
-
 .section-head p {
-    max-width: 560px;
-    color: var(--muted);
-    line-height: 1.5
+    max-width: 560px
 }
 
 .trending-grid {
     display: grid;
     grid-template-columns: 1.3fr repeat(3, 1fr);
     gap: 16px
-}
-
-.game-tile {
-    overflow: hidden;
-    border-radius: 22px;
-    border: 1px solid var(--line);
-    background: #0b1220;
-    box-shadow: 0 16px 42px rgba(0, 0, 0, .22)
 }
 
 .game-art {
@@ -154,14 +123,10 @@
 }
 
 .check-panel {
-    border: 1px solid var(--line);
-    border-radius: 24px;
-    background: linear-gradient(145deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .04));
     padding: 24px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    box-shadow: var(--shadow)
+    gap: 14px
 }
 
 .check-panel div {
@@ -170,14 +135,6 @@
     padding: 14px;
     background: rgba(7, 10, 18, .48);
     font-weight: 750
-}
-
-.image-panel {
-    border: 1px solid var(--line);
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    background: #05070b
 }
 
 .image-panel img {
@@ -229,13 +186,6 @@
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: 18px
-}
-
-.side-menu {
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 12px;
-    background: rgba(255, 255, 255, .04)
 }
 
 .side-menu a {
@@ -377,49 +327,8 @@
 
 .control-card {
     --accent: var(--orange);
-    border: 1px solid var(--line);
     border-left: 5px solid var(--accent);
-    border-radius: 18px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .025));
-    box-shadow: 0 14px 40px rgba(0, 0, 0, .24);
     padding: 18px
-}
-
-.control-card h3 {
-    color: var(--accent);
-    font-size: 20px
-}
-
-.choice {
-    color: var(--muted)
-}
-
-.slider {
-    background: #1f2937;
-    border: 1px solid var(--line)
-}
-
-.slider:before {
-    background: #fff
-}
-
-.switch input:checked+.slider {
-    background: color-mix(in srgb, var(--accent) 70%, #111722);
-    border-color: var(--accent)
-}
-
-progress,
-meter {
-    accent-color: var(--accent)
-}
-
-.control-fieldset {
-    border: 1px solid var(--line);
-}
-
-.control-fieldset legend {
-    color: var(--purple);
-    font-weight: 900
 }
 
 .dialog-sample {
