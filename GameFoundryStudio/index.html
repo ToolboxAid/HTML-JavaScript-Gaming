@@ -1,90 +1,146 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Game Foundry Studio — Build. Play. Share.</title>
+  <title>Game Foundry Studio - Build. Play. Share.</title>
   <meta name="description" content="Build, play, publish, and share browser games with Game Foundry Studio.">
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
+
 <body>
-<header class="site-header">
-  <div class="container nav">
-    <a class="brand" href="index.html"><img src="assets/images/logo-mark.svg" alt="Game Foundry Studio mark"><span>Game Foundry Studio</span></a>
-    <nav class="nav-links" aria-label="Main navigation">
-      <div class="nav-item"><a class="" href="tools.html">Tools ▾</a><div class="sub-menu"><a class="" href="tool-builder.html">Tool Builder</a><a class="" href="tool-creator.html">Tool Creator</a><a class="" href="tool-publisher.html">Tool Publisher</a><a class="" href="building-creation.html">Building / Creation</a><a class="" href="technology-system.html">Technology / System</a><a class="" href="assets-content.html">Assets / Content</a><a class="" href="media-community.html">Media / Community</a><a class="" href="design-animation.html">Design / Animation</a><a class="" href="configuration-admin.html">Configuration / Admin</a></div></div>
-	<a class="" href="games.html">Arcade</a><a class="" href="marketplace.html">Marketplace</a><a class="" href="learn.html">Learn</a><a class="" href="community.html">Community</a><a class="" href="docs.html">Docs</a><a class="" href="account.html">Account</a></nav>
-    <div class="nav-actions"><a class="btn" href="games.html">Play Games</a><a class="btn primary" href="tools.html">Start Building</a></div>
-  </div>
-</header>
-<main>
-  <section class="hero" id="start">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <div class="kicker">Browser-native creator platform</div>
-        <h1>Build. Play. Share.</h1>
-        <p class="lede">Create browser games with visual tools, reusable assets, manifest-driven configuration, and publishing workflows that make Game Foundry Studio feel like a destination, not just an engine.</p>
-        <div class="hero-cta"><a class="btn primary" href="tools.html">Start Building</a><a class="btn" href="games.html">Explore Games</a></div>
-        <div class="dual-entry" aria-label="Primary entry points">
-          <a class="entry-card" href="games.html"><span>🕹️</span><strong>Play Games</strong><small>Browse the Arcade</small></a>
-          <a class="entry-card" href="tools.html"><span>🛠️</span><strong>Create Games</strong><small>Open the Studio</small></a>
+  <div data-partial="header-nav"></div>
+  <main>
+    <section class="hero" id="start">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="kicker">Browser-native creator platform</div>
+          <h1>Build. Play. Share.</h1>
+          <p class="lede">Create browser games with visual tools, reusable assets, manifest-driven configuration, and
+            publishing workflows that make Game Foundry Studio feel like a destination, not just an engine.</p>
+          <div class="hero-cta"><a class="btn primary" href="tools/index.html">Start Building</a><a class="btn"
+              href="arcade/index.html">Explore Games</a></div>
+          <div class="dual-entry" aria-label="Primary entry points">
+            <a class="entry-card" href="arcade/index.html"><span>Play</span><strong>Play Games</strong><small>Browse the
+                Arcade</small></a>
+            <a class="entry-card" href="tools/index.html"><span>Build</span><strong>Create Games</strong><small>Open the
+                Studio</small></a>
+          </div>
+        </div>
+        <aside class="hero-art" aria-label="Game Foundry Studio logo artwork">
+          <img src="assets/images/game-foundry-studio-logo.png"
+            alt="Game Foundry Studio forged logo with anvil, sword, die, and gear">
+        </aside>
+      </div>
+    </section>
+    <section class="section" id="trending">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Most played this week</div>
+            <h2>Trending Games</h2>
+          </div>
+          <p>A top-of-home area that makes the site feel alive: featured games, new releases, seasonal events, and
+            creator challenges.</p>
+        </div>
+        <div class="trending-grid">
+          <article class="game-tile featured">
+            <div class="game-art"><img src="assets/images/game-iceberg.svg" alt="King of the Iceberg sample art"></div>
+            <div class="game-meta"><strong>King of the Iceberg</strong><span>Physics party brawler</span><em>12,543
+                players - 4.9</em></div>
+          </article>
+          <article class="game-tile">
+            <div class="game-art"><img src="assets/images/game-nebula.svg" alt="Nebula Runner sample art"></div>
+            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>8,234 players -
+                4.8</em></div>
+          </article>
+          <article class="game-tile">
+            <div class="game-art"><img src="assets/images/game-retrobot.svg" alt="RetroBot Rescue sample art"></div>
+            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>6,887 players -
+                4.7</em></div>
+          </article>
+          <article class="game-tile">
+            <div class="game-art"><img src="assets/images/game-forgequest.svg" alt="Forge Quest sample art"></div>
+            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>5,921 players -
+                4.6</em></div>
+          </article>
         </div>
       </div>
-      <aside class="hero-art" aria-label="Game Foundry Studio logo artwork">
-        <img src="assets/images/game-foundry-studio-logo.png" alt="Game Foundry Studio forged logo with anvil, sword, die, and gear">
-      </aside>
-    </div>
-  </section>
-
-  <section class="section" id="trending">
-    <div class="container">
-      <div class="section-head"><div><div class="kicker">Most played this week</div><h2>Trending Games</h2></div><p>A top-of-home area that makes the site feel alive: featured games, new releases, seasonal events, and creator challenges.</p></div>
-      <div class="trending-grid">
-        <article class="game-tile featured"><div class="game-art"><img src="assets/images/game-iceberg.svg" alt="King of the Iceberg sample art"></div><div class="game-meta"><strong>King of the Iceberg</strong><span>Physics party brawler</span><em>12,543 players · ★ 4.9</em></div></article>
-        <article class="game-tile"><div class="game-art"><img src="assets/images/game-nebula.svg" alt="Nebula Runner sample art"></div><div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>8,234 players · ★ 4.8</em></div></article>
-        <article class="game-tile"><div class="game-art"><img src="assets/images/game-retrobot.svg" alt="RetroBot Rescue sample art"></div><div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>6,887 players · ★ 4.7</em></div></article>
-        <article class="game-tile"><div class="game-art"><img src="assets/images/game-forgequest.svg" alt="Forge Quest sample art"></div><div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>5,921 players · ★ 4.6</em></div></article>
+    </section>
+    <section class="section" id="what">
+      <div class="container split">
+        <div>
+          <div class="kicker">What is Game Foundry Studio?</div>
+          <h2>A complete place to create, test, publish, and play.</h2>
+          <p class="lede small">No engine setup. No complicated installs. Create directly in the browser with clear
+            tools, friendly guardrails, and reusable game-building pieces.</p>
+        </div>
+        <div class="check-panel">
+          <div>Visual Editors</div>
+          <div>Asset Creation Tools</div>
+          <div>Tilemaps & Worlds</div>
+          <div>Audio & Music Tools</div>
+          <div>One-Click Publishing</div>
+          <div>Community Sharing</div>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <section class="section" id="what">
-    <div class="container split">
-      <div>
-        <div class="kicker">What is Game Foundry Studio?</div>
-        <h2>A complete place to create, test, publish, and play.</h2>
-        <p class="lede small">No engine setup. No complicated installs. Create directly in the browser with clear tools, friendly guardrails, and reusable game-building pieces.</p>
+    </section>
+    <section class="section" id="tools">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Featured tools</div>
+            <h2>Creator tools with guardrails.</h2>
+          </div>
+          <p>Each tool should use explicit manifest data, show safe empty states, and avoid hidden fallback behavior.
+          </p>
+        </div>
+        <div class="card-grid">
+          <article class="card">
+            <div class="card-body">
+              <h3>Asset Studio</h3>
+              <p>Create sprites, animations, vectors, palettes, previews, and reusable game assets.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-body">
+              <h3>World Studio</h3>
+              <p>Build maps, layers, object placement, world bounds, collisions, and camera rules.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-body">
+              <h3>Input Studio</h3>
+              <p>Configure keyboard, mouse, gamepads, touch, pen, wheel, and custom controls.</p>
+            </div>
+          </article>
+        </div>
       </div>
-      <div class="check-panel">
-        <div>✓ Visual Editors</div><div>✓ Asset Creation Tools</div><div>✓ Tilemaps & Worlds</div><div>✓ Audio & Music Tools</div><div>✓ One-Click Publishing</div><div>✓ Community Sharing</div>
+    </section>
+    <section class="section mascot-section">
+      <div class="container split reverse">
+        <div class="image-panel"><img src="assets/images/game-foundry-mascot-sheet.png"
+            alt="Game Foundry Studio mascot concepts including ForgeBot, Spark, Pixel Smith, and Foundry Bot"></div>
+        <div>
+          <div class="kicker">Mascot system</div>
+          <h2>ForgeBot, Spark, Pixel Smith, and Foundry Bot.</h2>
+          <p class="lede small">Use these characters for onboarding, tutorials, error states, achievements, learning
+            content, and playful creator moments.</p><a class="btn primary" href="tools/index.html">View Tool Images</a>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <section class="section" id="tools">
-    <div class="container">
-      <div class="section-head"><div><div class="kicker">Featured tools</div><h2>Creator tools with guardrails.</h2></div><p>Each tool should use explicit manifest data, show safe empty states, and avoid hidden fallback behavior.</p></div>
-      <div class="card-grid">
-        <article class="card"><div class="icon">🎨</div><h3>Asset Studio</h3><p>Create sprites, animations, vectors, palettes, previews, and reusable game assets.</p></article>
-        <article class="card"><div class="icon">🗺️</div><h3>World Studio</h3><p>Build maps, layers, object placement, world bounds, collisions, and camera rules.</p></article>
-        <article class="card"><div class="icon">🎮</div><h3>Input Studio</h3><p>Configure keyboard, mouse, gamepads, touch, pen, wheel, and custom controls.</p></article>
-        <article class="card"><div class="icon">🎵</div><h3>Music Studio</h3><p>Create game-ready music, sound effects, loops, and manifest-based audio data.</p></article>
-        <article class="card"><div class="icon">⚙️</div><h3>Game Builder</h3><p>Assemble object types, behaviors, scoring, publishing metadata, and play rules.</p></article>
-        <article class="card mascot-card"><div class="icon">🤖</div><h3>Foundry Bot</h3><p>A friendly guide for tutorials, tool help, validation messages, and creator onboarding.</p></article>
+    </section>
+    <section class="section">
+      <div class="container cta">
+        <h2>Forge games for the open web.</h2>
+        <p class="lede small">Game Foundry Studio can grow into Studio, Arcade, Marketplace, Cloud, and Learn without
+          changing the core brand.</p><a class="btn primary" href="account/branding.html">Open Brand Kit</a>
       </div>
-    </div>
-  </section>
-
-  <section class="section mascot-section">
-    <div class="container split reverse">
-      <div class="image-panel"><img src="assets/images/game-foundry-mascot-sheet.png" alt="Game Foundry Studio mascot concepts including ForgeBot, Spark, Pixel Smith, and Foundry Bot"></div>
-      <div><div class="kicker">Mascot system</div><h2>ForgeBot, Spark, Pixel Smith, and Foundry Bot.</h2><p class="lede small">Use these characters for onboarding, tutorials, error states, achievements, learning content, and playful creator moments.</p><a class="btn primary" href="tools.html">View Tool Images</a></div>
-    </div>
-  </section>
-
-  <section class="section"><div class="container cta"><h2>Forge games for the open web.</h2><p class="lede small">Game Foundry Studio can grow into Studio, Arcade, Marketplace, Cloud, and Learn without changing the core brand.</p><a class="btn primary" href="brand.html">Open Brand Kit</a></div></section>
-</main>
-<footer class="footer"><div class="container"><span>© 2026 Game Foundry Studio</span><span>Build · Play · Share</span></div></footer>
+    </section>
+  </main>
+  <div data-partial="footer"></div>
+  <script src="assets/js/gamefoundry-partials.js" defer></script>
 </body>
+
 </html>

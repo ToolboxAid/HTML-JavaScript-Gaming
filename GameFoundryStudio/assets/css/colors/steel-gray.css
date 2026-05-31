@@ -1,0 +1,70 @@
+.meaning-steel-gray {
+    --meaning-color: var(--steel-gray);
+    --meaning-soft: rgba(107, 114, 128, .18);
+    --meaning-border: rgba(107, 114, 128, .56)
+}
+
+#steel-gray {
+    --brand-color: var(--steel-gray)
+}
+
+.brand-color-steel-gray {
+    color: var(--steel-gray)
+}
+
+.brand-background-steel-gray {
+    background: var(--steel-gray)
+}
+
+.tool-column-header.steel-gray {
+    background: rgba(107, 114, 128, .14)
+}
+
+.tool-column-header.steel-gray h2,
+.tool-column-header.steel-gray h3 {
+    color: var(--steel-gray)
+}
+
+.side-steel {
+    --accent: #aeb6c2
+}
+
+.side-red {
+    --accent: #ff5757
+}
+
+.brand-color-iron-black {
+    color: var(--iron-black)
+}
+
+.brand-color-foundry-space {
+    color: var(--foundry-space)
+}
+
+.brand-color-panel-slate {
+    color: var(--panel-slate)
+}
+
+.brand-background-iron-black {
+    background: var(--iron-black)
+}
+
+.brand-background-foundry-space {
+    background: var(--foundry-space)
+}
+
+.brand-background-panel-slate {
+    background: var(--panel-slate)
+}
+
+#iron-black {
+    --brand-color: var(--iron-black)
+}
+
+#foundry-space {
+    --brand-color: var(--foundry-space)
+}
+
+#panel-slate {
+    --brand-color: var(--panel-slate)
+}

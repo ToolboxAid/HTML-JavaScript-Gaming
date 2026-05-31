@@ -1,22 +1,38 @@
 <header class="site-header">
   <div class="container nav">
-    <a class="brand" href="index.html"><img src="assets/images/logo-mark.svg" alt="Game Foundry Studio mark"><span>Game
-        Foundry Studio</span></a>
+    <a class="brand" data-route="home" href="index.html"><img src="assets/images/logo-mark.svg"
+        alt="Game Foundry Studio mark"><span>Game Foundry Studio</span></a>
     <nav class="nav-links" aria-label="Main navigation">
-      <div class="nav-item"><a data-nav-link href="tools.html">Tools ▾</a>
-        <div class="sub-menu"><a data-nav-link href="tool-builder.html">Tool Builder</a><a data-nav-link
-            href="tool-creator.html">Tool Creator</a><a data-nav-link href="tool-publisher.html">Tool Publisher</a><a
-            data-nav-link href="building-creation.html">Building / Creation</a><a data-nav-link
-            href="technology-system.html">Technology / System</a><a data-nav-link href="assets-content.html">Assets /
-            Content</a><a data-nav-link href="media-community.html">Media / Community</a><a data-nav-link
-            href="design-animation.html">Design / Animation</a><a data-nav-link
-            href="configuration-admin.html">Configuration / Admin</a></div>
+      <div class="nav-item"><a data-nav-link data-route="tools" href="tools/index.html">Tools ▾</a>
+        <div class="sub-menu">
+          <a data-nav-link data-route="tool-builder" href="tools/tool-builder.html">Tool Builder</a>
+          <a data-nav-link data-route="tool-creator" href="tools/tool-creator.html">Tool Creator</a>
+          <a data-nav-link data-route="tool-publisher" href="tools/tool-publisher.html">Tool Publisher</a>
+          <a data-nav-link data-route="building-creation" href="tools/groups/building-creation.html">Building /
+            Creation</a>
+          <a data-nav-link data-route="technology-system" href="tools/groups/technology-system.html">Technology /
+            System</a>
+          <a data-nav-link data-route="assets-content" href="tools/groups/assets-content.html">Assets / Content</a>
+          <a data-nav-link data-route="media-community" href="tools/groups/media-community.html">Media / Community</a>
+          <a data-nav-link data-route="design-animation" href="tools/groups/design-animation.html">Design /
+            Animation</a>
+          <a data-nav-link data-route="configuration-admin" href="tools/groups/configuration-admin.html">Configuration /
+            Admin</a>
+        </div>
       </div>
-      <a data-nav-link href="games.html">Arcade</a><a data-nav-link href="marketplace.html">Marketplace</a><a
-        data-nav-link href="learn.html">Learn</a><a data-nav-link href="community.html">Community</a><a data-nav-link
-        href="docs.html">Docs</a><a data-nav-link href="account.html">Account</a>
+      <a data-nav-link data-route="arcade" href="arcade/index.html">Arcade</a>
+      <a data-nav-link data-route="marketplace" href="marketplace/index.html">Marketplace</a>
+      <a data-nav-link data-route="learn" href="learn/index.html">Learn</a>
+      <a data-nav-link data-route="community" href="community/index.html">Community</a>
+      <a data-nav-link data-route="docs" href="docs/index.html">Docs</a>
+      <div class="nav-item"><a data-nav-link data-route="account" href="account/index.html">Account ▾</a>
+        <div class="sub-menu">
+          <a data-nav-link data-route="branding" href="account/branding.html">Branding</a>
+          <a data-nav-link data-route="controls" href="account/controls.html">Controls</a>
+        </div>
+      </div>
     </nav>
-    <div class="nav-actions"><a class="btn" href="games.html">Play Games</a><a class="btn primary"
-        href="tools.html">Start Building</a></div>
+    <div class="nav-actions"><a class="btn" data-route="arcade" href="arcade/index.html">Play Games</a><a
+        class="btn primary" data-route="tools" href="tools/index.html">Start Building</a></div>
   </div>
 </header>
