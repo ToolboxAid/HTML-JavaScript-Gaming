@@ -21,6 +21,55 @@ a{color:inherit;text-decoration:none}.container{width:min(1180px,calc(100% - 36p
     overflow: hidden;
 }
 
+/* Tool Display Mode indicator state */
+body:not(.tool-focus-mode) details.tool-display-mode summary::after {
+    content: "-" !important;
+}
+
+body.tool-focus-mode details.tool-display-mode summary::after {
+    content: "+" !important;
+}
+
+/* Place Tool Display Mode above the center panel without displacing columns */
+.tool-workspace {
+    grid-template-rows: auto auto;
+}
+
+.tool-workspace > .tool-column:first-of-type {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+}
+
+.tool-workspace > .tool-display-mode {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.tool-workspace > .tool-center-panel {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+}
+
+.tool-workspace > .tool-column:last-of-type {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+}
+
+@media(max-width:980px){
+    .tool-workspace {
+        grid-template-rows: auto;
+    }
+
+    .tool-workspace > .tool-column:first-of-type,
+    .tool-workspace > .tool-display-mode,
+    .tool-workspace > .tool-center-panel,
+    .tool-workspace > .tool-column:last-of-type {
+        grid-column: auto;
+        grid-row: auto;
+    }
+}
+
 .hero-art img {
     width: 100%;
     height: 100%;
@@ -904,13 +953,6 @@ body.tool-focus-mode .tool-display-mode {
     background: rgba(9, 11, 15, .96);
 }
 
-.tool-display-mode .btn,
-#toolFullscreenButton {
-    color: #fff;
-    background: linear-gradient(135deg, #ff7a00, #b83b00);
-    border-color: rgba(255, 200, 87, .65);
-}
-
 /* Fullscreen layout */
 body.tool-focus-mode .site-header,
 body.tool-focus-mode .page-title,
@@ -1009,4 +1051,3 @@ body.tool-focus-mode .tool-column:last-of-type {
         height: auto;
     }
 }
-

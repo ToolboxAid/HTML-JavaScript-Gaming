@@ -33,19 +33,14 @@
         <div class="container">
             <div class="tool-workspace">
 
-        <details class="accordion tool-display-mode" open>
-            <summary>Tool Display Mode</summary>
-            <div class="accordion-body">
-                <button class="btn primary" type="button" id="toolFullscreenButton">
-                    Enter Fullscreen Tool Mode
-                </button>
-            </div>
-        </details>
-
                 <aside class="tool-column">
                     <div class="tool-column-header"><h2>Left Controls</h2></div>
                     <div class="accordion-stack"><details class="accordion" open><summary>Left Accordion 1</summary><div class="accordion-body">Tool 1 left panel 1. Use this area for controls, options, previews, validation, logs, or tool-specific workflow content.</div></details></div>
                 </aside>
+
+                <details class="accordion tool-display-mode" id="toolDisplayMode" open>
+                    <summary>Tool Display Mode</summary>
+                </details>
 
                 <section class="tool-center-panel">
 <img src="assets/images/forge-bot.png" alt="ForgeBot">
@@ -116,64 +111,6 @@
         }
     });
 }());
-</script>
-
-<script>
-(function () {
-    const fullscreenButton = document.getElementById("toolFullscreenButton");
-    if (!fullscreenButton) {
-        return;
-    }
-
-    function setButtonText() {
-        fullscreenButton.textContent = document.body.classList.contains("tool-focus-mode")
-            ? "Exit Fullscreen Tool Mode"
-            : "Enter Fullscreen Tool Mode";
-    }
-
-    async function enterToolFullscreen() {
-        document.body.classList.add("tool-focus-mode");
-        setButtonText();
-
-        try {
-            if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-                await document.documentElement.requestFullscreen();
-            }
-        } catch (error) {
-            console.warn("Fullscreen was blocked by the browser:", error);
-        }
-    }
-
-    async function exitToolFullscreen() {
-        document.body.classList.remove("tool-focus-mode");
-        setButtonText();
-
-        try {
-            if (document.fullscreenElement && document.exitFullscreen) {
-                await document.exitFullscreen();
-            }
-        } catch (error) {
-            console.warn("Exit fullscreen failed:", error);
-        }
-    }
-
-    fullscreenButton.addEventListener("click", function () {
-        if (document.body.classList.contains("tool-focus-mode")) {
-            exitToolFullscreen();
-        } else {
-            enterToolFullscreen();
-        }
-    });
-
-    document.addEventListener("fullscreenchange", function () {
-        if (!document.fullscreenElement) {
-            document.body.classList.remove("tool-focus-mode");
-        }
-        setButtonText();
-    });
-
-    setButtonText();
-})();
 </script>
 
 </body>
