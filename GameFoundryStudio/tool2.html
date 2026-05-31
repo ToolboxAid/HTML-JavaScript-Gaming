@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tool 2 — Game Foundry Studio</title>
+    <meta name="description" content="Game Foundry Studio Tool 2 layout.">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container nav">
+        <a class="brand" href="index.html"><img src="assets/images/logo-mark.svg" alt="Game Foundry Studio mark"><span>Game Foundry Studio</span></a>
+        <nav class="nav-links" aria-label="Main navigation">
+            <div class="nav-item"><a href="tools.html">Tools ▾</a><div class="sub-menu"><a class="" href="tool1.html">Tool 1</a><a class="active" href="tool2.html">Tool 2</a><a class="" href="tool3.html">Tool 3</a></div></div>
+            <a href="games.html">Arcade</a><a href="marketplace.html">Marketplace</a><a href="learn.html">Learn</a><a href="community.html">Community</a><a href="docs.html">Docs</a><a href="account.html">Account</a>
+        </nav>
+        <div class="nav-actions"><a class="btn" href="games.html">Play Games</a><a class="btn primary" href="tools.html">Start Building</a></div>
+    </div>
+</header>
+<main>
+    <section class="page-title">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a> / <a href="tools.html">Tools</a> / Tool 2</div>
+            <div class="kicker">Tool Layout</div>
+            <h1>Tool 2</h1>
+            <p class="lede">Three-column tool page with left, center, and right accordion regions ready for future Game Foundry Studio tools.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="tool-workspace">
+
+        <details class="accordion tool-display-mode" open>
+            <summary>Tool Display Mode</summary>
+            <div class="accordion-body">
+                <button class="btn primary" type="button" id="toolFullscreenButton">
+                    Enter Fullscreen Tool Mode
+                </button>
+            </div>
+        </details>
+
+                <aside class="tool-column">
+                    <div class="tool-column-header"><h2>Left Controls</h2></div>
+                    <div class="accordion-stack"><details class="accordion" open><summary>Left Accordion 1</summary><div class="accordion-body">Tool 2 left panel 1. Use this area for controls, options, previews, validation, logs, or tool-specific workflow content.</div></details><details class="accordion"><summary>Left Accordion 2</summary><div class="accordion-body">Tool 2 left panel 2. Use this area for controls, options, previews, validation, logs, or tool-specific workflow content.</div></details><details class="accordion"><summary>Left Accordion 3</summary><div class="accordion-body">Tool 2 left panel 3. Use this area for controls, options, previews, validation, logs, or tool-specific workflow content.</div></details></div>
+                </aside>
+
+                <section class="tool-center-panel">
+<img src="assets/images/forge-bot.png" alt="ForgeBot">
+                    <h2>Tool 2 Workspace</h2>
+                    <p>Use this center region for the primary tool canvas, editor, preview, or guided workflow. The side columns provide collapsible controls without crowding the main work area.</p>
+                    <div class="accordion-stack">
+                        <details class="accordion" open><summary>Center Workspace</summary><div class="accordion-body">Tool 2 main workspace. This center column is reserved for the primary editor, canvas, preview, or builder surface.</div></details>
+                        <details class="accordion"><summary>Validation & Status</summary><div class="accordion-body">Tool 2 status, validation, and save/open state will live here while left and right accordions manage supporting controls.</div></details>
+                    </div>
+                </section>
+
+                <aside class="tool-column">
+                    <div class="tool-column-header cyan"><h2>Right Controls</h2></div>
+                    <div class="accordion-stack"><details class="accordion" open><summary>Right Accordion 1</summary><div class="accordion-body">Tool 2 right panel 1. Use this area for controls, options, previews, validation, logs, or tool-specific workflow content.</div></details><details class="accordion"><summary>Right Accordion 2</summary><div class="accordion-body">Tool 2 right panel 2. Use this area for controls, options, previews, validation, logs, or tool-specific workflow content.</div></details><details class="accordion"><summary>Right Accordion 3</summary><div class="accordion-body">Tool 2 right panel 3. Use this area for controls, options, previews, validation, logs, or tool-specific workflow content.</div></details><details class="accordion"><summary>Right Accordion 4</summary><div class="accordion-body">Tool 2 right panel 4. Use this area for controls, options, previews, validation, logs, or tool-specific workflow content.</div></details></div>
+                </aside>
+            </div>
+        </div>
+    </section>
+</main>
+<footer class="footer"><div class="container"><span>© 2026 Game Foundry Studio</span><span>Build · Play · Share</span></div></footer>
+<script>
+(function () {
+    const displayMode = document.getElementById("toolDisplayMode");
+    if (!displayMode) return;
+
+    const summary = displayMode.querySelector("summary");
+
+    async function enterToolMode() {
+        document.body.classList.add("tool-focus-mode");
+        displayMode.open = true;
+
+        try {
+            if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                await document.documentElement.requestFullscreen();
+            }
+        } catch (error) {
+            console.warn("Fullscreen was blocked by the browser. CSS tool display mode is still active.", error);
+        }
+    }
+
+    async function exitToolMode() {
+        document.body.classList.remove("tool-focus-mode");
+        displayMode.open = false;
+
+        try {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                await document.exitFullscreen();
+            }
+        } catch (error) {
+            console.warn("Exit fullscreen failed.", error);
+        }
+    }
+
+    summary.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        if (document.body.classList.contains("tool-focus-mode") || document.fullscreenElement) {
+            exitToolMode();
+        } else {
+            enterToolMode();
+        }
+    });
+
+    document.addEventListener("fullscreenchange", function () {
+        if (!document.fullscreenElement && document.body.classList.contains("tool-focus-mode")) {
+            document.body.classList.remove("tool-focus-mode");
+            displayMode.open = false;
+        }
+    });
+}());
+</script>
+
+<script>
+(function () {
+    const fullscreenButton = document.getElementById("toolFullscreenButton");
+    if (!fullscreenButton) {
+        return;
+    }
+
+    function setButtonText() {
+        fullscreenButton.textContent = document.body.classList.contains("tool-focus-mode")
+            ? "Exit Fullscreen Tool Mode"
+            : "Enter Fullscreen Tool Mode";
+    }
+
+    async function enterToolFullscreen() {
+        document.body.classList.add("tool-focus-mode");
+        setButtonText();
+
+        try {
+            if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                await document.documentElement.requestFullscreen();
+            }
+        } catch (error) {
+            console.warn("Fullscreen was blocked by the browser:", error);
+        }
+    }
+
+    async function exitToolFullscreen() {
+        document.body.classList.remove("tool-focus-mode");
+        setButtonText();
+
+        try {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                await document.exitFullscreen();
+            }
+        } catch (error) {
+            console.warn("Exit fullscreen failed:", error);
+        }
+    }
+
+    fullscreenButton.addEventListener("click", function () {
+        if (document.body.classList.contains("tool-focus-mode")) {
+            exitToolFullscreen();
+        } else {
+            enterToolFullscreen();
+        }
+    });
+
+    document.addEventListener("fullscreenchange", function () {
+        if (!document.fullscreenElement) {
+            document.body.classList.remove("tool-focus-mode");
+        }
+        setButtonText();
+    });
+
+    setButtonText();
+})();
+</script>
+
+</body>
+</html>

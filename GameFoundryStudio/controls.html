@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controls — Game Foundry Studio</title>
+  <meta name="description" content="Game Foundry Studio controls and form component examples.">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .controls-hero{padding:48px 0 26px;border-bottom:1px solid var(--line)}
+    .controls-hero-grid{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:center}
+    .forgebot-stage{min-height:360px;border:1px solid rgba(255,122,0,.32);border-radius:28px;background:radial-gradient(circle at 50% 55%,rgba(255,122,0,.25),transparent 48%),linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.025));display:grid;place-items:center;overflow:hidden;box-shadow:var(--shadow)}
+    .forgebot-stage img{width:min(92%,340px);height:auto;filter:drop-shadow(0 22px 45px rgba(255,122,0,.24))}
+    .control-section{padding:34px 0}.control-lab{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start}.control-card{--accent:var(--orange);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));box-shadow:0 14px 40px rgba(0,0,0,.24);padding:18px;min-height:100%}.control-card h3{margin:0 0 10px;color:var(--accent);font-size:20px}.control-card p{color:var(--muted);line-height:1.45;margin:0 0 14px}.control-demo{display:grid;gap:12px}.control-demo label{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:900}.control-demo input,.control-demo textarea,.control-demo select{width:100%;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:#0c111a;color:var(--text);padding:11px 12px;font:inherit}.control-demo textarea{min-height:92px;resize:vertical}.control-demo input:focus,.control-demo textarea:focus,.control-demo select:focus{outline:2px solid color-mix(in srgb,var(--accent) 70%,transparent);border-color:var(--accent)}.inline-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.choice{display:flex;align-items:center;gap:8px;color:var(--muted)}.choice input{width:auto;accent-color:var(--accent)}.button-row{display:flex;gap:10px;flex-wrap:wrap}.demo-btn{border:1px solid color-mix(in srgb,var(--accent) 65%,transparent);border-radius:12px;padding:10px 13px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 48%,#111722),rgba(255,255,255,.04));color:#fff;font-weight:850;cursor:pointer}.demo-btn.secondary{background:rgba(255,255,255,.04)}.demo-btn.ghost{background:transparent}.demo-btn:disabled{opacity:.45;cursor:not-allowed}.switch{position:relative;display:inline-flex;width:52px;height:30px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;inset:0;border-radius:999px;background:#1f2937;border:1px solid var(--line);transition:.2s}.slider:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}.switch input:checked+.slider{background:color-mix(in srgb,var(--accent) 70%,#111722);border-color:var(--accent)}.switch input:checked+.slider:before{transform:translateX(22px)}input[type="range"]{accent-color:var(--accent);padding:0}input[type="color"]{height:44px;padding:4px}progress,meter{width:100%;height:18px;accent-color:var(--accent)}.control-card details{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(0,0,0,.16)}.control-card summary{cursor:pointer;color:var(--accent);font-weight:900}.control-card table{width:100%;border-collapse:collapse}.control-card th,.control-card td{border-bottom:1px solid var(--line);padding:10px;text-align:left}.control-card th{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.1em}.dialog-sample{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0c111a}.side-orange{--accent:var(--orange)}.side-gold{--accent:var(--gold)}.side-cyan{--accent:var(--cyan)}.side-purple{--accent:var(--purple)}.side-green{--accent:var(--green)}.side-pink{--accent:var(--pink)}.side-steel{--accent:#aeb6c2}.side-red{--accent:#ff5757}.side-blue{--accent:#4da3ff}.side-mint{--accent:#22c55e}@media(max-width:980px){.controls-hero-grid,.control-lab{grid-template-columns:1fr 1fr}}@media(max-width:640px){.controls-hero-grid,.control-lab{grid-template-columns:1fr}.forgebot-stage{min-height:280px}}
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html"><img src="assets/images/logo-mark.svg" alt="Game Foundry Studio mark"><span>Game Foundry Studio</span></a>
+    <nav class="nav-links" aria-label="Main navigation"><div class="nav-item"><a class="" href="tools.html">Tools ▾</a><div class="sub-menu"><a class="" href="tool1.html">Tool 1</a><a class="" href="tool2.html">Tool 2</a><a class="" href="tool3.html">Tool 3</a></div></div><a class="" href="games.html">Arcade</a><a class="" href="marketplace.html">Marketplace</a><a class="" href="learn.html">Learn</a><a class="" href="community.html">Community</a><a class="" href="docs.html">Docs</a><a class="" href="account.html">Account</a></nav>
+    <div class="nav-actions"><a class="btn" href="games.html">Play Games</a><a class="btn primary" href="tools.html">Start Building</a></div>
+  </div>
+</header>
+<main>
+  <section class="controls-hero">
+    <div class="container controls-hero-grid">
+      <div>
+        <div class="kicker">UI control forge</div>
+        <h1 style="font-size:clamp(42px,6vw,76px);line-height:.95;margin:14px 0">Controls.</h1>
+        <p class="lede">A Game Foundry Studio control page showing common HTML controls with foundry-side accent colors for forms, tool panels, settings screens, publishing workflows, and account management.</p>
+        <div class="hero-actions"><a class="btn primary" href="#controls">View Controls</a><a class="btn" href="tools.html">Back to Tools</a></div>
+      </div>
+      <aside class="forgebot-stage"><img src="assets/images/forge-bot.png" alt="ForgeBot mascot holding a hammer beside an anvil"></aside>
+    </div>
+  </section>
+
+  <section class="control-section" id="controls">
+    <div class="container">
+      <div class="section-head"><div><div class="kicker">HTML controls</div><h2>Everyday controls with branded side colors.</h2></div><p>Each panel uses a left-side accent color so controls can be grouped by purpose across Game Foundry Studio.</p></div>
+      <div class="control-lab">
+        <article class="control-card side-orange"><h3>Text Inputs</h3><p>Names, slugs, paths, labels, and short values.</p><div class="control-demo"><label for="text-name">Text</label><input id="text-name" type="text" value="King of the Iceberg"><label for="search">Search</label><input id="search" type="search" placeholder="Search tools"><label for="url">URL</label><input id="url" type="url" value="https://gamefoundrystudio.com"></div></article>
+        <article class="control-card side-cyan"><h3>Identity Inputs</h3><p>Account forms and creator profile fields.</p><div class="control-demo"><label for="email">Email</label><input id="email" type="email" value="creator@example.com"><label for="password">Password</label><input id="password" type="password" value="foundry"><label for="tel">Phone</label><input id="tel" type="tel" placeholder="Optional"></div></article>
+        <article class="control-card side-gold"><h3>Numeric Inputs</h3><p>Stats, limits, sizes, scores, prices, and settings.</p><div class="control-demo"><label for="number">Number</label><input id="number" type="number" value="100" min="0" max="999"><label for="range">Range</label><input id="range" type="range" min="0" max="100" value="68"><label for="meter">Meter</label><meter id="meter" min="0" max="100" value="72">72%</meter></div></article>
+        <article class="control-card side-purple"><h3>Date & Time</h3><p>Events, releases, scheduled publishing, and reminders.</p><div class="control-demo"><label for="date">Date</label><input id="date" type="date"><label for="time">Time</label><input id="time" type="time"><label for="datetime">Date Time</label><input id="datetime" type="datetime-local"></div></article>
+        <article class="control-card side-green"><h3>Choices</h3><p>Modes, visibility, platforms, and feature flags.</p><div class="control-demo"><label>Checkboxes</label><label class="choice"><input type="checkbox" checked> Public project</label><label class="choice"><input type="checkbox"> Allow remixing</label><label>Radio</label><label class="choice"><input name="mode" type="radio" checked> Arcade</label><label class="choice"><input name="mode" type="radio"> Studio</label></div></article>
+        <article class="control-card side-pink"><h3>Switches</h3><p>On/off controls for tool preferences and game options.</p><div class="control-demo"><label>Toggle</label><div class="inline-row"><label class="switch"><input type="checkbox" checked><span class="slider"></span></label><span class="choice">Auto-save enabled</span></div><div class="inline-row"><label class="switch"><input type="checkbox"><span class="slider"></span></label><span class="choice">Private beta</span></div></div></article>
+        <article class="control-card side-blue"><h3>Selects</h3><p>Single-choice dropdowns for theme, engine mode, and tool role.</p><div class="control-demo"><label for="select">Select</label><select id="select"><option>Forge Dark</option><option>Molten Orange</option><option>Cloud Blue</option></select><label for="multi">Multi Select</label><select id="multi" multiple size="4"><option selected>Keyboard</option><option selected>Gamepad</option><option>Touch</option><option>Mouse</option></select></div></article>
+        <article class="control-card side-mint"><h3>Files & Color</h3><p>Uploads, imports, thumbnails, palettes, and asset colors.</p><div class="control-demo"><label for="file">File</label><input id="file" type="file"><label for="color">Color</label><input id="color" type="color" value="#ff7a00"></div></article>
+        <article class="control-card side-steel"><h3>Textarea</h3><p>GDD notes, descriptions, changelogs, and release text.</p><div class="control-demo"><label for="textarea">Long Text</label><textarea id="textarea">Build. Play. Share.</textarea></div></article>
+        <article class="control-card side-red"><h3>Buttons</h3><p>Primary, secondary, ghost, and disabled actions.</p><div class="button-row"><button class="demo-btn">Primary</button><button class="demo-btn secondary">Secondary</button><button class="demo-btn ghost">Ghost</button><button class="demo-btn" disabled>Disabled</button></div></article>
+        <article class="control-card side-orange"><h3>Progress</h3><p>Build steps, upload progress, validation, and publish status.</p><div class="control-demo"><label for="progress">Progress</label><progress id="progress" max="100" value="62">62%</progress><label for="meter2">Storage</label><meter id="meter2" min="0" max="100" low="25" high="80" optimum="60" value="44">44%</meter></div></article>
+        <article class="control-card side-cyan"><h3>Disclosure</h3><p>Expandable panels for details, warnings, and advanced options.</p><details open><summary>Advanced Options</summary><p style="color:var(--muted);line-height:1.5">Use this pattern for optional settings that should not distract from the main tool flow.</p></details></article>
+        <article class="control-card side-gold"><h3>Table</h3><p>Readable data blocks for settings, game stats, and permissions.</p><table><thead><tr><th>Control</th><th>Status</th></tr></thead><tbody><tr><td>Keyboard</td><td>Ready</td></tr><tr><td>Gamepad</td><td>Mapped</td></tr></tbody></table></article>
+        <article class="control-card side-purple"><h3>Fieldset</h3><p>Grouped controls for related options.</p><fieldset style="border:1px solid var(--line);border-radius:14px;padding:14px"><legend style="color:var(--purple);font-weight:900">Publishing</legend><label class="choice"><input type="checkbox" checked> Include preview</label><label class="choice"><input type="checkbox"> Generate release notes</label></fieldset></article>
+        <article class="control-card side-green"><h3>Dialog Pattern</h3><p>Modal-like content styling for confirmations and alerts.</p><div class="dialog-sample"><strong style="color:var(--green)">Publish Ready</strong><p style="color:var(--muted);margin-bottom:0">Your build passed validation and is ready to share.</p></div></article>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="footer"><div class="container"><span>© 2026 Game Foundry Studio</span><span>Build · Play · Share</span></div></footer>
+</body>
+</html>
