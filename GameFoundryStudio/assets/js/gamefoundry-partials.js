@@ -2,9 +2,9 @@
     const routeMap = {
         home: "index.html",
         tools: "tools/index.html",
-        "tool-builder": "tools/tool-builder.html",
-        "tool-creator": "tools/tool-creator.html",
-        "tool-publisher": "tools/tool-publisher.html",
+        builder: "tools/builder.html",
+        creator: "tools/creator.html",
+        publisher: "tools/publisher.html",
         "building-creation": "tools/groups/building-creation.html",
         "technology-system": "tools/groups/technology-system.html",
         "assets-content": "tools/groups/assets-content.html",
