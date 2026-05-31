@@ -1,23 +1,23 @@
 # Lane Snapshot Report
 
-Generated: 2026-05-30T05:14:50.401Z
+Generated: 2026-05-31T20:45:57.922Z
 Status: PASS
 Snapshot directory: docs/dev/reports/lane_snapshots
 
 ## Summary
 
-Reused lane snapshots: 1
+Reused lane snapshots: 0
 Invalidated snapshots: 0
 Generated snapshots: 0
 Skipped snapshots: 0
-Prevented graph rebuilds: 1
-Prevented manifest traversal: 1
+Prevented graph rebuilds: 0
+Prevented manifest traversal: 0
 
 ## Snapshot Decisions
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | REUSED | docs/dev/reports/lane_snapshots/workspace-contract.json | 609f65144d9891aa | 4138c2ded15059b2 | 5d0248502f5b423f | ba8c4b150942161f | 3fc50cc7c32e09db | 904c69a6a7ddcfcb | 6b4b9ab45dfac4a4 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
+| none | SKIP | none | none | none | none | none | none | none | none | No selected lanes produced snapshots. |
 
 ## Snapshot Validation Findings
 

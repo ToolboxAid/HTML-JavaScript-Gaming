@@ -1,8 +1,17 @@
 (function () {
-    const displayMode = document.getElementById("toolDisplayMode");
-    if (!displayMode) return;
+    const slot = document.querySelector("[data-tool-display-mode]");
+    if (!slot) return;
 
-    const summary = displayMode.querySelector("summary");
+    const displayMode = document.createElement("details");
+    displayMode.className = "accordion tool-display-mode";
+    displayMode.id = "toolDisplayMode";
+    displayMode.open = true;
+
+    const summary = document.createElement("summary");
+    summary.textContent = "Tool Display Mode";
+    displayMode.appendChild(summary);
+    slot.replaceWith(displayMode);
+
 
     async function enterToolMode() {
         document.body.classList.add("tool-focus-mode");

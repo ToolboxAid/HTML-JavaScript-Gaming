@@ -1,24 +1,24 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-05-30T05:14:50.400Z
+Generated: 2026-05-31T20:45:57.921Z
 Status: PASS
 
 ## Runtime Cost Summary
 
 Reused runtime sessions: 0
-Reused lane snapshots: 1
-Reused warm-start lanes: 1
-Reused dependency hydration: 1
-Prevented graph rebuilds: 1
-Prevented redundant initialization: 1
+Reused lane snapshots: 0
+Reused warm-start lanes: 0
+Reused dependency hydration: 0
+Prevented graph rebuilds: 0
+Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
-Prevented redundant lane execution: 5
-Baseline Playwright/browser launches: 1
-Scheduled Playwright/browser launches: 1
+Prevented redundant lane execution: 6
+Baseline Playwright/browser launches: 0
+Scheduled Playwright/browser launches: 0
 
 ## Scheduled Lane Order
 
-1. workspace-contract
+No runtime lanes are eligible for scheduling.
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts. |
+| none | SKIP | SKIP | SKIP | 0 | 0 | none | No dependency-eligible targeted lanes were scheduled. |
 
 ## Runtime Savings Observations
 

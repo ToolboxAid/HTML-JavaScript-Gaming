@@ -1,23 +1,23 @@
 # Lane Warm-Start Report
 
-Generated: 2026-05-30T05:14:50.401Z
+Generated: 2026-05-31T20:45:57.921Z
 Status: PASS
 Warm-start directory: docs/dev/reports/lane_warm_starts
 
 ## Summary
 
-Reused warm-start lanes: 1
+Reused warm-start lanes: 0
 Invalidated warm-start states: 0
 Generated warm-start states: 0
 Skipped warm-start states: 0
-Prevented redundant initialization: 1
-Prevented lane graph assembly: 1
+Prevented redundant initialization: 0
+Prevented lane graph assembly: 0
 
 ## Warm-Start Decisions
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | REUSED | docs/dev/reports/lane_warm_starts/workspace-contract.json | 609f65144d9891aa | 008ea1076fee8ae4 | 57d5580a00e01e26 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
+| none | SKIP | none | none | none | none | No selected lanes produced warm-start decisions. |
 
 ## Fast-Fail Safeguards
 

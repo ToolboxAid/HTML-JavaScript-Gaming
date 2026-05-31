@@ -2,74 +2,75 @@
 
 ## Scope
 
-GameFoundryStudio-only cleanup using the PR_26151_006 verification findings as the source for current gaps.
+GameFoundryStudio-only cleanup continued from PR_26151_007. This pass focuses on Tool Display Mode SSoT cleanup across direct tool pages.
 
 ## Changes Validated
 
-- Nested GameFoundryStudio folders are authoritative for tools, account pages, and tool groups.
-- Legacy root duplicates are intentional HTML redirects.
-- `GameFoundryStudio/assets/css/controls.css` exists as the non-color control sizing, typography, spacing, and shared layout SSoT.
-- Meaning and schema colors remain in the existing color/layout CSS files.
-- `GameFoundryStudio/assets/partials/tool-shell.html` exists.
-- `GameFoundryStudio/assets/partials/tool-page-shell.html` is removed and no longer referenced.
-- GameFoundryStudio tool pages include Tool Display Mode before the center panel.
-- Shared header/nav/footer partial slots are preserved on active nested pages.
-- Account submenu keeps Branding and Controls through the shared partial.
-- Existing page content and imagery were preserved on active nested pages.
+- Direct `GameFoundryStudio/tools/*.html` tool pages use a shared `data-tool-display-mode` slot.
+- `GameFoundryStudio/assets/js/tool-display-mode.js` renders the single shared Tool Display Mode implementation.
+- Tool Display Mode appears before `.tool-center-panel` on each direct tool page.
+- Tool Display Mode CSS selectors live in `GameFoundryStudio/assets/css/controls.css`.
+- `GameFoundryStudio/assets/css/tools.css` no longer carries duplicate Tool Display Mode styling.
+- Tool Display Mode colors use shared CSS variables so active schema/theme colors stay consistent.
+- Fullscreen/display-mode behavior remains on the existing `tool-focus-mode` body class.
+- Shared header/nav/footer/tool shell structure is preserved.
+- Account submenu and grouping pages remain unchanged.
 
 ## Commands
 
 ```text
+Get-Content docs/dev/PROJECT_INSTRUCTIONS.md -ErrorAction SilentlyContinue
+Get-Content .codex/skills/repo-build/SKILL.md
+Get-Content docs/dev/reports/PR_26151_007-gamefoundry-ssot-cleanup-validation.md -ErrorAction SilentlyContinue
+git status --short
+rg -n "data-tool-display-mode" GameFoundryStudio/tools
+rg -n "accordion.tool-display-mode" GameFoundryStudio/tools
+rg -n "data-tool-display-mode|tool-center-panel" GameFoundryStudio/tools -g "*.html"
+rg -n "tool-display-mode" GameFoundryStudio/assets/css
 rg --pcre2 -n "<style\b|<script(?![^>]*\bsrc=)|\son[a-zA-Z]+\s*=|\sstyle\s*=" GameFoundryStudio -g "*.html"
-rg -n "tool-page-shell|data-tool-page-shell" GameFoundryStudio
-rg -n "toolDisplayMode|tool-display-mode.js" GameFoundryStudio/tools -g "*.html"
-rg -n "#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(|linear-gradient|radial-gradient|var\(--(orange|gold|cyan|purple|green|pink|meaning|text|muted|line|bg|panel|molten|forge|electric|arcade|steel)" GameFoundryStudio/assets/css/controls.css
 node --check GameFoundryStudio/assets/js/gamefoundry-partials.js
 node --check GameFoundryStudio/assets/js/tool-display-mode.js
 git diff --check
 npm run test:playwright:static
-npx playwright install chromium
+npm run codex:review-artifacts
 ```
 
 ## Results
 
-- PASS: no inline `<style>` blocks, inline `<script>` blocks, inline event handlers, or inline `style=` attributes found in GameFoundryStudio HTML.
-- PASS: no references to `tool-page-shell.html` or `data-tool-page-shell` remain.
-- PASS: `tool-shell.html` exists and `tool-page-shell.html` is absent.
-- PASS: `controls.css` exists.
-- PASS: `controls.css` color ownership scan found no semantic colors, hex colors, rgb/rgba colors, hsl/hsla colors, or gradients.
-- PASS: internal `href` navigation targets resolve.
-- PASS: every direct `GameFoundryStudio/tools/*.html` tool page except `tools/index.html` has `#toolDisplayMode` before `.tool-center-panel`.
-- PASS: legacy root duplicate pages are explicit redirects to canonical nested destinations.
-- PASS: `node --check` passed for the shared partial loader and display-mode script.
-- PASS: CSS brace/static check passed for changed CSS files.
-- PASS: `git diff --check` completed with line-ending warnings only.
-- PASS: `npm run test:playwright:static` completed successfully.
-- WARN: focused browser page-load/navigation validation could not run because Playwright Chromium was not installed locally.
-- WARN: `npx playwright install chromium` failed with `UNABLE_TO_VERIFY_LEAF_SIGNATURE` while downloading from the Playwright CDN.
+- PASS: 17 direct GameFoundryStudio tool pages contain `data-tool-display-mode`.
+- PASS: every direct tool page with `tool-display-mode.js` places `data-tool-display-mode` immediately before `.tool-center-panel`.
+- PASS: no direct tool page retains the duplicated hardcoded `accordion tool-display-mode` details markup.
+- PASS: Tool Display Mode is rendered by `GameFoundryStudio/assets/js/tool-display-mode.js`.
+- PASS: Tool Display Mode CSS selectors are centralized in `GameFoundryStudio/assets/css/controls.css`.
+- PASS: `GameFoundryStudio/assets/css/tools.css` no longer contains Tool Display Mode styling selectors.
+- PASS: no inline `<style>` blocks, inline `<script>` blocks, inline event handlers, or inline `style=` attributes were found in GameFoundryStudio HTML.
+- PASS: `node --check` passed for `gamefoundry-partials.js` and `tool-display-mode.js`.
+- PASS: `npm run test:playwright:static` passed.
+- WARN: `git diff --check` and `npm run codex:review-artifacts` were retried after intermittent shell spawn failures; final artifact generation is recorded in the review files when available.
+- WARN: focused browser Playwright validation was not run because no existing GameFoundryStudio-specific Playwright coverage was found; the static Playwright lane was run.
 
 ## Playwright Impact
 
-Playwright impacted: Yes. This PR changes GameFoundryStudio page structure, navigation redirects, CSS control ownership, and tool display placement.
+Playwright impacted: Yes. This PR changes GameFoundryStudio tool-page DOM structure and Tool Display Mode initialization.
 
-Existing GameFoundryStudio-specific Playwright navigation/page-load coverage was not found. A focused browser validation script was attempted, but the local Playwright browser was unavailable and browser installation was blocked by certificate verification.
+Existing GameFoundryStudio-specific browser navigation/page-load coverage was not found. The static Playwright lane passed and direct page structure/navigation checks were run with repository search commands.
 
 ## Lanes
 
-- lanes executed: runtime/static for GameFoundryStudio pages, redirects, CSS ownership, and tool display placement.
+- lanes executed: runtime/static for GameFoundryStudio tool pages, shared JS initialization, CSS ownership, and inline HTML restrictions.
 - lanes skipped: engine, samples, and broad integration because no engine/runtime, sample JSON, or shared integration contract changed.
 - samples decision: SKIP because the PR is GameFoundryStudio UI structure only and full samples smoke test was explicitly prohibited.
-- blocker scope: Playwright browser execution only; static and navigation-resolution checks passed.
-- expected PASS behavior: canonical nested GameFoundryStudio pages load through resolvable routes, root duplicates redirect, shared partials remain, controls.css owns non-color control layout, and tool pages expose Tool Display Mode above the center panel.
-- expected WARN behavior: Playwright browser run remains blocked until the Chromium binary can be installed in the local environment.
+- blocker scope: browser Playwright coverage only; static and targeted structure checks passed.
+- expected PASS behavior: every direct GameFoundryStudio tool page renders shared Tool Display Mode at the top of the center column before workspace content and keeps fullscreen display-mode behavior.
+- expected WARN behavior: browser Playwright remains advisory until a GameFoundryStudio-specific browser test exists in the repository.
 
 ## Manual Validation
 
-1. Open `GameFoundryStudio/index.html`.
-2. Use the shared nav to open Tools, Account, Branding, and Controls.
-3. Open `GameFoundryStudio/tools/tool-builder.html` and `GameFoundryStudio/tools/ai-assistant.html`.
-4. Confirm Tool Display Mode appears above the center workspace content.
-5. Open legacy root pages such as `GameFoundryStudio/tool-builder.html`, `GameFoundryStudio/controls.html`, and `GameFoundryStudio/building-creation.html`.
-6. Confirm each legacy page redirects to the nested canonical destination.
+1. Open `GameFoundryStudio/tools/tool-builder.html`.
+2. Confirm Tool Display Mode appears above the center workspace content.
+3. Activate Tool Display Mode and confirm fullscreen/focus mode still hides header/title/footer while preserving the left, center, and right tool columns.
+4. Exit Tool Display Mode and confirm the normal shared header/nav/footer return.
+5. Repeat the same check on `GameFoundryStudio/tools/ai-assistant.html` and `GameFoundryStudio/tools/palette-manager.html`.
+6. Open `GameFoundryStudio/tools/groups/building-creation.html` and an Account page to confirm grouping pages and Account submenu behavior were preserved.
 
-Expected outcome: nested destinations are authoritative, shared nav/footer remain visible on active pages, Tool Display Mode keeps fullscreen/display behavior, and legacy duplicates do not expose stale hardcoded navigation.
+Expected outcome: direct tool pages use the shared implementation, Tool Display Mode appears before center workspace content, fullscreen behavior still works, and unchanged grouping/account pages retain their existing structure.
