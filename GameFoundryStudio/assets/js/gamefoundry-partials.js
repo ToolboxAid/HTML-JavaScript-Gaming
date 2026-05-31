@@ -2,16 +2,37 @@
     const routeMap = {
         home: "index.html",
         tools: "tools/index.html",
+        "ai-assistant": "tools/ai-assistant.html",
+        "animation-studio": "tools/animation-studio.html",
+        "asset-studio": "tools/asset-studio.html",
         builder: "tools/builder.html",
+        "code-studio": "tools/code-studio.html",
         creator: "tools/creator.html",
+        "game-builder": "tools/game-builder.html",
+        "game-design-studio": "tools/game-design-studio.html",
+        "input-studio": "tools/input-studio.html",
+        "midi-studio": "tools/midi-studio.html",
+        "object-vector-studio": "tools/object-vector-studio.html",
+        "palette-manager": "tools/palette-manager.html",
+        "particle-studio": "tools/particle-studio.html",
         publisher: "tools/publisher.html",
+        "sound-studio": "tools/sound-studio.html",
+        "storage-inspector": "tools/storage-inspector.html",
+        "world-vector-studio": "tools/world-vector-studio.html",
         "building-creation": "tools/groups/building-creation.html",
         "technology-system": "tools/groups/technology-system.html",
         "assets-content": "tools/groups/assets-content.html",
         "media-community": "tools/groups/media-community.html",
         "design-animation": "tools/groups/design-animation.html",
         "configuration-admin": "tools/groups/configuration-admin.html",
+        games: "arcade/index.html",
         arcade: "arcade/index.html",
+        "game-action": "arcade/index.html#action",
+        "game-adventure": "arcade/index.html#adventure",
+        "game-puzzle": "arcade/index.html#puzzle",
+        "game-racing": "arcade/index.html#racing",
+        "game-retro": "arcade/index.html#retro",
+        "game-strategy": "arcade/index.html#strategy",
         marketplace: "marketplace/index.html",
         learn: "learn/index.html",
         community: "community/index.html",
@@ -56,9 +77,14 @@
         const pagePath = currentPagePath() || "index.html";
         root.querySelectorAll("[data-nav-link]").forEach(function (link) {
             const route = routeMap[link.dataset.route] || "";
-            const isToolChild = pagePath.indexOf("tools/") === 0 && link.dataset.route === "tools";
+            const isAccountUtilityPage = pagePath.indexOf("tools/groups/") === 0
+                || pagePath === "tools/builder.html"
+                || pagePath === "tools/creator.html";
+            const isAccountUtility = isAccountUtilityPage && link.dataset.route === "account";
+            const isToolChild = pagePath.indexOf("tools/") === 0 && !isAccountUtilityPage && link.dataset.route === "tools";
+            const isGameChild = pagePath.indexOf("arcade/") === 0 && link.dataset.route === "games";
             const isAccountChild = pagePath.indexOf("account/") === 0 && link.dataset.route === "account";
-            if (route === pagePath || isToolChild || isAccountChild) {
+            if (route === pagePath || isToolChild || isGameChild || isAccountChild || isAccountUtility) {
                 link.classList.add("active");
             }
         });
