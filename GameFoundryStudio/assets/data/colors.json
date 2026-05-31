@@ -1,15 +1,29 @@
 {
-  "brand": "Game Foundry Studio",
-  "tagline": "Build. Play. Share.",
+  "colorModel": "Proposed Meanings",
   "colors": [
-    {"name":"Iron Black","hex":"#121212","use":"Primary background and footer"},
-    {"name":"Foundry Space","hex":"#070A12","use":"Deep UI background"},
-    {"name":"Panel Slate","hex":"#0F172A","use":"Cards and panels"},
-    {"name":"Steel Gray","hex":"#6B7280","use":"Borders, labels, secondary text"},
-    {"name":"Molten Orange","hex":"#FF7A00","use":"Primary buttons and brand heat"},
-    {"name":"Forge Orange","hex":"#FF8A2A","use":"Glow, hover, active states"},
-    {"name":"Forge Gold","hex":"#FFC857","use":"Rewards, highlights, achievements"},
-    {"name":"Electric Blue","hex":"#4DA3FF","use":"Builder/UI technology accent"},
-    {"name":"Arcade Cyan","hex":"#22D3EE","use":"Links, status, creator tools"}
+    {
+      "id": "molten-orange",
+      "meaning": "Building / Creation"
+    },
+    {
+      "id": "electric-blue",
+      "meaning": "Technology / System"
+    },
+    {
+      "id": "forge-gold",
+      "meaning": "Assets / Content"
+    },
+    {
+      "id": "arcade-cyan",
+      "meaning": "Media / Audio / Community"
+    },
+    {
+      "id": "purple",
+      "meaning": "Design / Animation"
+    },
+    {
+      "id": "steel-gray",
+      "meaning": "Configuration / Admin"
+    }
   ]
 }
