@@ -7798,6 +7798,202 @@ test.describe("MIDI Studio V2", () => {
     }
   });
 
+  test("validates PR501-560 production signoff workflow, readiness, and SSoT", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const server = await openMidiStudioForImport(page);
+    try {
+      await page.locator("#toolImportManifestInput").setInputFiles(uatManifestPath);
+      await selectMidiStudioTab(page, "song-setup");
+      await page.locator("#songDetails [data-song-detail-field='name']").fill("Production Signoff Cue");
+      await page.locator("#songDetails [data-song-detail-field='classification']").fill("Victory");
+      await page.locator("#songSheetTempoInput").fill("960");
+      await page.locator("#songSheetKeyInput").selectOption("C major");
+      await page.locator("#songSheetStyleInput").selectOption("victory-fanfare");
+      await page.locator("#songDetailNotes [data-song-detail-field='notes']").fill("Production signoff round-trip note.");
+      await expect(page.locator("#songDetails [data-song-detail-field='id']")).toHaveValue("productionSignoffCue-Victory");
+
+      await fillSongSheetSectionBuilder(page, "Intro: C\nVerse: Am\nChorus: F\nBridge: G\nOutro: C");
+      await clearSongSheetSequence(page);
+      await addSongSheetSequenceLabels(page, ["Intro", "Verse", "Chorus", "Outro"]);
+      await page.locator("#parseSongSheetButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Song Sheet updated the editable note grid/);
+      await page.locator("#regenerateArrangementButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Regenerated arrangement/);
+
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await expect(octaveTimelineCanvas(page)).toHaveAttribute("data-section-header-labels", "Intro|Verse|Chorus|Outro");
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-quick-instrument-label='lead']").click();
+      const editTarget = await emptyCanvasRun(page, { lane: "lead", length: 1 });
+      expect(editTarget).toBeTruthy();
+      await clickCanvasCell(page, editTarget.rowToken, editTarget.stepIndex);
+      expect(await hasCanvasNote(page, "lead", editTarget.rowToken, editTarget.stepIndex)).toBe(true);
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await clickCanvasKeyboardKey(page, "C5");
+      await expect.poll(() => page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+
+      await selectMidiStudioTab(page, "instruments");
+      await selectInstrumentRow(page, "lead");
+      await setInputValue(page, "#previewVolumeLeadInput", "0.7");
+      await setInputValue(page, "#previewPanLeadInput", "-0.2");
+      await setInputValue(page, "#previewTransposeLeadInput", "4");
+      await setInputValue(page, "#previewVelocityLeadInput", "92");
+      await setInputValue(page, "#previewDurationLeadInput", "1.25");
+      await setInputValue(page, "#previewEffectReverbLeadInput", "0.4");
+      await setInputValue(page, "#previewEffectChorusLeadInput", "0.25");
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await page.locator("#duplicateInstrumentRowButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated instrument row Lead/);
+      await page.locator("#moveInstrumentDownButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved instrument row/);
+      await selectMidiStudioTab(page, "instruments");
+      await instrumentRow(page, "lead-1").locator("[data-delete-instrument-row='lead-1']").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Confirm delete requested/);
+      await page.locator("[data-confirm-delete-instrument-row='lead-1']").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted instrument row/);
+      await selectInstrumentRow(page, "lead");
+
+      await page.evaluate(() => {
+        window.__midiStudioPreviewSynthEvents = [];
+      });
+      await page.locator("#instrumentAuditionKeyboard [data-audition-note='C5']").click();
+      await expect.poll(() => page.evaluate(() => window.__midiStudioPreviewSynthEvents.some((event) => event.action === "oscillator-start"))).toBe(true);
+
+      await selectMidiStudioTab(page, "export");
+      await expect(page.locator("#exportManifestReadinessDetails")).not.toContainText("Missing assignments WARN");
+      await expect(page.locator("#exportManifestReadinessDetails")).toContainText("Optional unassigned songs");
+      await expect(page.locator("#exportStatusDetails")).toContainText("Save WAV renders from the SoundFont pipeline");
+      await expect(page.locator("#renderedExportTargetTypeSelect option")).toContainText([
+        "WAV",
+        "MP3 (encoder unavailable)",
+        "OGG (encoder unavailable)"
+      ]);
+
+      await selectMidiStudioTab(page, "studio");
+      await page.locator("#loopToggle").setChecked(false);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playbackState")).toContainText("Engine: Fast JS Synth");
+      await expect.poll(async () => (await page.locator("#playbackState").textContent()) || "", { timeout: 10000 }).toContain("Completed audible preview");
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await selectMidiStudioTab(page, "export");
+      await page.locator("#previewEngineSelect").selectOption("soundfont");
+      await expect(page.locator("#soundFontPreviewStatus")).toContainText("PASS:");
+      await selectMidiStudioTab(page, "studio");
+      await page.evaluate(() => {
+        window.__midiStudioSoundFontEvents = [];
+      });
+      await page.locator("#loopToggle").setChecked(true);
+      await page.locator("#playButton").click();
+      await expect(page.locator("#playbackState")).toContainText("Engine: SoundFont Preview");
+      await expect(page.locator("#playbackState")).toContainText("(looping)");
+      await expect.poll(() => page.evaluate(() => window.__midiStudioSoundFontEvents.some((event) => event.action === "play-start" && event.loop === true))).toBe(true);
+      await page.locator("#stopButton").click();
+      await expect(page.locator("#playButton")).toBeEnabled();
+
+      await selectMidiStudioTab(page, "midi-import");
+      await expect(page.locator("#midiSourceDetails")).toContainText("INFO No MIDI source inspected yet.");
+      await expect(page.locator("#midiSourceDetails")).not.toContainText("WARN No MIDI source inspected");
+      await page.locator("#midiSourceFileInput").setInputFiles({
+        buffer: validMidiBytes,
+        mimeType: "audio/midi",
+        name: "production-signoff.midi"
+      });
+      await expect(page.locator("#midiSourceDetails")).toContainText("PASS Local MIDI notes can populate the canonical studio arrangement");
+
+      await page.evaluate(() => window.__midiStudioV2App.selectSong("productionSignoffCue-Victory"));
+      await selectMidiStudioTab(page, "export");
+      await page.evaluate(() => {
+        window.__midiStudioRenderedDownloads = [];
+        window.__midiStudioV2App.triggerRenderedDownload = (blob, filename) => {
+          window.__midiStudioRenderedDownloads.push({ filename, size: blob.size, type: blob.type });
+        };
+      });
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("wav");
+      await page.locator("#renderedExportSaveButton").click();
+      await expect.poll(() => page.evaluate(() => window.__midiStudioRenderedDownloads[0]?.type || "")).toBe("audio/wav");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("mp3");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("data-midi-studio-unwired", "encoder-unavailable");
+      await page.locator("#renderedExportTargetTypeSelect").selectOption("ogg");
+      await expect(page.locator("#renderedExportSaveButton")).toHaveAttribute("data-midi-studio-unwired", "encoder-unavailable");
+
+      await page.locator("#toolExportToolStateButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/PASS Export JSON PASS/);
+      const exportedJson = await page.locator("#inspectorOutput").textContent();
+      await page.locator("#toolImportManifestInput").setInputFiles({
+        buffer: Buffer.from(exportedJson),
+        mimeType: "application/json",
+        name: "midi-studio-v2-pr501-roundtrip.json"
+      });
+      expect(await page.evaluate(() => {
+        const song = window.__midiStudioV2App.selectedSong();
+        return {
+          effects: song.studioArrangement.previewLaneSettings.effects.lead,
+          id: song.id,
+          pan: song.studioArrangement.previewLaneSettings.pans.lead,
+          transpose: song.studioArrangement.previewLaneSettings.transposes.lead,
+          volume: song.studioArrangement.previewLaneSettings.volumes.lead
+        };
+      })).toEqual(expect.objectContaining({
+        id: "productionSignoffCue-Victory",
+        pan: -0.2,
+        transpose: 4,
+        volume: 0.7
+      }));
+
+      const controls = [];
+      for (const tabId of ["song-setup", "studio", "instruments", "midi-import", "diagnostics", "export"]) {
+        await selectMidiStudioTab(page, tabId);
+        if (tabId === "studio") {
+          await waitForCanvasRender(page);
+        }
+        controls.push(...await visibleMidiStudioControlOwnership(page, tabId));
+      }
+      const duplicateEditableOwners = Array.from(controls
+        .filter((control) => control.editable && control.kind === "canonical")
+        .reduce((map, control) => {
+          const owners = map.get(control.canonical) || new Set();
+          owners.add(control.owner);
+          map.set(control.canonical, owners);
+          return map;
+        }, new Map()), ([canonical, owners]) => ({ canonical, owners: Array.from(owners) }))
+        .filter((entry) => entry.owners.length > 1);
+      expect(duplicateEditableOwners).toEqual([]);
+      expect(controls.filter((control) => control.unwired && (!control.unwiredClass || !control.title))).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("validates PR501-560 workspace launch handoff split", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const manifest = JSON.parse(await fs.readFile(uatManifestPath, "utf8"));
+    const server = await openMidiStudioFromWorkspace(page, manifest);
+    try {
+      await expect(page.locator("body")).toHaveAttribute("data-midi-studio-launch-mode", "workspace");
+      await expect(page.locator("#returnToWorkspaceButton")).toBeVisible();
+      await expect(page.locator("#saveProjectButton")).toBeHidden();
+      await expect(page.locator("#toolImportManifestButton")).toBeHidden();
+      await selectMidiStudioTab(page, "studio");
+      await waitForCanvasRender(page);
+      await timelineQuickInstrumentRow(page, "lead").locator("[data-quick-instrument-label='lead']").click();
+      const workspaceEdit = await emptyCanvasRun(page, { lane: "lead", length: 1 });
+      expect(workspaceEdit).toBeTruthy();
+      await clickCanvasCell(page, workspaceEdit.rowToken, workspaceEdit.stepIndex);
+      expect(await page.evaluate(() => {
+        const session = JSON.parse(window.sessionStorage.getItem("workspace.tools.midi-studio-v2"));
+        return session.dirty.isDirty;
+      })).toBe(true);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("derives primary song, instrument, grid, playback, and diagnostics views from the canonical selected song", async ({ page }) => {
     const server = await openMidiStudioForImport(page);
     try {

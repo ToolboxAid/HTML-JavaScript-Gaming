@@ -189,7 +189,7 @@ function manifestGameUsageAssignmentSummary(payload) {
     .join("; ");
   const customSummary = customAssignments.length ? customAssignments.join("; ") : "none";
   const missingSummary = missingAssignments.length ? missingAssignments.join(", ") : "none";
-  return `${assignedCount}/${songs.length} songs assigned; ${commonSummary}; Custom: ${customSummary}; Missing assignments WARN: ${missingSummary}.`;
+  return `${assignedCount}/${songs.length} songs assigned; ${commonSummary}; Custom: ${customSummary}; Optional unassigned songs: ${missingSummary}.`;
 }
 
 function manifestExportReadiness(payload, selectedSong, playable) {
@@ -199,7 +199,7 @@ function manifestExportReadiness(payload, selectedSong, playable) {
   }
   const selectedNoteCount = noteCount(playable);
   const assignmentSummary = manifestGameUsageAssignmentSummary(payload);
-  return `${songs.length} song${songs.length === 1 ? "" : "s"} available; WAV SoundFont render path ready when a playable timeline exists; MP3/OGG encoders unavailable and report FAIL when selected; selected song ${selectedSong?.name || "none"} has ${selectedNoteCount} note${selectedNoteCount === 1 ? "" : "s"}; Game Usage ${assignmentSummary}.`;
+  return `${songs.length} song${songs.length === 1 ? "" : "s"} available; WAV SoundFont render path ready when a playable timeline exists; MP3/OGG are marked future encoder outputs; selected song ${selectedSong?.name || "none"} has ${selectedNoteCount} note${selectedNoteCount === 1 ? "" : "s"}; Game Usage ${assignmentSummary}.`;
 }
 
 export class ExportPanelControl {
@@ -360,7 +360,7 @@ export class ExportPanelControl {
     }
     return {
       level: this.previewEngineStatus.level === "FAIL" || this.previewEngineStatus.level === "WARN" ? "WARN" : "INFO",
-      message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Save WAV renders from the SoundFont pipeline. Save MP3/OGG reports encoder unavailable until browser encoders are added. Preview engine ${previewEngineSummary(this.previewEngineStatus)}.`,
+      message: `Export source is ready with ${sequenceLength(song)} sequence item(s), ${noteCount(playable)} notes, and ${instrumentCount(song)} instrument(s). Save WAV renders from the SoundFont pipeline. Save MP3/OGG are marked future encoder outputs until browser encoders are added. Preview engine ${previewEngineSummary(this.previewEngineStatus)}.`,
       payload,
       playable,
       song

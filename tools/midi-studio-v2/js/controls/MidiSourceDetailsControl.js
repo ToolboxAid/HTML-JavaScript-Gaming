@@ -2,8 +2,8 @@ function sourceDetailRows(details) {
   if (!details?.ok) {
     return [
       ["Workflow", "Local MIDI file import is separate from JSON manifest import. Use Import MIDI Source for .mid/.midi files; use Import JSON Manifest for game manifests."],
-      ["Inspection result", details?.message ? `FAIL ${details.message}` : "WARN No MIDI source inspected."],
-      ["Canonical conversion", "WARN Local MIDI import normalizes note timing into the canonical studio arrangement; advanced controller and velocity conversion remains future work."]
+      ["Inspection result", details?.message ? `FAIL ${details.message}` : "INFO No MIDI source inspected yet."],
+      ["Canonical conversion", "INFO Local MIDI import normalizes note timing into the canonical studio arrangement; advanced controller and velocity conversion is future-only."]
     ];
   }
   const warnings = String(details.warningSummary || "").trim();
@@ -13,7 +13,7 @@ function sourceDetailRows(details) {
   return [
     ["Workflow", "Local MIDI file import is separate from JSON manifest import. Use Import MIDI Source for .mid/.midi files; use Import JSON Manifest for game manifests."],
     ["Inspection result", inspectionStatus],
-    ["Canonical conversion", "PASS Local MIDI notes can populate the canonical studio arrangement; WARN advanced MIDI event conversion remains future work."],
+    ["Canonical conversion", "PASS Local MIDI notes can populate the canonical studio arrangement; advanced MIDI event conversion is future-only."],
     ["Source path", details.path],
     ["Format", details.format],
     ["Track count", details.trackCount],
