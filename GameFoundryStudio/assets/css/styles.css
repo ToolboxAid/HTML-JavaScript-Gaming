@@ -188,6 +188,11 @@ body.tool-focus-mode details.tool-display-mode summary::after {
 }
 .tool-column-header.cyan { background: rgba(32, 214, 255, .08); }
 .tool-column-header.purple { background: rgba(184, 119, 255, .08); }
+.tool-column-header.molten-orange { background: rgba(255, 122, 0, .10); }
+.tool-column-header.forge-gold { background: rgba(255, 200, 87, .10); }
+.tool-column-header.arcade-cyan { background: rgba(34, 211, 238, .10); }
+.tool-column-header.electric-blue { background: rgba(77, 163, 255, .10); }
+.tool-column-header.steel-gray { background: rgba(107, 114, 128, .14); }
 .tool-column-header h2,
 .tool-column-header h3 {
     margin: 0;
@@ -200,6 +205,16 @@ body.tool-focus-mode details.tool-display-mode summary::after {
 .tool-column-header.cyan h3 { color: var(--cyan); }
 .tool-column-header.purple h2,
 .tool-column-header.purple h3 { color: var(--purple); }
+.tool-column-header.molten-orange h2,
+.tool-column-header.molten-orange h3 { color: var(--molten-orange); }
+.tool-column-header.forge-gold h2,
+.tool-column-header.forge-gold h3 { color: var(--forge-gold); }
+.tool-column-header.arcade-cyan h2,
+.tool-column-header.arcade-cyan h3 { color: var(--arcade-cyan); }
+.tool-column-header.electric-blue h2,
+.tool-column-header.electric-blue h3 { color: var(--electric-blue); }
+.tool-column-header.steel-gray h2,
+.tool-column-header.steel-gray h3 { color: var(--steel-gray); }
 .accordion-stack {
     display: grid;
     gap: 10px;
