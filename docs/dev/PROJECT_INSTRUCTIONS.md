@@ -179,6 +179,46 @@ Allowed:
 - Removing deprecated CSS.
 - Consolidating duplicate CSS into `theme/v2`.
 
+### Theme V2 File Ownership
+
+All reusable styling must live under:
+
+`GameFoundryStudio/assets/css/theme/v2/`
+
+Approved styling surfaces:
+- `theme.css`
+- `colors.css`
+- `controls.css`
+- `typography.css`
+- `spacing.css`
+- `buttons.css`
+- `forms.css`
+- `panels.css`
+- `accordion.css`
+- `status.css`
+- `tables.css`
+- `dialogs.css`
+- `layout.css`
+
+Rules:
+- Pages consume `theme/v2`.
+- Tools consume `theme/v2`.
+- Pages do not define styling.
+- Tools do not define styling.
+- New CSS files outside `theme/v2` are prohibited.
+- Styling requests should be implemented as reusable `theme/v2` patterns.
+- Missing patterns must be documented as design-system gaps.
+- No page-specific styling unless approved and promoted into `theme/v2`.
+
+### Design System Gap Process
+
+When a style is missing:
+1. Document the gap.
+2. Identify affected pages/tools.
+3. Add reusable `theme/v2` pattern.
+4. Reuse everywhere.
+5. Do not implement locally.
+
 Exception documentation is required for any approved deviation and must include:
 - File.
 - Reason.
