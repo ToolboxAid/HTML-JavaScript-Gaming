@@ -147,9 +147,30 @@ Use that phrase as a compact IA and copywriting anchor:
 
 ## GAMEFOUNDRYSTUDIO THEME V2 GOVERNANCE
 
-`theme/v2` is the only approved styling surface for new GameFoundryStudio work.
+`theme/v2` is the only approved styling surface for GameFoundryStudio work.
 
-Existing CSS is deprecated and compatibility-only.
+V1/legacy CSS is deprecated and out of play.
+
+### Theme V2 Only CSS Rule
+
+- Theme V2 is the only active styling system.
+- V1/legacy CSS is deprecated and out of play.
+- V1/legacy CSS must not be used as a source.
+- V1/legacy CSS must not be copied.
+- V1/legacy CSS must not be ported.
+- V1/legacy CSS must not be compared as the desired target.
+- V1/legacy CSS must not be extended.
+- V1/legacy CSS must not be reintroduced through aliases, duplicate selectors, wrapper selectors, compatibility classes, or fallback imports.
+- New CSS must be authored directly in Theme V2 only when approved as reusable Theme V2 design-system styling.
+- Pages not migrated to Theme V2 may temporarily retain their existing references until their migration PR.
+- Pages that have migrated to Theme V2 must not reference V1/legacy CSS.
+- Migration means replacing the page with Theme V2 usage, not copying V1 styles into Theme V2.
+
+If Theme V2 lacks a needed pattern:
+1. Document the design-system gap.
+2. Request approval.
+3. Implement the reusable pattern directly in Theme V2.
+4. Do not solve it by using V1.
 
 Rules:
 - Do not extend deprecated CSS.
@@ -166,18 +187,21 @@ Rules:
 - No hardcoded font sizes.
 - No hardcoded z-index values.
 - No duplicate component styling.
-- No copy/paste of deprecated selectors into `theme/v2`.
+- No copy/paste, porting, aliasing, or wrapper recreation of deprecated selectors into `theme/v2`.
 - No one-off classes for a single page or tool unless approved and promoted into `theme/v2`.
 - New UI work must first attempt to use existing `theme/v2` tokens and classes.
 - Missing styling requirements must be reported as design-system gaps.
 - Design-system gaps should be documented rather than solved locally.
 
 Allowed:
-- Adding reusable `theme/v2` tokens.
-- Adding reusable `theme/v2` component classes.
+- Adding approved reusable `theme/v2` tokens.
+- Adding approved reusable `theme/v2` component classes.
 - Toggling approved `theme/v2` classes from JavaScript.
-- Removing deprecated CSS.
-- Consolidating duplicate CSS into `theme/v2`.
+- Ownership cleanup inside Theme V2.
+- Consolidation inside Theme V2.
+- Removing deprecated dependencies.
+- Migrating page families to Theme V2.
+- Documenting historical legacy behavior.
 
 ### Theme V2 File Ownership
 
@@ -215,19 +239,25 @@ Rules:
 When a style is missing:
 1. Document the gap.
 2. Identify affected pages/tools.
-3. Add reusable `theme/v2` pattern.
-4. Reuse everywhere.
-5. Do not implement locally.
+3. Request approval.
+4. Add the approved reusable `theme/v2` pattern directly in Theme V2.
+5. Reuse everywhere.
+6. Do not implement locally or solve it by using V1/legacy CSS.
 
 ### Theme V2 Consolidation Rule
 
 During migration, allowed:
-- moving existing reusable CSS into `theme/v2` ownership files
-- renaming ownership locations
-- removing duplicates
-- normalizing existing patterns
+- ownership cleanup inside Theme V2
+- consolidation inside Theme V2
+- removing deprecated dependencies
+- migration of page families to Theme V2
+- documentation of historical legacy behavior
 
 During migration, not allowed:
+- restoring legacy CSS
+- copying, porting, or using V1/legacy CSS as a source
+- comparing V1/legacy CSS as the desired target
+- reintroducing deprecated selectors through aliases, duplicate selectors, wrapper selectors, compatibility classes, or fallback imports
 - creating new component designs
 - creating new visual patterns
 - creating new utility systems
@@ -236,8 +266,9 @@ During migration, not allowed:
 
 If a required pattern does not exist:
 1. Document it as a Design System Gap.
-2. Stop.
-3. Request approval before implementation.
+2. Request approval before implementation.
+3. Implement it directly in Theme V2 after approval.
+4. Do not solve it by reactivating, copying, porting, or extending V1/legacy CSS.
 
 Exception documentation is required for any approved deviation and must include:
 - File.
