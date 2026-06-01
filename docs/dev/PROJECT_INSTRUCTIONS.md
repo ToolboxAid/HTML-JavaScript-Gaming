@@ -219,6 +219,26 @@ When a style is missing:
 4. Reuse everywhere.
 5. Do not implement locally.
 
+### Theme V2 Consolidation Rule
+
+During migration, allowed:
+- moving existing reusable CSS into `theme/v2` ownership files
+- renaming ownership locations
+- removing duplicates
+- normalizing existing patterns
+
+During migration, not allowed:
+- creating new component designs
+- creating new visual patterns
+- creating new utility systems
+- creating new color systems
+- creating new layout systems
+
+If a required pattern does not exist:
+1. Document it as a Design System Gap.
+2. Stop.
+3. Request approval before implementation.
+
 Exception documentation is required for any approved deviation and must include:
 - File.
 - Reason.
