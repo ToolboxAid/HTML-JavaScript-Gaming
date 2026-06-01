@@ -190,11 +190,6 @@
   padding: 18px
 }
 
-.card h3,
-.tool-card h3 {
-  font-size: 22px
-}
-
 .feature-image,
 .card img,
 .tool-card img {
@@ -222,12 +217,6 @@
 .page-title {
   padding: 44px 0 20px;
   border-bottom: 1px solid var(--line)
-}
-
-.page-title h1 {
-  font-size: clamp(42px, 7vw, 82px);
-  line-height: .92;
-  margin: 14px 0
 }
 
 .kicker {
@@ -533,7 +522,6 @@ details.vertical-accordion[open] summary:after {
 .tool-column-header h3 {
   margin: 0;
   color: var(--gold);
-  font-size: 16px;
   letter-spacing: .08em;
   text-transform: uppercase;
   order: 1
@@ -583,10 +571,6 @@ details.vertical-accordion[open] summary:after {
   object-fit: contain;
   display: block;
   margin: 4px auto 18px
-}
-
-.tool-center-panel h2 {
-  font-size: clamp(26px, 4vw, 44px)
 }
 
 .tool-center-panel p {
@@ -854,10 +838,6 @@ body.tool-focus-mode .tool-column:last-of-type {
 
   .nav-links {
     margin-left: 0
-  }
-
-  .page-title h1 {
-    font-size: 44px
   }
 
   .sub-menu {

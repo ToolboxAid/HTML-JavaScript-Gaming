@@ -292,12 +292,6 @@
     align-items: center
 }
 
-.controls-title {
-    font-size: clamp(42px, 6vw, 76px);
-    line-height: .95;
-    margin: 14px 0
-}
-
 .forgebot-stage {
     min-height: 360px;
     border: 1px solid rgba(255, 122, 0, .32);
