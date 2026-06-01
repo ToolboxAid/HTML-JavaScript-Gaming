@@ -1,105 +1,55 @@
-﻿<!--
-Toolbox Aid
-David Quesenberry
-03/23/2026
-index.html
--->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tools</title>
-  <link rel="stylesheet" href="../src/engine/theme/main.css" />
-  <link rel="stylesheet" href="../src/engine/ui/hubCommon.css" />
-  <link rel="stylesheet" href="./shared/platformShell.css" />
+    <meta charset="utf-8">
+    <base href="../GameFoundryStudio/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tools - Game Foundry Studio</title>
+    <meta name="description" content="Browse Game Foundry Studio creator tools.">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/css/theme/v2/theme.css">
 </head>
-
-<body class="hub-page-tools" data-tools-platform-page="landing">
-  <div id="shared-theme-header"></div>
-  <div data-tools-platform-header></div>
-  <div class="wrap">
-
-    <section class="hero">
-      <p class="subtitle">Launch the first-class art and scene tools from one registry-driven surface. The landing page
-        shows only active, user-facing tools and keeps transitional content out of the main launcher.</p>
-      <p class="subtitle">* Use Open Tool for normal day-to-day use, cleanest behavior, and quickest direct debugging.</p>
-    </section>
-
-    <section>
-      <h2>First-Class Tools</h2>
-      <h3>Workflow</h3>
-      <div class="grid" data-active-tools-workflow-grid></div>
-      <h3>Editors</h3>
-      <div class="grid" data-active-tools-editors-grid></div>
-      <h3>Utilities</h3>
-      <div class="grid" data-active-tools-utilities-grid></div>
-      <h3>Viewers</h3>
-      <div class="grid" data-active-tools-viewers-grid></div>
-      <noscript>
-        <p class="callout"><strong>JavaScript required:</strong> the active tools list is generated from the shared
-          tools registry.</p>
-      </noscript>
-    </section>
-
-    <section>
-      <h2>Planned Next</h2>
-      <p>Additional workflow tools are next priorities after the active browser and manager surfaces now live in the
-        shared tools registry.</p>
-      <div class="grid" data-planned-tools-grid>
-
-        <div class="card">
-          <h3>Animation / Flipbook Editor</h3>
-          <p>Preview timing, duplicate frames, reorder frames, and export animation data cleanly.</p>
-          <div class="meta">
-            <span class="pill planned">Planned</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Level / Entity Placement Editor</h3>
-          <p>Place enemies, spawns, pickups, triggers, and named points on top of map data.</p>
-          <div class="meta">
-            <span class="pill planned">Planned</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Replay Inspector</h3>
-          <p>Open recorded sessions, step frame by frame, and debug input-driven playback behavior.</p>
-          <div class="meta">
-            <span class="pill planned">Planned</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Piper WASM Backend</h3>
-          <p>Add a local Piper-powered speech backend for higher-quality offline voice generation in supported browsers.</p>
-          <div class="meta">
-            <span class="pill planned">Planned</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Optional SSML Processing Layer</h3>
-          <p>Plan an optional SSML-style processing layer for pauses, emphasis, pronunciation, and delivery hints.</p>
-          <div class="meta">
-            <span class="pill planned">Planned</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <div class="callout">
-      <strong>Registry rule:</strong> this page shows only launchable first-class tools from the shared registry.
-    </div>
-  </div>
-  <div data-tools-platform-status></div>
-  <script type="module" src="../src/engine/theme/mount-shared-header.js"></script>
-  <script type="module" src="./renderToolsIndex.js"></script>
-  <script type="module" src="./shared/platformShell.js"></script>
+<body>
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Build</div>
+                <h1>Creator Tools</h1>
+                <p class="lede">Open visual studios for assets, game design, audio, input, code, publishing, and platform support.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Tool index</div>
+                        <h2>Choose a workspace.</h2>
+                    </div>
+                    <p>These links keep the current tool runtime pages in place while the root site migration continues.</p>
+                </div>
+                <div class="card-grid">
+                    <article class="card"><div class="card-body"><div class="kicker">AI &amp; Learning</div><h3>AI Assistant</h3><p>Plan, draft, and refine game-building ideas with guided assistance.</p><a class="btn" href="tools/ai-assistant.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Build &amp; Create</div><h3>Animation Studio</h3><p>Create animation sequences and motion planning for game objects.</p><a class="btn" href="tools/animation-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Content &amp; Assets</div><h3>Asset Studio</h3><p>Create sprites, vectors, previews, and reusable game assets.</p><a class="btn" href="tools/asset-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Development &amp; System</div><h3>Code Studio</h3><p>Review code-oriented game building surfaces and implementation notes.</p><a class="btn" href="tools/code-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Build &amp; Create</div><h3>Game Builder</h3><p>Assemble screens, levels, objects, assets, behaviors, and state transitions.</p><a class="btn" href="tools/game-builder.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Build &amp; Create</div><h3>Game Design Studio</h3><p>Define genre, players, story, objectives, rules, progression, and game intent.</p><a class="btn" href="tools/game-design-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Development &amp; System</div><h3>Input Studio</h3><p>Plan keyboard, mouse, touch, gamepad, and custom input mappings.</p><a class="btn" href="tools/input-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Development &amp; System</div><h3>Localization Studio</h3><p>Prepare translation and localization workflows for game text.</p><a class="btn" href="tools/localization-studio/index.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Media &amp; Audio</div><h3>MIDI Studio</h3><p>Sketch MIDI-oriented music ideas and audio structure.</p><a class="btn" href="tools/midi-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Build &amp; Create</div><h3>Object Vector Studio</h3><p>Create object-ready vector assets and reusable scene pieces.</p><a class="btn" href="tools/object-vector-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Content &amp; Assets</div><h3>Palette Manager</h3><p>Craft and manage color palettes for browser games.</p><a class="btn" href="tools/palette-manager.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Content &amp; Assets</div><h3>Particle Studio</h3><p>Plan particle effects, emitters, and visual feedback moments.</p><a class="btn" href="tools/particle-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Platform &amp; Cloud</div><h3>Publish Studio</h3><p>Prepare release packages, marketplace listings, and published game records.</p><a class="btn" href="tools/publisher.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Media &amp; Audio</div><h3>Sound Studio</h3><p>Design sound effects, audio notes, and game-ready sound requirements.</p><a class="btn" href="tools/sound-studio.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Platform &amp; Cloud</div><h3>Storage Inspector</h3><p>Inspect storage planning and platform persistence surfaces.</p><a class="btn" href="tools/storage-inspector.html">Open Tool</a></div></article>
+                    <article class="card"><div class="card-body"><div class="kicker">Build &amp; Create</div><h3>World Vector Studio</h3><p>Shape world layouts, maps, terrain, and scene geometry.</p><a class="btn" href="tools/world-vector-studio.html">Open Tool</a></div></article>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/js/gamefoundry-partials.js" defer></script>
 </body>
-
 </html>

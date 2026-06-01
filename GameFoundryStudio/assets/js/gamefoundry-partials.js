@@ -71,6 +71,7 @@
     };
 
     const rootPageRoutes = new Set([
+        "tools",
         "about", "vision", "mission", "roadmap", "release-notes",
         "account", "account-profile", "account-preferences", "account-security",
         "admin", "admin-site-settings", "admin-branding", "admin-themes", "admin-design-system", "admin-controls",
