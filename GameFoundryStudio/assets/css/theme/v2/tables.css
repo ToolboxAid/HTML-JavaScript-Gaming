@@ -1,1 +1,21 @@
-/* Home migration does not require reusable table patterns yet. */
+.table-wrapper {
+  overflow: auto
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse
+}
+
+caption {
+  padding: var(--space-10);
+  font-weight: var(--font-weight-heavy);
+  text-align: left
+}
+
+th,
+td {
+  border-bottom: var(--border-standard);
+  padding: var(--space-14);
+  text-align: left
+}

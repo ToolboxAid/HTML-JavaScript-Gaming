@@ -84,8 +84,41 @@ small {
   font-size: var(--font-size-sm)
 }
 
+code,
+pre {
+  font-family: var(--font-family-code);
+  font-size: .95em
+}
+
+pre {
+  overflow: auto;
+  padding: var(--space-14)
+}
+
 span {
   min-width: var(--space-0)
+}
+
+ul,
+ol {
+  margin: var(--space-14) var(--space-0) var(--space-0);
+  padding-left: var(--space-18)
+}
+
+li {
+  line-height: 1.5
+}
+
+dl {
+  margin: var(--space-0)
+}
+
+dt {
+  font-weight: var(--font-weight-heavy)
+}
+
+dd {
+  margin: var(--space-0) var(--space-0) var(--space-10)
 }
 
 .kicker {

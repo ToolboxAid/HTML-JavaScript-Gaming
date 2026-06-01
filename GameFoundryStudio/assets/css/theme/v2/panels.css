@@ -1,16 +1,19 @@
 .card,
 .game-card,
 .panel,
+.control-card,
 .entry-card,
 .check-panel,
 .image-panel,
 .hero-art,
 .game-tile,
+.side-menu,
 .release-intro,
 .release-stat,
 .release-stage,
 .version-item,
-.timeline-placeholder {
+.timeline-placeholder,
+.mini-stat {
   border: var(--border-standard);
   background: var(--card-background);
   overflow: hidden;
@@ -19,7 +22,9 @@
 
 .card,
 .game-card,
-.panel {
+.panel,
+.control-card,
+.side-menu {
   border-radius: var(--space-18)
 }
 
@@ -32,10 +37,89 @@
   display: block
 }
 
+.side-menu a {
+  display: block;
+  padding: var(--space-11) var(--space-12);
+  border-radius: var(--radius-md);
+  color: var(--muted)
+}
+
+.side-menu a.active {
+  background: var(--orange-soft-strong);
+  color: var(--gold)
+}
+
 .callout {
   border: var(--border-standard);
   background: var(--orange-soft);
   border-radius: var(--space-18);
+  padding: var(--space-18)
+}
+
+.mini-stat {
+  padding: var(--space-18);
+  background: var(--panel-soft);
+  font-size: var(--font-size-sm);
+  line-height: 1.35
+}
+
+.mini-stat strong {
+  display: block;
+  font-size: var(--font-size-xl);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  color: var(--gold)
+}
+
+.brand-color-code {
+  align-items: center;
+  display: flex;
+  gap: var(--space-8)
+}
+
+.brand-color-code strong {
+  display: inline
+}
+
+.brand-color-swatch {
+  border: var(--border-standard);
+  border-color: var(--swatch-border);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-sm);
+  display: inline-block;
+  flex: 0 0 auto;
+  height: var(--icon-size-sm);
+  width: var(--icon-size-sm)
+}
+
+.mascot-role {
+  color: var(--text);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-strong);
+  margin: var(--space-4) var(--space-0) var(--space-10)
+}
+
+.forgebot-stage {
+  min-height: var(--size-forgebot-stage-min);
+  border: var(--border-standard);
+  border-color: var(--forgebot-stage-border);
+  border-radius: var(--space-28);
+  background: var(--forgebot-stage-background);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  box-shadow: var(--shadow)
+}
+
+.forgebot-stage img {
+  width: min(92%, var(--size-forgebot-image-max));
+  height: auto;
+  filter: drop-shadow(var(--shadow-xl))
+}
+
+.control-card {
+  --accent: var(--orange);
+  border-left: var(--size-control-accent-width) solid var(--accent);
   padding: var(--space-18)
 }
 

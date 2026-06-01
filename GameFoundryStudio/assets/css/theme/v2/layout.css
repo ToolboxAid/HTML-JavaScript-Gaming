@@ -41,6 +41,18 @@ div {
   padding: var(--space-34) var(--space-0)
 }
 
+.controls-hero {
+  padding: var(--space-46) var(--space-0) var(--space-24);
+  border-bottom: var(--border-standard)
+}
+
+.controls-hero-grid {
+  display: grid;
+  grid-template-columns: var(--controls-hero-columns);
+  gap: var(--space-34);
+  align-items: center
+}
+
 .grid {
   display: grid;
   gap: var(--space-18)
@@ -61,6 +73,30 @@ div {
 .page-title {
   padding: var(--space-44) var(--space-0) var(--space-20);
   border-bottom: var(--border-standard)
+}
+
+.account-panel {
+  display: grid;
+  grid-template-columns: var(--admin-panel-columns);
+  gap: var(--space-18)
+}
+
+.admin-page-stack {
+  display: grid;
+  gap: var(--space-18);
+  min-width: var(--space-0)
+}
+
+.admin-page-stack>.section,
+.admin-page-stack>.control-section {
+  padding: var(--space-0)
+}
+
+.admin-page-stack>.section>.container,
+.admin-page-stack>.control-section>.container {
+  max-width: none;
+  width: 100%;
+  padding: var(--space-0)
 }
 
 .site-header {
@@ -196,6 +232,44 @@ div {
   gap: var(--space-12);
   flex-wrap: wrap;
   margin-top: var(--space-28)
+}
+
+.hero-actions {
+  display: flex;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+  margin-top: var(--space-24)
+}
+
+.control-section {
+  padding: var(--space-34) var(--space-0)
+}
+
+.control-lab {
+  display: grid;
+  grid-template-columns: var(--control-lab-columns);
+  gap: var(--space-18)
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: var(--control-row-columns);
+  gap: var(--space-12);
+  align-items: center
+}
+
+.control-row input,
+.control-row select {
+  min-width: var(--space-0);
+  width: 100%
+}
+
+.control-row .switch {
+  justify-self: start
+}
+
+.control-row--toolbar {
+  min-width: var(--control-row-toolbar-min)
 }
 
 .dual-entry {
@@ -345,6 +419,8 @@ div {
   .hero-grid,
   .split,
   .split.reverse,
+  .account-panel,
+  .controls-hero-grid,
   .release-overview,
   .version-columns {
     grid-template-columns: var(--one-column)
@@ -352,6 +428,7 @@ div {
 
   .trending-grid,
   .card-grid,
+  .control-lab,
   .grid.cols-4,
   .grid.cols-3,
   .grid.cols-2,
@@ -382,10 +459,15 @@ div {
   .dual-entry,
   .check-panel,
   .card-grid,
+  .control-lab,
   .grid.cols-4,
   .grid.cols-3,
   .grid.cols-2,
   .release-progress {
+    grid-template-columns: var(--one-column)
+  }
+
+  .control-row {
     grid-template-columns: var(--one-column)
   }
 
