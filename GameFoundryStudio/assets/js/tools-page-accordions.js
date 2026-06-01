@@ -9,7 +9,7 @@
     let currentMode = "ascending";
     const toolGroups = [
         {
-            group: "Assets / Content",
+            group: "Content & Assets",
             tools: [
                 {
                     title: "Asset Studio",
@@ -23,7 +23,7 @@
             ]
         },
         {
-            group: "Assets / Content",
+            group: "Build & Create",
             tools: [
                 {
                     title: "Object Vector Studio",
@@ -46,7 +46,7 @@
             ]
         },
         {
-            group: "Assets / Content",
+            group: "Content & Assets",
             tools: [
                 {
                     title: "Palette Manager",
@@ -60,7 +60,7 @@
             ]
         },
         {
-            group: "Building / Creation",
+            group: "Build & Create",
             tools: [
                 {
                     title: "Game Builder",
@@ -74,7 +74,7 @@
             ]
         },
         {
-            group: "Building / Creation",
+            group: "Build & Create",
             tools: [
                 {
                     title: "Game Design Studio",
@@ -88,7 +88,7 @@
             ]
         },
         {
-            group: "Building / Creation",
+            group: "Platform & Cloud",
             tools: [
                 {
                     title: "Publish Studio",
@@ -102,7 +102,7 @@
             ]
         },
         {
-            group: "Design / Animation",
+            group: "Build & Create",
             tools: [
                 {
                     title: "Animation Studio",
@@ -125,7 +125,7 @@
             ]
         },
         {
-            group: "Media / Audio / Community",
+            group: "Media & Audio",
             tools: [
                 {
                     title: "MIDI Studio",
@@ -148,7 +148,7 @@
             ]
         },
         {
-            group: "Technology / System",
+            group: "AI & Learning",
             tools: [
                 {
                     title: "AI Assistant",
@@ -162,7 +162,7 @@
             ]
         },
         {
-            group: "Technology / System",
+            group: "Development & System",
             tools: [
                 {
                     title: "Code Studio",
@@ -185,7 +185,35 @@
             ]
         },
         {
-            group: "Settings and Admin",
+            group: "Community & Marketplace",
+            tools: [
+                {
+                    title: "Marketplace",
+                    href: "../marketplace/index.html",
+                    image: "../assets/images/tools/marketplace.png",
+                    description: "Browse community-ready tools, assets, listings, and distribution surfaces.",
+                    role: "Community",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                }
+            ]
+        },
+        {
+            group: "Play",
+            tools: [
+                {
+                    title: "Arcade",
+                    href: "../arcade/index.html",
+                    image: "../assets/images/tools/arcade.png",
+                    description: "Play and review available games from the Game Foundry arcade.",
+                    role: "Play",
+                    mascot: "forgebot",
+                    theme: "forge"
+                }
+            ]
+        },
+        {
+            group: "Platform & Cloud",
             tools: [
                 {
                     title: "Storage Inspector",
@@ -199,7 +227,24 @@
             ]
         }
     ];
-    const allTools = toolGroups.flatMap((group) => group.tools);
+    const groupClassMap = {
+        "Build & Create": "tool-group-build-create",
+        "Content & Assets": "tool-group-content-assets",
+        "Media & Audio": "tool-group-media-audio",
+        "AI & Learning": "tool-group-ai-learning",
+        "Platform & Cloud": "tool-group-platform-cloud",
+        "Development & System": "tool-group-development-system",
+        "Community & Marketplace": "tool-group-community-marketplace",
+        "Play": "tool-group-play"
+    };
+    const allTools = toolGroups.flatMap((group) => group.tools.map((tool) => ({
+        ...tool,
+        group: group.group
+    })));
+
+    function groupClass(groupName) {
+        return groupClassMap[groupName] || "";
+    }
 
     function setActiveButton(mode) {
         if (orderButton) {
@@ -224,21 +269,43 @@
         const groups = [];
         toolGroups.forEach((toolGroup) => {
             const group = groups.find((entry) => entry.title === toolGroup.group);
+            const tools = toolGroup.tools.map((tool) => ({
+                ...tool,
+                group: toolGroup.group
+            }));
             if (group) {
-                group.tools.push(...toolGroup.tools);
+                group.tools.push(...tools);
                 return;
             }
             groups.push({
                 title: toolGroup.group,
-                tools: toolGroup.tools.slice()
+                tools,
+                groupClass: groupClass(toolGroup.group)
             });
         });
         return groups;
     }
 
+    function createGroupLabel(groupName) {
+        const label = document.createElement("span");
+        label.className = "tool-group-label";
+
+        const swatch = document.createElement("span");
+        swatch.className = "tool-group-swatch";
+        swatch.setAttribute("role", "img");
+        swatch.setAttribute("aria-label", groupName + " group color");
+        swatch.title = groupName + " color";
+
+        const text = document.createElement("span");
+        text.textContent = groupName;
+
+        label.append(swatch, text);
+        return label;
+    }
+
     function createToolCard(tool) {
         const article = document.createElement("article");
-        article.className = `tool-card ${tool.theme}`;
+        article.className = `tool-card ${tool.theme} ${groupClass(tool.group)}`;
         article.dataset.mascot = tool.mascot;
 
         const link = document.createElement("a");
@@ -251,10 +318,6 @@
         const body = document.createElement("div");
         body.className = "body";
 
-        const role = document.createElement("span");
-        role.className = "role";
-        role.textContent = tool.role;
-
         const title = document.createElement("h3");
         title.textContent = tool.title;
 
@@ -265,20 +328,24 @@
         pill.className = "pill";
         pill.textContent = "Open page";
 
-        body.append(role, title, description, pill);
+        const group = document.createElement("span");
+        group.className = "role";
+        group.append(createGroupLabel(tool.group));
+
+        body.append(title, description, pill, group);
         link.append(image, body);
         article.append(link);
         return article;
     }
 
-    function createAccordion(title, tools, isOpen) {
+    function createAccordion(group, isOpen) {
         const details = document.createElement("details");
-        details.className = "vertical-accordion";
-        details.dataset.toolsAccordion = title;
+        details.className = `vertical-accordion ${group.groupClass}`;
+        details.dataset.toolsAccordion = group.title;
         details.open = isOpen;
 
         const summary = document.createElement("summary");
-        summary.textContent = title;
+        summary.append(createGroupLabel(group.title));
 
         const body = document.createElement("div");
         body.className = "accordion-body";
@@ -286,7 +353,7 @@
         const grid = document.createElement("div");
         grid.className = "tool-grid";
 
-        tools.forEach((tool) => {
+        group.tools.forEach((tool) => {
             grid.append(createToolCard(tool));
         });
 
@@ -306,7 +373,7 @@
 
     function render(mode) {
         if (mode === "grouped") {
-            const accordions = getGroupedTools().map((group, position) => createAccordion(group.title, group.tools, position === 0));
+            const accordions = getGroupedTools().map((group, position) => createAccordion(group, position === 0));
             list.replaceChildren(...accordions);
         } else {
             list.replaceChildren(createToolGrid(getOrderedTools(mode)));

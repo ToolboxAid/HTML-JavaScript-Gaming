@@ -435,7 +435,7 @@ details.vertical-accordion summary::-webkit-details-marker {
 }
 
 details.vertical-accordion summary:after {
-  content: "+";
+  content: "⌄";
   width: 24px;
   height: 24px;
   border: 1px solid var(--line);
@@ -448,7 +448,7 @@ details.vertical-accordion summary:after {
 }
 
 details.vertical-accordion[open] summary:after {
-  content: "-"
+  content: "⌃"
 }
 
 .accordion-body {
@@ -611,6 +611,23 @@ details.vertical-accordion[open] summary:after {
   display: none
 }
 
+.tool-display-mode summary:after {
+  content: "⌄";
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--meaning-border, var(--line));
+  border-radius: 999px;
+  background: var(--panel-soft);
+  color: var(--meaning-color, var(--gold));
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto
+}
+
+.tool-display-mode[open] summary:after {
+  content: "⌃"
+}
+
 .tool-display-mode__badge {
   width: 42px;
   height: 42px;
@@ -656,6 +673,31 @@ details.vertical-accordion[open] summary:after {
   align-items: stretch
 }
 
+.tool-group-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--tool-group-color)
+}
+
+.tool-group-swatch {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  flex: 0 0 auto;
+  border: 1px solid var(--swatch-border);
+  border-radius: var(--radius-pill);
+  background: var(--tool-group-color);
+  box-shadow: var(--shadow-sm)
+}
+
+.vertical-accordion[class*="tool-group-"] {
+  border-color: var(--tool-group-accent)
+}
+
+.vertical-accordion[class*="tool-group-"] summary {
+  color: var(--tool-group-color)
+}
+
 .tool-card img {
   width: 210px;
   height: 263px;
@@ -668,7 +710,16 @@ details.vertical-accordion[open] summary:after {
 }
 
 .tool-card .body {
-  padding: 14px
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1
+}
+
+.tool-card a {
+  display: flex;
+  flex-direction: column;
+  height: 100%
 }
 
 .role {
@@ -677,6 +728,12 @@ details.vertical-accordion[open] summary:after {
   font-weight: 900;
   letter-spacing: .12em;
   text-transform: uppercase
+}
+
+.tool-card .role:last-child {
+  display: block;
+  margin-top: auto;
+  padding-top: var(--space-md)
 }
 
 .tool-card.spark,
@@ -690,6 +747,10 @@ details.vertical-accordion[open] summary:after {
 
 .tool-card.bot {
   border-color: var(--cyan-border-muted)
+}
+
+.tool-card[class*="tool-group-"] {
+  border-color: var(--tool-group-accent)
 }
 
 body.tool-focus-mode .site-header,

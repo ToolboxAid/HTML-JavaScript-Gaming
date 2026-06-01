@@ -10,7 +10,7 @@
   <main>
     <h1>Tool Grouping And Color Reference</h1>
     <section>
-      <h2>Approved Groups</h2>
+      <h2>Approved Groups (deprecated)</h2>
       <ul>
         <li>Assets / Content</li>
         <li>Building / Creation</li>
@@ -35,6 +35,14 @@
       <h2>Future Alignment Note</h2>
       <p>Current group names remain the primary user-facing grouping. Badge colors are secondary visual cues. Tile colors
         can be corrected later without changing the grouping model.</p>
+    </section>
+    <section>
+      <h2>Shared Grouping Color Layer</h2>
+      <p>Grouping colors are applied by shared grouping classes and per-group imports under
+        <code>assets/css/tools/grouping/</code>. Tools can be rethemed by changing the grouping CSS import or token
+        mapping. Pages should not define their own group colors. The current mapping follows the Color-Aligned Grouping
+        Option: Build &amp; Create pink, Content &amp; Assets orange, Media &amp; Audio red, AI &amp; Learning purple,
+        Platform &amp; Cloud blue, and Development &amp; System gray.</p>
     </section>
   </main>
 </body>

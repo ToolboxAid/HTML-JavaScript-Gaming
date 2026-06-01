@@ -240,6 +240,10 @@
     background: var(--green)
 }
 
+.swatch-pink {
+    background: var(--pink)
+}
+
 .swatch-red {
     background: var(--red)
 }

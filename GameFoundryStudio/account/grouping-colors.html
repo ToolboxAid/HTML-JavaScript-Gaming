@@ -25,7 +25,7 @@
             <div class="container">
                 <div class="card">
                     <div class="card-body">
-                        <h2>Current Tool Groupings</h2>
+                        <h2>Current Tool Groupings (deprecated)</h2>
                         <p>Your current groupings are strong from a user perspective, but they do not map perfectly to
                             the color scheme.</p>
                         <div class="table-wrapper">
@@ -132,7 +132,7 @@
                         <div class="grid cols-4">
                             <article class="mini-stat">
                                 <h3><span class="brand-color-code"><span
-                                            class="brand-color-swatch swatch-green"></span>Green: Build &amp;
+                                            class="brand-color-swatch swatch-pink"></span>Pink: Build &amp;
                                         Create</span></h3>
                                 <ul>
                                     <li>Game Builder</li>
@@ -213,6 +213,13 @@
                         <div class="callout"><strong>Recommended future alignment:</strong> keep the current category
                             names as the primary user-facing grouping. Badge colors should be secondary visual grouping
                             cues inside those categories, and tile colors can be corrected later.</div>
+                        <div class="callout"><strong>Shared grouping color layer:</strong> grouping colors are applied
+                            through shared group classes and per-group imports under
+                            <code>assets/css/tools/grouping/</code>. Tools can be rethemed by changing the grouping CSS
+                            import or token mapping, and pages should not define their own group colors. The current
+                            mapping follows the Color-Aligned Grouping Option: Build &amp; Create pink, Content &amp;
+                            Assets orange, Media &amp; Audio red, AI &amp; Learning purple, Platform &amp; Cloud blue,
+                            and Development &amp; System gray.</div>
                     </div>
                 </div>
             </div>
