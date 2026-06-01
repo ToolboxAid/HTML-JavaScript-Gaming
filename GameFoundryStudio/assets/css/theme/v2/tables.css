@@ -19,3 +19,19 @@ td {
   padding: var(--space-14);
   text-align: left
 }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse
+}
+
+.data-table caption {
+  color: var(--text)
+}
+
+.data-table th {
+  color: var(--gold);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-brand)
+}

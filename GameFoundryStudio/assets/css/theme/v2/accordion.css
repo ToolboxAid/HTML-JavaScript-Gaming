@@ -11,6 +11,11 @@ summary::-webkit-details-marker {
   display: none
 }
 
+.accordion-group {
+  display: grid;
+  gap: var(--space-12)
+}
+
 details.vertical-accordion {
   border: var(--border-standard);
   border-radius: var(--radius-lg);

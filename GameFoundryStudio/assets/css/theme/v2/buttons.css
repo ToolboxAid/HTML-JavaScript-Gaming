@@ -25,6 +25,27 @@
   opacity: var(--opacity-disabled)
 }
 
+.btn:disabled,
+.btn[aria-disabled=true] {
+  cursor: not-allowed
+}
+
+.btn:focus-visible {
+  outline: var(--border-standard);
+  outline-offset: var(--space-3)
+}
+
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-10);
+  align-items: center
+}
+
+.action-group--end {
+  justify-content: flex-end
+}
+
 .return-to-top {
   min-width: var(--space-20);
   width: var(--space-44);
