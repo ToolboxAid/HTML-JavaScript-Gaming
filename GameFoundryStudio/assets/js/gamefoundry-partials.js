@@ -40,6 +40,7 @@
         vision: "vision.html",
         mission: "mission.html",
         roadmap: "roadmap.html",
+        "release-notes": "release-notes.html",
         admin: "admin/site-settings.html",
         "admin-site-settings": "admin/site-settings.html",
         "admin-branding": "admin/branding.html",
