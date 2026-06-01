@@ -199,6 +199,20 @@
             ]
         },
         {
+            group: "Community / Media",
+            tools: [
+                {
+                    title: "Localization Studio",
+                    href: "localization-studio/index.html",
+                    image: "../assets/images/tools/localization-studio.png",
+                    description: "Plan game translation, language coverage, and contributor review workflows.",
+                    role: "Community / Media",
+                    mascot: "localization-studio",
+                    theme: "bot"
+                }
+            ]
+        },
+        {
             group: "Play",
             tools: [
                 {
@@ -234,6 +248,7 @@
         "AI & Learning": "tool-group-ai-learning",
         "Platform & Cloud": "tool-group-platform-cloud",
         "Development & System": "tool-group-development-system",
+        "Community / Media": "tool-group-community-marketplace",
         "Community & Marketplace": "tool-group-community-marketplace",
         "Play": "tool-group-play"
     };

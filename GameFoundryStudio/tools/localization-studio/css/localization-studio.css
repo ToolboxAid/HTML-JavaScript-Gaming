@@ -1,0 +1,23 @@
+.localization-workspace .tool-column {
+    --tool-group-color: var(--gold);
+    --tool-group-accent: var(--gold)
+}
+
+.localization-hero-image {
+    max-height: 320px;
+    object-fit: contain
+}
+
+.localization-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+    width: 100%
+}
+
+@media(max-width:980px) {
+    .localization-status-grid {
+        grid-template-columns: 1fr
+    }
+}

@@ -237,12 +237,16 @@
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  background: var(--panel-soft)
+  background: var(--panel-soft);
+  font-size: 13px;
+  line-height: 1.35
 }
 
 .mini-stat strong {
   display: block;
-  font-size: 28px;
+  font-size: 18px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
   color: var(--gold)
 }
 
@@ -855,7 +859,6 @@ details.vertical-accordion[open] summary:active:after {
 
 .tool-display-mode summary {
   color: var(--gold);
-  background: var(--panel-soft);
   font-weight: 900;
   cursor: pointer;
   list-style: none;
@@ -976,7 +979,7 @@ details.vertical-accordion[open] summary:active:after {
 
 .tool-card img {
   width: 210px;
-  height: 263px;
+  height: 260px;
   aspect-ratio: auto;
   object-fit: contain;
   object-position: center;

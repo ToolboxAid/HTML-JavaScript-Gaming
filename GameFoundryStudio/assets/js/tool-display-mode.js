@@ -19,7 +19,7 @@
 
     const badge = document.createElement("img");
     badge.className = "tool-display-mode__badge";
-    badge.src = basePath + "/badges/" + toolSlug + ".png";
+    badge.src = slot.dataset.toolIconSrc || basePath + "/badges/" + toolSlug + ".png";
     badge.alt = toolName + " badge";
     summary.appendChild(badge);
 
