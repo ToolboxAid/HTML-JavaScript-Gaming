@@ -217,11 +217,13 @@
 }
 
 .kicker {
+  display: block;
   color: var(--gold);
   text-transform: uppercase;
   letter-spacing: .16em;
   font-weight: 900;
-  font-size: 13px
+  font-size: 13px;
+  padding-block: 6px
 }
 
 .lede {
@@ -323,23 +325,26 @@
 
 .footer__inner {
   display: grid;
-  grid-template-columns: minmax(160px, .55fr) minmax(0, 2.45fr) max-content;
-  gap: 24px;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  gap: 16px;
   align-items: start;
   position: relative
 }
 
 .footer__brand {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-  align-items: center
+  display: grid;
+  gap: 4px;
+  align-content: start
+}
+
+.footer__brand span {
+  white-space: nowrap
 }
 
 .footer__groups {
   display: grid;
-  grid-template-columns: repeat(6, minmax(110px, 1fr));
-  gap: 20px
+  grid-template-columns: repeat(6, minmax(96px, 1fr));
+  gap: 12px
 }
 
 .footer__group {
