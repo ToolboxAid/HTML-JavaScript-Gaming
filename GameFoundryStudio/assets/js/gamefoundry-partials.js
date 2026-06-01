@@ -70,7 +70,13 @@
         rating: "admin/ratings.html"
     };
 
-    const rootPageRoutes = new Set(["about", "vision", "mission", "roadmap", "release-notes", "account", "account-profile", "account-preferences", "account-security"]);
+    const rootPageRoutes = new Set([
+        "about", "vision", "mission", "roadmap", "release-notes",
+        "account", "account-profile", "account-preferences", "account-security",
+        "admin", "admin-site-settings", "admin-branding", "admin-themes", "admin-design-system", "admin-controls",
+        "admin-grouping-colors", "admin-ratings", "admin-users", "admin-roles", "admin-moderation", "admin-analytics",
+        "branding", "controls", "design-system", "grouping-colors", "rating"
+    ]);
 
     const partials = {
         "header-nav": "assets/partials/header-nav.html",
@@ -80,7 +86,7 @@
     function currentPagePath() {
         const parts = window.location.pathname.split("/").filter(Boolean);
         const studioIndex = parts.lastIndexOf("GameFoundryStudio");
-        return studioIndex >= 0 ? parts.slice(studioIndex + 1).join("/") : (parts.pop() || "index.html");
+        return studioIndex >= 0 ? parts.slice(studioIndex + 1).join("/") : (parts.join("/") || "index.html");
     }
 
     function rootPrefix() {
@@ -95,7 +101,7 @@
             const parts = window.location.pathname.split("/").filter(Boolean);
             const studioIndex = parts.lastIndexOf("GameFoundryStudio");
             if (studioIndex >= 0) {
-                return "../".repeat(parts.length - studioIndex) + routeMap[routeName];
+                return "../".repeat(Math.max(1, parts.length - studioIndex - 1)) + routeMap[routeName];
             }
             return "../" + routeMap[routeName];
         }
