@@ -469,6 +469,10 @@
     margin-top: 4px
 }
 
+.version-item span {
+    text-transform: none
+}
+
 .version-item.is-current {
     border-color: var(--gold);
     background: var(--orange-soft)

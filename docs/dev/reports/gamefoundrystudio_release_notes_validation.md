@@ -40,11 +40,12 @@ Task: PR_26152_017-release-notes-platform-status
   - Confirmed progression stages render in order: Alpha, Beta, Developer Preview, Public Preview, v1 Launch.
   - Confirmed Developer Preview is visually highlighted with distinct border/background treatment and `aria-current="step"`.
   - Confirmed Platform Version History renders v0.1 through v1.0 in order.
+  - Confirmed version labels keep lowercase `v` visually.
   - Confirmed v0.3 Workspace Integration is highlighted as current.
   - Confirmed Future Planned items render through v1.0 Launch.
   - Confirmed the platform milestone explanation and placeholder timeline render.
   - Confirmed no browser console errors during footer navigation.
-  - Result: Passed, 18 checks.
+  - Result: Passed, 19 checks.
 
 ## Coverage
 
