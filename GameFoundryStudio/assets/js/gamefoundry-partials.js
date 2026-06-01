@@ -5,9 +5,7 @@
         "ai-assistant": "tools/ai-assistant.html",
         "animation-studio": "tools/animation-studio.html",
         "asset-studio": "tools/asset-studio.html",
-        builder: "tools/builder.html",
         "code-studio": "tools/code-studio.html",
-        creator: "tools/creator.html",
         "game-builder": "tools/game-builder.html",
         "game-design-studio": "tools/game-design-studio.html",
         "input-studio": "tools/input-studio.html",
@@ -77,9 +75,7 @@
         const pagePath = currentPagePath() || "index.html";
         root.querySelectorAll("[data-nav-link]").forEach(function (link) {
             const route = routeMap[link.dataset.route] || "";
-            const isAccountUtilityPage = pagePath.indexOf("tools/groups/") === 0
-                || pagePath === "tools/builder.html"
-                || pagePath === "tools/creator.html";
+            const isAccountUtilityPage = pagePath.indexOf("tools/groups/") === 0;
             const isAccountUtility = isAccountUtilityPage && link.dataset.route === "account";
             const isToolChild = pagePath.indexOf("tools/") === 0 && !isAccountUtilityPage && link.dataset.route === "tools";
             const isGameChild = pagePath.indexOf("arcade/") === 0 && link.dataset.route === "games";

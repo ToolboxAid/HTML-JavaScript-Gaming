@@ -586,7 +586,10 @@ details.vertical-accordion[open] summary:after {
   border-radius: 16px;
   background: var(--panel);
   box-shadow: 0 14px 40px var(--shadow);
-  overflow: hidden
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px
 }
 
 .tool-display-mode summary {
@@ -598,14 +601,16 @@ details.vertical-accordion[open] summary:after {
   padding: 10px;
   display: flex;
   align-items: center;
-  justify-content: center
+  justify-content: center;
+  gap: 10px;
+  flex: 0 0 auto
 }
 
 .tool-display-mode summary::-webkit-details-marker {
   display: none
 }
 
-.tool-display-mode__icon {
+.tool-display-mode__badge {
   width: 42px;
   height: 42px;
   object-fit: cover;
@@ -616,16 +621,31 @@ details.vertical-accordion[open] summary:after {
 }
 
 .tool-display-mode__body {
-  display: grid;
-  place-items: center;
-  padding: 0 14px 14px
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 14px 10px 0
 }
 
 .tool-display-mode__character {
-  width: min(150px, 44%);
-  height: auto;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
-  display: block
+  display: block;
+  flex: 0 0 auto
+}
+
+.tool-display-mode__fullscreen-name {
+  display: none;
+  white-space: nowrap
+}
+
+.tool-display-mode__description {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
 }
 
 .tool-grid {
@@ -720,7 +740,12 @@ body.tool-focus-mode .tool-display-mode {
   margin: 0;
   border-color: var(--meaning-border, var(--line));
   background: var(--panel);
-  box-shadow: 0 18px 60px var(--shadow)
+  box-shadow: 0 18px 60px var(--shadow);
+  justify-content: center
+}
+
+body.tool-focus-mode .tool-display-mode__fullscreen-name {
+  display: inline
 }
 
 body.tool-focus-mode .tool-column,

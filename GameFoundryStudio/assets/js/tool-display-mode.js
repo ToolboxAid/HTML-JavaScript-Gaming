@@ -8,25 +8,41 @@
     displayMode.open = true;
 
     const basePath = slot.dataset.assetRoot || "../assets/images";
+    const pageTitle = document.querySelector(".page-title h1");
+    const centerDescription = document.querySelector(".tool-center-panel p");
+    const toolName = pageTitle ? pageTitle.textContent.trim() : "Tool";
+    const routeSlug = window.location.pathname.split("/").pop().replace(/\.html$/, "");
+    const toolSlug = slot.dataset.toolSlug || (routeSlug === "publisher" ? "publish-studio" : routeSlug);
+
     const summary = document.createElement("summary");
     summary.setAttribute("aria-label", "Tool Display Mode");
     summary.title = "Tool Display Mode";
 
-    const icon = document.createElement("img");
-    icon.className = "tool-display-mode__icon";
-    icon.src = basePath + "/forge-bot.png";
-    icon.alt = "Tool Display Mode";
-    summary.appendChild(icon);
+    const badge = document.createElement("img");
+    badge.className = "tool-display-mode__badge";
+    badge.src = basePath + "/badges/" + toolSlug + ".png";
+    badge.alt = toolName + " badge";
+    summary.appendChild(badge);
+
+    const fullscreenName = document.createElement("span");
+    fullscreenName.className = "tool-display-mode__fullscreen-name";
+    fullscreenName.textContent = toolName;
+    summary.appendChild(fullscreenName);
     displayMode.appendChild(summary);
 
     const body = document.createElement("div");
     body.className = "tool-display-mode__body";
 
-    const mascot = document.createElement("img");
-    mascot.className = "tool-display-mode__character";
-    mascot.src = basePath + "/forge-bot.png";
-    mascot.alt = "ForgeBot";
-    body.appendChild(mascot);
+    const character = document.createElement("img");
+    character.className = "tool-display-mode__character";
+    character.src = basePath + "/characters/" + toolSlug + ".png";
+    character.alt = toolName + " character";
+    body.appendChild(character);
+
+    const description = document.createElement("span");
+    description.className = "tool-display-mode__description";
+    description.textContent = centerDescription ? centerDescription.textContent.trim() : toolName;
+    body.appendChild(description);
     displayMode.appendChild(body);
     slot.replaceWith(displayMode);
 
