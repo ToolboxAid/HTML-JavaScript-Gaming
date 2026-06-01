@@ -111,7 +111,7 @@
             button.setAttribute("aria-label", "Collapse " + label);
             button.setAttribute("aria-expanded", "true");
             button.textContent = entry.openIndicator;
-            header.appendChild(button);
+            header.insertBefore(button, header.firstChild);
 
             button.addEventListener("click", function () {
                 const collapsed = entry.column.classList.toggle("is-collapsed");

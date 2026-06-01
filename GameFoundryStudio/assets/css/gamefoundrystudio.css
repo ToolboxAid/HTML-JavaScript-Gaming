@@ -543,7 +543,7 @@ details.vertical-accordion[open] summary:after {
   padding: 12px 8px;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  justify-content: space-between
+  justify-content: flex-start
 }
 
 .tool-column.is-collapsed .horizontal-accordion-toggle {
