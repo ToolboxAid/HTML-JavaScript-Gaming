@@ -527,8 +527,23 @@ details.vertical-accordion[open] summary:after {
   order: 1
 }
 
+body[class*="tool-group-"] .tool-column-header h2,
+body[class*="tool-group-"] .tool-column-header h3 {
+  color: var(--tool-group-color)
+}
+
 .tool-column-header .horizontal-accordion-toggle {
   order: 2
+}
+
+body[class*="tool-group-"] .horizontal-accordion-toggle {
+  border-color: var(--tool-group-accent);
+  color: var(--tool-group-color)
+}
+
+body[class*="tool-group-"] details.vertical-accordion summary:after {
+  border-color: var(--tool-group-accent);
+  color: var(--tool-group-color)
 }
 
 .tool-column.is-collapsed .tool-column-header {
