@@ -1,10 +1,10 @@
 # Theme V2 Design System Gaps
 
-PR: `PR_26152_033-theme-v2-admin-consumption`
+PR: `PR_26152_034-theme-v2-admin-copy-correction`
 
-## Admin Consumption Result
+## Admin Copy Correction Result
 
-No new Theme V2 CSS gaps were discovered while migrating the named Admin pages to consume existing Theme V2 CSS.
+No new Theme V2 CSS gaps were discovered while validating the named Admin pages against the approved working Theme V2 HTML structure.
 
 Admin pages validated successfully with the existing Theme V2 primitives:
 
@@ -15,15 +15,27 @@ Admin pages validated successfully with the existing Theme V2 primitives:
 - Accordions: `.vertical-accordion`, `.accordion-body`
 - Brand/color references: `.brand-color-code`, `.brand-color-swatch`, swatch classes, side accent classes, tool-group classes
 
-## Resolved In This PR
+## Class And ID Correction Result
 
-| Gap | Resolution |
+| Check | Result |
 | --- | --- |
-| Admin `branding.html` carried non-owned/dead classes for mascot cards and feature images. | Removed the dead classes and relied on existing Theme V2 `.card` and `.card img` styling. |
-| Admin `controls.html` carried non-owned/dead `controls-title` and `control-row--choice` classes. | Removed the dead classes and relied on existing Theme V2 heading and `.control-row` / `.choice` styling. |
-| Admin `design-system.html` still described legacy CSS ownership files. | Updated copy to describe Theme V2 ownership files. |
-| Admin `grouping-colors.html` table did not consume the available Theme V2 data table primitive. | Added existing `.data-table` to the table. |
-| Admin `grouping-colors.html` copy still referenced legacy grouping CSS import ownership. | Updated copy to reference Theme V2 group classes and `theme/v2/colors.css`. |
+| Admin class changes required for PR034 | None. |
+| Admin ID changes required for PR034 | None. |
+| New selectors required | None. |
+| CSS changes required | None. |
+| Pages unable to match approved Theme V2 structure | None. |
+
+## Approved Structure Confirmed
+
+The named Admin pages already match the approved Theme V2 Admin structure without additional CSS:
+
+- Shared partial slots.
+- `theme/v2/theme.css` stylesheet consumption.
+- `.page-title` or `.controls-hero` page header.
+- `.section > .container.account-panel` Admin layout.
+- `aside.side-menu[aria-label="Admin pages"]` Admin navigation.
+- `.admin-page-stack` content column.
+- Direct child `.section` or `.control-section` blocks with direct `.container` wrappers.
 
 ## Remaining Gaps Outside This PR
 
