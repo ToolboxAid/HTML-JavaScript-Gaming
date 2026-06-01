@@ -17,7 +17,7 @@
         "sound-studio": "tools/sound-studio.html",
         "storage-inspector": "tools/storage-inspector.html",
         "world-vector-studio": "tools/world-vector-studio.html",
-        "configuration-admin": "tools/groups/configuration-admin.html",
+        "configuration-admin": "admin/site-settings.html",
         games: "arcade/index.html",
         arcade: "arcade/index.html",
         "game-action": "arcade/index.html#action",
@@ -32,16 +32,37 @@
         docs: "docs/index.html",
         about: "about.html",
         faq: "faq.html",
+        assets: "assets.html",
+        publish: "publish/index.html",
+        support: "support.html",
+        reference: "reference.html",
+        contact: "contact.html",
+        roadmap: "roadmap.html",
+        admin: "admin/site-settings.html",
+        "admin-site-settings": "admin/site-settings.html",
+        "admin-branding": "admin/branding.html",
+        "admin-themes": "admin/themes.html",
+        "admin-design-system": "admin/design-system.html",
+        "admin-controls": "admin/controls.html",
+        "admin-grouping-colors": "admin/grouping-colors.html",
+        "admin-ratings": "admin/ratings.html",
+        "admin-users": "admin/users.html",
+        "admin-roles": "admin/roles.html",
+        "admin-moderation": "admin/moderation.html",
+        "admin-analytics": "admin/analytics.html",
         "cookie-policy": "cookie-policy.html",
         disclaimer: "disclaimer.html",
         "privacy-policy": "privacy-policy.html",
         "terms-legal": "terms.html",
         account: "account/index.html",
-        branding: "account/branding.html",
-        controls: "account/controls.html",
-        "design-system": "account/design-system.html",
-        "grouping-colors": "account/grouping-colors.html",
-        rating: "account/rating.html"
+        "account-profile": "account/profile.html",
+        "account-preferences": "account/preferences.html",
+        "account-security": "account/security.html",
+        branding: "admin/branding.html",
+        controls: "admin/controls.html",
+        "design-system": "admin/design-system.html",
+        "grouping-colors": "admin/grouping-colors.html",
+        rating: "admin/ratings.html"
     };
 
     const partials = {
@@ -79,12 +100,11 @@
         const pagePath = currentPagePath() || "index.html";
         root.querySelectorAll("[data-nav-link]").forEach(function (link) {
             const route = routeMap[link.dataset.route] || "";
-            const isAccountUtilityPage = pagePath.indexOf("tools/groups/") === 0;
-            const isAccountUtility = isAccountUtilityPage && link.dataset.route === "account";
-            const isToolChild = pagePath.indexOf("tools/") === 0 && !isAccountUtilityPage && link.dataset.route === "tools";
+            const isToolChild = pagePath.indexOf("tools/") === 0 && link.dataset.route === "tools";
             const isGameChild = pagePath.indexOf("arcade/") === 0 && link.dataset.route === "games";
             const isAccountChild = pagePath.indexOf("account/") === 0 && link.dataset.route === "account";
-            if (route === pagePath || isToolChild || isGameChild || isAccountChild || isAccountUtility) {
+            const isAdminChild = pagePath.indexOf("admin/") === 0 && link.dataset.route === "admin";
+            if (route === pagePath || isToolChild || isGameChild || isAccountChild || isAdminChild) {
                 link.classList.add("active");
             }
         });
