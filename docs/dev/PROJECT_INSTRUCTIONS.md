@@ -145,6 +145,57 @@ Use that phrase as a compact IA and copywriting anchor:
 - Play: playable games, arcade browsing, testing, saves, and discovery.
 - Share: marketplace assets, tutorials, community visibility, publishing, and creator identity.
 
+## GAMEFOUNDRYSTUDIO THEME V2 GOVERNANCE
+
+`theme/v2` is the only approved styling surface for new GameFoundryStudio work.
+
+Existing CSS is deprecated and compatibility-only.
+
+Rules:
+- Do not extend deprecated CSS.
+- Do not create new CSS files outside `theme/v2`.
+- No page-local CSS.
+- No tool-local CSS.
+- No inline style attributes.
+- No `<style>` blocks.
+- No JavaScript-generated styling except toggling approved `theme/v2` classes.
+- No hardcoded colors.
+- No hardcoded spacing.
+- No hardcoded borders.
+- No hardcoded shadows.
+- No hardcoded font sizes.
+- No hardcoded z-index values.
+- No duplicate component styling.
+- No copy/paste of deprecated selectors into `theme/v2`.
+- No one-off classes for a single page or tool unless approved and promoted into `theme/v2`.
+- New UI work must first attempt to use existing `theme/v2` tokens and classes.
+- Missing styling requirements must be reported as design-system gaps.
+- Design-system gaps should be documented rather than solved locally.
+
+Allowed:
+- Adding reusable `theme/v2` tokens.
+- Adding reusable `theme/v2` component classes.
+- Toggling approved `theme/v2` classes from JavaScript.
+- Removing deprecated CSS.
+- Consolidating duplicate CSS into `theme/v2`.
+
+Exception documentation is required for any approved deviation and must include:
+- File.
+- Reason.
+- Follow-up plan.
+
+Migration order:
+1. Home
+2. Company pages
+3. Admin pages
+4. Account pages
+5. Tools index
+6. Tool families
+7. Games
+8. Samples
+
+Do not migrate pages during governance-only PRs unless the PR explicitly authorizes migration work.
+
 ## FILE SCOPE GUARD
 
 Allowed change scope is PR-specific.
