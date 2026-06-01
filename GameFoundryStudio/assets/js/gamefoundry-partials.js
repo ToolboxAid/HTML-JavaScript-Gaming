@@ -32,6 +32,10 @@
         docs: "docs/index.html",
         about: "about.html",
         faq: "faq.html",
+        "cookie-policy": "cookie-policy.html",
+        disclaimer: "disclaimer.html",
+        "privacy-policy": "privacy-policy.html",
+        "terms-legal": "terms.html",
         account: "account/index.html",
         branding: "account/branding.html",
         controls: "account/controls.html",
@@ -86,6 +90,21 @@
         });
     }
 
+    function wireReturnToTop(root) {
+        const button = root.querySelector("[data-return-to-top]");
+        if (!button) return;
+
+        function updateVisibility() {
+            button.classList.toggle("is-visible", window.scrollY > 280);
+        }
+
+        button.addEventListener("click", function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        window.addEventListener("scroll", updateVisibility, { passive: true });
+        updateVisibility();
+    }
+
     async function partialElement(partialName) {
         const partialPath = partials[partialName];
         if (!partialPath) return null;
@@ -101,6 +120,8 @@
         rewriteRootedPaths(element);
         if (partialName === "header-nav") {
             markActiveNavigation(element);
+        } else if (partialName === "footer") {
+            wireReturnToTop(element);
         }
         return element;
     }

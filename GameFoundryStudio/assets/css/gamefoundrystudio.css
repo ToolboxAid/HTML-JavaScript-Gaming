@@ -304,11 +304,38 @@
   color: var(--muted)
 }
 
-.footer .container {
+.footer__inner {
   display: flex;
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap
+}
+
+.footer__brand,
+.footer__legal,
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center
+}
+
+.footer__legal h2 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 13px;
+  letter-spacing: .16em;
+  text-transform: uppercase
+}
+
+.footer__links a {
+  color: var(--muted);
+  font-size: 14px
+}
+
+.footer__links a:hover,
+.footer__links a:focus-visible {
+  color: var(--gold)
 }
 
 .field {
@@ -468,17 +495,28 @@ details.vertical-accordion summary::-webkit-details-marker {
   display: none
 }
 
-details.vertical-accordion summary:after {
-  content: "";
+details.vertical-accordion summary:after,
+.horizontal-accordion-toggle,
+.return-to-top {
+  --accordion-button-border: var(--line);
+  --accordion-button-background: var(--panel-soft);
+  --accordion-button-color: var(--gold);
+  min-width: 20px;
   width: 20px;
   height: 20px;
-  border: 1px solid var(--line);
+  padding: 0;
+  border: 1px solid var(--accordion-button-border);
   border-radius: var(--radius-pill);
-  background: var(--panel-soft);
-  color: var(--gold);
+  background: var(--accordion-button-background);
+  color: var(--accordion-button-color);
+  line-height: 1;
   display: inline-grid;
   place-items: center;
-  flex: 0 0 auto;
+  flex: 0 0 auto
+}
+
+details.vertical-accordion summary:after {
+  content: "";
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
   background-position: calc(50% - 3.5px) 50%, calc(50% + 3.5px) 50%;
   background-size: 7px 7px;
@@ -505,14 +543,6 @@ details.vertical-accordion[open] summary:active:after {
 
 .horizontal-accordion-toggle {
   margin-left: auto;
-  min-width: 20px;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border-radius: var(--radius-pill);
-  background: var(--panel-soft);
-  color: var(--gold);
-  line-height: 1;
   font-size: 0;
   overflow: hidden;
   position: relative
@@ -630,13 +660,47 @@ details.vertical-accordion[open] summary:active:after {
 }
 
 .tool-column[class*="tool-group-"] .horizontal-accordion-toggle {
-  border-color: var(--tool-group-accent);
-  color: var(--tool-group-color)
+  --accordion-button-border: var(--tool-group-accent);
+  --accordion-button-color: var(--tool-group-color)
 }
 
 .tool-column[class*="tool-group-"] details.vertical-accordion summary:after {
-  border-color: var(--tool-group-accent);
-  color: var(--tool-group-color)
+  --accordion-button-border: var(--tool-group-accent);
+  --accordion-button-color: var(--tool-group-color)
+}
+
+.return-to-top {
+  --accordion-button-border: var(--meaning-border, var(--line));
+  --accordion-button-background: var(--meaning-soft, var(--panel-soft));
+  --accordion-button-color: var(--meaning-color, var(--gold));
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: var(--z-index-lg);
+  width: 44px;
+  height: 44px;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity .2s ease, transform .2s ease, color .2s ease, border-color .2s ease, background .2s ease
+}
+
+.return-to-top span {
+  transform: translateY(-1px)
+}
+
+.return-to-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0)
+}
+
+.return-to-top:hover,
+.return-to-top:focus-visible {
+  --accordion-button-border: var(--meaning-color, var(--gold));
+  --accordion-button-background: color-mix(in srgb, var(--meaning-color, var(--gold)) 24%, var(--panel));
+  outline: none
 }
 
 .tool-column.is-collapsed .tool-column-header {
