@@ -37,6 +37,8 @@
         support: "support.html",
         reference: "reference.html",
         contact: "contact.html",
+        vision: "vision.html",
+        mission: "mission.html",
         roadmap: "roadmap.html",
         admin: "admin/site-settings.html",
         "admin-site-settings": "admin/site-settings.html",

@@ -136,10 +136,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer
-}
-
-.btn {
+  cursor: pointer;
   border: 1px solid var(--line);
   background: var(--panel-soft);
   color: var(--text)
@@ -434,6 +431,16 @@
   margin: 0;
   color: var(--muted);
   font-weight: 800
+}
+
+.control-row input,
+.control-row select {
+  min-width: 0;
+  width: 100%
+}
+
+.control-row .switch {
+  justify-self: start
 }
 
 .control-row--toolbar {
@@ -736,11 +743,7 @@ details.vertical-accordion[open] summary:active:after {
   order: 2
 }
 
-.tool-column[class*="tool-group-"] .horizontal-accordion-toggle {
-  --accordion-button-border: var(--tool-group-accent);
-  --accordion-button-color: var(--tool-group-color)
-}
-
+.tool-column[class*="tool-group-"] .horizontal-accordion-toggle,
 .tool-column[class*="tool-group-"] details.vertical-accordion summary:after {
   --accordion-button-border: var(--tool-group-accent);
   --accordion-button-color: var(--tool-group-color)

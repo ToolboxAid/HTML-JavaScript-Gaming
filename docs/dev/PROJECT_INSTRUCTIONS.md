@@ -132,6 +132,19 @@ Future guidance:
 - implementation, runtime, and tool work should now take priority over additional governance expansion unless a real gap is discovered
 - governance additions should solve demonstrated operational problems rather than hypothetical future issues
 
+## GAMEFOUNDRYSTUDIO NORTH STAR
+
+GameFoundryStudio should present as an open-web creator destination where players and makers can move fluidly between creator tools, playable games, marketplace assets, tutorials, cloud saves, and community discovery.
+
+The product guidance phrase is:
+
+`Build · Play · Share`
+
+Use that phrase as a compact IA and copywriting anchor:
+- Build: creator tools, asset creation, prototypes, systems, and publishing preparation.
+- Play: playable games, arcade browsing, testing, saves, and discovery.
+- Share: marketplace assets, tutorials, community visibility, publishing, and creator identity.
+
 ## FILE SCOPE GUARD
 
 Allowed change scope is PR-specific.
