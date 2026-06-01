@@ -30,6 +30,8 @@
         learn: "learn/index.html",
         community: "community/index.html",
         docs: "docs/index.html",
+        about: "about.html",
+        faq: "faq.html",
         account: "account/index.html",
         branding: "account/branding.html",
         controls: "account/controls.html",

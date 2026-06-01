@@ -9,7 +9,6 @@
 
     const basePath = slot.dataset.assetRoot || "../assets/images";
     const pageTitle = document.querySelector(".page-title h1");
-    const centerDescription = document.querySelector(".tool-center-panel p");
     const toolName = pageTitle ? pageTitle.textContent.trim() : "Tool";
     const routeSlug = window.location.pathname.split("/").pop().replace(/\.html$/, "");
     const toolSlug = slot.dataset.toolSlug || (routeSlug === "publisher" ? "publish-studio" : routeSlug);
@@ -41,7 +40,7 @@
 
     const description = document.createElement("span");
     description.className = "tool-display-mode__description";
-    description.textContent = centerDescription ? centerDescription.textContent.trim() : toolName;
+    description.textContent = toolName;
     body.appendChild(description);
     displayMode.appendChild(body);
     slot.replaceWith(displayMode);

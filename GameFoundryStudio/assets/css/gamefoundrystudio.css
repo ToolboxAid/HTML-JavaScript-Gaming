@@ -695,10 +695,11 @@ details.vertical-accordion[open] summary:active:after {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--panel);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px
 }
 
@@ -784,7 +785,8 @@ details.vertical-accordion[open] summary:active:after {
 }
 
 .tool-display-mode__description {
-  color: var(--muted);
+  color: var(--gold);
+  font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap
