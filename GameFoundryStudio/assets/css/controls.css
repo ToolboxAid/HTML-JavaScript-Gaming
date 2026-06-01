@@ -109,7 +109,7 @@ button,
 input[type="button"],
 input[type="submit"],
 input[type="reset"] {
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 10px 14px;
   font: inherit;
   font-weight: 800;
@@ -154,7 +154,7 @@ output {
 input,
 textarea,
 select {
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 12px
 }
 
