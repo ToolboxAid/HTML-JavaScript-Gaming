@@ -691,6 +691,7 @@ details.vertical-accordion[open] summary:active:after {
   grid-column: 2;
   grid-row: 1;
   margin: 0 0 12px;
+  position: relative;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--panel);
@@ -707,7 +708,7 @@ details.vertical-accordion[open] summary:active:after {
   font-weight: 900;
   cursor: pointer;
   list-style: none;
-  padding: 10px;
+  padding: 10px 44px 10px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -721,6 +722,10 @@ details.vertical-accordion[open] summary:active:after {
 
 .tool-display-mode summary:after {
   content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 20px;
   height: 20px;
   border: 1px solid var(--line);
@@ -729,7 +734,6 @@ details.vertical-accordion[open] summary:active:after {
   color: var(--gold);
   display: inline-grid;
   place-items: center;
-  flex: 0 0 auto;
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
   background-position: calc(50% - 3.5px) 50%, calc(50% + 3.5px) 50%;
   background-size: 7px 7px;
