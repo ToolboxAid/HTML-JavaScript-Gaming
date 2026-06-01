@@ -297,6 +297,26 @@
   color: var(--muted)
 }
 
+.about-hero {
+  min-height: 520px;
+  display: flex;
+  align-items: end;
+  padding: 78px 0 54px;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 86%, transparent) 42%, color-mix(in srgb, var(--bg) 38%, transparent) 100%),
+    url("../images/forge-bot.png") right center / min(50vw, 620px) auto no-repeat;
+}
+
+.about-hero__content {
+  max-width: 760px
+}
+
+.about-hero h1 {
+  max-width: 720px;
+  margin-bottom: 18px
+}
+
 .footer {
   margin-top: 46px;
   border-top: 1px solid var(--line);
@@ -306,7 +326,7 @@
 
 .footer__inner {
   display: grid;
-  grid-template-columns: minmax(180px, .75fr) minmax(0, 2.25fr);
+  grid-template-columns: minmax(160px, .55fr) minmax(0, 2.45fr) max-content;
   gap: 24px;
   align-items: start;
   position: relative
@@ -321,7 +341,7 @@
 
 .footer__groups {
   display: grid;
-  grid-template-columns: repeat(3, minmax(140px, 1fr));
+  grid-template-columns: repeat(6, minmax(110px, 1fr));
   gap: 20px
 }
 
@@ -352,6 +372,11 @@
 .footer__links a:hover,
 .footer__links a:focus-visible {
   color: var(--gold)
+}
+
+.footer__tagline {
+  justify-self: end;
+  white-space: nowrap
 }
 
 .field {
@@ -395,6 +420,24 @@
 .control-demo {
   display: grid;
   gap: 12px
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: minmax(126px, .8fr) minmax(0, 1.2fr);
+  gap: 12px;
+  align-items: center
+}
+
+.control-row>label,
+.control-row__label {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800
+}
+
+.control-row--toolbar {
+  min-width: min(100%, 360px)
 }
 
 .button-row,
@@ -1074,7 +1117,11 @@ body.tool-focus-mode .tool-column:last-of-type {
   }
 
   .footer__groups {
-    grid-template-columns: repeat(2, minmax(130px, 1fr))
+    grid-template-columns: repeat(3, minmax(130px, 1fr))
+  }
+
+  .footer__tagline {
+    justify-self: start
   }
 
   .tool-workspace {
@@ -1134,6 +1181,17 @@ body.tool-focus-mode .tool-column:last-of-type {
   }
 
   .footer__groups {
+    grid-template-columns: 1fr
+  }
+
+  .about-hero {
+    min-height: 460px;
+    background:
+      linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 100%),
+      url("../images/forge-bot.png") center bottom / 340px auto no-repeat;
+  }
+
+  .control-row {
     grid-template-columns: 1fr
   }
 
