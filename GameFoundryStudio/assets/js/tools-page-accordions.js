@@ -152,7 +152,7 @@
             tools: [
                 {
                     title: "AI Assistant",
-                    href: "tools/ai-assistant.html",
+                    href: "../tools/ai-assistant.html",
                     image: "assets/images/tools/ai-assistant.png",
                     description: "Get guided technical help for game creation workflows.",
                     role: "Foundry Bot",
