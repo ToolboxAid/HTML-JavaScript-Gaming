@@ -5,7 +5,12 @@
 .check-panel,
 .image-panel,
 .hero-art,
-.game-tile {
+.game-tile,
+.release-intro,
+.release-stat,
+.release-stage,
+.version-item,
+.timeline-placeholder {
   border: var(--border-standard);
   background: var(--card-background);
   overflow: hidden;
@@ -25,6 +30,31 @@
 .card img {
   width: 100%;
   display: block
+}
+
+.callout {
+  border: var(--border-standard);
+  background: var(--orange-soft);
+  border-radius: var(--space-18);
+  padding: var(--space-18)
+}
+
+.about-hero {
+  min-height: var(--size-about-hero-min);
+  display: flex;
+  align-items: end;
+  padding: var(--space-78) var(--space-0) var(--space-54);
+  border-bottom: var(--border-standard);
+  background: var(--about-hero-background)
+}
+
+.about-hero__content {
+  max-width: var(--measure-lg)
+}
+
+.about-hero h1 {
+  max-width: var(--measure-about-title);
+  margin-bottom: var(--space-18)
 }
 
 .hero-art {
@@ -127,7 +157,97 @@
   box-shadow: var(--shadow)
 }
 
+.release-intro,
+.timeline-placeholder {
+  padding: var(--space-24)
+}
+
+.release-intro h2,
+.timeline-placeholder h2 {
+  margin-top: var(--space-0)
+}
+
+.release-stat,
+.release-stage {
+  padding: var(--space-16)
+}
+
+.release-stage {
+  display: grid;
+  gap: var(--space-8);
+  min-height: var(--size-release-stage-min)
+}
+
+.release-stat span,
+.version-item span,
+.release-stage span {
+  color: var(--muted);
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase
+}
+
+.release-stat strong {
+  color: var(--text);
+  display: block;
+  font-size: var(--font-size-release-stat);
+  margin-top: var(--space-6)
+}
+
+.release-stage strong {
+  color: var(--text);
+  font-size: var(--font-size-xl)
+}
+
+.release-stage.is-current {
+  border-color: var(--gold);
+  background: var(--release-current-background);
+  box-shadow: var(--shadow)
+}
+
+.release-stage.is-current strong,
+.release-stage.is-current span {
+  color: var(--gold)
+}
+
+.version-item {
+  padding: var(--space-14) var(--space-16)
+}
+
+.version-item strong {
+  color: var(--text);
+  display: block;
+  font-size: var(--font-size-lg);
+  margin-top: var(--space-4)
+}
+
+.version-item span {
+  text-transform: none
+}
+
+.version-item.is-current {
+  border-color: var(--gold);
+  background: var(--orange-soft)
+}
+
+.version-item.is-planned {
+  background: var(--panel-overlay-strong)
+}
+
+.timeline-placeholder {
+  display: grid;
+  gap: var(--space-10);
+  background: var(--panel-overlay);
+  box-shadow: var(--shadow-sm)
+}
+
 @media(max-width:620px) {
+  .about-hero {
+    min-height: var(--size-about-hero-mobile-min);
+    background: var(--about-hero-mobile-background)
+  }
+
   .cta {
     padding: var(--space-30) var(--space-20)
   }

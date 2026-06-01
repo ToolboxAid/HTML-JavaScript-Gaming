@@ -41,6 +41,28 @@ div {
   padding: var(--space-34) var(--space-0)
 }
 
+.grid {
+  display: grid;
+  gap: var(--space-18)
+}
+
+.grid.cols-2 {
+  grid-template-columns: var(--grid-cols-2)
+}
+
+.grid.cols-3 {
+  grid-template-columns: var(--grid-cols-3)
+}
+
+.grid.cols-4 {
+  grid-template-columns: var(--grid-cols-4)
+}
+
+.page-title {
+  padding: var(--space-44) var(--space-0) var(--space-20);
+  border-bottom: var(--border-standard)
+}
+
 .site-header {
   position: sticky;
   top: var(--space-0);
@@ -218,6 +240,40 @@ div {
   gap: var(--space-18)
 }
 
+.release-overview {
+  display: grid;
+  grid-template-columns: var(--release-overview-columns);
+  gap: var(--space-18);
+  align-items: stretch
+}
+
+.release-stat-grid,
+.version-list {
+  display: grid;
+  gap: var(--space-12)
+}
+
+.release-progress {
+  display: grid;
+  grid-template-columns: var(--release-progress-columns);
+  gap: var(--space-12);
+  list-style: none;
+  margin: var(--space-0);
+  padding: var(--space-0)
+}
+
+.version-columns {
+  display: grid;
+  grid-template-columns: var(--version-columns);
+  gap: var(--space-18)
+}
+
+.version-list {
+  list-style: none;
+  margin: var(--space-0);
+  padding: var(--space-0)
+}
+
 .footer {
   margin-top: var(--space-46);
   border-top: var(--border-standard);
@@ -288,12 +344,18 @@ div {
 
   .hero-grid,
   .split,
-  .split.reverse {
+  .split.reverse,
+  .release-overview,
+  .version-columns {
     grid-template-columns: var(--one-column)
   }
 
   .trending-grid,
-  .card-grid {
+  .card-grid,
+  .grid.cols-4,
+  .grid.cols-3,
+  .grid.cols-2,
+  .release-progress {
     grid-template-columns: var(--two-columns)
   }
 
@@ -319,7 +381,11 @@ div {
   .trending-grid,
   .dual-entry,
   .check-panel,
-  .card-grid {
+  .card-grid,
+  .grid.cols-4,
+  .grid.cols-3,
+  .grid.cols-2,
+  .release-progress {
     grid-template-columns: var(--one-column)
   }
 
