@@ -394,6 +394,40 @@
   transform: translateX(22px)
 }
 
+.control-lab[class*="tool-group-"] .control-card {
+  --accent: var(--tool-group-color);
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] input[type="checkbox"],
+.control-lab[class*="tool-group-"] input[type="radio"],
+.control-lab[class*="tool-group-"] input[type="range"] {
+  accent-color: var(--tool-group-color)
+}
+
+.control-lab[class*="tool-group-"] input[type="range"]::-webkit-slider-thumb {
+  background: var(--tool-group-color);
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] input[type="range"]::-moz-range-thumb {
+  background: var(--tool-group-color);
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] input[type="range"]::-webkit-slider-runnable-track {
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] input[type="range"]::-moz-range-track {
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] .switch input:checked+.slider {
+  background: color-mix(in srgb, var(--tool-group-color) 70%, var(--panel));
+  border-color: var(--tool-group-accent)
+}
+
 .control-fieldset {
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -435,20 +469,32 @@ details.vertical-accordion summary::-webkit-details-marker {
 }
 
 details.vertical-accordion summary:after {
-  content: "⌄";
-  width: 24px;
-  height: 24px;
+  content: "";
+  width: 20px;
+  height: 20px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--panel-soft);
   color: var(--gold);
   display: inline-grid;
   place-items: center;
-  flex: 0 0 auto
+  flex: 0 0 auto;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(50% - 3.5px) 50%, calc(50% + 3.5px) 50%;
+  background-size: 7px 7px;
+  background-repeat: no-repeat
 }
 
 details.vertical-accordion[open] summary:after {
-  content: "⌃"
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+details.vertical-accordion summary:active:after {
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+details.vertical-accordion[open] summary:active:after {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
 }
 
 .accordion-body {
@@ -459,11 +505,45 @@ details.vertical-accordion[open] summary:after {
 
 .horizontal-accordion-toggle {
   margin-left: auto;
-  min-width: 34px;
-  width: 34px;
-  height: 34px;
+  min-width: 20px;
+  width: 20px;
+  height: 20px;
   padding: 0;
-  border-radius: 999px
+  border-radius: 999px;
+  background: var(--panel-soft);
+  color: var(--gold);
+  line-height: 1;
+  font-size: 0;
+  overflow: hidden;
+  position: relative
+}
+
+.horizontal-accordion-toggle:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  clip-path: polygon(70% 50%, 30% 20%, 30% 80%);
+  transform-origin: center
+}
+
+.horizontal-accordion-toggle[aria-expanded="true"]:before {
+  transform: translate(-50%, -50%)
+}
+
+.horizontal-accordion-toggle[aria-expanded="false"]:before {
+  transform: translate(-50%, -50%) rotate(180deg)
+}
+
+.horizontal-accordion-toggle--left[aria-expanded="true"]:before {
+  transform: translate(-50%, -50%) rotate(180deg)
+}
+
+.horizontal-accordion-toggle--left[aria-expanded="false"]:before {
+  transform: translate(-50%, -50%)
 }
 
 .tool-workspace {
@@ -627,20 +707,32 @@ body[class*="tool-group-"] details.vertical-accordion summary:after {
 }
 
 .tool-display-mode summary:after {
-  content: "⌄";
-  width: 24px;
-  height: 24px;
+  content: "";
+  width: 20px;
+  height: 20px;
   border: 1px solid var(--meaning-border, var(--line));
   border-radius: 999px;
   background: var(--panel-soft);
   color: var(--meaning-color, var(--gold));
   display: inline-grid;
   place-items: center;
-  flex: 0 0 auto
+  flex: 0 0 auto;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(50% - 3.5px) 50%, calc(50% + 3.5px) 50%;
+  background-size: 7px 7px;
+  background-repeat: no-repeat
 }
 
 .tool-display-mode[open] summary:after {
-  content: "⌃"
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+.tool-display-mode summary:active:after {
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+.tool-display-mode[open] summary:active:after {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
 }
 
 .tool-display-mode__badge {

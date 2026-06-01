@@ -107,7 +107,7 @@
             const label = title ? title.textContent.trim() : "Tool column";
             const button = document.createElement("button");
             button.type = "button";
-            button.className = "horizontal-accordion-toggle";
+            button.className = "horizontal-accordion-toggle horizontal-accordion-toggle--" + entry.side;
             button.setAttribute("aria-label", "Collapse " + label);
             button.setAttribute("aria-expanded", "true");
             button.textContent = entry.openIndicator;

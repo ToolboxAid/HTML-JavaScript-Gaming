@@ -35,10 +35,21 @@
                         <div class="kicker">HTML controls</div>
                         <h2>Everyday controls with branded side colors.</h2>
                     </div>
-                    <p>Each panel uses a left-side accent color so controls can be grouped by purpose across Game
-                        Foundry Studio.</p>
+                    <div class="field">
+                        <label for="control-theme">Preview grouping</label>
+                        <select id="control-theme" data-controls-theme-select>
+                            <option value="tool-group-build-create">Build &amp; Create</option>
+                            <option value="tool-group-content-assets">Content &amp; Assets</option>
+                            <option value="tool-group-media-audio">Media &amp; Audio</option>
+                            <option value="tool-group-ai-learning">AI &amp; Learning</option>
+                            <option value="tool-group-platform-cloud">Platform &amp; Cloud</option>
+                            <option value="tool-group-development-system">Development &amp; System</option>
+                            <option value="tool-group-community-marketplace">Community &amp; Marketplace</option>
+                            <option value="tool-group-play">Play</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="control-lab">
+                <div class="control-lab tool-group-build-create" data-controls-preview>
                     <article class="control-card side-orange">
                         <h3>Text Inputs</h3>
                         <p>Names, slugs, paths, labels, and short values.</p>
@@ -78,10 +89,16 @@
                     <article class="control-card side-blue">
                         <h3>Selects</h3>
                         <p>Single-choice dropdowns for theme, engine mode, and tool role.</p>
-                        <div class="control-demo"><label for="select">Select</label><select id="select">
-                                <option>Forge Dark</option>
-                                <option>Molten Orange</option>
-                                <option>Cloud Blue</option>
+                        <div class="control-demo"><label for="select">Select</label><select id="select"
+                                data-controls-theme-select>
+                                <option value="tool-group-build-create">Build &amp; Create</option>
+                                <option value="tool-group-content-assets">Content &amp; Assets</option>
+                                <option value="tool-group-media-audio">Media &amp; Audio</option>
+                                <option value="tool-group-ai-learning">AI &amp; Learning</option>
+                                <option value="tool-group-platform-cloud">Platform &amp; Cloud</option>
+                                <option value="tool-group-development-system">Development &amp; System</option>
+                                <option value="tool-group-community-marketplace">Community &amp; Marketplace</option>
+                                <option value="tool-group-play">Play</option>
                             </select></div>
                     </article>
                 </div>
@@ -90,6 +107,7 @@
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/js/gamefoundry-partials.js" defer></script>
+    <script src="../assets/js/account-controls.js" defer></script>
 </body>
 
 </html>
