@@ -17,7 +17,7 @@
             <div class="container">
                 <div class="kicker">Spark</div>
                 <h1>Game Design Studio</h1>
-                <p class="lede">Plan your game with GDD tools and validation.</p>
+                <p class="lede">What game are we building?</p>
             </div>
         </section>
         <section class="section">
@@ -29,15 +29,58 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Toolbox Accordion 5</summary>
-                                <div class="accordion-body">Game Design Studio toolbox panel 5.</div>
+                                <summary>Purpose</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label>Genre <input type="text" placeholder="Platformer, puzzle, arcade"></label>
+                                        <label>Players <input type="text" placeholder="Single player, co-op, versus"></label>
+                                        <label>Story <textarea rows="3" placeholder="World, premise, and tone"></textarea></label>
+                                        <label>Objectives <textarea rows="3" placeholder="What the player is trying to do"></textarea></label>
+                                        <label>Win Conditions <textarea rows="3" placeholder="How the player succeeds"></textarea></label>
+                                        <label>Lose Conditions <textarea rows="3" placeholder="How the player fails"></textarea></label>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Systems</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label>Rules <textarea rows="3" placeholder="Core constraints and play rules"></textarea></label>
+                                        <label>Characters <textarea rows="3" placeholder="Heroes, enemies, NPCs, and roles"></textarea></label>
+                                        <label>Progression <textarea rows="3" placeholder="Levels, unlocks, pacing, and difficulty"></textarea></label>
+                                        <label>Economy <textarea rows="3" placeholder="Currencies, rewards, resources"></textarea></label>
+                                        <label>Monetization <textarea rows="3" placeholder="Purchase model, ads, DLC, cosmetics"></textarea></label>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Requirements</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label>Asset Requirements <textarea rows="3" placeholder="Sprites, UI, tiles, effects, objects"></textarea></label>
+                                        <label>Sound Requirements <textarea rows="3" placeholder="Music, sound effects, ambience, UI sounds"></textarea></label>
+                                    </form>
+                                </div>
                             </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode></div>
                     <section class="tool-center-panel"><img src="../assets/images/forge-bot.png" alt="ForgeBot">
                         <h2>Workspace</h2>
-                        <p>Use this center region for the primary tool canvas, editor, preview, or guided workflow.</p>
+                        <p>Game Design Studio turns an idea into a design blueprint. The workflow starts with AI-assisted discovery, then organizes the answers into a Game Design Document.</p>
+                        <details class="vertical-accordion" open>
+                            <summary>AI -> GDD Workflow</summary>
+                            <div class="accordion-body">
+                                <p>The AI interview asks what kind of game you want to build, clarifies the audience and rules, then produces a structured design plan for the next tool.</p>
+                                <p>The output is the design contract: <code>game.gdd.json</code>.</p>
+                            </div>
+                        </details>
+                        <details class="vertical-accordion">
+                            <summary>Architect / Blueprint</summary>
+                            <div class="accordion-body">
+                                <p>Game Design Studio is the architect. It does not build the house. It decides what the house is, who it serves, how it should feel, and what must be true before construction begins.</p>
+                            </div>
+                        </details>
                     </section>
                     <aside class="tool-column">
                         <div class="tool-column-header forge-gold">
@@ -45,8 +88,25 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Inspector Accordion 5</summary>
-                                <div class="accordion-body">Game Design Studio inspector panel 5.</div>
+                                <summary>Output</summary>
+                                <div class="accordion-body">
+                                    <p><strong>game.gdd.json</strong></p>
+                                    <pre><code>{
+  "genre": "",
+  "players": "",
+  "objectives": [],
+  "winConditions": [],
+  "loseConditions": [],
+  "assetRequirements": [],
+  "soundRequirements": []
+}</code></pre>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Next Step</summary>
+                                <div class="accordion-body">
+                                    <p>Send <code>game.gdd.json</code> to Game Builder so the design can become a manifest.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>

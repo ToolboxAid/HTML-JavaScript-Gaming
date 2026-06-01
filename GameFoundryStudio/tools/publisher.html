@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tool Publisher - Game Foundry Studio</title>
-    <meta name="description" content="Game Foundry Studio Tool Publisher layout.">
+    <title>Publish Studio - Game Foundry Studio</title>
+    <meta name="description" content="Game Foundry Studio Publish Studio wireframe.">
     <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
@@ -15,10 +15,9 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Tool Layout</div>
-                <h1>Tool Publisher</h1>
-                <p class="lede">Three-column tool page with left, center, and right accordion regions ready for future
-                    Game Foundry Studio tools.</p>
+                <div class="kicker">ForgeBot</div>
+                <h1>Publish Studio</h1>
+                <p class="lede">How is the game released?</p>
             </div>
         </section>
         <section class="section">
@@ -30,15 +29,55 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Toolbox Accordion 11</summary>
-                                <div class="accordion-body">Tool Publisher toolbox panel 11.</div>
+                                <summary>Release Setup</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label>Version <input type="text" placeholder="1.0.0"></label>
+                                        <label>Screenshots <input type="file"></label>
+                                        <label>Trailer <input type="url" placeholder="https://"></label>
+                                        <label>Categories <input type="text" placeholder="Action, puzzle, strategy"></label>
+                                        <label>Tags <input type="text" placeholder="Cozy, retro, roguelike"></label>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Marketplace</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label>Age Rating <select>
+                                                <option>Everyone</option>
+                                                <option>Teen</option>
+                                                <option>Mature</option>
+                                            </select></label>
+                                        <label>Release Notes <textarea rows="3" placeholder="What changed in this release"></textarea></label>
+                                        <label>Visibility <select>
+                                                <option>Draft</option>
+                                                <option>Private</option>
+                                                <option>Public</option>
+                                            </select></label>
+                                        <label>Pricing <input type="text" placeholder="Free, paid, demo"></label>
+                                        <label>Marketplace Information <textarea rows="3" placeholder="Short description, long description, support links"></textarea></label>
+                                    </form>
+                                </div>
                             </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode></div>
                     <section class="tool-center-panel"><img src="../assets/images/forge-bot.png" alt="ForgeBot">
                         <h2>Workspace</h2>
-                        <p>Use this center region for the primary tool canvas, editor, preview, or guided workflow.</p>
+                        <p>Publish Studio turns a game manifest into a release. It packages the playable game, prepares marketplace information, and defines the published record.</p>
+                        <details class="vertical-accordion" open>
+                            <summary>Manifest -> Publish Workflow</summary>
+                            <div class="accordion-body">
+                                <p>The publish workflow starts with <code>game.manifest.json</code>, verifies release metadata, prepares assets for listing, and creates release-ready outputs.</p>
+                            </div>
+                        </details>
+                        <details class="vertical-accordion">
+                            <summary>Real Estate Agent / Product Release</summary>
+                            <div class="accordion-body">
+                                <p>Publish Studio is the real estate agent and product launch desk. The game already exists; this page prepares how it is presented, priced, described, packaged, and released.</p>
+                            </div>
+                        </details>
                     </section>
                     <aside class="tool-column">
                         <div class="tool-column-header forge-gold">
@@ -46,8 +85,25 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Inspector Accordion 11</summary>
-                                <div class="accordion-body">Tool Publisher inspector panel 11.</div>
+                                <summary>Outputs</summary>
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Release Package</li>
+                                        <li>Marketplace Listing</li>
+                                        <li>Published Game Record</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Release Checklist</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label><input type="checkbox"> Manifest reviewed</label>
+                                        <label><input type="checkbox"> Screenshots attached</label>
+                                        <label><input type="checkbox"> Listing copy drafted</label>
+                                        <label><input type="checkbox"> Visibility selected</label>
+                                    </form>
+                                </div>
                             </details>
                         </div>
                     </aside>
