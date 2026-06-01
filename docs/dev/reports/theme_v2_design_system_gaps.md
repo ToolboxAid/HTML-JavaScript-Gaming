@@ -1,30 +1,38 @@
 # Theme V2 Design System Gaps
 
-PR: `PR_26152_032-theme-v2-direct-primitives`
+PR: `PR_26152_033-theme-v2-admin-consumption`
 
-## Direct Theme V2 Primitives Added
+## Admin Consumption Result
 
-These primitives were authored directly in Theme V2 using existing Theme V2 tokens. They do not use V1/legacy CSS as a source, target, or comparison baseline.
+No new Theme V2 CSS gaps were discovered while migrating the named Admin pages to consume existing Theme V2 CSS.
 
-| Primitive area | Owning file | New selectors | Intended consumers |
-| --- | --- | --- | --- |
-| Page/content layout | `layout.css` | `.content-stack`, `.content-stack--compact`, `.content-cluster`, `.content-grid`, `.content-grid--three`, `.content-split` | Migrated Theme V2 pages that need reusable content stacking, clustering, two/three-column grids, or split content layouts. |
-| Panel/card surfaces | `panels.css` | `.surface`, `.surface-header`, `.surface-body`, `.surface-footer`, `.card-header`, `.card-footer`, `.card-media`, `.card-media img` | Migrated Theme V2 pages that need reusable framed content, card sections, or media areas. |
-| Buttons/actions | `buttons.css` | `.btn:disabled`, `.btn[aria-disabled=true]`, `.btn:focus-visible`, `.action-group`, `.action-group--end` | Migrated Theme V2 pages that need consistent action grouping, disabled affordance, and focus affordance. |
-| Forms/inputs | `forms.css` | `.field-group`, `.field-row`, `.field-hint` | Migrated Theme V2 pages that need reusable label/input grouping, responsive paired fields, and helper text. |
-| Accordions | `accordion.css` | `.accordion-group` | Migrated Theme V2 pages that need reusable spacing between existing `details.vertical-accordion` blocks. |
-| Status/log surfaces | `status.css` | `.feedback`, `.feedback-title`, `.feedback-message`, `.event-log`, `.event-log-entry` | Migrated Theme V2 pages that need reusable message panels or structured textual logs. |
-| Tables | `tables.css` | `.data-table`, `.data-table caption`, `.data-table th` | Migrated Theme V2 pages that need reusable data table presentation beyond the generic table baseline. |
+Admin pages validated successfully with the existing Theme V2 primitives:
 
-## Remaining Gaps
+- Page layout: `.page-title`, `.section`, `.container`, `.account-panel`, `.admin-page-stack`, `.grid`
+- Navigation/panels: `.side-menu`, `.card`, `.card-body`, `.callout`, `.mini-stat`
+- Controls: `.controls-hero`, `.controls-hero-grid`, `.control-section`, `.control-lab`, `.control-card`, `.control-demo`, `.control-row`, `.choice`, `.switch`
+- Tables: `.table-wrapper`, `.data-table`
+- Accordions: `.vertical-accordion`, `.accordion-body`
+- Brand/color references: `.brand-color-code`, `.brand-color-swatch`, swatch classes, side accent classes, tool-group classes
+
+## Resolved In This PR
+
+| Gap | Resolution |
+| --- | --- |
+| Admin `branding.html` carried non-owned/dead classes for mascot cards and feature images. | Removed the dead classes and relied on existing Theme V2 `.card` and `.card img` styling. |
+| Admin `controls.html` carried non-owned/dead `controls-title` and `control-row--choice` classes. | Removed the dead classes and relied on existing Theme V2 heading and `.control-row` / `.choice` styling. |
+| Admin `design-system.html` still described legacy CSS ownership files. | Updated copy to describe Theme V2 ownership files. |
+| Admin `grouping-colors.html` table did not consume the available Theme V2 data table primitive. | Added existing `.data-table` to the table. |
+| Admin `grouping-colors.html` copy still referenced legacy grouping CSS import ownership. | Updated copy to reference Theme V2 group classes and `theme/v2/colors.css`. |
+
+## Remaining Gaps Outside This PR
 
 | Gap | Reason Deferred |
 | --- | --- |
-| Tool-shell layout, tool columns, tool display mode, and focus behavior are still unresolved. | Tool-specific primitives are out of scope for this PR. They require separate approval and direct Theme V2 design. |
-| Horizontal tool-panel accordion toggles are still unresolved. | This PR adds only generic accordion grouping; tool-specific toggles require separate approval. |
-| Dialog/modals are still unresolved. | Dialog primitives were not requested in this PR and require separate approval. |
-| Brand/background/meaning utility systems are still unresolved. | New color utility systems were not requested in this PR and require separate approval. |
-| Badge/pill/role metadata variants are still unresolved. | This PR adds generic feedback/log primitives only; metadata variants require separate approval. |
+| Dialog/modal primitives remain unresolved. | No Admin page in this PR required dialog styling. |
+| Tool-shell layout, tool columns, display mode, and focus behavior remain unresolved. | Tool pages are explicitly out of scope. |
+| Horizontal tool-panel accordion toggles remain unresolved. | Tool pages are explicitly out of scope. |
+| Badge/pill/role metadata variants remain unresolved. | Admin pages in this PR did not require them. |
 
 ## Guardrails
 

@@ -70,7 +70,7 @@
                         <p>Your current groupings are strong from a user perspective, but they do not map perfectly to
                             the color scheme.</p>
                         <div class="table-wrapper">
-                            <table>
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Current Group</th>
@@ -255,9 +255,8 @@
                             names as the primary user-facing grouping. Badge colors should be secondary visual grouping
                             cues inside those categories, and tile colors can be corrected later.</div>
                         <div class="callout"><strong>Shared grouping color layer:</strong> grouping colors are applied
-                            through shared group classes and per-group imports under
-                            <code>assets/css/tools/grouping/</code>. Tools can be rethemed by changing the grouping CSS
-                            import or token mapping, and pages should not define their own group colors. The current
+                            through Theme V2 group classes and variables owned by <code>theme/v2/colors.css</code>.
+                            Pages should consume those classes and should not define their own group colors. The current
                             mapping follows the Color-Aligned Grouping Option: Build &amp; Create pink, Content &amp;
                             Assets orange, Media &amp; Audio red, AI &amp; Learning purple, Platform &amp; Cloud blue,
                             and Development &amp; System gray.</div>
