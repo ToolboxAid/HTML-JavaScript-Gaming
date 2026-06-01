@@ -525,6 +525,7 @@ details.vertical-accordion[open] summary:after {
   background: rgba(255, 122, 0, .08);
   display: flex;
   align-items: center;
+  flex-direction: row;
   gap: 12px
 }
 
@@ -534,21 +535,37 @@ details.vertical-accordion[open] summary:after {
   color: var(--gold);
   font-size: 16px;
   letter-spacing: .08em;
-  text-transform: uppercase
+  text-transform: uppercase;
+  order: 1
+}
+
+.tool-column-header .horizontal-accordion-toggle {
+  order: 2
 }
 
 .tool-column.is-collapsed .tool-column-header {
   height: 100%;
   min-height: 180px;
   padding: 12px 8px;
-  writing-mode: vertical-rl;
+  writing-mode: horizontal-tb;
   text-orientation: mixed;
+  flex-direction: column;
+  align-items: center;
   justify-content: flex-start
 }
 
 .tool-column.is-collapsed .horizontal-accordion-toggle {
   margin: 0;
+  order: 1;
   writing-mode: horizontal-tb
+}
+
+.tool-column.is-collapsed .tool-column-header h2,
+.tool-column.is-collapsed .tool-column-header h3 {
+  order: 2;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  text-align: center
 }
 
 .tool-center-panel {
