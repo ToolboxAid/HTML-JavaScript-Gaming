@@ -1,1 +1,49 @@
-/* Home migration does not require reusable status patterns yet. */
+.status,
+.log {
+  border: var(--border-standard);
+  border-radius: var(--space-14);
+  padding: var(--space-12);
+  background: var(--panel-overlay-strong);
+  color: var(--muted)
+}
+
+.pill {
+  display: inline-flex;
+  border: var(--border-standard);
+  border-radius: var(--radius-pill);
+  padding: var(--space-7) var(--space-10);
+  color: var(--muted);
+  font-size: var(--font-size-sm)
+}
+
+.role {
+  color: var(--gold);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-heavy);
+  letter-spacing: .12em;
+  text-transform: uppercase
+}
+
+.tool-card .role:last-child {
+  display: block;
+  margin-top: auto;
+  padding-top: var(--space-12)
+}
+
+.tool-group-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  color: var(--tool-group-color)
+}
+
+.tool-group-swatch {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  flex: 0 0 auto;
+  border: var(--border-standard);
+  border-color: var(--swatch-border);
+  border-radius: var(--radius-pill);
+  background: var(--tool-group-color);
+  box-shadow: var(--shadow-sm)
+}

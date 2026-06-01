@@ -7,6 +7,13 @@ table {
   border-collapse: collapse
 }
 
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: var(--radius-lg)
+}
+
 caption {
   padding: var(--space-10);
   font-weight: var(--font-weight-heavy);
@@ -18,4 +25,18 @@ td {
   border-bottom: var(--border-standard);
   padding: var(--space-14);
   text-align: left
+}
+
+.table th,
+.table td {
+  border-bottom: var(--border-standard);
+  padding: var(--space-14);
+  text-align: left
+}
+
+.table th {
+  color: var(--gold);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: .1em
 }

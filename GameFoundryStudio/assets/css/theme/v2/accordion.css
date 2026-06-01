@@ -11,6 +11,12 @@ summary::-webkit-details-marker {
   display: none
 }
 
+.accordion-stack {
+  display: grid;
+  gap: var(--space-10);
+  padding: var(--space-14)
+}
+
 details.vertical-accordion {
   border: var(--border-standard);
   border-radius: var(--radius-lg);
@@ -77,4 +83,138 @@ details.vertical-accordion[open] summary:active:after {
   padding: var(--space-0) var(--space-14) var(--space-14);
   color: var(--muted);
   line-height: 1.5
+}
+
+.horizontal-accordion-toggle {
+  --accordion-button-border: var(--line);
+  --accordion-button-background: var(--panel-soft);
+  --accordion-button-color: var(--gold);
+  min-width: var(--space-20);
+  width: var(--space-20);
+  height: var(--space-20);
+  padding: var(--space-0);
+  border: var(--border-standard);
+  border-color: var(--accordion-button-border);
+  border-radius: var(--radius-pill);
+  background: var(--accordion-button-background);
+  color: var(--accordion-button-color);
+  line-height: var(--line-height-single);
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: var(--space-0);
+  overflow: hidden;
+  position: relative
+}
+
+.horizontal-accordion-toggle:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--size-horizontal-toggle-icon);
+  height: var(--size-horizontal-toggle-icon);
+  background: currentColor;
+  clip-path: polygon(70% 50%, 30% 20%, 30% 80%);
+  transform-origin: center
+}
+
+.horizontal-accordion-toggle[aria-expanded="true"]:before {
+  transform: translate(-50%, -50%)
+}
+
+.horizontal-accordion-toggle[aria-expanded="false"]:before {
+  transform: translate(-50%, -50%) rotate(180deg)
+}
+
+.horizontal-accordion-toggle--left[aria-expanded="true"]:before {
+  transform: translate(-50%, -50%) rotate(180deg)
+}
+
+.horizontal-accordion-toggle--left[aria-expanded="false"]:before {
+  transform: translate(-50%, -50%)
+}
+
+.tool-column .accordion-stack {
+  padding: var(--space-8) var(--space-12);
+  gap: var(--space-8)
+}
+
+.tool-column details.vertical-accordion summary {
+  padding: var(--space-10) var(--space-12)
+}
+
+.tool-column .accordion-body {
+  padding: var(--space-0) var(--space-12) var(--space-10)
+}
+
+.tool-column-header .horizontal-accordion-toggle {
+  order: 2
+}
+
+.tool-column[class*="tool-group-"] .horizontal-accordion-toggle,
+.tool-column[class*="tool-group-"] details.vertical-accordion summary:after {
+  --accordion-button-border: var(--tool-group-accent);
+  --accordion-button-color: var(--tool-group-color)
+}
+
+.tool-column.is-collapsed .horizontal-accordion-toggle {
+  margin: var(--space-0);
+  order: 1;
+  writing-mode: horizontal-tb
+}
+
+.vertical-accordion[class*="tool-group-"] {
+  border-color: var(--tool-group-accent)
+}
+
+.vertical-accordion[class*="tool-group-"] summary {
+  color: var(--tool-group-color)
+}
+
+.tool-display-mode summary {
+  color: var(--gold);
+  font-weight: var(--font-weight-heavy);
+  cursor: pointer;
+  list-style: none;
+  padding: var(--space-10) var(--space-44) var(--space-10) var(--space-10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-10);
+  flex: 0 0 auto
+}
+
+.tool-display-mode summary::-webkit-details-marker {
+  display: none
+}
+
+.tool-display-mode summary:after {
+  content: "";
+  position: absolute;
+  right: var(--space-12);
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--space-20);
+  height: var(--space-20);
+  border: var(--border-standard);
+  border-radius: var(--radius-pill);
+  background: var(--panel-soft);
+  color: var(--gold);
+  display: inline-grid;
+  place-items: center;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
+  background-size: var(--space-7) var(--space-7);
+  background-repeat: no-repeat
+}
+
+.tool-display-mode[open] summary:after,
+.tool-display-mode summary:active:after {
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+.tool-display-mode[open] summary:active:after {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
 }

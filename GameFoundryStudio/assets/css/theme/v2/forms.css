@@ -23,6 +23,19 @@ form {
   margin: var(--space-0)
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-bottom: var(--space-14)
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: var(--two-columns);
+  gap: var(--space-14)
+}
+
 fieldset {
   border-radius: var(--space-14);
   padding: var(--space-14)
@@ -87,4 +100,15 @@ progress,
 meter {
   width: 100%;
   height: var(--space-18)
+}
+
+.control-fieldset {
+  border: var(--border-standard);
+  border-radius: var(--space-14);
+  padding: var(--space-14)
+}
+
+.control-fieldset legend {
+  color: var(--purple);
+  font-weight: var(--font-weight-heavy)
 }

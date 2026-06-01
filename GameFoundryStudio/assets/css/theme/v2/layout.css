@@ -272,6 +272,45 @@ div {
   min-width: var(--control-row-toolbar-min)
 }
 
+.tool-workspace {
+  display: grid;
+  grid-template-columns: var(--tool-workspace-columns);
+  grid-template-rows: auto minmax(var(--space-0), 1fr);
+  gap: var(--space-18);
+  align-items: start
+}
+
+.tool-workspace.is-left-collapsed {
+  grid-template-columns: var(--tool-workspace-left-collapsed-columns)
+}
+
+.tool-workspace.is-right-collapsed {
+  grid-template-columns: var(--tool-workspace-right-collapsed-columns)
+}
+
+.tool-workspace.is-left-collapsed.is-right-collapsed {
+  grid-template-columns: var(--tool-workspace-both-collapsed-columns)
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: var(--tool-grid-columns);
+  gap: var(--space-18);
+  align-items: stretch
+}
+
+.tool-display-mode {
+  grid-column: 2;
+  grid-row: 1;
+  margin: var(--space-0) var(--space-0) var(--space-12);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-12)
+}
+
 .dual-entry {
   display: grid;
   grid-template-columns: var(--two-columns);
@@ -429,6 +468,8 @@ div {
   .trending-grid,
   .card-grid,
   .control-lab,
+  .form-row,
+  .tool-grid,
   .grid.cols-4,
   .grid.cols-3,
   .grid.cols-2,
@@ -451,6 +492,42 @@ div {
   .footer__tagline {
     justify-self: start
   }
+
+  .tool-workspace {
+    grid-template-columns: var(--one-column)
+  }
+
+  .tool-display-mode,
+  body.tool-focus-mode .tool-display-mode,
+  .tool-column:first-of-type,
+  .tool-center-panel,
+  .tool-column:last-of-type,
+  body.tool-focus-mode .tool-column:first-of-type,
+  body.tool-focus-mode .tool-center-panel,
+  body.tool-focus-mode .tool-column:last-of-type {
+    grid-column: auto;
+    grid-row: auto
+  }
+
+  .tool-column.is-collapsed .tool-column-header {
+    height: auto;
+    min-height: var(--space-0);
+    writing-mode: horizontal-tb
+  }
+
+  body.tool-focus-mode {
+    overflow: auto
+  }
+
+  body.tool-focus-mode .tool-workspace {
+    height: auto;
+    grid-template-columns: var(--one-column)
+  }
+
+  body.tool-focus-mode .tool-column,
+  body.tool-focus-mode .tool-center-panel {
+    height: auto
+  }
 }
 
 @media(max-width:620px) {
@@ -460,6 +537,8 @@ div {
   .check-panel,
   .card-grid,
   .control-lab,
+  .form-row,
+  .tool-grid,
   .grid.cols-4,
   .grid.cols-3,
   .grid.cols-2,
@@ -491,5 +570,115 @@ div {
     pointer-events: auto;
     box-shadow: none;
     margin-top: var(--space-8)
+  }
+}
+
+body.tool-focus-mode .site-header,
+body.tool-focus-mode .page-title,
+body.tool-focus-mode .footer {
+  display: none !important
+}
+
+body.tool-focus-mode {
+  overflow: hidden
+}
+
+body.tool-focus-mode .container {
+  width: 100%;
+  max-width: none
+}
+
+body.tool-focus-mode .section {
+  padding: var(--space-0)
+}
+
+body.tool-focus-mode .tool-workspace {
+  height: var(--size-tool-focus-height);
+  grid-template-columns: var(--tool-focus-columns);
+  grid-template-rows: auto minmax(var(--space-0), 1fr);
+  gap: var(--space-10);
+  padding: var(--space-10);
+  align-items: stretch
+}
+
+body.tool-focus-mode .tool-workspace.is-left-collapsed {
+  grid-template-columns: var(--tool-focus-left-collapsed-columns)
+}
+
+body.tool-focus-mode .tool-workspace.is-right-collapsed {
+  grid-template-columns: var(--tool-focus-right-collapsed-columns)
+}
+
+body.tool-focus-mode .tool-workspace.is-left-collapsed.is-right-collapsed {
+  grid-template-columns: var(--tool-focus-both-collapsed-columns)
+}
+
+body.tool-focus-mode .tool-display-mode {
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  top: var(--space-10);
+  z-index: var(--z-index-md);
+  margin: var(--space-0);
+  justify-content: center
+}
+
+body.tool-focus-mode .tool-display-mode__fullscreen-name {
+  display: inline
+}
+
+body.tool-focus-mode .tool-column,
+body.tool-focus-mode .tool-center-panel {
+  height: calc(var(--size-tool-focus-height) - var(--space-20));
+  overflow: auto
+}
+
+body.tool-focus-mode .tool-column:first-of-type {
+  grid-column: 1;
+  grid-row: 1 / span 2
+}
+
+body.tool-focus-mode .tool-center-panel {
+  grid-column: 2;
+  grid-row: 2
+}
+
+body.tool-focus-mode .tool-column:last-of-type {
+  grid-column: 3;
+  grid-row: 1 / span 2
+}
+
+@media(max-width:980px) {
+  .tool-workspace,
+  body.tool-focus-mode .tool-workspace {
+    height: auto;
+    grid-template-columns: var(--one-column)
+  }
+
+  .tool-display-mode,
+  body.tool-focus-mode .tool-display-mode,
+  .tool-column:first-of-type,
+  .tool-center-panel,
+  .tool-column:last-of-type,
+  body.tool-focus-mode .tool-column:first-of-type,
+  body.tool-focus-mode .tool-center-panel,
+  body.tool-focus-mode .tool-column:last-of-type {
+    grid-column: auto;
+    grid-row: auto
+  }
+
+  .tool-column.is-collapsed .tool-column-header {
+    height: auto;
+    min-height: var(--space-0);
+    writing-mode: horizontal-tb
+  }
+
+  body.tool-focus-mode {
+    overflow: auto
+  }
+
+  body.tool-focus-mode .tool-column,
+  body.tool-focus-mode .tool-center-panel {
+    height: auto
   }
 }

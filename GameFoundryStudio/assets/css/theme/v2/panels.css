@@ -1,6 +1,9 @@
 .card,
+.tool-card,
 .game-card,
 .panel,
+.tool-column,
+.tool-center-panel,
 .control-card,
 .entry-card,
 .check-panel,
@@ -21,8 +24,11 @@
 }
 
 .card,
+.tool-card,
 .game-card,
 .panel,
+.tool-column,
+.tool-center-panel,
 .control-card,
 .side-menu {
   border-radius: var(--space-18)
@@ -32,7 +38,9 @@
   padding: var(--space-18)
 }
 
-.card img {
+.feature-image,
+.card img,
+.tool-card img {
   width: 100%;
   display: block
 }
@@ -121,6 +129,181 @@
   --accent: var(--orange);
   border-left: var(--size-control-accent-width) solid var(--accent);
   padding: var(--space-18)
+}
+
+.tool-column:first-of-type {
+  grid-column: 1;
+  grid-row: 1 / span 2
+}
+
+.tool-column,
+.tool-center-panel {
+  border-radius: var(--radius-xl)
+}
+
+.tool-column:last-of-type {
+  grid-column: 3;
+  grid-row: 1 / span 2
+}
+
+.tool-column.is-collapsed {
+  overflow: hidden
+}
+
+.tool-column.is-collapsed .accordion-stack {
+  display: none
+}
+
+.tool-column-header {
+  padding: var(--space-8) var(--space-18);
+  border-bottom: var(--border-standard);
+  background: var(--orange-soft);
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: var(--space-12)
+}
+
+.tool-column-header h2,
+.tool-column-header h3 {
+  margin: var(--space-0);
+  color: var(--gold);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  order: 1
+}
+
+.tool-column[class*="tool-group-"] .tool-column-header h2,
+.tool-column[class*="tool-group-"] .tool-column-header h3 {
+  color: var(--tool-group-color)
+}
+
+.tool-column.is-collapsed .tool-column-header {
+  height: 100%;
+  min-height: var(--size-tool-column-collapsed-min);
+  padding: var(--space-12) var(--space-8);
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start
+}
+
+.tool-column.is-collapsed .tool-column-header h2,
+.tool-column.is-collapsed .tool-column-header h3 {
+  order: 2;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  text-align: center
+}
+
+.tool-center-panel {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: var(--space-0);
+  padding: var(--space-22);
+  text-align: center
+}
+
+.tool-center-panel img {
+  width: min(var(--size-tool-center-image-max), 75%);
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: var(--space-4) auto var(--space-18)
+}
+
+.tool-center-panel p {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: var(--measure-tool-center)
+}
+
+.tool-display-mode {
+  border: var(--border-standard);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow-lg)
+}
+
+.tool-display-mode__badge {
+  width: var(--size-tool-display-badge);
+  height: var(--size-tool-display-badge);
+  object-fit: cover;
+  object-position: center;
+  border: var(--border-standard);
+  border-radius: var(--radius-pill);
+  background: var(--panel-soft)
+}
+
+.tool-display-mode__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-width: var(--space-0);
+  padding: var(--space-10) var(--space-14) var(--space-10) var(--space-0)
+}
+
+.tool-display-mode__character {
+  width: var(--size-tool-display-badge);
+  height: var(--size-tool-display-badge);
+  object-fit: contain;
+  display: block;
+  flex: 0 0 auto
+}
+
+.tool-display-mode__fullscreen-name {
+  display: none;
+  white-space: nowrap
+}
+
+.tool-display-mode__description {
+  color: var(--gold);
+  font-weight: var(--font-weight-heavy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
+}
+
+.tool-card .body {
+  padding: var(--space-14);
+  display: flex;
+  flex-direction: column;
+  flex: 1
+}
+
+.tool-card a {
+  display: flex;
+  flex-direction: column;
+  height: 100%
+}
+
+.tool-card img {
+  width: var(--size-tool-card-image-width);
+  height: var(--size-tool-card-image-height);
+  aspect-ratio: auto;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  margin: var(--space-0) auto;
+  background: var(--tool-image-bg)
+}
+
+.tool-card.spark,
+.tool-card.forge {
+  border-color: var(--orange-border-muted)
+}
+
+.tool-card.pixel {
+  border-color: var(--gold-border-muted)
+}
+
+.tool-card.bot {
+  border-color: var(--cyan-border-muted)
+}
+
+.tool-card[class*="tool-group-"] {
+  border-color: var(--tool-group-accent)
 }
 
 .about-hero {

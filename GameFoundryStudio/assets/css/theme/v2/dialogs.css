@@ -1,1 +1,24 @@
-/* Home migration does not require reusable dialog patterns yet. */
+dialog {
+  max-width: min(var(--dialog-max-width), calc(100% - var(--space-34)));
+  width: 100%;
+  padding: var(--space-18);
+  border: var(--border-standard);
+  border-radius: var(--space-14);
+  background: var(--dialog-bg);
+  color: var(--text)
+}
+
+dialog::backdrop {
+  background: color-mix(in srgb, var(--bg) 72%, transparent)
+}
+
+.dialog-sample {
+  border: var(--border-standard);
+  border-radius: var(--space-14);
+  padding: var(--space-14);
+  background: var(--dialog-bg)
+}
+
+.dialog-sample strong {
+  color: var(--green)
+}

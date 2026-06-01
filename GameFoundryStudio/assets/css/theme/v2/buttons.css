@@ -25,15 +25,39 @@
   opacity: var(--opacity-disabled)
 }
 
+.btn:hover,
+.btn:focus-visible {
+  border-color: var(--gold);
+  outline: none
+}
+
+.btn[aria-disabled=true],
+.btn:disabled {
+  cursor: not-allowed;
+  pointer-events: none
+}
+
+.button-row,
+.inline-row {
+  display: flex;
+  gap: var(--space-10);
+  flex-wrap: wrap;
+  align-items: center
+}
+
 .return-to-top {
+  --accordion-button-border: var(--meaning-border, var(--line));
+  --accordion-button-background: var(--meaning-soft, var(--panel-soft));
+  --accordion-button-color: var(--meaning-color, var(--gold));
   min-width: var(--space-20);
   width: var(--space-44);
   height: var(--space-44);
   padding: var(--space-0);
   border: var(--border-standard);
+  border-color: var(--accordion-button-border);
   border-radius: var(--radius-pill);
-  background: var(--panel-soft);
-  color: var(--gold);
+  background: var(--accordion-button-background);
+  color: var(--accordion-button-color);
   line-height: var(--line-height-single);
   display: inline-grid;
   place-items: center;
@@ -60,7 +84,7 @@
 
 .return-to-top:hover,
 .return-to-top:focus-visible {
-  border-color: var(--gold);
-  background: color-mix(in srgb, var(--gold) 24%, var(--panel));
+  border-color: var(--meaning-color, var(--gold));
+  background: color-mix(in srgb, var(--meaning-color, var(--gold)) 24%, var(--panel));
   outline: none
 }
