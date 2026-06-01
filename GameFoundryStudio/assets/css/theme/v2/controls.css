@@ -65,6 +65,11 @@
   border-color: var(--tool-group-accent)
 }
 
+.control-card[class*="tool-group-"] {
+  --accent: var(--tool-group-color);
+  border-color: var(--tool-group-accent)
+}
+
 .control-lab[class*="tool-group-"] input[type="checkbox"],
 .control-lab[class*="tool-group-"] input[type="radio"],
 .control-lab[class*="tool-group-"] input[type="range"] {

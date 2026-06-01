@@ -345,7 +345,7 @@
 
     function createToolCard(tool) {
         const article = document.createElement("article");
-        article.className = `card ${groupClass(tool.group)}`;
+        article.className = `control-card ${groupClass(tool.group)}`;
         article.dataset.mascot = tool.mascot;
 
         const media = document.createElement("div");
