@@ -1,0 +1,20 @@
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  border-radius: var(--radius-md);
+  padding: var(--space-10) var(--space-14);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer
+}
+
+button:disabled,
+input[type="button"]:disabled,
+input[type="submit"]:disabled,
+input[type="reset"]:disabled {
+  cursor: not-allowed
+}
