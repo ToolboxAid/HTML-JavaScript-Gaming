@@ -68,6 +68,24 @@ PASS by source review:
 - No publishing logic was added.
 - The pages remain static wireframes.
 
+## Side Accordion Count Validation
+
+PASS:
+
+```text
+rg -n "Toolbox Accordion|Inspector Accordion|panel [0-9]+" GameFoundryStudio/tools -g "*.html"
+```
+
+Result: no matches.
+
+Interpretation:
+
+- The page-processing counter no longer appears as visible accordion numbering.
+- Placeholder side accordions use content labels instead of counter labels.
+- Game Design Studio uses three left-side and three right-side accordions.
+- Game Builder uses two left-side and two right-side accordions.
+- Publish Studio uses two left-side and two right-side accordions.
+
 Existing external shared scripts remain:
 
 ```text
