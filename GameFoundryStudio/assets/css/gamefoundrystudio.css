@@ -589,7 +589,7 @@ details.vertical-accordion[open] summary:active:after {
 }
 
 .tool-column-header {
-  padding: 16px 18px;
+  padding: 8px 18px;
   border-bottom: 1px solid var(--line);
   background: var(--orange-soft);
   display: flex;
@@ -607,21 +607,34 @@ details.vertical-accordion[open] summary:active:after {
   order: 1
 }
 
-body[class*="tool-group-"] .tool-column-header h2,
-body[class*="tool-group-"] .tool-column-header h3 {
+.tool-column[class*="tool-group-"] .tool-column-header h2,
+.tool-column[class*="tool-group-"] .tool-column-header h3 {
   color: var(--tool-group-color)
+}
+
+.tool-column .accordion-stack {
+  padding: 8px 12px;
+  gap: 8px
+}
+
+.tool-column details.vertical-accordion summary {
+  padding: 9px 12px
+}
+
+.tool-column .accordion-body {
+  padding: 0 12px 10px
 }
 
 .tool-column-header .horizontal-accordion-toggle {
   order: 2
 }
 
-body[class*="tool-group-"] .horizontal-accordion-toggle {
+.tool-column[class*="tool-group-"] .horizontal-accordion-toggle {
   border-color: var(--tool-group-accent);
   color: var(--tool-group-color)
 }
 
-body[class*="tool-group-"] details.vertical-accordion summary:after {
+.tool-column[class*="tool-group-"] details.vertical-accordion summary:after {
   border-color: var(--tool-group-accent);
   color: var(--tool-group-color)
 }
@@ -678,7 +691,7 @@ body[class*="tool-group-"] details.vertical-accordion summary:after {
   grid-column: 2;
   grid-row: 1;
   margin: 0 0 12px;
-  border: 1px solid var(--meaning-border, var(--line));
+  border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--panel);
   box-shadow: var(--shadow-md);
@@ -689,8 +702,8 @@ body[class*="tool-group-"] details.vertical-accordion summary:after {
 }
 
 .tool-display-mode summary {
-  color: var(--meaning-color, var(--gold));
-  background: var(--meaning-soft, var(--panel-soft));
+  color: var(--gold);
+  background: var(--panel-soft);
   font-weight: 900;
   cursor: pointer;
   list-style: none;
@@ -710,10 +723,10 @@ body[class*="tool-group-"] details.vertical-accordion summary:after {
   content: "";
   width: 20px;
   height: 20px;
-  border: 1px solid var(--meaning-border, var(--line));
+  border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   background: var(--panel-soft);
-  color: var(--meaning-color, var(--gold));
+  color: var(--gold);
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
@@ -740,7 +753,7 @@ body[class*="tool-group-"] details.vertical-accordion summary:after {
   height: 42px;
   object-fit: cover;
   object-position: center;
-  border: 1px solid var(--meaning-border, var(--line));
+  border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   background: var(--panel-soft)
 }
@@ -907,7 +920,7 @@ body.tool-focus-mode .tool-display-mode {
   top: 10px;
   z-index: var(--z-index-md);
   margin: 0;
-  border-color: var(--meaning-border, var(--line));
+  border-color: var(--line);
   background: var(--panel);
   box-shadow: var(--shadow-lg);
   justify-content: center
