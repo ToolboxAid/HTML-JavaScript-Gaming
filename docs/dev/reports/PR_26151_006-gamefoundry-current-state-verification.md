@@ -12,8 +12,8 @@ The current GameFoundryStudio implementation is partially aligned with the inten
 
 ## PRESENT
 
-- `GameFoundryStudio/assets/data/colors.json` exists and parses as JSON.
-- `colors.json` defines six proposed meaning colors:
+- The old GameFoundryStudio JSON palette exists and parses as JSON.
+- The old JSON palette defines six proposed meaning colors:
   - `molten-orange` - Building / Creation
   - `electric-blue` - Technology / System
   - `forge-gold` - Assets / Content
@@ -69,7 +69,7 @@ The current GameFoundryStudio implementation is partially aligned with the inten
 - Read `docs/dev/PROJECT_INSTRUCTIONS.md` first.
 - Ran read-only file discovery for `GameFoundryStudio`.
 - Read exact target files and immediate dependencies for colors, CSS, partials, JS partial loader, target pages, and tool display mode.
-- Parsed `GameFoundryStudio/assets/data/colors.json` with Node.
+- Parsed the old GameFoundryStudio JSON palette with Node.
 - Ran static inline CSS/JS/event-handler checks:
   - `<style\b`
   - `<script(?![^>]*\bsrc=)`

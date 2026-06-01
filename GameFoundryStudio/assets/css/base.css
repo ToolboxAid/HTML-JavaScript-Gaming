@@ -1,30 +1,5 @@
-:root {
-  --iron-black: #121212;
-  --foundry-space: #070a12;
-  --panel-slate: #0f172a;
-  --steel-gray: #6b7280;
-  --molten-orange: #ff7a00;
-  --forge-orange: #ff8a2a;
-  --forge-gold: #ffc857;
-  --electric-blue: #4da3ff;
-  --arcade-cyan: #22d3ee;
-  --bg: #090b0f;
-  --panel: #111722;
-  --panel2: #151b25;
-  --text: #f5f7fb;
-  --muted: #aeb6c2;
-  --orange: var(--molten-orange);
-  --gold: var(--forge-gold);
-  --cyan: #20d6ff;
-  --purple: #b877ff;
-  --green: #7dd957;
-  --pink: #ff4f8b;
-  --line: rgba(255, 255, 255, .12);
-  --shadow: 0 20px 60px rgba(0, 0, 0, .45)
-}
-
 body {
-  background: radial-gradient(circle at 20% 0%, rgba(255, 122, 0, .16), transparent 28%), radial-gradient(circle at 80% 10%, rgba(32, 214, 255, .1), transparent 24%), var(--bg);
+  background: var(--body-background);
   color: var(--text)
 }
 

@@ -10,8 +10,8 @@
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 10;
-  background: rgba(9, 11, 15, .82);
+  z-index: var(--z-index-sm);
+  background: var(--header-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line)
 }
@@ -91,12 +91,12 @@
   gap: 4px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(9, 11, 15, .98);
+  background: var(--submenu-bg);
   box-shadow: var(--shadow);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  z-index: 1000
+  z-index: var(--z-index-lg)
 }
 
 .nav-item:after {
@@ -125,7 +125,7 @@
 .sub-menu a:hover,
 .sub-menu a.active {
   color: var(--gold);
-  background: rgba(255, 122, 0, .14)
+  background: var(--orange-soft-strong)
 }
 
 .btn {
@@ -141,17 +141,17 @@
 
 .btn {
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, .04);
+  background: var(--panel-soft);
   color: var(--text)
 }
 
 .btn.primary {
-  background: linear-gradient(135deg, var(--orange), #b83b00);
-  border-color: rgba(255, 122, 0, .6)
+  background: var(--button-primary-background);
+  border-color: var(--orange-border-strong)
 }
 
 .btn.cyan {
-  background: linear-gradient(135deg, #0891b2, #0e7490)
+  background: var(--button-cyan-background)
 }
 
 .btn[aria-disabled=true] {
@@ -172,9 +172,9 @@
 .game-tile,
 .side-menu {
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .025));
+  background: var(--card-background);
   overflow: hidden;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, .28)
+  box-shadow: var(--shadow-md)
 }
 
 .card,
@@ -238,7 +238,7 @@
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(255, 255, 255, .04)
+  background: var(--panel-soft)
 }
 
 .mini-stat strong {
@@ -282,8 +282,8 @@
 }
 
 .callout {
-  border: 1px solid rgba(255, 122, 0, .38);
-  background: rgba(255, 122, 0, .08);
+  border: 1px solid var(--orange-border);
+  background: var(--orange-soft);
   border-radius: 18px;
   padding: 18px
 }
@@ -293,7 +293,7 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 12px;
-  background: rgba(7, 10, 18, .58);
+  background: var(--panel-overlay-strong);
   color: var(--muted)
 }
 
@@ -369,7 +369,7 @@
   inset: 0;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: #1f2937;
+  background: var(--switch-off);
   transition: .2s
 }
 
@@ -381,12 +381,12 @@
   left: 3px;
   top: 3px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--white);
   transition: .2s
 }
 
 .switch input:checked+.slider {
-  background: color-mix(in srgb, var(--accent) 70%, #111722);
+  background: color-mix(in srgb, var(--accent) 70%, var(--panel));
   border-color: var(--accent)
 }
 
@@ -414,7 +414,7 @@
 details.vertical-accordion {
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(7, 10, 18, .58);
+  background: var(--panel-overlay-strong);
   overflow: hidden
 }
 
@@ -440,7 +440,7 @@ details.vertical-accordion summary:after {
   height: 24px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(255, 255, 255, .04);
+  background: var(--panel-soft);
   color: var(--gold);
   display: inline-grid;
   place-items: center;
@@ -511,7 +511,7 @@ details.vertical-accordion[open] summary:after {
 .tool-column-header {
   padding: 16px 18px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 122, 0, .08);
+  background: var(--orange-soft);
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -586,7 +586,7 @@ details.vertical-accordion[open] summary:after {
   border: 1px solid var(--meaning-border, var(--line));
   border-radius: 16px;
   background: var(--panel);
-  box-shadow: 0 14px 40px var(--shadow);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -664,7 +664,7 @@ details.vertical-accordion[open] summary:after {
   object-position: center;
   display: block;
   margin: 0 auto;
-  background: #080d14
+  background: var(--tool-image-bg)
 }
 
 .tool-card .body {
@@ -681,15 +681,15 @@ details.vertical-accordion[open] summary:after {
 
 .tool-card.spark,
 .tool-card.forge {
-  border-color: rgba(255, 122, 0, .35)
+  border-color: var(--orange-border-muted)
 }
 
 .tool-card.pixel {
-  border-color: rgba(255, 200, 87, .35)
+  border-color: var(--gold-border-muted)
 }
 
 .tool-card.bot {
-  border-color: rgba(32, 214, 255, .35)
+  border-color: var(--cyan-border-muted)
 }
 
 body.tool-focus-mode .site-header,
@@ -737,11 +737,11 @@ body.tool-focus-mode .tool-display-mode {
   grid-row: 1;
   position: sticky;
   top: 10px;
-  z-index: 50;
+  z-index: var(--z-index-md);
   margin: 0;
   border-color: var(--meaning-border, var(--line));
   background: var(--panel);
-  box-shadow: 0 18px 60px var(--shadow);
+  box-shadow: var(--shadow-lg);
   justify-content: center
 }
 

@@ -78,7 +78,7 @@
     aspect-ratio: 16/10;
     display: grid;
     place-items: center;
-    background: linear-gradient(135deg, rgba(255, 122, 0, .22), rgba(77, 163, 255, .15))
+    background: var(--game-art-background)
 }
 
 .game-art img {
@@ -133,7 +133,7 @@
     border: 1px solid var(--line);
     border-radius: 16px;
     padding: 14px;
-    background: rgba(7, 10, 18, .48);
+    background: var(--panel-overlay);
     font-weight: 750
 }
 
@@ -148,7 +148,7 @@
     padding: 52px;
     border-radius: 24px;
     border: 1px solid var(--line);
-    background: linear-gradient(135deg, rgba(255, 122, 0, .18), rgba(77, 163, 255, .11));
+    background: var(--cta-background);
     box-shadow: var(--shadow)
 }
 
@@ -164,7 +164,7 @@
     border-radius: 16px;
     display: grid;
     place-items: center;
-    background: linear-gradient(135deg, rgba(255, 122, 0, .28), rgba(77, 163, 255, .16));
+    background: var(--icon-background);
     font-size: 26px
 }
 
@@ -196,7 +196,7 @@
 }
 
 .side-menu a.active {
-    background: rgba(255, 122, 0, .14);
+    background: var(--orange-soft-strong);
     color: var(--gold)
 }
 
@@ -211,9 +211,9 @@
 }
 
 .brand-color-swatch {
-    border: 1px solid rgba(255, 255, 255, .28);
+    border: 1px solid var(--swatch-border);
     border-radius: 4px;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, .16);
+    box-shadow: var(--shadow-sm);
     display: inline-block;
     flex: 0 0 auto;
     height: 16px;
@@ -221,19 +221,19 @@
 }
 
 .swatch-orange {
-    background: #ff7a00
+    background: var(--molten-orange)
 }
 
 .swatch-gold {
-    background: #ffc857
+    background: var(--forge-gold)
 }
 
 .swatch-black {
-    background: #090b0f
+    background: var(--bg)
 }
 
 .swatch-cyan {
-    background: #20d6ff
+    background: var(--bot-cyan)
 }
 
 .swatch-green {
@@ -241,7 +241,7 @@
 }
 
 .swatch-red {
-    background: #ff4d4d
+    background: var(--red)
 }
 
 .swatch-purple {
@@ -249,7 +249,7 @@
 }
 
 .swatch-blue {
-    background: #4da3ff
+    background: var(--electric-blue)
 }
 
 .swatch-gray {
@@ -314,9 +314,9 @@
 
 .forgebot-stage {
     min-height: 360px;
-    border: 1px solid rgba(255, 122, 0, .32);
+    border: 1px solid var(--forgebot-stage-border);
     border-radius: 28px;
-    background: radial-gradient(circle at 50% 55%, rgba(255, 122, 0, .25), transparent 48%), linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025));
+    background: var(--forgebot-stage-background);
     display: grid;
     place-items: center;
     overflow: hidden;
@@ -326,7 +326,7 @@
 .forgebot-stage img {
     width: min(92%, 340px);
     height: auto;
-    filter: drop-shadow(0 22px 45px rgba(255, 122, 0, .24))
+    filter: drop-shadow(var(--forgebot-stage-shadow))
 }
 
 .control-section {
@@ -349,7 +349,7 @@
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: 14px;
-    background: #0c111a
+    background: var(--dialog-bg)
 }
 
 .dialog-sample strong {

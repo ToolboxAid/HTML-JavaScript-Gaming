@@ -33,6 +33,7 @@
         account: "account/index.html",
         branding: "account/branding.html",
         controls: "account/controls.html",
+        "design-system": "account/design-system.html",
         "grouping-colors": "account/grouping-colors.html"
     };
 

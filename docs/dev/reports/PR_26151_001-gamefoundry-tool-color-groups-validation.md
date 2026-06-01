@@ -8,8 +8,8 @@
 
 ## Scope Completed
 
-- Migrated current brand color values from `GameFoundryStudio/assets/data/colors.json` into `GameFoundryStudio/assets/css/styles.css` as CSS variables and reusable classes/IDs.
-- Recreated `GameFoundryStudio/assets/data/colors.json` with only the Proposed Meanings color model.
+- Migrated current brand color values from the old GameFoundryStudio JSON palette into `GameFoundryStudio/assets/css/styles.css` as CSS variables and reusable classes/IDs.
+- Recreated the old GameFoundryStudio JSON palette with only the Proposed Meanings color model.
 - Added six tool grouping pages:
   - `GameFoundryStudio/building-creation.html`
   - `GameFoundryStudio/technology-system.html`
@@ -28,8 +28,8 @@
 - Changed-file syntax/static checks: BLOCKED by shell spawn failure.
 - Targeted navigation validation: BLOCKED by shell spawn failure.
 - Playwright: BLOCKED by shell spawn failure.
-- Verify `colors.json` contains only Proposed Meanings model: MANUAL REVIEW from applied patch, PASS.
-- Verify no old brand-color-only `colors.json` remains: MANUAL REVIEW from applied patch, PASS for edited path.
+- Verify old JSON palette contains only Proposed Meanings model: MANUAL REVIEW from applied patch, PASS.
+- Verify no old brand-color-only JSON palette remains: MANUAL REVIEW from applied patch, PASS for edited path.
 - Verify no inline `<style>`, inline `<script>`, `onclick`, `onchange`, `oninput`, or similar handlers in changed HTML: NOT EXECUTED by command; manual review of added pages found no inline style/script/event handlers.
 - Verify NAV links resolve for all pages: BLOCKED by shell spawn failure.
 - ZIP creation: BLOCKED by shell spawn failure.
@@ -58,7 +58,7 @@ Expected pass behavior when shell access is restored:
 - Each grouping page renders left and right panels with its meaning color.
 
 Expected fail behavior:
-- Missing grouping links, unresolved links, inline HTML script/style/event handlers, or a non-Proposed-Meanings `colors.json` should fail the targeted lane.
+- Missing grouping links, unresolved links, inline HTML script/style/event handlers, or a non-Proposed-Meanings JSON palette should fail the targeted lane.
 
 ## Samples Decision
 

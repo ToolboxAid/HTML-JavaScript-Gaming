@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>GameFoundryStudio Design System</title>
+</head>
+
+<body>
+  <main>
+    <h1>GameFoundryStudio Design System</h1>
+    <section>
+      <h2>Source Of Truth</h2>
+      <ul>
+        <li><code>GameFoundryStudio/assets/css/colors.css</code> owns all approved color values.</li>
+        <li><code>GameFoundryStudio/assets/css/tokens.css</code> owns non-color design tokens.</li>
+        <li><code>GameFoundryStudio/assets/css/base.css</code> stays limited to reset, typography defaults, focus,
+          accessibility, and base element rules.</li>
+        <li><code>GameFoundryStudio/assets/css/gamefoundrystudio.css</code> owns shared component and pattern visuals.
+        </li>
+        <li><code>GameFoundryStudio/assets/css/pages.css</code> should remain page layout oriented and use shared tokens.
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>Token Families</h2>
+      <ul>
+        <li>Spacing: <code>xs</code>, <code>sm</code>, <code>md</code>, <code>lg</code>, <code>xl</code>,
+          <code>2xl</code>.
+        </li>
+        <li>Sizing: <code>xs</code>, <code>sm</code>, <code>md</code>, <code>lg</code>, <code>xl</code>,
+          <code>2xl</code>.
+        </li>
+        <li>Typography: base/code font families, size scale, weights, and line heights.</li>
+        <li>Radius: <code>xs</code>, <code>sm</code>, <code>md</code>, <code>lg</code>, <code>xl</code>,
+          <code>2xl</code>, and pill.</li>
+        <li>Shadows, z-index, icon sizes, and tool tile dimensions live in token variables.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Color Safety</h2>
+      <p>New visual work must use existing color tokens. If a color is not approved, add the smallest necessary token to
+        <code>colors.css</code> and document why it exists.</p>
+    </section>
+  </main>
+</body>
+
+</html>

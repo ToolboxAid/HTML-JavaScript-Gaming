@@ -1,10 +1,6 @@
+@import url("colors.css");
+@import url("tokens.css");
 @import url("base.css");
-@import url("colors/molten-orange.css");
-@import url("colors/electric-blue.css");
-@import url("colors/forge-gold.css");
-@import url("colors/arcade-cyan.css");
-@import url("colors/purple.css");
-@import url("colors/steel-gray.css");
 @import url("controls.css");
 @import url("gamefoundrystudio.css");
 @import url("pages.css");

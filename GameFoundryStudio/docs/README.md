@@ -10,7 +10,7 @@ Open `index.html` in a browser.
 - `assets/images/game-foundry-studio-logo.png` — generated logo from this chat
 - `assets/images/game-foundry-mascot-sheet.png` — generated mascot concept sheet from this chat
 - `assets/images/*.svg` — existing logo mark, favicon, ForgeBot, and sample game art
-- `assets/data/colors.json` — reusable color palette
+- `assets/css/colors.css` — reusable color palette and color token source of truth
 
 ## Brand direction
 - Name: Game Foundry Studio
