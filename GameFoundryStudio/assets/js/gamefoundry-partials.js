@@ -70,6 +70,8 @@
         rating: "admin/ratings.html"
     };
 
+    const rootPageRoutes = new Set(["about", "vision", "mission", "roadmap", "release-notes"]);
+
     const partials = {
         "header-nav": "assets/partials/header-nav.html",
         footer: "assets/partials/footer.html"
@@ -88,6 +90,14 @@
     }
 
     function routeHref(routeName) {
+        if (rootPageRoutes.has(routeName)) {
+            const parts = window.location.pathname.split("/").filter(Boolean);
+            const studioIndex = parts.lastIndexOf("GameFoundryStudio");
+            if (studioIndex >= 0) {
+                return "../".repeat(parts.length - studioIndex) + routeMap[routeName];
+            }
+            return "../" + routeMap[routeName];
+        }
         return rootPrefix() + (routeMap[routeName] || routeName || "index.html");
     }
 
