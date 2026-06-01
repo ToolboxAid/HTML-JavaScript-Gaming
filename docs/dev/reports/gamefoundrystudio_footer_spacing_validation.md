@@ -37,6 +37,11 @@ Task: PR_26152_016-footer-kicker-spacing
     - Result: Passed.
   - Playwright validation confirmed the two footer brand lines stack vertically, each line remains unwrapped, and footer grouping columns remain aligned at desktop width.
     - Result: Passed, 8 checks.
+- Follow-up footer placement validation:
+  - Static Node validation confirmed the footer partial order is motto, footer navigation, then copyright block.
+    - Result: Passed.
+  - Playwright validation confirmed `Build - Play - Share` sits left of Product, the copyright block sits right of Company, shared font/color treatment remains matched, and responsive footer columns are preserved.
+    - Result: Passed, 14 checks.
 
 ## Skipped
 

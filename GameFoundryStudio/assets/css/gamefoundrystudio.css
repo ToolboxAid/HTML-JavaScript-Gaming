@@ -334,7 +334,8 @@
 .footer__brand {
   display: grid;
   gap: 4px;
-  align-content: start
+  align-content: start;
+  justify-self: end
 }
 
 .footer__brand span {
@@ -377,7 +378,7 @@
 }
 
 .footer__tagline {
-  justify-self: end;
+  justify-self: start;
   white-space: nowrap
 }
 
