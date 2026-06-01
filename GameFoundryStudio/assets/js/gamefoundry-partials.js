@@ -59,10 +59,10 @@
         disclaimer: "disclaimer.html",
         "privacy-policy": "privacy-policy.html",
         "terms-legal": "terms.html",
-        account: "account/index.html",
-        "account-profile": "account/profile.html",
-        "account-preferences": "account/preferences.html",
-        "account-security": "account/security.html",
+        account: "account.html",
+        "account-profile": "profile.html",
+        "account-preferences": "preferences.html",
+        "account-security": "security.html",
         branding: "admin/branding.html",
         controls: "admin/controls.html",
         "design-system": "admin/design-system.html",
@@ -70,7 +70,7 @@
         rating: "admin/ratings.html"
     };
 
-    const rootPageRoutes = new Set(["about", "vision", "mission", "roadmap", "release-notes"]);
+    const rootPageRoutes = new Set(["about", "vision", "mission", "roadmap", "release-notes", "account", "account-profile", "account-preferences", "account-security"]);
 
     const partials = {
         "header-nav": "assets/partials/header-nav.html",
@@ -84,6 +84,7 @@
     }
 
     function rootPrefix() {
+        if (window.location.pathname.split("/").filter(Boolean).lastIndexOf("GameFoundryStudio") < 0) return "";
         const pagePath = currentPagePath();
         if (!pagePath || pagePath === "index.html") return "";
         return "../".repeat(pagePath.split("/").length - 1);
@@ -117,7 +118,7 @@
             const route = routeMap[link.dataset.route] || "";
             const isToolChild = pagePath.indexOf("tools/") === 0 && link.dataset.route === "tools";
             const isGameChild = pagePath.indexOf("arcade/") === 0 && link.dataset.route === "games";
-            const isAccountChild = pagePath.indexOf("account/") === 0 && link.dataset.route === "account";
+            const isAccountChild = ["account.html", "profile.html", "preferences.html", "security.html"].includes(pagePath) && link.dataset.route === "account";
             const isAdminChild = pagePath.indexOf("admin/") === 0 && link.dataset.route === "admin";
             if (route === pagePath || isToolChild || isGameChild || isAccountChild || isAdminChild) {
                 link.classList.add("active");
