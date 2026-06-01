@@ -236,6 +236,26 @@
     background: #20d6ff
 }
 
+.swatch-green {
+    background: var(--green)
+}
+
+.swatch-red {
+    background: #ff4d4d
+}
+
+.swatch-purple {
+    background: var(--purple)
+}
+
+.swatch-blue {
+    background: #4da3ff
+}
+
+.swatch-gray {
+    background: var(--steel-gray)
+}
+
 .mascot-role {
     color: var(--text);
     font-size: 18px;

@@ -32,7 +32,8 @@
         docs: "docs/index.html",
         account: "account/index.html",
         branding: "account/branding.html",
-        controls: "account/controls.html"
+        controls: "account/controls.html",
+        "grouping-colors": "account/grouping-colors.html"
     };
 
     const partials = {
