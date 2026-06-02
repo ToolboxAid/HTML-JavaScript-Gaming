@@ -1,0 +1,112 @@
+{
+  "baseNotification": {
+    "notificationId": "notification.marketplace.alpha.1",
+    "ownerId": "platform.notifications",
+    "recipientId": "user.creator",
+    "notificationType": "marketplace",
+    "channel": "inApp",
+    "deliveryStatus": "sent",
+    "createdAt": "2026-06-02T15:50:00.000Z",
+    "notificationText": "Marketplace listing was published."
+  },
+  "validNotifications": [
+    {
+      "name": "sent marketplace notification",
+      "overrides": {},
+      "expectedErrors": []
+    },
+    {
+      "name": "read collaboration notification",
+      "overrides": {
+        "notificationId": "notification.collaboration.alpha.1",
+        "notificationType": "collaboration",
+        "deliveryStatus": "read",
+        "readAt": "2026-06-02T16:00:00.000Z",
+        "notificationText": "A collaborator role was granted."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "queued email notification",
+      "overrides": {
+        "notificationId": "notification.system.alpha.1",
+        "notificationType": "system",
+        "channel": "email",
+        "deliveryStatus": "queued"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidNotifications": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["NOTIFICATION_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing recipient",
+      "overrides": {
+        "recipientId": ""
+      },
+      "expectedErrors": ["NOTIFICATION_RECIPIENT_REQUIRED"]
+    },
+    {
+      "name": "invalid type",
+      "overrides": {
+        "notificationType": "payment"
+      },
+      "expectedErrors": ["NOTIFICATION_TYPE_INVALID"]
+    },
+    {
+      "name": "invalid channel",
+      "overrides": {
+        "channel": "sms"
+      },
+      "expectedErrors": ["NOTIFICATION_CHANNEL_INVALID"]
+    },
+    {
+      "name": "invalid delivery status",
+      "overrides": {
+        "deliveryStatus": "delivered"
+      },
+      "expectedErrors": ["NOTIFICATION_DELIVERY_STATUS_INVALID"]
+    },
+    {
+      "name": "read status without read at",
+      "overrides": {
+        "deliveryStatus": "read"
+      },
+      "expectedErrors": ["NOTIFICATION_READ_AT_REQUIRED"]
+    },
+    {
+      "name": "invalid read at",
+      "overrides": {
+        "readAt": "not-a-date"
+      },
+      "expectedErrors": ["NOTIFICATION_READ_AT_INVALID"]
+    },
+    {
+      "name": "provider detail leakage",
+      "overrides": {
+        "sendGridMessageId": "provider-message-1"
+      },
+      "expectedErrors": ["NOTIFICATION_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["NOTIFICATION_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth session leakage",
+      "overrides": {
+        "authSession": "session-1"
+      },
+      "expectedErrors": ["NOTIFICATION_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

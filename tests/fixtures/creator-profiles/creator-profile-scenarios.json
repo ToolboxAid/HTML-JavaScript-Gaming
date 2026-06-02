@@ -1,0 +1,93 @@
+{
+  "baseCreatorProfile": {
+    "creatorProfileId": "creator-profile.user.creator",
+    "ownerId": "user.creator",
+    "displayName": "Ari Creator",
+    "handle": "ari-creator",
+    "visibility": "public",
+    "profileStatus": "active",
+    "createdAt": "2026-06-02T15:10:00.000Z",
+    "profileNotes": "Public creator profile metadata only."
+  },
+  "validCreatorProfiles": [
+    {
+      "name": "public creator profile",
+      "overrides": {},
+      "expectedErrors": []
+    },
+    {
+      "name": "archived creator profile",
+      "overrides": {
+        "creatorProfileId": "creator-profile.user.creator.archived",
+        "visibility": "private",
+        "profileStatus": "archived"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidCreatorProfiles": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["CREATOR_PROFILE_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing display name",
+      "overrides": {
+        "displayName": ""
+      },
+      "expectedErrors": ["CREATOR_PROFILE_DISPLAY_NAME_REQUIRED"]
+    },
+    {
+      "name": "invalid handle",
+      "overrides": {
+        "handle": "Bad Handle"
+      },
+      "expectedErrors": ["CREATOR_PROFILE_HANDLE_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "overrides": {
+        "visibility": "team"
+      },
+      "expectedErrors": ["CREATOR_PROFILE_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid status",
+      "overrides": {
+        "profileStatus": "pending"
+      },
+      "expectedErrors": ["CREATOR_PROFILE_STATUS_INVALID"]
+    },
+    {
+      "name": "invalid created timestamp",
+      "overrides": {
+        "createdAt": "not-a-date"
+      },
+      "expectedErrors": ["CREATOR_PROFILE_CREATED_AT_INVALID"]
+    },
+    {
+      "name": "auth session leakage",
+      "overrides": {
+        "authSessionState": {}
+      },
+      "expectedErrors": ["CREATOR_PROFILE_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["CREATOR_PROFILE_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "overrides": {
+        "toolState": {}
+      },
+      "expectedErrors": ["CREATOR_PROFILE_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

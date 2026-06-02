@@ -1,0 +1,94 @@
+{
+  "baseReviewRating": {
+    "reviewRatingId": "review-rating.alpha.1",
+    "ownerId": "user.buyer",
+    "projectId": "project.game.alpha",
+    "marketplaceListing": {
+      "listingId": "listing.game.alpha.2",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2",
+      "status": "listed"
+    },
+    "rating": 5,
+    "reviewText": "Fast to install and fun to remix.",
+    "visibility": "marketplace",
+    "reviewStatus": "active",
+    "createdAt": "2026-06-02T15:30:00.000Z",
+    "reviewNotes": "Review metadata only."
+  },
+  "validReviewRatings": [
+    {
+      "name": "marketplace review rating",
+      "overrides": {},
+      "expectedErrors": []
+    },
+    {
+      "name": "hidden review rating",
+      "overrides": {
+        "reviewRatingId": "review-rating.alpha.hidden",
+        "visibility": "private",
+        "reviewStatus": "hidden"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidReviewRatings": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["REVIEW_RATING_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing marketplace listing",
+      "removeFields": ["marketplaceListing"],
+      "expectedErrors": ["REVIEW_RATING_MARKETPLACE_LISTING_REQUIRED"]
+    },
+    {
+      "name": "listing project mismatch",
+      "overrides": {
+        "marketplaceListing": {
+          "projectId": "project.other"
+        }
+      },
+      "expectedErrors": ["REVIEW_RATING_LISTING_PROJECT_MISMATCH"]
+    },
+    {
+      "name": "invalid rating",
+      "overrides": {
+        "rating": 6
+      },
+      "expectedErrors": ["REVIEW_RATING_RATING_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "overrides": {
+        "visibility": "team"
+      },
+      "expectedErrors": ["REVIEW_RATING_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid status",
+      "overrides": {
+        "reviewStatus": "queued"
+      },
+      "expectedErrors": ["REVIEW_RATING_STATUS_INVALID"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["REVIEW_RATING_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "moderation decision leakage",
+      "overrides": {
+        "moderationDecision": "approved"
+      },
+      "expectedErrors": ["REVIEW_RATING_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

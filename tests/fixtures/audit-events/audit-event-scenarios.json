@@ -1,0 +1,114 @@
+{
+  "baseAuditEvent": {
+    "auditEventId": "audit-event.project.alpha.1",
+    "ownerId": "platform.audit",
+    "actorId": "user.creator",
+    "action": "create",
+    "targetType": "project",
+    "targetId": "project.game.alpha",
+    "severity": "info",
+    "occurredAt": "2026-06-02T15:45:00.000Z",
+    "auditNotes": "Audit metadata only; no runtime or provider state is stored."
+  },
+  "validAuditEvents": [
+    {
+      "name": "project create audit event",
+      "overrides": {},
+      "expectedErrors": []
+    },
+    {
+      "name": "moderation queue audit event",
+      "overrides": {
+        "auditEventId": "audit-event.moderation.alpha.1",
+        "action": "moderate",
+        "targetType": "moderationQueue",
+        "targetId": "moderation-queue.review.alpha.1",
+        "severity": "warning"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "restore snapshot audit event",
+      "overrides": {
+        "auditEventId": "audit-event.restore.alpha.1",
+        "action": "administer",
+        "targetType": "restoreSnapshot",
+        "targetId": "restore-snapshot.alpha.1",
+        "severity": "security"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidAuditEvents": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["AUDIT_EVENT_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing actor",
+      "overrides": {
+        "actorId": ""
+      },
+      "expectedErrors": ["AUDIT_EVENT_ACTOR_REQUIRED"]
+    },
+    {
+      "name": "invalid action",
+      "overrides": {
+        "action": "approve"
+      },
+      "expectedErrors": ["AUDIT_EVENT_ACTION_INVALID"]
+    },
+    {
+      "name": "invalid target type",
+      "overrides": {
+        "targetType": "runtimeState"
+      },
+      "expectedErrors": ["AUDIT_EVENT_TARGET_TYPE_INVALID"]
+    },
+    {
+      "name": "missing target id",
+      "overrides": {
+        "targetId": ""
+      },
+      "expectedErrors": ["AUDIT_EVENT_TARGET_ID_REQUIRED"]
+    },
+    {
+      "name": "invalid severity",
+      "overrides": {
+        "severity": "critical"
+      },
+      "expectedErrors": ["AUDIT_EVENT_SEVERITY_INVALID"]
+    },
+    {
+      "name": "invalid occurred at",
+      "overrides": {
+        "occurredAt": "not-a-date"
+      },
+      "expectedErrors": ["AUDIT_EVENT_OCCURRED_AT_INVALID"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["AUDIT_EVENT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "payment state leakage",
+      "overrides": {
+        "paymentState": "authorized"
+      },
+      "expectedErrors": ["AUDIT_EVENT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "file bytes leakage",
+      "overrides": {
+        "fileBytes": "AAA="
+      },
+      "expectedErrors": ["AUDIT_EVENT_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

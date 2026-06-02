@@ -1,0 +1,112 @@
+{
+  "baseCollaborationRole": {
+    "collaborationRoleId": "collaboration-role.project.alpha.collaborator",
+    "ownerId": "user.creator",
+    "projectId": "project.game.alpha",
+    "subjectType": "creatorProfile",
+    "subjectId": "creator-profile.user.collaborator",
+    "role": "collaborator",
+    "permissions": ["view", "edit"],
+    "visibility": "project",
+    "grantedAt": "2026-06-02T15:20:00.000Z",
+    "roleNotes": "Project collaboration role metadata only."
+  },
+  "validCollaborationRoles": [
+    {
+      "name": "creator profile collaborator",
+      "overrides": {},
+      "expectedErrors": []
+    },
+    {
+      "name": "organization viewer",
+      "overrides": {
+        "collaborationRoleId": "collaboration-role.project.alpha.viewer",
+        "subjectType": "organization",
+        "subjectId": "organization.foundry-team",
+        "role": "viewer",
+        "permissions": ["view"],
+        "visibility": "team"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidCollaborationRoles": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "overrides": {
+        "projectId": ""
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "invalid subject type",
+      "overrides": {
+        "subjectType": "team"
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_SUBJECT_TYPE_INVALID"]
+    },
+    {
+      "name": "missing subject id",
+      "overrides": {
+        "subjectId": ""
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_SUBJECT_ID_REQUIRED"]
+    },
+    {
+      "name": "invalid role",
+      "overrides": {
+        "role": "producer"
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_INVALID"]
+    },
+    {
+      "name": "invalid permissions",
+      "overrides": {
+        "permissions": ["view", "fly"]
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_PERMISSIONS_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "overrides": {
+        "visibility": "marketplace"
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid granted timestamp",
+      "overrides": {
+        "grantedAt": "not-a-date"
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_GRANTED_AT_INVALID"]
+    },
+    {
+      "name": "auth session leakage",
+      "overrides": {
+        "authSessionState": {}
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "overrides": {
+        "toolState": {}
+      },
+      "expectedErrors": ["COLLABORATION_ROLE_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "baseOrganization": {
+    "organizationId": "organization.foundry-team",
+    "ownerId": "user.creator",
+    "displayName": "Foundry Team",
+    "handle": "foundry-team",
+    "visibility": "public",
+    "organizationStatus": "active",
+    "createdAt": "2026-06-02T15:15:00.000Z",
+    "organizationNotes": "Organization metadata only."
+  },
+  "validOrganizations": [
+    {
+      "name": "public organization",
+      "overrides": {},
+      "expectedErrors": []
+    },
+    {
+      "name": "private archived organization",
+      "overrides": {
+        "organizationId": "organization.foundry-team.archived",
+        "visibility": "private",
+        "organizationStatus": "archived"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidOrganizations": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["ORGANIZATION_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing display name",
+      "overrides": {
+        "displayName": ""
+      },
+      "expectedErrors": ["ORGANIZATION_DISPLAY_NAME_REQUIRED"]
+    },
+    {
+      "name": "invalid handle",
+      "overrides": {
+        "handle": "Foundry Team"
+      },
+      "expectedErrors": ["ORGANIZATION_HANDLE_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "overrides": {
+        "visibility": "project"
+      },
+      "expectedErrors": ["ORGANIZATION_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid status",
+      "overrides": {
+        "organizationStatus": "invited"
+      },
+      "expectedErrors": ["ORGANIZATION_STATUS_INVALID"]
+    },
+    {
+      "name": "invalid created timestamp",
+      "overrides": {
+        "createdAt": "not-a-date"
+      },
+      "expectedErrors": ["ORGANIZATION_CREATED_AT_INVALID"]
+    },
+    {
+      "name": "auth session leakage",
+      "overrides": {
+        "authSessionState": {}
+      },
+      "expectedErrors": ["ORGANIZATION_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["ORGANIZATION_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "overrides": {
+        "toolState": {}
+      },
+      "expectedErrors": ["ORGANIZATION_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

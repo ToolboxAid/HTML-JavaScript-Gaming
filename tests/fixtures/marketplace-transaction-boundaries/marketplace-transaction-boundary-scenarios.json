@@ -1,0 +1,183 @@
+{
+  "baseMarketplaceTransactionBoundary": {
+    "marketplaceTransactionBoundaryId": "marketplace-transaction-boundary.alpha.1",
+    "ownerId": "user.buyer",
+    "projectId": "project.game.alpha",
+    "marketplaceListing": {
+      "listingId": "listing.game.alpha.1",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.1",
+      "publishId": "publish.game.alpha.1",
+      "status": "listed"
+    },
+    "entitlement": {
+      "entitlementId": "entitlement.alpha.1",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "listingId": "listing.game.alpha.1",
+      "releaseId": "release.game.alpha.1",
+      "publishId": "publish.game.alpha.1",
+      "entitlementType": "owned"
+    },
+    "sourceRelease": {
+      "releaseId": "release.game.alpha.1",
+      "version": 1,
+      "status": "published"
+    },
+    "sourcePublish": {
+      "publishId": "publish.game.alpha.1",
+      "releaseId": "release.game.alpha.1",
+      "status": "published"
+    },
+    "boundaryType": "licenseGrant",
+    "boundaryStatus": "recorded",
+    "createdAt": "2026-06-02T16:05:00.000Z",
+    "boundaryNotes": "Boundary metadata only; no payment or provider implementation is stored."
+  },
+  "validMarketplaceTransactionBoundaries": [
+    {
+      "name": "recorded license grant boundary",
+      "overrides": {},
+      "expectedErrors": []
+    },
+    {
+      "name": "purchase intent boundary",
+      "overrides": {
+        "marketplaceTransactionBoundaryId": "marketplace-transaction-boundary.alpha.2",
+        "boundaryType": "purchaseIntent",
+        "boundaryStatus": "opened",
+        "entitlement": {
+          "entitlementType": "licensed"
+        }
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "retired listing refund boundary",
+      "overrides": {
+        "marketplaceTransactionBoundaryId": "marketplace-transaction-boundary.alpha.3",
+        "marketplaceListing": {
+          "status": "retired"
+        },
+        "sourceRelease": {
+          "status": "retired"
+        },
+        "sourcePublish": {
+          "status": "retired"
+        },
+        "boundaryType": "refundBoundary",
+        "boundaryStatus": "closed"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidMarketplaceTransactionBoundaries": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing marketplace listing",
+      "removeFields": ["marketplaceListing"],
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_LISTING_REQUIRED"]
+    },
+    {
+      "name": "missing entitlement",
+      "removeFields": ["entitlement"],
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_ENTITLEMENT_REQUIRED"]
+    },
+    {
+      "name": "owner entitlement mismatch",
+      "overrides": {
+        "entitlement": {
+          "ownerId": "user.other"
+        }
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_OWNER_ENTITLEMENT_MISMATCH"]
+    },
+    {
+      "name": "project linkage mismatch",
+      "overrides": {
+        "marketplaceListing": {
+          "projectId": "project.other"
+        }
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_PROJECT_LINKAGE_MISMATCH"]
+    },
+    {
+      "name": "release linkage mismatch",
+      "overrides": {
+        "sourceRelease": {
+          "releaseId": "release.game.beta.1"
+        }
+      },
+      "expectedErrors": [
+        "MARKETPLACE_TRANSACTION_BOUNDARY_RELEASE_LINKAGE_MISMATCH",
+        "MARKETPLACE_TRANSACTION_BOUNDARY_RELEASE_PUBLISH_MISMATCH"
+      ]
+    },
+    {
+      "name": "publish linkage mismatch",
+      "overrides": {
+        "sourcePublish": {
+          "publishId": "publish.game.beta.1"
+        }
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_PUBLISH_LINKAGE_MISMATCH"]
+    },
+    {
+      "name": "release publish mismatch",
+      "overrides": {
+        "sourcePublish": {
+          "releaseId": "release.game.beta.1"
+        }
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_RELEASE_PUBLISH_MISMATCH"]
+    },
+    {
+      "name": "invalid boundary type",
+      "overrides": {
+        "boundaryType": "paymentCapture"
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_TYPE_INVALID"]
+    },
+    {
+      "name": "invalid boundary status",
+      "overrides": {
+        "boundaryStatus": "settled"
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_STATUS_INVALID"]
+    },
+    {
+      "name": "missing created at",
+      "overrides": {
+        "createdAt": ""
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_CREATED_AT_REQUIRED"]
+    },
+    {
+      "name": "payment state leakage",
+      "overrides": {
+        "paymentState": "authorized"
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "provider implementation leakage",
+      "overrides": {
+        "providerResponse": {}
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["MARKETPLACE_TRANSACTION_BOUNDARY_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

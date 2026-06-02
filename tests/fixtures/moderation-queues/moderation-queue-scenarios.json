@@ -1,0 +1,89 @@
+{
+  "baseModerationQueue": {
+    "moderationQueueId": "moderation-queue.review.alpha.1",
+    "ownerId": "platform.moderation",
+    "projectId": "project.game.alpha",
+    "subjectType": "reviewRating",
+    "subjectId": "review-rating.alpha.1",
+    "reportReason": "needs-review",
+    "queueStatus": "open",
+    "visibility": "admin-only",
+    "createdAt": "2026-06-02T15:35:00.000Z",
+    "moderationNotes": "Queue metadata only; no final moderation decision is stored here."
+  },
+  "validModerationQueues": [
+    {
+      "name": "open review queue item",
+      "overrides": {},
+      "expectedErrors": []
+    },
+    {
+      "name": "listing queue item in review",
+      "overrides": {
+        "moderationQueueId": "moderation-queue.listing.alpha.1",
+        "subjectType": "marketplaceListing",
+        "subjectId": "listing.game.alpha.2",
+        "queueStatus": "inReview"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidModerationQueues": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["MODERATION_QUEUE_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "overrides": {
+        "projectId": ""
+      },
+      "expectedErrors": ["MODERATION_QUEUE_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "invalid subject type",
+      "overrides": {
+        "subjectType": "payment"
+      },
+      "expectedErrors": ["MODERATION_QUEUE_SUBJECT_TYPE_INVALID"]
+    },
+    {
+      "name": "missing report reason",
+      "overrides": {
+        "reportReason": ""
+      },
+      "expectedErrors": ["MODERATION_QUEUE_REPORT_REASON_REQUIRED"]
+    },
+    {
+      "name": "invalid queue status",
+      "overrides": {
+        "queueStatus": "approved"
+      },
+      "expectedErrors": ["MODERATION_QUEUE_STATUS_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "overrides": {
+        "visibility": "public"
+      },
+      "expectedErrors": ["MODERATION_QUEUE_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["MODERATION_QUEUE_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "final moderation decision leakage",
+      "overrides": {
+        "moderationDecision": "approved"
+      },
+      "expectedErrors": ["MODERATION_QUEUE_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
