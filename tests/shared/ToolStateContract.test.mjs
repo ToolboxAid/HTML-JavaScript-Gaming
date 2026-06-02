@@ -23,8 +23,13 @@ import {
   TOOL_STATE_CONTRACT_VERSION,
   TOOL_STATE_FIELDS,
   TOOL_STATE_PORTABLE_EXPORT_FIELDS,
+  TOOL_STATE_RECOVERY_ACTIONS,
+  TOOL_STATE_RECOVERY_AGE,
+  TOOL_STATE_RECOVERY_RULES,
   TOOL_STATE_RELATIONSHIP_LIST,
   TOOL_STATE_RELATIONSHIPS,
+  TOOL_STATE_SLOTS,
+  TOOL_STATE_STARTUP_ACTION_LIST,
   TOOL_STATE_STATUS,
   TOOL_STATE_STATUS_LIST,
   TOOL_STATE_VISIBILITY_LIST,
@@ -32,12 +37,19 @@ import {
   canActorAccessToolState,
   canEditToolStateStatus,
   createPortableToolStateExport,
+  discardToolStateRecovery,
+  getToolStateRecoveryAge,
+  getToolStateStartupChoices,
   isToolStateRelationship,
   isToolStateStatus,
   isToolStateVersion,
   isToolStateVisibility,
   isToolStateVisibleToActor,
+  promoteToolStateRecovery,
+  resolveToolStateStartupState,
+  selectToolStateStartupAction,
   validatePortableToolStateExport,
+  validateToolStateRecoveryContract,
   validateToolStateContract,
 } from "../../src/shared/contracts/toolStateContract.js";
 
@@ -49,7 +61,7 @@ export function run() {
   const scenarios = JSON.parse(readFileSync(scenariosPath, "utf8"));
 
   assert.equal(TOOL_STATE_CONTRACT_ID, "gamefoundrystudio.tool-state.lifecycle");
-  assert.equal(TOOL_STATE_CONTRACT_VERSION, "1.0.0");
+  assert.equal(TOOL_STATE_CONTRACT_VERSION, "1.1.0");
   assert.deepEqual(TOOL_STATE_FIELDS, {
     TOOL_STATE_ID: "toolStateId",
     TOOL_TYPE: "toolType",
@@ -59,6 +71,11 @@ export function run() {
     VERSION: "version",
     STATUS: "status",
   });
+  assert.deepEqual(TOOL_STATE_SLOTS, {
+    CURRENT_SAVED_STATE: "current-saved-state",
+    RECOVERY_STATE: "recovery-state",
+    VERSION_HISTORY: "version-history",
+  });
   assert.deepEqual(TOOL_STATE_STATUS_LIST, ["draft", "active", "archived"]);
   assert.deepEqual(TOOL_STATE_VISIBILITY_LIST, ["private", "project", "unlisted", "public"]);
   assert.deepEqual(TOOL_STATE_RELATIONSHIP_LIST, [
@@ -67,6 +84,25 @@ export function run() {
     "may-reference-assets",
     "may-be-exported",
   ]);
+  assert.deepEqual(TOOL_STATE_STARTUP_ACTION_LIST, ["resume", "open"]);
+  assert.deepEqual(TOOL_STATE_RECOVERY_AGE, {
+    NEWER_THAN_SAVED: "newer-than-saved",
+    OLDER_THAN_SAVED: "older-than-saved",
+    SAME_AS_SAVED: "same-as-saved",
+    WITHOUT_SAVED_STATE: "without-saved-state",
+  });
+  assert.equal(TOOL_STATE_RECOVERY_RULES.SEPARATE_FROM_SAVED_STATE, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.TEMPORARY, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.NEVER_OVERWRITES_SAVED_STATE_AUTOMATICALLY, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.USER_SELECTED, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.MAY_BE_AUTOSAVED, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.MAY_BE_DISCARDED, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.MAY_BE_PROMOTED_TO_SAVED_STATE, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.NEVER_AUTO_LOADED, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.NEVER_AUTO_APPLIED, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.REMAINS_AVAILABLE_UNTIL_SAVED_OR_DISCARDED, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.REQUIRES_TIMESTAMP, true);
+  assert.equal(TOOL_STATE_RECOVERY_RULES.IDENTIFIES_TOOL_AND_PROJECT, true);
   assert.deepEqual(TOOL_STATE_PORTABLE_EXPORT_FIELDS, [
     "toolStateId",
     "toolType",
@@ -187,6 +223,72 @@ export function run() {
     }).errors.some((error) => error.code === TOOL_STATE_CONTRACT_ERRORS.PORTABLE_EXPORT_INVALID),
     true
   );
+
+  for (const scenario of scenarios.recoveryScenarios.valid) {
+    const validation = validateToolStateRecoveryContract(scenario.context);
+    assert.equal(validation.valid, true, scenario.name);
+    assert.deepEqual(validation.errors, scenario.expectedErrors, scenario.name);
+    assert.equal(getToolStateRecoveryAge(scenario.context), scenario.expectedAge, scenario.name);
+  }
+
+  for (const scenario of scenarios.recoveryScenarios.invalid) {
+    const validation = validateToolStateRecoveryContract(scenario.context);
+    assert.equal(validation.valid, false, scenario.name);
+    assert.deepEqual(validation.errors.map((error) => error.code), scenario.expectedErrors, scenario.name);
+  }
+
+  const recoveryContext = scenarios.recoveryScenarios.valid.find((scenario) => scenario.name === "recovery exists").context;
+  const startupState = resolveToolStateStartupState(recoveryContext);
+  assert.equal(startupState.action, null);
+  assert.equal(startupState.stateSlot, null);
+  assert.equal(startupState.loadedState, null);
+  assert.equal(startupState.recoveryAvailable, true);
+  assert.deepEqual(startupState.choices.map((choice) => choice.label), ["Resume", "Open"]);
+
+  const choices = getToolStateStartupChoices(recoveryContext);
+  assert.deepEqual(choices.map((choice) => choice.action), [
+    TOOL_STATE_RECOVERY_ACTIONS.RESUME,
+    TOOL_STATE_RECOVERY_ACTIONS.OPEN,
+  ]);
+  assert.equal(choices[0].stateSlot, TOOL_STATE_SLOTS.RECOVERY_STATE);
+  assert.equal(choices[1].stateSlot, TOOL_STATE_SLOTS.CURRENT_SAVED_STATE);
+  assert.equal(choices[0].enabled, true);
+  assert.equal(choices[1].enabled, true);
+
+  const recoveryWithoutSavedState = scenarios.recoveryScenarios.valid.find((scenario) => scenario.name === "recovery without saved state").context;
+  const unsavedChoices = getToolStateStartupChoices(recoveryWithoutSavedState);
+  assert.deepEqual(unsavedChoices.map((choice) => choice.action), [
+    TOOL_STATE_RECOVERY_ACTIONS.RESUME,
+    TOOL_STATE_RECOVERY_ACTIONS.OPEN,
+  ]);
+  assert.equal(unsavedChoices[0].enabled, true);
+  assert.equal(unsavedChoices[1].enabled, false);
+
+  const resumed = selectToolStateStartupAction(recoveryContext, TOOL_STATE_RECOVERY_ACTIONS.RESUME);
+  assert.equal(resumed.action, TOOL_STATE_RECOVERY_ACTIONS.RESUME);
+  assert.equal(resumed.stateSlot, TOOL_STATE_SLOTS.RECOVERY_STATE);
+  assert.deepEqual(resumed.loadedState.payload.swatches, ["recovery-green"]);
+  assert.deepEqual(resumed.savedState.payload.swatches, ["saved-blue"]);
+
+  const opened = selectToolStateStartupAction(recoveryContext, TOOL_STATE_RECOVERY_ACTIONS.OPEN);
+  assert.equal(opened.action, TOOL_STATE_RECOVERY_ACTIONS.OPEN);
+  assert.equal(opened.stateSlot, TOOL_STATE_SLOTS.CURRENT_SAVED_STATE);
+  assert.deepEqual(opened.loadedState.payload.swatches, ["saved-blue"]);
+  assert.deepEqual(opened.recoveryState.payload.swatches, ["recovery-green"]);
+  assert.deepEqual(recoveryContext.savedState.payload.swatches, ["saved-blue"]);
+  assert.deepEqual(recoveryContext.recoveryState.payload.swatches, ["recovery-green"]);
+
+  const discarded = discardToolStateRecovery(recoveryContext);
+  assert.deepEqual(discarded.savedState.payload.swatches, ["saved-blue"]);
+  assert.equal(discarded.recoveryState, null);
+
+  const promoted = promoteToolStateRecovery(recoveryContext);
+  assert.deepEqual(promoted.savedState.payload.swatches, ["recovery-green"]);
+  assert.equal(promoted.savedState.savedAt, "2026-06-02T13:30:00.000Z");
+  assert.equal(Object.hasOwn(promoted.savedState, "autosaved"), false);
+  assert.equal(Object.hasOwn(promoted.savedState, "temporary"), false);
+  assert.equal(Object.hasOwn(promoted.savedState, "timestamp"), false);
+  assert.equal(promoted.recoveryState, null);
 }
 
 function assertUnique(values) {

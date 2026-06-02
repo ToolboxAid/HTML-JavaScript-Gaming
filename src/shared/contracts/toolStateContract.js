@@ -19,7 +19,13 @@ import {
 } from "./projectContract.js";
 
 export const TOOL_STATE_CONTRACT_ID = "gamefoundrystudio.tool-state.lifecycle";
-export const TOOL_STATE_CONTRACT_VERSION = "1.0.0";
+export const TOOL_STATE_CONTRACT_VERSION = "1.1.0";
+
+export const TOOL_STATE_SLOTS = Object.freeze({
+  CURRENT_SAVED_STATE: "current-saved-state",
+  RECOVERY_STATE: "recovery-state",
+  VERSION_HISTORY: "version-history",
+});
 
 export const TOOL_STATE_FIELDS = Object.freeze({
   TOOL_STATE_ID: "toolStateId",
@@ -71,6 +77,40 @@ export const TOOL_STATE_RELATIONSHIP_LIST = Object.freeze([
   TOOL_STATE_RELATIONSHIPS.MAY_BE_EXPORTED,
 ]);
 
+export const TOOL_STATE_RECOVERY_ACTIONS = Object.freeze({
+  RESUME: "resume",
+  OPEN: "open",
+  DISCARD: "discard",
+  PROMOTE: "promote",
+});
+
+export const TOOL_STATE_STARTUP_ACTION_LIST = Object.freeze([
+  TOOL_STATE_RECOVERY_ACTIONS.RESUME,
+  TOOL_STATE_RECOVERY_ACTIONS.OPEN,
+]);
+
+export const TOOL_STATE_RECOVERY_AGE = Object.freeze({
+  NEWER_THAN_SAVED: "newer-than-saved",
+  OLDER_THAN_SAVED: "older-than-saved",
+  SAME_AS_SAVED: "same-as-saved",
+  WITHOUT_SAVED_STATE: "without-saved-state",
+});
+
+export const TOOL_STATE_RECOVERY_RULES = Object.freeze({
+  SEPARATE_FROM_SAVED_STATE: true,
+  TEMPORARY: true,
+  NEVER_OVERWRITES_SAVED_STATE_AUTOMATICALLY: true,
+  USER_SELECTED: true,
+  MAY_BE_AUTOSAVED: true,
+  MAY_BE_DISCARDED: true,
+  MAY_BE_PROMOTED_TO_SAVED_STATE: true,
+  NEVER_AUTO_LOADED: true,
+  NEVER_AUTO_APPLIED: true,
+  REMAINS_AVAILABLE_UNTIL_SAVED_OR_DISCARDED: true,
+  REQUIRES_TIMESTAMP: true,
+  IDENTIFIES_TOOL_AND_PROJECT: true,
+});
+
 export const TOOL_STATE_PORTABLE_EXPORT_FIELDS = Object.freeze([
   TOOL_STATE_FIELDS.TOOL_STATE_ID,
   TOOL_STATE_FIELDS.TOOL_TYPE,
@@ -95,6 +135,12 @@ export const TOOL_STATE_CONTRACT_ERRORS = Object.freeze({
   RELATIONSHIP_INVALID: "TOOL_STATE_RELATIONSHIP_INVALID",
   ASSET_REF_INVALID: "TOOL_STATE_ASSET_REF_INVALID",
   PORTABLE_EXPORT_INVALID: "TOOL_STATE_PORTABLE_EXPORT_INVALID",
+  RECOVERY_OWNER_REQUIRED: "TOOL_STATE_RECOVERY_OWNER_REQUIRED",
+  RECOVERY_PROJECT_REQUIRED: "TOOL_STATE_RECOVERY_PROJECT_REQUIRED",
+  RECOVERY_TOOL_TYPE_REQUIRED: "TOOL_STATE_RECOVERY_TOOL_TYPE_REQUIRED",
+  RECOVERY_TIMESTAMP_REQUIRED: "TOOL_STATE_RECOVERY_TIMESTAMP_REQUIRED",
+  RECOVERY_TIMESTAMP_INVALID: "TOOL_STATE_RECOVERY_TIMESTAMP_INVALID",
+  RECOVERY_PROJECT_MISMATCH: "TOOL_STATE_RECOVERY_PROJECT_MISMATCH",
 });
 
 export function isToolStateStatus(value) {
@@ -369,8 +415,192 @@ export function validatePortableToolStateExport(portableExport) {
   });
 }
 
+export function validateToolStateRecoveryContract({
+  savedState = null,
+  recoveryState = null,
+} = {}) {
+  const errors = [];
+
+  if (!recoveryState) {
+    return Object.freeze({
+      valid: true,
+      errors: Object.freeze(errors),
+    });
+  }
+
+  if (!hasNonEmptyString(recoveryState.ownerId)) {
+    errors.push(createContractError(
+      TOOL_STATE_CONTRACT_ERRORS.RECOVERY_OWNER_REQUIRED,
+      "Recovery state requires ownerId.",
+      "recoveryState.ownerId"
+    ));
+  }
+
+  if (!hasNonEmptyString(recoveryState.projectId)) {
+    errors.push(createContractError(
+      TOOL_STATE_CONTRACT_ERRORS.RECOVERY_PROJECT_REQUIRED,
+      "Recovery state requires projectId.",
+      "recoveryState.projectId"
+    ));
+  }
+
+  if (!hasNonEmptyString(recoveryState.toolType)) {
+    errors.push(createContractError(
+      TOOL_STATE_CONTRACT_ERRORS.RECOVERY_TOOL_TYPE_REQUIRED,
+      "Recovery state requires toolType.",
+      "recoveryState.toolType"
+    ));
+  }
+
+  if (!hasNonEmptyString(recoveryState.timestamp)) {
+    errors.push(createContractError(
+      TOOL_STATE_CONTRACT_ERRORS.RECOVERY_TIMESTAMP_REQUIRED,
+      "Recovery state requires timestamp.",
+      "recoveryState.timestamp"
+    ));
+  } else if (!isTimestamp(recoveryState.timestamp)) {
+    errors.push(createContractError(
+      TOOL_STATE_CONTRACT_ERRORS.RECOVERY_TIMESTAMP_INVALID,
+      "Recovery state timestamp must be a valid timestamp.",
+      "recoveryState.timestamp"
+    ));
+  }
+
+  if (savedState && hasNonEmptyString(savedState.projectId) && recoveryState.projectId !== savedState.projectId) {
+    errors.push(createContractError(
+      TOOL_STATE_CONTRACT_ERRORS.RECOVERY_PROJECT_MISMATCH,
+      "Recovery state projectId must match saved state projectId.",
+      "recoveryState.projectId"
+    ));
+  }
+
+  return Object.freeze({
+    valid: errors.length === 0,
+    errors: Object.freeze(errors),
+  });
+}
+
+export function getToolStateRecoveryAge({
+  savedState = null,
+  recoveryState = null,
+} = {}) {
+  if (!savedState) {
+    return TOOL_STATE_RECOVERY_AGE.WITHOUT_SAVED_STATE;
+  }
+
+  const recoveryTime = Date.parse(recoveryState?.timestamp || "");
+  const savedTime = Date.parse(savedState.savedAt || savedState.timestamp || "");
+
+  if (!Number.isFinite(recoveryTime) || !Number.isFinite(savedTime)) {
+    return TOOL_STATE_RECOVERY_AGE.WITHOUT_SAVED_STATE;
+  }
+
+  if (recoveryTime > savedTime) {
+    return TOOL_STATE_RECOVERY_AGE.NEWER_THAN_SAVED;
+  }
+
+  if (recoveryTime < savedTime) {
+    return TOOL_STATE_RECOVERY_AGE.OLDER_THAN_SAVED;
+  }
+
+  return TOOL_STATE_RECOVERY_AGE.SAME_AS_SAVED;
+}
+
+export function getToolStateStartupChoices({
+  savedState = null,
+  recoveryState = null,
+} = {}) {
+  if (recoveryState) {
+    return Object.freeze([
+      Object.freeze({
+        action: TOOL_STATE_RECOVERY_ACTIONS.RESUME,
+        label: "Resume",
+        stateSlot: TOOL_STATE_SLOTS.RECOVERY_STATE,
+        enabled: true,
+      }),
+      Object.freeze({
+        action: TOOL_STATE_RECOVERY_ACTIONS.OPEN,
+        label: "Open",
+        stateSlot: TOOL_STATE_SLOTS.CURRENT_SAVED_STATE,
+        enabled: Boolean(savedState),
+      }),
+    ]);
+  }
+
+  return Object.freeze([
+    Object.freeze({
+      action: TOOL_STATE_RECOVERY_ACTIONS.OPEN,
+      label: "Open",
+      stateSlot: TOOL_STATE_SLOTS.CURRENT_SAVED_STATE,
+      enabled: Boolean(savedState),
+    }),
+  ]);
+}
+
+export function resolveToolStateStartupState(context = {}) {
+  return Object.freeze({
+    action: null,
+    stateSlot: null,
+    loadedState: null,
+    recoveryAvailable: Boolean(context.recoveryState),
+    choices: getToolStateStartupChoices(context),
+  });
+}
+
+export function selectToolStateStartupAction(context = {}, action) {
+  if (action === TOOL_STATE_RECOVERY_ACTIONS.RESUME) {
+    return Object.freeze({
+      action,
+      stateSlot: TOOL_STATE_SLOTS.RECOVERY_STATE,
+      loadedState: cloneJsonData(context.recoveryState),
+      savedState: cloneJsonData(context.savedState),
+      recoveryState: cloneJsonData(context.recoveryState),
+    });
+  }
+
+  if (action === TOOL_STATE_RECOVERY_ACTIONS.OPEN) {
+    return Object.freeze({
+      action,
+      stateSlot: TOOL_STATE_SLOTS.CURRENT_SAVED_STATE,
+      loadedState: cloneJsonData(context.savedState),
+      savedState: cloneJsonData(context.savedState),
+      recoveryState: cloneJsonData(context.recoveryState),
+    });
+  }
+
+  return Object.freeze({
+    action: null,
+    stateSlot: null,
+    loadedState: null,
+    savedState: cloneJsonData(context.savedState),
+    recoveryState: cloneJsonData(context.recoveryState),
+  });
+}
+
+export function discardToolStateRecovery(context = {}) {
+  return Object.freeze({
+    savedState: cloneJsonData(context.savedState),
+    recoveryState: null,
+    versionHistory: cloneJsonData(context.versionHistory ?? []),
+  });
+}
+
+export function promoteToolStateRecovery(context = {}) {
+  const promotedSavedState = recoveryStateAsSavedState(context.recoveryState);
+
+  return Object.freeze({
+    savedState: promotedSavedState,
+    recoveryState: null,
+    versionHistory: cloneJsonData(context.versionHistory ?? []),
+  });
+}
+
 function hasNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function isTimestamp(value) {
+  return hasNonEmptyString(value) && Number.isFinite(Date.parse(value));
 }
 
 function normalizeStringArray(values) {
@@ -383,6 +613,30 @@ function normalizeStringArray(values) {
 
 function clonePortablePayload(payload) {
   return Object.freeze(JSON.parse(JSON.stringify(payload)));
+}
+
+function cloneJsonData(value) {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  return JSON.parse(JSON.stringify(value));
+}
+
+function recoveryStateAsSavedState(recoveryState) {
+  if (!recoveryState) {
+    return null;
+  }
+
+  const savedState = cloneJsonData(recoveryState);
+  delete savedState.autosaved;
+  delete savedState.temporary;
+  delete savedState.timestamp;
+
+  return Object.freeze({
+    ...savedState,
+    savedAt: recoveryState.timestamp,
+  });
 }
 
 function createContractError(code, message, path) {

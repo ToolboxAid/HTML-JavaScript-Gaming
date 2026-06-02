@@ -290,5 +290,215 @@
       },
       "expected": true
     }
-  ]
+  ],
+  "recoveryScenarios": {
+    "valid": [
+      {
+        "name": "recovery exists",
+        "context": {
+          "savedState": {
+            "toolStateId": "tool-state.palette.alpha",
+            "toolType": "palette-manager-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 4,
+            "status": "active",
+            "savedAt": "2026-06-02T13:00:00.000Z",
+            "payload": {
+              "swatches": ["saved-blue"]
+            }
+          },
+          "recoveryState": {
+            "toolStateId": "tool-state.palette.alpha",
+            "toolType": "palette-manager-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 5,
+            "status": "active",
+            "timestamp": "2026-06-02T13:30:00.000Z",
+            "autosaved": true,
+            "temporary": true,
+            "payload": {
+              "swatches": ["recovery-green"]
+            }
+          }
+        },
+        "expectedAge": "newer-than-saved",
+        "expectedErrors": []
+      },
+      {
+        "name": "recovery newer than saved state",
+        "context": {
+          "savedState": {
+            "toolStateId": "tool-state.vector.alpha",
+            "toolType": "object-vector-studio-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 7,
+            "status": "active",
+            "savedAt": "2026-06-02T10:00:00.000Z",
+            "payload": {
+              "objects": ["saved-object"]
+            }
+          },
+          "recoveryState": {
+            "toolStateId": "tool-state.vector.alpha",
+            "toolType": "object-vector-studio-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 8,
+            "status": "active",
+            "timestamp": "2026-06-02T10:05:00.000Z",
+            "autosaved": true,
+            "temporary": true,
+            "payload": {
+              "objects": ["recovery-object"]
+            }
+          }
+        },
+        "expectedAge": "newer-than-saved",
+        "expectedErrors": []
+      },
+      {
+        "name": "recovery older than saved state",
+        "context": {
+          "savedState": {
+            "toolStateId": "tool-state.audio.alpha",
+            "toolType": "audio-sfx-playground-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 5,
+            "status": "active",
+            "savedAt": "2026-06-02T14:00:00.000Z",
+            "payload": {
+              "sounds": ["saved-sound"]
+            }
+          },
+          "recoveryState": {
+            "toolStateId": "tool-state.audio.alpha",
+            "toolType": "audio-sfx-playground-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 4,
+            "status": "active",
+            "timestamp": "2026-06-02T13:45:00.000Z",
+            "autosaved": true,
+            "temporary": true,
+            "payload": {
+              "sounds": ["recovery-sound"]
+            }
+          }
+        },
+        "expectedAge": "older-than-saved",
+        "expectedErrors": []
+      },
+      {
+        "name": "recovery without saved state",
+        "context": {
+          "savedState": null,
+          "recoveryState": {
+            "toolStateId": "tool-state.new.alpha",
+            "toolType": "palette-manager-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 1,
+            "status": "draft",
+            "timestamp": "2026-06-02T15:00:00.000Z",
+            "autosaved": true,
+            "temporary": true,
+            "payload": {
+              "swatches": ["unsaved-recovery"]
+            }
+          }
+        },
+        "expectedAge": "without-saved-state",
+        "expectedErrors": []
+      }
+    ],
+    "invalid": [
+      {
+        "name": "recovery without owner",
+        "context": {
+          "savedState": {
+            "toolStateId": "tool-state.palette.alpha",
+            "toolType": "palette-manager-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 1,
+            "status": "active",
+            "savedAt": "2026-06-02T13:00:00.000Z"
+          },
+          "recoveryState": {
+            "toolStateId": "tool-state.palette.alpha",
+            "toolType": "palette-manager-v2",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 2,
+            "status": "active",
+            "timestamp": "2026-06-02T13:30:00.000Z"
+          }
+        },
+        "expectedErrors": ["TOOL_STATE_RECOVERY_OWNER_REQUIRED"]
+      },
+      {
+        "name": "recovery without tool type",
+        "context": {
+          "savedState": {
+            "toolStateId": "tool-state.palette.alpha",
+            "toolType": "palette-manager-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 1,
+            "status": "active",
+            "savedAt": "2026-06-02T13:00:00.000Z"
+          },
+          "recoveryState": {
+            "toolStateId": "tool-state.palette.alpha",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 2,
+            "status": "active",
+            "timestamp": "2026-06-02T13:30:00.000Z"
+          }
+        },
+        "expectedErrors": ["TOOL_STATE_RECOVERY_TOOL_TYPE_REQUIRED"]
+      },
+      {
+        "name": "recovery linked to wrong project",
+        "context": {
+          "savedState": {
+            "toolStateId": "tool-state.palette.alpha",
+            "toolType": "palette-manager-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.active",
+            "visibility": "project",
+            "version": 1,
+            "status": "active",
+            "savedAt": "2026-06-02T13:00:00.000Z"
+          },
+          "recoveryState": {
+            "toolStateId": "tool-state.palette.alpha",
+            "toolType": "palette-manager-v2",
+            "ownerId": "user.owner",
+            "projectId": "project.other",
+            "visibility": "project",
+            "version": 2,
+            "status": "active",
+            "timestamp": "2026-06-02T13:30:00.000Z"
+          }
+        },
+        "expectedErrors": ["TOOL_STATE_RECOVERY_PROJECT_MISMATCH"]
+      }
+    ]
+  }
 }
