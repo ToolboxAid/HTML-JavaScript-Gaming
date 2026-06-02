@@ -1,0 +1,150 @@
+{
+  "validReleases": [
+    {
+      "name": "published release",
+      "release": {
+        "releaseId": "release.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceManifest": {
+          "manifestId": "manifest.game.alpha",
+          "version": 1,
+          "exportFormat": "game-manifest-json"
+        },
+        "version": 1,
+        "status": "published",
+        "visibility": "public",
+        "publishedAt": "2026-06-02T14:00:00.000Z",
+        "releaseNotes": "Initial public release."
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidReleases": [
+    {
+      "name": "missing owner",
+      "release": {
+        "releaseId": "release.missing.owner",
+        "projectId": "project.game.alpha",
+        "sourceManifest": {
+          "manifestId": "manifest.game.alpha",
+          "version": 1,
+          "exportFormat": "game-manifest-json"
+        },
+        "version": 1,
+        "status": "published",
+        "visibility": "public",
+        "publishedAt": "2026-06-02T14:00:00.000Z",
+        "releaseNotes": "Missing owner fixture."
+      },
+      "expectedErrors": ["RELEASE_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "release": {
+        "releaseId": "release.missing.project",
+        "ownerId": "user.owner",
+        "sourceManifest": {
+          "manifestId": "manifest.game.alpha",
+          "version": 1,
+          "exportFormat": "game-manifest-json"
+        },
+        "version": 1,
+        "status": "published",
+        "visibility": "public",
+        "publishedAt": "2026-06-02T14:00:00.000Z",
+        "releaseNotes": "Missing project fixture."
+      },
+      "expectedErrors": ["RELEASE_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing source manifest",
+      "release": {
+        "releaseId": "release.missing.manifest",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "version": 1,
+        "status": "published",
+        "visibility": "public",
+        "publishedAt": "2026-06-02T14:00:00.000Z",
+        "releaseNotes": "Missing manifest fixture."
+      },
+      "expectedErrors": ["RELEASE_SOURCE_MANIFEST_REQUIRED"]
+    },
+    {
+      "name": "invalid source manifest",
+      "release": {
+        "releaseId": "release.invalid.manifest",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceManifest": {
+          "manifestId": "manifest.game.alpha",
+          "version": 0,
+          "exportFormat": "game-manifest-json"
+        },
+        "version": 1,
+        "status": "published",
+        "visibility": "public",
+        "publishedAt": "2026-06-02T14:00:00.000Z",
+        "releaseNotes": "Invalid manifest fixture."
+      },
+      "expectedErrors": ["RELEASE_SOURCE_MANIFEST_INVALID"]
+    },
+    {
+      "name": "invalid version",
+      "release": {
+        "releaseId": "release.invalid.version",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceManifest": {
+          "manifestId": "manifest.game.alpha",
+          "version": 1,
+          "exportFormat": "game-manifest-json"
+        },
+        "version": 0,
+        "status": "published",
+        "visibility": "public",
+        "publishedAt": "2026-06-02T14:00:00.000Z",
+        "releaseNotes": "Invalid version fixture."
+      },
+      "expectedErrors": ["RELEASE_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "release": {
+        "releaseId": "release.invalid.visibility",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceManifest": {
+          "manifestId": "manifest.game.alpha",
+          "version": 1,
+          "exportFormat": "game-manifest-json"
+        },
+        "version": 1,
+        "status": "published",
+        "visibility": "marketplace",
+        "publishedAt": "2026-06-02T14:00:00.000Z",
+        "releaseNotes": "Invalid visibility fixture."
+      },
+      "expectedErrors": ["RELEASE_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "published without timestamp",
+      "release": {
+        "releaseId": "release.missing.timestamp",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceManifest": {
+          "manifestId": "manifest.game.alpha",
+          "version": 1,
+          "exportFormat": "game-manifest-json"
+        },
+        "version": 1,
+        "status": "published",
+        "visibility": "public",
+        "releaseNotes": "Missing publishedAt fixture."
+      },
+      "expectedErrors": ["RELEASE_PUBLISHED_AT_REQUIRED"]
+    }
+  ]
+}
