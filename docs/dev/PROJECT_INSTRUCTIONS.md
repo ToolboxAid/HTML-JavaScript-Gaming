@@ -147,13 +147,36 @@ Use that phrase as a compact IA and copywriting anchor:
 
 ## GAMEFOUNDRYSTUDIO THEME V2 GOVERNANCE
 
-`theme/v2` is the only approved styling surface for GameFoundryStudio work.
+`theme/v2` is the only approved styling surface for public/root GameFoundryStudio page work as bounded below.
 
 V1/legacy CSS is deprecated and out of play.
 
+### Theme Surface Boundary
+
+`GameFoundryStudio/assets/css/theme/v2` owns public/root GameFoundryStudio page styling:
+- root Home
+- Company pages
+- Tools index
+- public/root tool pages
+- marketing/content surfaces
+- placeholder Admin/Account pages until DB/login implementation
+
+`src/engine/theme` owns engine/runtime first-class tool shell styling:
+- runtime tool shell
+- engine-facing first-class tools
+- reusable runtime UI foundations
+
+Rules:
+- Do not deprecate `src/engine/theme` at this time.
+- Do not duplicate behavior between the two surfaces.
+- Do not create competing `.tool-shell` implementations.
+- If both public/root tools and runtime first-class tools need the same behavior, document the shared shell contract first.
+- Shared behavior must be promoted intentionally rather than patched independently in both places.
+- Collapse/rail behavior currently belongs only to the public/root `.tool-workspace` shell unless a later PR explicitly promotes it to shared runtime shell behavior.
+
 ### Theme V2 Only CSS Rule
 
-- Theme V2 is the only active styling system.
+- Theme V2 is the only active styling system for public/root GameFoundryStudio page work.
 - V1/legacy CSS is deprecated and out of play.
 - V1/legacy CSS must not be used as a source.
 - V1/legacy CSS must not be copied.
@@ -205,7 +228,7 @@ Allowed:
 
 ### Theme V2 File Ownership
 
-All reusable styling must live under:
+All reusable public/root GameFoundryStudio styling must live under:
 
 `GameFoundryStudio/assets/css/theme/v2/`
 
@@ -225,8 +248,8 @@ Approved styling surfaces:
 - `layout.css`
 
 Rules:
-- Pages consume `theme/v2`.
-- Tools consume `theme/v2`.
+- Public/root pages consume `theme/v2`.
+- Public/root tools consume `theme/v2`.
 - Pages do not define styling.
 - Tools do not define styling.
 - New CSS files outside `theme/v2` are prohibited.
