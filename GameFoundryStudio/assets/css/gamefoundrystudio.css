@@ -672,22 +672,22 @@ details.vertical-accordion[open] summary:active:after {
 
 .tool-workspace {
   display: grid;
-  grid-template-columns: minmax(230px, .8fr) minmax(320px, 1.25fr) minmax(230px, .8fr);
+  grid-template-columns: 280px minmax(0, 1fr) 280px;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 18px;
   align-items: start
 }
 
 .tool-workspace.is-left-collapsed {
-  grid-template-columns: 56px minmax(320px, 1fr) minmax(230px, .8fr)
+  grid-template-columns: 56px minmax(0, 1fr) 280px
 }
 
 .tool-workspace.is-right-collapsed {
-  grid-template-columns: minmax(230px, .8fr) minmax(320px, 1fr) 56px
+  grid-template-columns: 280px minmax(0, 1fr) 56px
 }
 
 .tool-workspace.is-left-collapsed.is-right-collapsed {
-  grid-template-columns: 56px minmax(320px, 1fr) 56px
+  grid-template-columns: 56px minmax(0, 1fr) 56px
 }
 
 .tool-column {
