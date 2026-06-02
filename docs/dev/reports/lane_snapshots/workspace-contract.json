@@ -3,10 +3,10 @@
   "dependencyGateStatus": "PASS",
   "dependencyGraph": {
     "dependencies": [],
-    "dependencyGraphHash": "4138c2ded15059b2",
+    "dependencyGraphHash": "22d43616972c1154",
     "importHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
-      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
     },
@@ -17,8 +17,8 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "dependencyGraphHash": "4138c2ded15059b2",
-  "executionGraphHash": "904c69a6a7ddcfcb",
+  "dependencyGraphHash": "22d43616972c1154",
+  "executionGraphHash": "c0da103f5d6ba489",
   "fixtureGraph": {
     "fixtureHashes": {
       "games/AITargetDummy/game.manifest.json": "2c8db43659b7eed7",
@@ -55,7 +55,7 @@
   "helperGraph": {
     "helperHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
-      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
     },
@@ -66,8 +66,8 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "helperGraphHash": "5d0248502f5b423f",
-  "inputHash": "7dc33bc619d71aa7",
+  "helperGraphHash": "a1cf21c99a8de7b5",
+  "inputHash": "9a6b43cbeb11938b",
   "lane": "workspace-contract",
   "laneCompilationStatus": "PASS",
   "laneDefinitionHash": "1171a3be87ecbb89",
@@ -87,10 +87,10 @@
       "games/vector-arcade-sample/game.manifest.json": "2155d563446a5667",
       "tests/fixtures/workspace-v2/uat.manifest.json": "4b2d4b7e04df35e3",
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
-      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/WorkspaceManagerV2.spec.mjs": "2062ae864ba307cc"
+      "tests/playwright/tools/WorkspaceManagerV2.spec.mjs": "09c4fa68d4adfec2"
     },
     "fixtures": [
       "games/AITargetDummy/game.manifest.json",
@@ -119,14 +119,14 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "609f65144d9891aa",
+    "manifestHash": "206a508dc4c249d7",
     "manifestPath": "docs/dev/reports/lane_manifests/workspace-contract.json",
     "source": "generated",
     "tests": [
       "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
     ]
   },
-  "manifestHash": "609f65144d9891aa",
+  "manifestHash": "206a508dc4c249d7",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "Workspace Manager V2 contract and lifecycle behavior",
@@ -153,8 +153,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "3fc50cc7c32e09db",
-  "snapshotHash": "6b4b9ab45dfac4a4",
+  "snapshotHash": "b9b0963e6254481c",
   "version": 1,
-  "warmStartHash": "008ea1076fee8ae4",
-  "generatedAt": "2026-05-30T04:24:21.882Z"
+  "warmStartHash": "e5efc6aba0e39043",
+  "generatedAt": "2026-06-02T20:52:58.649Z"
 }

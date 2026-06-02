@@ -1,12 +1,12 @@
 # Incremental Validation Report
 
-Generated: 2026-06-01T04:35:59.557Z
+Generated: 2026-06-02T20:52:58.654Z
 Status: PASS
 
 ## Reuse Summary
 
 Reused manifests: 0
-Invalidated manifests: 0
+Invalidated manifests: 1
 Generated manifests: 0
 Skipped manifests: 0
 Prevented lane regeneration: 0
@@ -18,7 +18,7 @@ Prevented fixture resolution passes: 0
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| none | SKIP | none | No incremental validation decisions were recorded. |
+| workspace-contract | INVALIDATED | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
 
 ## Invalidation Rules
 

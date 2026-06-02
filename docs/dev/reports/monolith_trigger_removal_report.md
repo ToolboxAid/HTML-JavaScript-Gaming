@@ -1,6 +1,6 @@
 # Monolith Trigger Removal Report
 
-Generated: 2026-06-01T04:35:59.559Z
+Generated: 2026-06-02T20:52:58.656Z
 Status: PASS
 
 ## Removed Broad Execution Triggers
@@ -27,8 +27,8 @@ Status: PASS
 
 ## Execution Safeguards
 
-No-argument safe mode active for this invocation: Yes
-Scheduled runtime lanes: none
+No-argument safe mode active for this invocation: No
+Scheduled runtime lanes: workspace-contract
 Executed lanes: none
 Skipped lanes: none
 Full samples smoke: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.

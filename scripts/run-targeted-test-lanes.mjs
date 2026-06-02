@@ -332,6 +332,7 @@ function parseArgs(argv) {
     laneWarmStartReportPath: defaultLaneWarmStartReportPath,
     lanes: [],
     lanesDefaultedToSafeMode: false,
+    playwrightGrep: null,
     monolithTriggerRemovalReportPath: defaultMonolithTriggerRemovalReportPath,
     rawLaneRequests: [],
     reportPath: defaultReportPath,
@@ -395,6 +396,11 @@ function parseArgs(argv) {
       options.filesystemScanReportPath = argument.slice("--filesystem-scan-report=".length);
     } else if (argument === "--include-samples") {
       options.includeSamples = true;
+    } else if (argument === "--grep") {
+      options.playwrightGrep = argv[index + 1] || "";
+      index += 1;
+    } else if (argument.startsWith("--grep=")) {
+      options.playwrightGrep = argument.slice("--grep=".length);
     } else if (argument === "--incremental-validation-report") {
       options.incrementalValidationReportPath = argv[index + 1] || defaultIncrementalValidationReportPath;
       index += 1;
@@ -521,6 +527,8 @@ function parseArgs(argv) {
       index += 1;
     } else if (argument.startsWith("--validation-cache-report=")) {
       options.validationCacheReportPath = argument.slice("--validation-cache-report=".length);
+    } else if (!argument.startsWith("--") && !options.playwrightGrep) {
+      options.playwrightGrep = argument;
     } else {
       throw new Error(`Unknown argument: ${argument}`);
     }
@@ -532,6 +540,22 @@ function parseArgs(argv) {
     options.lanesDefaultedToSafeMode = true;
   }
   return options;
+}
+
+function commandWithPlaywrightGrep(commandConfig, pattern) {
+  if (!pattern || commandConfig.type !== "playwright") {
+    return commandConfig;
+  }
+
+  if (grepPatterns(commandConfig).length > 0) {
+    return commandConfig;
+  }
+
+  return {
+    args: [...commandConfig.args, "--grep", pattern],
+    command: commandConfig.command,
+    type: commandConfig.type
+  };
 }
 
 function commandArgToString(argument) {
@@ -5619,7 +5643,8 @@ for (const [lane, definition] of Object.entries(laneDefinitions)) {
     continue;
   }
 
-  const laneCommands = scheduledCommandsByLane.get(lane) || definition.commands;
+  const laneCommands = (scheduledCommandsByLane.get(lane) || definition.commands)
+    .map((commandConfig) => commandWithPlaywrightGrep(commandConfig, options.playwrightGrep));
 
   if (options.dryRun) {
     results.push({

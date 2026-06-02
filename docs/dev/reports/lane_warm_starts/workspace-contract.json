@@ -1,8 +1,8 @@
 {
   "commandsHash": "f2b9a48be591584a",
-  "dependencyGraphHash": "4138c2ded15059b2",
+  "dependencyGraphHash": "22d43616972c1154",
   "dependencyHydration": {
-    "dependencyHydrationHash": "57d5580a00e01e26",
+    "dependencyHydrationHash": "ac11ecf4b82fe61d",
     "fixtureHashes": {
       "games/AITargetDummy/game.manifest.json": "2c8db43659b7eed7",
       "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
@@ -35,7 +35,7 @@
     ],
     "helperHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
-      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
     },
@@ -47,7 +47,7 @@
     ],
     "importHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
-      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
     },
@@ -58,16 +58,16 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "dependencyHydrationHash": "57d5580a00e01e26",
-  "inputHash": "7dc33bc619d71aa7",
+  "dependencyHydrationHash": "ac11ecf4b82fe61d",
+  "inputHash": "9a6b43cbeb11938b",
   "lane": "workspace-contract",
   "laneConfigHash": "7c4e88b944af7517",
   "laneDefinitionHash": "1171a3be87ecbb89",
-  "manifestHash": "609f65144d9891aa",
+  "manifestHash": "206a508dc4c249d7",
   "ownership": "tools",
-  "warmStartHash": "008ea1076fee8ae4",
+  "warmStartHash": "e5efc6aba0e39043",
   "version": 1,
-  "generatedAt": "2026-05-30T04:24:21.030Z",
+  "generatedAt": "2026-06-02T20:52:57.730Z",
   "manifestPath": "docs/dev/reports/lane_manifests/workspace-contract.json",
   "sourceManifest": "generated"
 }

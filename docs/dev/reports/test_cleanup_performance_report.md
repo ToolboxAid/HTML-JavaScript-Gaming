@@ -1,19 +1,19 @@
 # Test Cleanup Performance Report
 
-Generated: 2026-06-01T04:35:59.559Z
+Generated: 2026-06-02T20:52:58.656Z
 Status: PASS
 
 ## Cost Summary
 
 Total measured lane elapsed time: 0ms
 Actual browser launch count: 0
-Scheduled browser launch count: 0
-Baseline browser launch count: 0
+Scheduled browser launch count: 1
+Baseline browser launch count: 1
 Skipped lanes: 0
 Reused manifests: 0
 Reused snapshots: 0
-Cached validations reused: 16
-Prevented broad execution: 3
+Cached validations reused: 18
+Prevented broad execution: 2
 Prevented reruns: 0
 Prevented redundant browser launches: 0
 Prevented graph rebuilds: 0
@@ -33,7 +33,6 @@ Prevented redundant dependency traversal: 0
 
 ## Prevented Broad Execution
 
-- Workspace V2 lane was not scheduled without explicit selection.
 - Full samples smoke stayed skipped/on-request.
 - Unselected lane directories stayed outside targeted discovery.
 

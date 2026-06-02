@@ -1,7 +1,7 @@
 {
   "commandsHash": "f2b9a48be591584a",
   "dependencies": [],
-  "dependencyGraphHash": "4138c2ded15059b2",
+  "dependencyGraphHash": "22d43616972c1154",
   "fileHashes": {
     "games/AITargetDummy/game.manifest.json": "2c8db43659b7eed7",
     "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
@@ -17,10 +17,10 @@
     "games/vector-arcade-sample/game.manifest.json": "2155d563446a5667",
     "tests/fixtures/workspace-v2/uat.manifest.json": "4b2d4b7e04df35e3",
     "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
-    "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+    "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
     "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
     "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-    "tests/playwright/tools/WorkspaceManagerV2.spec.mjs": "2062ae864ba307cc"
+    "tests/playwright/tools/WorkspaceManagerV2.spec.mjs": "09c4fa68d4adfec2"
   },
   "fixtures": [
     "games/AITargetDummy/game.manifest.json",
@@ -49,15 +49,15 @@
     "tests/helpers/playwrightV8CoverageReporter.mjs",
     "tests/helpers/workspaceV2CoverageReporter.mjs"
   ],
-  "inputHash": "7dc33bc619d71aa7",
+  "inputHash": "9a6b43cbeb11938b",
   "lane": "workspace-contract",
   "laneDefinitionHash": "1171a3be87ecbb89",
-  "manifestHash": "609f65144d9891aa",
+  "manifestHash": "206a508dc4c249d7",
   "ownership": "tools",
   "tests": [
     "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-05-30T04:24:21.022Z",
+  "generatedAt": "2026-06-02T20:52:57.721Z",
   "source": "generated"
 }

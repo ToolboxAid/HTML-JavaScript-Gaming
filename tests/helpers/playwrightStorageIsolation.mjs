@@ -8,7 +8,15 @@ export async function installPlaywrightStorageIsolation(page, options = {}) {
   const marker = makeMarker(options);
   await page.addInitScript(({ marker: storageMarker }) => {
     const currentName = String(window.name || "");
-    if (currentName.includes(storageMarker)) {
+    const sessionMarkerKey = `${storageMarker}:active`;
+    let hasSessionMarker = false;
+    try {
+      hasSessionMarker = window.sessionStorage?.getItem(sessionMarkerKey) === "true";
+    } catch {}
+    if (currentName.includes(storageMarker) || hasSessionMarker) {
+      if (!currentName.includes(storageMarker)) {
+        window.name = currentName ? `${currentName}|${storageMarker}` : storageMarker;
+      }
       return;
     }
     try {
@@ -16,6 +24,7 @@ export async function installPlaywrightStorageIsolation(page, options = {}) {
     } catch {}
     try {
       window.sessionStorage?.clear();
+      window.sessionStorage?.setItem(sessionMarkerKey, "true");
     } catch {}
     window.name = currentName ? `${currentName}|${storageMarker}` : storageMarker;
   }, { marker });
