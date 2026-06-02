@@ -1,0 +1,425 @@
+{
+  "invalidToolContracts": [
+    {
+      "name": "missing owner",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project when saved",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "invalid tool type",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "daemon",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_TOOL_TYPE_INVALID"]
+    },
+    {
+      "name": "invalid import format",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": ["spreadsheet"],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_IMPORT_FORMAT_INVALID"]
+    },
+    {
+      "name": "missing produced outputs",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": [],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_PRODUCED_OUTPUTS_REQUIRED"]
+    },
+    {
+      "name": "invalid supported asset type",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": ["shader"],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_SUPPORTED_ASSET_TYPE_INVALID"]
+    },
+    {
+      "name": "invalid source tool state",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": {
+          "toolStateId": "tool-state.fixture",
+          "projectId": "project.tools",
+          "version": 1
+        },
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_SOURCE_TOOL_STATE_INVALID"]
+    },
+    {
+      "name": "source tool state project mismatch",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": {
+          "toolStateId": "tool-state.fixture",
+          "toolType": "fixture-tool",
+          "projectId": "project.other",
+          "version": 1
+        },
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_SOURCE_TOOL_STATE_PROJECT_MISMATCH"]
+    },
+    {
+      "name": "invalid visibility",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "team",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid version",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 0
+      },
+      "expectedErrors": ["TOOL_CONTRACT_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid export format",
+      "toolContract": {
+        "toolId": "fixture-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["spreadsheet"],
+        "status": "active",
+        "version": 1
+      },
+      "expectedErrors": ["TOOL_CONTRACT_EXPORT_FORMAT_INVALID"]
+    }
+  ],
+  "accessChecks": [
+    {
+      "name": "private tool contract owner can view",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "view",
+      "toolContract": {
+        "toolId": "fixture-private-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    },
+    {
+      "name": "private tool contract ungranted user cannot view",
+      "actorId": "user.other",
+      "projectRole": "viewer",
+      "permission": "view",
+      "toolContract": {
+        "toolId": "fixture-private-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "project tool contract granted collaborator can edit",
+      "actorId": "user.collaborator",
+      "projectRole": "collaborator",
+      "permission": "edit",
+      "grantedProjectIds": ["project.tools"],
+      "grantedScopes": ["project"],
+      "toolContract": {
+        "toolId": "fixture-project-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "project": {
+        "id": "project.tools",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": true
+    },
+    {
+      "name": "viewer cannot edit tool contract",
+      "actorId": "user.viewer",
+      "projectRole": "viewer",
+      "permission": "edit",
+      "grantedProjectIds": ["project.tools"],
+      "grantedScopes": ["project"],
+      "toolContract": {
+        "toolId": "fixture-project-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "project",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "project": {
+        "id": "project.tools",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": false
+    },
+    {
+      "name": "marketplace tool contract is visible",
+      "actorId": "market.viewer",
+      "projectRole": "viewer",
+      "permission": "view",
+      "toolContract": {
+        "toolId": "fixture-marketplace-tool",
+        "toolType": "viewer",
+        "ownerId": "user.owner",
+        "projectId": "project.marketplace",
+        "visibility": "marketplace",
+        "requiredInputs": ["asset"],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": ["image"],
+        "importFormats": ["asset"],
+        "exportFormats": ["metadata-json"],
+        "status": "active",
+        "version": 1
+      },
+      "project": {
+        "id": "project.marketplace",
+        "ownerId": "user.owner",
+        "state": "marketplace",
+        "visibility": "public"
+      },
+      "expected": true
+    },
+    {
+      "name": "archived tool outputs cannot be edited by default",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "toolContract": {
+        "toolId": "fixture-archived-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "private",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "archived",
+        "version": 1
+      },
+      "project": {
+        "id": "project.tools",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "archived tool outputs can be edited when policy allows",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "policy": {
+        "allowArchivedToolOutputEdit": true
+      },
+      "toolContract": {
+        "toolId": "fixture-archived-tool",
+        "toolType": "utility",
+        "ownerId": "user.owner",
+        "projectId": "project.tools",
+        "visibility": "private",
+        "requiredInputs": [],
+        "producedOutputs": ["metadata-json"],
+        "sourceToolState": null,
+        "supportedAssetTypes": [],
+        "importFormats": [],
+        "exportFormats": ["metadata-json"],
+        "status": "archived",
+        "version": 1
+      },
+      "project": {
+        "id": "project.tools",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    }
+  ]
+}
