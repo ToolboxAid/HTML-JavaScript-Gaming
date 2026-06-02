@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <base href="../GameFoundryStudio/">
@@ -7,15 +8,174 @@
     <title>Controls - Game Foundry Studio</title>
     <meta name="description" content="Game Foundry Studio controls and form component examples.">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="assets/css/theme/v2/theme.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
+
 <body>
     <div data-partial="header-nav"></div>
     <main>
-        <section class="page-title"><div class="container"><div class="kicker">Admin</div><h1>Controls</h1><p class="lede">A planning page for control guidance, keyboard patterns and form behavior.</p></div></section>
-        <section class="section"><div class="container account-panel"><aside class="side-menu" aria-label="Admin pages"><a href="../admin/site-settings.html">Site Settings</a><a href="../admin/branding.html">Branding</a><a href="../admin/themes.html">Themes</a><a href="../admin/design-system.html">Design System</a><a class="active" aria-current="page" href="../admin/controls.html">Controls</a><a href="../admin/grouping-colors.html">Grouping Colors</a><a href="../admin/ratings.html">Ratings</a><a href="../admin/users.html">Users</a><a href="../admin/roles.html">Roles</a><a href="../admin/moderation.html">Moderation</a><a href="../admin/analytics.html">Analytics</a></aside><div class="card"><div class="card-body"><div class="kicker">Status = Planning</div><div class="grid cols-3"><article class="callout"><h2>Purpose</h2><p>Move control guidance from Account into Admin for the broader product surface.</p></article><article class="callout"><h2>Future Scope</h2><p>Plan keyboard patterns, touch behavior and tool-specific control recommendations.</p></article><article class="callout"><h2>Planned Sections</h2><ul><li>Keyboard controls</li><li>Pointer controls</li><li>Tool control notes</li></ul></article></div></div></div></div></section>
+        <section class="controls-hero">
+            <div class="container controls-hero-grid">
+                <div>
+                    <div class="kicker">Admin control forge</div>
+                    <h1 class="controls-title">Controls.</h1>
+                    <p class="lede">A Game Foundry Studio control page showing common HTML controls with foundry-side
+                        accent colors for forms, tool panels, settings screens, publishing workflows, and account
+                        management.</p>
+                    <div class="hero-actions"><a class="btn primary" href="../admin/controls.html#controls">View Controls</a><a class="btn"
+                            href="../tools/index.html">Back to Tools</a></div>
+                </div>
+                <aside class="forgebot-stage"><img src="assets/images/forge-bot-single.png"
+                        alt="ForgeBot mascot holding a hammer beside an anvil"></aside>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container account-panel">
+                <aside class="side-menu" aria-label="Admin pages">
+                    <a href="../admin/site-settings.html">Site Settings</a>
+                    <a href="../admin/branding.html">Branding</a>
+                    <a href="../admin/themes.html">Themes</a>
+                    <a href="../admin/design-system.html">Design System</a>
+                    <a class="active" aria-current="page" href="../admin/controls.html">Controls</a>
+                    <a href="../admin/grouping-colors.html">Grouping Colors</a>
+                    <a href="../admin/ratings.html">Ratings</a>
+                    <a href="../admin/users.html">Users</a>
+                    <a href="../admin/roles.html">Roles</a>
+                    <a href="../admin/moderation.html">Moderation</a>
+                    <a href="../admin/analytics.html">Analytics</a>
+                </aside>
+                <div class="admin-page-stack">
+        <section class="section">
+            <div class="container card">
+                <div class="card-body">
+                    <div class="kicker">Status = Planning</div>
+                    <div class="grid cols-3">
+                        <article class="callout">
+                            <h2>Purpose</h2>
+                            <p>Move control guidance from Account into Admin for the broader product surface.</p>
+                        </article>
+                        <article class="callout">
+                            <h2>Future Scope</h2>
+                            <p>Plan keyboard patterns, touch behavior and tool-specific control recommendations.</p>
+                        </article>
+                        <article class="callout">
+                            <h2>Planned Sections</h2>
+                            <ul>
+                                <li>Keyboard controls</li>
+                                <li>Pointer controls</li>
+                                <li>Tool control notes</li>
+                            </ul>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="control-section" id="controls">
+            <div class="container">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">HTML controls</div>
+                        <h2>Everyday controls with branded side colors.</h2>
+                    </div>
+                    <div class="control-row control-row--toolbar">
+                        <label for="control-theme">Preview grouping</label>
+                        <select id="control-theme" data-controls-theme-select>
+                            <option value="tool-group-build-create">Build &amp; Create</option>
+                            <option value="tool-group-content-assets">Content &amp; Assets</option>
+                            <option value="tool-group-media-audio">Media &amp; Audio</option>
+                            <option value="tool-group-ai-learning">AI &amp; Learning</option>
+                            <option value="tool-group-platform-cloud">Platform &amp; Cloud</option>
+                            <option value="tool-group-development-system">Development &amp; System</option>
+                            <option value="tool-group-community-marketplace">Community &amp; Marketplace</option>
+                            <option value="tool-group-play">Play</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-lab tool-group-build-create" data-controls-preview>
+                    <article class="control-card side-orange">
+                        <h3>Text Inputs</h3>
+                        <p>Names, slugs, paths, labels, and short values.</p>
+                        <div class="control-demo">
+                            <div class="control-row"><label for="text-name">Text Input - Text - textbox</label><input
+                                    id="text-name" type="text" value="King of the Iceberg"></div>
+                            <div class="control-row"><label for="search">Text Input - Search - textbox</label><input
+                                    id="search" type="search" placeholder="Search tools"></div>
+                        </div>
+                    </article>
+                    <article class="control-card side-cyan">
+                        <h3>Identity Inputs</h3>
+                        <p>Account forms and creator profile fields.</p>
+                        <div class="control-demo">
+                            <div class="control-row"><label for="email">Identity Input - Email - textbox</label><input
+                                    id="email" type="email" value="creator@example.com"></div>
+                            <div class="control-row"><label for="password">Identity Input - Password - textbox</label><input
+                                    id="password" type="password" value="foundry"></div>
+                        </div>
+                    </article>
+                    <article class="control-card side-gold">
+                        <h3>Numeric Inputs</h3>
+                        <p>Stats, limits, sizes, scores, prices, and settings.</p>
+                        <div class="control-demo">
+                            <div class="control-row"><label for="number">Numeric Input - Number - textbox</label><input
+                                    id="number" type="number" value="100" min="0" max="999"></div>
+                            <div class="control-row"><label for="range">Numeric Input - Range - slider</label><input
+                                    id="range" type="range" min="0" max="100" value="68"></div>
+                        </div>
+                    </article>
+                    <article class="control-card side-green">
+                        <h3>Choices</h3>
+                        <p>Modes, visibility, platforms, and feature flags.</p>
+                        <div class="control-demo">
+                            <div class="control-row control-row--choice"><span class="control-row__label">Choice -
+                                    Public project - Checkbox</span><label class="choice"><input type="checkbox"
+                                        checked> Public project</label></div>
+                            <div class="control-row control-row--choice"><span class="control-row__label">Choice -
+                                    Allow remixing - Checkbox</span><label class="choice"><input type="checkbox"> Allow
+                                    remixing</label></div>
+                            <div class="control-row control-row--choice"><span class="control-row__label">Choice -
+                                    Arcade - Radio</span><label class="choice"><input name="mode" type="radio" checked>
+                                    Arcade</label></div>
+                            <div class="control-row control-row--choice"><span class="control-row__label">Choice -
+                                    Studio - Radio</span><label class="choice"><input name="mode" type="radio">
+                                    Studio</label></div>
+                        </div>
+                    </article>
+                    <article class="control-card side-pink">
+                        <h3>Switches</h3>
+                        <p>On/off controls for tool preferences and game options.</p>
+                        <div class="control-demo">
+                            <div class="control-row"><span class="control-row__label">Switch - Auto-save -
+                                    Checkbox</span><label class="switch"><input type="checkbox" checked><span
+                                        class="slider"></span></label></div>
+                        </div>
+                    </article>
+                    <article class="control-card side-blue">
+                        <h3>Selects</h3>
+                        <p>Single-choice dropdowns for theme, engine mode, and tool role.</p>
+                        <div class="control-demo">
+                            <div class="control-row"><label for="select">Select Input - Grouping</label><select
+                                    id="select" data-controls-theme-select>
+                                    <option value="tool-group-build-create">Build &amp; Create</option>
+                                    <option value="tool-group-content-assets">Content &amp; Assets</option>
+                                    <option value="tool-group-media-audio">Media &amp; Audio</option>
+                                    <option value="tool-group-ai-learning">AI &amp; Learning</option>
+                                    <option value="tool-group-platform-cloud">Platform &amp; Cloud</option>
+                                    <option value="tool-group-development-system">Development &amp; System</option>
+                                    <option value="tool-group-community-marketplace">Community &amp; Marketplace</option>
+                                    <option value="tool-group-play">Play</option>
+                                </select></div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+                </div>
+            </div>
+        </section>
     </main>
     <div data-partial="footer"></div>
     <script src="assets/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/js/account-controls.js" defer></script>
 </body>
+
 </html>

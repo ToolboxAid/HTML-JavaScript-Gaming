@@ -1,21 +1,107 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <base href="../GameFoundryStudio/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Design System - Game Foundry Studio</title>
-    <meta name="description" content="Plan design-system stewardship for Game Foundry Studio.">
+    <meta name="description" content="Game Foundry Studio design-system source of truth.">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="assets/css/theme/v2/theme.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
+
 <body>
     <div data-partial="header-nav"></div>
     <main>
-        <section class="page-title"><div class="container"><div class="kicker">Admin</div><h1>Design System</h1><p class="lede">A planning page for shared components, spacing, controls and Theme V2 patterns.</p></div></section>
-        <section class="section"><div class="container account-panel"><aside class="side-menu" aria-label="Admin pages"><a href="../admin/site-settings.html">Site Settings</a><a href="../admin/branding.html">Branding</a><a href="../admin/themes.html">Themes</a><a class="active" aria-current="page" href="../admin/design-system.html">Design System</a><a href="../admin/controls.html">Controls</a><a href="../admin/grouping-colors.html">Grouping Colors</a><a href="../admin/ratings.html">Ratings</a><a href="../admin/users.html">Users</a><a href="../admin/roles.html">Roles</a><a href="../admin/moderation.html">Moderation</a><a href="../admin/analytics.html">Analytics</a></aside><div class="card"><div class="card-body"><div class="kicker">Status = Planning</div><div class="grid cols-3"><article class="callout"><h2>Purpose</h2><p>Move design system stewardship from Account into Admin for shared ownership.</p></article><article class="callout"><h2>Future Scope</h2><p>Plan reusable patterns, documentation and component audits.</p></article><article class="callout"><h2>Planned Sections</h2><ul><li>Theme V2 components</li><li>Pattern ownership</li><li>Design-system gaps</li></ul></article></div></div></div></div></section>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Admin Reference</div>
+                <h1>Design-system source of truth.</h1>
+                <p class="lede">Shared CSS layers define colors, tokens, base element behavior, controls, reusable
+                    GameFoundry patterns, and page layouts.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container account-panel">
+                <aside class="side-menu" aria-label="Admin pages">
+                    <a href="../admin/site-settings.html">Site Settings</a>
+                    <a href="../admin/branding.html">Branding</a>
+                    <a href="../admin/themes.html">Themes</a>
+                    <a class="active" aria-current="page" href="../admin/design-system.html">Design System</a>
+                    <a href="../admin/controls.html">Controls</a>
+                    <a href="../admin/grouping-colors.html">Grouping Colors</a>
+                    <a href="../admin/ratings.html">Ratings</a>
+                    <a href="../admin/users.html">Users</a>
+                    <a href="../admin/roles.html">Roles</a>
+                    <a href="../admin/moderation.html">Moderation</a>
+                    <a href="../admin/analytics.html">Analytics</a>
+                </aside>
+                <div class="admin-page-stack">
+        <section class="section">
+            <div class="container card">
+                <div class="card-body">
+                    <div class="kicker">Status = Planning</div>
+                    <div class="grid cols-3">
+                        <article class="callout">
+                            <h2>Purpose</h2>
+                            <p>Move design system stewardship from Account into Admin for shared ownership.</p>
+                        </article>
+                        <article class="callout">
+                            <h2>Future Scope</h2>
+                            <p>Plan token references, component states and accessibility guidance.</p>
+                        </article>
+                        <article class="callout">
+                            <h2>Planned Sections</h2>
+                            <ul>
+                                <li>Tokens</li>
+                                <li>Components</li>
+                                <li>Accessibility notes</li>
+                            </ul>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <div class="card">
+                    <div class="card-body">
+                        <h2>CSS Ownership</h2>
+                        <dl>
+                            <dt>colors.css</dt>
+                            <dd>Approved color values and color-family variables.</dd>
+                            <dt>tokens.css</dt>
+                            <dd>Spacing, sizing, typography, radius, shadows, z-index, icon sizes, and tool tile
+                                dimensions.</dd>
+                            <dt>base.css</dt>
+                            <dd>Reset, typography defaults, focus styles, accessibility helpers, and base element
+                                rules.</dd>
+                            <dt>controls.css</dt>
+                            <dd>Native HTML control scale, spacing, sizing, and typography.</dd>
+                            <dt>gamefoundrystudio.css</dt>
+                            <dd>Shared GameFoundry components and patterns.</dd>
+                            <dt>pages.css</dt>
+                            <dd>Page-specific layout helpers that consume shared tokens and colors.</dd>
+                        </dl>
+                        <h2>Design Rules</h2>
+                        <ul>
+                            <li>Use shared CSS layers before adding page-specific styles.</li>
+                            <li>Keep raw color values in <code>colors.css</code>.</li>
+                            <li>Keep non-color design values in <code>tokens.css</code>.</li>
+                            <li>Use current tool group names as the primary user-facing organization.</li>
+                            <li>Use badge and tile colors as secondary visual cues.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+                </div>
+            </div>
+        </section>
     </main>
     <div data-partial="footer"></div>
     <script src="assets/js/gamefoundry-partials.js" defer></script>
 </body>
+
 </html>
