@@ -45,6 +45,10 @@ Result: PASS.
 
 SKIP / pending rebuild. No sample files were touched.
 
+## Tools Decision
+
+SKIP / out of scope. State boundary validation proves ownership boundaries only and does not claim tool runtime validation passed.
+
 ## Playwright
 
 Playwright impacted: No.

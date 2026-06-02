@@ -43,6 +43,10 @@ Result: PASS.
 
 SKIP / pending rebuild. No sample JSON was read as source of truth or modified.
 
+## Tools Decision
+
+SKIP / out of scope. The launch boundary validates explicit ProjectWorkspace inputs only and does not claim tool runtime validation passed.
+
 ## Playwright
 
 Playwright impacted: No.

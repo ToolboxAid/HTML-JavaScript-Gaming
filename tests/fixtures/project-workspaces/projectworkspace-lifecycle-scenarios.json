@@ -1,0 +1,241 @@
+{
+  "validLifecycleTransitions": [
+    {
+      "name": "create establishes ProjectWorkspace coordination without payload",
+      "transition": {
+        "action": "create",
+        "before": {
+          "flowState": "idle"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        }
+      }
+    },
+    {
+      "name": "open attaches explicit project tool and toolState references",
+      "transition": {
+        "action": "open",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "flowState": "idle"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        }
+      }
+    },
+    {
+      "name": "save clears dirty state through explicit toolState target",
+      "transition": {
+        "action": "save",
+        "saveTargetToolStateId": "tool-state.palette.alpha",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": true,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        }
+      }
+    },
+    {
+      "name": "close releases active tool references",
+      "transition": {
+        "action": "close",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        },
+        "after": {
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "idle"
+        }
+      }
+    },
+    {
+      "name": "cancel leaves no hidden persisted state",
+      "transition": {
+        "action": "cancel",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": true,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "idle"
+        }
+      }
+    },
+    {
+      "name": "dirty-state transition stays boolean and coordination-only",
+      "transition": {
+        "action": "setDirty",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": true,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        }
+      }
+    }
+  ],
+  "invalidLifecycleTransitions": [
+    {
+      "name": "save without toolState target rejects visibly",
+      "transition": {
+        "action": "save",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "dirty": true,
+          "flowState": "open"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "dirty": false,
+          "flowState": "open"
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECTWORKSPACE_LIFECYCLE_SAVE_TOOLSTATE_REQUIRED"
+      ]
+    },
+    {
+      "name": "save with ProjectWorkspace payload rejects visibly",
+      "transition": {
+        "action": "save",
+        "saveTargetToolStateId": "tool-state.palette.alpha",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": true,
+          "flowState": "open"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": false,
+          "flowState": "open",
+          "payload": {
+            "swatches": []
+          }
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECT_WORKSPACE_RUNTIME_FIELD_NOT_ALLOWED"
+      ]
+    },
+    {
+      "name": "dirty-state failure rejects visibly",
+      "transition": {
+        "action": "setDirty",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": false,
+          "flowState": "open"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": "yes",
+          "flowState": "open"
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECT_WORKSPACE_RUNTIME_DIRTY_INVALID"
+      ]
+    },
+    {
+      "name": "close cannot rely on localStorage",
+      "transition": {
+        "action": "close",
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": false,
+          "flowState": "open"
+        },
+        "after": {
+          "dirty": false,
+          "flowState": "idle",
+          "localStorage": {
+            "activeProjectId": "project.alpha"
+          }
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECT_WORKSPACE_RUNTIME_FIELD_NOT_ALLOWED"
+      ]
+    },
+    {
+      "name": "cancel cannot validate tool runtime state",
+      "transition": {
+        "action": "cancel",
+        "toolRuntime": {
+          "status": "mounted"
+        },
+        "before": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": true,
+          "flowState": "opening"
+        },
+        "after": {
+          "activeProjectId": "project.alpha",
+          "dirty": false,
+          "flowState": "idle"
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECTWORKSPACE_LIFECYCLE_FORBIDDEN_FIELD"
+      ]
+    }
+  ]
+}

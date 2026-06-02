@@ -44,6 +44,10 @@ Result: PASS.
 
 SKIP / pending rebuild. No sample files were changed or validated.
 
+## Tools Decision
+
+SKIP / out of scope unless explicitly migrated and named in a later runtime lane. Unmigrated tools are not failures in this lane.
+
 ## Playwright
 
 Playwright impacted: No.

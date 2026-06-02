@@ -17,6 +17,7 @@ Workspace V2 may remain only where existing file names, command names, package s
 - ProjectWorkspace launch inputs.
 - ProjectWorkspace manifest handoff inputs.
 - ProjectWorkspace state coordination.
+- ProjectWorkspace create/open/save/close/cancel/dirty-state lifecycle boundaries.
 - Tool State ownership boundaries.
 - Palette ownership boundaries.
 - Hidden persisted ProjectWorkspace state assumptions.
@@ -33,6 +34,7 @@ Workspace V2 may remain only where existing file names, command names, package s
 
 - Contract-valid ProjectWorkspace inputs are PASS.
 - Invalid ProjectWorkspace boundary inputs are REJECT with visible validation detail.
+- Invalid ProjectWorkspace lifecycle transitions are REJECT with visible and actionable validation detail.
 - Unmigrated tools are SKIP and must not be classified as FAIL in this lane.
 
 ## Non-Goals

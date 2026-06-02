@@ -43,6 +43,10 @@ Result: PASS.
 
 SKIP / pending rebuild. No sample JSON was modified or used as fallback data.
 
+## Tools Decision
+
+SKIP / out of scope. Manifest handoff validation stops before tool-specific rendering or behavior.
+
 ## Playwright
 
 Playwright impacted: No.

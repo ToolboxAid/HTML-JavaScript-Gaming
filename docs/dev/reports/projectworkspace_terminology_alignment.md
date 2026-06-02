@@ -43,6 +43,10 @@ Result: PASS.
 
 SKIP / pending rebuild. No sample JSON or sample runtime files were touched.
 
+## Tools Decision
+
+SKIP / out of scope. Tool runtime validation was not run and is not claimed as passed.
+
 ## Playwright
 
 Playwright impacted: No.
