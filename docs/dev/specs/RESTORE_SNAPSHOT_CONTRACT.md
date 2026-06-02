@@ -1,20 +1,20 @@
-# Restore Request Contract
+# Restore Snapshot Contract
 
 ## Purpose
 
-Restore Request records describe a metadata-only request to restore from a Backup Snapshot into a target Release context.
+Restore Snapshot records describe a metadata-only restore point created from a Backup Snapshot into a target Release context.
 
 The record links the restore owner, project, backup snapshot, target release, and version compatibility records. It does not store restore payload data, runtime state, toolState, file bytes, auth session state, installer state, updater implementation details, or storage implementation details.
 
 ## Ownership
 
-- Every Restore Request requires `ownerId`.
-- The Restore Request owner must match `backupSnapshot.ownerId`.
-- The Restore Request owner must match `versionCompatibility.ownerId`.
+- Every Restore Snapshot requires `ownerId`.
+- The Restore Snapshot owner must match `backupSnapshot.ownerId`.
+- The Restore Snapshot owner must match `versionCompatibility.ownerId`.
 
 ## Required Linkage
 
-- `projectId` links the request to the persisted Project container.
+- `projectId` links the restore snapshot to the persisted Project container.
 - `backupSnapshot` identifies the Backup Snapshot selected for restore.
 - `targetRelease` identifies the published or retired Release target.
 - `versionCompatibility` identifies the compatibility gate for the target restore path.
@@ -31,7 +31,7 @@ The record links the restore owner, project, backup snapshot, target release, an
 
 ## Boundaries
 
-Restore Request records must not contain:
+Restore Snapshot records must not contain:
 
 - runtime state
 - toolState or tool payloads
@@ -45,7 +45,6 @@ Restore Request records must not contain:
 
 Targeted validation lives in:
 
-- `src/shared/contracts/restoreRequestContract.js`
-- `tests/shared/RestoreRequestContract.test.mjs`
-- `tests/fixtures/restore-requests/restore-request-scenarios.json`
-
+- `src/shared/contracts/restoreSnapshotContract.js`
+- `tests/shared/RestoreSnapshotContract.test.mjs`
+- `tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json`
