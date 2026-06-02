@@ -1,0 +1,294 @@
+{
+  "validToolStates": [
+    {
+      "name": "active project tool state",
+      "toolState": {
+        "toolStateId": "tool-state.palette.alpha",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "relationships": ["belongs-to-project", "owned-by-user", "may-reference-assets", "may-be-exported"],
+        "assetRefs": ["asset.palette.seed", "asset.palette.seed"],
+        "payload": {
+          "swatches": [
+            {
+              "hex": "#ffffff"
+            }
+          ]
+        }
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "draft private tool state",
+      "toolState": {
+        "toolStateId": "tool-state.vector.draft",
+        "toolType": "object-vector-studio-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 2,
+        "status": "draft",
+        "relationships": ["belongs-to-project", "owned-by-user", "may-be-exported"],
+        "assetRefs": [],
+        "payload": {
+          "objects": []
+        }
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "archived public exportable tool state",
+      "toolState": {
+        "toolStateId": "tool-state.audio.archive",
+        "toolType": "audio-sfx-playground-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.public",
+        "visibility": "public",
+        "version": 3,
+        "status": "archived",
+        "relationships": ["belongs-to-project", "owned-by-user", "may-reference-assets", "may-be-exported"],
+        "assetRefs": ["asset.sound.blip"],
+        "payload": {
+          "sounds": []
+        }
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidToolStates": [
+    {
+      "name": "missing owner",
+      "toolState": {
+        "toolStateId": "tool-state.missing.owner",
+        "toolType": "palette-manager-v2",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active"
+      },
+      "expectedErrors": ["TOOL_STATE_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "toolState": {
+        "toolStateId": "tool-state.missing.project",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "visibility": "project",
+        "version": 1,
+        "status": "active"
+      },
+      "expectedErrors": ["TOOL_STATE_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing tool type",
+      "toolState": {
+        "toolStateId": "tool-state.missing.type",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active"
+      },
+      "expectedErrors": ["TOOL_TYPE_REQUIRED"]
+    },
+    {
+      "name": "invalid visibility",
+      "toolState": {
+        "toolStateId": "tool-state.invalid.visibility",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "marketplace",
+        "version": 1,
+        "status": "active"
+      },
+      "expectedErrors": ["TOOL_STATE_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid version",
+      "toolState": {
+        "toolStateId": "tool-state.invalid.version",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 0,
+        "status": "active"
+      },
+      "expectedErrors": ["TOOL_STATE_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid status",
+      "toolState": {
+        "toolStateId": "tool-state.invalid.status",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "deleted"
+      },
+      "expectedErrors": ["TOOL_STATE_STATUS_INVALID"]
+    },
+    {
+      "name": "invalid relationship",
+      "toolState": {
+        "toolStateId": "tool-state.invalid.relationship",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "relationships": ["belongs-to-project", "writes-database"]
+      },
+      "expectedErrors": ["TOOL_STATE_RELATIONSHIP_INVALID"]
+    }
+  ],
+  "accessChecks": [
+    {
+      "name": "private tool state owner can view",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "view",
+      "toolState": {
+        "toolStateId": "tool-state.private",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "active"
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    },
+    {
+      "name": "private tool state ungranted user cannot view",
+      "actorId": "user.other",
+      "projectRole": "viewer",
+      "permission": "view",
+      "toolState": {
+        "toolStateId": "tool-state.private",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "active"
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "project-visible tool state granted collaborator can edit",
+      "actorId": "user.collaborator",
+      "projectRole": "collaborator",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "toolState": {
+        "toolStateId": "tool-state.project",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active"
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": true
+    },
+    {
+      "name": "viewer cannot edit tool state",
+      "actorId": "user.viewer",
+      "projectRole": "viewer",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "toolState": {
+        "toolStateId": "tool-state.project",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active"
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": false
+    },
+    {
+      "name": "archived tool state cannot be edited by default",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "toolState": {
+        "toolStateId": "tool-state.archived",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 2,
+        "status": "archived"
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "archived tool state can be edited when policy allows",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "policy": {
+        "allowArchivedToolStateEdit": true
+      },
+      "toolState": {
+        "toolStateId": "tool-state.archived",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 2,
+        "status": "archived"
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    }
+  ]
+}
