@@ -71,7 +71,7 @@ An external launch is any launch that begins from:
 
 External launches MUST clear launch memory before loading the target tool or workspace.
 
-External launches MUST NOT reuse prior tool state, prior workspace state, stale selected tool values, stale selected game values, stale launch context, or prior session carryover.
+External launches MUST NOT reuse prior tool state, prior Project Workspace state, stale selected tool values, stale selected game values, stale launch context, or prior session carryover.
 
 ## Query Contract
 
