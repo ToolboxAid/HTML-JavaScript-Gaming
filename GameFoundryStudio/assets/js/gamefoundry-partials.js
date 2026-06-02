@@ -73,6 +73,8 @@
     const rootPageRoutes = new Set([
         "tools",
         "ai-assistant",
+        "animation-studio", "asset-studio", "code-studio", "input-studio", "midi-studio",
+        "object-vector-studio", "palette-manager", "particle-studio", "sound-studio", "storage-inspector",
         "about", "vision", "mission", "roadmap", "release-notes",
         "account", "account-profile", "account-preferences", "account-security",
         "admin", "admin-site-settings", "admin-branding", "admin-themes", "admin-design-system", "admin-controls",

@@ -13,7 +13,7 @@
             tools: [
                 {
                     title: "Asset Studio",
-                    href: "tools/asset-studio.html",
+                    href: "../tools/asset-studio.html",
                     image: "assets/images/tools/asset-studio.png",
                     description: "Create sprites, animations, vectors and palettes.",
                     role: "Pixel Smith",
@@ -27,7 +27,7 @@
             tools: [
                 {
                     title: "Object Vector Studio",
-                    href: "tools/object-vector-studio.html",
+                    href: "../tools/object-vector-studio.html",
                     image: "assets/images/tools/object-vector-studio.png",
                     description: "Create object-ready vector assets and reusable scene pieces.",
                     role: "Pixel Smith",
@@ -50,7 +50,7 @@
             tools: [
                 {
                     title: "Palette Manager",
-                    href: "tools/palette-manager.html",
+                    href: "../tools/palette-manager.html",
                     image: "assets/images/tools/palette-manager.png",
                     description: "Craft and manage color palettes for your games.",
                     role: "Pixel Smith",
@@ -106,7 +106,7 @@
             tools: [
                 {
                     title: "Animation Studio",
-                    href: "tools/animation-studio.html",
+                    href: "../tools/animation-studio.html",
                     image: "assets/images/tools/animation-studio.png",
                     description: "Create timing, animation states, and motion workflows.",
                     role: "Spark",
@@ -115,7 +115,7 @@
                 },
                 {
                     title: "Particle Studio",
-                    href: "tools/particle-studio.html",
+                    href: "../tools/particle-studio.html",
                     image: "assets/images/tools/particle-studio.png",
                     description: "Author visual effects, emitters, and particle looks.",
                     role: "Spark",
@@ -129,7 +129,7 @@
             tools: [
                 {
                     title: "MIDI Studio",
-                    href: "tools/midi-studio.html",
+                    href: "../tools/midi-studio.html",
                     image: "assets/images/tools/midi-studio.png",
                     description: "Build MIDI-driven audio and music interaction flows.",
                     role: "Foundry Bot",
@@ -138,7 +138,7 @@
                 },
                 {
                     title: "Sound Studio",
-                    href: "tools/sound-studio.html",
+                    href: "../tools/sound-studio.html",
                     image: "assets/images/tools/sound-studio.png",
                     description: "Prepare audio, sound effects, and game sound workflows.",
                     role: "Foundry Bot",
@@ -166,7 +166,7 @@
             tools: [
                 {
                     title: "Code Studio",
-                    href: "tools/code-studio.html",
+                    href: "../tools/code-studio.html",
                     image: "assets/images/tools/code-studio.png",
                     description: "Write code, extend systems and build custom logic.",
                     role: "Foundry Bot",
@@ -175,7 +175,7 @@
                 },
                 {
                     title: "Input Studio",
-                    href: "tools/input-studio.html",
+                    href: "../tools/input-studio.html",
                     image: "assets/images/tools/input-studio.png",
                     description: "Map player controls and configure input workflows.",
                     role: "Foundry Bot",
@@ -231,7 +231,7 @@
             tools: [
                 {
                     title: "Storage Inspector",
-                    href: "tools/storage-inspector.html",
+                    href: "../tools/storage-inspector.html",
                     image: "assets/images/tools/storage-inspector.png",
                     description: "Inspect local storage, saved state, and tool data.",
                     role: "Foundry Bot",
