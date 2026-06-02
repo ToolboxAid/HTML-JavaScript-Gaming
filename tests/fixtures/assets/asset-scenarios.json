@@ -1,0 +1,521 @@
+{
+  "validAssets": [
+    {
+      "name": "active vector asset with source tool state",
+      "asset": {
+        "assetId": "asset.vector.ship",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.vector.ship",
+          "toolType": "object-vector-studio-v2",
+          "projectId": "project.active",
+          "version": 3
+        },
+        "visibility": "project",
+        "version": 2,
+        "status": "active",
+        "metadata": {
+          "title": "Ship Vector",
+          "vectorFormat": "svg",
+          "objectCount": 3,
+          "tags": ["ship", "player"]
+        },
+        "exportFormats": ["vector-json", "svg", "project-package"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "active palette asset",
+      "asset": {
+        "assetId": "asset.palette.hud",
+        "assetType": "palette",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "title": "HUD Palette",
+          "swatchCount": 2,
+          "tags": ["hud", "ui"]
+        },
+        "exportFormats": ["palette-json", "metadata-json"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "active image asset",
+      "asset": {
+        "assetId": "asset.image.hero",
+        "assetType": "image",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "title": "Hero Sprite",
+          "filePath": "assets/images/hero.png",
+          "width": 128,
+          "height": 128
+        },
+        "exportFormats": ["image-file", "metadata-json"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "active audio asset",
+      "asset": {
+        "assetId": "asset.audio.blip",
+        "assetType": "audio",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "unlisted",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "title": "UI Blip",
+          "filePath": "assets/audio/blip.wav",
+          "durationMs": 500
+        },
+        "exportFormats": ["audio-file", "project-package"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "active tilemap asset",
+      "asset": {
+        "assetId": "asset.tilemap.level01",
+        "assetType": "tilemap",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 3,
+        "status": "active",
+        "metadata": {
+          "title": "Level 01",
+          "filePath": "assets/tilemaps/level-01.json",
+          "tileCount": 256
+        },
+        "exportFormats": ["tilemap-json", "project-package"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "active localization asset",
+      "asset": {
+        "assetId": "asset.localization.en-us",
+        "assetType": "localization",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "public",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "title": "English Strings",
+          "filePath": "assets/locales/en-US.json",
+          "locale": "en-US"
+        },
+        "exportFormats": ["localization-json", "metadata-json"]
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidAssets": [
+    {
+      "name": "missing owner",
+      "asset": {
+        "assetId": "asset.missing.owner",
+        "assetType": "vector",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "vectorFormat": "svg"
+        },
+        "exportFormats": ["svg"]
+      },
+      "expectedErrors": ["ASSET_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "asset": {
+        "assetId": "asset.missing.project",
+        "assetType": "palette",
+        "ownerId": "user.owner",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "swatchCount": 1
+        },
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["ASSET_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "invalid asset type",
+      "asset": {
+        "assetId": "asset.invalid.type",
+        "assetType": "shader",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "title": "Unknown"
+        },
+        "exportFormats": ["metadata-json"]
+      },
+      "expectedErrors": ["ASSET_TYPE_INVALID"]
+    },
+    {
+      "name": "missing metadata",
+      "asset": {
+        "assetId": "asset.missing.metadata",
+        "assetType": "image",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["image-file"]
+      },
+      "expectedErrors": ["ASSET_METADATA_REQUIRED"]
+    },
+    {
+      "name": "invalid vector metadata",
+      "asset": {
+        "assetId": "asset.vector.invalid.metadata",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "vectorFormat": "bitmap"
+        },
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["ASSET_METADATA_INVALID"]
+    },
+    {
+      "name": "invalid image metadata",
+      "asset": {
+        "assetId": "asset.image.invalid.metadata",
+        "assetType": "image",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "title": "Missing Path",
+          "width": 128,
+          "height": 128
+        },
+        "exportFormats": ["image-file"]
+      },
+      "expectedErrors": ["ASSET_METADATA_INVALID"]
+    },
+    {
+      "name": "invalid source tool state",
+      "asset": {
+        "assetId": "asset.invalid.source",
+        "assetType": "palette",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.palette.invalid",
+          "projectId": "project.active",
+          "version": 1
+        },
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "swatchCount": 0
+        },
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["ASSET_SOURCE_TOOL_STATE_INVALID"]
+    },
+    {
+      "name": "source tool state project mismatch",
+      "asset": {
+        "assetId": "asset.source.mismatch",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.vector.other",
+          "toolType": "object-vector-studio-v2",
+          "projectId": "project.other",
+          "version": 1
+        },
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "vectorFormat": "vector-json"
+        },
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["ASSET_SOURCE_TOOL_STATE_PROJECT_MISMATCH"]
+    },
+    {
+      "name": "invalid visibility",
+      "asset": {
+        "assetId": "asset.invalid.visibility",
+        "assetType": "audio",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "team",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "filePath": "assets/audio/blip.wav",
+          "durationMs": 500
+        },
+        "exportFormats": ["audio-file"]
+      },
+      "expectedErrors": ["ASSET_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid version",
+      "asset": {
+        "assetId": "asset.invalid.version",
+        "assetType": "tilemap",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 0,
+        "status": "active",
+        "metadata": {
+          "filePath": "assets/tilemaps/level-01.json",
+          "tileCount": 256
+        },
+        "exportFormats": ["tilemap-json"]
+      },
+      "expectedErrors": ["ASSET_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid export format for type",
+      "asset": {
+        "assetId": "asset.invalid.export",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "vectorFormat": "svg"
+        },
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["ASSET_EXPORT_FORMAT_INVALID"]
+    }
+  ],
+  "accessChecks": [
+    {
+      "name": "private asset owner can view",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "view",
+      "asset": {
+        "assetId": "asset.private",
+        "assetType": "image",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "filePath": "assets/images/private.png",
+          "width": 32,
+          "height": 32
+        },
+        "exportFormats": ["image-file"]
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    },
+    {
+      "name": "private asset ungranted user cannot view",
+      "actorId": "user.other",
+      "projectRole": "viewer",
+      "permission": "view",
+      "asset": {
+        "assetId": "asset.private",
+        "assetType": "image",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "filePath": "assets/images/private.png",
+          "width": 32,
+          "height": 32
+        },
+        "exportFormats": ["image-file"]
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "project asset granted collaborator can edit",
+      "actorId": "user.collaborator",
+      "projectRole": "collaborator",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "asset": {
+        "assetId": "asset.project",
+        "assetType": "palette",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "swatchCount": 2
+        },
+        "exportFormats": ["palette-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": true
+    },
+    {
+      "name": "viewer cannot edit asset",
+      "actorId": "user.viewer",
+      "projectRole": "viewer",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "asset": {
+        "assetId": "asset.project",
+        "assetType": "palette",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "swatchCount": 2
+        },
+        "exportFormats": ["palette-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": false
+    },
+    {
+      "name": "marketplace asset is visible",
+      "actorId": "market.viewer",
+      "projectRole": "viewer",
+      "permission": "view",
+      "asset": {
+        "assetId": "asset.marketplace",
+        "assetType": "audio",
+        "ownerId": "user.owner",
+        "projectId": "project.marketplace",
+        "visibility": "marketplace",
+        "version": 1,
+        "status": "active",
+        "metadata": {
+          "filePath": "assets/audio/coin.wav",
+          "durationMs": 300
+        },
+        "exportFormats": ["audio-file", "metadata-json"]
+      },
+      "project": {
+        "id": "project.marketplace",
+        "ownerId": "user.owner",
+        "state": "marketplace",
+        "visibility": "public"
+      },
+      "expected": true
+    },
+    {
+      "name": "archived asset cannot be edited by default",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "asset": {
+        "assetId": "asset.archived",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 2,
+        "status": "archived",
+        "metadata": {
+          "vectorFormat": "svg"
+        },
+        "exportFormats": ["svg"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "archived asset can be edited when policy allows",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "policy": {
+        "allowArchivedAssetEdit": true
+      },
+      "asset": {
+        "assetId": "asset.archived",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 2,
+        "status": "archived",
+        "metadata": {
+          "vectorFormat": "svg"
+        },
+        "exportFormats": ["svg"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    }
+  ]
+}
