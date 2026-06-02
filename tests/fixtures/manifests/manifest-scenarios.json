@@ -1,0 +1,164 @@
+{
+  "validManifests": [
+    {
+      "name": "active game manifest",
+      "manifest": {
+        "manifestId": "manifest.game.alpha",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "projectType": "game",
+        "sourceToolStates": [
+          {
+            "toolStateId": "tool-state.palette.alpha",
+            "toolType": "palette-manager-v2",
+            "version": 1
+          },
+          {
+            "toolStateId": "tool-state.object-vector.hero",
+            "toolType": "object-vector-studio-v2",
+            "version": 2
+          }
+        ],
+        "sourceAssets": [
+          {
+            "assetId": "asset.vector.hero",
+            "assetType": "vector",
+            "version": 1
+          },
+          {
+            "assetId": "asset.audio.theme",
+            "assetType": "audio",
+            "version": 1
+          }
+        ],
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidManifests": [
+    {
+      "name": "missing owner",
+      "manifest": {
+        "manifestId": "manifest.missing.owner",
+        "projectId": "project.game.alpha",
+        "projectType": "game",
+        "sourceToolStates": [],
+        "sourceAssets": [],
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "manifest": {
+        "manifestId": "manifest.missing.project",
+        "ownerId": "user.owner",
+        "projectType": "game",
+        "sourceToolStates": [],
+        "sourceAssets": [],
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing project type",
+      "manifest": {
+        "manifestId": "manifest.missing.project-type",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceToolStates": [],
+        "sourceAssets": [],
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_PROJECT_TYPE_REQUIRED"]
+    },
+    {
+      "name": "non-game project",
+      "manifest": {
+        "manifestId": "manifest.non.game",
+        "ownerId": "user.owner",
+        "projectId": "project.asset.pack",
+        "projectType": "asset-pack",
+        "sourceToolStates": [],
+        "sourceAssets": [],
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_PROJECT_TYPE_INVALID"]
+    },
+    {
+      "name": "invalid source tool state",
+      "manifest": {
+        "manifestId": "manifest.invalid.tool-state",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "projectType": "game",
+        "sourceToolStates": [
+          {
+            "toolStateId": "tool-state.palette.alpha",
+            "version": 1
+          }
+        ],
+        "sourceAssets": [],
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_SOURCE_TOOL_STATE_INVALID"]
+    },
+    {
+      "name": "invalid source asset",
+      "manifest": {
+        "manifestId": "manifest.invalid.asset",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "projectType": "game",
+        "sourceToolStates": [],
+        "sourceAssets": [
+          {
+            "assetId": "asset.shader.hero",
+            "assetType": "shader",
+            "version": 1
+          }
+        ],
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_SOURCE_ASSET_INVALID"]
+    },
+    {
+      "name": "invalid export format",
+      "manifest": {
+        "manifestId": "manifest.invalid.export",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "projectType": "game",
+        "sourceToolStates": [],
+        "sourceAssets": [],
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "database-row"
+      },
+      "expectedErrors": ["GAME_MANIFEST_EXPORT_FORMAT_INVALID"]
+    }
+  ]
+}
