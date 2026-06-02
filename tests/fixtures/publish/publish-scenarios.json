@@ -1,0 +1,239 @@
+{
+  "validPublishes": [
+    {
+      "name": "published public publish record",
+      "publish": {
+        "publishId": "publish.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Public web publish record."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "ready project publish record",
+      "publish": {
+        "publishId": "publish.game.alpha.ready",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "project",
+        "status": "ready",
+        "publishNotes": "Ready for publish validation."
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidPublishes": [
+    {
+      "name": "missing owner",
+      "publish": {
+        "publishId": "publish.missing.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Missing owner fixture."
+      },
+      "expectedErrors": ["PUBLISH_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "publish": {
+        "publishId": "publish.missing.project",
+        "ownerId": "user.owner",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Missing project fixture."
+      },
+      "expectedErrors": ["PUBLISH_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing source release",
+      "publish": {
+        "publishId": "publish.missing.release",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Missing source release fixture."
+      },
+      "expectedErrors": ["PUBLISH_SOURCE_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "invalid source release",
+      "publish": {
+        "publishId": "publish.invalid.release",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 0,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Invalid source release fixture."
+      },
+      "expectedErrors": ["PUBLISH_SOURCE_RELEASE_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "publish": {
+        "publishId": "publish.invalid.visibility",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Invalid visibility fixture."
+      },
+      "expectedErrors": ["PUBLISH_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid status",
+      "publish": {
+        "publishId": "publish.invalid.status",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "approved",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Invalid status fixture."
+      },
+      "expectedErrors": ["PUBLISH_STATUS_INVALID"]
+    },
+    {
+      "name": "published without timestamp",
+      "publish": {
+        "publishId": "publish.missing.timestamp",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishNotes": "Missing timestamp fixture."
+      },
+      "expectedErrors": ["PUBLISH_PUBLISHED_AT_REQUIRED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "publish": {
+        "publishId": "publish.runtime.leak",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Runtime state leak fixture.",
+        "workspaceState": {
+          "activeToolId": "publish-studio"
+        }
+      },
+      "expectedErrors": ["PUBLISH_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth state leakage",
+      "publish": {
+        "publishId": "publish.auth.leak",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Auth state leak fixture.",
+        "authState": {
+          "token": "not-portable"
+        }
+      },
+      "expectedErrors": ["PUBLISH_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "marketplace moderation state leakage",
+      "publish": {
+        "publishId": "publish.marketplace.leak",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Marketplace moderation state leak fixture.",
+        "marketplaceModerationState": "approved"
+      },
+      "expectedErrors": ["PUBLISH_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "publish": {
+        "publishId": "publish.tool-state.leak",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published",
+          "toolStateId": "tool-state.publish.leak"
+        },
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": "2026-06-02T15:00:00.000Z",
+        "publishNotes": "Tool state leak fixture."
+      },
+      "expectedErrors": ["PUBLISH_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
