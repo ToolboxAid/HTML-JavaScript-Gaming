@@ -1,0 +1,267 @@
+{
+  "validProjects": [
+    {
+      "name": "private draft project",
+      "project": {
+        "id": "project.private.draft",
+        "ownerId": "user.owner",
+        "state": "draft",
+        "visibility": "private",
+        "members": [
+          {
+            "userId": "user.collaborator",
+            "role": "collaborator"
+          },
+          {
+            "userId": "user.viewer",
+            "role": "viewer"
+          }
+        ],
+        "relationships": ["tool-states", "assets", "palettes", "game-manifest"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "published public project",
+      "project": {
+        "id": "project.public.published",
+        "ownerId": "user.owner",
+        "state": "published",
+        "visibility": "public",
+        "members": [
+          {
+            "userId": "user.viewer",
+            "role": "viewer"
+          }
+        ],
+        "relationships": ["tool-states", "assets", "palettes", "game-manifest", "releases"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "marketplace project",
+      "project": {
+        "id": "project.marketplace",
+        "ownerId": "user.owner",
+        "state": "marketplace",
+        "visibility": "public",
+        "members": [],
+        "relationships": ["tool-states", "assets", "palettes", "game-manifest", "releases", "marketplace-items"]
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidProjects": [
+    {
+      "name": "missing owner",
+      "project": {
+        "id": "project.missing.owner",
+        "state": "draft",
+        "visibility": "private"
+      },
+      "expectedErrors": ["PROJECT_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing visibility",
+      "project": {
+        "id": "project.missing.visibility",
+        "ownerId": "user.owner",
+        "state": "active"
+      },
+      "expectedErrors": ["PROJECT_VISIBILITY_REQUIRED"]
+    },
+    {
+      "name": "invalid state",
+      "project": {
+        "id": "project.invalid.state",
+        "ownerId": "user.owner",
+        "state": "deleted",
+        "visibility": "private"
+      },
+      "expectedErrors": ["PROJECT_STATE_INVALID"]
+    },
+    {
+      "name": "invalid member role",
+      "project": {
+        "id": "project.invalid.role",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project",
+        "members": [
+          {
+            "userId": "user.editor",
+            "role": "editor"
+          }
+        ]
+      },
+      "expectedErrors": ["PROJECT_ROLE_INVALID"]
+    },
+    {
+      "name": "invalid relationship",
+      "project": {
+        "id": "project.invalid.relationship",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project",
+        "relationships": ["tool-states", "database-table"]
+      },
+      "expectedErrors": ["PROJECT_RELATIONSHIP_INVALID"]
+    }
+  ],
+  "accessChecks": [
+    {
+      "name": "private project owner can view",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "view",
+      "project": {
+        "id": "project.private.draft",
+        "ownerId": "user.owner",
+        "state": "draft",
+        "visibility": "private"
+      },
+      "expected": true
+    },
+    {
+      "name": "private project ungranted user cannot view",
+      "actorId": "user.other",
+      "projectRole": "viewer",
+      "permission": "view",
+      "project": {
+        "id": "project.private.draft",
+        "ownerId": "user.owner",
+        "state": "draft",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "private project granted viewer can view",
+      "actorId": "user.viewer",
+      "projectRole": "viewer",
+      "permission": "view",
+      "grantedProjectIds": ["project.private.draft"],
+      "project": {
+        "id": "project.private.draft",
+        "ownerId": "user.owner",
+        "state": "draft",
+        "visibility": "private"
+      },
+      "expected": true
+    },
+    {
+      "name": "collaborator can edit granted project scope",
+      "actorId": "user.collaborator",
+      "projectRole": "collaborator",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": true
+    },
+    {
+      "name": "collaborator cannot edit without granted project scope",
+      "actorId": "user.collaborator",
+      "projectRole": "collaborator",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": [],
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": false
+    },
+    {
+      "name": "viewer can view public project",
+      "actorId": "user.viewer",
+      "projectRole": "viewer",
+      "permission": "view",
+      "project": {
+        "id": "project.public",
+        "ownerId": "user.owner",
+        "state": "published",
+        "visibility": "public"
+      },
+      "expected": true
+    },
+    {
+      "name": "viewer cannot edit public project",
+      "actorId": "user.viewer",
+      "projectRole": "viewer",
+      "permission": "edit",
+      "project": {
+        "id": "project.public",
+        "ownerId": "user.owner",
+        "state": "published",
+        "visibility": "public"
+      },
+      "expected": false
+    },
+    {
+      "name": "archived project cannot be edited by default",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "project": {
+        "id": "project.archived",
+        "ownerId": "user.owner",
+        "state": "archived",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "archived project can be edited when policy allows",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "policy": {
+        "allowArchivedProjectEdit": true
+      },
+      "project": {
+        "id": "project.archived",
+        "ownerId": "user.owner",
+        "state": "archived",
+        "visibility": "private"
+      },
+      "expected": true
+    },
+    {
+      "name": "retired project cannot be edited by default",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "project": {
+        "id": "project.retired",
+        "ownerId": "user.owner",
+        "state": "retired",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "retired project can be edited when policy allows",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "policy": {
+        "allowRetiredProjectEdit": true
+      },
+      "project": {
+        "id": "project.retired",
+        "ownerId": "user.owner",
+        "state": "retired",
+        "visibility": "private"
+      },
+      "expected": true
+    }
+  ]
+}
