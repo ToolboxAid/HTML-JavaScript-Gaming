@@ -1,0 +1,555 @@
+{
+  "validEntitlements": [
+    {
+      "name": "owned marketplace entitlement",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "entitlementNotes": "Owned entitlement for marketplace access."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "licensed marketplace entitlement",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.license.1",
+        "ownerId": "user.licensee",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "licensed",
+        "grantedAt": "2026-06-02T17:05:00.000Z"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "granted marketplace entitlement",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.grant.1",
+        "ownerId": "user.grantee",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "granted",
+        "grantedAt": "2026-06-02T17:10:00.000Z"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "revoked marketplace entitlement",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.revoked.1",
+        "ownerId": "user.revoked",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.retired",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.retired",
+          "publishId": "publish.game.alpha.retired",
+          "status": "retired"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.retired",
+          "version": 1,
+          "status": "retired"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.retired",
+          "releaseId": "release.game.alpha.retired",
+          "status": "retired"
+        },
+        "entitlementType": "revoked",
+        "grantedAt": "2026-06-02T17:15:00.000Z",
+        "revokedAt": "2026-06-02T17:45:00.000Z"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidEntitlements": [
+    {
+      "name": "missing owner",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing marketplace listing",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_MARKETPLACE_LISTING_REQUIRED"]
+    },
+    {
+      "name": "missing source release",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_SOURCE_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "missing source publish",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_SOURCE_PUBLISH_REQUIRED"]
+    },
+    {
+      "name": "invalid entitlement type",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "trial",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_TYPE_INVALID"]
+    },
+    {
+      "name": "marketplace listing project mismatch",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.other",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_MARKETPLACE_LISTING_PROJECT_MISMATCH"]
+    },
+    {
+      "name": "marketplace listing release mismatch",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.other.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_MARKETPLACE_LISTING_RELEASE_MISMATCH"]
+    },
+    {
+      "name": "marketplace listing publish mismatch",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.other.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_MARKETPLACE_LISTING_PUBLISH_MISMATCH"]
+    },
+    {
+      "name": "release publish mismatch",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.other.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["ENTITLEMENT_RELEASE_PUBLISH_MISMATCH"]
+    },
+    {
+      "name": "revoked without timestamp",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.revoked.1",
+        "ownerId": "user.revoked",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.retired",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.retired",
+          "publishId": "publish.game.alpha.retired",
+          "status": "retired"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.retired",
+          "version": 1,
+          "status": "retired"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.retired",
+          "releaseId": "release.game.alpha.retired",
+          "status": "retired"
+        },
+        "entitlementType": "revoked"
+      },
+      "expectedErrors": ["ENTITLEMENT_REVOKED_AT_REQUIRED"]
+    },
+    {
+      "name": "payment state leakage",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "paymentState": {}
+      },
+      "expectedErrors": ["ENTITLEMENT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth session state leakage",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "authSessionState": {}
+      },
+      "expectedErrors": ["ENTITLEMENT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "workspaceState": {}
+      },
+      "expectedErrors": ["ENTITLEMENT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "toolState": {}
+      },
+      "expectedErrors": ["ENTITLEMENT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "download state leakage",
+      "entitlement": {
+        "entitlementId": "entitlement.alpha.owner.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "entitlementType": "owned",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "downloadState": {}
+      },
+      "expectedErrors": ["ENTITLEMENT_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
