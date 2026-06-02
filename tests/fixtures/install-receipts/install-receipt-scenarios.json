@@ -1,0 +1,1105 @@
+{
+  "validInstallReceipts": [
+    {
+      "name": "installed install receipt",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z",
+        "receiptNotes": "Install completed."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "removed install receipt",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.removed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "removed",
+        "removedAt": "2026-06-02T21:00:00.000Z"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "failed install receipt",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.failed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "failed",
+        "failedAt": "2026-06-02T20:15:00.000Z"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "superseded install receipt",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.superseded.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.archived.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.retired",
+          "releaseId": "release.game.alpha.retired",
+          "publishId": "publish.game.alpha.retired",
+          "libraryStatus": "archived"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.retired",
+          "releaseId": "release.game.alpha.retired",
+          "publishId": "publish.game.alpha.retired",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.retired",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.retired",
+          "publishId": "publish.game.alpha.retired",
+          "status": "retired"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.retired",
+          "version": 1,
+          "status": "retired"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.retired",
+          "releaseId": "release.game.alpha.retired",
+          "status": "retired"
+        },
+        "receiptStatus": "superseded",
+        "supersededAt": "2026-06-02T21:30:00.000Z"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidInstallReceipts": [
+    {
+      "name": "missing owner",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing library item",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_LIBRARY_ITEM_REQUIRED"]
+    },
+    {
+      "name": "missing entitlement",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_ENTITLEMENT_REQUIRED"]
+    },
+    {
+      "name": "missing marketplace listing",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_MARKETPLACE_LISTING_REQUIRED"]
+    },
+    {
+      "name": "missing source release",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_SOURCE_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "missing source publish",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_SOURCE_PUBLISH_REQUIRED"]
+    },
+    {
+      "name": "invalid receipt status",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "queued",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_STATUS_INVALID"]
+    },
+    {
+      "name": "installed without installed timestamp",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_INSTALLED_AT_REQUIRED"]
+    },
+    {
+      "name": "owner library item mismatch",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.other",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_OWNER_LIBRARY_ITEM_MISMATCH"]
+    },
+    {
+      "name": "library item entitlement mismatch",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.other.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_LIBRARY_ITEM_ENTITLEMENT_MISMATCH"]
+    },
+    {
+      "name": "library item listing mismatch",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.other.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_LIBRARY_ITEM_LISTING_MISMATCH"]
+    },
+    {
+      "name": "listing release mismatch",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.other.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_LISTING_RELEASE_MISMATCH"]
+    },
+    {
+      "name": "release publish mismatch",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.other.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_RELEASE_PUBLISH_MISMATCH"]
+    },
+    {
+      "name": "payment state leakage",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z",
+        "paymentState": {}
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth session state leakage",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z",
+        "authSessionState": {}
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z",
+        "workspaceState": {}
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z",
+        "toolState": {}
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "file bytes leakage",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z",
+        "fileBytes": "AAAA"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "cdn details leakage",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z",
+        "cdnUrl": "https://cdn.example.invalid/file.zip"
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "installer implementation leakage",
+      "installReceipt": {
+        "installReceiptId": "install-receipt.alpha.installed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "entitlementId": "entitlement.alpha.owner.1",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "libraryStatus": "available"
+        },
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "receiptStatus": "installed",
+        "installedAt": "2026-06-02T20:00:00.000Z",
+        "installerState": {}
+      },
+      "expectedErrors": ["INSTALL_RECEIPT_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
