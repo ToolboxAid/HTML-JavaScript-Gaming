@@ -6,7 +6,7 @@ AssetStudioToolContract.test.mjs
 */
 import {
   ASSET_STUDIO_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/assetStudioToolContract.js";
+} from "../../../src/shared/contracts/tools/assetStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

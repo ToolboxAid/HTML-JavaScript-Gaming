@@ -6,7 +6,7 @@ AnimationStudioToolContract.test.mjs
 */
 import {
   ANIMATION_STUDIO_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/animationStudioToolContract.js";
+} from "../../../src/shared/contracts/tools/animationStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

@@ -6,7 +6,7 @@ ThreeDAssetViewerToolContract.test.mjs
 */
 import {
   THREE_D_ASSET_VIEWER_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/threeDAssetViewerToolContract.js";
+} from "../../../src/shared/contracts/tools/threeDAssetViewerContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

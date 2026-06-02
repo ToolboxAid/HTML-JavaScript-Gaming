@@ -6,7 +6,7 @@ GameBuilderToolContract.test.mjs
 */
 import {
   GAME_BUILDER_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/gameBuilderToolContract.js";
+} from "../../../src/shared/contracts/tools/gameBuilderContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

@@ -6,7 +6,7 @@ SoundStudioToolContract.test.mjs
 */
 import {
   SOUND_STUDIO_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/soundStudioToolContract.js";
+} from "../../../src/shared/contracts/tools/soundStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

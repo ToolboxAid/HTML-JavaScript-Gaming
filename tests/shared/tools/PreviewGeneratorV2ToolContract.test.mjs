@@ -6,7 +6,7 @@ PreviewGeneratorV2ToolContract.test.mjs
 */
 import {
   PREVIEW_GENERATOR_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/previewGeneratorV2ToolContract.js";
+} from "../../../src/shared/contracts/tools/previewGeneratorV2Contract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

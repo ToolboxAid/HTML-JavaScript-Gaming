@@ -6,7 +6,7 @@ ParticleStudioToolContract.test.mjs
 */
 import {
   PARTICLE_STUDIO_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/particleStudioToolContract.js";
+} from "../../../src/shared/contracts/tools/particleStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

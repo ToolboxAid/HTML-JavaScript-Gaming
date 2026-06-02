@@ -6,7 +6,7 @@ AiAssistantToolContract.test.mjs
 */
 import {
   AI_ASSISTANT_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/aiAssistantToolContract.js";
+} from "../../../src/shared/contracts/tools/aiAssistantContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

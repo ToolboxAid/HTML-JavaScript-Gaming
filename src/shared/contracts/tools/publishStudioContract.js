@@ -1,0 +1,22 @@
+/*
+Toolbox Aid
+David Quesenberry
+06/02/2026
+publishStudioContract.js
+*/
+import {
+  TOOL_CONTRACT_FORMATS,
+  TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
+  TOOL_CONTRACT_TYPES,
+  createDraftToolContract,
+} from "../toolContract.js";
+
+export const PUBLISH_STUDIO_TOOL_CONTRACT = createDraftToolContract({
+  toolId: "publish-studio",
+  toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  requiredInputs: [TOOL_CONTRACT_FORMATS.GAME_MANIFEST, TOOL_CONTRACT_FORMATS.METADATA_JSON],
+  producedOutputs: [TOOL_CONTRACT_FORMATS.PUBLISH_PACKAGE],
+  supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.ALL,
+  importFormats: [TOOL_CONTRACT_FORMATS.GAME_MANIFEST, TOOL_CONTRACT_FORMATS.METADATA_JSON],
+  exportFormats: [TOOL_CONTRACT_FORMATS.PUBLISH_PACKAGE, TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE],
+});

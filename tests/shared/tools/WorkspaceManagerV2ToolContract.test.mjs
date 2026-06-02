@@ -6,7 +6,7 @@ WorkspaceManagerV2ToolContract.test.mjs
 */
 import {
   WORKSPACE_MANAGER_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/workspaceManagerV2ToolContract.js";
+} from "../../../src/shared/contracts/tools/workspaceManagerV2Contract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

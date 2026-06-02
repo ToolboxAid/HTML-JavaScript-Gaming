@@ -6,7 +6,7 @@ ParallaxEditorToolContract.test.mjs
 */
 import {
   PARALLAX_EDITOR_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/parallaxEditorToolContract.js";
+} from "../../../src/shared/contracts/tools/parallaxEditorContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

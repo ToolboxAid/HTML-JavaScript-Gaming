@@ -53,7 +53,7 @@ import {
   toolStateLinksToToolContract,
   validatePortableToolContractExport,
   validateToolContract,
-} from "../../../src/shared/contracts/toolContractPrimitives.js";
+} from "../../../src/shared/contracts/toolContract.js";
 import {
   TOOL_CONTRACT_LIST,
   TOOL_INDEX_ROOT_CARD_COVERAGE,

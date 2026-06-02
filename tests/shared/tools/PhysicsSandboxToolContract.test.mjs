@@ -6,7 +6,7 @@ PhysicsSandboxToolContract.test.mjs
 */
 import {
   PHYSICS_SANDBOX_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/physicsSandboxToolContract.js";
+} from "../../../src/shared/contracts/tools/physicsSandboxContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

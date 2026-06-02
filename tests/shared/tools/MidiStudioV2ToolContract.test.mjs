@@ -6,7 +6,7 @@ MidiStudioV2ToolContract.test.mjs
 */
 import {
   MIDI_STUDIO_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/midiStudioV2ToolContract.js";
+} from "../../../src/shared/contracts/tools/midiStudioV2Contract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

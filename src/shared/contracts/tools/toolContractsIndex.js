@@ -6,109 +6,109 @@ toolContractsIndex.js
 */
 import {
   createRootCardCoverage,
-} from "../toolContractPrimitives.js";
+} from "../toolContract.js";
 import {
   WORLD_VECTOR_STUDIO_V2_TOOL_CONTRACT,
-} from "./worldVectorStudioV2ToolContract.js";
+} from "./worldVectorStudioV2Contract.js";
 import {
   OBJECT_VECTOR_STUDIO_V2_TOOL_CONTRACT,
-} from "./objectVectorStudioV2ToolContract.js";
+} from "./objectVectorStudioV2Contract.js";
 import {
   TILE_MAP_EDITOR_TOOL_CONTRACT,
-} from "./tileMapEditorToolContract.js";
+} from "./tileMapEditorContract.js";
 import {
   PARALLAX_EDITOR_TOOL_CONTRACT,
-} from "./parallaxEditorToolContract.js";
+} from "./parallaxEditorContract.js";
 import {
   SPRITE_EDITOR_TOOL_CONTRACT,
-} from "./spriteEditorToolContract.js";
+} from "./spriteEditorContract.js";
 import {
   ASSET_MANAGER_V2_TOOL_CONTRACT,
-} from "./assetManagerV2ToolContract.js";
+} from "./assetManagerV2Contract.js";
 import {
   WORKSPACE_MANAGER_V2_TOOL_CONTRACT,
-} from "./workspaceManagerV2ToolContract.js";
+} from "./workspaceManagerV2Contract.js";
 import {
   PALETTE_MANAGER_V2_TOOL_CONTRACT,
-} from "./paletteManagerV2ToolContract.js";
+} from "./paletteManagerV2Contract.js";
 import {
   PREVIEW_GENERATOR_V2_TOOL_CONTRACT,
-} from "./previewGeneratorV2ToolContract.js";
+} from "./previewGeneratorV2Contract.js";
 import {
   TEXT2SPEECH_V2_TOOL_CONTRACT,
-} from "./text2speechV2ToolContract.js";
+} from "./text2speechV2Contract.js";
 import {
   AUDIO_SFX_PLAYGROUND_V2_TOOL_CONTRACT,
-} from "./audioSfxPlaygroundV2ToolContract.js";
+} from "./audioSfxPlaygroundV2Contract.js";
 import {
   MIDI_STUDIO_V2_TOOL_CONTRACT,
-} from "./midiStudioV2ToolContract.js";
+} from "./midiStudioV2Contract.js";
 import {
   COLLISION_INSPECTOR_V2_TOOL_CONTRACT,
-} from "./collisionInspectorV2ToolContract.js";
+} from "./collisionInspectorV2Contract.js";
 import {
   STORAGE_INSPECTOR_V2_TOOL_CONTRACT,
-} from "./storageInspectorV2ToolContract.js";
+} from "./storageInspectorV2Contract.js";
 import {
   INPUT_MAPPING_V2_TOOL_CONTRACT,
-} from "./inputMappingV2ToolContract.js";
+} from "./inputMappingV2Contract.js";
 import {
   STATE_INSPECTOR_TOOL_CONTRACT,
-} from "./stateInspectorToolContract.js";
+} from "./stateInspectorContract.js";
 import {
   REPLAY_VISUALIZER_TOOL_CONTRACT,
-} from "./replayVisualizerToolContract.js";
+} from "./replayVisualizerContract.js";
 import {
   PERFORMANCE_PROFILER_TOOL_CONTRACT,
-} from "./performanceProfilerToolContract.js";
+} from "./performanceProfilerContract.js";
 import {
   PHYSICS_SANDBOX_TOOL_CONTRACT,
-} from "./physicsSandboxToolContract.js";
+} from "./physicsSandboxContract.js";
 import {
   ASSET_PIPELINE_TOOL_CONTRACT,
-} from "./assetPipelineToolContract.js";
+} from "./assetPipelineContract.js";
 import {
   THREE_D_JSON_PAYLOAD_TOOL_CONTRACT,
-} from "./threeDJsonPayloadToolContract.js";
+} from "./threeDJsonPayloadContract.js";
 import {
   THREE_D_ASSET_VIEWER_TOOL_CONTRACT,
-} from "./threeDAssetViewerToolContract.js";
+} from "./threeDAssetViewerContract.js";
 import {
   THREE_D_CAMERA_PATH_EDITOR_TOOL_CONTRACT,
-} from "./threeDCameraPathEditorToolContract.js";
+} from "./threeDCameraPathEditorContract.js";
 import {
   ASSET_STUDIO_TOOL_CONTRACT,
-} from "./assetStudioToolContract.js";
+} from "./assetStudioContract.js";
 import {
   GAME_BUILDER_TOOL_CONTRACT,
-} from "./gameBuilderToolContract.js";
+} from "./gameBuilderContract.js";
 import {
   GAME_DESIGN_STUDIO_TOOL_CONTRACT,
-} from "./gameDesignStudioToolContract.js";
+} from "./gameDesignStudioContract.js";
 import {
   PUBLISH_STUDIO_TOOL_CONTRACT,
-} from "./publishStudioToolContract.js";
+} from "./publishStudioContract.js";
 import {
   ANIMATION_STUDIO_TOOL_CONTRACT,
-} from "./animationStudioToolContract.js";
+} from "./animationStudioContract.js";
 import {
   PARTICLE_STUDIO_TOOL_CONTRACT,
-} from "./particleStudioToolContract.js";
+} from "./particleStudioContract.js";
 import {
   SOUND_STUDIO_TOOL_CONTRACT,
-} from "./soundStudioToolContract.js";
+} from "./soundStudioContract.js";
 import {
   AI_ASSISTANT_TOOL_CONTRACT,
-} from "./aiAssistantToolContract.js";
+} from "./aiAssistantContract.js";
 import {
   CODE_STUDIO_TOOL_CONTRACT,
-} from "./codeStudioToolContract.js";
+} from "./codeStudioContract.js";
 import {
   INPUT_STUDIO_TOOL_CONTRACT,
-} from "./inputStudioToolContract.js";
+} from "./inputStudioContract.js";
 import {
   LOCALIZATION_STUDIO_TOOL_CONTRACT,
-} from "./localizationStudioToolContract.js";
+} from "./localizationStudioContract.js";
 
 export {
   AI_ASSISTANT_TOOL_CONTRACT,

@@ -6,7 +6,7 @@ ReplayVisualizerToolContract.test.mjs
 */
 import {
   REPLAY_VISUALIZER_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/replayVisualizerToolContract.js";
+} from "../../../src/shared/contracts/tools/replayVisualizerContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

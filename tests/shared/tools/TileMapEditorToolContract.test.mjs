@@ -6,7 +6,7 @@ TileMapEditorToolContract.test.mjs
 */
 import {
   TILE_MAP_EDITOR_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/tileMapEditorToolContract.js";
+} from "../../../src/shared/contracts/tools/tileMapEditorContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

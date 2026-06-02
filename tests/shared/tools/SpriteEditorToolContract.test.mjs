@@ -6,7 +6,7 @@ SpriteEditorToolContract.test.mjs
 */
 import {
   SPRITE_EDITOR_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/spriteEditorToolContract.js";
+} from "../../../src/shared/contracts/tools/spriteEditorContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

@@ -6,7 +6,7 @@ InputStudioToolContract.test.mjs
 */
 import {
   INPUT_STUDIO_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/inputStudioToolContract.js";
+} from "../../../src/shared/contracts/tools/inputStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

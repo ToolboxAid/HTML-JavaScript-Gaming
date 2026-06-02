@@ -6,7 +6,7 @@ StorageInspectorV2ToolContract.test.mjs
 */
 import {
   STORAGE_INSPECTOR_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/storageInspectorV2ToolContract.js";
+} from "../../../src/shared/contracts/tools/storageInspectorV2Contract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

@@ -6,7 +6,7 @@ ThreeDCameraPathEditorToolContract.test.mjs
 */
 import {
   THREE_D_CAMERA_PATH_EDITOR_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/threeDCameraPathEditorToolContract.js";
+} from "../../../src/shared/contracts/tools/threeDCameraPathEditorContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

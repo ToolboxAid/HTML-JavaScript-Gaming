@@ -6,7 +6,7 @@ LocalizationStudioToolContract.test.mjs
 */
 import {
   LOCALIZATION_STUDIO_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/localizationStudioToolContract.js";
+} from "../../../src/shared/contracts/tools/localizationStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

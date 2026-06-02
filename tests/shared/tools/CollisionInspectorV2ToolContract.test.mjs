@@ -6,7 +6,7 @@ CollisionInspectorV2ToolContract.test.mjs
 */
 import {
   COLLISION_INSPECTOR_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/collisionInspectorV2ToolContract.js";
+} from "../../../src/shared/contracts/tools/collisionInspectorV2Contract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

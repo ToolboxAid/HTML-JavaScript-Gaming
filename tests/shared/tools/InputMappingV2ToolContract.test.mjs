@@ -6,7 +6,7 @@ InputMappingV2ToolContract.test.mjs
 */
 import {
   INPUT_MAPPING_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/inputMappingV2ToolContract.js";
+} from "../../../src/shared/contracts/tools/inputMappingV2Contract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

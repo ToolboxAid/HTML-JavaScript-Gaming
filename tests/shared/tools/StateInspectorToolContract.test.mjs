@@ -6,7 +6,7 @@ StateInspectorToolContract.test.mjs
 */
 import {
   STATE_INSPECTOR_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/stateInspectorToolContract.js";
+} from "../../../src/shared/contracts/tools/stateInspectorContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

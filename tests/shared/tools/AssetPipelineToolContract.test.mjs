@@ -6,7 +6,7 @@ AssetPipelineToolContract.test.mjs
 */
 import {
   ASSET_PIPELINE_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/assetPipelineToolContract.js";
+} from "../../../src/shared/contracts/tools/assetPipelineContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

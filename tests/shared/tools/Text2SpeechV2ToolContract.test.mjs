@@ -6,7 +6,7 @@ Text2SpeechV2ToolContract.test.mjs
 */
 import {
   TEXT2SPEECH_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/text2speechV2ToolContract.js";
+} from "../../../src/shared/contracts/tools/text2speechV2Contract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

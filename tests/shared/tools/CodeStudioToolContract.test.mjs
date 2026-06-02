@@ -6,7 +6,7 @@ CodeStudioToolContract.test.mjs
 */
 import {
   CODE_STUDIO_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/codeStudioToolContract.js";
+} from "../../../src/shared/contracts/tools/codeStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

@@ -6,7 +6,7 @@ PublishStudioToolContract.test.mjs
 */
 import {
   PUBLISH_STUDIO_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/publishStudioToolContract.js";
+} from "../../../src/shared/contracts/tools/publishStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

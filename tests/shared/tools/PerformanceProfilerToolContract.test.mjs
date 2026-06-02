@@ -6,7 +6,7 @@ PerformanceProfilerToolContract.test.mjs
 */
 import {
   PERFORMANCE_PROFILER_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/performanceProfilerToolContract.js";
+} from "../../../src/shared/contracts/tools/performanceProfilerContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";
