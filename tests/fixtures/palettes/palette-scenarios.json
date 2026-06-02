@@ -1,0 +1,429 @@
+{
+  "validPalettes": [
+    {
+      "name": "active project palette with source tool state",
+      "palette": {
+        "paletteId": "palette.hud.primary",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.palette.hud",
+          "toolType": "palette-manager-v2",
+          "projectId": "project.active",
+          "version": 3
+        },
+        "visibility": "project",
+        "version": 2,
+        "status": "active",
+        "swatches": [
+          {
+            "symbol": "H",
+            "hex": "#3366FF",
+            "name": "HUD Blue",
+            "source": "Palette Manager V2",
+            "tags": ["ui", "hud"]
+          },
+          {
+            "symbol": "A",
+            "hex": "#F59E0B",
+            "name": "Alert Amber",
+            "source": "Palette Manager V2",
+            "tags": ["warning", "hud"]
+          }
+        ],
+        "exportFormats": ["palette-json", "project-package"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "draft private palette with empty swatches",
+      "palette": {
+        "paletteId": "palette.draft.empty",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "draft",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "archived public palette",
+      "palette": {
+        "paletteId": "palette.archive.public",
+        "ownerId": "user.owner",
+        "projectId": "project.public",
+        "sourceToolState": {
+          "toolStateId": "tool-state.palette.archive",
+          "toolType": "palette-manager-v2",
+          "projectId": "project.public",
+          "version": 5
+        },
+        "visibility": "public",
+        "version": 4,
+        "status": "archived",
+        "swatches": [
+          {
+            "hex": "#112233FF",
+            "name": "Archive Navy"
+          }
+        ],
+        "exportFormats": ["palette-json", "project-package"]
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidPalettes": [
+    {
+      "name": "missing owner",
+      "palette": {
+        "paletteId": "palette.missing.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "palette": {
+        "paletteId": "palette.missing.project",
+        "ownerId": "user.owner",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing swatches",
+      "palette": {
+        "paletteId": "palette.missing.swatches",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_SWATCHES_REQUIRED"]
+    },
+    {
+      "name": "invalid swatches container",
+      "palette": {
+        "paletteId": "palette.invalid.swatches.container",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": {
+          "hex": "#ffffff"
+        },
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_SWATCHES_REQUIRED"]
+    },
+    {
+      "name": "invalid swatch hex",
+      "palette": {
+        "paletteId": "palette.invalid.hex",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [
+          {
+            "hex": "3366ff",
+            "name": "Missing Hash"
+          }
+        ],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_SWATCH_INVALID"]
+    },
+    {
+      "name": "invalid swatch name",
+      "palette": {
+        "paletteId": "palette.invalid.name",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [
+          {
+            "hex": "#3366FF",
+            "name": ""
+          }
+        ],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_SWATCH_INVALID"]
+    },
+    {
+      "name": "invalid source tool state",
+      "palette": {
+        "paletteId": "palette.invalid.source",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.palette.invalid",
+          "projectId": "project.active",
+          "version": 1
+        },
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_SOURCE_TOOL_STATE_INVALID"]
+    },
+    {
+      "name": "source tool state project mismatch",
+      "palette": {
+        "paletteId": "palette.source.mismatch",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.palette.other",
+          "toolType": "palette-manager-v2",
+          "projectId": "project.other",
+          "version": 1
+        },
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_SOURCE_TOOL_STATE_PROJECT_MISMATCH"]
+    },
+    {
+      "name": "invalid visibility",
+      "palette": {
+        "paletteId": "palette.invalid.visibility",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "team",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid version",
+      "palette": {
+        "paletteId": "palette.invalid.version",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 0,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "expectedErrors": ["PALETTE_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid export format",
+      "palette": {
+        "paletteId": "palette.invalid.export",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json", "css"]
+      },
+      "expectedErrors": ["PALETTE_EXPORT_FORMAT_INVALID"]
+    }
+  ],
+  "accessChecks": [
+    {
+      "name": "private palette owner can view",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "view",
+      "palette": {
+        "paletteId": "palette.private",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    },
+    {
+      "name": "private palette ungranted user cannot view",
+      "actorId": "user.other",
+      "projectRole": "viewer",
+      "permission": "view",
+      "palette": {
+        "paletteId": "palette.private",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "project palette granted collaborator can edit",
+      "actorId": "user.collaborator",
+      "projectRole": "collaborator",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "palette": {
+        "paletteId": "palette.project",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": true
+    },
+    {
+      "name": "viewer cannot edit palette",
+      "actorId": "user.viewer",
+      "projectRole": "viewer",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "palette": {
+        "paletteId": "palette.project",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": false
+    },
+    {
+      "name": "marketplace palette is visible",
+      "actorId": "market.viewer",
+      "projectRole": "viewer",
+      "permission": "view",
+      "palette": {
+        "paletteId": "palette.marketplace",
+        "ownerId": "user.owner",
+        "projectId": "project.marketplace",
+        "visibility": "marketplace",
+        "version": 1,
+        "status": "active",
+        "swatches": [
+          {
+            "hex": "#22C55E",
+            "name": "Success Green"
+          }
+        ],
+        "exportFormats": ["palette-json", "project-package"]
+      },
+      "project": {
+        "id": "project.marketplace",
+        "ownerId": "user.owner",
+        "state": "marketplace",
+        "visibility": "public"
+      },
+      "expected": true
+    },
+    {
+      "name": "archived palette cannot be edited by default",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "palette": {
+        "paletteId": "palette.archived",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 2,
+        "status": "archived",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "archived palette can be edited when policy allows",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "policy": {
+        "allowArchivedPaletteEdit": true
+      },
+      "palette": {
+        "paletteId": "palette.archived",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 2,
+        "status": "archived",
+        "swatches": [],
+        "exportFormats": ["palette-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    }
+  ]
+}
