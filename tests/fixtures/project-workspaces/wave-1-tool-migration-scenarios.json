@@ -1,0 +1,552 @@
+{
+  "wave": "wave-1",
+  "samplesDecision": "SKIP / pending rebuild",
+  "wave2Decision": "SKIP / out of scope",
+  "tools": [
+    {
+      "toolId": "state-inspector",
+      "displayName": "State Inspector",
+      "toolType": "inspector",
+      "requiredInputs": ["tool-state", "json"],
+      "producedOutputs": ["metadata-json"],
+      "payloadRequiredField": "inspectionTarget"
+    },
+    {
+      "toolId": "replay-visualizer",
+      "displayName": "Replay Visualizer",
+      "toolType": "viewer",
+      "requiredInputs": ["replay-events"],
+      "producedOutputs": ["metadata-json"],
+      "payloadRequiredField": "events"
+    },
+    {
+      "toolId": "performance-profiler",
+      "displayName": "Performance Profiler",
+      "toolType": "inspector",
+      "requiredInputs": ["json"],
+      "producedOutputs": ["metadata-json"],
+      "payloadRequiredField": "metrics"
+    },
+    {
+      "toolId": "physics-sandbox",
+      "displayName": "Physics Sandbox",
+      "toolType": "utility",
+      "requiredInputs": ["physics-config"],
+      "producedOutputs": ["physics-config"],
+      "payloadRequiredField": "config"
+    },
+    {
+      "toolId": "3d-json-payload",
+      "displayName": "3D JSON Payload",
+      "toolType": "utility",
+      "requiredInputs": ["3d-json"],
+      "producedOutputs": ["3d-json"],
+      "payloadRequiredField": "document"
+    },
+    {
+      "toolId": "3d-asset-viewer",
+      "displayName": "3D Asset Viewer",
+      "toolType": "viewer",
+      "requiredInputs": ["3d-json", "metadata-json"],
+      "producedOutputs": ["metadata-json"],
+      "payloadRequiredField": "assetRef"
+    }
+  ],
+  "validLaunches": [
+    {
+      "name": "state-inspector launch uses explicit ProjectWorkspace inputs",
+      "toolId": "state-inspector",
+      "launch": {
+        "selectedToolId": "state-inspector",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "state-inspector",
+          "activeToolStateId": "tool-state.wave1.state-inspector",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave1",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave1.state-inspector",
+          "projectId": "project.wave1",
+          "toolType": "state-inspector",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "replay-visualizer launch uses explicit ProjectWorkspace inputs",
+      "toolId": "replay-visualizer",
+      "launch": {
+        "selectedToolId": "replay-visualizer",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "replay-visualizer",
+          "activeToolStateId": "tool-state.wave1.replay-visualizer",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave1",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave1.replay-visualizer",
+          "projectId": "project.wave1",
+          "toolType": "replay-visualizer",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "performance-profiler launch uses explicit ProjectWorkspace inputs",
+      "toolId": "performance-profiler",
+      "launch": {
+        "selectedToolId": "performance-profiler",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "performance-profiler",
+          "activeToolStateId": "tool-state.wave1.performance-profiler",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave1",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave1.performance-profiler",
+          "projectId": "project.wave1",
+          "toolType": "performance-profiler",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "physics-sandbox launch uses explicit ProjectWorkspace inputs",
+      "toolId": "physics-sandbox",
+      "launch": {
+        "selectedToolId": "physics-sandbox",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "physics-sandbox",
+          "activeToolStateId": "tool-state.wave1.physics-sandbox",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave1",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave1.physics-sandbox",
+          "projectId": "project.wave1",
+          "toolType": "physics-sandbox",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "3d-json-payload launch uses explicit ProjectWorkspace inputs",
+      "toolId": "3d-json-payload",
+      "launch": {
+        "selectedToolId": "3d-json-payload",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "3d-json-payload",
+          "activeToolStateId": "tool-state.wave1.3d-json-payload",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave1",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave1.3d-json-payload",
+          "projectId": "project.wave1",
+          "toolType": "3d-json-payload",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "3d-asset-viewer launch uses explicit ProjectWorkspace inputs",
+      "toolId": "3d-asset-viewer",
+      "launch": {
+        "selectedToolId": "3d-asset-viewer",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "3d-asset-viewer",
+          "activeToolStateId": "tool-state.wave1.3d-asset-viewer",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave1",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave1.3d-asset-viewer",
+          "projectId": "project.wave1",
+          "toolType": "3d-asset-viewer",
+          "version": 1
+        }
+      }
+    }
+  ],
+  "invalidLaunches": [
+    {
+      "name": "Wave 1 launch without manifest rejects visibly",
+      "launch": {
+        "selectedToolId": "state-inspector",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "state-inspector",
+          "activeToolStateId": "tool-state.wave1.state-inspector",
+          "flowState": "opening"
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave1.state-inspector",
+          "projectId": "project.wave1",
+          "toolType": "state-inspector",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": ["PROJECTWORKSPACE_LAUNCH_MANIFEST_INPUT_REQUIRED"]
+    },
+    {
+      "name": "Wave 1 launch fallback rejects visibly",
+      "launch": {
+        "selectedToolId": "3d-json-payload",
+        "fallbackData": {
+          "source": "silent-default"
+        },
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "3d-json-payload",
+          "activeToolStateId": "tool-state.wave1.3d-json-payload",
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave1",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave1.3d-json-payload",
+          "projectId": "project.wave1",
+          "toolType": "3d-json-payload",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": ["PROJECTWORKSPACE_LAUNCH_FORBIDDEN_FIELD"]
+    }
+  ],
+  "manifestHandoffs": [
+    {
+      "name": "state-inspector manifest handoff uses declared fields only",
+      "toolId": "state-inspector",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "state-inspector",
+          "activeToolStateId": "tool-state.wave1.state-inspector",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.wave1",
+          "ownerId": "user.owner",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "sourceToolStates": [
+            {
+              "toolStateId": "tool-state.wave1.state-inspector",
+              "toolType": "state-inspector",
+              "version": 1
+            }
+          ],
+          "sourceAssets": [],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": ["manifestId", "projectId", "projectType", "sourceToolStates", "sourceAssets", "visibility", "version", "status", "exportFormat"],
+        "downstreamUseFields": ["manifestId", "projectId", "sourceToolStates"]
+      }
+    },
+    {
+      "name": "3d-asset-viewer manifest handoff uses declared fields only",
+      "toolId": "3d-asset-viewer",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "3d-asset-viewer",
+          "activeToolStateId": "tool-state.wave1.3d-asset-viewer",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.wave1",
+          "ownerId": "user.owner",
+          "projectId": "project.wave1",
+          "projectType": "game",
+          "sourceToolStates": [
+            {
+              "toolStateId": "tool-state.wave1.3d-asset-viewer",
+              "toolType": "3d-asset-viewer",
+              "version": 1
+            }
+          ],
+          "sourceAssets": [
+            {
+              "assetId": "asset.wave1.asteroid",
+              "assetType": "image",
+              "version": 1
+            }
+          ],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": ["manifestId", "projectId", "projectType", "sourceToolStates", "sourceAssets", "visibility", "version", "status", "exportFormat"],
+        "downstreamUseFields": ["manifestId", "projectId", "sourceAssets"]
+      }
+    }
+  ],
+  "lifecycleTransitions": [
+    {
+      "name": "Wave 1 open participates in ProjectWorkspace lifecycle",
+      "transition": {
+        "action": "open",
+        "before": {
+          "activeProjectId": "project.wave1",
+          "flowState": "idle"
+        },
+        "after": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "state-inspector",
+          "activeToolStateId": "tool-state.wave1.state-inspector",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        }
+      }
+    },
+    {
+      "name": "Wave 1 save participates through active toolState",
+      "transition": {
+        "action": "save",
+        "saveTargetToolStateId": "tool-state.wave1.physics-sandbox",
+        "before": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "physics-sandbox",
+          "activeToolStateId": "tool-state.wave1.physics-sandbox",
+          "dirty": true,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        },
+        "after": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "physics-sandbox",
+          "activeToolStateId": "tool-state.wave1.physics-sandbox",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        }
+      }
+    },
+    {
+      "name": "Wave 1 close releases active tool references",
+      "transition": {
+        "action": "close",
+        "before": {
+          "activeProjectId": "project.wave1",
+          "activeToolId": "3d-asset-viewer",
+          "activeToolStateId": "tool-state.wave1.3d-asset-viewer",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        },
+        "after": {
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "idle"
+        }
+      }
+    }
+  ],
+  "validToolStates": [
+    {
+      "toolId": "state-inspector",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.state-inspector",
+        "toolType": "state-inspector",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "inspectionTarget": "tool-state.wave1.state-inspector"
+        }
+      }
+    },
+    {
+      "toolId": "replay-visualizer",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.replay-visualizer",
+        "toolType": "replay-visualizer",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "events": []
+        }
+      }
+    },
+    {
+      "toolId": "performance-profiler",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.performance-profiler",
+        "toolType": "performance-profiler",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "toolId": "physics-sandbox",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.physics-sandbox",
+        "toolType": "physics-sandbox",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "config": {
+            "gravity": 9.8
+          }
+        }
+      }
+    },
+    {
+      "toolId": "3d-json-payload",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.3d-json-payload",
+        "toolType": "3d-json-payload",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "document": {
+            "vertices": []
+          }
+        }
+      }
+    },
+    {
+      "toolId": "3d-asset-viewer",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.3d-asset-viewer",
+        "toolType": "3d-asset-viewer",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "assetRef": "asset.wave1.asteroid"
+        }
+      }
+    }
+  ],
+  "invalidToolStates": [
+    {
+      "name": "missing Wave 1 payload rejects",
+      "toolId": "state-inspector",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.state-inspector",
+        "toolType": "state-inspector",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {}
+      },
+      "expectedErrorCodes": ["WAVE1_TOOLSTATE_PAYLOAD_INVALID"]
+    },
+    {
+      "name": "hidden fallback payload rejects",
+      "toolId": "3d-json-payload",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.3d-json-payload",
+        "toolType": "3d-json-payload",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "document": {},
+          "fallbackData": {
+            "source": "silent-default"
+          }
+        }
+      },
+      "expectedErrorCodes": ["WAVE1_TOOLSTATE_PAYLOAD_FIELD_FORBIDDEN"]
+    },
+    {
+      "name": "toolState type mismatch rejects active ownership",
+      "toolId": "3d-asset-viewer",
+      "toolState": {
+        "toolStateId": "tool-state.wave1.3d-asset-viewer",
+        "toolType": "3d-json-payload",
+        "ownerId": "user.owner",
+        "projectId": "project.wave1",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "assetRef": "asset.wave1.asteroid"
+        }
+      },
+      "expectedErrorCodes": ["WAVE1_TOOLSTATE_ACTIVE_OWNERSHIP_INVALID"]
+    }
+  ]
+}
