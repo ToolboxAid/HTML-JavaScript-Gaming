@@ -6,9 +6,9 @@
     <base href="../GameFoundryStudio/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Design System - Game Foundry Studio</title>
-    <meta name="description" content="Game Foundry Studio design-system source of truth.">
+    <meta name="description" content="Authoritative Theme V2 catalog for Game Foundry Studio.">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/theme/v2/theme.css">
 </head>
 
 <body>
@@ -17,9 +17,9 @@
         <section class="page-title">
             <div class="container">
                 <div class="kicker">Admin Reference</div>
-                <h1>Design-system source of truth.</h1>
-                <p class="lede">Shared CSS layers define colors, tokens, base element behavior, controls, reusable
-                    GameFoundry patterns, and page layouts.</p>
+                <h1>Theme V2 design-system catalog.</h1>
+                <p class="lede">Authoritative ownership, usage, consumers, status, and gap tracking for the approved
+                    Game Foundry Studio Theme V2 surface.</p>
             </div>
         </section>
         <section class="section">
@@ -38,64 +38,355 @@
                     <a href="../admin/analytics.html">Analytics</a>
                 </aside>
                 <div class="admin-page-stack">
-        <section class="section">
-            <div class="container card">
-                <div class="card-body">
-                    <div class="kicker">Status = Planning</div>
-                    <div class="grid cols-3">
-                        <article class="callout">
-                            <h2>Purpose</h2>
-                            <p>Move design system stewardship from Account into Admin for shared ownership.</p>
-                        </article>
-                        <article class="callout">
-                            <h2>Future Scope</h2>
-                            <p>Plan token references, component states and accessibility guidance.</p>
-                        </article>
-                        <article class="callout">
-                            <h2>Planned Sections</h2>
-                            <ul>
-                                <li>Tokens</li>
-                                <li>Components</li>
-                                <li>Accessibility notes</li>
-                            </ul>
-                        </article>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="section">
-            <div class="container">
-                <div class="card">
-                    <div class="card-body">
-                        <h2>CSS Ownership</h2>
-                        <dl>
-                            <dt>colors.css</dt>
-                            <dd>Approved color values and color-family variables.</dd>
-                            <dt>tokens.css</dt>
-                            <dd>Spacing, sizing, typography, radius, shadows, z-index, icon sizes, and tool tile
-                                dimensions.</dd>
-                            <dt>base.css</dt>
-                            <dd>Reset, typography defaults, focus styles, accessibility helpers, and base element
-                                rules.</dd>
-                            <dt>controls.css</dt>
-                            <dd>Native HTML control scale, spacing, sizing, and typography.</dd>
-                            <dt>gamefoundrystudio.css</dt>
-                            <dd>Shared GameFoundry components and patterns.</dd>
-                            <dt>pages.css</dt>
-                            <dd>Page-specific layout helpers that consume shared tokens and colors.</dd>
-                        </dl>
-                        <h2>Design Rules</h2>
-                        <ul>
-                            <li>Use shared CSS layers before adding page-specific styles.</li>
-                            <li>Keep raw color values in <code>colors.css</code>.</li>
-                            <li>Keep non-color design values in <code>tokens.css</code>.</li>
-                            <li>Use current tool group names as the primary user-facing organization.</li>
-                            <li>Use badge and tile colors as secondary visual cues.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
+                    <section class="section">
+                        <div class="container">
+                            <div class="surface">
+                                <div class="surface-header">
+                                    <div class="kicker">Catalog Status</div>
+                                    <h2>Theme V2 is the only approved styling surface.</h2>
+                                </div>
+                                <div class="surface-body">
+                                    <div class="grid cols-3">
+                                        <article class="feedback">
+                                            <strong class="feedback-title">Purpose</strong>
+                                            <p class="feedback-message">Document approved Theme V2 primitives and
+                                                ownership decisions for Admin review.</p>
+                                        </article>
+                                        <article class="feedback">
+                                            <strong class="feedback-title">Rule</strong>
+                                            <p class="feedback-message">Pages consume existing Theme V2 classes; new
+                                                styling requires an approved Theme V2 ownership file change.</p>
+                                        </article>
+                                        <article class="feedback">
+                                            <strong class="feedback-title">Implementation</strong>
+                                            <p class="feedback-message">This page implements no new visual components
+                                                and adds no CSS.</p>
+                                        </article>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section">
+                        <div class="container">
+                            <div class="accordion-group">
+                                <details class="vertical-accordion" open>
+                                    <summary>Theme V2 Overview</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Define the single approved styling surface for
+                                            Game Foundry Studio pages, Admin references, and first-class tool shells.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>theme.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;link rel="stylesheet" href="assets/css/theme/v2/theme.css"&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Theme V2 Admin pages, root Tools pages,
+                                            shared header and footer partials, and first-class tool surfaces when they
+                                            consume the approved shell.</p>
+                                        <p><strong>Status:</strong> Approved active surface.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Colors</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own raw color values, semantic color variables,
+                                            swatches, group accents, and color-family mappings.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>colors.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;span class="brand-color-swatch swatch-orange"&gt;&lt;/span&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Branding references, Grouping Colors,
+                                            Controls, tool group tiles, Admin navigation states, and status surfaces.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Typography</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own type scale, heading behavior, body copy,
+                                            code text, kicker text, and lede text.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>typography.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;div class="kicker"&gt;Admin Reference&lt;/div&gt;</code></p>
+                                        <p><strong>Current consumers:</strong> Page titles, section headings,
+                                            navigation, footer groups, cards, forms, tables, and documentation pages.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Spacing</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own spacing tokens, sizing tokens, radii, shadows,
+                                            opacity, z-index, and reusable dimension variables.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>spacing.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;section class="section"&gt;&lt;div class="container"&gt;...&lt;/div&gt;&lt;/section&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Page sections, panels, cards, Admin
+                                            layouts, footer layout, accordions, controls, and tool surfaces.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Buttons</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own primary actions, secondary actions, action
+                                            groups, and return-to-top base behavior.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>buttons.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;a class="btn primary" href="../tools/index.html"&gt;Start Building&lt;/a&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Header actions, hero actions, tool tiles,
+                                            form actions, footer return-to-top, and Admin command surfaces.</p>
+                                        <p><strong>Status:</strong> Approved; mascot return-to-top variant is planned
+                                            only.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Forms</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own form rows, field groups, labels, helper text,
+                                            inputs, selects, textareas, and native form element baselines.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>forms.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;div class="field-group"&gt;&lt;label for="name"&gt;Name&lt;/label&gt;&lt;input id="name"&gt;&lt;p class="field-hint"&gt;Required&lt;/p&gt;&lt;/div&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Controls, Account forms, Admin settings,
+                                            tool setup panels, and future publish workflows.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Panels</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own cards, surfaces, media areas, side menus,
+                                            callouts, mini stats, game tiles, and panel bodies.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>panels.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;article class="surface"&gt;&lt;div class="surface-header"&gt;...&lt;/div&gt;&lt;div class="surface-body"&gt;...&lt;/div&gt;&lt;/article&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Admin pages, Tools index, release notes,
+                                            home cards, game cards, account panels, and tool workspaces.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Accordions</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own disclosure behavior, vertical accordion
+                                            structure, accordion groups, summary markers, and accordion body spacing.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>accordion.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;details class="vertical-accordion"&gt;&lt;summary&gt;Setup&lt;/summary&gt;&lt;div class="accordion-body"&gt;...&lt;/div&gt;&lt;/details&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Tools index grouping, tool panels,
+                                            Controls, Grouping Colors, Admin references, and planned documentation
+                                            sections.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Status Cards</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own feedback cards, feedback titles, feedback
+                                            messages, event logs, and event log entries.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>status.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;article class="feedback"&gt;&lt;strong class="feedback-title"&gt;PASS&lt;/strong&gt;&lt;p class="feedback-message"&gt;Validation complete.&lt;/p&gt;&lt;/article&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Admin diagnostics, tool status panels,
+                                            validation summaries, and event log surfaces.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Tables</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own table wrappers, table baseline, captions,
+                                            header cells, body cells, and data-table emphasis.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>tables.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;div class="table-wrapper"&gt;&lt;table class="data-table"&gt;...&lt;/table&gt;&lt;/div&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Grouping Colors, Design System, Admin
+                                            references, diagnostics, and future settings audits.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Dialogs</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Reserve ownership for future approved modal and
+                                            dialog primitives.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>dialogs.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;dialog&gt;&lt;div class="surface"&gt;&lt;div class="surface-body"&gt;...&lt;/div&gt;&lt;/div&gt;&lt;/dialog&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> None in this PR; dialog ownership remains
+                                            reserved.</p>
+                                        <p><strong>Status:</strong> Reserved; no implementation added.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Tool Tiles</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own approved tool card composition through existing
+                                            card grid, control card, media, body, and group accent classes.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>panels.css</code>, <code>layout.css</code>,
+                                            <code>colors.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;article class="control-card tool-group-build-create"&gt;&lt;div class="card-body"&gt;...&lt;/div&gt;&lt;/article&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Root Tools index, tool grouping previews,
+                                            Admin references, and future marketplace cards when approved.</p>
+                                        <p><strong>Status:</strong> Approved with existing classes only.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Navigation</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own site header, brand area, nav links, nav items,
+                                            submenu behavior, nav actions, side menus, and active states.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>layout.css</code>, <code>panels.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;aside class="side-menu"&gt;&lt;a class="active" href="../admin/design-system.html"&gt;Design System&lt;/a&gt;&lt;/aside&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Shared header partial, Admin side
+                                            navigation, Account navigation, Tools navigation, and footer route links.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                                <details class="vertical-accordion">
+                                    <summary>Footer</summary>
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Own footer layout, footer groups, footer links,
+                                            footer brand area, tagline, and return-to-top base button.</p>
+                                        <p><strong>Approved Theme V2 ownership file:</strong>
+                                            <code>layout.css</code>, <code>buttons.css</code></p>
+                                        <p><strong>Example usage:</strong>
+                                            <code>&lt;footer class="footer"&gt;&lt;div class="footer__inner"&gt;...&lt;/div&gt;&lt;/footer&gt;</code>
+                                        </p>
+                                        <p><strong>Current consumers:</strong> Shared footer partial and every page that
+                                            loads the footer partial.</p>
+                                        <p><strong>Status:</strong> Approved.</p>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section">
+                        <div class="container">
+                            <div class="surface">
+                                <div class="surface-header">
+                                    <div class="kicker">Planned Components</div>
+                                    <h2>Mascot Return-to-Top</h2>
+                                </div>
+                                <div class="surface-body">
+                                    <p>Planned only. No implementation is included in this PR.</p>
+                                    <div class="table-wrapper">
+                                        <table class="data-table">
+                                            <caption>Mascot return-to-top routing plan</caption>
+                                            <thead>
+                                                <tr>
+                                                    <th>Surface</th>
+                                                    <th>Mascot</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Home/Vision/Mission</td>
+                                                    <td>Spark</td>
+                                                    <td>Planned</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Tools/Build</td>
+                                                    <td>ForgeBot</td>
+                                                    <td>Planned</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>AI/Help/Docs</td>
+                                                    <td>Foundry Bot</td>
+                                                    <td>Planned</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Marketplace/Assets</td>
+                                                    <td>Pixel Smith</td>
+                                                    <td>Planned</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Localization Studio</td>
+                                                    <td>Localization Bot</td>
+                                                    <td>Planned</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="feedback">
+                                        <strong class="feedback-title">Catalog Status</strong>
+                                        <p class="feedback-message">Purpose: document the planned variant. Approved
+                                            Theme V2 ownership file: <code>buttons.css</code>. Example usage: planned
+                                            extension of <code>return-to-top</code>. Current consumers: none. Status:
+                                            Planned.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section">
+                        <div class="container">
+                            <div class="surface">
+                                <div class="surface-header">
+                                    <div class="kicker">Design System Gap</div>
+                                    <h2>Approved gaps and future candidates.</h2>
+                                </div>
+                                <div class="surface-body">
+                                    <div class="grid cols-3">
+                                        <article class="feedback">
+                                            <strong class="feedback-title">Current approved gaps</strong>
+                                            <p class="feedback-message">Dialogs are reserved but not implemented.
+                                                Mascot return-to-top is planned but not implemented. Additional mascot
+                                                routing remains documentation-only.</p>
+                                        </article>
+                                        <article class="feedback">
+                                            <strong class="feedback-title">Future candidates</strong>
+                                            <p class="feedback-message">Reusable dialog states, reusable mascot action
+                                                assets, Admin audit summaries, and richer tool tile metadata states.</p>
+                                        </article>
+                                        <article class="feedback">
+                                            <strong class="feedback-title">Ownership decisions</strong>
+                                            <p class="feedback-message">Buttons remain in <code>buttons.css</code>;
+                                                dialogs remain in <code>dialogs.css</code>; panels and tiles remain in
+                                                <code>panels.css</code>; layout remains in <code>layout.css</code>.</p>
+                                        </article>
+                                    </div>
+                                    <div class="event-log" aria-label="Design system gap notes">
+                                        <div class="event-log-entry">PASS Theme V2 catalog uses existing classes only.
+                                        </div>
+                                        <div class="event-log-entry">SKIP No new CSS or Theme V2 implementation in this
+                                            PR.</div>
+                                        <div class="event-log-entry">PLAN Future component requests require explicit
+                                            Theme V2 ownership approval.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </section>
