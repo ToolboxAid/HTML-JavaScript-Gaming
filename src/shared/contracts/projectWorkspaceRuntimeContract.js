@@ -91,6 +91,12 @@ export const PROJECT_WORKSPACE_RUNTIME_FORBIDDEN_FIELDS = Object.freeze([
   "workspaceStorage",
   "workspaceSession",
   "savedWorkspace",
+  "localStorage",
+  "sessionStorage",
+  "persistedWorkspaceState",
+  "hiddenWorkspaceState",
+  "sampleJson",
+  "fallbackData",
 ]);
 
 export const PROJECT_WORKSPACE_ACTIVE_PALETTE_CONTEXT_FIELDS = Object.freeze({
@@ -153,7 +159,7 @@ export function validateProjectWorkspaceRuntimeContract(projectWorkspaceContext 
   if (!projectWorkspaceContext || typeof projectWorkspaceContext !== "object" || Array.isArray(projectWorkspaceContext)) {
     errors.push(createContractError(
       PROJECT_WORKSPACE_RUNTIME_ERRORS.CONTEXT_INVALID,
-      "Project Workspace runtime context must be an object.",
+      "ProjectWorkspace runtime context must be an object.",
       "projectWorkspace"
     ));
 
@@ -172,7 +178,7 @@ export function validateProjectWorkspaceRuntimeContract(projectWorkspaceContext 
   if (projectWorkspaceContext.dirty !== undefined && typeof projectWorkspaceContext.dirty !== "boolean") {
     errors.push(createContractError(
       PROJECT_WORKSPACE_RUNTIME_ERRORS.DIRTY_INVALID,
-      "Project Workspace dirty status must be a runtime boolean when provided.",
+      "ProjectWorkspace dirty status must be a runtime boolean when provided.",
       PROJECT_WORKSPACE_RUNTIME_FIELDS.DIRTY
     ));
   }
@@ -180,7 +186,7 @@ export function validateProjectWorkspaceRuntimeContract(projectWorkspaceContext 
   if (projectWorkspaceContext.recoveryAvailable !== undefined && typeof projectWorkspaceContext.recoveryAvailable !== "boolean") {
     errors.push(createContractError(
       PROJECT_WORKSPACE_RUNTIME_ERRORS.RECOVERY_AVAILABLE_INVALID,
-      "Project Workspace recovery availability must be a runtime boolean when provided.",
+      "ProjectWorkspace recovery availability must be a runtime boolean when provided.",
       PROJECT_WORKSPACE_RUNTIME_FIELDS.RECOVERY_AVAILABLE
     ));
   }
@@ -188,7 +194,7 @@ export function validateProjectWorkspaceRuntimeContract(projectWorkspaceContext 
   if (projectWorkspaceContext.recoveryAvailable === true && !hasNonEmptyString(projectWorkspaceContext.recoveryToolStateId)) {
     errors.push(createContractError(
       PROJECT_WORKSPACE_RUNTIME_ERRORS.RECOVERY_TOOL_STATE_REQUIRED,
-      "Project Workspace recovery must point to a tool state recovery reference.",
+      "ProjectWorkspace recovery must point to a tool state recovery reference.",
       PROJECT_WORKSPACE_RUNTIME_FIELDS.RECOVERY_TOOL_STATE_ID
     ));
   }
@@ -196,7 +202,7 @@ export function validateProjectWorkspaceRuntimeContract(projectWorkspaceContext 
   if (projectWorkspaceContext.flowState !== undefined && !isProjectWorkspaceRuntimeFlowState(projectWorkspaceContext.flowState)) {
     errors.push(createContractError(
       PROJECT_WORKSPACE_RUNTIME_ERRORS.FLOW_STATE_INVALID,
-      "Project Workspace flow state must be an allowed runtime flow state.",
+      "ProjectWorkspace flow state must be an allowed runtime flow state.",
       PROJECT_WORKSPACE_RUNTIME_FIELDS.FLOW_STATE
     ));
   }
@@ -222,7 +228,7 @@ function validateRuntimeReference(projectWorkspaceContext, fieldName, errors) {
   if (!isProjectWorkspaceRuntimeReference(projectWorkspaceContext[fieldName])) {
     errors.push(createContractError(
       PROJECT_WORKSPACE_RUNTIME_ERRORS.REFERENCE_INVALID,
-      "Project Workspace runtime references must be non-empty strings when provided.",
+      "ProjectWorkspace runtime references must be non-empty strings when provided.",
       fieldName
     ));
   }
@@ -236,7 +242,7 @@ function validateActivePaletteContext(activePaletteContext, errors) {
   if (typeof activePaletteContext !== "object" || Array.isArray(activePaletteContext)) {
     errors.push(createContractError(
       PROJECT_WORKSPACE_RUNTIME_ERRORS.ACTIVE_PALETTE_CONTEXT_INVALID,
-      "Project Workspace active palette context must be an object when provided.",
+      "ProjectWorkspace active palette context must be an object when provided.",
       PROJECT_WORKSPACE_RUNTIME_FIELDS.ACTIVE_PALETTE_CONTEXT
     ));
     return;
@@ -256,7 +262,7 @@ function validateActivePaletteContext(activePaletteContext, errors) {
     if (!isProjectWorkspaceRuntimeReference(activePaletteContext[fieldName])) {
       errors.push(createContractError(
         PROJECT_WORKSPACE_RUNTIME_ERRORS.ACTIVE_PALETTE_CONTEXT_INVALID,
-        "Project Workspace active palette context references must be non-empty strings when provided.",
+        "ProjectWorkspace active palette context references must be non-empty strings when provided.",
         `${PROJECT_WORKSPACE_RUNTIME_FIELDS.ACTIVE_PALETTE_CONTEXT}.${fieldName}`
       ));
     }
@@ -265,7 +271,7 @@ function validateActivePaletteContext(activePaletteContext, errors) {
   if (activePaletteContext.version !== undefined && !isPositiveInteger(activePaletteContext.version)) {
     errors.push(createContractError(
       PROJECT_WORKSPACE_RUNTIME_ERRORS.ACTIVE_PALETTE_CONTEXT_INVALID,
-      "Project Workspace active palette context version must be a positive integer when provided.",
+      "ProjectWorkspace active palette context version must be a positive integer when provided.",
       `${PROJECT_WORKSPACE_RUNTIME_FIELDS.ACTIVE_PALETTE_CONTEXT}.${PROJECT_WORKSPACE_ACTIVE_PALETTE_CONTEXT_FIELDS.VERSION}`
     ));
   }
@@ -276,7 +282,7 @@ function collectForbiddenFieldErrors(record, errors, pathPrefix = "") {
     if (Object.hasOwn(record, fieldName)) {
       errors.push(createContractError(
         PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED,
-        "Project Workspace runtime context must not persist project, tool state, manifest, or tool payload data.",
+        "ProjectWorkspace runtime context must not persist project, tool state, manifest, or tool payload data.",
         pathPrefix ? `${pathPrefix}.${fieldName}` : fieldName
       ));
     }

@@ -28,7 +28,7 @@ Approved first-pass Project Types:
 - All Project Types share the same visibility model.
 - All Project Types share the same permissions model.
 - All Project Types share the same lifecycle model.
-- All Project Types share the same Project Workspace runtime-only model.
+- All Project Types share the same ProjectWorkspace runtime-only model.
 
 ## Expected Outputs
 
@@ -55,13 +55,13 @@ Private Projects remain private regardless of type.
 
 Collaborators, Viewers, Owners, Admins, Moderators, Reviewers, Players, and Guests continue to use the approved Identity/Permissions and Project contract rules.
 
-## Project Workspace Boundary
+## ProjectWorkspace Boundary
 
-Project Workspace remains runtime-only for every Project Type.
+ProjectWorkspace remains runtime-only for every Project Type.
 
-Project Workspace may track active project, active tool, active tool state, dirty status, recovery availability, active palette context, and open/close/save flow state.
+ProjectWorkspace may track active project, active tool, active tool state, dirty status, recovery availability, active palette context, and open/close/save flow state.
 
-Project Workspace does not persist tool payloads, own saved Tool State, duplicate Project storage, or create a separate Project Type storage model.
+ProjectWorkspace does not persist tool payloads, own saved Tool State, duplicate Project storage, or create a separate Project Type storage model.
 
 ## Non-Goals
 
@@ -72,7 +72,7 @@ This document does not:
 - implement project persistence
 - implement authentication
 - implement authorization checks
-- implement Project Workspace storage
+- implement ProjectWorkspace storage
 - implement Admin pages
 - implement Account pages
 - implement publishing

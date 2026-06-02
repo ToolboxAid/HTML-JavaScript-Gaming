@@ -85,7 +85,7 @@ This document does not:
 - implement release persistence
 - implement authentication
 - implement authorization checks
-- implement Project Workspace storage
+- implement ProjectWorkspace storage
 - implement runtime release loading
 - implement publishing
 - implement marketplace behavior

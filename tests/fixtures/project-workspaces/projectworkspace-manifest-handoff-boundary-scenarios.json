@@ -1,0 +1,155 @@
+{
+  "validHandoffs": [
+    {
+      "name": "tool consumes declared manifest fields only",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "preview-generator-v2",
+          "activeToolStateId": "tool-state.preview.alpha",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.project.alpha",
+          "ownerId": "user.owner",
+          "projectId": "project.alpha",
+          "projectType": "game",
+          "sourceToolStates": [
+            {
+              "toolStateId": "tool-state.preview.alpha",
+              "toolType": "preview-generator-v2",
+              "version": 1
+            }
+          ],
+          "sourceAssets": [],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": [
+          "manifestId",
+          "projectId",
+          "projectType",
+          "sourceToolStates",
+          "sourceAssets",
+          "visibility",
+          "version",
+          "status",
+          "exportFormat"
+        ],
+        "downstreamUseFields": [
+          "manifestId",
+          "projectId",
+          "sourceToolStates"
+        ]
+      }
+    }
+  ],
+  "invalidHandoffs": [
+    {
+      "name": "undeclared manifest field rejects before downstream use",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "preview-generator-v2",
+          "activeToolStateId": "tool-state.preview.alpha",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.project.alpha",
+          "ownerId": "user.owner",
+          "projectId": "project.alpha",
+          "projectType": "game",
+          "sourceToolStates": [],
+          "sourceAssets": [],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": [
+          "manifestId",
+          "projectId"
+        ],
+        "downstreamUseFields": [
+          "manifestId",
+          "sourceToolStates"
+        ]
+      },
+      "expectedErrorCodes": [
+        "PROJECTWORKSPACE_MANIFEST_HANDOFF_UNDECLARED_FIELD"
+      ]
+    },
+    {
+      "name": "tool runtime payload rejects before render",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "preview-generator-v2",
+          "activeToolStateId": "tool-state.preview.alpha",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.project.alpha",
+          "ownerId": "user.owner",
+          "projectId": "project.alpha",
+          "projectType": "game",
+          "sourceToolStates": [],
+          "sourceAssets": [],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json",
+          "toolPayload": {
+            "renderState": "hidden"
+          }
+        },
+        "declaredManifestFields": [
+          "manifestId",
+          "projectId"
+        ],
+        "downstreamUseFields": [
+          "manifestId"
+        ]
+      },
+      "expectedErrorCodes": [
+        "PROJECTWORKSPACE_MANIFEST_HANDOFF_FORBIDDEN_FIELD"
+      ]
+    },
+    {
+      "name": "invalid manifest payload rejects before render",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "preview-generator-v2",
+          "activeToolStateId": "tool-state.preview.alpha",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.project.alpha",
+          "ownerId": "user.owner",
+          "projectId": "project.alpha",
+          "projectType": "template",
+          "sourceToolStates": [],
+          "sourceAssets": [],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": [
+          "manifestId",
+          "projectId",
+          "projectType"
+        ],
+        "downstreamUseFields": [
+          "manifestId"
+        ]
+      },
+      "expectedErrorCodes": [
+        "GAME_MANIFEST_PROJECT_TYPE_INVALID"
+      ]
+    }
+  ]
+}

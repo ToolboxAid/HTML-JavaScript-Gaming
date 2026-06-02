@@ -1,4 +1,4 @@
-# Project Workspace Contract Rename Validation
+# ProjectWorkspace Contract Rename Validation
 
 PR: PR_26152_079-project-workspace-contract-rename
 Date: 2026-06-02
@@ -6,7 +6,7 @@ Date: 2026-06-02
 ## Scope
 
 - Continued from PR_26152_078.
-- Renamed runtime-only Workspace terminology to Project Workspace.
+- Renamed runtime-only Workspace terminology to ProjectWorkspace.
 - Updated contracts, contract tests, docs/specs, and required reports only.
 - No database implementation, authentication implementation, runtime UI, page, CSS, or HTML changes were made.
 
@@ -14,29 +14,29 @@ Date: 2026-06-02
 
 - The previous runtime-only contract file was renamed to `src/shared/contracts/projectWorkspaceRuntimeContract.js`.
 - The matching runtime-only contract test was renamed to `tests/shared/ProjectWorkspaceRuntimeContract.test.mjs`.
-- The runtime-only contract terminology was renamed to Project Workspace Runtime Contract.
-- Project Workspace is the active runtime working context for a Project.
+- The runtime-only contract terminology was renamed to ProjectWorkspace Runtime Contract.
+- ProjectWorkspace is the active runtime working context for a Project.
 
-## Project Workspace Rules
+## ProjectWorkspace Rules
 
-- Project Workspace is runtime-only.
-- Project Workspace does not persist tool payloads.
-- Project Workspace does not own saved tool state.
-- Project Workspace does not duplicate project storage.
-- Project Workspace does not duplicate tool state storage.
-- Project Workspace recovery points to Tool State recovery.
+- ProjectWorkspace is runtime-only.
+- ProjectWorkspace does not persist tool payloads.
+- ProjectWorkspace does not own saved tool state.
+- ProjectWorkspace does not duplicate project storage.
+- ProjectWorkspace does not duplicate tool state storage.
+- ProjectWorkspace recovery points to Tool State recovery.
 
 ## Data Ownership
 
 - Project = persisted DB container.
-- Project Workspace = current runtime working context for the Project.
+- ProjectWorkspace = current runtime working context for the Project.
 - Tool State = persisted DB record for one tool.
 - Manifest = portable export/import format.
 
 ## Docs
 
 - Added `docs/dev/specs/PROJECT_WORKSPACE_RUNTIME_CONTRACT.md`.
-- Updated `docs/dev/specs/TOOL_LAUNCH_SSOT.md` to use Project Workspace terminology for prior runtime launch state.
+- Updated `docs/dev/specs/TOOL_LAUNCH_SSOT.md` to use ProjectWorkspace terminology for prior runtime launch state.
 
 ## Validation Commands
 
@@ -68,8 +68,8 @@ rg '"workspaceState"' -n src/shared/contracts/projectWorkspaceRuntimeContract.js
 
 ## Expected Results
 
-- PASS: Project Workspace contract tests validate terminology and behavior remain unchanged.
-- PASS: Project Workspace rejects old standalone workspace storage fields such as `workspaceState`.
+- PASS: ProjectWorkspace contract tests validate terminology and behavior remain unchanged.
+- PASS: ProjectWorkspace rejects old standalone workspace storage fields such as `workspaceState`.
 - PASS: Tool State remains the saved editing source.
 - PASS: Project, Identity/Permissions, and Tool contract tests remain compatible.
 - PASS: no runtime/UI/CSS/HTML files changed.

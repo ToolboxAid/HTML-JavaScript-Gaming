@@ -159,27 +159,27 @@ export function run() {
   assertErrorCodes(validateProjectWorkspaceRuntimeContract({
     ...projectWorkspace,
     payload: { swatches: [] },
-  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "Project Workspace cannot persist tool payload data");
+  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "ProjectWorkspace cannot persist tool payload data");
 
   assertErrorCodes(validateProjectWorkspaceRuntimeContract({
     ...projectWorkspace,
     savedToolStates: [savedToolState],
-  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "Project Workspace cannot create saved tool state records");
+  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "ProjectWorkspace cannot create saved tool state records");
 
   assertErrorCodes(validateProjectWorkspaceRuntimeContract({
     ...projectWorkspace,
     toolStates: [savedToolState],
-  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "Project Workspace cannot duplicate tool state storage");
+  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "ProjectWorkspace cannot duplicate tool state storage");
 
   assertErrorCodes(validateProjectWorkspaceRuntimeContract({
     ...projectWorkspace,
     project: { ...project },
-  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "Project Workspace cannot duplicate project storage");
+  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "ProjectWorkspace cannot duplicate project storage");
 
   assertErrorCodes(validateProjectWorkspaceRuntimeContract({
     ...projectWorkspace,
     manifest: { tools: {} },
-  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "Project Workspace cannot own manifest export data");
+  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "ProjectWorkspace cannot own manifest export data");
 
   assertErrorCodes(validateProjectWorkspaceRuntimeContract({
     ...projectWorkspace,
@@ -187,12 +187,12 @@ export function run() {
   }), [
     PROJECT_WORKSPACE_RUNTIME_ERRORS.REFERENCE_INVALID,
     PROJECT_WORKSPACE_RUNTIME_ERRORS.RECOVERY_TOOL_STATE_REQUIRED,
-  ], "Project Workspace recovery must point to tool state recovery");
+  ], "ProjectWorkspace recovery must point to tool state recovery");
 
   assertErrorCodes(validateProjectWorkspaceRuntimeContract({
     ...projectWorkspace,
     recoveryState,
-  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "Project Workspace cannot own recovery saved data");
+  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "ProjectWorkspace cannot own recovery saved data");
   assert.equal(projectWorkspaceRecoveryTargetsToolState({
     ...projectWorkspace,
     recoveryState,
@@ -218,7 +218,7 @@ export function run() {
     activePaletteContext: {
       swatches: [{ hex: "#ffffff" }],
     },
-  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "Project Workspace palette context cannot persist palette payload");
+  }), [PROJECT_WORKSPACE_RUNTIME_ERRORS.FIELD_NOT_ALLOWED], "ProjectWorkspace palette context cannot persist palette payload");
 
   assertErrorCodes(validateProjectWorkspaceRuntimeContract({
     ...projectWorkspace,
@@ -228,6 +228,9 @@ export function run() {
   assert.equal(PROJECT_WORKSPACE_RUNTIME_FORBIDDEN_FIELDS.includes("payload"), true);
   assert.equal(PROJECT_WORKSPACE_RUNTIME_FORBIDDEN_FIELDS.includes("savedToolStates"), true);
   assert.equal(PROJECT_WORKSPACE_RUNTIME_FORBIDDEN_FIELDS.includes("workspaceState"), true);
+  assert.equal(PROJECT_WORKSPACE_RUNTIME_FORBIDDEN_FIELDS.includes("localStorage"), true);
+  assert.equal(PROJECT_WORKSPACE_RUNTIME_FORBIDDEN_FIELDS.includes("sessionStorage"), true);
+  assert.equal(PROJECT_WORKSPACE_RUNTIME_FORBIDDEN_FIELDS.includes("sampleJson"), true);
 }
 
 function assertErrorCodes(validation, expectedCodes, name) {

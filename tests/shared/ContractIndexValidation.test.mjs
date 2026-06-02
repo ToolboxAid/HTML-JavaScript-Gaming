@@ -29,7 +29,7 @@ export const CONTRACT_INDEX = Object.freeze([
   entry("Notification", "notificationContract.js", "NotificationContract.test.mjs", "notifications/notification-scenarios.json", "NOTIFICATION_CONTRACT.md", "notification_contract_tests_validation.md"),
   entry("Organization", "organizationContract.js", "OrganizationContract.test.mjs", "organizations/organization-scenarios.json", "ORGANIZATION_CONTRACT.md", "organization_contract_tests_validation.md"),
   entry("Project", "projectContract.js", "ProjectContract.test.mjs", "projects/project-scenarios.json", "PROJECT_CONTRACT.md", "project_contract_tests_validation.md"),
-  entry("Project Workspace Runtime", "projectWorkspaceRuntimeContract.js", "ProjectWorkspaceRuntimeContract.test.mjs", "project-workspaces/project-workspace-runtime-scenarios.json", "PROJECT_WORKSPACE_RUNTIME_CONTRACT.md", "project_workspace_contract_rename_validation.md"),
+  entry("ProjectWorkspace Runtime", "projectWorkspaceRuntimeContract.js", "ProjectWorkspaceRuntimeContract.test.mjs", "project-workspaces/project-workspace-runtime-scenarios.json", "PROJECT_WORKSPACE_RUNTIME_CONTRACT.md", "project_workspace_contract_rename_validation.md"),
   entry("Publish", "publishContract.js", "PublishContract.test.mjs", "publish/publish-scenarios.json", "PUBLISH_CONTRACT.md", "publish_contract_tests_validation.md"),
   entry("Release", "releaseContract.js", "ReleaseContract.test.mjs", "releases/release-scenarios.json", "RELEASE_CONTRACT.md", "release_contract_tests_validation.md"),
   entry("Restore Snapshot", "restoreSnapshotContract.js", "RestoreSnapshotContract.test.mjs", "restore-snapshots/restore-snapshot-scenarios.json", "RESTORE_SNAPSHOT_CONTRACT.md", "restore_snapshot_contract_tests_validation.md"),

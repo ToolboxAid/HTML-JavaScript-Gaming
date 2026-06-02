@@ -1,0 +1,131 @@
+{
+  "validLaunches": [
+    {
+      "name": "selected tool launch uses explicit manifest and toolState inputs",
+      "launch": {
+        "selectedToolId": "palette-manager-v2",
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.project.alpha",
+          "projectId": "project.alpha",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.palette.alpha",
+          "projectId": "project.alpha",
+          "toolType": "palette-manager-v2",
+          "version": 1
+        }
+      }
+    }
+  ],
+  "invalidLaunches": [
+    {
+      "name": "missing explicit manifest input rejects visibly",
+      "launch": {
+        "selectedToolId": "palette-manager-v2",
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "flowState": "opening"
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.palette.alpha",
+          "projectId": "project.alpha",
+          "toolType": "palette-manager-v2",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECTWORKSPACE_LAUNCH_MANIFEST_INPUT_REQUIRED"
+      ]
+    },
+    {
+      "name": "missing explicit toolState input rejects visibly",
+      "launch": {
+        "selectedToolId": "palette-manager-v2",
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.project.alpha",
+          "projectId": "project.alpha",
+          "projectType": "game",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECTWORKSPACE_LAUNCH_TOOLSTATE_INPUT_REQUIRED"
+      ]
+    },
+    {
+      "name": "fallback data rejects visibly",
+      "launch": {
+        "selectedToolId": "palette-manager-v2",
+        "fallbackData": {
+          "source": "hidden"
+        },
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "palette-manager-v2",
+          "activeToolStateId": "tool-state.palette.alpha",
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.project.alpha",
+          "projectId": "project.alpha",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.palette.alpha",
+          "projectId": "project.alpha",
+          "toolType": "palette-manager-v2",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECTWORKSPACE_LAUNCH_FORBIDDEN_FIELD"
+      ]
+    }
+  ],
+  "skippedLaunches": [
+    {
+      "name": "unmigrated tool runtime remains skipped not failed",
+      "launch": {
+        "selectedToolId": "unmigrated-tool-v2",
+        "migrationStatus": "not-migrated",
+        "projectWorkspace": {
+          "activeProjectId": "project.alpha",
+          "activeToolId": "unmigrated-tool-v2",
+          "activeToolStateId": "tool-state.unmigrated.alpha",
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.project.alpha",
+          "projectId": "project.alpha",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.unmigrated.alpha",
+          "projectId": "project.alpha",
+          "toolType": "unmigrated-tool-v2",
+          "version": 1
+        }
+      }
+    }
+  ]
+}

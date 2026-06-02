@@ -70,7 +70,7 @@ Publish records must not carry:
 - authentication state
 - marketplace moderation state
 - tool state data
-- Workspace or Project Workspace runtime fields
+- Workspace or ProjectWorkspace runtime fields
 - tool payload data
 - database-only ids beyond the contract-owned ids
 
@@ -106,7 +106,7 @@ This document does not:
 - implement authentication
 - implement authorization checks
 - implement marketplace moderation
-- implement Project Workspace storage
+- implement ProjectWorkspace storage
 - implement runtime publish loading
 - change runtime behavior
 - change CSS, HTML, JavaScript, TypeScript, or JSON files outside the contract/test scope

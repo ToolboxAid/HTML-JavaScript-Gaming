@@ -1,0 +1,112 @@
+{
+  "validStateBoundaries": [
+    {
+      "name": "ProjectWorkspace coordinates active state while Tool State owns payload",
+      "projectWorkspace": {
+        "activeProjectId": "project.alpha",
+        "activeToolId": "palette-manager-v2",
+        "activeToolStateId": "tool-state.palette.alpha",
+        "dirty": true,
+        "recoveryAvailable": true,
+        "recoveryToolStateId": "tool-state.palette.alpha",
+        "activePaletteContext": {
+          "paletteId": "palette.hud",
+          "sourceToolId": "palette-manager-v2",
+          "sourceToolStateId": "tool-state.palette.alpha",
+          "version": 1
+        },
+        "flowState": "open"
+      },
+      "toolState": {
+        "toolStateId": "tool-state.palette.alpha",
+        "toolType": "palette-manager-v2",
+        "ownerId": "user.owner",
+        "projectId": "project.alpha",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "swatches": [
+            {
+              "hex": "#ffffff"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "invalidStateBoundaries": [
+    {
+      "name": "ProjectWorkspace cannot own Tool State records",
+      "projectWorkspace": {
+        "activeProjectId": "project.alpha",
+        "activeToolId": "palette-manager-v2",
+        "activeToolStateId": "tool-state.palette.alpha",
+        "flowState": "open",
+        "toolState": {
+          "toolStateId": "tool-state.palette.alpha"
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECT_WORKSPACE_RUNTIME_FIELD_NOT_ALLOWED"
+      ]
+    },
+    {
+      "name": "ProjectWorkspace cannot rely on localStorage",
+      "projectWorkspace": {
+        "activeProjectId": "project.alpha",
+        "activeToolId": "palette-manager-v2",
+        "activeToolStateId": "tool-state.palette.alpha",
+        "flowState": "open",
+        "localStorage": {
+          "activeProjectId": "project.alpha"
+        }
+      },
+      "expectedErrorCodes": [
+        "PROJECT_WORKSPACE_RUNTIME_FIELD_NOT_ALLOWED"
+      ]
+    },
+    {
+      "name": "ProjectWorkspace palette context cannot own swatches",
+      "projectWorkspace": {
+        "activeProjectId": "project.alpha",
+        "activeToolId": "palette-manager-v2",
+        "activeToolStateId": "tool-state.palette.alpha",
+        "activePaletteContext": {
+          "paletteId": "palette.hud",
+          "sourceToolId": "palette-manager-v2",
+          "sourceToolStateId": "tool-state.palette.alpha",
+          "version": 1,
+          "swatches": [
+            {
+              "hex": "#ffffff"
+            }
+          ]
+        },
+        "flowState": "open"
+      },
+      "expectedErrorCodes": [
+        "PROJECT_WORKSPACE_RUNTIME_FIELD_NOT_ALLOWED"
+      ]
+    },
+    {
+      "name": "ProjectWorkspace palette context allows references only",
+      "projectWorkspace": {
+        "activeProjectId": "project.alpha",
+        "activeToolId": "palette-manager-v2",
+        "activeToolStateId": "tool-state.palette.alpha",
+        "activePaletteContext": {
+          "paletteId": "palette.hud",
+          "sourceToolId": "palette-manager-v2",
+          "sourceToolStateId": "tool-state.palette.alpha",
+          "version": 1,
+          "paletteName": "HUD"
+        },
+        "flowState": "open"
+      },
+      "expectedErrorCodes": [
+        "PROJECTWORKSPACE_STATE_PALETTE_CONTEXT_FIELD_INVALID"
+      ]
+    }
+  ]
+}

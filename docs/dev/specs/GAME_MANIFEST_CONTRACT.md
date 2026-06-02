@@ -104,7 +104,7 @@ This document does not:
 - implement manifest persistence
 - implement authentication
 - implement authorization checks
-- implement Project Workspace storage
+- implement ProjectWorkspace storage
 - implement runtime manifest loading
 - implement publishing
 - implement marketplace behavior

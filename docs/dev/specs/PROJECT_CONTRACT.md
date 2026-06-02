@@ -10,7 +10,7 @@
 - Every Project requires a project type.
 - Every Project requires explicit visibility.
 - Project type determines expected outputs, not ownership behavior.
-- All project types share the same ownership, visibility, permissions, lifecycle, and Project Workspace model.
+- All project types share the same ownership, visibility, permissions, lifecycle, and ProjectWorkspace model.
 
 ## Lifecycle
 
