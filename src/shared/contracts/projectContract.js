@@ -16,6 +16,24 @@ import {
 export const PROJECT_CONTRACT_ID = "gamefoundrystudio.project.lifecycle";
 export const PROJECT_CONTRACT_VERSION = "1.0.0";
 
+export const PROJECT_TYPES = Object.freeze({
+  GAME: "game",
+  ASSET_PACK: "asset-pack",
+  MUSIC_PACK: "music-pack",
+  LOCALIZATION_PACK: "localization-pack",
+  TEMPLATE: "template",
+  TUTORIAL: "tutorial",
+});
+
+export const PROJECT_TYPE_LIST = Object.freeze([
+  PROJECT_TYPES.GAME,
+  PROJECT_TYPES.ASSET_PACK,
+  PROJECT_TYPES.MUSIC_PACK,
+  PROJECT_TYPES.LOCALIZATION_PACK,
+  PROJECT_TYPES.TEMPLATE,
+  PROJECT_TYPES.TUTORIAL,
+]);
+
 export const PROJECT_STATES = Object.freeze({
   DRAFT: "draft",
   ACTIVE: "active",
@@ -78,6 +96,45 @@ export const PROJECT_RELATIONSHIP_LIST = Object.freeze([
   PROJECT_RELATIONSHIPS.MARKETPLACE_ITEMS,
 ]);
 
+export const PROJECT_TYPE_OUTPUTS = Object.freeze({
+  ASSET_OUTPUTS: "asset-outputs",
+  AUDIO_OUTPUTS: "audio-outputs",
+  MIDI_OUTPUTS: "midi-outputs",
+  TRANSLATION_OUTPUTS: "translation-outputs",
+  REUSABLE_STARTER_CONTENT: "reusable-starter-content",
+  LEARNING_COMMUNITY_CONTENT: "learning-community-content",
+});
+
+export const PROJECT_TYPE_EXPECTED_OUTPUTS = Object.freeze({
+  [PROJECT_TYPES.GAME]: Object.freeze([
+    PROJECT_RELATIONSHIPS.GAME_MANIFEST,
+    PROJECT_RELATIONSHIPS.RELEASES,
+  ]),
+  [PROJECT_TYPES.ASSET_PACK]: Object.freeze([
+    PROJECT_TYPE_OUTPUTS.ASSET_OUTPUTS,
+  ]),
+  [PROJECT_TYPES.MUSIC_PACK]: Object.freeze([
+    PROJECT_TYPE_OUTPUTS.AUDIO_OUTPUTS,
+    PROJECT_TYPE_OUTPUTS.MIDI_OUTPUTS,
+  ]),
+  [PROJECT_TYPES.LOCALIZATION_PACK]: Object.freeze([
+    PROJECT_TYPE_OUTPUTS.TRANSLATION_OUTPUTS,
+  ]),
+  [PROJECT_TYPES.TEMPLATE]: Object.freeze([
+    PROJECT_TYPE_OUTPUTS.REUSABLE_STARTER_CONTENT,
+  ]),
+  [PROJECT_TYPES.TUTORIAL]: Object.freeze([
+    PROJECT_TYPE_OUTPUTS.LEARNING_COMMUNITY_CONTENT,
+  ]),
+});
+
+export const PROJECT_TYPE_RULES = Object.freeze({
+  PROJECT_IS_PERSISTED_OWNERSHIP_CONTAINER: true,
+  PROJECT_TYPE_DETERMINES_EXPECTED_OUTPUTS_ONLY: true,
+  SHARES_OWNERSHIP_VISIBILITY_PERMISSIONS_LIFECYCLE: true,
+  SHARES_PROJECT_WORKSPACE_MODEL: true,
+});
+
 export const PROJECT_ROLE_PERMISSION_GRANTS = Object.freeze({
   [PROJECT_ROLES.OWNER]: Object.freeze([
     IDENTITY_PERMISSIONS.VIEW,
@@ -103,6 +160,8 @@ export const PROJECT_INACTIVE_STATES = Object.freeze([
 
 export const PROJECT_CONTRACT_ERRORS = Object.freeze({
   OWNER_REQUIRED: "PROJECT_OWNER_REQUIRED",
+  PROJECT_TYPE_REQUIRED: "PROJECT_TYPE_REQUIRED",
+  PROJECT_TYPE_INVALID: "PROJECT_TYPE_INVALID",
   VISIBILITY_REQUIRED: "PROJECT_VISIBILITY_REQUIRED",
   VISIBILITY_INVALID: "PROJECT_VISIBILITY_INVALID",
   STATE_REQUIRED: "PROJECT_STATE_REQUIRED",
@@ -113,6 +172,10 @@ export const PROJECT_CONTRACT_ERRORS = Object.freeze({
 
 export function isProjectState(value) {
   return PROJECT_STATE_LIST.includes(value);
+}
+
+export function isProjectType(value) {
+  return PROJECT_TYPE_LIST.includes(value);
 }
 
 export function isProjectRole(value) {
@@ -135,6 +198,20 @@ export function validateProjectContract(project) {
       PROJECT_CONTRACT_ERRORS.OWNER_REQUIRED,
       "Project records require ownerId.",
       "ownerId"
+    ));
+  }
+
+  if (!hasNonEmptyString(project?.projectType)) {
+    errors.push(createContractError(
+      PROJECT_CONTRACT_ERRORS.PROJECT_TYPE_REQUIRED,
+      "Project records require projectType.",
+      "projectType"
+    ));
+  } else if (!isProjectType(project.projectType)) {
+    errors.push(createContractError(
+      PROJECT_CONTRACT_ERRORS.PROJECT_TYPE_INVALID,
+      "Project type must be an allowed project type.",
+      "projectType"
     ));
   }
 

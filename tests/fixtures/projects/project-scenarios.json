@@ -5,6 +5,7 @@
       "project": {
         "id": "project.private.draft",
         "ownerId": "user.owner",
+        "projectType": "game",
         "state": "draft",
         "visibility": "private",
         "members": [
@@ -26,6 +27,7 @@
       "project": {
         "id": "project.public.published",
         "ownerId": "user.owner",
+        "projectType": "game",
         "state": "published",
         "visibility": "public",
         "members": [
@@ -43,6 +45,7 @@
       "project": {
         "id": "project.marketplace",
         "ownerId": "user.owner",
+        "projectType": "asset-pack",
         "state": "marketplace",
         "visibility": "public",
         "members": [],
@@ -56,16 +59,39 @@
       "name": "missing owner",
       "project": {
         "id": "project.missing.owner",
+        "projectType": "game",
         "state": "draft",
         "visibility": "private"
       },
       "expectedErrors": ["PROJECT_OWNER_REQUIRED"]
     },
     {
+      "name": "missing project type",
+      "project": {
+        "id": "project.missing.type",
+        "ownerId": "user.owner",
+        "state": "draft",
+        "visibility": "private"
+      },
+      "expectedErrors": ["PROJECT_TYPE_REQUIRED"]
+    },
+    {
+      "name": "invalid project type",
+      "project": {
+        "id": "project.invalid.type",
+        "ownerId": "user.owner",
+        "projectType": "workspace",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expectedErrors": ["PROJECT_TYPE_INVALID"]
+    },
+    {
       "name": "missing visibility",
       "project": {
         "id": "project.missing.visibility",
         "ownerId": "user.owner",
+        "projectType": "game",
         "state": "active"
       },
       "expectedErrors": ["PROJECT_VISIBILITY_REQUIRED"]
@@ -75,6 +101,7 @@
       "project": {
         "id": "project.invalid.state",
         "ownerId": "user.owner",
+        "projectType": "game",
         "state": "deleted",
         "visibility": "private"
       },
@@ -85,6 +112,7 @@
       "project": {
         "id": "project.invalid.role",
         "ownerId": "user.owner",
+        "projectType": "game",
         "state": "active",
         "visibility": "project",
         "members": [
@@ -101,6 +129,7 @@
       "project": {
         "id": "project.invalid.relationship",
         "ownerId": "user.owner",
+        "projectType": "game",
         "state": "active",
         "visibility": "project",
         "relationships": ["tool-states", "database-table"]

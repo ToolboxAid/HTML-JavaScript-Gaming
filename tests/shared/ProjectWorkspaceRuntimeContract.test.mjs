@@ -7,6 +7,7 @@ ProjectWorkspaceRuntimeContract.test.mjs
 import assert from "node:assert/strict";
 import {
   PROJECT_CONTRACT_ID,
+  PROJECT_TYPES,
   validateProjectContract,
 } from "../../src/shared/contracts/projectContract.js";
 import {
@@ -87,6 +88,7 @@ export function run() {
   const project = {
     id: "project.alpha",
     ownerId: "user.owner",
+    projectType: PROJECT_TYPES.GAME,
     visibility: "project",
     state: "active",
     relationships: ["tool-states", "game-manifest"],
