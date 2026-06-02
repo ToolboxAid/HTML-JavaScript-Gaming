@@ -1,0 +1,268 @@
+{
+  "baseVersionCompatibility": {
+    "versionCompatibilityId": "version-compatibility.alpha.compatible",
+    "ownerId": "user.buyer",
+    "projectId": "project.game.alpha",
+    "sourceRelease": {
+      "releaseId": "release.game.alpha.2",
+      "projectId": "project.game.alpha",
+      "version": 2,
+      "status": "published"
+    },
+    "sourcePublish": {
+      "publishId": "publish.game.alpha.2",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.2",
+      "status": "published"
+    },
+    "updateChannel": {
+      "updateChannelId": "update-channel.alpha.stable",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "channelType": "stable",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2"
+    },
+    "libraryItem": {
+      "libraryItemId": "library-item.alpha.available.1",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2",
+      "libraryStatus": "available"
+    },
+    "installReceipt": {
+      "installReceiptId": "install-receipt.alpha.installed.2",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "libraryItemId": "library-item.alpha.available.1",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2",
+      "receiptStatus": "installed"
+    },
+    "minimumVersion": 1,
+    "maximumVersion": 3,
+    "targetVersion": 2,
+    "supportedSchemaVersion": 1,
+    "compatibilityState": "compatible",
+    "evaluatedAt": "2026-06-02T23:00:00.000Z",
+    "compatibilityNotes": "Target release is compatible with this library item."
+  },
+  "validVersionCompatibilities": [
+    {
+      "name": "compatible version compatibility",
+      "overrides": {
+        "versionCompatibilityId": "version-compatibility.alpha.compatible",
+        "compatibilityState": "compatible"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "incompatible version compatibility",
+      "overrides": {
+        "versionCompatibilityId": "version-compatibility.alpha.incompatible",
+        "compatibilityState": "incompatible",
+        "compatibilityNotes": "Target release is known incompatible for this installed item."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "deprecated version compatibility",
+      "overrides": {
+        "versionCompatibilityId": "version-compatibility.alpha.deprecated",
+        "compatibilityState": "deprecated",
+        "compatibilityNotes": "Target release is allowed but deprecated."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "blocked version compatibility",
+      "overrides": {
+        "versionCompatibilityId": "version-compatibility.alpha.blocked",
+        "compatibilityState": "blocked",
+        "compatibilityNotes": "Target release is blocked by platform policy."
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidVersionCompatibilities": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "overrides": {
+        "projectId": ""
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing source release",
+      "removeFields": ["sourceRelease"],
+      "expectedErrors": ["VERSION_COMPATIBILITY_SOURCE_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "missing source publish",
+      "removeFields": ["sourcePublish"],
+      "expectedErrors": ["VERSION_COMPATIBILITY_SOURCE_PUBLISH_REQUIRED"]
+    },
+    {
+      "name": "missing update channel",
+      "removeFields": ["updateChannel"],
+      "expectedErrors": ["VERSION_COMPATIBILITY_UPDATE_CHANNEL_REQUIRED"]
+    },
+    {
+      "name": "missing library item",
+      "removeFields": ["libraryItem"],
+      "expectedErrors": ["VERSION_COMPATIBILITY_LIBRARY_ITEM_REQUIRED"]
+    },
+    {
+      "name": "missing install receipt",
+      "removeFields": ["installReceipt"],
+      "expectedErrors": ["VERSION_COMPATIBILITY_INSTALL_RECEIPT_REQUIRED"]
+    },
+    {
+      "name": "invalid minimum version",
+      "overrides": {
+        "minimumVersion": 0
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_MINIMUM_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid maximum version",
+      "overrides": {
+        "maximumVersion": 0
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_MAXIMUM_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid target version",
+      "overrides": {
+        "targetVersion": 0
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_TARGET_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid supported schema version",
+      "overrides": {
+        "supportedSchemaVersion": 0
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_SUPPORTED_SCHEMA_VERSION_INVALID"]
+    },
+    {
+      "name": "minimum greater than maximum",
+      "overrides": {
+        "minimumVersion": 4,
+        "maximumVersion": 3
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_RANGE_INVALID"]
+    },
+    {
+      "name": "target outside version range",
+      "overrides": {
+        "minimumVersion": 1,
+        "maximumVersion": 2,
+        "targetVersion": 3,
+        "sourceRelease": {
+          "version": 3
+        }
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_TARGET_VERSION_OUT_OF_RANGE"]
+    },
+    {
+      "name": "target release version mismatch",
+      "overrides": {
+        "maximumVersion": 4,
+        "targetVersion": 3
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_TARGET_RELEASE_VERSION_MISMATCH"]
+    },
+    {
+      "name": "invalid compatibility state",
+      "overrides": {
+        "compatibilityState": "unknown"
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_STATE_INVALID"]
+    },
+    {
+      "name": "release publish mismatch",
+      "overrides": {
+        "sourcePublish": {
+          "releaseId": "release.game.other.2"
+        }
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_RELEASE_PUBLISH_MISMATCH"]
+    },
+    {
+      "name": "update channel publish mismatch",
+      "overrides": {
+        "updateChannel": {
+          "publishId": "publish.game.other.2"
+        }
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_PUBLISH_UPDATE_CHANNEL_MISMATCH"]
+    },
+    {
+      "name": "library item install receipt mismatch",
+      "overrides": {
+        "installReceipt": {
+          "libraryItemId": "library-item.alpha.other"
+        }
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_LIBRARY_ITEM_INSTALL_RECEIPT_MISMATCH"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "overrides": {
+        "toolState": {}
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "installer state leakage",
+      "overrides": {
+        "installerState": {}
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "updater implementation leakage",
+      "overrides": {
+        "updaterImplementation": {}
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "migration implementation leakage",
+      "overrides": {
+        "migrationImplementation": {}
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "file bytes leakage",
+      "overrides": {
+        "fileBytes": "AAAA"
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "download state leakage",
+      "overrides": {
+        "downloadState": {}
+      },
+      "expectedErrors": ["VERSION_COMPATIBILITY_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
