@@ -1,0 +1,365 @@
+{
+  "validVectorAssets": [
+    {
+      "name": "active project vector asset with source tool state",
+      "vectorAsset": {
+        "assetId": "vector.asset.ship",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.vector.ship",
+          "toolType": "object-vector-studio-v2",
+          "projectId": "project.active",
+          "version": 3
+        },
+        "visibility": "project",
+        "version": 2,
+        "status": "active",
+        "exportFormats": ["vector-json", "svg"],
+        "payload": {
+          "objects": [
+            {
+              "id": "ship",
+              "shapes": ["polygon", "circle"]
+            }
+          ]
+        }
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "draft private vector asset without source tool state",
+      "vectorAsset": {
+        "assetId": "vector.asset.pickup",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "draft",
+        "exportFormats": ["vector-json"],
+        "payload": {
+          "objects": []
+        }
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "archived public vector asset",
+      "vectorAsset": {
+        "assetId": "vector.asset.enemy.archive",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.public",
+        "sourceToolState": {
+          "toolStateId": "tool-state.vector.enemy",
+          "toolType": "object-vector-studio-v2",
+          "projectId": "project.public",
+          "version": 5
+        },
+        "visibility": "public",
+        "version": 4,
+        "status": "archived",
+        "exportFormats": ["vector-json", "svg", "project-package"],
+        "payload": {
+          "objects": ["enemy"]
+        }
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidVectorAssets": [
+    {
+      "name": "missing owner",
+      "vectorAsset": {
+        "assetId": "vector.asset.missing.owner",
+        "assetType": "vector",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["VECTOR_ASSET_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "vectorAsset": {
+        "assetId": "vector.asset.missing.project",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["VECTOR_ASSET_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "invalid asset type",
+      "vectorAsset": {
+        "assetId": "vector.asset.invalid.type",
+        "assetType": "sprite",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["VECTOR_ASSET_TYPE_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "vectorAsset": {
+        "assetId": "vector.asset.invalid.visibility",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "team",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["VECTOR_ASSET_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid version",
+      "vectorAsset": {
+        "assetId": "vector.asset.invalid.version",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 0,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["VECTOR_ASSET_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid export format",
+      "vectorAsset": {
+        "assetId": "vector.asset.invalid.export",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json", "gif"]
+      },
+      "expectedErrors": ["VECTOR_ASSET_EXPORT_FORMAT_INVALID"]
+    },
+    {
+      "name": "invalid source tool state",
+      "vectorAsset": {
+        "assetId": "vector.asset.invalid.source",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.vector.invalid",
+          "projectId": "project.active",
+          "version": 1
+        },
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["VECTOR_ASSET_SOURCE_TOOL_STATE_INVALID"]
+    },
+    {
+      "name": "source tool state project mismatch",
+      "vectorAsset": {
+        "assetId": "vector.asset.source.mismatch",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "sourceToolState": {
+          "toolStateId": "tool-state.vector.other",
+          "toolType": "object-vector-studio-v2",
+          "projectId": "project.other",
+          "version": 1
+        },
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "expectedErrors": ["VECTOR_ASSET_SOURCE_TOOL_STATE_PROJECT_MISMATCH"]
+    }
+  ],
+  "accessChecks": [
+    {
+      "name": "private vector asset owner can view",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "view",
+      "vectorAsset": {
+        "assetId": "vector.asset.private",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    },
+    {
+      "name": "private vector asset ungranted user cannot view",
+      "actorId": "user.other",
+      "projectRole": "viewer",
+      "permission": "view",
+      "vectorAsset": {
+        "assetId": "vector.asset.private",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.private",
+        "visibility": "private",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "project": {
+        "id": "project.private",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "project vector asset granted collaborator can edit",
+      "actorId": "user.collaborator",
+      "projectRole": "collaborator",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "vectorAsset": {
+        "assetId": "vector.asset.project",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": true
+    },
+    {
+      "name": "viewer cannot edit vector asset",
+      "actorId": "user.viewer",
+      "projectRole": "viewer",
+      "permission": "edit",
+      "grantedProjectIds": ["project.active"],
+      "grantedScopes": ["project"],
+      "vectorAsset": {
+        "assetId": "vector.asset.project",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "project"
+      },
+      "expected": false
+    },
+    {
+      "name": "marketplace vector asset is visible",
+      "actorId": "market.viewer",
+      "projectRole": "viewer",
+      "permission": "view",
+      "vectorAsset": {
+        "assetId": "vector.asset.marketplace",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.marketplace",
+        "visibility": "marketplace",
+        "version": 1,
+        "status": "active",
+        "exportFormats": ["vector-json", "svg"]
+      },
+      "project": {
+        "id": "project.marketplace",
+        "ownerId": "user.owner",
+        "state": "marketplace",
+        "visibility": "public"
+      },
+      "expected": true
+    },
+    {
+      "name": "archived vector asset cannot be edited by default",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "vectorAsset": {
+        "assetId": "vector.asset.archived",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 2,
+        "status": "archived",
+        "exportFormats": ["vector-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "archived vector asset can be edited when policy allows",
+      "actorId": "user.owner",
+      "projectRole": "owner",
+      "permission": "edit",
+      "policy": {
+        "allowArchivedVectorAssetEdit": true
+      },
+      "vectorAsset": {
+        "assetId": "vector.asset.archived",
+        "assetType": "vector",
+        "ownerId": "user.owner",
+        "projectId": "project.active",
+        "visibility": "private",
+        "version": 2,
+        "status": "archived",
+        "exportFormats": ["vector-json"]
+      },
+      "project": {
+        "id": "project.active",
+        "ownerId": "user.owner",
+        "state": "active",
+        "visibility": "private"
+      },
+      "expected": true
+    }
+  ]
+}
