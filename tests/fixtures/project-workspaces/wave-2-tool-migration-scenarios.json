@@ -1,0 +1,529 @@
+{
+  "wave": "wave-2",
+  "samplesDecision": "SKIP / pending rebuild",
+  "futureToolsDecision": "SKIP / out of scope",
+  "wave1Decision": "SKIP / already closed",
+  "tools": [
+    {
+      "toolId": "tile-map-editor",
+      "displayName": "Tilemap Studio",
+      "toolType": "editor",
+      "requiredInputs": ["image-file", "palette-json"],
+      "producedOutputs": ["tilemap-json"],
+      "payloadRequiredField": "tilemap"
+    },
+    {
+      "toolId": "parallax-editor",
+      "displayName": "Parallax Scene Studio",
+      "toolType": "editor",
+      "requiredInputs": ["image-file"],
+      "producedOutputs": ["json", "image-file"],
+      "payloadRequiredField": "layers"
+    },
+    {
+      "toolId": "sprite-editor",
+      "displayName": "Sprite Editor",
+      "toolType": "editor",
+      "requiredInputs": ["palette-json"],
+      "producedOutputs": ["image-file", "metadata-json"],
+      "payloadRequiredField": "frames"
+    },
+    {
+      "toolId": "asset-pipeline",
+      "displayName": "Asset Pipeline",
+      "toolType": "pipeline",
+      "requiredInputs": ["metadata-json", "asset"],
+      "producedOutputs": ["metadata-json", "project-package"],
+      "payloadRequiredField": "assetManifest"
+    },
+    {
+      "toolId": "3d-camera-path-editor",
+      "displayName": "3D Camera Path Editor",
+      "toolType": "editor",
+      "requiredInputs": ["camera-path-json"],
+      "producedOutputs": ["camera-path-json"],
+      "payloadRequiredField": "cameraPath"
+    }
+  ],
+  "validLaunches": [
+    {
+      "name": "tile-map-editor launch uses explicit ProjectWorkspace inputs",
+      "toolId": "tile-map-editor",
+      "launch": {
+        "selectedToolId": "tile-map-editor",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "tile-map-editor",
+          "activeToolStateId": "tool-state.wave2.tile-map-editor",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave2",
+          "projectId": "project.wave2",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave2.tile-map-editor",
+          "projectId": "project.wave2",
+          "toolType": "tile-map-editor",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "parallax-editor launch uses explicit ProjectWorkspace inputs",
+      "toolId": "parallax-editor",
+      "launch": {
+        "selectedToolId": "parallax-editor",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "parallax-editor",
+          "activeToolStateId": "tool-state.wave2.parallax-editor",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave2",
+          "projectId": "project.wave2",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave2.parallax-editor",
+          "projectId": "project.wave2",
+          "toolType": "parallax-editor",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "sprite-editor launch uses explicit ProjectWorkspace inputs",
+      "toolId": "sprite-editor",
+      "launch": {
+        "selectedToolId": "sprite-editor",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "sprite-editor",
+          "activeToolStateId": "tool-state.wave2.sprite-editor",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave2",
+          "projectId": "project.wave2",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave2.sprite-editor",
+          "projectId": "project.wave2",
+          "toolType": "sprite-editor",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "asset-pipeline launch uses explicit ProjectWorkspace inputs",
+      "toolId": "asset-pipeline",
+      "launch": {
+        "selectedToolId": "asset-pipeline",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "asset-pipeline",
+          "activeToolStateId": "tool-state.wave2.asset-pipeline",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave2",
+          "projectId": "project.wave2",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave2.asset-pipeline",
+          "projectId": "project.wave2",
+          "toolType": "asset-pipeline",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "3d-camera-path-editor launch uses explicit ProjectWorkspace inputs",
+      "toolId": "3d-camera-path-editor",
+      "launch": {
+        "selectedToolId": "3d-camera-path-editor",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "3d-camera-path-editor",
+          "activeToolStateId": "tool-state.wave2.3d-camera-path-editor",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave2",
+          "projectId": "project.wave2",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave2.3d-camera-path-editor",
+          "projectId": "project.wave2",
+          "toolType": "3d-camera-path-editor",
+          "version": 1
+        }
+      }
+    }
+  ],
+  "invalidLaunches": [
+    {
+      "name": "Wave 2 launch without manifest rejects visibly",
+      "launch": {
+        "selectedToolId": "tile-map-editor",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "tile-map-editor",
+          "activeToolStateId": "tool-state.wave2.tile-map-editor",
+          "flowState": "opening"
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave2.tile-map-editor",
+          "projectId": "project.wave2",
+          "toolType": "tile-map-editor",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": ["PROJECTWORKSPACE_LAUNCH_MANIFEST_INPUT_REQUIRED"]
+    },
+    {
+      "name": "Wave 2 launch fallback rejects visibly",
+      "launch": {
+        "selectedToolId": "sprite-editor",
+        "fallbackData": {
+          "source": "silent-default"
+        },
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "sprite-editor",
+          "activeToolStateId": "tool-state.wave2.sprite-editor",
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave2",
+          "projectId": "project.wave2",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave2.sprite-editor",
+          "projectId": "project.wave2",
+          "toolType": "sprite-editor",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": ["PROJECTWORKSPACE_LAUNCH_FORBIDDEN_FIELD"]
+    }
+  ],
+  "manifestHandoffs": [
+    {
+      "name": "tile-map-editor manifest handoff uses declared fields only",
+      "toolId": "tile-map-editor",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "tile-map-editor",
+          "activeToolStateId": "tool-state.wave2.tile-map-editor",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.wave2",
+          "ownerId": "user.owner",
+          "projectId": "project.wave2",
+          "projectType": "game",
+          "sourceToolStates": [
+            {
+              "toolStateId": "tool-state.wave2.tile-map-editor",
+              "toolType": "tile-map-editor",
+              "version": 1
+            }
+          ],
+          "sourceAssets": [
+            {
+              "assetId": "asset.wave2.tileset",
+              "assetType": "image",
+              "version": 1
+            },
+            {
+              "assetId": "palette.wave2.primary",
+              "assetType": "palette",
+              "version": 1
+            }
+          ],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": ["manifestId", "projectId", "projectType", "sourceToolStates", "sourceAssets", "visibility", "version", "status", "exportFormat"],
+        "downstreamUseFields": ["manifestId", "projectId", "sourceToolStates", "sourceAssets"]
+      }
+    },
+    {
+      "name": "asset-pipeline manifest handoff uses declared fields only",
+      "toolId": "asset-pipeline",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "asset-pipeline",
+          "activeToolStateId": "tool-state.wave2.asset-pipeline",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.wave2",
+          "ownerId": "user.owner",
+          "projectId": "project.wave2",
+          "projectType": "game",
+          "sourceToolStates": [
+            {
+              "toolStateId": "tool-state.wave2.asset-pipeline",
+              "toolType": "asset-pipeline",
+              "version": 1
+            }
+          ],
+          "sourceAssets": [
+            {
+              "assetId": "asset.wave2.bundle",
+              "assetType": "image",
+              "version": 1
+            }
+          ],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": ["manifestId", "projectId", "projectType", "sourceToolStates", "sourceAssets", "visibility", "version", "status", "exportFormat"],
+        "downstreamUseFields": ["manifestId", "projectId", "sourceAssets"]
+      }
+    }
+  ],
+  "lifecycleTransitions": [
+    {
+      "name": "Wave 2 open participates in ProjectWorkspace lifecycle",
+      "transition": {
+        "action": "open",
+        "before": {
+          "activeProjectId": "project.wave2",
+          "flowState": "idle"
+        },
+        "after": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "tile-map-editor",
+          "activeToolStateId": "tool-state.wave2.tile-map-editor",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        }
+      }
+    },
+    {
+      "name": "Wave 2 save participates through active toolState",
+      "transition": {
+        "action": "save",
+        "saveTargetToolStateId": "tool-state.wave2.sprite-editor",
+        "before": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "sprite-editor",
+          "activeToolStateId": "tool-state.wave2.sprite-editor",
+          "dirty": true,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        },
+        "after": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "sprite-editor",
+          "activeToolStateId": "tool-state.wave2.sprite-editor",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        }
+      }
+    },
+    {
+      "name": "Wave 2 close releases active tool references",
+      "transition": {
+        "action": "close",
+        "before": {
+          "activeProjectId": "project.wave2",
+          "activeToolId": "3d-camera-path-editor",
+          "activeToolStateId": "tool-state.wave2.3d-camera-path-editor",
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "open"
+        },
+        "after": {
+          "dirty": false,
+          "recoveryAvailable": false,
+          "flowState": "idle"
+        }
+      }
+    }
+  ],
+  "validToolStates": [
+    {
+      "toolId": "tile-map-editor",
+      "toolState": {
+        "toolStateId": "tool-state.wave2.tile-map-editor",
+        "toolType": "tile-map-editor",
+        "ownerId": "user.owner",
+        "projectId": "project.wave2",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "assetRefs": ["asset.wave2.tileset", "palette.wave2.primary"],
+        "payload": {
+          "tilemap": {
+            "width": 16,
+            "height": 16
+          }
+        }
+      }
+    },
+    {
+      "toolId": "parallax-editor",
+      "toolState": {
+        "toolStateId": "tool-state.wave2.parallax-editor",
+        "toolType": "parallax-editor",
+        "ownerId": "user.owner",
+        "projectId": "project.wave2",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "assetRefs": ["asset.wave2.sky"],
+        "payload": {
+          "layers": [
+            {
+              "assetId": "asset.wave2.sky"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "toolId": "sprite-editor",
+      "toolState": {
+        "toolStateId": "tool-state.wave2.sprite-editor",
+        "toolType": "sprite-editor",
+        "ownerId": "user.owner",
+        "projectId": "project.wave2",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "assetRefs": ["palette.wave2.primary"],
+        "payload": {
+          "frames": [
+            {
+              "index": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "toolId": "asset-pipeline",
+      "toolState": {
+        "toolStateId": "tool-state.wave2.asset-pipeline",
+        "toolType": "asset-pipeline",
+        "ownerId": "user.owner",
+        "projectId": "project.wave2",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "assetRefs": ["asset.wave2.bundle"],
+        "payload": {
+          "assetManifest": {
+            "assetCount": 1
+          }
+        }
+      }
+    },
+    {
+      "toolId": "3d-camera-path-editor",
+      "toolState": {
+        "toolStateId": "tool-state.wave2.3d-camera-path-editor",
+        "toolType": "3d-camera-path-editor",
+        "ownerId": "user.owner",
+        "projectId": "project.wave2",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "cameraPath": {
+            "waypoints": []
+          }
+        }
+      }
+    }
+  ],
+  "invalidToolStates": [
+    {
+      "name": "missing Wave 2 payload rejects",
+      "toolId": "tile-map-editor",
+      "toolState": {
+        "toolStateId": "tool-state.wave2.tile-map-editor",
+        "toolType": "tile-map-editor",
+        "ownerId": "user.owner",
+        "projectId": "project.wave2",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {}
+      },
+      "expectedErrorCodes": ["WAVE2_TOOLSTATE_PAYLOAD_INVALID"]
+    },
+    {
+      "name": "hidden fallback payload rejects",
+      "toolId": "sprite-editor",
+      "toolState": {
+        "toolStateId": "tool-state.wave2.sprite-editor",
+        "toolType": "sprite-editor",
+        "ownerId": "user.owner",
+        "projectId": "project.wave2",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "frames": [],
+          "sampleJson": {
+            "source": "silent-default"
+          }
+        }
+      },
+      "expectedErrorCodes": ["WAVE2_TOOLSTATE_PAYLOAD_FIELD_FORBIDDEN"]
+    },
+    {
+      "name": "toolState type mismatch rejects active ownership",
+      "toolId": "asset-pipeline",
+      "toolState": {
+        "toolStateId": "tool-state.wave2.asset-pipeline",
+        "toolType": "sprite-editor",
+        "ownerId": "user.owner",
+        "projectId": "project.wave2",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "assetManifest": {}
+        }
+      },
+      "expectedErrorCodes": ["WAVE2_TOOLSTATE_ACTIVE_OWNERSHIP_INVALID"]
+    }
+  ]
+}
