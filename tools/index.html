@@ -1,38 +1,32 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <base href="../GameFoundryStudio/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tools - Game Foundry Studio</title>
-    <meta name="description" content="Browse Game Foundry Studio creator tools.">
+    <meta name="description" content="Game Foundry Studio creator tools.">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="assets/css/theme/v2/theme.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
+
 <body>
     <div data-partial="header-nav"></div>
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Build</div>
-                <h1>Creator Tools</h1>
-                <p class="lede">Open visual studios for assets, game design, audio, input, code, publishing, and platform support.</p>
+                <div class="kicker">The Tools</div>
+                <h1>Every tool gets its own branded tile.</h1>
             </div>
         </section>
         <section class="section">
             <div class="container">
-                <div class="section-head">
-                    <div>
-                        <div class="kicker">Tool index</div>
-                        <h2>Choose a workspace.</h2>
-                    </div>
-                    <p>Tool cards use the current runtime pages, approved image assets, badge assets, grouping labels, and Theme V2 color indicators.</p>
-                </div>
-                <div class="hero-actions" aria-label="Tool sorting and grouping">
+                <div class="hero-actions" aria-label="Tool accordion sorting">
                     <button class="btn" type="button" data-tools-order="ascending" aria-pressed="true">Order A-Z</button>
                     <button class="btn" type="button" data-tools-sort="grouped" aria-pressed="false">Grouped</button>
                 </div>
-                <div data-tools-accordion-list></div>
+                <div class="accordion-stack" data-tools-accordion-list></div>
             </div>
         </section>
     </main>
@@ -40,4 +34,5 @@
     <script src="assets/js/gamefoundry-partials.js" defer></script>
     <script src="assets/js/tools-page-accordions.js" defer></script>
 </body>
+
 </html>
