@@ -18,7 +18,7 @@
         "sound-studio": "tools/sound-studio.html",
         "storage-inspector": "tools/storage-inspector.html",
         "world-vector-studio": "tools/world-vector-studio.html",
-        "configuration-admin": "admin/site-settings.html",
+        "configuration-admin": "tools/groups/configuration-admin.html",
         games: "arcade/index.html",
         arcade: "arcade/index.html",
         "game-action": "arcade/index.html#action",
@@ -72,6 +72,7 @@
 
     const rootPageRoutes = new Set([
         "tools",
+        "configuration-admin",
         "ai-assistant",
         "animation-studio", "asset-studio", "code-studio", "input-studio", "midi-studio",
         "object-vector-studio", "palette-manager", "particle-studio", "sound-studio", "storage-inspector",
