@@ -1,0 +1,377 @@
+{
+  "validListings": [
+    {
+      "name": "listed marketplace release listing",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z",
+        "listingTitle": "Alpha Quest",
+        "listingSummary": "Marketplace listing linked to a published release and publish record."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "draft private marketplace listing",
+      "listing": {
+        "listingId": "listing.game.alpha.draft",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "private",
+        "status": "draft",
+        "listingTitle": "Alpha Quest Draft",
+        "listingSummary": ""
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "retired historically referenceable listing",
+      "listing": {
+        "listingId": "listing.game.alpha.retired",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.retired",
+          "version": 1,
+          "status": "retired"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.retired",
+          "releaseId": "release.game.alpha.retired",
+          "status": "retired"
+        },
+        "visibility": "public",
+        "status": "retired",
+        "listedAt": "2026-06-02T16:00:00.000Z",
+        "listingTitle": "Alpha Quest Retired"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidListings": [
+    {
+      "name": "missing owner",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing source release",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_SOURCE_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "missing source publish",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_SOURCE_PUBLISH_REQUIRED"]
+    },
+    {
+      "name": "invalid source release",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 0,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_SOURCE_RELEASE_INVALID"]
+    },
+    {
+      "name": "invalid source publish",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "ready"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_SOURCE_PUBLISH_INVALID"]
+    },
+    {
+      "name": "source linkage mismatch",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.2",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_SOURCE_LINKAGE_MISMATCH"]
+    },
+    {
+      "name": "invalid visibility",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "team",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid status",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "approved",
+        "listedAt": "2026-06-02T16:00:00.000Z"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_STATUS_INVALID"]
+    },
+    {
+      "name": "listed without timestamp",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_LISTED_AT_REQUIRED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z",
+        "workspaceState": {}
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth state leakage",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z",
+        "authState": {}
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "payment state leakage",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z",
+        "paymentState": {}
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "moderation decision leakage",
+      "listing": {
+        "listingId": "listing.game.alpha.1",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "visibility": "marketplace",
+        "status": "listed",
+        "listedAt": "2026-06-02T16:00:00.000Z",
+        "moderationDecision": "approved"
+      },
+      "expectedErrors": ["MARKETPLACE_LISTING_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
