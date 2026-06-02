@@ -1,0 +1,936 @@
+{
+  "validDownloadGrants": [
+    {
+      "name": "active download grant",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z",
+        "grantNotes": "Active grant for marketplace content."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "expired download grant",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.expired.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "licensed"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "expired",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "expiresAt": "2026-05-01T00:00:00.000Z"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "revoked download grant",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.revoked.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "granted"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "revoked",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "revokedAt": "2026-06-02T18:00:00.000Z"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "consumed download grant",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.consumed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "consumed",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "consumedAt": "2026-06-02T17:30:00.000Z"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidDownloadGrants": [
+    {
+      "name": "missing owner",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing entitlement",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_ENTITLEMENT_REQUIRED"]
+    },
+    {
+      "name": "missing marketplace listing",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_MARKETPLACE_LISTING_REQUIRED"]
+    },
+    {
+      "name": "missing source release",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_SOURCE_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "missing source publish",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_SOURCE_PUBLISH_REQUIRED"]
+    },
+    {
+      "name": "invalid grant status",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "pending",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_STATUS_INVALID"]
+    },
+    {
+      "name": "owner entitlement mismatch",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.other",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_OWNER_ENTITLEMENT_MISMATCH"]
+    },
+    {
+      "name": "entitlement listing mismatch",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.other.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_ENTITLEMENT_LISTING_MISMATCH"]
+    },
+    {
+      "name": "listing release mismatch",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.other.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_LISTING_RELEASE_MISMATCH"]
+    },
+    {
+      "name": "release publish mismatch",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.other.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_RELEASE_PUBLISH_MISMATCH"]
+    },
+    {
+      "name": "active grant expired",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-05-01T00:00:00.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_ACTIVE_EXPIRED"]
+    },
+    {
+      "name": "expired grant not expired",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.expired.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "expired",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_EXPIRED_NOT_EXPIRED"]
+    },
+    {
+      "name": "revoked without timestamp",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.revoked.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "revoked",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_REVOKED_AT_REQUIRED"]
+    },
+    {
+      "name": "consumed without timestamp",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.consumed.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "consumed",
+        "grantedAt": "2026-06-02T17:00:00.000Z"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_CONSUMED_AT_REQUIRED"]
+    },
+    {
+      "name": "payment state leakage",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z",
+        "paymentState": {}
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth session state leakage",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z",
+        "authSessionState": {}
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z",
+        "workspaceState": {}
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z",
+        "toolState": {}
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "file bytes leakage",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z",
+        "fileBytes": "AAAA"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "cdn implementation leakage",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z",
+        "cdnUrl": "https://cdn.example.invalid/file.zip"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "storage implementation leakage",
+      "downloadGrant": {
+        "downloadGrantId": "download-grant.alpha.active.1",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "entitlement": {
+          "entitlementId": "entitlement.alpha.owner.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "listingId": "listing.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "entitlementType": "owned"
+        },
+        "marketplaceListing": {
+          "listingId": "listing.game.alpha.1",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.1",
+          "publishId": "publish.game.alpha.1",
+          "status": "listed"
+        },
+        "sourceRelease": {
+          "releaseId": "release.game.alpha.1",
+          "version": 1,
+          "status": "published"
+        },
+        "sourcePublish": {
+          "publishId": "publish.game.alpha.1",
+          "releaseId": "release.game.alpha.1",
+          "status": "published"
+        },
+        "grantStatus": "active",
+        "grantedAt": "2026-06-02T17:00:00.000Z",
+        "expiresAt": "2026-12-31T23:59:59.000Z",
+        "storageBucket": "marketplace-artifacts"
+      },
+      "expectedErrors": ["DOWNLOAD_GRANT_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
