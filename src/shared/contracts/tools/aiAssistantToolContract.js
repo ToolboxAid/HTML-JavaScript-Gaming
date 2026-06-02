@@ -6,18 +6,17 @@ aiAssistantToolContract.js
 */
 import {
   TOOL_CONTRACT_FORMATS,
-  TOOL_CONTRACT_STATUS,
+  TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
-  createToolContract,
+  createDraftToolContract,
 } from "../toolContractPrimitives.js";
 
-export const AI_ASSISTANT_TOOL_CONTRACT = createToolContract({
+export const AI_ASSISTANT_TOOL_CONTRACT = createDraftToolContract({
   toolId: "ai-assistant",
   toolType: TOOL_CONTRACT_TYPES.UTILITY,
   requiredInputs: [TOOL_CONTRACT_FORMATS.TEXT],
   producedOutputs: [TOOL_CONTRACT_FORMATS.TEXT],
-  supportedAssetTypes: [],
+  supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,
   importFormats: [TOOL_CONTRACT_FORMATS.TEXT],
   exportFormats: [TOOL_CONTRACT_FORMATS.TEXT],
-  status: TOOL_CONTRACT_STATUS.DRAFT,
 });

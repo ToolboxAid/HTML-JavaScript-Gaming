@@ -9,12 +9,11 @@ import {
 } from "../assetContract.js";
 import {
   TOOL_CONTRACT_FORMATS,
-  TOOL_CONTRACT_STATUS,
   TOOL_CONTRACT_TYPES,
-  createToolContract,
+  createDraftToolContract,
 } from "../toolContractPrimitives.js";
 
-export const ASSET_STUDIO_TOOL_CONTRACT = createToolContract({
+export const ASSET_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   toolId: "asset-studio",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
   requiredInputs: [TOOL_CONTRACT_FORMATS.PALETTE_JSON],
@@ -22,5 +21,4 @@ export const ASSET_STUDIO_TOOL_CONTRACT = createToolContract({
   supportedAssetTypes: [ASSET_TYPES.IMAGE, ASSET_TYPES.VECTOR, ASSET_TYPES.PALETTE],
   importFormats: [TOOL_CONTRACT_FORMATS.PALETTE_JSON, TOOL_CONTRACT_FORMATS.IMAGE_FILE],
   exportFormats: [TOOL_CONTRACT_FORMATS.IMAGE_FILE, TOOL_CONTRACT_FORMATS.VECTOR_JSON, TOOL_CONTRACT_FORMATS.PALETTE_JSON],
-  status: TOOL_CONTRACT_STATUS.DRAFT,
 });

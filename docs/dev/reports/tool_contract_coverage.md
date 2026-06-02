@@ -1,6 +1,6 @@
 # Tool Contract Coverage
 
-PR: PR_26152_073-split-tool-contracts-by-tool
+PR: PR_26152_074-tool-contract-deduplication-audit
 Date: 2026-06-02
 
 ## Discovery Sources
@@ -11,6 +11,14 @@ Date: 2026-06-02
 - Shared contract primitives: `src/shared/contracts/toolContractPrimitives.js`
 - Per-tool contracts: `src/shared/contracts/tools/*ToolContract.js`
 - Contract index: `src/shared/contracts/tools/toolContractsIndex.js`
+
+## Deduplication Status
+
+- Per-tool modules remain split: 34/34 retained.
+- Matching per-tool tests remain split: 34/34 retained.
+- Shared primitives now own repeated empty/all supported asset declarations and draft contract creation.
+- Per-tool declarations still own only tool-specific ids, types, inputs, outputs, asset support, imports, and exports.
+- Registered first-class tool coverage remains unchanged.
 
 ## Active Registered First-Class Tools
 
@@ -76,3 +84,6 @@ The root Tools Index card data includes public/root cards that are not all activ
 - Registered first-class tools without contract: 0
 - Root Tools Index cards reviewed: 18
 - Root Tools Index cards skipped as non-tool surfaces: 2
+- Duplicated empty supported asset declarations remaining in tool files: 0
+- Duplicated all-supported-assets declarations remaining in tool files: 0
+- Duplicated draft status declarations remaining in tool files: 0

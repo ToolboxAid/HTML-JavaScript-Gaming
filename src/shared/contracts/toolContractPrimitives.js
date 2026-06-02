@@ -22,6 +22,7 @@ import {
   isToolStateVersion,
 } from "./toolStateContract.js";
 import {
+  ASSET_TYPES,
   isAssetType,
 } from "./assetContract.js";
 
@@ -199,6 +200,11 @@ export const TOOL_CONTRACT_ERRORS = Object.freeze({
   PORTABLE_EXPORT_INVALID: "TOOL_CONTRACT_PORTABLE_EXPORT_INVALID",
 });
 
+export const TOOL_CONTRACT_SUPPORTED_ASSET_TYPES = Object.freeze({
+  ALL: Object.freeze(Object.values(ASSET_TYPES)),
+  NONE: Object.freeze([]),
+});
+
 export function createToolContract({
   toolId,
   toolType,
@@ -225,6 +231,13 @@ export function createToolContract({
     exportFormats: Object.freeze(exportFormats),
     status,
     version,
+  });
+}
+
+export function createDraftToolContract(toolContractDeclaration) {
+  return createToolContract({
+    ...toolContractDeclaration,
+    status: TOOL_CONTRACT_STATUS.DRAFT,
   });
 }
 

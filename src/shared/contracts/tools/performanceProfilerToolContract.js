@@ -6,6 +6,7 @@ performanceProfilerToolContract.js
 */
 import {
   TOOL_CONTRACT_FORMATS,
+  TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createToolContract,
 } from "../toolContractPrimitives.js";
@@ -15,7 +16,7 @@ export const PERFORMANCE_PROFILER_TOOL_CONTRACT = createToolContract({
   toolType: TOOL_CONTRACT_TYPES.INSPECTOR,
   requiredInputs: [TOOL_CONTRACT_FORMATS.JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.METADATA_JSON],
-  supportedAssetTypes: [],
+  supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,
   importFormats: [TOOL_CONTRACT_FORMATS.JSON],
   exportFormats: [TOOL_CONTRACT_FORMATS.METADATA_JSON],
 });

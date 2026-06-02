@@ -6,6 +6,7 @@ threeDJsonPayloadToolContract.js
 */
 import {
   TOOL_CONTRACT_FORMATS,
+  TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createToolContract,
 } from "../toolContractPrimitives.js";
@@ -15,7 +16,7 @@ export const THREE_D_JSON_PAYLOAD_TOOL_CONTRACT = createToolContract({
   toolType: TOOL_CONTRACT_TYPES.UTILITY,
   requiredInputs: [TOOL_CONTRACT_FORMATS.THREE_D_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.THREE_D_JSON],
-  supportedAssetTypes: [],
+  supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,
   importFormats: [TOOL_CONTRACT_FORMATS.THREE_D_JSON],
   exportFormats: [TOOL_CONTRACT_FORMATS.THREE_D_JSON],
 });
