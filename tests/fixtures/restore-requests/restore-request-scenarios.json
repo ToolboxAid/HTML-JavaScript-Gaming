@@ -1,0 +1,261 @@
+{
+  "baseRestoreRequest": {
+    "restoreRequestId": "restore-request.alpha.2",
+    "ownerId": "user.buyer",
+    "projectId": "project.game.alpha",
+    "backupSnapshot": {
+      "backupSnapshotId": "backup-snapshot.alpha.2",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2",
+      "snapshotVersion": 2,
+      "schemaVersion": 1
+    },
+    "targetRelease": {
+      "releaseId": "release.game.alpha.2",
+      "projectId": "project.game.alpha",
+      "version": 2,
+      "status": "published"
+    },
+    "versionCompatibility": {
+      "versionCompatibilityId": "version-compatibility.alpha.compatible",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2",
+      "targetVersion": 2,
+      "supportedSchemaVersion": 1,
+      "compatibilityState": "compatible"
+    },
+    "requestedAt": "2026-06-02T23:55:00.000Z",
+    "restoreNotes": "Restore request metadata only; restore payload bytes remain outside the contract."
+  },
+  "validRestoreRequests": [
+    {
+      "name": "compatible restore request",
+      "overrides": {
+        "restoreRequestId": "restore-request.alpha.compatible"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "deprecated compatibility restore request",
+      "overrides": {
+        "restoreRequestId": "restore-request.alpha.deprecated",
+        "versionCompatibility": {
+          "compatibilityState": "deprecated"
+        },
+        "restoreNotes": "Deprecated compatibility may still restore while metadata remains linked."
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidRestoreRequests": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["RESTORE_REQUEST_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "overrides": {
+        "projectId": ""
+      },
+      "expectedErrors": ["RESTORE_REQUEST_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing backup snapshot",
+      "removeFields": ["backupSnapshot"],
+      "expectedErrors": ["RESTORE_REQUEST_BACKUP_SNAPSHOT_REQUIRED"]
+    },
+    {
+      "name": "missing target release",
+      "removeFields": ["targetRelease"],
+      "expectedErrors": ["RESTORE_REQUEST_TARGET_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "missing version compatibility",
+      "removeFields": ["versionCompatibility"],
+      "expectedErrors": ["RESTORE_REQUEST_VERSION_COMPATIBILITY_REQUIRED"]
+    },
+    {
+      "name": "invalid backup snapshot",
+      "overrides": {
+        "backupSnapshot": {
+          "snapshotVersion": 0
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_BACKUP_SNAPSHOT_INVALID"]
+    },
+    {
+      "name": "invalid target release",
+      "overrides": {
+        "targetRelease": {
+          "version": 0
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_TARGET_RELEASE_INVALID"]
+    },
+    {
+      "name": "invalid version compatibility",
+      "overrides": {
+        "versionCompatibility": {
+          "targetVersion": 0
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_VERSION_COMPATIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid requested timestamp",
+      "overrides": {
+        "requestedAt": "not-a-date"
+      },
+      "expectedErrors": ["RESTORE_REQUEST_REQUESTED_AT_INVALID"]
+    },
+    {
+      "name": "backup snapshot owner mismatch",
+      "overrides": {
+        "backupSnapshot": {
+          "ownerId": "user.other"
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_OWNER_BACKUP_SNAPSHOT_MISMATCH"]
+    },
+    {
+      "name": "version compatibility owner mismatch",
+      "overrides": {
+        "versionCompatibility": {
+          "ownerId": "user.other"
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_OWNER_COMPATIBILITY_MISMATCH"]
+    },
+    {
+      "name": "target release project mismatch",
+      "overrides": {
+        "targetRelease": {
+          "projectId": "project.other"
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_PROJECT_TARGET_RELEASE_MISMATCH"]
+    },
+    {
+      "name": "backup target release mismatch",
+      "overrides": {
+        "backupSnapshot": {
+          "releaseId": "release.game.other.2"
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_RELEASE_BACKUP_TARGET_MISMATCH"]
+    },
+    {
+      "name": "version compatibility release mismatch",
+      "overrides": {
+        "versionCompatibility": {
+          "releaseId": "release.game.other.2"
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_RELEASE_COMPATIBILITY_MISMATCH"]
+    },
+    {
+      "name": "publish compatibility mismatch",
+      "overrides": {
+        "versionCompatibility": {
+          "publishId": "publish.game.other.2"
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_PUBLISH_BACKUP_COMPATIBILITY_MISMATCH"]
+    },
+    {
+      "name": "target release version mismatch",
+      "overrides": {
+        "targetRelease": {
+          "version": 3
+        },
+        "versionCompatibility": {
+          "targetVersion": 3
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_TARGET_RELEASE_VERSION_MISMATCH"]
+    },
+    {
+      "name": "schema version mismatch",
+      "overrides": {
+        "versionCompatibility": {
+          "supportedSchemaVersion": 2
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_SCHEMA_VERSION_MISMATCH"]
+    },
+    {
+      "name": "blocked compatibility",
+      "overrides": {
+        "versionCompatibility": {
+          "compatibilityState": "blocked"
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_COMPATIBILITY_GATE_BLOCKED"]
+    },
+    {
+      "name": "incompatible compatibility",
+      "overrides": {
+        "versionCompatibility": {
+          "compatibilityState": "incompatible"
+        }
+      },
+      "expectedErrors": ["RESTORE_REQUEST_COMPATIBILITY_GATE_BLOCKED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["RESTORE_REQUEST_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "overrides": {
+        "toolState": {}
+      },
+      "expectedErrors": ["RESTORE_REQUEST_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "file bytes leakage",
+      "overrides": {
+        "fileBytes": "AAAA"
+      },
+      "expectedErrors": ["RESTORE_REQUEST_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth session leakage",
+      "overrides": {
+        "authSessionState": {}
+      },
+      "expectedErrors": ["RESTORE_REQUEST_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "installer state leakage",
+      "overrides": {
+        "installerState": {}
+      },
+      "expectedErrors": ["RESTORE_REQUEST_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "updater implementation leakage",
+      "overrides": {
+        "updaterImplementation": {}
+      },
+      "expectedErrors": ["RESTORE_REQUEST_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "storage implementation leakage",
+      "overrides": {
+        "storageProvider": "s3"
+      },
+      "expectedErrors": ["RESTORE_REQUEST_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

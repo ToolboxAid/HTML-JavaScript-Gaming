@@ -1,0 +1,270 @@
+{
+  "baseBackupSnapshot": {
+    "backupSnapshotId": "backup-snapshot.alpha.2",
+    "ownerId": "user.buyer",
+    "projectId": "project.game.alpha",
+    "sourceRelease": {
+      "releaseId": "release.game.alpha.2",
+      "projectId": "project.game.alpha",
+      "version": 2,
+      "status": "published"
+    },
+    "sourcePublish": {
+      "publishId": "publish.game.alpha.2",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.2",
+      "status": "published"
+    },
+    "libraryItem": {
+      "libraryItemId": "library-item.alpha.available.1",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2",
+      "libraryStatus": "available"
+    },
+    "installReceipt": {
+      "installReceiptId": "install-receipt.alpha.installed.2",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "libraryItemId": "library-item.alpha.available.1",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2",
+      "receiptStatus": "installed"
+    },
+    "migrationPlan": {
+      "migrationPlanId": "migration-plan.alpha.required",
+      "ownerId": "user.buyer",
+      "projectId": "project.game.alpha",
+      "releaseId": "release.game.alpha.2",
+      "publishId": "publish.game.alpha.2",
+      "libraryItemId": "library-item.alpha.available.1",
+      "installReceiptId": "install-receipt.alpha.installed.2",
+      "targetVersion": 2,
+      "schemaVersion": 1,
+      "migrationState": "required"
+    },
+    "snapshotVersion": 2,
+    "schemaVersion": 1,
+    "createdAt": "2026-06-02T23:50:00.000Z",
+    "backupNotes": "Backup metadata only; snapshot bytes remain outside the contract."
+  },
+  "validBackupSnapshots": [
+    {
+      "name": "available backup snapshot",
+      "overrides": {
+        "backupSnapshotId": "backup-snapshot.alpha.2"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "retired release backup snapshot",
+      "overrides": {
+        "backupSnapshotId": "backup-snapshot.alpha.retired.2",
+        "sourceRelease": {
+          "status": "retired"
+        },
+        "sourcePublish": {
+          "status": "retired"
+        },
+        "libraryItem": {
+          "libraryStatus": "archived"
+        },
+        "installReceipt": {
+          "receiptStatus": "superseded"
+        },
+        "migrationPlan": {
+          "migrationState": "completed"
+        },
+        "backupNotes": "Retired release backup remains metadata-only and historically referenceable."
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidBackupSnapshots": [
+    {
+      "name": "missing owner",
+      "overrides": {
+        "ownerId": ""
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing project",
+      "overrides": {
+        "projectId": ""
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_PROJECT_REQUIRED"]
+    },
+    {
+      "name": "missing source release",
+      "removeFields": ["sourceRelease"],
+      "expectedErrors": ["BACKUP_SNAPSHOT_SOURCE_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "missing source publish",
+      "removeFields": ["sourcePublish"],
+      "expectedErrors": ["BACKUP_SNAPSHOT_SOURCE_PUBLISH_REQUIRED"]
+    },
+    {
+      "name": "missing library item",
+      "removeFields": ["libraryItem"],
+      "expectedErrors": ["BACKUP_SNAPSHOT_LIBRARY_ITEM_REQUIRED"]
+    },
+    {
+      "name": "missing install receipt",
+      "removeFields": ["installReceipt"],
+      "expectedErrors": ["BACKUP_SNAPSHOT_INSTALL_RECEIPT_REQUIRED"]
+    },
+    {
+      "name": "missing migration plan",
+      "removeFields": ["migrationPlan"],
+      "expectedErrors": ["BACKUP_SNAPSHOT_MIGRATION_PLAN_REQUIRED"]
+    },
+    {
+      "name": "invalid snapshot version",
+      "overrides": {
+        "snapshotVersion": 0
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid schema version",
+      "overrides": {
+        "schemaVersion": 0
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_SCHEMA_VERSION_INVALID"]
+    },
+    {
+      "name": "source release version mismatch",
+      "overrides": {
+        "snapshotVersion": 3,
+        "migrationPlan": {
+          "targetVersion": 3
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_RELEASE_VERSION_MISMATCH"]
+    },
+    {
+      "name": "migration plan target version mismatch",
+      "overrides": {
+        "migrationPlan": {
+          "targetVersion": 3
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_MIGRATION_PLAN_TARGET_VERSION_MISMATCH"]
+    },
+    {
+      "name": "migration plan schema mismatch",
+      "overrides": {
+        "migrationPlan": {
+          "schemaVersion": 2
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_MIGRATION_PLAN_SCHEMA_MISMATCH"]
+    },
+    {
+      "name": "library item owner mismatch",
+      "overrides": {
+        "libraryItem": {
+          "ownerId": "user.other"
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_OWNER_LIBRARY_ITEM_MISMATCH"]
+    },
+    {
+      "name": "source release project mismatch",
+      "overrides": {
+        "sourceRelease": {
+          "projectId": "project.other"
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_PROJECT_RELEASE_MISMATCH"]
+    },
+    {
+      "name": "source publish release mismatch",
+      "overrides": {
+        "sourcePublish": {
+          "releaseId": "release.game.other.2"
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_RELEASE_PUBLISH_MISMATCH"]
+    },
+    {
+      "name": "migration plan publish mismatch",
+      "overrides": {
+        "migrationPlan": {
+          "publishId": "publish.game.other.2"
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_PUBLISH_MIGRATION_PLAN_MISMATCH"]
+    },
+    {
+      "name": "install receipt library item mismatch",
+      "overrides": {
+        "installReceipt": {
+          "libraryItemId": "library-item.alpha.other"
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_LIBRARY_ITEM_INSTALL_RECEIPT_MISMATCH"]
+    },
+    {
+      "name": "migration plan install receipt mismatch",
+      "overrides": {
+        "migrationPlan": {
+          "installReceiptId": "install-receipt.alpha.other"
+        }
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_INSTALL_RECEIPT_MIGRATION_PLAN_MISMATCH"]
+    },
+    {
+      "name": "runtime state leakage",
+      "overrides": {
+        "workspaceState": {}
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "overrides": {
+        "toolState": {}
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "file bytes leakage",
+      "overrides": {
+        "fileBytes": "AAAA"
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth session leakage",
+      "overrides": {
+        "authSessionState": {}
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "installer state leakage",
+      "overrides": {
+        "installerState": {}
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "updater implementation leakage",
+      "overrides": {
+        "updaterImplementation": {}
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "storage implementation leakage",
+      "overrides": {
+        "storageProvider": "s3"
+      },
+      "expectedErrors": ["BACKUP_SNAPSHOT_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
