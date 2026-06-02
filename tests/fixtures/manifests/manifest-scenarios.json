@@ -159,6 +159,54 @@
         "exportFormat": "database-row"
       },
       "expectedErrors": ["GAME_MANIFEST_EXPORT_FORMAT_INVALID"]
+    },
+    {
+      "name": "invalid visibility",
+      "manifest": {
+        "manifestId": "manifest.invalid.visibility",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "projectType": "game",
+        "sourceToolStates": [],
+        "sourceAssets": [],
+        "visibility": "marketplace",
+        "version": 1,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_VISIBILITY_INVALID"]
+    },
+    {
+      "name": "invalid version",
+      "manifest": {
+        "manifestId": "manifest.invalid.version",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "projectType": "game",
+        "sourceToolStates": [],
+        "sourceAssets": [],
+        "visibility": "project",
+        "version": 0,
+        "status": "active",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_VERSION_INVALID"]
+    },
+    {
+      "name": "invalid status",
+      "manifest": {
+        "manifestId": "manifest.invalid.status",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "projectType": "game",
+        "sourceToolStates": [],
+        "sourceAssets": [],
+        "visibility": "project",
+        "version": 1,
+        "status": "retired",
+        "exportFormat": "game-manifest-json"
+      },
+      "expectedErrors": ["GAME_MANIFEST_STATUS_INVALID"]
     }
   ]
 }

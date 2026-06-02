@@ -1,0 +1,79 @@
+{
+  "validProjectWorkspaces": [
+    {
+      "name": "runtime context references active project tool and tool state",
+      "payload": {
+        "activeProjectId": "project.alpha",
+        "activeToolId": "palette-manager-v2",
+        "activeToolStateId": "tool-state.palette.alpha",
+        "dirty": true,
+        "recoveryAvailable": true,
+        "recoveryToolStateId": "tool-state.palette.alpha",
+        "activePaletteContext": {
+          "paletteId": "palette.hud",
+          "sourceToolId": "palette-manager-v2",
+          "sourceToolStateId": "tool-state.palette.alpha",
+          "version": 1
+        },
+        "flowState": "open"
+      }
+    },
+    {
+      "name": "runtime context may be empty before a project opens",
+      "payload": {}
+    }
+  ],
+  "invalidProjectWorkspaces": [
+    {
+      "name": "payload data is forbidden",
+      "payload": {
+        "activeProjectId": "project.alpha",
+        "payload": {
+          "swatches": []
+        }
+      },
+      "expectedErrors": ["PROJECT_WORKSPACE_RUNTIME_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "saved tool state records are forbidden",
+      "payload": {
+        "activeProjectId": "project.alpha",
+        "savedToolStates": [
+          {
+            "toolStateId": "tool-state.palette.alpha"
+          }
+        ]
+      },
+      "expectedErrors": ["PROJECT_WORKSPACE_RUNTIME_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "recovery must reference tool state",
+      "payload": {
+        "activeProjectId": "project.alpha",
+        "recoveryAvailable": true,
+        "recoveryToolStateId": ""
+      },
+      "expectedErrors": [
+        "PROJECT_WORKSPACE_RUNTIME_REFERENCE_INVALID",
+        "PROJECT_WORKSPACE_RUNTIME_RECOVERY_TOOL_STATE_REQUIRED"
+      ]
+    },
+    {
+      "name": "invalid flow state is rejected",
+      "payload": {
+        "activeProjectId": "project.alpha",
+        "flowState": "persisting"
+      },
+      "expectedErrors": ["PROJECT_WORKSPACE_RUNTIME_FLOW_STATE_INVALID"]
+    },
+    {
+      "name": "old workspace storage is rejected",
+      "payload": {
+        "workspaceState": {
+          "activeToolId": "palette-manager-v2"
+        }
+      },
+      "expectedErrors": ["PROJECT_WORKSPACE_RUNTIME_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}

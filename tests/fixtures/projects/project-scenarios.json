@@ -97,6 +97,17 @@
       "expectedErrors": ["PROJECT_VISIBILITY_REQUIRED"]
     },
     {
+      "name": "invalid visibility",
+      "project": {
+        "id": "project.invalid.visibility",
+        "ownerId": "user.owner",
+        "projectType": "game",
+        "state": "active",
+        "visibility": "team"
+      },
+      "expectedErrors": ["PROJECT_VISIBILITY_INVALID"]
+    },
+    {
       "name": "invalid state",
       "project": {
         "id": "project.invalid.state",

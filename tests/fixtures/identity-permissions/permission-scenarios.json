@@ -44,6 +44,17 @@
       "expectedErrors": ["VISIBILITY_REQUIRED"]
     },
     {
+      "name": "shareable object invalid visibility",
+      "object": {
+        "id": "asset.shareable.invalid",
+        "ownerId": "user.owner",
+        "shareable": true,
+        "visibility": "internal",
+        "editable": false
+      },
+      "expectedErrors": ["VISIBILITY_INVALID"]
+    },
+    {
       "name": "editable object missing permissions",
       "object": {
         "id": "tool-state.editable",

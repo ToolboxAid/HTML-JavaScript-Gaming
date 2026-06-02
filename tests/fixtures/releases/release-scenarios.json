@@ -129,6 +129,25 @@
       "expectedErrors": ["RELEASE_VISIBILITY_INVALID"]
     },
     {
+      "name": "invalid status",
+      "release": {
+        "releaseId": "release.invalid.status",
+        "ownerId": "user.owner",
+        "projectId": "project.game.alpha",
+        "sourceManifest": {
+          "manifestId": "manifest.game.alpha",
+          "version": 1,
+          "exportFormat": "game-manifest-json"
+        },
+        "version": 1,
+        "status": "archived",
+        "visibility": "public",
+        "publishedAt": "2026-06-02T14:00:00.000Z",
+        "releaseNotes": "Invalid status fixture."
+      },
+      "expectedErrors": ["RELEASE_STATUS_INVALID"]
+    },
+    {
       "name": "published without timestamp",
       "release": {
         "releaseId": "release.missing.timestamp",
