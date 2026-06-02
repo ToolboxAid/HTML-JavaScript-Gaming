@@ -1,0 +1,365 @@
+{
+  "wave": "wave-3",
+  "sourcePlanning": "Future activation backlog from PR_26152_120-tool-migration-prioritization",
+  "samplesDecision": "SKIP / pending rebuild",
+  "wave1Decision": "SKIP / already closed",
+  "wave2Decision": "SKIP / already closed",
+  "futureToolsDecision": "SKIP / out of scope",
+  "tools": [
+    {
+      "toolId": "asset-studio",
+      "displayName": "Asset Studio",
+      "toolType": "studio",
+      "requiredInputs": ["palette-json"],
+      "producedOutputs": ["image-file", "vector-json", "palette-json"],
+      "payloadRequiredField": "assetDraft",
+      "payloadExample": {
+        "assets": ["asset.wave3.sprite"],
+        "paletteId": "palette.wave3.primary"
+      }
+    },
+    {
+      "toolId": "game-builder",
+      "displayName": "Game Builder",
+      "toolType": "studio",
+      "requiredInputs": ["game-design-json", "asset"],
+      "producedOutputs": ["game-manifest"],
+      "payloadRequiredField": "buildPlan",
+      "payloadExample": {
+        "manifestId": "manifest.wave3",
+        "assetRefs": ["asset.wave3.sprite"]
+      }
+    },
+    {
+      "toolId": "game-design-studio",
+      "displayName": "Game Design Studio",
+      "toolType": "studio",
+      "requiredInputs": ["text"],
+      "producedOutputs": ["game-design-json"],
+      "payloadRequiredField": "designDocument",
+      "payloadExample": {
+        "sections": ["mechanics", "progression"]
+      }
+    },
+    {
+      "toolId": "publish-studio",
+      "displayName": "Publish Studio",
+      "toolType": "studio",
+      "requiredInputs": ["game-manifest", "metadata-json"],
+      "producedOutputs": ["publish-package"],
+      "payloadRequiredField": "publishPlan",
+      "payloadExample": {
+        "releaseId": "release.wave3",
+        "channels": ["preview"]
+      }
+    },
+    {
+      "toolId": "animation-studio",
+      "displayName": "Animation Studio",
+      "toolType": "studio",
+      "requiredInputs": ["image-file"],
+      "producedOutputs": ["animation-json"],
+      "payloadRequiredField": "timeline",
+      "payloadExample": {
+        "frames": [
+          {
+            "frame": 0,
+            "durationMs": 100
+          }
+        ]
+      }
+    },
+    {
+      "toolId": "particle-studio",
+      "displayName": "Particle Studio",
+      "toolType": "studio",
+      "requiredInputs": ["image-file", "vector-json"],
+      "producedOutputs": ["particle-json"],
+      "payloadRequiredField": "emitter",
+      "payloadExample": {
+        "emitterId": "emitter.wave3.preview",
+        "rate": 8
+      }
+    },
+    {
+      "toolId": "sound-studio",
+      "displayName": "Sound Studio",
+      "toolType": "studio",
+      "requiredInputs": [],
+      "producedOutputs": ["audio-file"],
+      "payloadRequiredField": "soundGraph",
+      "payloadExample": {
+        "nodes": ["oscillator", "envelope"]
+      }
+    },
+    {
+      "toolId": "ai-assistant",
+      "displayName": "AI Assistant",
+      "toolType": "utility",
+      "requiredInputs": ["text"],
+      "producedOutputs": ["text"],
+      "payloadRequiredField": "prompt",
+      "payloadExample": {
+        "text": "Draft a puzzle beat."
+      }
+    },
+    {
+      "toolId": "code-studio",
+      "displayName": "Code Studio",
+      "toolType": "editor",
+      "requiredInputs": ["code-file"],
+      "producedOutputs": ["code-file"],
+      "payloadRequiredField": "files",
+      "payloadExample": {
+        "paths": ["scripts/player.js"]
+      }
+    },
+    {
+      "toolId": "input-studio",
+      "displayName": "Input Studio",
+      "toolType": "utility",
+      "requiredInputs": ["input-map"],
+      "producedOutputs": ["input-map"],
+      "payloadRequiredField": "inputMap",
+      "payloadExample": {
+        "actions": ["jump", "dash"]
+      }
+    },
+    {
+      "toolId": "localization-studio",
+      "displayName": "Localization Studio",
+      "toolType": "studio",
+      "requiredInputs": ["text"],
+      "producedOutputs": ["localization-json"],
+      "payloadRequiredField": "translations",
+      "payloadExample": {
+        "locale": "en-US",
+        "keys": ["menu.start"]
+      }
+    }
+  ],
+  "invalidLaunches": [
+    {
+      "name": "Wave 3 launch without manifest rejects visibly",
+      "launch": {
+        "selectedToolId": "asset-studio",
+        "projectWorkspace": {
+          "activeProjectId": "project.wave3",
+          "activeToolId": "asset-studio",
+          "activeToolStateId": "tool-state.wave3.asset-studio",
+          "flowState": "opening"
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave3.asset-studio",
+          "projectId": "project.wave3",
+          "toolType": "asset-studio",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": ["PROJECTWORKSPACE_LAUNCH_MANIFEST_INPUT_REQUIRED"]
+    },
+    {
+      "name": "Wave 3 silent fallback launch rejects visibly",
+      "launch": {
+        "selectedToolId": "publish-studio",
+        "fallbackData": {
+          "source": "silent-default"
+        },
+        "projectWorkspace": {
+          "activeProjectId": "project.wave3",
+          "activeToolId": "publish-studio",
+          "activeToolStateId": "tool-state.wave3.publish-studio",
+          "flowState": "opening"
+        },
+        "manifestInput": {
+          "manifestId": "manifest.wave3",
+          "projectId": "project.wave3",
+          "projectType": "game",
+          "version": 1
+        },
+        "toolStateInput": {
+          "toolStateId": "tool-state.wave3.publish-studio",
+          "projectId": "project.wave3",
+          "toolType": "publish-studio",
+          "version": 1
+        }
+      },
+      "expectedErrorCodes": ["PROJECTWORKSPACE_LAUNCH_FORBIDDEN_FIELD"]
+    }
+  ],
+  "manifestHandoffs": [
+    {
+      "name": "game-builder manifest handoff uses declared fields only",
+      "toolId": "game-builder",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.wave3",
+          "activeToolId": "game-builder",
+          "activeToolStateId": "tool-state.wave3.game-builder",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.wave3",
+          "ownerId": "user.owner",
+          "projectId": "project.wave3",
+          "projectType": "game",
+          "sourceToolStates": [
+            {
+              "toolStateId": "tool-state.wave3.game-builder",
+              "toolType": "game-builder",
+              "version": 1
+            }
+          ],
+          "sourceAssets": [
+            {
+              "assetId": "asset.wave3.sprite",
+              "assetType": "image",
+              "version": 1
+            },
+            {
+              "assetId": "palette.wave3.primary",
+              "assetType": "palette",
+              "version": 1
+            }
+          ],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": ["manifestId", "projectId", "projectType", "sourceToolStates", "sourceAssets", "visibility", "version", "status", "exportFormat"],
+        "downstreamUseFields": ["manifestId", "projectId", "sourceToolStates", "sourceAssets"]
+      }
+    },
+    {
+      "name": "publish-studio manifest handoff uses declared fields only",
+      "toolId": "publish-studio",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.wave3",
+          "activeToolId": "publish-studio",
+          "activeToolStateId": "tool-state.wave3.publish-studio",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.wave3",
+          "ownerId": "user.owner",
+          "projectId": "project.wave3",
+          "projectType": "game",
+          "sourceToolStates": [
+            {
+              "toolStateId": "tool-state.wave3.publish-studio",
+              "toolType": "publish-studio",
+              "version": 1
+            }
+          ],
+          "sourceAssets": [
+            {
+              "assetId": "asset.wave3.package",
+              "assetType": "image",
+              "version": 1
+            }
+          ],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": ["manifestId", "projectId", "projectType", "sourceToolStates", "sourceAssets", "visibility", "version", "status", "exportFormat"],
+        "downstreamUseFields": ["manifestId", "projectId", "sourceAssets"]
+      }
+    },
+    {
+      "name": "localization-studio manifest handoff uses declared fields only",
+      "toolId": "localization-studio",
+      "handoff": {
+        "projectWorkspace": {
+          "activeProjectId": "project.wave3",
+          "activeToolId": "localization-studio",
+          "activeToolStateId": "tool-state.wave3.localization-studio",
+          "flowState": "opening"
+        },
+        "manifest": {
+          "manifestId": "manifest.wave3",
+          "ownerId": "user.owner",
+          "projectId": "project.wave3",
+          "projectType": "game",
+          "sourceToolStates": [
+            {
+              "toolStateId": "tool-state.wave3.localization-studio",
+              "toolType": "localization-studio",
+              "version": 1
+            }
+          ],
+          "sourceAssets": [
+            {
+              "assetId": "asset.wave3.localization",
+              "assetType": "localization",
+              "version": 1
+            }
+          ],
+          "visibility": "project",
+          "version": 1,
+          "status": "active",
+          "exportFormat": "game-manifest-json"
+        },
+        "declaredManifestFields": ["manifestId", "projectId", "projectType", "sourceToolStates", "sourceAssets", "visibility", "version", "status", "exportFormat"],
+        "downstreamUseFields": ["manifestId", "projectId", "sourceAssets"]
+      }
+    }
+  ],
+  "invalidToolStates": [
+    {
+      "name": "missing Wave 3 payload rejects",
+      "toolId": "asset-studio",
+      "toolState": {
+        "toolStateId": "tool-state.wave3.asset-studio",
+        "toolType": "asset-studio",
+        "ownerId": "user.owner",
+        "projectId": "project.wave3",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {}
+      },
+      "expectedErrorCodes": ["WAVE3_TOOLSTATE_PAYLOAD_INVALID"]
+    },
+    {
+      "name": "hidden Wave 3 fallback payload rejects",
+      "toolId": "publish-studio",
+      "toolState": {
+        "toolStateId": "tool-state.wave3.publish-studio",
+        "toolType": "publish-studio",
+        "ownerId": "user.owner",
+        "projectId": "project.wave3",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "publishPlan": {},
+          "sampleJson": {
+            "source": "silent-default"
+          }
+        }
+      },
+      "expectedErrorCodes": ["WAVE3_TOOLSTATE_PAYLOAD_FIELD_FORBIDDEN"]
+    },
+    {
+      "name": "Wave 3 toolState type mismatch rejects active ownership",
+      "toolId": "localization-studio",
+      "toolState": {
+        "toolStateId": "tool-state.wave3.localization-studio",
+        "toolType": "publish-studio",
+        "ownerId": "user.owner",
+        "projectId": "project.wave3",
+        "visibility": "project",
+        "version": 1,
+        "status": "active",
+        "payload": {
+          "translations": {}
+        }
+      },
+      "expectedErrorCodes": ["WAVE3_TOOLSTATE_ACTIVE_OWNERSHIP_INVALID"]
+    }
+  ]
+}
