@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const GAME_DESIGN_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   toolId: "game-design-studio",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  grouping: "Design",
   requiredInputs: [TOOL_CONTRACT_FORMATS.TEXT],
   producedOutputs: [TOOL_CONTRACT_FORMATS.GAME_DESIGN_JSON],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,

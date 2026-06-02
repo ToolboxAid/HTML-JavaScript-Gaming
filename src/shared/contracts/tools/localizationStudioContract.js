@@ -11,11 +11,12 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const LOCALIZATION_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   toolId: "localization-studio",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  grouping: "Localization",
   requiredInputs: [TOOL_CONTRACT_FORMATS.TEXT],
   producedOutputs: [TOOL_CONTRACT_FORMATS.LOCALIZATION_JSON],
   supportedAssetTypes: [ASSET_TYPES.LOCALIZATION],

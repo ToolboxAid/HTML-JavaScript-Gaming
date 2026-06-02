@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const ASSET_PIPELINE_TOOL_CONTRACT = createToolContract({
   toolId: "asset-pipeline",
   toolType: TOOL_CONTRACT_TYPES.PIPELINE,
+  grouping: "Pipeline",
   requiredInputs: [TOOL_CONTRACT_FORMATS.METADATA_JSON, TOOL_CONTRACT_FORMATS.ASSET],
   producedOutputs: [TOOL_CONTRACT_FORMATS.METADATA_JSON, TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.ALL,

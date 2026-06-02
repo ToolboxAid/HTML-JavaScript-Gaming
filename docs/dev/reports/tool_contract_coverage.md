@@ -1,6 +1,6 @@
 # Tool Contract Coverage
 
-PR: PR_26152_075-unify-tool-contract-behavior
+PR: PR_26152_076-tool-contract-location-correction
 Date: 2026-06-02
 
 ## Discovery Sources
@@ -8,17 +8,20 @@ Date: 2026-06-02
 - Root Tools Index page: `tools/index.html`
 - Root Tools Index card data: `tools/tools-page-accordions.js`
 - Active first-class tool registry: `tools/toolRegistry.js`
-- Shared tool behavior: `src/shared/contracts/toolContract.js`
+- Shared tool behavior: `src/shared/contracts/tools/toolContract.js`
 - Per-tool declarations: `src/shared/contracts/tools/*Contract.js`
 - Contract index: `src/shared/contracts/tools/toolContractsIndex.js`
 
-## Unified Behavior Status
+## Location Status
 
+- Top-level `src/shared/contracts/` contains platform/object contracts only.
+- Shared tool behavior now lives under `src/shared/contracts/tools/toolContract.js`.
 - Per-tool modules remain split: 34/34 retained.
 - Matching per-tool tests remain split: 34/34 retained.
-- Shared tool behavior owns owner/project/visibility/status/version, import/export, produced output, supported asset, source tool state, archive, and permission rules.
-- Per-tool declarations own only tool-specific ids, types, inputs, outputs, asset support, imports, exports, and tool metadata.
-- Registered first-class tool coverage remains unchanged.
+- Per-tool declarations include tool-specific id, type, grouping, inputs, outputs, supported assets, import formats, export formats, and tool metadata.
+- Shared tool behavior owns owner/project/visibility/status/version, import/export, produced output, supported asset, source tool state, archive, permission, and portable export rules.
+- No `src/shared/contracts/tools/paletteContract.js` exists; the platform Palette object remains `src/shared/contracts/paletteContract.js`.
+- No standalone `vectorStudioContract.js` was created because the registered vector tools are `object-vector-studio-v2` and `world-vector-studio-v2`.
 
 ## Active Registered First-Class Tools
 
@@ -26,21 +29,21 @@ All active visible registered first-class tools discovered through `getVisibleAc
 
 | Tool ID | Contract Module | Matching Test |
 |---|---|---|
-| `world-vector-studio-v2` | `src/shared/contracts/tools/worldVectorStudioV2Contract.js` | `tests/shared/tools/WorldVectorStudioV2ToolContract.test.mjs` |
-| `object-vector-studio-v2` | `src/shared/contracts/tools/objectVectorStudioV2Contract.js` | `tests/shared/tools/ObjectVectorStudioV2ToolContract.test.mjs` |
+| `world-vector-studio-v2` | `src/shared/contracts/tools/worldVectorStudioContract.js` | `tests/shared/tools/WorldVectorStudioV2ToolContract.test.mjs` |
+| `object-vector-studio-v2` | `src/shared/contracts/tools/objectVectorStudioContract.js` | `tests/shared/tools/ObjectVectorStudioV2ToolContract.test.mjs` |
 | `tile-map-editor` | `src/shared/contracts/tools/tileMapEditorContract.js` | `tests/shared/tools/TileMapEditorToolContract.test.mjs` |
 | `parallax-editor` | `src/shared/contracts/tools/parallaxEditorContract.js` | `tests/shared/tools/ParallaxEditorToolContract.test.mjs` |
 | `sprite-editor` | `src/shared/contracts/tools/spriteEditorContract.js` | `tests/shared/tools/SpriteEditorToolContract.test.mjs` |
-| `asset-manager-v2` | `src/shared/contracts/tools/assetManagerV2Contract.js` | `tests/shared/tools/AssetManagerV2ToolContract.test.mjs` |
-| `workspace-manager-v2` | `src/shared/contracts/tools/workspaceManagerV2Contract.js` | `tests/shared/tools/WorkspaceManagerV2ToolContract.test.mjs` |
-| `palette-manager-v2` | `src/shared/contracts/tools/paletteManagerV2Contract.js` | `tests/shared/tools/PaletteManagerV2ToolContract.test.mjs` |
-| `preview-generator-v2` | `src/shared/contracts/tools/previewGeneratorV2Contract.js` | `tests/shared/tools/PreviewGeneratorV2ToolContract.test.mjs` |
-| `text2speech-V2` | `src/shared/contracts/tools/text2speechV2Contract.js` | `tests/shared/tools/Text2SpeechV2ToolContract.test.mjs` |
-| `audio-sfx-playground-v2` | `src/shared/contracts/tools/audioSfxPlaygroundV2Contract.js` | `tests/shared/tools/AudioSfxPlaygroundV2ToolContract.test.mjs` |
-| `midi-studio-v2` | `src/shared/contracts/tools/midiStudioV2Contract.js` | `tests/shared/tools/MidiStudioV2ToolContract.test.mjs` |
-| `collision-inspector-v2` | `src/shared/contracts/tools/collisionInspectorV2Contract.js` | `tests/shared/tools/CollisionInspectorV2ToolContract.test.mjs` |
-| `storage-inspector-v2` | `src/shared/contracts/tools/storageInspectorV2Contract.js` | `tests/shared/tools/StorageInspectorV2ToolContract.test.mjs` |
-| `input-mapping-v2` | `src/shared/contracts/tools/inputMappingV2Contract.js` | `tests/shared/tools/InputMappingV2ToolContract.test.mjs` |
+| `asset-manager-v2` | `src/shared/contracts/tools/assetManagerContract.js` | `tests/shared/tools/AssetManagerV2ToolContract.test.mjs` |
+| `workspace-manager-v2` | `src/shared/contracts/tools/workspaceManagerContract.js` | `tests/shared/tools/WorkspaceManagerV2ToolContract.test.mjs` |
+| `palette-manager-v2` | `src/shared/contracts/tools/paletteManagerContract.js` | `tests/shared/tools/PaletteManagerV2ToolContract.test.mjs` |
+| `preview-generator-v2` | `src/shared/contracts/tools/previewGeneratorContract.js` | `tests/shared/tools/PreviewGeneratorV2ToolContract.test.mjs` |
+| `text2speech-V2` | `src/shared/contracts/tools/textToSpeechContract.js` | `tests/shared/tools/Text2SpeechV2ToolContract.test.mjs` |
+| `audio-sfx-playground-v2` | `src/shared/contracts/tools/audioSfxPlaygroundContract.js` | `tests/shared/tools/AudioSfxPlaygroundV2ToolContract.test.mjs` |
+| `midi-studio-v2` | `src/shared/contracts/tools/midiStudioContract.js` | `tests/shared/tools/MidiStudioV2ToolContract.test.mjs` |
+| `collision-inspector-v2` | `src/shared/contracts/tools/collisionInspectorContract.js` | `tests/shared/tools/CollisionInspectorV2ToolContract.test.mjs` |
+| `storage-inspector-v2` | `src/shared/contracts/tools/storageInspectorContract.js` | `tests/shared/tools/StorageInspectorV2ToolContract.test.mjs` |
+| `input-mapping-v2` | `src/shared/contracts/tools/inputMappingContract.js` | `tests/shared/tools/InputMappingV2ToolContract.test.mjs` |
 | `state-inspector` | `src/shared/contracts/tools/stateInspectorContract.js` | `tests/shared/tools/StateInspectorToolContract.test.mjs` |
 | `replay-visualizer` | `src/shared/contracts/tools/replayVisualizerContract.js` | `tests/shared/tools/ReplayVisualizerToolContract.test.mjs` |
 | `performance-profiler` | `src/shared/contracts/tools/performanceProfilerContract.js` | `tests/shared/tools/PerformanceProfilerToolContract.test.mjs` |
@@ -50,22 +53,61 @@ All active visible registered first-class tools discovered through `getVisibleAc
 | `3d-asset-viewer` | `src/shared/contracts/tools/threeDAssetViewerContract.js` | `tests/shared/tools/ThreeDAssetViewerToolContract.test.mjs` |
 | `3d-camera-path-editor` | `src/shared/contracts/tools/threeDCameraPathEditorContract.js` | `tests/shared/tools/ThreeDCameraPathEditorToolContract.test.mjs` |
 
+## All Tool Declarations
+
+| Tool Contract | Grouping | Contract Module | Matching Test |
+|---|---|---|---|
+| `ai-assistant` | AI | `src/shared/contracts/tools/aiAssistantContract.js` | `tests/shared/tools/AiAssistantToolContract.test.mjs` |
+| `animation-studio` | Animation | `src/shared/contracts/tools/animationStudioContract.js` | `tests/shared/tools/AnimationStudioToolContract.test.mjs` |
+| `asset-manager-v2` | Assets | `src/shared/contracts/tools/assetManagerContract.js` | `tests/shared/tools/AssetManagerV2ToolContract.test.mjs` |
+| `asset-pipeline` | Pipeline | `src/shared/contracts/tools/assetPipelineContract.js` | `tests/shared/tools/AssetPipelineToolContract.test.mjs` |
+| `asset-studio` | Assets | `src/shared/contracts/tools/assetStudioContract.js` | `tests/shared/tools/AssetStudioToolContract.test.mjs` |
+| `audio-sfx-playground-v2` | Audio | `src/shared/contracts/tools/audioSfxPlaygroundContract.js` | `tests/shared/tools/AudioSfxPlaygroundV2ToolContract.test.mjs` |
+| `code-studio` | Code | `src/shared/contracts/tools/codeStudioContract.js` | `tests/shared/tools/CodeStudioToolContract.test.mjs` |
+| `collision-inspector-v2` | Debug | `src/shared/contracts/tools/collisionInspectorContract.js` | `tests/shared/tools/CollisionInspectorV2ToolContract.test.mjs` |
+| `game-builder` | Build | `src/shared/contracts/tools/gameBuilderContract.js` | `tests/shared/tools/GameBuilderToolContract.test.mjs` |
+| `game-design-studio` | Design | `src/shared/contracts/tools/gameDesignStudioContract.js` | `tests/shared/tools/GameDesignStudioToolContract.test.mjs` |
+| `input-mapping-v2` | Input | `src/shared/contracts/tools/inputMappingContract.js` | `tests/shared/tools/InputMappingV2ToolContract.test.mjs` |
+| `input-studio` | Input | `src/shared/contracts/tools/inputStudioContract.js` | `tests/shared/tools/InputStudioToolContract.test.mjs` |
+| `localization-studio` | Localization | `src/shared/contracts/tools/localizationStudioContract.js` | `tests/shared/tools/LocalizationStudioToolContract.test.mjs` |
+| `midi-studio-v2` | Audio | `src/shared/contracts/tools/midiStudioContract.js` | `tests/shared/tools/MidiStudioV2ToolContract.test.mjs` |
+| `object-vector-studio-v2` | Object Vectors | `src/shared/contracts/tools/objectVectorStudioContract.js` | `tests/shared/tools/ObjectVectorStudioV2ToolContract.test.mjs` |
+| `palette-manager-v2` | Palettes | `src/shared/contracts/tools/paletteManagerContract.js` | `tests/shared/tools/PaletteManagerV2ToolContract.test.mjs` |
+| `parallax-editor` | Parallax | `src/shared/contracts/tools/parallaxEditorContract.js` | `tests/shared/tools/ParallaxEditorToolContract.test.mjs` |
+| `particle-studio` | FX | `src/shared/contracts/tools/particleStudioContract.js` | `tests/shared/tools/ParticleStudioToolContract.test.mjs` |
+| `performance-profiler` | Debug | `src/shared/contracts/tools/performanceProfilerContract.js` | `tests/shared/tools/PerformanceProfilerToolContract.test.mjs` |
+| `physics-sandbox` | Debug | `src/shared/contracts/tools/physicsSandboxContract.js` | `tests/shared/tools/PhysicsSandboxToolContract.test.mjs` |
+| `preview-generator-v2` | Preview | `src/shared/contracts/tools/previewGeneratorContract.js` | `tests/shared/tools/PreviewGeneratorV2ToolContract.test.mjs` |
+| `publish-studio` | Publishing | `src/shared/contracts/tools/publishStudioContract.js` | `tests/shared/tools/PublishStudioToolContract.test.mjs` |
+| `replay-visualizer` | Debug | `src/shared/contracts/tools/replayVisualizerContract.js` | `tests/shared/tools/ReplayVisualizerToolContract.test.mjs` |
+| `sound-studio` | Audio | `src/shared/contracts/tools/soundStudioContract.js` | `tests/shared/tools/SoundStudioToolContract.test.mjs` |
+| `sprite-editor` | Sprites | `src/shared/contracts/tools/spriteEditorContract.js` | `tests/shared/tools/SpriteEditorToolContract.test.mjs` |
+| `state-inspector` | Debug | `src/shared/contracts/tools/stateInspectorContract.js` | `tests/shared/tools/StateInspectorToolContract.test.mjs` |
+| `storage-inspector-v2` | Debug | `src/shared/contracts/tools/storageInspectorContract.js` | `tests/shared/tools/StorageInspectorV2ToolContract.test.mjs` |
+| `text2speech-V2` | Audio | `src/shared/contracts/tools/textToSpeechContract.js` | `tests/shared/tools/Text2SpeechV2ToolContract.test.mjs` |
+| `3d-asset-viewer` | 3D | `src/shared/contracts/tools/threeDAssetViewerContract.js` | `tests/shared/tools/ThreeDAssetViewerToolContract.test.mjs` |
+| `3d-camera-path-editor` | 3D | `src/shared/contracts/tools/threeDCameraPathEditorContract.js` | `tests/shared/tools/ThreeDCameraPathEditorToolContract.test.mjs` |
+| `3d-json-payload` | 3D | `src/shared/contracts/tools/threeDJsonPayloadContract.js` | `tests/shared/tools/ThreeDJsonPayloadToolContract.test.mjs` |
+| `tile-map-editor` | Tile Maps | `src/shared/contracts/tools/tileMapEditorContract.js` | `tests/shared/tools/TileMapEditorToolContract.test.mjs` |
+| `workspace-manager-v2` | Workspace | `src/shared/contracts/tools/workspaceManagerContract.js` | `tests/shared/tools/WorkspaceManagerV2ToolContract.test.mjs` |
+| `world-vector-studio-v2` | World Vectors | `src/shared/contracts/tools/worldVectorStudioContract.js` | `tests/shared/tools/WorldVectorStudioV2ToolContract.test.mjs` |
+
 ## Root Tools Index Card Coverage
 
-The root Tools Index card data includes public/root cards that are not all active registered first-class tools. Unified tool contracts cover registered tools directly, map legacy/root card names to their first-class contract where applicable, and document non-tool cards.
+The root Tools Index card data includes public/root cards that are not all active registered first-class tools. Tool contracts cover registered tools directly, map legacy/root card names to their first-class contract where applicable, and document non-tool cards.
 
 | Root Card | Coverage | Contract ID | Contract Module | Matching Test | Notes |
 |---|---|---|---|---|---|
 | Asset Studio | Contracted | `asset-studio` | `src/shared/contracts/tools/assetStudioContract.js` | `tests/shared/tools/AssetStudioToolContract.test.mjs` | Root planning/tool card contract. |
-| Object Vector Studio | Mapped | `object-vector-studio-v2` | `src/shared/contracts/tools/objectVectorStudioV2Contract.js` | `tests/shared/tools/ObjectVectorStudioV2ToolContract.test.mjs` | Root card links `object-vector-studio.html`; first-class contract is `object-vector-studio-v2`. |
-| World Vector Studio | Mapped | `world-vector-studio-v2` | `src/shared/contracts/tools/worldVectorStudioV2Contract.js` | `tests/shared/tools/WorldVectorStudioV2ToolContract.test.mjs` | Root card links `world-vector-studio.html`; first-class contract is `world-vector-studio-v2`. |
-| Palette Manager | Mapped | `palette-manager-v2` | `src/shared/contracts/tools/paletteManagerV2Contract.js` | `tests/shared/tools/PaletteManagerV2ToolContract.test.mjs` | Root card links `palette-manager.html`; first-class contract is `palette-manager-v2`. |
+| Object Vector Studio | Mapped | `object-vector-studio-v2` | `src/shared/contracts/tools/objectVectorStudioContract.js` | `tests/shared/tools/ObjectVectorStudioV2ToolContract.test.mjs` | Root card links `object-vector-studio.html`; first-class contract is `object-vector-studio-v2`. |
+| World Vector Studio | Mapped | `world-vector-studio-v2` | `src/shared/contracts/tools/worldVectorStudioContract.js` | `tests/shared/tools/WorldVectorStudioV2ToolContract.test.mjs` | Root card links `world-vector-studio.html`; first-class contract is `world-vector-studio-v2`. |
+| Palette Manager | Mapped | `palette-manager-v2` | `src/shared/contracts/tools/paletteManagerContract.js` | `tests/shared/tools/PaletteManagerV2ToolContract.test.mjs` | Root card links `palette-manager.html`; first-class contract is `palette-manager-v2`. |
 | Game Builder | Contracted | `game-builder` | `src/shared/contracts/tools/gameBuilderContract.js` | `tests/shared/tools/GameBuilderToolContract.test.mjs` | Root planning/tool card contract. |
 | Game Design Studio | Contracted | `game-design-studio` | `src/shared/contracts/tools/gameDesignStudioContract.js` | `tests/shared/tools/GameDesignStudioToolContract.test.mjs` | Root planning/tool card contract. |
 | Publish Studio | Contracted | `publish-studio` | `src/shared/contracts/tools/publishStudioContract.js` | `tests/shared/tools/PublishStudioToolContract.test.mjs` | Root planning/tool card contract. |
 | Animation Studio | Contracted | `animation-studio` | `src/shared/contracts/tools/animationStudioContract.js` | `tests/shared/tools/AnimationStudioToolContract.test.mjs` | Root planning/tool card contract. |
 | Particle Studio | Contracted | `particle-studio` | `src/shared/contracts/tools/particleStudioContract.js` | `tests/shared/tools/ParticleStudioToolContract.test.mjs` | Root planning/tool card contract. |
-| MIDI Studio | Mapped | `midi-studio-v2` | `src/shared/contracts/tools/midiStudioV2Contract.js` | `tests/shared/tools/MidiStudioV2ToolContract.test.mjs` | Root card links `midi-studio.html`; first-class contract is `midi-studio-v2`. |
+| MIDI Studio | Mapped | `midi-studio-v2` | `src/shared/contracts/tools/midiStudioContract.js` | `tests/shared/tools/MidiStudioV2ToolContract.test.mjs` | Root card links `midi-studio.html`; first-class contract is `midi-studio-v2`. |
 | Sound Studio | Contracted | `sound-studio` | `src/shared/contracts/tools/soundStudioContract.js` | `tests/shared/tools/SoundStudioToolContract.test.mjs` | Root planning/tool card contract. |
 | AI Assistant | Contracted | `ai-assistant` | `src/shared/contracts/tools/aiAssistantContract.js` | `tests/shared/tools/AiAssistantToolContract.test.mjs` | Root planning/tool card contract. |
 | Code Studio | Contracted | `code-studio` | `src/shared/contracts/tools/codeStudioContract.js` | `tests/shared/tools/CodeStudioToolContract.test.mjs` | Root planning/tool card contract. |
@@ -73,17 +115,17 @@ The root Tools Index card data includes public/root cards that are not all activ
 | Marketplace | Skipped | n/a | n/a | n/a | Targets `marketplace/index.html`, which is a marketplace page rather than a first-class tool contract. |
 | Localization Studio | Contracted | `localization-studio` | `src/shared/contracts/tools/localizationStudioContract.js` | `tests/shared/tools/LocalizationStudioToolContract.test.mjs` | Root planning/tool card contract. |
 | Arcade | Skipped | n/a | n/a | n/a | Targets `arcade/index.html`, which is a play surface rather than a first-class tool contract. |
-| Storage Inspector | Mapped | `storage-inspector-v2` | `src/shared/contracts/tools/storageInspectorV2Contract.js` | `tests/shared/tools/StorageInspectorV2ToolContract.test.mjs` | Root card links `storage-inspector.html`; first-class contract is `storage-inspector-v2`. |
+| Storage Inspector | Mapped | `storage-inspector-v2` | `src/shared/contracts/tools/storageInspectorContract.js` | `tests/shared/tools/StorageInspectorV2ToolContract.test.mjs` | Root card links `storage-inspector.html`; first-class contract is `storage-inspector-v2`. |
 
 ## Summary
 
 - Active visible registered first-class tools discovered: 23
 - Tool contracts defined: 34
+- Tool contracts with grouping metadata: 34
 - Per-tool contract modules: 34
 - Matching per-tool tests: 34
 - Registered first-class tools without contract: 0
 - Root Tools Index cards reviewed: 18
 - Root Tools Index cards skipped as non-tool surfaces: 2
-- Duplicated empty supported asset declarations remaining in tool files: 0
-- Duplicated all-supported-assets declarations remaining in tool files: 0
-- Duplicated draft status declarations remaining in tool files: 0
+- Top-level tool behavior contracts remaining: 0
+- Duplicate object-vs-tool declaration files remaining: 0

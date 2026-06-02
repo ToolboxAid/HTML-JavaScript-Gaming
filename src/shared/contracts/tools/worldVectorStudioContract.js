@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 06/02/2026
-worldVectorStudioV2Contract.js
+worldVectorStudioContract.js
 */
 import {
   ASSET_TYPES,
@@ -11,11 +11,12 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const WORLD_VECTOR_STUDIO_V2_TOOL_CONTRACT = createToolContract({
   toolId: "world-vector-studio-v2",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  grouping: "World Vectors",
   requiredInputs: [TOOL_CONTRACT_FORMATS.ASSET, TOOL_CONTRACT_FORMATS.PALETTE_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.VECTOR_JSON, TOOL_CONTRACT_FORMATS.TILEMAP_JSON],
   supportedAssetTypes: [ASSET_TYPES.VECTOR, ASSET_TYPES.TILEMAP, ASSET_TYPES.IMAGE],

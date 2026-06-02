@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const THREE_D_JSON_PAYLOAD_TOOL_CONTRACT = createToolContract({
   toolId: "3d-json-payload",
   toolType: TOOL_CONTRACT_TYPES.UTILITY,
+  grouping: "3D",
   requiredInputs: [TOOL_CONTRACT_FORMATS.THREE_D_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.THREE_D_JSON],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,

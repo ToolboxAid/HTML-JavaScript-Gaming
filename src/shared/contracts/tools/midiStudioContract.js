@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 06/02/2026
-midiStudioV2Contract.js
+midiStudioContract.js
 */
 import {
   ASSET_TYPES,
@@ -11,11 +11,12 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const MIDI_STUDIO_V2_TOOL_CONTRACT = createToolContract({
   toolId: "midi-studio-v2",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  grouping: "Audio",
   requiredInputs: [TOOL_CONTRACT_FORMATS.MIDI_FILE],
   producedOutputs: [TOOL_CONTRACT_FORMATS.AUDIO_FILE, TOOL_CONTRACT_FORMATS.METADATA_JSON],
   supportedAssetTypes: [ASSET_TYPES.AUDIO],

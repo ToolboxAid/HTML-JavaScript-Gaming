@@ -6,7 +6,7 @@ AudioSfxPlaygroundV2ToolContract.test.mjs
 */
 import {
   AUDIO_SFX_PLAYGROUND_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/audioSfxPlaygroundV2Contract.js";
+} from "../../../src/shared/contracts/tools/audioSfxPlaygroundContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const PHYSICS_SANDBOX_TOOL_CONTRACT = createToolContract({
   toolId: "physics-sandbox",
   toolType: TOOL_CONTRACT_TYPES.UTILITY,
+  grouping: "Debug",
   requiredInputs: [TOOL_CONTRACT_FORMATS.PHYSICS_CONFIG],
   producedOutputs: [TOOL_CONTRACT_FORMATS.PHYSICS_CONFIG],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,

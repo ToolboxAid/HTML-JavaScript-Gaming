@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const PUBLISH_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   toolId: "publish-studio",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  grouping: "Publishing",
   requiredInputs: [TOOL_CONTRACT_FORMATS.GAME_MANIFEST, TOOL_CONTRACT_FORMATS.METADATA_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.PUBLISH_PACKAGE],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.ALL,

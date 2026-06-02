@@ -6,7 +6,7 @@ WorldVectorStudioV2ToolContract.test.mjs
 */
 import {
   WORLD_VECTOR_STUDIO_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/worldVectorStudioV2Contract.js";
+} from "../../../src/shared/contracts/tools/worldVectorStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

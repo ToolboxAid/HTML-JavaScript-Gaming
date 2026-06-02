@@ -6,13 +6,13 @@ toolContractsIndex.js
 */
 import {
   createRootCardCoverage,
-} from "../toolContract.js";
+} from "./toolContract.js";
 import {
   WORLD_VECTOR_STUDIO_V2_TOOL_CONTRACT,
-} from "./worldVectorStudioV2Contract.js";
+} from "./worldVectorStudioContract.js";
 import {
   OBJECT_VECTOR_STUDIO_V2_TOOL_CONTRACT,
-} from "./objectVectorStudioV2Contract.js";
+} from "./objectVectorStudioContract.js";
 import {
   TILE_MAP_EDITOR_TOOL_CONTRACT,
 } from "./tileMapEditorContract.js";
@@ -24,34 +24,34 @@ import {
 } from "./spriteEditorContract.js";
 import {
   ASSET_MANAGER_V2_TOOL_CONTRACT,
-} from "./assetManagerV2Contract.js";
+} from "./assetManagerContract.js";
 import {
   WORKSPACE_MANAGER_V2_TOOL_CONTRACT,
-} from "./workspaceManagerV2Contract.js";
+} from "./workspaceManagerContract.js";
 import {
   PALETTE_MANAGER_V2_TOOL_CONTRACT,
-} from "./paletteManagerV2Contract.js";
+} from "./paletteManagerContract.js";
 import {
   PREVIEW_GENERATOR_V2_TOOL_CONTRACT,
-} from "./previewGeneratorV2Contract.js";
+} from "./previewGeneratorContract.js";
 import {
   TEXT2SPEECH_V2_TOOL_CONTRACT,
-} from "./text2speechV2Contract.js";
+} from "./textToSpeechContract.js";
 import {
   AUDIO_SFX_PLAYGROUND_V2_TOOL_CONTRACT,
-} from "./audioSfxPlaygroundV2Contract.js";
+} from "./audioSfxPlaygroundContract.js";
 import {
   MIDI_STUDIO_V2_TOOL_CONTRACT,
-} from "./midiStudioV2Contract.js";
+} from "./midiStudioContract.js";
 import {
   COLLISION_INSPECTOR_V2_TOOL_CONTRACT,
-} from "./collisionInspectorV2Contract.js";
+} from "./collisionInspectorContract.js";
 import {
   STORAGE_INSPECTOR_V2_TOOL_CONTRACT,
-} from "./storageInspectorV2Contract.js";
+} from "./storageInspectorContract.js";
 import {
   INPUT_MAPPING_V2_TOOL_CONTRACT,
-} from "./inputMappingV2Contract.js";
+} from "./inputMappingContract.js";
 import {
   STATE_INSPECTOR_TOOL_CONTRACT,
 } from "./stateInspectorContract.js";

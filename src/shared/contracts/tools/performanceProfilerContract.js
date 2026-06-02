@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const PERFORMANCE_PROFILER_TOOL_CONTRACT = createToolContract({
   toolId: "performance-profiler",
   toolType: TOOL_CONTRACT_TYPES.INSPECTOR,
+  grouping: "Debug",
   requiredInputs: [TOOL_CONTRACT_FORMATS.JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.METADATA_JSON],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,

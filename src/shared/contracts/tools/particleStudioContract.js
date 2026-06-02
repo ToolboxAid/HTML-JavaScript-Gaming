@@ -11,11 +11,12 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const PARTICLE_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   toolId: "particle-studio",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  grouping: "FX",
   requiredInputs: [TOOL_CONTRACT_FORMATS.IMAGE_FILE, TOOL_CONTRACT_FORMATS.VECTOR_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.PARTICLE_JSON],
   supportedAssetTypes: [ASSET_TYPES.IMAGE, ASSET_TYPES.VECTOR],

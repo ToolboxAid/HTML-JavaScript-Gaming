@@ -11,11 +11,12 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const SOUND_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   toolId: "sound-studio",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  grouping: "Audio",
   requiredInputs: [],
   producedOutputs: [TOOL_CONTRACT_FORMATS.AUDIO_FILE],
   supportedAssetTypes: [ASSET_TYPES.AUDIO],

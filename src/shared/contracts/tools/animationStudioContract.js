@@ -11,11 +11,12 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const ANIMATION_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   toolId: "animation-studio",
   toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  grouping: "Animation",
   requiredInputs: [TOOL_CONTRACT_FORMATS.IMAGE_FILE],
   producedOutputs: [TOOL_CONTRACT_FORMATS.ANIMATION_JSON],
   supportedAssetTypes: [ASSET_TYPES.IMAGE],

@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const AI_ASSISTANT_TOOL_CONTRACT = createDraftToolContract({
   toolId: "ai-assistant",
   toolType: TOOL_CONTRACT_TYPES.UTILITY,
+  grouping: "AI",
   requiredInputs: [TOOL_CONTRACT_FORMATS.TEXT],
   producedOutputs: [TOOL_CONTRACT_FORMATS.TEXT],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,

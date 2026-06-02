@@ -6,7 +6,7 @@ PaletteManagerV2ToolContract.test.mjs
 */
 import {
   PALETTE_MANAGER_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/paletteManagerV2Contract.js";
+} from "../../../src/shared/contracts/tools/paletteManagerContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

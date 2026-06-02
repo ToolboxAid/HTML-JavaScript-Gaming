@@ -53,7 +53,7 @@ import {
   toolStateLinksToToolContract,
   validatePortableToolContractExport,
   validateToolContract,
-} from "../../../src/shared/contracts/toolContract.js";
+} from "../../../src/shared/contracts/tools/toolContract.js";
 import {
   TOOL_CONTRACT_LIST,
   TOOL_INDEX_ROOT_CARD_COVERAGE,
@@ -77,6 +77,7 @@ export function run() {
   assert.deepEqual(TOOL_CONTRACT_FIELDS, {
     TOOL_ID: "toolId",
     TOOL_TYPE: "toolType",
+    GROUPING: "grouping",
     OWNER: "ownerId",
     PROJECT: "projectId",
     VISIBILITY: "visibility",
@@ -111,6 +112,7 @@ export function run() {
   assert.deepEqual(TOOL_CONTRACT_PORTABLE_EXPORT_FIELDS, [
     "toolId",
     "toolType",
+    "grouping",
     "visibility",
     "requiredInputs",
     "producedOutputs",
@@ -271,6 +273,7 @@ export function run() {
   assert.equal(portableExport.portable, true);
   assert.equal(portableExport.toolId, sourceLinkedContract.toolId);
   assert.equal(portableExport.toolType, sourceLinkedContract.toolType);
+  assert.equal(portableExport.grouping, sourceLinkedContract.grouping);
   assert.equal(portableExport.ownerId, undefined);
   assert.equal(portableExport.projectId, undefined);
   assert.equal(portableExport.databaseId, undefined);

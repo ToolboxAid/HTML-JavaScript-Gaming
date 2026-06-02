@@ -6,7 +6,7 @@ ObjectVectorStudioV2ToolContract.test.mjs
 */
 import {
   OBJECT_VECTOR_STUDIO_V2_TOOL_CONTRACT,
-} from "../../../src/shared/contracts/tools/objectVectorStudioV2Contract.js";
+} from "../../../src/shared/contracts/tools/objectVectorStudioContract.js";
 import {
   runToolContractModuleTest,
 } from "./toolContractTestHelpers.mjs";

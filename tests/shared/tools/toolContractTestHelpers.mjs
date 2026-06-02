@@ -9,6 +9,8 @@ import assert from "node:assert/strict";
 export function runToolContractModuleTest(toolContract, expectedToolId) {
   assert.equal(toolContract.toolId, expectedToolId);
   assert.equal(typeof toolContract.toolType, "string", `${expectedToolId} toolType`);
+  assert.equal(typeof toolContract.grouping, "string", `${expectedToolId} grouping`);
+  assert.ok(toolContract.grouping.length > 0, `${expectedToolId} grouping value`);
   assert.ok(Array.isArray(toolContract.requiredInputs), `${expectedToolId} requiredInputs`);
   assert.ok(Array.isArray(toolContract.producedOutputs), `${expectedToolId} producedOutputs`);
   assert.ok(Array.isArray(toolContract.supportedAssetTypes), `${expectedToolId} supportedAssetTypes`);

@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 06/02/2026
-audioSfxPlaygroundV2Contract.js
+textToSpeechContract.js
 */
 import {
   ASSET_TYPES,
@@ -11,14 +11,15 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
-export const AUDIO_SFX_PLAYGROUND_V2_TOOL_CONTRACT = createToolContract({
-  toolId: "audio-sfx-playground-v2",
-  toolType: TOOL_CONTRACT_TYPES.STUDIO,
-  requiredInputs: [],
+export const TEXT2SPEECH_V2_TOOL_CONTRACT = createToolContract({
+  toolId: "text2speech-V2",
+  toolType: TOOL_CONTRACT_TYPES.GENERATOR,
+  grouping: "Audio",
+  requiredInputs: [TOOL_CONTRACT_FORMATS.TEXT],
   producedOutputs: [TOOL_CONTRACT_FORMATS.AUDIO_FILE],
   supportedAssetTypes: [ASSET_TYPES.AUDIO],
-  importFormats: [TOOL_CONTRACT_FORMATS.JSON],
+  importFormats: [TOOL_CONTRACT_FORMATS.TEXT],
   exportFormats: [TOOL_CONTRACT_FORMATS.AUDIO_FILE, TOOL_CONTRACT_FORMATS.METADATA_JSON],
 });

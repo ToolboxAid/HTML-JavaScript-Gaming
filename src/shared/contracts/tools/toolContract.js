@@ -11,20 +11,20 @@ import {
   IDENTITY_VISIBILITY_STATES,
   canActorPerformPermission,
   isIdentityPermission,
-} from "./identityPermissionsContract.js";
+} from "../identityPermissionsContract.js";
 import {
   PROJECT_ROLES,
   PROJECT_VISIBILITY_STATES,
   canActorAccessProject,
-} from "./projectContract.js";
+} from "../projectContract.js";
 import {
   TOOL_STATE_FIELDS,
   isToolStateVersion,
-} from "./toolStateContract.js";
+} from "../toolStateContract.js";
 import {
   ASSET_TYPES,
   isAssetType,
-} from "./assetContract.js";
+} from "../assetContract.js";
 
 export const TOOL_CONTRACT_CATALOG_ID = "gamefoundrystudio.tool.contract-catalog";
 export const TOOL_CONTRACT_CATALOG_VERSION = "1.0.0";
@@ -35,6 +35,7 @@ export const TOOL_CONTRACT_PROJECT_ID = "project.gamefoundrystudio.tools";
 export const TOOL_CONTRACT_FIELDS = Object.freeze({
   TOOL_ID: "toolId",
   TOOL_TYPE: "toolType",
+  GROUPING: "grouping",
   OWNER: "ownerId",
   PROJECT: "projectId",
   VISIBILITY: "visibility",
@@ -165,6 +166,7 @@ export const TOOL_CONTRACT_FORMAT_LIST = Object.freeze([
 export const TOOL_CONTRACT_PORTABLE_EXPORT_FIELDS = Object.freeze([
   TOOL_CONTRACT_FIELDS.TOOL_ID,
   TOOL_CONTRACT_FIELDS.TOOL_TYPE,
+  TOOL_CONTRACT_FIELDS.GROUPING,
   TOOL_CONTRACT_FIELDS.VISIBILITY,
   TOOL_CONTRACT_FIELDS.REQUIRED_INPUTS,
   TOOL_CONTRACT_FIELDS.PRODUCED_OUTPUTS,
@@ -208,6 +210,7 @@ export const TOOL_CONTRACT_SUPPORTED_ASSET_TYPES = Object.freeze({
 export function createToolContract({
   toolId,
   toolType,
+  grouping = "",
   requiredInputs,
   producedOutputs,
   supportedAssetTypes,
@@ -220,6 +223,7 @@ export function createToolContract({
   return Object.freeze({
     toolId,
     toolType,
+    grouping,
     ownerId: TOOL_CONTRACT_OWNER_ID,
     projectId: TOOL_CONTRACT_PROJECT_ID,
     visibility,
@@ -490,6 +494,7 @@ export function createPortableToolContractExport(toolContract) {
     contractVersion: TOOL_CONTRACT_CATALOG_VERSION,
     toolId: toolContract.toolId,
     toolType: toolContract.toolType,
+    grouping: toolContract.grouping,
     visibility: toolContract.visibility,
     requiredInputs: Object.freeze(cloneJsonData(toolContract.requiredInputs)),
     producedOutputs: Object.freeze(cloneJsonData(toolContract.producedOutputs)),

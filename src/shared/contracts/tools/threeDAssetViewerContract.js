@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const THREE_D_ASSET_VIEWER_TOOL_CONTRACT = createToolContract({
   toolId: "3d-asset-viewer",
   toolType: TOOL_CONTRACT_TYPES.VIEWER,
+  grouping: "3D",
   requiredInputs: [TOOL_CONTRACT_FORMATS.THREE_D_JSON, TOOL_CONTRACT_FORMATS.METADATA_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.METADATA_JSON],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,

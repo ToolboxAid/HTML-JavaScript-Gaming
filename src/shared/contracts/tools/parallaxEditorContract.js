@@ -11,11 +11,12 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const PARALLAX_EDITOR_TOOL_CONTRACT = createToolContract({
   toolId: "parallax-editor",
   toolType: TOOL_CONTRACT_TYPES.EDITOR,
+  grouping: "Parallax",
   requiredInputs: [TOOL_CONTRACT_FORMATS.IMAGE_FILE],
   producedOutputs: [TOOL_CONTRACT_FORMATS.JSON, TOOL_CONTRACT_FORMATS.IMAGE_FILE],
   supportedAssetTypes: [ASSET_TYPES.IMAGE],

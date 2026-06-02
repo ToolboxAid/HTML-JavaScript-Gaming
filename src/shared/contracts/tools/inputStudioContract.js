@@ -9,11 +9,12 @@ import {
   TOOL_CONTRACT_SUPPORTED_ASSET_TYPES,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const INPUT_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   toolId: "input-studio",
   toolType: TOOL_CONTRACT_TYPES.UTILITY,
+  grouping: "Input",
   requiredInputs: [TOOL_CONTRACT_FORMATS.INPUT_MAP],
   producedOutputs: [TOOL_CONTRACT_FORMATS.INPUT_MAP],
   supportedAssetTypes: TOOL_CONTRACT_SUPPORTED_ASSET_TYPES.NONE,

@@ -11,11 +11,12 @@ import {
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
-} from "../toolContract.js";
+} from "./toolContract.js";
 
 export const TILE_MAP_EDITOR_TOOL_CONTRACT = createToolContract({
   toolId: "tile-map-editor",
   toolType: TOOL_CONTRACT_TYPES.EDITOR,
+  grouping: "Tile Maps",
   requiredInputs: [TOOL_CONTRACT_FORMATS.IMAGE_FILE, TOOL_CONTRACT_FORMATS.PALETTE_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.TILEMAP_JSON],
   supportedAssetTypes: [ASSET_TYPES.TILEMAP, ASSET_TYPES.IMAGE, ASSET_TYPES.PALETTE],
