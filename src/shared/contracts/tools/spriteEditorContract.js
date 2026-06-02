@@ -5,9 +5,7 @@ David Quesenberry
 spriteEditorContract.js
 */
 import {
-  ASSET_TYPES,
-} from "../assetContract.js";
-import {
+  TOOL_CONTRACT_ASSET_TYPES,
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
@@ -19,7 +17,7 @@ export const SPRITE_EDITOR_TOOL_CONTRACT = createToolContract({
   grouping: "Sprites",
   requiredInputs: [TOOL_CONTRACT_FORMATS.PALETTE_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.IMAGE_FILE, TOOL_CONTRACT_FORMATS.METADATA_JSON],
-  supportedAssetTypes: [ASSET_TYPES.IMAGE, ASSET_TYPES.PALETTE],
+  supportedAssetTypes: [TOOL_CONTRACT_ASSET_TYPES.IMAGE, TOOL_CONTRACT_ASSET_TYPES.PALETTE],
   importFormats: [TOOL_CONTRACT_FORMATS.IMAGE_FILE, TOOL_CONTRACT_FORMATS.PALETTE_JSON],
   exportFormats: [TOOL_CONTRACT_FORMATS.IMAGE_FILE, TOOL_CONTRACT_FORMATS.METADATA_JSON],
 });

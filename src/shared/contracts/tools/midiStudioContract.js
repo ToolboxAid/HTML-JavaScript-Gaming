@@ -5,9 +5,7 @@ David Quesenberry
 midiStudioContract.js
 */
 import {
-  ASSET_TYPES,
-} from "../assetContract.js";
-import {
+  TOOL_CONTRACT_ASSET_TYPES,
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
@@ -19,7 +17,7 @@ export const MIDI_STUDIO_V2_TOOL_CONTRACT = createToolContract({
   grouping: "Audio",
   requiredInputs: [TOOL_CONTRACT_FORMATS.MIDI_FILE],
   producedOutputs: [TOOL_CONTRACT_FORMATS.AUDIO_FILE, TOOL_CONTRACT_FORMATS.METADATA_JSON],
-  supportedAssetTypes: [ASSET_TYPES.AUDIO],
+  supportedAssetTypes: [TOOL_CONTRACT_ASSET_TYPES.AUDIO],
   importFormats: [TOOL_CONTRACT_FORMATS.MIDI_FILE],
   exportFormats: [TOOL_CONTRACT_FORMATS.AUDIO_FILE, TOOL_CONTRACT_FORMATS.METADATA_JSON],
 });

@@ -5,9 +5,7 @@ David Quesenberry
 parallaxEditorContract.js
 */
 import {
-  ASSET_TYPES,
-} from "../assetContract.js";
-import {
+  TOOL_CONTRACT_ASSET_TYPES,
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
@@ -19,7 +17,7 @@ export const PARALLAX_EDITOR_TOOL_CONTRACT = createToolContract({
   grouping: "Parallax",
   requiredInputs: [TOOL_CONTRACT_FORMATS.IMAGE_FILE],
   producedOutputs: [TOOL_CONTRACT_FORMATS.JSON, TOOL_CONTRACT_FORMATS.IMAGE_FILE],
-  supportedAssetTypes: [ASSET_TYPES.IMAGE],
+  supportedAssetTypes: [TOOL_CONTRACT_ASSET_TYPES.IMAGE],
   importFormats: [TOOL_CONTRACT_FORMATS.JSON, TOOL_CONTRACT_FORMATS.IMAGE_FILE],
   exportFormats: [TOOL_CONTRACT_FORMATS.JSON, TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE],
 });

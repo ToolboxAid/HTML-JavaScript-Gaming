@@ -21,10 +21,6 @@ import {
   TOOL_STATE_FIELDS,
   isToolStateVersion,
 } from "../toolStateContract.js";
-import {
-  ASSET_TYPES,
-  isAssetType,
-} from "../assetContract.js";
 
 export const TOOL_CONTRACT_CATALOG_ID = "gamefoundrystudio.tool.contract-catalog";
 export const TOOL_CONTRACT_CATALOG_VERSION = "1.0.0";
@@ -163,6 +159,58 @@ export const TOOL_CONTRACT_FORMAT_LIST = Object.freeze([
   TOOL_CONTRACT_FORMATS.SVG,
 ]);
 
+export const TOOL_CONTRACT_ASSET_TYPES = Object.freeze({
+  VECTOR: "vector",
+  PALETTE: "palette",
+  IMAGE: "image",
+  AUDIO: "audio",
+  TILEMAP: "tilemap",
+  LOCALIZATION: "localization",
+});
+
+export const TOOL_CONTRACT_ASSET_TYPE_LIST = Object.freeze([
+  TOOL_CONTRACT_ASSET_TYPES.VECTOR,
+  TOOL_CONTRACT_ASSET_TYPES.PALETTE,
+  TOOL_CONTRACT_ASSET_TYPES.IMAGE,
+  TOOL_CONTRACT_ASSET_TYPES.AUDIO,
+  TOOL_CONTRACT_ASSET_TYPES.TILEMAP,
+  TOOL_CONTRACT_ASSET_TYPES.LOCALIZATION,
+]);
+
+export const TOOL_CONTRACT_ASSET_TYPE_OUTPUT_FORMATS = Object.freeze({
+  [TOOL_CONTRACT_ASSET_TYPES.VECTOR]: Object.freeze([
+    TOOL_CONTRACT_FORMATS.VECTOR_JSON,
+    TOOL_CONTRACT_FORMATS.SVG,
+    TOOL_CONTRACT_FORMATS.METADATA_JSON,
+    TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE,
+  ]),
+  [TOOL_CONTRACT_ASSET_TYPES.PALETTE]: Object.freeze([
+    TOOL_CONTRACT_FORMATS.PALETTE_JSON,
+    TOOL_CONTRACT_FORMATS.METADATA_JSON,
+    TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE,
+  ]),
+  [TOOL_CONTRACT_ASSET_TYPES.IMAGE]: Object.freeze([
+    TOOL_CONTRACT_FORMATS.IMAGE_FILE,
+    TOOL_CONTRACT_FORMATS.METADATA_JSON,
+    TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE,
+  ]),
+  [TOOL_CONTRACT_ASSET_TYPES.AUDIO]: Object.freeze([
+    TOOL_CONTRACT_FORMATS.AUDIO_FILE,
+    TOOL_CONTRACT_FORMATS.METADATA_JSON,
+    TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE,
+  ]),
+  [TOOL_CONTRACT_ASSET_TYPES.TILEMAP]: Object.freeze([
+    TOOL_CONTRACT_FORMATS.TILEMAP_JSON,
+    TOOL_CONTRACT_FORMATS.METADATA_JSON,
+    TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE,
+  ]),
+  [TOOL_CONTRACT_ASSET_TYPES.LOCALIZATION]: Object.freeze([
+    TOOL_CONTRACT_FORMATS.LOCALIZATION_JSON,
+    TOOL_CONTRACT_FORMATS.METADATA_JSON,
+    TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE,
+  ]),
+});
+
 export const TOOL_CONTRACT_PORTABLE_EXPORT_FIELDS = Object.freeze([
   TOOL_CONTRACT_FIELDS.TOOL_ID,
   TOOL_CONTRACT_FIELDS.TOOL_TYPE,
@@ -203,7 +251,7 @@ export const TOOL_CONTRACT_ERRORS = Object.freeze({
 });
 
 export const TOOL_CONTRACT_SUPPORTED_ASSET_TYPES = Object.freeze({
-  ALL: Object.freeze(Object.values(ASSET_TYPES)),
+  ALL: TOOL_CONTRACT_ASSET_TYPE_LIST,
   NONE: Object.freeze([]),
 });
 
@@ -267,6 +315,15 @@ export function isToolContractVersion(value) {
 
 export function isToolContractFormat(value) {
   return TOOL_CONTRACT_FORMAT_LIST.includes(value);
+}
+
+export function isToolContractAssetType(value) {
+  return TOOL_CONTRACT_ASSET_TYPE_LIST.includes(value);
+}
+
+export function isToolContractOutputFormatForAssetType(assetType, outputFormat) {
+  return Array.isArray(TOOL_CONTRACT_ASSET_TYPE_OUTPUT_FORMATS[assetType])
+    && TOOL_CONTRACT_ASSET_TYPE_OUTPUT_FORMATS[assetType].includes(outputFormat);
 }
 
 export function validateToolContract(toolContract, { saved = true } = {}) {
@@ -339,7 +396,7 @@ export function validateToolContract(toolContract, { saved = true } = {}) {
     ));
   } else {
     toolContract.supportedAssetTypes.forEach((assetType, index) => {
-      if (!isAssetType(assetType)) {
+      if (!isToolContractAssetType(assetType)) {
         errors.push(createContractError(
           TOOL_CONTRACT_ERRORS.SUPPORTED_ASSET_TYPE_INVALID,
           "Tool contract supportedAssetTypes must use allowed asset types.",

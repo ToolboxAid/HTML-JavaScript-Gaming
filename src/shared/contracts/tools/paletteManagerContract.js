@@ -5,9 +5,7 @@ David Quesenberry
 paletteManagerContract.js
 */
 import {
-  ASSET_TYPES,
-} from "../assetContract.js";
-import {
+  TOOL_CONTRACT_ASSET_TYPES,
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createToolContract,
@@ -19,7 +17,7 @@ export const PALETTE_MANAGER_V2_TOOL_CONTRACT = createToolContract({
   grouping: "Palettes",
   requiredInputs: [],
   producedOutputs: [TOOL_CONTRACT_FORMATS.PALETTE_JSON],
-  supportedAssetTypes: [ASSET_TYPES.PALETTE],
+  supportedAssetTypes: [TOOL_CONTRACT_ASSET_TYPES.PALETTE],
   importFormats: [TOOL_CONTRACT_FORMATS.PALETTE_JSON],
   exportFormats: [TOOL_CONTRACT_FORMATS.PALETTE_JSON, TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE],
 });

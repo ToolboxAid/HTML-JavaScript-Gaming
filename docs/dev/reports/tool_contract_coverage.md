@@ -1,6 +1,6 @@
 # Tool Contract Coverage
 
-PR: PR_26152_076-tool-contract-location-correction
+PR: PR_26152_077-model-b-contract-final-cleanup
 Date: 2026-06-02
 
 ## Discovery Sources
@@ -8,20 +8,19 @@ Date: 2026-06-02
 - Root Tools Index page: `tools/index.html`
 - Root Tools Index card data: `tools/tools-page-accordions.js`
 - Active first-class tool registry: `tools/toolRegistry.js`
-- Shared tool behavior: `src/shared/contracts/tools/toolContract.js`
+- Shared tool behavior and output vocabulary: `src/shared/contracts/tools/toolContract.js`
 - Per-tool declarations: `src/shared/contracts/tools/*Contract.js`
 - Contract index: `src/shared/contracts/tools/toolContractsIndex.js`
 
-## Location Status
+## Model B Status
 
-- Top-level `src/shared/contracts/` contains platform/object contracts only.
-- Shared tool behavior now lives under `src/shared/contracts/tools/toolContract.js`.
+- Platform contract tests remain at the top-level contract surface for identity/permissions, projects, and tool state.
+- Shared tool behavior now owns tool status, visibility, versioning, import/export formats, supported output types, and output format compatibility vocabulary.
 - Per-tool modules remain split: 34/34 retained.
-- Matching per-tool tests remain split: 34/34 retained.
-- Per-tool declarations include tool-specific id, type, grouping, inputs, outputs, supported assets, import formats, export formats, and tool metadata.
-- Shared tool behavior owns owner/project/visibility/status/version, import/export, produced output, supported asset, source tool state, archive, permission, and portable export rules.
-- No `src/shared/contracts/tools/paletteContract.js` exists; the platform Palette object remains `src/shared/contracts/paletteContract.js`.
-- No standalone `vectorStudioContract.js` was created because the registered vector tools are `object-vector-studio-v2` and `world-vector-studio-v2`.
+- Matching per-tool declaration tests remain split: 34/34 retained.
+- Tool output declarations live in per-tool modules through `producedOutputs`, `supportedAssetTypes`, `importFormats`, and `exportFormats`.
+- Standalone top-level output object behavior models for asset, palette, and vector asset records were removed.
+- No separate behavior models were created for asset, palette, or vector outputs.
 
 ## Active Registered First-Class Tools
 
@@ -52,6 +51,19 @@ All active visible registered first-class tools discovered through `getVisibleAc
 | `3d-json-payload` | `src/shared/contracts/tools/threeDJsonPayloadContract.js` | `tests/shared/tools/ThreeDJsonPayloadToolContract.test.mjs` |
 | `3d-asset-viewer` | `src/shared/contracts/tools/threeDAssetViewerContract.js` | `tests/shared/tools/ThreeDAssetViewerToolContract.test.mjs` |
 | `3d-camera-path-editor` | `src/shared/contracts/tools/threeDCameraPathEditorContract.js` | `tests/shared/tools/ThreeDCameraPathEditorToolContract.test.mjs` |
+
+## Tool Output Declaration Coverage
+
+| Output Family | Shared Vocabulary | Representative Tool Declaration |
+|---|---|---|
+| Vector | `vector`, `vector-json`, `svg` | `object-vector-studio-v2` produces `vector-json` and `svg`. |
+| Palette | `palette`, `palette-json` | `palette-manager-v2` produces `palette-json`. |
+| Image | `image`, `image-file` | `asset-studio` produces `image-file`. |
+| Audio | `audio`, `audio-file` | `audio-sfx-playground-v2` produces `audio-file`. |
+| Tilemap | `tilemap`, `tilemap-json` | `tile-map-editor` produces `tilemap-json`. |
+| Localization | `localization`, `localization-json` | `localization-studio` produces `localization-json`. |
+
+The shared output vocabulary is validated by `tests/shared/tools/ToolOutputDeclarationContract.test.mjs`.
 
 ## All Tool Declarations
 
@@ -123,9 +135,10 @@ The root Tools Index card data includes public/root cards that are not all activ
 - Tool contracts defined: 34
 - Tool contracts with grouping metadata: 34
 - Per-tool contract modules: 34
-- Matching per-tool tests: 34
+- Matching per-tool declaration tests: 34
+- Shared tool behavior tests: 2
 - Registered first-class tools without contract: 0
 - Root Tools Index cards reviewed: 18
 - Root Tools Index cards skipped as non-tool surfaces: 2
-- Top-level tool behavior contracts remaining: 0
-- Duplicate object-vs-tool declaration files remaining: 0
+- Top-level asset/palette/vector output behavior contracts remaining: 0
+- Duplicate output behavior models remaining: 0

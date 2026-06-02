@@ -5,9 +5,7 @@ David Quesenberry
 animationStudioContract.js
 */
 import {
-  ASSET_TYPES,
-} from "../assetContract.js";
-import {
+  TOOL_CONTRACT_ASSET_TYPES,
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
@@ -19,7 +17,7 @@ export const ANIMATION_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   grouping: "Animation",
   requiredInputs: [TOOL_CONTRACT_FORMATS.IMAGE_FILE],
   producedOutputs: [TOOL_CONTRACT_FORMATS.ANIMATION_JSON],
-  supportedAssetTypes: [ASSET_TYPES.IMAGE],
+  supportedAssetTypes: [TOOL_CONTRACT_ASSET_TYPES.IMAGE],
   importFormats: [TOOL_CONTRACT_FORMATS.IMAGE_FILE],
   exportFormats: [TOOL_CONTRACT_FORMATS.ANIMATION_JSON],
 });

@@ -8,10 +8,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  ASSET_TYPES,
-  isAssetType,
-} from "../../../src/shared/contracts/assetContract.js";
-import {
   IDENTITY_PERMISSIONS,
   isIdentityPermission,
 } from "../../../src/shared/contracts/identityPermissionsContract.js";
@@ -28,6 +24,8 @@ import {
 import {
   TOOL_CONTRACT_CATALOG_ID,
   TOOL_CONTRACT_CATALOG_VERSION,
+  TOOL_CONTRACT_ASSET_TYPES,
+  TOOL_CONTRACT_ASSET_TYPE_LIST,
   TOOL_CONTRACT_ERRORS,
   TOOL_CONTRACT_FIELDS,
   TOOL_CONTRACT_FORMAT_LIST,
@@ -44,6 +42,7 @@ import {
   canActorAccessToolContract,
   canEditToolContractStatus,
   createPortableToolContractExport,
+  isToolContractAssetType,
   isToolContractFormat,
   isToolContractStatus,
   isToolContractType,
@@ -109,6 +108,14 @@ export function run() {
     "public",
     "marketplace",
   ]);
+  assert.deepEqual(TOOL_CONTRACT_ASSET_TYPE_LIST, [
+    "vector",
+    "palette",
+    "image",
+    "audio",
+    "tilemap",
+    "localization",
+  ]);
   assert.deepEqual(TOOL_CONTRACT_PORTABLE_EXPORT_FIELDS, [
     "toolId",
     "toolType",
@@ -127,6 +134,7 @@ export function run() {
   assertUnique(TOOL_CONTRACT_STATUS_LIST);
   assertUnique(TOOL_CONTRACT_VISIBILITY_LIST);
   assertUnique(TOOL_CONTRACT_FORMAT_LIST);
+  assertUnique(TOOL_CONTRACT_ASSET_TYPE_LIST);
   assertUnique(TOOL_CONTRACT_LIST.map((toolContract) => toolContract.toolId));
 
   assert.equal(isToolContractType(TOOL_CONTRACT_TYPES.STUDIO), true);
@@ -139,7 +147,8 @@ export function run() {
   assert.equal(isToolContractVersion(0), false);
   assert.equal(isToolContractFormat(TOOL_CONTRACT_FORMATS.GAME_MANIFEST), true);
   assert.equal(isToolContractFormat("spreadsheet"), false);
-  assert.equal(isAssetType(ASSET_TYPES.VECTOR), true);
+  assert.equal(isToolContractAssetType(TOOL_CONTRACT_ASSET_TYPES.VECTOR), true);
+  assert.equal(isToolContractAssetType("shader"), false);
 
   assert.equal(isIdentityPermission(IDENTITY_PERMISSIONS.VIEW), true);
   assert.equal(isIdentityPermission(IDENTITY_PERMISSIONS.EDIT), true);

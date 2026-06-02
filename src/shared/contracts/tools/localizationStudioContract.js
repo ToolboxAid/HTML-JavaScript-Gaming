@@ -5,9 +5,7 @@ David Quesenberry
 localizationStudioContract.js
 */
 import {
-  ASSET_TYPES,
-} from "../assetContract.js";
-import {
+  TOOL_CONTRACT_ASSET_TYPES,
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
@@ -19,7 +17,7 @@ export const LOCALIZATION_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   grouping: "Localization",
   requiredInputs: [TOOL_CONTRACT_FORMATS.TEXT],
   producedOutputs: [TOOL_CONTRACT_FORMATS.LOCALIZATION_JSON],
-  supportedAssetTypes: [ASSET_TYPES.LOCALIZATION],
+  supportedAssetTypes: [TOOL_CONTRACT_ASSET_TYPES.LOCALIZATION],
   importFormats: [TOOL_CONTRACT_FORMATS.TEXT, TOOL_CONTRACT_FORMATS.LOCALIZATION_JSON],
   exportFormats: [TOOL_CONTRACT_FORMATS.LOCALIZATION_JSON],
 });

@@ -5,9 +5,7 @@ David Quesenberry
 particleStudioContract.js
 */
 import {
-  ASSET_TYPES,
-} from "../assetContract.js";
-import {
+  TOOL_CONTRACT_ASSET_TYPES,
   TOOL_CONTRACT_FORMATS,
   TOOL_CONTRACT_TYPES,
   createDraftToolContract,
@@ -19,7 +17,7 @@ export const PARTICLE_STUDIO_TOOL_CONTRACT = createDraftToolContract({
   grouping: "FX",
   requiredInputs: [TOOL_CONTRACT_FORMATS.IMAGE_FILE, TOOL_CONTRACT_FORMATS.VECTOR_JSON],
   producedOutputs: [TOOL_CONTRACT_FORMATS.PARTICLE_JSON],
-  supportedAssetTypes: [ASSET_TYPES.IMAGE, ASSET_TYPES.VECTOR],
+  supportedAssetTypes: [TOOL_CONTRACT_ASSET_TYPES.IMAGE, TOOL_CONTRACT_ASSET_TYPES.VECTOR],
   importFormats: [TOOL_CONTRACT_FORMATS.IMAGE_FILE, TOOL_CONTRACT_FORMATS.VECTOR_JSON],
   exportFormats: [TOOL_CONTRACT_FORMATS.PARTICLE_JSON],
 });
