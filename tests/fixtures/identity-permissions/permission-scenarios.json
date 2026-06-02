@@ -1,0 +1,195 @@
+{
+  "validObjects": [
+    {
+      "name": "owned editable project asset",
+      "object": {
+        "id": "asset.vector.hero",
+        "ownerId": "user.owner",
+        "shareable": true,
+        "visibility": "project",
+        "editable": true,
+        "permissions": ["view", "edit", "share"]
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "owned private read record",
+      "object": {
+        "id": "profile.private",
+        "ownerId": "user.owner",
+        "shareable": false,
+        "editable": false
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidObjects": [
+    {
+      "name": "missing owner",
+      "object": {
+        "id": "project.without.owner",
+        "shareable": false,
+        "editable": false
+      },
+      "expectedErrors": ["OWNER_REQUIRED"]
+    },
+    {
+      "name": "shareable object missing visibility",
+      "object": {
+        "id": "asset.shareable.hidden",
+        "ownerId": "user.owner",
+        "shareable": true,
+        "editable": false
+      },
+      "expectedErrors": ["VISIBILITY_REQUIRED"]
+    },
+    {
+      "name": "editable object missing permissions",
+      "object": {
+        "id": "tool-state.editable",
+        "ownerId": "user.owner",
+        "shareable": false,
+        "editable": true
+      },
+      "expectedErrors": ["PERMISSIONS_REQUIRED"]
+    },
+    {
+      "name": "editable object invalid permission",
+      "object": {
+        "id": "release.invalid.permission",
+        "ownerId": "user.owner",
+        "shareable": true,
+        "visibility": "public",
+        "editable": true,
+        "permissions": ["view", "launch"]
+      },
+      "expectedErrors": ["PERMISSION_INVALID"]
+    }
+  ],
+  "permissionChecks": [
+    {
+      "name": "guest can view public content",
+      "actorId": "guest",
+      "role": "guest",
+      "permission": "view",
+      "scope": "public",
+      "object": {
+        "ownerId": "user.owner",
+        "visibility": "public"
+      },
+      "expected": true
+    },
+    {
+      "name": "guest cannot view private content",
+      "actorId": "guest",
+      "role": "guest",
+      "permission": "view",
+      "scope": "public",
+      "object": {
+        "ownerId": "user.owner",
+        "visibility": "private"
+      },
+      "expected": false
+    },
+    {
+      "name": "guest cannot edit public content",
+      "actorId": "guest",
+      "role": "guest",
+      "permission": "edit",
+      "scope": "public",
+      "object": {
+        "ownerId": "user.owner",
+        "visibility": "public"
+      },
+      "expected": false
+    },
+    {
+      "name": "admin administers platform scope",
+      "actorId": "admin.user",
+      "role": "admin",
+      "permission": "administer",
+      "scope": "platform",
+      "object": {
+        "ownerId": "platform",
+        "visibility": "admin-only"
+      },
+      "expected": true
+    },
+    {
+      "name": "moderator cannot administer platform scope",
+      "actorId": "moderator.user",
+      "role": "moderator",
+      "permission": "administer",
+      "scope": "platform",
+      "object": {
+        "ownerId": "platform",
+        "visibility": "admin-only"
+      },
+      "expected": false
+    },
+    {
+      "name": "moderator moderates community scope",
+      "actorId": "moderator.user",
+      "role": "moderator",
+      "permission": "moderate",
+      "scope": "community",
+      "object": {
+        "ownerId": "user.owner",
+        "visibility": "public"
+      },
+      "expected": true
+    },
+    {
+      "name": "reviewer approves granted review scope",
+      "actorId": "reviewer.user",
+      "role": "reviewer",
+      "permission": "approve",
+      "scope": "review",
+      "grantedScopes": ["review"],
+      "object": {
+        "ownerId": "user.owner",
+        "visibility": "project"
+      },
+      "expected": true
+    },
+    {
+      "name": "reviewer cannot moderate community scope",
+      "actorId": "reviewer.user",
+      "role": "reviewer",
+      "permission": "moderate",
+      "scope": "community",
+      "grantedScopes": ["review"],
+      "object": {
+        "ownerId": "user.owner",
+        "visibility": "public"
+      },
+      "expected": false
+    },
+    {
+      "name": "contributor edits only granted project scope",
+      "actorId": "contributor.user",
+      "role": "contributor",
+      "permission": "edit",
+      "scope": "project",
+      "grantedScopes": ["project"],
+      "object": {
+        "ownerId": "user.owner",
+        "visibility": "project"
+      },
+      "expected": true
+    },
+    {
+      "name": "contributor cannot edit ungranted marketplace scope",
+      "actorId": "contributor.user",
+      "role": "contributor",
+      "permission": "edit",
+      "scope": "marketplace",
+      "grantedScopes": ["project"],
+      "object": {
+        "ownerId": "user.owner",
+        "visibility": "marketplace"
+      },
+      "expected": false
+    }
+  ]
+}
