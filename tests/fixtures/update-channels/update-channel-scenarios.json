@@ -1,0 +1,1075 @@
+{
+  "validUpdateChannels": [
+    {
+      "name": "stable channel promoted from beta",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "promotesFrom": "beta",
+        "promotedAt": "2026-06-02T22:05:00.000Z",
+        "channelNotes": "Stable channel points at the current published release."
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "beta channel promoted from alpha",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.beta",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "beta",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T21:30:00.000Z",
+        "promotesFrom": "alpha",
+        "promotedAt": "2026-06-02T21:35:00.000Z"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "alpha channel promoted from preview",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.alpha",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "alpha",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T21:00:00.000Z",
+        "promotesFrom": "preview",
+        "promotedAt": "2026-06-02T21:05:00.000Z"
+      },
+      "expectedErrors": []
+    },
+    {
+      "name": "preview channel assigned directly",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.preview",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "preview",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T20:30:00.000Z"
+      },
+      "expectedErrors": []
+    }
+  ],
+  "invalidUpdateChannels": [
+    {
+      "name": "missing owner",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_OWNER_REQUIRED"]
+    },
+    {
+      "name": "missing assigned release",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_ASSIGNED_RELEASE_REQUIRED"]
+    },
+    {
+      "name": "missing assigned publish",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_ASSIGNED_PUBLISH_REQUIRED"]
+    },
+    {
+      "name": "missing library item",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_LIBRARY_ITEM_REQUIRED"]
+    },
+    {
+      "name": "missing install receipt",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_INSTALL_RECEIPT_REQUIRED"]
+    },
+    {
+      "name": "invalid channel type",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.canary",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "canary",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_TYPE_INVALID"]
+    },
+    {
+      "name": "invalid assigned release",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "draft"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_ASSIGNED_RELEASE_INVALID"]
+    },
+    {
+      "name": "owner library item mismatch",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.other",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_OWNER_LIBRARY_ITEM_MISMATCH"]
+    },
+    {
+      "name": "project release mismatch",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.other",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_PROJECT_RELEASE_MISMATCH"]
+    },
+    {
+      "name": "release publish mismatch",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.other.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_RELEASE_PUBLISH_MISMATCH"]
+    },
+    {
+      "name": "library item release mismatch",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.other.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_RELEASE_LIBRARY_ITEM_MISMATCH"]
+    },
+    {
+      "name": "install receipt library item mismatch",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.other",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_LIBRARY_ITEM_INSTALL_RECEIPT_MISMATCH"]
+    },
+    {
+      "name": "invalid assigned timestamp",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "not-a-date"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_ASSIGNED_AT_INVALID"]
+    },
+    {
+      "name": "invalid promotion order",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.beta",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "beta",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "promotesFrom": "stable",
+        "promotedAt": "2026-06-02T22:05:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_PROMOTION_ORDER_INVALID"]
+    },
+    {
+      "name": "promotion without timestamp",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "promotesFrom": "beta"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_PROMOTED_AT_REQUIRED"]
+    },
+    {
+      "name": "promoted timestamp without source channel",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "promotedAt": "2026-06-02T22:05:00.000Z"
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_PROMOTES_FROM_REQUIRED"]
+    },
+    {
+      "name": "payment state leakage",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "paymentState": {}
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "auth session state leakage",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "authSessionState": {}
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "runtime state leakage",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "workspaceState": {}
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "tool state leakage",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "toolState": {}
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "installer state leakage",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "installerState": {}
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "updater implementation leakage",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "updaterImplementation": {}
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_FIELD_NOT_ALLOWED"]
+    },
+    {
+      "name": "download state leakage",
+      "updateChannel": {
+        "updateChannelId": "update-channel.alpha.stable",
+        "ownerId": "user.buyer",
+        "projectId": "project.game.alpha",
+        "channelType": "stable",
+        "assignedRelease": {
+          "releaseId": "release.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "version": 2,
+          "status": "published"
+        },
+        "assignedPublish": {
+          "publishId": "publish.game.alpha.2",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "status": "published"
+        },
+        "libraryItem": {
+          "libraryItemId": "library-item.alpha.available.1",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "libraryStatus": "available"
+        },
+        "installReceipt": {
+          "installReceiptId": "install-receipt.alpha.installed.2",
+          "ownerId": "user.buyer",
+          "projectId": "project.game.alpha",
+          "libraryItemId": "library-item.alpha.available.1",
+          "releaseId": "release.game.alpha.2",
+          "publishId": "publish.game.alpha.2",
+          "receiptStatus": "installed"
+        },
+        "assignedAt": "2026-06-02T22:00:00.000Z",
+        "downloadState": {}
+      },
+      "expectedErrors": ["UPDATE_CHANNEL_FIELD_NOT_ALLOWED"]
+    }
+  ]
+}
