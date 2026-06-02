@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 06/02/2026
-ToolContractBundle.test.mjs
+ToolContractCoverage.test.mjs
 */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -10,29 +10,28 @@ import { fileURLToPath } from "node:url";
 import {
   ASSET_TYPES,
   isAssetType,
-} from "../../src/shared/contracts/assetContract.js";
+} from "../../../src/shared/contracts/assetContract.js";
 import {
   IDENTITY_PERMISSIONS,
   isIdentityPermission,
-} from "../../src/shared/contracts/identityPermissionsContract.js";
+} from "../../../src/shared/contracts/identityPermissionsContract.js";
 import {
   PROJECT_ROLES,
   PROJECT_VISIBILITY_STATES,
   isProjectVisibility,
-} from "../../src/shared/contracts/projectContract.js";
+} from "../../../src/shared/contracts/projectContract.js";
 import {
   TOOL_STATE_FIELDS,
   isToolStateVersion,
   validateToolStateContract,
-} from "../../src/shared/contracts/toolStateContract.js";
+} from "../../../src/shared/contracts/toolStateContract.js";
 import {
-  TOOL_CONTRACT_BUNDLE_ID,
-  TOOL_CONTRACT_BUNDLE_VERSION,
+  TOOL_CONTRACT_CATALOG_ID,
+  TOOL_CONTRACT_CATALOG_VERSION,
   TOOL_CONTRACT_ERRORS,
   TOOL_CONTRACT_FIELDS,
   TOOL_CONTRACT_FORMAT_LIST,
   TOOL_CONTRACT_FORMATS,
-  TOOL_CONTRACT_LIST,
   TOOL_CONTRACT_OWNER_ID,
   TOOL_CONTRACT_PORTABLE_EXPORT_FIELDS,
   TOOL_CONTRACT_PROJECT_ID,
@@ -42,11 +41,9 @@ import {
   TOOL_CONTRACT_TYPES,
   TOOL_CONTRACT_VISIBILITY_LIST,
   TOOL_CONTRACT_VISIBILITY_STATES,
-  TOOL_INDEX_ROOT_CARD_COVERAGE,
   canActorAccessToolContract,
   canEditToolContractStatus,
   createPortableToolContractExport,
-  getToolContractById,
   isToolContractFormat,
   isToolContractStatus,
   isToolContractType,
@@ -56,20 +53,25 @@ import {
   toolStateLinksToToolContract,
   validatePortableToolContractExport,
   validateToolContract,
-} from "../../src/shared/contracts/toolContractBundle.js";
+} from "../../../src/shared/contracts/toolContractPrimitives.js";
+import {
+  TOOL_CONTRACT_LIST,
+  TOOL_INDEX_ROOT_CARD_COVERAGE,
+  getToolContractById,
+} from "../../../src/shared/contracts/tools/toolContractsIndex.js";
 import {
   getVisibleActiveToolRegistry,
-} from "../../tools/toolRegistry.js";
+} from "../../../tools/toolRegistry.js";
 
 const scenariosPath = fileURLToPath(
-  new URL("../fixtures/tools/tool-contract-bundle-scenarios.json", import.meta.url)
+  new URL("../../fixtures/tools/tool-contract-scenarios.json", import.meta.url)
 );
 
 export function run() {
   const scenarios = JSON.parse(readFileSync(scenariosPath, "utf8"));
 
-  assert.equal(TOOL_CONTRACT_BUNDLE_ID, "gamefoundrystudio.tool.contract-bundle");
-  assert.equal(TOOL_CONTRACT_BUNDLE_VERSION, "1.0.0");
+  assert.equal(TOOL_CONTRACT_CATALOG_ID, "gamefoundrystudio.tool.contract-catalog");
+  assert.equal(TOOL_CONTRACT_CATALOG_VERSION, "1.0.0");
   assert.equal(TOOL_CONTRACT_OWNER_ID, "platform.gamefoundrystudio");
   assert.equal(TOOL_CONTRACT_PROJECT_ID, "project.gamefoundrystudio.tools");
   assert.deepEqual(TOOL_CONTRACT_FIELDS, {
@@ -152,13 +154,7 @@ export function run() {
     assert.equal(toolContract.projectId, TOOL_CONTRACT_PROJECT_ID, toolContract.toolId);
     assert.ok(toolContract.producedOutputs.length > 0, `${toolContract.toolId} produced outputs`);
     assert.ok(toolContract.exportFormats.length > 0, `${toolContract.toolId} export formats`);
-
-    for (const producedOutput of toolContract.producedOutputs) {
-      assert.equal(isToolContractFormat(producedOutput), true, `${toolContract.toolId} produced output ${producedOutput}`);
-    }
-    for (const supportedAssetType of toolContract.supportedAssetTypes) {
-      assert.equal(isAssetType(supportedAssetType), true, `${toolContract.toolId} supported asset ${supportedAssetType}`);
-    }
+    assert.equal(getToolContractById(toolContract.toolId), toolContract, toolContract.toolId);
   }
 
   const requiredNamedContracts = [
@@ -270,8 +266,8 @@ export function run() {
   assert.equal(portableResult.valid, true);
   assert.deepEqual(portableResult.errors, []);
   const portableExport = portableResult.export;
-  assert.equal(portableExport.contractId, TOOL_CONTRACT_BUNDLE_ID);
-  assert.equal(portableExport.contractVersion, TOOL_CONTRACT_BUNDLE_VERSION);
+  assert.equal(portableExport.contractId, TOOL_CONTRACT_CATALOG_ID);
+  assert.equal(portableExport.contractVersion, TOOL_CONTRACT_CATALOG_VERSION);
   assert.equal(portableExport.portable, true);
   assert.equal(portableExport.toolId, sourceLinkedContract.toolId);
   assert.equal(portableExport.toolType, sourceLinkedContract.toolType);

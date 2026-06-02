@@ -1,0 +1,24 @@
+/*
+Toolbox Aid
+David Quesenberry
+06/02/2026
+worldVectorStudioV2ToolContract.js
+*/
+import {
+  ASSET_TYPES,
+} from "../assetContract.js";
+import {
+  TOOL_CONTRACT_FORMATS,
+  TOOL_CONTRACT_TYPES,
+  createToolContract,
+} from "../toolContractPrimitives.js";
+
+export const WORLD_VECTOR_STUDIO_V2_TOOL_CONTRACT = createToolContract({
+  toolId: "world-vector-studio-v2",
+  toolType: TOOL_CONTRACT_TYPES.STUDIO,
+  requiredInputs: [TOOL_CONTRACT_FORMATS.ASSET, TOOL_CONTRACT_FORMATS.PALETTE_JSON],
+  producedOutputs: [TOOL_CONTRACT_FORMATS.VECTOR_JSON, TOOL_CONTRACT_FORMATS.TILEMAP_JSON],
+  supportedAssetTypes: [ASSET_TYPES.VECTOR, ASSET_TYPES.TILEMAP, ASSET_TYPES.IMAGE],
+  importFormats: [TOOL_CONTRACT_FORMATS.VECTOR_JSON, TOOL_CONTRACT_FORMATS.TILEMAP_JSON, TOOL_CONTRACT_FORMATS.IMAGE_FILE],
+  exportFormats: [TOOL_CONTRACT_FORMATS.VECTOR_JSON, TOOL_CONTRACT_FORMATS.TILEMAP_JSON, TOOL_CONTRACT_FORMATS.PROJECT_PACKAGE],
+});

@@ -1,0 +1,21 @@
+/*
+Toolbox Aid
+David Quesenberry
+06/02/2026
+threeDAssetViewerToolContract.js
+*/
+import {
+  TOOL_CONTRACT_FORMATS,
+  TOOL_CONTRACT_TYPES,
+  createToolContract,
+} from "../toolContractPrimitives.js";
+
+export const THREE_D_ASSET_VIEWER_TOOL_CONTRACT = createToolContract({
+  toolId: "3d-asset-viewer",
+  toolType: TOOL_CONTRACT_TYPES.VIEWER,
+  requiredInputs: [TOOL_CONTRACT_FORMATS.THREE_D_JSON, TOOL_CONTRACT_FORMATS.METADATA_JSON],
+  producedOutputs: [TOOL_CONTRACT_FORMATS.METADATA_JSON],
+  supportedAssetTypes: [],
+  importFormats: [TOOL_CONTRACT_FORMATS.THREE_D_JSON, TOOL_CONTRACT_FORMATS.METADATA_JSON],
+  exportFormats: [TOOL_CONTRACT_FORMATS.METADATA_JSON],
+});
