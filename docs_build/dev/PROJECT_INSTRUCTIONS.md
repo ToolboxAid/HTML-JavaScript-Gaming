@@ -153,7 +153,7 @@ V1/legacy CSS is deprecated and out of play.
 
 ### Theme Surface Boundary
 
-`assets/theme/v2/css/theme/v2` owns public/root GameFoundryStudio page styling:
+`assets/theme/v2/css` owns public/root GameFoundryStudio page styling:
 - root Home
 - Company pages
 - Tools index
@@ -230,7 +230,7 @@ Allowed:
 
 All reusable public/root GameFoundryStudio styling must live under:
 
-`assets/theme/v2/css/theme/v2/`
+`assets/theme/v2/css/`
 
 Approved styling surfaces:
 - `theme.css`
@@ -252,7 +252,7 @@ Rules:
 - Public/root tools consume `theme/v2`.
 - Pages do not define styling.
 - Tools do not define styling.
-- New CSS files outside `theme/v2` are prohibited.
+- New CSS files outside `assets/theme/v2/css` are prohibited.
 - Styling requests should be implemented as reusable `theme/v2` patterns.
 - Missing patterns must be documented as design-system gaps.
 - No page-specific styling unless approved and promoted into `theme/v2`.

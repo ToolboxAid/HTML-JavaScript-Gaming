@@ -26,15 +26,6 @@
             group: "Assets",
             tools: [
                 {
-                    title: "Arcade",
-                    href: "../games/arcade/index.html",
-                    image: "../assets/theme/v2/images/tools/arcade.png",
-                    description: "Play and review available games from the Game Foundry arcade.",
-                    role: "Play",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
-                {
                     title: "Cloud",
                     href: "../tools/cloud/index.html",
                     image: "../assets/theme/v2/images/tools/cloud-studio.png",

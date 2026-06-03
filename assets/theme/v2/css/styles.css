@@ -1,4 +1,4 @@
-@import url("colors.css");
+@import url("site-colors.css");
 @import url("tools/grouping/build-create.css");
 @import url("tools/grouping/content-assets.css");
 @import url("tools/grouping/media-audio.css");
@@ -9,7 +9,7 @@
 @import url("tools/grouping/play.css");
 @import url("tokens.css");
 @import url("base.css");
-@import url("controls.css");
+@import url("site-controls.css");
 @import url("gamefoundrystudio.css");
 @import url("pages.css");
 @import url("tools.css");

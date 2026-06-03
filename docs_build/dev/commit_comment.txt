@@ -1,9 +1,10 @@
-Root migration closeout bundle
+Normalize Theme V2 CSS wiring and retire obsolete tool legacy references - PR_26154_018-020-theme-tools-css-stack
 
-PR: PR_26154_017-root-migration-closeout-bundle
-
-- Normalize remaining active root `samples/` references to `old_samples/` where the intended owner is clear.
-- Confirm active stale paths are gone for `GameFoundryStudio/`, `src/engine/theme/`, `assets/theme/v1/`, `favicon.ico`, and deprecated root `samples/`.
-- Confirm active/deprecated ownership for docs, docs_build, tools, games, old-tools, old_games, and old_samples.
-- Confirm `/favicon.svg`, proprietary LICENSE, games index tiles, and alphabetized tools index ordering.
-- Validate targeted active paths, changed static/script files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Remove Arcade from the active Tools index data.
+- Delete unreferenced `src/engine/ui/toolboxaid-header.html`.
+- Delete obsolete `tools/shared/tooling/CapturePreviewRuntime.js` after active reference audit.
+- Move Theme V2 core CSS from `assets/theme/v2/css/theme/v2/` to `assets/theme/v2/css/`.
+- Preserve `styles.css` bundle behavior through `site-colors.css` and `site-controls.css`.
+- Move deprecated old game/sample test skip shims to `tests/validation/` and update package scripts.
+- Fix Marketplace Toolbox nested submenu behavior on the `styles.css` path.
+- Report Theme V2 asset wiring, Font Awesome unused/stale status, legacy tools review, and CSS structure normalization.

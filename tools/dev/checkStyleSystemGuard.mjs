@@ -12,19 +12,19 @@ const styleSystemPages = [
 ];
 
 const requiredThemeFiles = [
-  "assets/theme/v2/css/theme/v2/theme.css",
-  "assets/theme/v2/css/theme/v2/colors.css",
-  "assets/theme/v2/css/theme/v2/spacing.css",
-  "assets/theme/v2/css/theme/v2/typography.css",
-  "assets/theme/v2/css/theme/v2/layout.css",
-  "assets/theme/v2/css/theme/v2/buttons.css",
-  "assets/theme/v2/css/theme/v2/forms.css",
-  "assets/theme/v2/css/theme/v2/controls.css",
-  "assets/theme/v2/css/theme/v2/panels.css",
-  "assets/theme/v2/css/theme/v2/accordion.css",
-  "assets/theme/v2/css/theme/v2/status.css",
-  "assets/theme/v2/css/theme/v2/tables.css",
-  "assets/theme/v2/css/theme/v2/dialogs.css"
+  "assets/theme/v2/css/theme.css",
+  "assets/theme/v2/css/colors.css",
+  "assets/theme/v2/css/spacing.css",
+  "assets/theme/v2/css/typography.css",
+  "assets/theme/v2/css/layout.css",
+  "assets/theme/v2/css/buttons.css",
+  "assets/theme/v2/css/forms.css",
+  "assets/theme/v2/css/controls.css",
+  "assets/theme/v2/css/panels.css",
+  "assets/theme/v2/css/accordion.css",
+  "assets/theme/v2/css/status.css",
+  "assets/theme/v2/css/tables.css",
+  "assets/theme/v2/css/dialogs.css"
 ];
 
 function readUtf8(relativePath) {

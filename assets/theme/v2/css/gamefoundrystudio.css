@@ -108,8 +108,8 @@
   height: 10px
 }
 
-.nav-item:hover .sub-menu,
-.nav-item:focus-within .sub-menu {
+.nav-item:hover>.sub-menu,
+.nav-item:focus-within>.sub-menu {
   opacity: 1;
   visibility: visible;
   pointer-events: auto
@@ -126,6 +126,48 @@
 .sub-menu a.active {
   color: var(--gold);
   background: var(--orange-soft-strong)
+}
+
+.sub-menu--toolbox {
+  align-content: start
+}
+
+.sub-menu .nav-popout-item {
+  display: block;
+  width: 100%;
+  position: relative
+}
+
+.sub-menu .nav-popout-item>a {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  white-space: nowrap
+}
+
+.sub-menu .nav-popout-item>.sub-menu {
+  top: 0;
+  left: calc(100% + 8px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none
+}
+
+.sub-menu .nav-popout-item:hover>.sub-menu,
+.sub-menu .nav-popout-item:focus-within>.sub-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto
+}
+
+.sub-menu .nav-popout-item:after {
+  left: 100%;
+  right: auto;
+  top: 0;
+  width: 10px;
+  height: 100%
 }
 
 .btn {

@@ -1,5 +1,4 @@
 :root {
-  /* Theme Colors */
   --iron-black: #121212;
   --foundry-space: #070a12;
   --panel-slate: #0f172a;
@@ -23,8 +22,6 @@
   --switch-off: #1f2937;
   --tool-image-bg: #080d14;
   --dialog-bg: #0c111a;
-
-  /* Surface Colors */
   --bg: #090b0f;
   --panel: #111722;
   --panel2: #151b25;
@@ -49,18 +46,18 @@
   --game-art-background: linear-gradient(135deg, rgba(255, 122, 0, .22), rgba(77, 163, 255, .15));
   --cta-background: linear-gradient(135deg, rgba(255, 122, 0, .18), rgba(77, 163, 255, .11));
   --icon-background: linear-gradient(135deg, rgba(255, 122, 0, .28), rgba(77, 163, 255, .16));
+  --release-current-background: color-mix(in srgb, var(--gold) 14%, var(--panel));
+  --about-hero-background-image: url("../../../images/forge-bot-single.png");
+  --about-hero-background: linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 86%, transparent) 42%, color-mix(in srgb, var(--bg) 38%, transparent) 100%), var(--about-hero-background-image) right center / min(50vw, 620px) auto no-repeat;
+  --about-hero-mobile-background: linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 100%), var(--about-hero-background-image) center bottom / 340px auto no-repeat;
   --forgebot-stage-background: radial-gradient(circle at 50% 55%, rgba(255, 122, 0, .25), var(--transparent) 48%), linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025));
   --button-primary-background: linear-gradient(135deg, var(--orange), var(--button-primary-end));
   --button-cyan-background: linear-gradient(135deg, var(--button-cyan-start), var(--button-cyan-end));
-
-  /* Text Colors */
   --text: #f5f7fb;
   --muted: #aeb6c2;
   --orange: var(--molten-orange);
   --gold: var(--forge-gold);
   --cyan: var(--bot-cyan);
-
-  /* Border Colors */
   --line: rgba(255, 255, 255, .12);
   --swatch-border: rgba(255, 255, 255, .28);
   --swatch-shadow-color: rgba(0, 0, 0, .16);
@@ -72,233 +69,47 @@
   --orange-border-muted: rgba(255, 122, 0, .35);
   --gold-border-muted: rgba(255, 200, 87, .35);
   --cyan-border-muted: rgba(32, 214, 255, .35);
-  --forgebot-stage-border: rgba(255, 122, 0, .32);
-
-  /* Tool Group Colors */
-  --gf-assets-color: var(--green);
-  --gf-assets-accent: var(--green);
-  --gf-building-color: var(--green);
-  --gf-building-accent: var(--green);
-  --gf-design-color: var(--green);
-  --gf-design-accent: var(--green);
-  --gf-media-color: var(--red);
-  --gf-media-accent: var(--red);
-  --gf-technology-color: var(--steel-gray);
-  --gf-technology-accent: var(--steel-gray);
-  --gf-admin-color: var(--orange);
-  --gf-admin-accent: var(--orange);
-
-  /* Status Colors */
-  --meaning-molten-orange-soft: rgba(255, 122, 0, .14);
-  --meaning-molten-orange-border: rgba(255, 122, 0, .48);
-  --meaning-electric-blue-soft: rgba(77, 163, 255, .14);
-  --meaning-electric-blue-border: rgba(77, 163, 255, .48);
-  --meaning-forge-gold-soft: rgba(255, 200, 87, .14);
-  --meaning-forge-gold-border: rgba(255, 200, 87, .48);
-  --meaning-arcade-cyan-soft: rgba(34, 211, 238, .14);
-  --meaning-arcade-cyan-border: rgba(34, 211, 238, .48);
-  --meaning-purple-soft: rgba(184, 119, 255, .14);
-  --meaning-purple-border: rgba(184, 119, 255, .48);
-  --meaning-steel-gray-soft: rgba(107, 114, 128, .18);
-  --meaning-steel-gray-border: rgba(107, 114, 128, .56);
+  --forgebot-stage-border: rgba(255, 122, 0, .32)
 }
 
-.meaning-molten-orange {
-  --meaning-color: var(--molten-orange);
-  --meaning-soft: var(--meaning-molten-orange-soft);
-  --meaning-border: var(--meaning-molten-orange-border)
-}
-
-.meaning-electric-blue {
-  --meaning-color: var(--electric-blue);
-  --meaning-soft: var(--meaning-electric-blue-soft);
-  --meaning-border: var(--meaning-electric-blue-border)
-}
-
-.meaning-forge-gold {
-  --meaning-color: var(--forge-gold);
-  --meaning-soft: var(--meaning-forge-gold-soft);
-  --meaning-border: var(--meaning-forge-gold-border)
-}
-
-.meaning-arcade-cyan {
-  --meaning-color: var(--arcade-cyan);
-  --meaning-soft: var(--meaning-arcade-cyan-soft);
-  --meaning-border: var(--meaning-arcade-cyan-border)
-}
-
-.meaning-purple {
-  --meaning-color: var(--purple);
-  --meaning-soft: var(--meaning-purple-soft);
-  --meaning-border: var(--meaning-purple-border)
-}
-
-.meaning-steel-gray {
-  --meaning-color: var(--steel-gray);
-  --meaning-soft: var(--meaning-steel-gray-soft);
-  --meaning-border: var(--meaning-steel-gray-border)
-}
-
-#molten-orange {
-  --brand-color: var(--molten-orange)
-}
-
-#electric-blue {
-  --brand-color: var(--electric-blue)
-}
-
-#forge-gold {
-  --brand-color: var(--forge-gold)
-}
-
-#arcade-cyan {
-  --brand-color: var(--arcade-cyan)
-}
-
-#purple {
-  --brand-color: var(--purple)
-}
-
-#steel-gray {
-  --brand-color: var(--steel-gray)
-}
-
-#iron-black {
-  --brand-color: var(--iron-black)
-}
-
-#foundry-space {
-  --brand-color: var(--foundry-space)
-}
-
-#panel-slate {
-  --brand-color: var(--panel-slate)
-}
-
-.brand-color-molten-orange {
-  color: var(--molten-orange)
-}
-
-.brand-color-electric-blue {
-  color: var(--electric-blue)
-}
-
-.brand-color-forge-gold {
-  color: var(--forge-gold)
-}
-
-.brand-color-arcade-cyan {
-  color: var(--arcade-cyan)
-}
-
-.brand-color-purple {
-  color: var(--purple)
-}
-
-.brand-color-steel-gray {
-  color: var(--steel-gray)
-}
-
-.brand-color-iron-black {
-  color: var(--iron-black)
-}
-
-.brand-color-foundry-space {
-  color: var(--foundry-space)
-}
-
-.brand-color-panel-slate {
-  color: var(--panel-slate)
-}
-
-.brand-background-molten-orange {
+.swatch-orange {
   background: var(--molten-orange)
 }
 
-.brand-background-electric-blue {
-  background: var(--electric-blue)
-}
-
-.brand-background-forge-gold {
+.swatch-gold {
   background: var(--forge-gold)
 }
 
-.brand-background-arcade-cyan {
-  background: var(--arcade-cyan)
+.swatch-black {
+  background: var(--bg)
 }
 
-.brand-background-purple {
+.swatch-cyan {
+  background: var(--bot-cyan)
+}
+
+.swatch-green {
+  background: var(--green)
+}
+
+.swatch-pink {
+  background: var(--pink)
+}
+
+.swatch-red {
+  background: var(--red)
+}
+
+.swatch-purple {
   background: var(--purple)
 }
 
-.brand-background-steel-gray {
+.swatch-blue {
+  background: var(--electric-blue)
+}
+
+.swatch-gray {
   background: var(--steel-gray)
-}
-
-.brand-background-iron-black {
-  background: var(--iron-black)
-}
-
-.brand-background-foundry-space {
-  background: var(--foundry-space)
-}
-
-.brand-background-panel-slate {
-  background: var(--panel-slate)
-}
-
-.tool-column-header.molten-orange {
-  background: var(--orange-soft-medium)
-}
-
-.tool-column-header.electric-blue {
-  background: var(--blue-soft)
-}
-
-.tool-column-header.forge-gold {
-  background: var(--gold-soft)
-}
-
-.tool-column-header.arcade-cyan {
-  background: var(--cyan-soft)
-}
-
-.tool-column-header.purple {
-  background: var(--purple-soft)
-}
-
-.tool-column-header.steel-gray {
-  background: var(--steel-soft)
-}
-
-.tool-column-header.molten-orange h2,
-.tool-column-header.molten-orange h3 {
-  color: var(--molten-orange)
-}
-
-.tool-column-header.electric-blue h2,
-.tool-column-header.electric-blue h3 {
-  color: var(--electric-blue)
-}
-
-.tool-column-header.forge-gold h2,
-.tool-column-header.forge-gold h3 {
-  color: var(--forge-gold)
-}
-
-.tool-column-header.arcade-cyan h2,
-.tool-column-header.arcade-cyan h3 {
-  color: var(--arcade-cyan)
-}
-
-.tool-column-header.purple h2,
-.tool-column-header.purple h3 {
-  color: var(--purple)
-}
-
-.tool-column-header.steel-gray h2,
-.tool-column-header.steel-gray h3 {
-  color: var(--steel-gray)
 }
 
 .side-orange {
@@ -317,22 +128,50 @@
   --accent: var(--cyan)
 }
 
-.side-mint {
-  --accent: var(--mint)
-}
-
-.side-purple {
-  --accent: var(--purple)
+.side-green {
+  --accent: var(--green)
 }
 
 .side-pink {
   --accent: var(--pink)
 }
 
-.side-steel {
-  --accent: var(--muted)
+.tool-group-build-create {
+  --tool-group-color: var(--pink);
+  --tool-group-accent: var(--pink)
 }
 
-.side-red {
-  --accent: var(--deep-red)
+.tool-group-content-assets {
+  --tool-group-color: var(--orange);
+  --tool-group-accent: var(--orange)
+}
+
+.tool-group-media-audio {
+  --tool-group-color: var(--red);
+  --tool-group-accent: var(--red)
+}
+
+.tool-group-ai-learning {
+  --tool-group-color: var(--purple);
+  --tool-group-accent: var(--purple)
+}
+
+.tool-group-platform-cloud {
+  --tool-group-color: var(--electric-blue);
+  --tool-group-accent: var(--electric-blue)
+}
+
+.tool-group-development-system {
+  --tool-group-color: var(--steel-gray);
+  --tool-group-accent: var(--steel-gray)
+}
+
+.tool-group-community-marketplace {
+  --tool-group-color: var(--gold);
+  --tool-group-accent: var(--gold)
+}
+
+.tool-group-play {
+  --tool-group-color: var(--green);
+  --tool-group-accent: var(--green)
 }
