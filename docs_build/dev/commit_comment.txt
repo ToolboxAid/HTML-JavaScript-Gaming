@@ -1,7 +1,6 @@
-Theme V2 public asset teardown - PR_26154_008-theme-v2-public-asset-teardown
+Theme V1 assets, games images, and favicon cleanup - PR_26154_009-theme-v1-assets-games-favicon-cleanup
 
-- Move remaining public/root Theme V2 CSS, JS helpers, partials, and `image-missing.svg` into `assets/theme/v2/`.
-- Update public/root pages, templates, tool pages, old tool reference, and docs to consume `assets/theme/v2/`.
-- Remove the empty former Theme V2 source folder after confirming no references remain outside generated artifacts.
-- Keep unrelated `src/engine` runtime files in place.
-- Validate targeted references, changed static files, browser loading of moved assets, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Canonicalize active HTML favicon links to root `/favicon.ico` and confirm no duplicate `.ico` files exist.
+- Move Theme V2 games art into `games/assets/images/` and update active game image references.
+- Move confirmed static V1 companions into `assets/theme/v1/` while keeping active `src/engine/theme` runtime shell styling/code in place.
+- Validate targeted references, static paths, root HTTP asset resolution, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.

@@ -1,5 +1,5 @@
 @import url('./tokens.css');
-@import url('./fontawesome/css/font-awesome.min.css');
+@import url('/assets/theme/v1/fontawesome/css/font-awesome.min.css');
 @import url('./layout.css');
 @import url('./header.css');
 @import url('./nav.css');
