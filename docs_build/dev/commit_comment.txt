@@ -1,7 +1,12 @@
-SVG favicon normalization - PR_26154_010-svg-favicon-normalization
+Theme V1 final teardown, root asset reference cleanup, and structure inventory closeout
 
-- Move the canonical site icon from `assets/theme/v2/images/favicon.svg` to root `/favicon.svg`.
-- Remove obsolete root `/favicon.ico`.
-- Update active HTML favicon links and the website deployment include list to use `/favicon.svg`.
-- Report historical favicon references and additional root-level branding candidates without moving unrelated assets.
-- Validate targeted references, root HTTP loading, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+Stack:
+- PR_26154_011-theme-v1-final-teardown
+- PR_26154_012-root-asset-reference-cleanup
+- PR_26154_013-root-structure-inventory-closeout
+
+- Confirm no further V1 static/theme assets can safely move from `src/engine/theme/` because the remaining files are runtime-owned.
+- Update `src/engine/theme/README.md` to remove a stale removed-barrel import and document current runtime ownership.
+- Audit active root/page/tool/game/doc references for stale path strings and report remaining intentional runtime, generated, or historical references.
+- Create root structure ownership inventory and cleanup candidate report without moving unrelated files.
+- Validate targeted references, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.

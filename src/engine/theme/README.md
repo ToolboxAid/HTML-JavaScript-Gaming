@@ -1,16 +1,23 @@
-# Shared Toolbox Aid Header
+# Engine Runtime Theme
 
-This folder now contains the raw shared header source plus the importable module.
+`src/engine/theme/` owns engine/runtime first-class tool shell styling and shared runtime header helpers.
 
 ## Files
-- `toolboxaid-header.html` → raw shared header markup
-- `toolboxaid-header.css` → shared styling
-- `toolboxaid-header.js` → importable module that exports the HTML and mount helpers
-- `index.js` → re-export entry
+
+- `main.css` imports the runtime theme CSS modules.
+- `toolboxaid-header.html` contains the raw shared runtime header markup.
+- `toolboxaid-header.css` imports runtime header/nav styling.
+- `toolboxaid-header.js` exports the runtime header HTML and mount helpers.
+- `mount-shared-header.js` mounts the runtime header and related runtime page enhancements.
+- `Theme.js` and `ThemeTokens.js` provide runtime theme helpers used by tooling.
+- `accordionV2/` contains the runtime accordion component CSS and JS.
+
+Static legacy assets consumed by this runtime surface now live under `assets/theme/v1/`.
 
 ## Import
+
 ```js
-import { mountToolboxAidHeader } from '/src/engine/theme/index.js';
+import { mountToolboxAidHeader } from '/src/engine/theme/toolboxaid-header.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   mountToolboxAidHeader(document.body);
