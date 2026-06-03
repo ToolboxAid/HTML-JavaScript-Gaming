@@ -4,8 +4,8 @@ David Quesenberry
 03/22/2026
 Combat.js
 */
-import { isColliding } from '../collision/aabb.js';
-import { clamp } from '../../shared/math/scalars.js';
+import { isColliding } from '../aabb.js';
+import { clamp } from '../../../shared/math/scalars.js';
 
 function sanitizeDuration(value) {
   return Math.max(0, Number(value) || 0);
