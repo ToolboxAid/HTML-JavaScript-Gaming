@@ -18,8 +18,33 @@ export const ENGINE_V2_CUSTOM_EXTENSION_HOOKS = Object.freeze({
 export const ENGINE_V2_CUSTOM_EXTENSION_HOOK_LIST = Object.freeze(Object.values(ENGINE_V2_CUSTOM_EXTENSION_HOOKS));
 
 export const ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS = Object.freeze({
-  APPROVED: "approved",
-  UNAPPROVED: "unapproved",
+  DRAFT: "draft",
+  PRIVATE: "private",
+  SUBMITTED: "submitted",
+  AI_VALIDATED: "aiValidated",
+  AI_REJECTED: "aiRejected",
+  HUMAN_APPROVED: "humanApproved",
+  HUMAN_REJECTED: "humanRejected",
+  PROMOTED_CANDIDATE: "promotedCandidate",
+});
+
+export const ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS = Object.freeze({
+  SUBMIT: "submit",
+  MARK_PRIVATE: "markPrivate",
+  RETURN_TO_DRAFT: "returnToDraft",
+  RECORD_AI_VALIDATED: "recordAiValidated",
+  RECORD_AI_REJECTED: "recordAiRejected",
+  PROMOTE_CANDIDATE: "promoteCandidate",
+  HUMAN_APPROVE: "humanApprove",
+  HUMAN_REJECT: "humanReject",
+});
+
+export const ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_BOUNDARY = Object.freeze({
+  boundaryName: "Admin Custom Extension Approval",
+  aiValidationAdvisoryOnly: true,
+  humanApprovalRequiredForPublishEligibility: true,
+  noOpenAiIntegrationImplementation: true,
+  noAdminUiImplementation: true,
 });
 
 export const ENGINE_V2_CUSTOM_EXTENSION_ALLOWED_CONTEXT_KEYS = Object.freeze([
@@ -73,9 +98,53 @@ export const ENGINE_V2_CUSTOM_EXTENSION_ERRORS = Object.freeze({
   FIELD_FORBIDDEN: "ENGINE_V2_CUSTOM_EXTENSION_FIELD_FORBIDDEN",
   RUNTIME_INVALID: "ENGINE_V2_CUSTOM_EXTENSION_RUNTIME_INVALID",
   HOOK_NAME_INVALID: "ENGINE_V2_CUSTOM_EXTENSION_HOOK_NAME_INVALID",
+  APPROVAL_ACTION_INVALID: "ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_ACTION_INVALID",
+  APPROVAL_TRANSITION_INVALID: "ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_TRANSITION_INVALID",
 });
 
 const APPROVAL_STATUS_LIST = Object.freeze(Object.values(ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS));
+const APPROVAL_ACTION_LIST = Object.freeze(Object.values(ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS));
+const AI_ADVISORY_APPROVAL_STATUSES = new Set([
+  ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.AI_VALIDATED,
+  ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.AI_REJECTED,
+]);
+const PUBLISH_ELIGIBLE_APPROVAL_STATUSES = new Set([
+  ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_APPROVED,
+]);
+const ADMIN_APPROVAL_TRANSITIONS = Object.freeze({
+  [ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.DRAFT]: Object.freeze({
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.MARK_PRIVATE]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.PRIVATE,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.SUBMIT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.SUBMITTED,
+  }),
+  [ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.PRIVATE]: Object.freeze({
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.RETURN_TO_DRAFT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.DRAFT,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.SUBMIT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.SUBMITTED,
+  }),
+  [ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.SUBMITTED]: Object.freeze({
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.RECORD_AI_VALIDATED]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.AI_VALIDATED,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.RECORD_AI_REJECTED]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.AI_REJECTED,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.HUMAN_APPROVE]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_APPROVED,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.HUMAN_REJECT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_REJECTED,
+  }),
+  [ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.AI_VALIDATED]: Object.freeze({
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.PROMOTE_CANDIDATE]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.PROMOTED_CANDIDATE,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.HUMAN_APPROVE]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_APPROVED,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.HUMAN_REJECT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_REJECTED,
+  }),
+  [ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.AI_REJECTED]: Object.freeze({
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.SUBMIT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.SUBMITTED,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.HUMAN_REJECT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_REJECTED,
+  }),
+  [ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.PROMOTED_CANDIDATE]: Object.freeze({
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.HUMAN_APPROVE]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_APPROVED,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.HUMAN_REJECT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_REJECTED,
+  }),
+  [ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_REJECTED]: Object.freeze({
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.MARK_PRIVATE]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.PRIVATE,
+    [ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_ACTIONS.SUBMIT]: ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.SUBMITTED,
+  }),
+  [ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.HUMAN_APPROVED]: Object.freeze({}),
+});
 
 export function registerEngineV2CustomExtensionHooks({ extensionDefinitions }) {
   const errors = [];
@@ -94,7 +163,7 @@ export function registerEngineV2CustomExtensionHooks({ extensionDefinitions }) {
   }
 
   const registeredHooks = extensionDefinitions.flatMap((definition) => {
-    const approved = definition.approvalStatus === ENGINE_V2_CUSTOM_EXTENSION_APPROVAL_STATUS.APPROVED;
+    const approvalState = createApprovalState(definition.approvalStatus);
 
     return definition.hookRegistrations.map((registration) => Object.freeze({
       extensionId: definition.extensionId,
@@ -102,9 +171,12 @@ export function registerEngineV2CustomExtensionHooks({ extensionDefinitions }) {
       hookName: registration.hookName,
       extensionMode: registration.extensionMode,
       allowedContextKeys: Object.freeze([...registration.allowedContextKeys]),
-      approved,
-      creatorPrivate: !approved,
-      publishEligible: approved,
+      approvalStatus: approvalState.approvalStatus,
+      humanApproved: approvalState.humanApproved,
+      aiValidationAdvisory: approvalState.aiValidationAdvisory,
+      humanApprovalRequiredForPublishEligibility: approvalState.humanApprovalRequiredForPublishEligibility,
+      creatorPrivate: approvalState.creatorPrivate,
+      publishEligible: approvalState.publishEligible,
     }));
   });
   const publishEligible = registeredHooks.every((hook) => hook.publishEligible);
@@ -112,7 +184,8 @@ export function registerEngineV2CustomExtensionHooks({ extensionDefinitions }) {
     registeredHooks: Object.freeze(registeredHooks),
     publishEligibility: Object.freeze({
       eligible: publishEligible,
-      blockedByExtensionIds: Object.freeze(registeredHooks.filter((hook) => !hook.publishEligible).map((hook) => hook.extensionId)),
+      humanApprovalRequired: !publishEligible,
+      blockedByExtensionIds: freezeUnique(registeredHooks.filter((hook) => !hook.publishEligible).map((hook) => hook.extensionId)),
     }),
   });
 
@@ -120,6 +193,52 @@ export function registerEngineV2CustomExtensionHooks({ extensionDefinitions }) {
     runtime,
     registeredHooks,
     publishEligibility: runtime.publishEligibility,
+    errors,
+  });
+}
+
+export function resolveEngineV2AdminCustomExtensionApprovalBoundary({ extensionDefinition, approvalAction }) {
+  const errors = [];
+  const definitionErrors = validateExtensionDefinition(extensionDefinition, "extensionDefinition");
+  definitionErrors.forEach((error) => errors.push(error));
+
+  const actionType = isRecord(approvalAction) ? approvalAction.actionType : approvalAction;
+
+  if (!APPROVAL_ACTION_LIST.includes(actionType)) {
+    errors.push(createCustomExtensionError(ENGINE_V2_CUSTOM_EXTENSION_ERRORS.APPROVAL_ACTION_INVALID, "Admin Custom Extension Approval requires an approved approval action.", "approvalAction.actionType"));
+  }
+
+  if (errors.length > 0) {
+    return createApprovalBoundaryResult({
+      previousApprovalStatus: isRecord(extensionDefinition) ? extensionDefinition.approvalStatus : null,
+      nextApprovalStatus: null,
+      publishEligibility: null,
+      errors,
+    });
+  }
+
+  const nextApprovalStatus = ADMIN_APPROVAL_TRANSITIONS[extensionDefinition.approvalStatus][actionType];
+
+  if (!nextApprovalStatus) {
+    errors.push(createCustomExtensionError(ENGINE_V2_CUSTOM_EXTENSION_ERRORS.APPROVAL_TRANSITION_INVALID, "Admin Custom Extension Approval action is not valid for the current approval status.", "approvalAction.actionType"));
+    return createApprovalBoundaryResult({
+      previousApprovalStatus: extensionDefinition.approvalStatus,
+      nextApprovalStatus: null,
+      publishEligibility: null,
+      errors,
+    });
+  }
+
+  const approvalState = createApprovalState(nextApprovalStatus);
+
+  return createApprovalBoundaryResult({
+    previousApprovalStatus: extensionDefinition.approvalStatus,
+    nextApprovalStatus,
+    publishEligibility: Object.freeze({
+      eligible: approvalState.publishEligible,
+      humanApprovalRequired: approvalState.humanApprovalRequiredForPublishEligibility,
+      blockedByExtensionIds: approvalState.publishEligible ? Object.freeze([]) : Object.freeze([extensionDefinition.extensionId]),
+    }),
     errors,
   });
 }
@@ -200,6 +319,19 @@ function validateHookRegistration(registration, path) {
   return errors;
 }
 
+function createApprovalState(approvalStatus) {
+  const humanApproved = PUBLISH_ELIGIBLE_APPROVAL_STATUSES.has(approvalStatus);
+
+  return Object.freeze({
+    approvalStatus,
+    humanApproved,
+    aiValidationAdvisory: AI_ADVISORY_APPROVAL_STATUSES.has(approvalStatus),
+    humanApprovalRequiredForPublishEligibility: !humanApproved,
+    creatorPrivate: !humanApproved,
+    publishEligible: humanApproved,
+  });
+}
+
 function validateNoForbiddenFields(value, path) {
   return ENGINE_V2_CUSTOM_EXTENSION_FORBIDDEN_FIELDS
     .filter((field) => Object.hasOwn(value, field))
@@ -246,12 +378,32 @@ function createCustomExtensionDispatchResult({ hookInvocations, errors }) {
   });
 }
 
+function createApprovalBoundaryResult({ previousApprovalStatus, nextApprovalStatus, publishEligibility, errors }) {
+  const nextApprovalState = nextApprovalStatus ? createApprovalState(nextApprovalStatus) : null;
+
+  return Object.freeze({
+    valid: errors.length === 0,
+    boundary: ENGINE_V2_ADMIN_CUSTOM_EXTENSION_APPROVAL_BOUNDARY,
+    previousApprovalStatus,
+    nextApprovalStatus,
+    aiValidationAdvisory: nextApprovalState ? nextApprovalState.aiValidationAdvisory : false,
+    humanApprovalRequiredForPublishEligibility: nextApprovalState ? nextApprovalState.humanApprovalRequiredForPublishEligibility : true,
+    creatorPrivate: nextApprovalState ? nextApprovalState.creatorPrivate : true,
+    publishEligibility,
+    errors: Object.freeze(errors),
+  });
+}
+
 function createCustomExtensionError(code, message, path) {
   return Object.freeze({ code, message, path });
 }
 
 function freezeJsonClone(value) {
   return Object.freeze(JSON.parse(JSON.stringify(value)));
+}
+
+function freezeUnique(values) {
+  return Object.freeze([...new Set(values)]);
 }
 
 function isRecord(value) {
