@@ -1274,7 +1274,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await workspaceV2CoverageReporter.writeReport();
   });
 
-  test("navigation toolbox menu shows Toolbox IA grouping", async ({ page }) => {
+  test("navigation toolbox accordion menu shows Toolbox IA grouping", async ({ page }) => {
     const pageErrors = [];
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
@@ -1286,34 +1286,73 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".footer [data-route='tools']")).toHaveText("Toolbox");
       await expect(page.locator(".page-title")).toContainText("The Toolbox");
       const headerToolboxMenu = await page.locator("[data-toolbox-menu]").evaluate((menu) => ({
-        groups: Array.from(menu.querySelectorAll("[data-toolbox-menu-group]"))
+        accordions: Array.from(menu.querySelectorAll("[data-toolbox-menu-accordion]"))
           .map((group) => ({
             label: group.querySelector("[data-toolbox-menu-group-label]")?.textContent.trim(),
             items: Array.from(group.querySelectorAll("[data-toolbox-menu-item]"))
               .map((item) => item.textContent.trim()),
             routes: Array.from(group.querySelectorAll("[data-toolbox-menu-item]"))
-              .map((item) => item.getAttribute("data-route"))
-          })),
-        sections: Array.from(menu.querySelectorAll(":scope > [data-toolbox-menu-section]"))
-          .map((section) => section.textContent.trim()),
-        sectionRoutes: Array.from(menu.querySelectorAll(":scope > [data-toolbox-menu-section]"))
-          .map((section) => section.getAttribute("data-route"))
+              .map((item) => item.getAttribute("data-route")),
+            open: group.open
+          }))
       }));
 
-      expect(headerToolboxMenu.groups).toEqual([
+      expect(headerToolboxMenu.accordions).toEqual([
         {
           label: "Objects",
           items: ["Vector", "Sprite", "Animated Sprite", "UI"],
-          routes: ["object-vector-studio", "asset-studio", "animation-studio", "code-studio"]
+          routes: ["object-vector-studio", "asset-studio", "animation-studio", "code-studio"],
+          open: false
         },
         {
           label: "Worlds",
           items: ["Vector", "Tilemap", "Isometric", "Hybrid"],
-          routes: ["world-vector-studio", "game-builder", "particle-studio", "game-design-studio"]
+          routes: ["world-vector-studio", "game-builder", "particle-studio", "game-design-studio"],
+          open: false
+        },
+        {
+          label: "Audio",
+          items: ["Audio"],
+          routes: ["sound-studio"],
+          open: false
+        },
+        {
+          label: "Input",
+          items: ["Input"],
+          routes: ["input-studio"],
+          open: false
+        },
+        {
+          label: "AI",
+          items: ["AI"],
+          routes: ["ai-assistant"],
+          open: false
+        },
+        {
+          label: "Colors",
+          items: ["Colors"],
+          routes: ["palette-manager"],
+          open: false
+        },
+        {
+          label: "Assets",
+          items: ["Assets"],
+          routes: ["storage-inspector"],
+          open: false
         }
       ]);
-      expect(headerToolboxMenu.sections).toEqual(["Audio", "Input", "AI", "Colors", "Assets"]);
-      expect(headerToolboxMenu.sectionRoutes).toEqual(["sound-studio", "input-studio", "ai-assistant", "palette-manager", "storage-inspector"]);
+      const accordionToggleState = await page.locator("[data-toolbox-menu]").evaluate((menu) => {
+        const objectsAccordion = menu.querySelector("[data-toolbox-menu-accordion]");
+        const summary = objectsAccordion.querySelector("summary");
+        const beforeOpen = objectsAccordion.open;
+        summary.click();
+        const afterOpen = objectsAccordion.open;
+        summary.click();
+        const afterClose = objectsAccordion.open;
+        return { beforeOpen, afterOpen, afterClose };
+      });
+
+      expect(accordionToggleState).toEqual({ beforeOpen: false, afterOpen: true, afterClose: false });
 
       await page.locator("[data-tools-sort='grouped']").click();
       const toolboxState = await page.evaluate(() => ({
@@ -11936,7 +11975,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("launches Storage Inspector V2 with V2 labels, accordions, theme, and delete controls", async ({ page }) => {
+  test("launches Storage Inspector V2 with V2 labels, panels, theme, and delete controls", async ({ page }) => {
     const pageErrors = [];
     await page.setViewportSize({ height: 900, width: 1440 });
     await page.addInitScript(() => {
