@@ -7,7 +7,7 @@
     displayMode.id = "toolDisplayMode";
     displayMode.open = true;
 
-    const publicAssetRoot = "/assets/theme/v2/assets/images";
+    const publicAssetRoot = "/assets/theme/v2/images";
     const pageTitle = document.querySelector(".page-title h1");
     const toolName = pageTitle ? pageTitle.textContent.trim() : "Tool";
     const routeSlug = window.location.pathname.split("/").pop().replace(/\.html$/, "");

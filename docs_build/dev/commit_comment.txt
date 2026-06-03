@@ -1,6 +1,7 @@
-Theme V2 public display-mode asset path fix - PR_26154_005-theme-v2-public-asset-path-fix
+Theme V2 asset ownership normalization - PR_26154_006-theme-v2-asset-ownership-normalization
 
-- Update `tool-display-mode.js` so badge and character images resolve from `/assets/theme/v2/assets/images/` instead of deriving image URLs from `src/engine/theme/v2`.
-- Seed public Theme V2 badge and character PNGs under `assets/theme/v2/assets/images/`, including required `badges/index.png` and `characters/index.png` fallbacks.
-- Keep `src/engine/theme` in place and document remaining references as engine/runtime shell styling, current public Theme V2 styling/scripts, or obsolete public image-source references needing follow-up.
-- Validate changed JS, targeted asset paths/references, browser image request statuses, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Move Theme V2 image content into the public canonical image root at `assets/theme/v2/images/`.
+- Remove the former engine-owned image folder and temporary nested public image folder after path rewiring.
+- Update `tool-display-mode.js`, templates, public/root pages, tool pages, and tool index scripts to resolve public images from `assets/theme/v2/images/`.
+- Keep `src/engine/theme/v2/` in place for remaining CSS, JS, partial, template, and placeholder assets.
+- Validate changed static files, targeted references, browser image request statuses, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.

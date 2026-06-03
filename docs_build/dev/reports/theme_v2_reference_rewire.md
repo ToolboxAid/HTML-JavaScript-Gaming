@@ -73,4 +73,4 @@ Task: PR_26152_280-theme-v2-reference-rewire
 
 - `src/engine/theme/v2/assets/js/gamefoundry-partials.js`: resolves partial fetches and partial image rewrites from the Theme V2 asset script root.
 - `src/engine/theme/v2/assets/js/tool-display-mode.js`: derives default image assets from the Theme V2 asset script root and allows a template placeholder character source.
-- `tools/tools-page-accordions.js`: active generated image and badge paths now point to `../src/engine/theme/v2/assets/images/...`.
+- `tools/tools-page-accordions.js`: active generated image and badge paths now point to `../assets/theme/v2/images/...`.
