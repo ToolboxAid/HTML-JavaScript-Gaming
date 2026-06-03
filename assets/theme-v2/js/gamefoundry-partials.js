@@ -19,6 +19,8 @@
         "storage-inspector": "toolbox/storage/index.html",
         "world-vector-studio": "toolbox/world-vector/index.html",
         "configuration-admin": "toolbox/configuration-admin/index.html",
+        "tool-builder": "toolbox/builder/index.html",
+        "tool-creator": "toolbox/creator/index.html",
         cloud: "toolbox/cloud/index.html",
         games: "games/index.html",
         arcade: "games/arcade/index.html",

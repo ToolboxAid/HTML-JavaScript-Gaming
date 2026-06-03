@@ -44,15 +44,6 @@
                     theme: "bot"
                 },
                 {
-                    title: "Marketplace",
-                    href: "../marketplace/index.html",
-                    image: "../assets/theme-v2/images/tools/marketplace.png",
-                    description: "Browse community-ready tools, assets, listings, and distribution surfaces.",
-                    role: "Community",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
                     title: "Publish",
                     href: "../toolbox/publish/index.html",
                     image: "../assets/theme-v2/images/tools/publish-studio.png",

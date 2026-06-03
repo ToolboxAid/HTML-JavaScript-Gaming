@@ -961,14 +961,15 @@ details.vertical-accordion[open] summary:active:after {
 .tool-display-mode__body {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0;
   min-width: 0;
   padding: 10px 14px 10px 0
 }
 
 .tool-display-mode__character {
-  width: 42px;
-  height: 42px;
+  width: 150px;
+  height: 150px;
+  margin-right: 15px;
   object-fit: contain;
   display: block;
   flex: 0 0 auto

@@ -8,28 +8,49 @@
       <div class="nav-item">
         <a data-nav-link data-route="toolbox" href="toolbox/index.html">Toolbox &#9662;</a>
         <div class="sub-menu sub-menu--toolbox" data-toolbox-menu aria-label="Toolbox menu">
-          <a data-nav-link data-toolbox-menu-item data-route="ai-assistant" href="toolbox/ai-assistant/index.html">AI</a>
-          <a data-nav-link data-toolbox-menu-item data-route="cloud" href="toolbox/cloud/index.html">Cloud</a>
-          <a data-nav-link data-toolbox-menu-item data-route="storage-inspector" href="toolbox/storage/index.html">Assets</a>
-          <a data-nav-link data-toolbox-menu-item data-route="sound-studio" href="toolbox/sound/index.html">Audio</a>
-          <a data-nav-link data-toolbox-menu-item data-route="palette-manager" href="toolbox/palette/index.html">Colors</a>
+          <a data-nav-link data-toolbox-menu-item data-route="ai-assistant" href="toolbox/ai-assistant/index.html">AI Assistant</a>
+          <div class="nav-item nav-popout-item" data-toolbox-menu-group>
+            <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Assets &#9656;</a>
+            <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Assets tools">
+              <a data-nav-link data-toolbox-menu-item data-route="cloud" href="toolbox/cloud/index.html">Cloud</a>
+              <a data-nav-link data-toolbox-menu-item data-route="localization-studio" href="toolbox/localization/index.html">Localization</a>
+              <a data-nav-link data-toolbox-menu-item data-route="publisher" href="toolbox/publish/index.html">Publish</a>
+              <a data-nav-link data-toolbox-menu-item data-route="storage-inspector" href="toolbox/storage/index.html">Storage Inspector</a>
+            </div>
+          </div>
+          <div class="nav-item nav-popout-item" data-toolbox-menu-group>
+            <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Audio &#9656;</a>
+            <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Audio tools">
+              <a data-nav-link data-toolbox-menu-item data-route="midi-studio" href="toolbox/midi/index.html">MIDI</a>
+              <a data-nav-link data-toolbox-menu-item data-route="sound-studio" href="toolbox/sound/index.html">Sound</a>
+            </div>
+          </div>
+          <a data-nav-link data-toolbox-menu-item data-route="palette-manager" href="toolbox/palette/index.html">Palette Manager</a>
+          <a data-nav-link data-toolbox-menu-item data-route="configuration-admin" href="toolbox/configuration-admin/index.html">Configuration Admin</a>
           <a data-nav-link data-toolbox-menu-item data-route="input-studio" href="toolbox/input/index.html">Input</a>
           <div class="nav-item nav-popout-item" data-toolbox-menu-group>
             <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Objects &#9656;</a>
             <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Objects tools">
-              <a data-nav-link data-toolbox-menu-item data-route="animation-studio" href="toolbox/animation/index.html">Animated Sprite</a>
+              <a data-nav-link data-toolbox-menu-item data-route="animation-studio" href="toolbox/animation/index.html">Animation</a>
+              <a data-nav-link data-toolbox-menu-item data-route="asset-studio" href="toolbox/assets/index.html">Assets</a>
               <a data-nav-link data-toolbox-menu-item data-route="code-studio" href="toolbox/code/index.html">Custom Extensions</a>
-              <a data-nav-link data-toolbox-menu-item data-route="asset-studio" href="toolbox/assets/index.html">Sprite</a>
-              <a data-nav-link data-toolbox-menu-item data-route="object-vector-studio" href="toolbox/object-vector/index.html">Vector</a>
+              <a data-nav-link data-toolbox-menu-item data-route="object-vector-studio" href="toolbox/object-vector/index.html">Object Vector</a>
+            </div>
+          </div>
+          <div class="nav-item nav-popout-item" data-toolbox-menu-group>
+            <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Tooling &#9656;</a>
+            <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Tooling tools">
+              <a data-nav-link data-toolbox-menu-item data-route="tool-builder" href="toolbox/builder/index.html">Tool Builder</a>
+              <a data-nav-link data-toolbox-menu-item data-route="tool-creator" href="toolbox/creator/index.html">Tool Creator</a>
             </div>
           </div>
           <div class="nav-item nav-popout-item" data-toolbox-menu-group>
             <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Worlds &#9656;</a>
             <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="World tools">
-              <a data-nav-link data-toolbox-menu-item data-route="game-design-studio" href="toolbox/game-design/index.html">Hybrid</a>
-              <a data-nav-link data-toolbox-menu-item data-route="particle-studio" href="toolbox/particles/index.html">Isometric</a>
-              <a data-nav-link data-toolbox-menu-item data-route="game-builder" href="toolbox/game-builder/index.html">Tilemap</a>
-              <a data-nav-link data-toolbox-menu-item data-route="world-vector-studio" href="toolbox/world-vector/index.html">Vector</a>
+              <a data-nav-link data-toolbox-menu-item data-route="game-builder" href="toolbox/game-builder/index.html">Game Builder</a>
+              <a data-nav-link data-toolbox-menu-item data-route="game-design-studio" href="toolbox/game-design/index.html">Game Design</a>
+              <a data-nav-link data-toolbox-menu-item data-route="particle-studio" href="toolbox/particles/index.html">Particles</a>
+              <a data-nav-link data-toolbox-menu-item data-route="world-vector-studio" href="toolbox/world-vector/index.html">World Vector</a>
             </div>
           </div>
         </div>

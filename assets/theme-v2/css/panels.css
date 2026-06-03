@@ -273,14 +273,15 @@
 .tool-display-mode__body {
   display: flex;
   align-items: center;
-  gap: var(--space-12);
+  gap: var(--space-0);
   min-width: var(--space-0);
   padding: var(--space-10) var(--space-14) var(--space-10) var(--space-0)
 }
 
 .tool-display-mode__character {
-  width: var(--tool-display-media-size);
-  height: var(--tool-display-media-size);
+  width: 150px;
+  height: 150px;
+  margin-right: var(--space-15);
   object-fit: contain;
   display: block;
   flex: 0 0 auto
