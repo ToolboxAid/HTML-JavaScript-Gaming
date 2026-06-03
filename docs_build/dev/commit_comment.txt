@@ -1,7 +1,7 @@
-Safe Theme V2 CSS/template consistency cleanup - PR_26154_023-template-consistency-safe-css-audit
+Rebuild Localization from tool template - PR_26154_024-localization-template-rebuild
 
-- Replace `styles.css` with `theme.css` only for public/root pages classified as safe-replace.
-- Document aggregate-only `styles.css` cases that need approved Theme V2 extraction before migration.
-- Add missing `theme.css` wiring to PR022-listed active toolbox pages and add ToolDisplayMode hosts to builder and creator.
-- Leave display-only or ambiguous pages unchanged and report remaining template mismatches.
-- Produce before/after template consistency counts and required Codex review artifacts.
+- Preserve the previous Localization implementation under `old-tools/localization_pre_template_rebuild/`.
+- Replace active `toolbox/localization/` with a fresh copy of `toolbox/_tool_template-v2/`.
+- Adapt only Localization identity text and ToolDisplayMode metadata in the rebuilt template.
+- Remove active local Localization CSS/JS folders by not copying old implementation code back into the active tool.
+- Validate active folder shape, preserved backup, Localization links, static paths, and diff hygiene.
