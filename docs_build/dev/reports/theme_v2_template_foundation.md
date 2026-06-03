@@ -2,8 +2,8 @@
 
 ## Scope
 
-- Created `src/engine/theme/v2/templates/_tool_template_v2.html`.
-- Created `src/engine/theme/v2/templates/_page_template_v2.html`.
+- Created `retired Theme V2 tool template`.
+- Created `/_page_template_v2.html`.
 - Added `src/engine/theme/v2/assets/image-missing.svg` because no existing `image-missing.svg` was present.
 - Used AI Assistant only as the tool layout reference.
 - Used Marketplace only as the page layout reference.
@@ -26,8 +26,8 @@
 
 | Template | Location | Reference | Intent |
 |---|---|---|---|
-| Tool Template V2 | `src/engine/theme/v2/templates/_tool_template_v2.html` | `tools/ai-assistant.html` | Three-region tool workspace: left setup, center work area, right inspector. |
-| Page Template V2 | `src/engine/theme/v2/templates/_page_template_v2.html` | `GameFoundryStudio/marketplace/index.html` | Page title plus hero media/content section and repeated content blocks. |
+| Tool Template V2 | `retired Theme V2 tool template` | `tools/ai-assistant.html` | Three-region tool workspace: left setup, center work area, right inspector. |
+| Page Template V2 | `/_page_template_v2.html` | `GameFoundryStudio/marketplace/index.html` | Page title plus hero media/content section and repeated content blocks. |
 | Missing Image | `src/engine/theme/v2/assets/image-missing.svg` | New shared placeholder | Shared template image fallback only. |
 
 ## Theme V2 Pattern Usage

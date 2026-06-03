@@ -65,8 +65,8 @@ Task: PR_26152_280-theme-v2-reference-rewire
 - `GameFoundryStudio/tools/publisher.html`
 - `GameFoundryStudio/tools/world-vector-studio.html`
 - `GameFoundryStudio/tools.html`
-- `src/engine/theme/v2/templates/_page_template_v2.html`
-- `src/engine/theme/v2/templates/_tool_template_v2.html`
+- `/_page_template_v2.html`
+- `retired Theme V2 tool template`
 - `tools/tools-page-accordions.js`
 
 ## Runtime Helper Adjustments

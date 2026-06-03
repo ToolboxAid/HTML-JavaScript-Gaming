@@ -4,9 +4,9 @@
 
 | Dependency | Used By | Purpose | Status |
 |---|---|---|---|
-| `GameFoundryStudio/assets/partials/header-nav.html` | `_tool_template_v2.html`, `_page_template_v2.html` | Shared Theme V2 header and navigation chrome | Existing |
-| `GameFoundryStudio/assets/partials/footer.html` | `_tool_template_v2.html`, `_page_template_v2.html` | Shared Theme V2 footer chrome | Existing |
-| `GameFoundryStudio/assets/js/gamefoundry-partials.js` | `_tool_template_v2.html`, `_page_template_v2.html` | Existing shared partial loader for header/footer | Existing |
+| `GameFoundryStudio/assets/partials/header-nav.html` | `retired Theme V2 tool template`, `_page_template_v2.html` | Shared Theme V2 header and navigation chrome | Existing |
+| `GameFoundryStudio/assets/partials/footer.html` | `retired Theme V2 tool template`, `_page_template_v2.html` | Shared Theme V2 footer chrome | Existing |
+| `GameFoundryStudio/assets/js/gamefoundry-partials.js` | `retired Theme V2 tool template`, `_page_template_v2.html` | Existing shared partial loader for header/footer | Existing |
 
 ## Theme V2 Style Dependencies
 

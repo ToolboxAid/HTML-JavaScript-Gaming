@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Updated `src/engine/theme/v2/templates/_tool_template_v2.html`.
+- Updated `retired Theme V2 tool template`.
 - Kept `_page_template_v2.html` unchanged.
 - Did not rebuild Storage Inspector.
 - Did not touch samples.

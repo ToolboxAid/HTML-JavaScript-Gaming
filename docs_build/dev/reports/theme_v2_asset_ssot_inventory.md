@@ -206,13 +206,13 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `../assets/js/gamefoundry-partials.js`
 - `src` -> `../assets/js/tool-display-mode.js`
 
-### `src/engine/theme/v2/templates/_page_template_v2.html`
+### `/_page_template_v2.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/theme/v2/theme.css`
 - `src` -> `assets/js/gamefoundry-partials.js`
 - `base` -> `../../../../../GameFoundryStudio/`
 
-### `src/engine/theme/v2/templates/_tool_template_v2.html`
+### `retired Theme V2 tool template`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/theme/v2/theme.css`
 - `src` -> `assets/js/gamefoundry-partials.js`

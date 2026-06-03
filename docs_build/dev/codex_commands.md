@@ -1,34 +1,30 @@
 # Codex Commands
 
-Task: PR_26154_006-theme-v2-asset-ownership-normalization
+Task: PR_26154_007-theme-v2-template-cleanup
 
 Commands run:
 
 - `Get-Content .codex/skills/repo-build/SKILL.md`
 - `Get-Content docs_build/dev/PROJECT_INSTRUCTIONS.md`
 - `git status --short --untracked-files=all`
-- Targeted `Get-Content`, `rg`, `Get-ChildItem`, and `git diff` reads for Theme V2 image ownership, `tool-display-mode.js`, affected pages/templates/tools, and report state.
-- Node migration script to copy the engine-owned Theme V2 image tree to `assets/theme/v2/images/`, verify file parity, remove the former source image folder, and remove the temporary nested public image folder.
-- Node rewrite script to update active text references to `assets/theme/v2/images/` while excluding protected `start_of_day/`, deprecated sample/game folders, generated review artifacts, and `tmp/`.
-- `node --check src/engine/theme/v2/assets/js/tool-display-mode.js`
-- Targeted public asset checks for:
-  - `assets/theme/v2/images/badges/index.png`
-  - `assets/theme/v2/images/characters/index.png`
-- Targeted reference checks for the former engine-owned image folder, the temporary nested public image folder, and the canonical public image root.
+- Targeted `Get-Content`, `rg`, and `Get-ChildItem` reads for the Theme V2 templates, template references, and remaining Theme V2 asset surface.
+- Node file operation script to move the page template to `/_page_template_v2.html`, remove the retired tool template, and delete the empty template folder.
+- Node reference cleanup script for historical report references to the old template folder and retired tool template.
+- Root template browser/HTTP validation found the header logo still resolving through the old partial-local image convention; patched `src/engine/theme/v2/assets/partials/header-nav.html` to use the public Theme V2 image root.
+- Targeted reference checks for the old template folder, the retired tool template filename, and the root page template filename.
 - Static validation for changed HTML, JS, CSS, and Markdown files.
-- Local browser validation of `tools/_templates-v2/index.html` with request status capture for both display-mode image requests.
 - `git diff --check`
 - `npm run codex:review-artifacts`
-- Python ZIP packaging for `tmp/PR_26154_006-theme-v2-asset-ownership-normalization_delta.zip`
+- Python ZIP packaging for `tmp/PR_26154_007-theme-v2-template-cleanup_delta.zip`
 
 Validation summary:
 
-- PASS `node --check src/engine/theme/v2/assets/js/tool-display-mode.js`.
-- PASS public asset checks for `badges/index.png` and `characters/index.png`.
-- PASS zero-reference checks for the former engine-owned image folder and temporary nested public image folder, excluding protected/generated paths.
-- PASS canonical public image root exists with 111 files.
-- PASS local browser validation: `/assets/theme/v2/images/badges/index.png` and `/assets/theme/v2/images/characters/index.png` both returned `200`.
+- PASS root page template exists at `/_page_template_v2.html`.
+- PASS root page template browser/HTTP check: page, Theme V2 CSS modules, partials, placeholder image, and logo all returned `200`.
+- PASS old template folder was removed.
+- PASS retired tool template file was removed.
+- PASS zero-reference checks for the old template folder and retired tool template filename, excluding protected/generated paths.
 - PASS static validation for changed HTML, JS, CSS, and Markdown files.
 - PASS `git diff --check`.
-- SKIPPED `npm run test:workspace-v2`; image ownership/pathing changed, tool launch/navigation behavior did not.
+- SKIPPED `npm run test:workspace-v2`; template location/report cleanup changed, active tool launch/navigation behavior did not.
 - SKIPPED old_games, old_samples, and full samples smoke validation per request.

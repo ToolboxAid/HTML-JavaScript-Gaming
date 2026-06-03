@@ -1,7 +1,8 @@
-Theme V2 asset ownership normalization - PR_26154_006-theme-v2-asset-ownership-normalization
+Theme V2 template cleanup - PR_26154_007-theme-v2-template-cleanup
 
-- Move Theme V2 image content into the public canonical image root at `assets/theme/v2/images/`.
-- Remove the former engine-owned image folder and temporary nested public image folder after path rewiring.
-- Update `tool-display-mode.js`, templates, public/root pages, tool pages, and tool index scripts to resolve public images from `assets/theme/v2/images/`.
-- Keep `src/engine/theme/v2/` in place for remaining CSS, JS, partial, template, and placeholder assets.
-- Validate changed static files, targeted references, browser image request statuses, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Move the Theme V2 page template to the repository root as `/_page_template_v2.html`.
+- Delete the retired Theme V2 tool template and remove the empty old template folder.
+- Normalize historical report references to the old template location and retired tool template.
+- Fix the shared header partial logo path so the relocated root page template resolves cleanly.
+- Inventory remaining files under `src/engine/theme/v2/`, classify ownership, and recommend next cleanup moves.
+- Validate targeted template references, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
