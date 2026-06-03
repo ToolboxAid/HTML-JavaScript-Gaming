@@ -141,7 +141,7 @@ div {
   border-bottom: var(--border-standard)
 }
 
-.nav {
+.site-header .nav {
   display: flex;
   align-items: center;
   gap: var(--space-20);
@@ -149,7 +149,7 @@ div {
   overflow: visible
 }
 
-.brand {
+.site-header .brand {
   display: flex;
   align-items: center;
   gap: var(--space-10);
@@ -157,12 +157,12 @@ div {
   letter-spacing: var(--letter-spacing-brand)
 }
 
-.brand img {
+.site-header .brand img {
   width: var(--space-34);
   height: var(--space-34)
 }
 
-.nav-links {
+.site-header .nav-links {
   display: flex;
   align-items: center;
   gap: var(--space-14);
@@ -171,37 +171,37 @@ div {
   overflow: visible
 }
 
-.nav-links a,
-.nav-item>a {
+.site-header .nav-links a,
+.site-header .nav-item>a {
   color: var(--muted);
   font-size: var(--font-size-md)
 }
 
-.nav-links a.active,
-.nav-links a:hover,
-.nav-item:hover>a,
-.nav-item:focus-within>a,
-.nav-item>a.active {
+.site-header .nav-links a.active,
+.site-header .nav-links a:hover,
+.site-header .nav-item:hover>a,
+.site-header .nav-item:focus-within>a,
+.site-header .nav-item>a.active {
   color: var(--gold)
 }
 
-.nav-actions {
+.site-header .nav-actions {
   display: flex;
   gap: var(--space-10)
 }
 
-.nav-item {
+.site-header .nav-item {
   position: relative;
   display: inline-flex;
   align-items: center
 }
 
-.nav-item>a {
+.site-header .nav-item>a {
   display: inline-flex;
   align-items: center
 }
 
-.sub-menu {
+.site-header .sub-menu {
   position: absolute;
   top: 100%;
   left: var(--space-0);
@@ -220,7 +220,7 @@ div {
   z-index: var(--z-index-lg)
 }
 
-.nav-item:after {
+.site-header .nav-item:after {
   content: "";
   position: absolute;
   left: var(--space-0);
@@ -229,24 +229,65 @@ div {
   height: var(--space-10)
 }
 
-.nav-item:hover .sub-menu,
-.nav-item:focus-within .sub-menu {
+.site-header .nav-item:hover>.sub-menu,
+.site-header .nav-item:focus-within>.sub-menu {
   opacity: 1;
   visibility: visible;
   pointer-events: auto
 }
 
-.sub-menu a {
+.site-header .sub-menu a {
   display: block;
   padding: var(--space-10) var(--space-12);
   border-radius: var(--space-10);
   white-space: nowrap
 }
 
-.sub-menu a:hover,
-.sub-menu a.active {
+.site-header .sub-menu a:hover,
+.site-header .sub-menu a.active {
   color: var(--gold);
   background: var(--orange-soft-strong)
+}
+
+.site-header .sub-menu--toolbox {
+  align-content: start
+}
+
+.site-header .sub-menu .nav-popout-item {
+  display: block;
+  width: 100%
+}
+
+.site-header .sub-menu .nav-popout-item>a {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-18);
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--space-10);
+  white-space: nowrap
+}
+
+.site-header .sub-menu .nav-popout-item>.sub-menu {
+  top: var(--space-0);
+  left: calc(100% + var(--space-8));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none
+}
+
+.site-header .sub-menu .nav-popout-item:hover>.sub-menu,
+.site-header .sub-menu .nav-popout-item:focus-within>.sub-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto
+}
+
+.site-header .sub-menu .nav-popout-item:after {
+  left: 100%;
+  right: auto;
+  top: var(--space-0);
+  width: var(--space-10);
+  height: 100%
 }
 
 .hero {
@@ -472,7 +513,7 @@ div {
     grid-template-columns: var(--two-columns)
   }
 
-  .nav-actions {
+  .site-header .nav-actions {
     display: none
   }
 
@@ -511,12 +552,12 @@ div {
     grid-template-columns: var(--one-column)
   }
 
-  .nav {
+  .site-header .nav {
     align-items: flex-start;
     flex-direction: column
   }
 
-  .nav-links {
+  .site-header .nav-links {
     margin-left: var(--space-0)
   }
 
@@ -524,12 +565,17 @@ div {
     grid-template-columns: var(--one-column)
   }
 
-  .sub-menu {
+  .site-header .sub-menu,
+  .site-header .sub-menu .nav-popout-item>.sub-menu {
     position: static;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
     box-shadow: none;
     margin-top: var(--space-8)
+  }
+
+  .site-header .sub-menu .nav-popout-item:after {
+    content: none
   }
 }
