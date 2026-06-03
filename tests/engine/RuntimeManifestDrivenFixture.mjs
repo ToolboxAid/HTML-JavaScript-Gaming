@@ -169,3 +169,76 @@ export function createManifestDrivenRuntimeFixture() {
     },
   };
 }
+
+export function createValidEngineFixture() {
+  return Object.freeze({
+    manifest: createManifestDrivenRuntimeFixture(),
+    inputEvents: Object.freeze([
+      Object.freeze({ key: "ArrowRight", pressed: true }),
+    ]),
+  });
+}
+
+export function createInvalidEngineFixtures() {
+  const manifest = createManifestDrivenRuntimeFixture();
+
+  return Object.freeze({
+    missingSchema: Object.freeze({
+      ...manifest,
+      schema: "",
+    }),
+    missingObjectInstances: Object.freeze({
+      ...manifest,
+      objectInstances: undefined,
+    }),
+    invalidTerrainMaterial: Object.freeze({
+      ...manifest,
+      terrainMaterials: Object.freeze({
+        bad: Object.freeze({
+          passable: true,
+          blocked: true,
+        }),
+      }),
+    }),
+    invalidEnvironmentForce: Object.freeze({
+      ...manifest,
+      environmentForces: Object.freeze({
+        wind: Object.freeze({
+          forceType: "wind",
+          strength: 1,
+        }),
+      }),
+    }),
+    missingRuleAttachment: Object.freeze({
+      ...manifest,
+      objects: Object.freeze({
+        ...manifest.objects,
+        "object.player": Object.freeze({
+          ...manifest.objects["object.player"],
+          rules: Object.freeze(["missing.rule"]),
+        }),
+      }),
+    }),
+    invalidInputBinding: Object.freeze({
+      ...manifest,
+      inputBindings: Object.freeze([
+        Object.freeze({ actionId: "move.right" }),
+      ]),
+    }),
+    blockedCollisionScene: Object.freeze({
+      ...manifest,
+      terrainTiles: Object.freeze([
+        Object.freeze({
+          tileId: "tile.wall.uat",
+          materialId: "wall",
+          material: Object.freeze({
+            materialId: "wall",
+            passable: false,
+            blocked: true,
+          }),
+          bounds: Object.freeze({ x: 2, y: 1, width: 1, height: 1 }),
+        }),
+      ]),
+    }),
+  });
+}
