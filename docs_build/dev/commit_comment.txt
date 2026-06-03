@@ -1,8 +1,7 @@
-Rename active tools surface to toolbox and align footer/template wiring - PR_26154_022-toolbox-footer-template-consistency-bundle
+Safe Theme V2 CSS/template consistency cleanup - PR_26154_023-template-consistency-safe-css-audit
 
-- Rename active `tools/` surface to `toolbox/` and update active routes, docs, scripts, tests, and Workspace/tool launch references.
-- Rename the active tool template source to `toolbox/_tool_template-v2/` and update project instructions.
-- Align shared footer IA to the requested Product, Community, Docs & Help, Account, Legal, and Company groups.
-- Add Theme V2 CSS wiring to marketplace and verify Toolbox, Objects, and Worlds menu behavior there.
-- Produce template consistency audit and bundle reports with remaining mismatches documented.
-- Validate with targeted path/static checks, `git diff --check`, and `npm run test:workspace-v2`.
+- Replace `styles.css` with `theme.css` only for public/root pages classified as safe-replace.
+- Document aggregate-only `styles.css` cases that need approved Theme V2 extraction before migration.
+- Add missing `theme.css` wiring to PR022-listed active toolbox pages and add ToolDisplayMode hosts to builder and creator.
+- Leave display-only or ambiguous pages unchanged and report remaining template mismatches.
+- Produce before/after template consistency counts and required Codex review artifacts.
