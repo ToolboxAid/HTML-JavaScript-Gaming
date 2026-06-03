@@ -195,7 +195,7 @@
                 },
                 {
                     title: "Marketplace",
-                    href: "marketplace/index.html",
+                    href: "../marketplace/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/marketplace.png",
                     description: "Browse community-ready tools, assets, listings, and distribution surfaces.",
                     role: "Community",
@@ -204,7 +204,7 @@
                 },
                 {
                     title: "Arcade",
-                    href: "arcade/index.html",
+                    href: "../arcade/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/arcade.png",
                     description: "Play and review available games from the Game Foundry arcade.",
                     role: "Play",

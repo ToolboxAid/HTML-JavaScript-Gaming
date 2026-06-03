@@ -32,17 +32,17 @@
         community: "community/index.html",
         translations: "tools/localization-studio/index.html",
         docs: "docs/index.html",
-        about: "about.html",
-        faq: "faq.html",
-        assets: "assets.html",
-        publish: "publish/index.html",
-        support: "support.html",
-        reference: "reference.html",
-        contact: "contact.html",
-        vision: "vision.html",
-        mission: "mission.html",
-        roadmap: "roadmap.html",
-        "release-notes": "release-notes.html",
+        about: "company/about.html",
+        faq: "docs/faq.html",
+        assets: "community/assets.html",
+        publish: "community/publish.html",
+        support: "docs/support.html",
+        reference: "docs/reference.html",
+        contact: "company/contact.html",
+        vision: "company/vision.html",
+        mission: "company/mission.html",
+        roadmap: "company/roadmap.html",
+        "release-notes": "company/release-notes.html",
         admin: "admin/site-settings.html",
         "admin-site-settings": "admin/site-settings.html",
         "admin-branding": "admin/branding.html",
@@ -55,14 +55,14 @@
         "admin-roles": "admin/roles.html",
         "admin-moderation": "admin/moderation.html",
         "admin-analytics": "admin/analytics.html",
-        "cookie-policy": "cookie-policy.html",
-        disclaimer: "disclaimer.html",
-        "privacy-policy": "privacy-policy.html",
-        "terms-legal": "terms.html",
-        account: "account.html",
-        "account-profile": "profile.html",
-        "account-preferences": "preferences.html",
-        "account-security": "security.html",
+        "cookie-policy": "legal/cookie-policy.html",
+        disclaimer: "legal/disclaimer.html",
+        "privacy-policy": "legal/privacy-policy.html",
+        "terms-legal": "legal/terms.html",
+        account: "account/index.html",
+        "account-profile": "account/profile.html",
+        "account-preferences": "account/preferences.html",
+        "account-security": "account/security.html",
         branding: "admin/branding.html",
         controls: "admin/controls.html",
         "design-system": "admin/design-system.html",
@@ -70,24 +70,15 @@
         rating: "admin/ratings.html"
     };
 
-    const rootPageRoutes = new Set([
-        "tools",
-        "configuration-admin",
-        "ai-assistant",
-        "animation-studio", "asset-studio", "code-studio", "game-builder", "game-design-studio", "input-studio",
-        "midi-studio", "object-vector-studio", "palette-manager", "particle-studio", "sound-studio",
-        "storage-inspector", "world-vector-studio",
-        "about", "vision", "mission", "roadmap", "release-notes",
-        "account", "account-profile", "account-preferences", "account-security",
-        "admin", "admin-site-settings", "admin-branding", "admin-themes", "admin-design-system", "admin-controls",
-        "admin-grouping-colors", "admin-ratings", "admin-users", "admin-roles", "admin-moderation", "admin-analytics",
-        "branding", "controls", "design-system", "grouping-colors", "rating"
-    ]);
-
     const partials = {
         "header-nav": "assets/partials/header-nav.html",
         footer: "assets/partials/footer.html"
     };
+
+    const rootSegments = new Set([
+        "account", "company", "community", "legal",
+        "admin", "arcade", "cloud", "docs", "learn", "marketplace", "tools"
+    ]);
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
@@ -99,26 +90,23 @@
 
     function currentPagePath() {
         const parts = window.location.pathname.split("/").filter(Boolean);
-        const studioIndex = parts.lastIndexOf("GameFoundryStudio");
-        return studioIndex >= 0 ? parts.slice(studioIndex + 1).join("/") : (parts.join("/") || "index.html");
+        const rootIndex = parts.findIndex(function (part) {
+            return rootSegments.has(part);
+        });
+        if (rootIndex >= 0) {
+            return parts.slice(rootIndex).join("/");
+        }
+        const lastPart = parts[parts.length - 1] || "";
+        return lastPart.endsWith(".html") ? lastPart : "index.html";
     }
 
     function rootPrefix() {
-        if (window.location.pathname.split("/").filter(Boolean).lastIndexOf("GameFoundryStudio") < 0) return "";
         const pagePath = currentPagePath();
         if (!pagePath || pagePath === "index.html") return "";
         return "../".repeat(pagePath.split("/").length - 1);
     }
 
     function routeHref(routeName) {
-        if (rootPageRoutes.has(routeName)) {
-            const parts = window.location.pathname.split("/").filter(Boolean);
-            const studioIndex = parts.lastIndexOf("GameFoundryStudio");
-            if (studioIndex >= 0) {
-                return "../".repeat(Math.max(1, parts.length - studioIndex - 1)) + routeMap[routeName];
-            }
-            return "../" + routeMap[routeName];
-        }
         return rootPrefix() + (routeMap[routeName] || routeName || "index.html");
     }
 
@@ -138,7 +126,7 @@
             const route = routeMap[link.dataset.route] || "";
             const isToolChild = pagePath.indexOf("tools/") === 0 && link.dataset.route === "tools";
             const isGameChild = pagePath.indexOf("arcade/") === 0 && link.dataset.route === "games";
-            const isAccountChild = ["account.html", "profile.html", "preferences.html", "security.html"].includes(pagePath) && link.dataset.route === "account";
+            const isAccountChild = pagePath.indexOf("account/") === 0 && link.dataset.route === "account";
             const isAdminChild = pagePath.indexOf("admin/") === 0 && link.dataset.route === "admin";
             if (route === pagePath || isToolChild || isGameChild || isAccountChild || isAdminChild) {
                 link.classList.add("active");

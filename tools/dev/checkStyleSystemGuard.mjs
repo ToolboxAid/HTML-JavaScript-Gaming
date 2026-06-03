@@ -8,10 +8,8 @@ const styleSystemPages = [
   "samples/index.html",
   "games/index.html",
   "tools/index.html",
-  "tools/State Inspector/index.html",
-  "tools/Performance Profiler/index.html",
-  "tools/Replay Visualizer/index.html",
-  "tools/Physics Sandbox/index.html"
+  "tools/_templates-v2/index.html",
+  "tools/localization-studio/index.html"
 ];
 
 const requiredThemeFiles = [

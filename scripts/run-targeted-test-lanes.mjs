@@ -104,28 +104,23 @@ function playwrightCommand(...specPaths) {
 
 const laneDefinitions = Object.freeze({
   "workspace-contract": {
-    affectedSurface: "Workspace Manager V2 contract and lifecycle behavior",
+    affectedSurface: "Root tools future-state navigation and Tool Template V2 contract",
     commands: [
-      playwrightCommand("tests/playwright/tools/WorkspaceManagerV2.spec.mjs")
+      playwrightCommand("tests/playwright/tools/RootToolsFutureState.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
+      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
     ],
     fixtures: [
-      "tests/fixtures/workspace-v2/uat.manifest.json",
-      "mocked File System Access repo handles",
-      "explicit game manifest/toolState payloads"
+      "repo-served root tools page",
+      "Tool Template V2 future-state page",
+      "Theme V2 shared partials and assets"
     ],
-    fixturePaths: [
-      "tests/fixtures/workspace-v2/uat.manifest.json"
-    ],
+    fixturePaths: [],
     ownership: "tools",
     requiresPreflight: true,
-    reason: "Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts.",
-    virtualFixturePrefixes: [
-      "games/"
-    ]
+    reason: "Workspace V2 command now validates the future-state tools surface without exercising deprecated tools/old_* routes."
   },
   "tool-runtime": {
     affectedSurface: "First-class tool runtime behavior",
