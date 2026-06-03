@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>First-Class Tool Starter V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="./styles/toolStarter.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="tool-template-v2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-tool-starter-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <div class="tool-starter__header" data-tool-starter-header>
+          <section class="tools-platform-frame tool-starter__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="tool-template-v2">First-Class Tool Starter V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface V2</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Self-contained First-Class Tool V2 starter with no tools/shared dependency.</div>
+                </div>
+              </div>
+              <div class="tools-platform-frame__topline">
+                <p class="tools-platform-frame__description">Replace this Tool Template V2 shell with the new First-Class Tool V2 name and purpose.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </details>
+
+    <nav class="tool-starter__menu tool-starter__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <button id="toolExportButton" type="button">Export</button>
+      <button id="toolCopyJsonButton" type="button">Copy JSON</button>
+      <button id="toolExportToolStateButton" type="button">Export toolState</button>
+    </nav>
+
+    <nav class="tool-starter__menu tool-starter__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <button id="workspaceImportManifestButton" type="button">Import manifest</button>
+      <button id="workspaceCopyManifestButton" type="button">Copy manifest</button>
+      <button id="workspaceExportManifestButton" type="button">Export manifest</button>
+      <button id="returnToWorkspaceButton" type="button" hidden>Return to Workspace</button>
+    </nav>
+
+    <main class="tool-starter app-shell" data-tool-id="tool-template-v2">
+      <aside class="tool-starter__panel tool-starter__panel--left" aria-label="Tool inputs">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourceInputContent">
+            <span>Input Source</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="sourceInputContent" class="accordion-v2__content">
+            <label class="tool-starter__field" for="sourceInput">
+              <span>Source value</span>
+              <input id="sourceInput" type="text" autocomplete="off" placeholder="Enter a value to process">
+            </label>
+            <div class="tool-starter__field-patterns" aria-label="Editable and non-editable field patterns">
+              <label class="tool-starter__field tool-starter__field--compact tool-starter__field--not-editable" for="notEditableField">
+                <span>Not Editable</span>
+                <input id="notEditableField" type="text" autocomplete="off" value="Read-only display value" readonly>
+              </label>
+              <label class="tool-starter__field tool-starter__field--compact tool-starter__field--editable" for="editableField">
+                <span>Editable</span>
+                <input id="editableField" class="tool-starter__editable-tags-box" type="text" autocomplete="off" value="No tags.">
+              </label>
+            </div>
+            <p id="sourceValidationMessage" class="tool-starter__hint">Input is required before Export can process.</p>
+          </div>
+        </section>
+
+      </aside>
+
+      <section class="tool-starter__panel tool-starter__panel--center" aria-label="Tool preview">
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="previewPanelContent">
+            <span>Preview</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="previewPanelContent" class="accordion-v2__content">
+            <div id="previewOutput" class="tool-starter__preview" role="img" aria-label="Tool preview output">
+              <p>No preview rendered yet.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="tool-starter__panel tool-starter__panel--right" aria-label="Tool output">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
+            <span>Output Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="inspectorContent" class="accordion-v2__content">
+            <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <div class="accordion-v2__header tool-starter__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
+            <span>Status</span>
+            <div class="tool-starter__status-header-actions">
+              <button id="clearStatusButton" class="tool-starter__status-clear-button" type="button">Clear</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
+          <div id="statusLogContent" class="accordion-v2__content">
+            <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
+          </div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>
