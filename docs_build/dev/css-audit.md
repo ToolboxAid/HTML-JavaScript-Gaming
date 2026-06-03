@@ -2,9 +2,9 @@
 
 ## Summary
 
-- Added `assets/theme/v2/css/colors.css` as the CSS color source of truth.
-- Added `assets/theme/v2/css/tokens.css` for non-color design tokens.
-- Removed per-color CSS files under `assets/theme/v2/css/colors/`.
+- Added `assets/theme-v2/css/colors.css` as the CSS color source of truth.
+- Added `assets/theme-v2/css/tokens.css` for non-color design tokens.
+- Removed per-color CSS files under `assets/theme-v2/css/colors/`.
 - Removed the old JSON palette file because no runtime dependency was found.
 - Updated `styles.css` import order so colors and tokens load before base/component/page CSS.
 

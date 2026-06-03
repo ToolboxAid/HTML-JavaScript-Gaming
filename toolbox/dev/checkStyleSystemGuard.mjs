@@ -12,19 +12,19 @@ const styleSystemPages = [
 ];
 
 const requiredThemeFiles = [
-  "assets/theme/v2/css/theme.css",
-  "assets/theme/v2/css/colors.css",
-  "assets/theme/v2/css/spacing.css",
-  "assets/theme/v2/css/typography.css",
-  "assets/theme/v2/css/layout.css",
-  "assets/theme/v2/css/buttons.css",
-  "assets/theme/v2/css/forms.css",
-  "assets/theme/v2/css/controls.css",
-  "assets/theme/v2/css/panels.css",
-  "assets/theme/v2/css/accordion.css",
-  "assets/theme/v2/css/status.css",
-  "assets/theme/v2/css/tables.css",
-  "assets/theme/v2/css/dialogs.css"
+  "assets/theme-v2/css/theme.css",
+  "assets/theme-v2/css/colors.css",
+  "assets/theme-v2/css/spacing.css",
+  "assets/theme-v2/css/typography.css",
+  "assets/theme-v2/css/layout.css",
+  "assets/theme-v2/css/buttons.css",
+  "assets/theme-v2/css/forms.css",
+  "assets/theme-v2/css/controls.css",
+  "assets/theme-v2/css/panels.css",
+  "assets/theme-v2/css/accordion.css",
+  "assets/theme-v2/css/status.css",
+  "assets/theme-v2/css/tables.css",
+  "assets/theme-v2/css/dialogs.css"
 ];
 
 function readUtf8(relativePath) {

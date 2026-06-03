@@ -147,13 +147,13 @@ Use that phrase as a compact IA and copywriting anchor:
 
 ## GAMEFOUNDRYSTUDIO THEME V2 GOVERNANCE
 
-`theme/v2` is the only approved styling surface for public/root GameFoundryStudio page work as bounded below.
+`assets/theme-v2` is the only approved styling surface for public/root GameFoundryStudio page work as bounded below.
 
 V1/legacy CSS is deprecated and out of play.
 
 ### Theme Surface Boundary
 
-`assets/theme/v2/css` owns public/root GameFoundryStudio page styling:
+`assets/theme-v2/css` owns public/root GameFoundryStudio page styling:
 - root Home
 - Company pages
 - Tools index
@@ -197,12 +197,12 @@ If Theme V2 lacks a needed pattern:
 
 Rules:
 - Do not extend deprecated CSS.
-- Do not create new CSS files outside `theme/v2`.
+- Do not create new CSS files outside `assets/theme-v2/css`.
 - No page-local CSS.
 - No tool-local CSS.
 - No inline style attributes.
 - No `<style>` blocks.
-- No JavaScript-generated styling except toggling approved `theme/v2` classes.
+- No JavaScript-generated styling except toggling approved Theme V2 classes.
 - No hardcoded colors.
 - No hardcoded spacing.
 - No hardcoded borders.
@@ -210,16 +210,16 @@ Rules:
 - No hardcoded font sizes.
 - No hardcoded z-index values.
 - No duplicate component styling.
-- No copy/paste, porting, aliasing, or wrapper recreation of deprecated selectors into `theme/v2`.
-- No one-off classes for a single page or tool unless approved and promoted into `theme/v2`.
-- New UI work must first attempt to use existing `theme/v2` tokens and classes.
+- No copy/paste, porting, aliasing, or wrapper recreation of deprecated selectors into Theme V2.
+- No one-off classes for a single page or tool unless approved and promoted into Theme V2.
+- New UI work must first attempt to use existing Theme V2 tokens and classes.
 - Missing styling requirements must be reported as design-system gaps.
 - Design-system gaps should be documented rather than solved locally.
 
 Allowed:
-- Adding approved reusable `theme/v2` tokens.
-- Adding approved reusable `theme/v2` component classes.
-- Toggling approved `theme/v2` classes from JavaScript.
+- Adding approved reusable Theme V2 tokens.
+- Adding approved reusable Theme V2 component classes.
+- Toggling approved Theme V2 classes from JavaScript.
 - Ownership cleanup inside Theme V2.
 - Consolidation inside Theme V2.
 - Removing deprecated dependencies.
@@ -230,7 +230,7 @@ Allowed:
 
 All reusable public/root GameFoundryStudio styling must live under:
 
-`assets/theme/v2/css/`
+`assets/theme-v2/css/`
 
 Approved styling surfaces:
 - `theme.css`
@@ -248,14 +248,14 @@ Approved styling surfaces:
 - `layout.css`
 
 Rules:
-- Public/root pages consume `theme/v2`.
-- Public/root tools consume `theme/v2`.
+- Public/root pages consume `assets/theme-v2`.
+- Public/root tools consume `assets/theme-v2`.
 - Pages do not define styling.
 - Tools do not define styling.
-- New CSS files outside `assets/theme/v2/css` are prohibited.
-- Styling requests should be implemented as reusable `theme/v2` patterns.
+- New CSS files outside `assets/theme-v2/css` are prohibited.
+- Styling requests should be implemented as reusable Theme V2 patterns.
 - Missing patterns must be documented as design-system gaps.
-- No page-specific styling unless approved and promoted into `theme/v2`.
+- No page-specific styling unless approved and promoted into Theme V2.
 
 ### Design System Gap Process
 
@@ -263,7 +263,7 @@ When a style is missing:
 1. Document the gap.
 2. Identify affected pages/tools.
 3. Request approval.
-4. Add the approved reusable `theme/v2` pattern directly in Theme V2.
+4. Add the approved reusable Theme V2 pattern directly in Theme V2.
 5. Reuse everywhere.
 6. Do not implement locally or solve it by using V1/legacy CSS.
 

@@ -350,7 +350,7 @@
   border-bottom: 1px solid var(--line);
   background:
     linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 86%, transparent) 42%, color-mix(in srgb, var(--bg) 38%, transparent) 100%),
-    url("../images/forge-bot.png") right center / min(50vw, 620px) auto no-repeat;
+    url("../images/forge-bot-single.png") right center / min(50vw, 620px) auto no-repeat;
 }
 
 .about-hero__content {
@@ -1242,7 +1242,7 @@ body.tool-focus-mode .tool-column:last-of-type {
     min-height: 460px;
     background:
       linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 100%),
-      url("../images/forge-bot.png") center bottom / 340px auto no-repeat;
+      url("../images/forge-bot-single.png") center bottom / 340px auto no-repeat;
   }
 
   .control-row {

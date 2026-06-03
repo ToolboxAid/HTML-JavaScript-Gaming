@@ -1,7 +1,6 @@
-Close template, Theme V2, and legacy cleanup gaps - PR_26154_026-028-template-theme-legacy-closeout
+Rename public Theme V2 asset root to assets/theme-v2 - PR_26154_029-theme-v2-root-rename
 
-- Close remaining public/root template markers and active toolbox ToolDisplayMode data attributes.
-- Wire Font Awesome through the active Theme V2 entry point.
-- Remove obsolete V1 theme test coverage that imports deleted `src/engine/theme` files.
-- Report remaining Theme V2 unwired assets, ambiguous toolbox legacy surfaces, and stale test candidates.
-- Validate template counts, active path references, static changed files, Workspace V2, diff hygiene, and review artifacts.
+- Move the public Theme V2 asset root to `assets/theme-v2/`.
+- Update active pages, toolbox pages, templates, JS helpers, partials, tests, and Theme V2 governance docs to the new root.
+- Keep deprecated old-tools and historical reports isolated without rewriting them.
+- Validate active references, template consistency, static changed files, Workspace V2, diff hygiene, and review artifacts.
