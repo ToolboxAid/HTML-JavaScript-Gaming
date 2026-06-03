@@ -165,10 +165,10 @@
             group: "Development & System",
             tools: [
                 {
-                    title: "Code Studio",
+                    title: "Custom Extensions",
                     href: "../tools/code-studio.html",
                     image: "assets/images/tools/code-studio.png",
-                    description: "Write code, extend systems and build custom logic.",
+                    description: "Register approved Engine V2 extension hooks and creator-private custom logic.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
                     theme: "bot"
