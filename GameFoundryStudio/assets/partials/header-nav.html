@@ -7,23 +7,26 @@
     <nav class="nav-links" aria-label="Main navigation">
       <div class="nav-item">
         <a data-nav-link data-route="tools" href="tools/index.html">Toolbox &#9662;</a>
-        <div class="sub-menu">
-          <a data-nav-link data-route="ai-assistant" href="tools/ai-assistant.html">AI Assistant</a>
-          <a data-nav-link data-route="animation-studio" href="tools/animation-studio.html">Animation Studio</a>
-          <a data-nav-link data-route="asset-studio" href="tools/asset-studio.html">Asset Studio</a>
-          <a data-nav-link data-route="code-studio" href="tools/code-studio.html">Code Studio</a>
-          <a data-nav-link data-route="game-builder" href="tools/game-builder.html">Game Builder</a>
-          <a data-nav-link data-route="game-design-studio" href="tools/game-design-studio.html">Game Design Studio</a>
-          <a data-nav-link data-route="input-studio" href="tools/input-studio.html">Input Studio</a>
-          <a data-nav-link data-route="localization-studio" href="tools/localization-studio/index.html">Localization Studio</a>
-          <a data-nav-link data-route="midi-studio" href="tools/midi-studio.html">MIDI Studio</a>
-          <a data-nav-link data-route="object-vector-studio" href="tools/object-vector-studio.html">Object Vector Studio</a>
-          <a data-nav-link data-route="palette-manager" href="tools/palette-manager.html">Palette Manager</a>
-          <a data-nav-link data-route="particle-studio" href="tools/particle-studio.html">Particle Studio</a>
-          <a data-nav-link data-route="publisher" href="tools/publisher.html">Publish Studio</a>
-          <a data-nav-link data-route="sound-studio" href="tools/sound-studio.html">Sound Studio</a>
-          <a data-nav-link data-route="storage-inspector" href="tools/storage-inspector.html">Storage Inspector</a>
-          <a data-nav-link data-route="world-vector-studio" href="tools/world-vector-studio.html">World Vector Studio</a>
+        <div class="sub-menu" data-toolbox-menu aria-label="Toolbox menu">
+          <div data-toolbox-menu-group aria-label="Objects">
+            <span data-toolbox-menu-group-label>Objects</span>
+            <a data-nav-link data-toolbox-menu-item data-route="object-vector-studio" href="tools/object-vector-studio.html">Vector</a>
+            <a data-nav-link data-toolbox-menu-item data-route="asset-studio" href="tools/asset-studio.html">Sprite</a>
+            <a data-nav-link data-toolbox-menu-item data-route="animation-studio" href="tools/animation-studio.html">Animated Sprite</a>
+            <a data-nav-link data-toolbox-menu-item data-route="code-studio" href="tools/code-studio.html">UI</a>
+          </div>
+          <div data-toolbox-menu-group aria-label="Worlds">
+            <span data-toolbox-menu-group-label>Worlds</span>
+            <a data-nav-link data-toolbox-menu-item data-route="world-vector-studio" href="tools/world-vector-studio.html">Vector</a>
+            <a data-nav-link data-toolbox-menu-item data-route="game-builder" href="tools/game-builder.html">Tilemap</a>
+            <a data-nav-link data-toolbox-menu-item data-route="particle-studio" href="tools/particle-studio.html">Isometric</a>
+            <a data-nav-link data-toolbox-menu-item data-route="game-design-studio" href="tools/game-design-studio.html">Hybrid</a>
+          </div>
+          <a data-nav-link data-toolbox-menu-section data-route="sound-studio" href="tools/sound-studio.html">Audio</a>
+          <a data-nav-link data-toolbox-menu-section data-route="input-studio" href="tools/input-studio.html">Input</a>
+          <a data-nav-link data-toolbox-menu-section data-route="ai-assistant" href="tools/ai-assistant.html">AI</a>
+          <a data-nav-link data-toolbox-menu-section data-route="palette-manager" href="tools/palette-manager.html">Colors</a>
+          <a data-nav-link data-toolbox-menu-section data-route="storage-inspector" href="tools/storage-inspector.html">Assets</a>
         </div>
       </div>
       <div class="nav-item">
