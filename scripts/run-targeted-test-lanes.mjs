@@ -656,7 +656,7 @@ function routeLanesForChangedFiles(changedFiles) {
       || normalized.startsWith("tests/input/")
       || normalized.startsWith("tests/render/")) {
       routed.add("engine-src");
-    } else if (normalized.startsWith("samples/") || normalized.startsWith("old_samples/") || normalized.startsWith("tests/samples/")) {
+    } else if (normalized.startsWith("old_samples/") || normalized.startsWith("tests/samples/")) {
       continue;
     }
   }

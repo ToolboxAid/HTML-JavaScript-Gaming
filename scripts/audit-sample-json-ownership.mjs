@@ -7,12 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
-const SAMPLES_ROOT = path.join(repoRoot, "samples");
+const SAMPLES_ROOT = path.join(repoRoot, "old_samples");
 const METADATA_PATH = path.join(SAMPLES_ROOT, "metadata", "samples.index.metadata.json");
-const REPORT_PATH = path.join(repoRoot, "docs", "dev", "reports", "PR_11_41_sample_json_ownership_audit.md");
+const REPORT_PATH = path.join(repoRoot, "docs_build", "dev", "reports", "PR_11_41_sample_json_ownership_audit.md");
 
 const SAMPLE_JSON_PATTERN = /^sample(?:\.|-)\d{4}[.-].+\.json$/i;
-const SAMPLE_PATH_PATTERN = /^samples\/phase-\d{2}\/\d{4}\//;
+const SAMPLE_PATH_PATTERN = /^old_samples\/phase-\d{2}\/\d{4}\//;
 const EXEMPT_WORKSPACE_SAMPLE_ID = "1902";
 const EXEMPT_WORKSPACE_FILE = "sample.1902.workspace-all-tools.json";
 
@@ -224,7 +224,7 @@ async function main() {
 
   const rows = [];
   for (const relPath of sampleJsonFiles) {
-    const folderMatch = relPath.match(/^samples\/phase-\d{2}\/(\d{4})\//);
+    const folderMatch = relPath.match(/^old_samples\/phase-\d{2}\/(\d{4})\//);
     const folderSampleId = folderMatch ? folderMatch[1] : "";
     const fileName = path.basename(relPath);
     const fileIdentity = parseSampleFileIdentity(fileName);
@@ -287,12 +287,12 @@ async function main() {
     "# PR 11.41 Sample JSON Ownership Audit",
     "",
     "## Scope",
-    "- Audited sample-owned JSON files under `samples/phase-*/####/sample*.json`.",
-    "- Cross-checked against `samples/metadata/samples.index.metadata.json` roundtrip tool preset mappings.",
+    "- Audited sample-owned JSON files under `old_samples/phase-*/####/sample*.json`.",
+    "- Cross-checked against `old_samples/metadata/samples.index.metadata.json` roundtrip tool preset mappings.",
     "- Cross-checked sample-local entrypoint/source references (`index.html`, `main.js`, sibling JSON/MD references).",
     "",
     "## Sample 1902 Exemption",
-    "- `samples/phase-19/1902/sample.1902.workspace-all-tools.json` is marked **EXEMPT WORKSPACE SAMPLE**.",
+    "- `old_samples/phase-19/1902/sample.1902.workspace-all-tools.json` is marked **EXEMPT WORKSPACE SAMPLE**.",
     "- Single-tool KEEP/MOVE/DELETE ownership rules were not applied to 1902.",
     "- 1902 was validated only as a workspace integration manifest source.",
     "",

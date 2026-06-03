@@ -9,7 +9,7 @@ Root-level schema files should not be added.
 ```text
 tools/schemas/
   palette.schema.json
-  samples/
+  samples
     sample.tool-payload.schema.json
   tools/
     <tool>.schema.json

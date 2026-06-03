@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-  Recursively audits samples/** and reports sample folders where the only JSON files are palette JSON files.
+  Recursively audits old_samples/** and reports sample folders where the only JSON files are palette JSON files.
 
 .DESCRIPTION
-  A palette-only sample folder is a leaf sample directory under samples/** that contains one or more *.json files,
+  A palette-only sample folder is a leaf sample directory under old_samples/** that contains one or more *.json files,
   and every JSON file in that folder matches *.palette.json.
 
   Output:
@@ -12,14 +12,14 @@
     - total count at the end
 
 .PARAMETER SamplesRoot
-  Root samples directory. Defaults to "samples" relative to the current repo root.
+  Root samples directory. Defaults to "old_samples" relative to the current repo root.
 
 .PARAMETER CsvPath
   Optional CSV output path. Defaults to docs_build/dev/reports/samples_only_palette_json_audit.csv.
 #>
 
 param(
-    [string]$SamplesRoot = "samples",
+    [string]$SamplesRoot = "old_samples",
     [string]$CsvPath = "docs_build/dev/reports/samples_only_palette_json_audit.csv"
 )
 

@@ -155,7 +155,7 @@ function isGameEntryIndex(relativePath) {
 }
 
 function isSampleEntryIndex(relativePath) {
-  return /^samples\/phase-\d{2}\/\d{4}\/index\.js$/.test(relativePath);
+  return /^old_samples\/phase-\d{2}\/\d{4}\/index\.js$/.test(relativePath);
 }
 
 function isToolEntryIndex(relativePath, fullPath) {

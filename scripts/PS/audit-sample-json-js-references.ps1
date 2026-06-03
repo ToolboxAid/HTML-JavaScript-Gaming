@@ -1,5 +1,5 @@
 param(
-  [string]$SamplesRoot = "$PSScriptRoot\..\..\samples",
+  [string]$SamplesRoot = "$PSScriptRoot\..\..\old_samples",
   [string]$OutputPath = "docs_build/dev/reports/sample_json_js_reference_audit.csv",
   [switch]$FailOnMissing,
   [switch]$Details,
@@ -40,7 +40,7 @@ function Get-SampleRootForFile {
     return $null
   }
 
-  # Handle JSON files directly under a first-level folder (for example samples/metadata/*.json).
+  # Handle JSON files directly under a first-level folder (for example old_samples/metadata/*.json).
   if ($parts.Count -eq 2 -and [System.IO.Path]::GetExtension($parts[1]) -eq '.json') {
     return Join-Path $SamplesRootFull $parts[0]
   }

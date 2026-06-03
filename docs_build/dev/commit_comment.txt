@@ -1,9 +1,9 @@
-Final theme engine removal and active structure cleanup
+Root migration closeout bundle
 
-PR: PR_26154_016-final-theme-engine-removal-and-active-structure-cleanup
+PR: PR_26154_017-root-migration-closeout-bundle
 
-- Move the final V1 header image to `assets/theme/v2/images/toolboxaid-header.png`.
-- Delete `assets/theme/v1/` and `src/engine/theme/` after active reference removal.
-- Remove active `src/engine/theme` dependencies from capture tooling and dev guards.
-- Produce final active-vs-deprecated ownership inventory and cleanup candidate report.
-- Validate targeted active references, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Normalize remaining active root `samples/` references to `old_samples/` where the intended owner is clear.
+- Confirm active stale paths are gone for `GameFoundryStudio/`, `src/engine/theme/`, `assets/theme/v1/`, `favicon.ico`, and deprecated root `samples/`.
+- Confirm active/deprecated ownership for docs, docs_build, tools, games, old-tools, old_games, and old_samples.
+- Confirm `/favicon.svg`, proprietary LICENSE, games index tiles, and alphabetized tools index ordering.
+- Validate targeted active paths, changed static/script files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.

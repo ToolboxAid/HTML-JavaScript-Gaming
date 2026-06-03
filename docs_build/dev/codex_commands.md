@@ -2,22 +2,25 @@
 
 Task:
 
-- `PR_26154_016-final-theme-engine-removal-and-active-structure-cleanup`
+- `PR_26154_017-root-migration-closeout-bundle`
 
 Commands run:
 
 - `Get-Content .codex/skills/repo-build/SKILL.md`
 - `Get-Content docs_build/dev/PROJECT_INSTRUCTIONS.md`
 - `git status --short --untracked-files=all`
-- Targeted `Get-ChildItem` and `Get-Content` inspection for:
+- Targeted `Get-ChildItem`, `Get-Content`, and `Test-Path` inspection for:
+  - `GameFoundryStudio/`
   - `assets/theme/v1/`
-  - `assets/theme/v2/images/`
-  - `assets/theme/v2/css/theme/v2/`
   - `src/engine/theme/`
-  - `src/engine/ui/toolboxaid-header.html`
-  - `tools/shared/tooling/CapturePreviewRuntime.js`
-  - `tools/dev/checkStyleSystemGuard.mjs`
-  - `tools/dev/checkSharedExtractionGuard.baseline.json`
+  - `samples/`
+  - `favicon.ico`
+  - `favicon.svg`
+  - `LICENSE`
+  - `docs/`
+  - `docs_build/`
+  - `games/index.html`
+  - `tools/tools-page-accordions.js`
 - Targeted ownership inventory for:
   - `tools/`
   - `old-tools/`
@@ -31,32 +34,28 @@ Commands run:
   - `src/engine/theme/`
   - `assets/theme/v1/`
   - `favicon.ico`
-- Moved `assets/theme/v1/images/toolboxaid-header.png` to `assets/theme/v2/images/toolboxaid-header.png`.
-- Updated `src/engine/ui/toolboxaid-header.html`.
-- Updated `tools/shared/tooling/CapturePreviewRuntime.js`.
-- Updated `tools/dev/checkStyleSystemGuard.mjs`.
-- Updated `tools/dev/checkSharedExtractionGuard.baseline.json`.
-- Deleted `assets/theme/v1/`.
-- Deleted `src/engine/theme/`.
-- `node tools/dev/checkStyleSystemGuard.mjs`
-- `node --check tools/shared/tooling/CapturePreviewRuntime.js`
-- `node --check tools/dev/checkStyleSystemGuard.mjs`
-- Node static validation for changed HTML, JS, CSS, JSON, and Markdown files.
+  - deprecated root `samples/`
+- Updated active script references from root `samples/` to `old_samples/` where the intended path was clear.
+- Verified `games/index.html` game-type tile hrefs and images.
+- Verified `tools/index.html` group and tile alphabetical ordering through `tools/tools-page-accordions.js`.
+- Verified `/favicon.svg` canonical icon and proprietary/restrictive `LICENSE`.
+- Node static validation for changed HTML, JS, CSS, JSON, Markdown, PowerShell, and Python files.
 - `git diff --check`
 - `git status --short -- start_of_day old-tools old_games old_samples`
 - `npm run codex:review-artifacts`
-- ZIP packaging for `tmp/PR_26154_016-final-theme-engine-removal-and-active-structure-cleanup_delta.zip`
+- ZIP packaging for `tmp/PR_26154_017-root-migration-closeout-bundle_delta.zip`
 
 Validation summary:
 
-- PASS `assets/theme/v1/` removed.
-- PASS `src/engine/theme/` removed.
-- PASS active header image now resolves from `assets/theme/v2/images/toolboxaid-header.png`.
-- PASS no active stale references remain for `GameFoundryStudio/`, `src/engine/theme/`, `assets/theme/v1/`, or `favicon.ico`.
-- PASS active structure inventory completed for active and deprecated ownership areas.
-- PASS `node tools/dev/checkStyleSystemGuard.mjs`.
-- PASS syntax checks for changed JS files.
-- PASS static validation for changed HTML, JS, CSS, JSON, and Markdown files.
+- PASS no active stale references remain for `GameFoundryStudio/`, `src/engine/theme/`, `assets/theme/v1/`, `favicon.ico`, or root `samples/`.
+- PASS active/deprecated structure inventory completed.
+- PASS `/docs/` user-facing only and `/docs_build/` build/governance ownership confirmed.
+- PASS active game and tool structure confirmed.
+- PASS `/favicon.svg` is canonical and `favicon.ico` is absent.
+- PASS `LICENSE` is proprietary/restrictive.
+- PASS `games/index.html` tile links and images resolve.
+- PASS `tools/index.html` groups and group contents are alphabetically sorted.
+- PASS static validation for changed HTML, JS, CSS, JSON, Markdown, PowerShell, and Python files.
 - PASS `git diff --check`.
 - PASS no `start_of_day/`, `old-tools/`, `old_games/`, or `old_samples/` changes.
 - PASS review artifact generation.
