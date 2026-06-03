@@ -1,7 +1,8 @@
-Rebuild Localization from tool template - PR_26154_024-localization-template-rebuild
+Normalize Cloud template and remove active styles.css usage - PR_26154_025-cloud-template-styles-cleanup
 
-- Preserve the previous Localization implementation under `old-tools/localization_pre_template_rebuild/`.
-- Replace active `toolbox/localization/` with a fresh copy of `toolbox/_tool_template-v2/`.
-- Adapt only Localization identity text and ToolDisplayMode metadata in the rebuilt template.
-- Remove active local Localization CSS/JS folders by not copying old implementation code back into the active tool.
-- Validate active folder shape, preserved backup, Localization links, static paths, and diff hygiene.
+- Rebuild `toolbox/cloud/index.html` as an active tool-template page with ToolDisplayMode, tool workspace shell, and left/center/right panels.
+- Promote reusable page hero, accordion stack, semantic color, and public tool shell styling into approved Theme V2 CSS modules.
+- Restore compact tool column header text sizing after moving active pages off the aggregate stylesheet.
+- Remove active `styles.css` references from public/root pages, active toolbox pages, the active tool template, and the rebuilt Localization template.
+- Leave deprecated-only `styles.css` references documented while confirming zero active consumers remain.
+- Validate Cloud wiring, Theme V2 CSS imports, template consistency counts, Workspace V2 launch/navigation behavior, static paths, and diff hygiene.

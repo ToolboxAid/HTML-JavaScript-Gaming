@@ -40,6 +40,18 @@
   --cyan-soft: rgba(34, 211, 238, .10);
   --purple-soft: rgba(184, 119, 255, .08);
   --steel-soft: rgba(107, 114, 128, .14);
+  --meaning-molten-orange-soft: rgba(255, 122, 0, .14);
+  --meaning-molten-orange-border: rgba(255, 122, 0, .48);
+  --meaning-electric-blue-soft: rgba(77, 163, 255, .14);
+  --meaning-electric-blue-border: rgba(77, 163, 255, .48);
+  --meaning-forge-gold-soft: rgba(255, 200, 87, .14);
+  --meaning-forge-gold-border: rgba(255, 200, 87, .48);
+  --meaning-arcade-cyan-soft: rgba(34, 211, 238, .14);
+  --meaning-arcade-cyan-border: rgba(34, 211, 238, .48);
+  --meaning-purple-soft: rgba(184, 119, 255, .14);
+  --meaning-purple-border: rgba(184, 119, 255, .48);
+  --meaning-steel-gray-soft: rgba(107, 114, 128, .18);
+  --meaning-steel-gray-border: rgba(107, 114, 128, .56);
   --transparent: transparent;
   --body-background: radial-gradient(circle at 20% 0%, rgba(255, 122, 0, .16), var(--transparent) 28%), radial-gradient(circle at 80% 10%, rgba(32, 214, 255, .10), var(--transparent) 24%), var(--bg);
   --card-background: linear-gradient(180deg, var(--panel-soft-strong), var(--panel-soft-subtle));
@@ -174,4 +186,94 @@
 .tool-group-play {
   --tool-group-color: var(--green);
   --tool-group-accent: var(--green)
+}
+
+.meaning-molten-orange {
+  --meaning-color: var(--molten-orange);
+  --meaning-soft: var(--meaning-molten-orange-soft);
+  --meaning-border: var(--meaning-molten-orange-border)
+}
+
+.meaning-electric-blue {
+  --meaning-color: var(--electric-blue);
+  --meaning-soft: var(--meaning-electric-blue-soft);
+  --meaning-border: var(--meaning-electric-blue-border)
+}
+
+.meaning-forge-gold {
+  --meaning-color: var(--forge-gold);
+  --meaning-soft: var(--meaning-forge-gold-soft);
+  --meaning-border: var(--meaning-forge-gold-border)
+}
+
+.meaning-arcade-cyan {
+  --meaning-color: var(--arcade-cyan);
+  --meaning-soft: var(--meaning-arcade-cyan-soft);
+  --meaning-border: var(--meaning-arcade-cyan-border)
+}
+
+.meaning-purple {
+  --meaning-color: var(--purple);
+  --meaning-soft: var(--meaning-purple-soft);
+  --meaning-border: var(--meaning-purple-border)
+}
+
+.meaning-steel-gray {
+  --meaning-color: var(--steel-gray);
+  --meaning-soft: var(--meaning-steel-gray-soft);
+  --meaning-border: var(--meaning-steel-gray-border)
+}
+
+.tool-column-header.molten-orange {
+  background: var(--orange-soft-medium)
+}
+
+.tool-column-header.electric-blue {
+  background: var(--blue-soft)
+}
+
+.tool-column-header.forge-gold {
+  background: var(--gold-soft)
+}
+
+.tool-column-header.arcade-cyan {
+  background: var(--cyan-soft)
+}
+
+.tool-column-header.purple {
+  background: var(--purple-soft)
+}
+
+.tool-column-header.steel-gray {
+  background: var(--steel-soft)
+}
+
+.tool-column-header.molten-orange h2,
+.tool-column-header.molten-orange h3 {
+  color: var(--molten-orange)
+}
+
+.tool-column-header.electric-blue h2,
+.tool-column-header.electric-blue h3 {
+  color: var(--electric-blue)
+}
+
+.tool-column-header.forge-gold h2,
+.tool-column-header.forge-gold h3 {
+  color: var(--forge-gold)
+}
+
+.tool-column-header.arcade-cyan h2,
+.tool-column-header.arcade-cyan h3 {
+  color: var(--arcade-cyan)
+}
+
+.tool-column-header.purple h2,
+.tool-column-header.purple h3 {
+  color: var(--purple)
+}
+
+.tool-column-header.steel-gray h2,
+.tool-column-header.steel-gray h3 {
+  color: var(--steel-gray)
 }

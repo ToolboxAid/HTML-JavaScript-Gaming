@@ -1,6 +1,9 @@
 .card,
+.tool-card,
 .game-card,
 .panel,
+.tool-column,
+.tool-center-panel,
 .control-card,
 .entry-card,
 .check-panel,
@@ -21,8 +24,11 @@
 }
 
 .card,
+.tool-card,
 .game-card,
 .panel,
+.tool-column,
+.tool-center-panel,
 .control-card,
 .side-menu {
   border-radius: var(--space-18)
@@ -79,6 +85,229 @@
 .card img {
   width: 100%;
   display: block
+}
+
+.feature-image {
+  width: 100%;
+  display: block
+}
+
+.tool-column {
+  border-radius: var(--radius-xl)
+}
+
+.tool-column.is-collapsed {
+  overflow: hidden
+}
+
+.tool-column.is-collapsed .accordion-stack {
+  display: none
+}
+
+.tool-column-header {
+  padding: var(--space-8) var(--space-18);
+  border-bottom: var(--border-standard);
+  background: var(--orange-soft);
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: var(--space-12)
+}
+
+.tool-column-header h2,
+.tool-column-header h3 {
+  margin: var(--space-0);
+  color: var(--gold);
+  font-size: var(--font-size-base);
+  letter-spacing: var(--letter-spacing-kicker);
+  text-transform: uppercase;
+  order: 1
+}
+
+.tool-column[class*="tool-group-"] .tool-column-header h2,
+.tool-column[class*="tool-group-"] .tool-column-header h3 {
+  color: var(--tool-group-color)
+}
+
+.tool-column .accordion-stack {
+  padding: var(--space-8) var(--space-12);
+  gap: var(--space-8)
+}
+
+.tool-column details.vertical-accordion summary {
+  padding: var(--space-10) var(--space-12)
+}
+
+.tool-column .accordion-body {
+  padding: var(--space-0) var(--space-12) var(--space-10)
+}
+
+.tool-column-header .horizontal-accordion-toggle {
+  order: 2
+}
+
+.tool-column[class*="tool-group-"] .horizontal-accordion-toggle,
+.tool-column[class*="tool-group-"] details.vertical-accordion summary:after {
+  --accordion-button-border: var(--tool-group-accent);
+  --accordion-button-color: var(--tool-group-color)
+}
+
+.tool-column.is-collapsed .tool-column-header {
+  height: 100%;
+  min-height: var(--tool-column-collapsed-min-height);
+  padding: var(--space-12) var(--space-8);
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start
+}
+
+.tool-column.is-collapsed .horizontal-accordion-toggle {
+  margin: var(--space-0);
+  order: 1;
+  writing-mode: horizontal-tb
+}
+
+.tool-column.is-collapsed .tool-column-header h2,
+.tool-column.is-collapsed .tool-column-header h3 {
+  order: 2;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  text-align: center
+}
+
+.tool-center-panel {
+  padding: var(--space-22);
+  text-align: center;
+  border-radius: var(--radius-xl)
+}
+
+.tool-center-panel img {
+  width: min(var(--tool-center-image-max), 75%);
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: var(--space-4) auto var(--space-18)
+}
+
+.tool-center-panel p {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: var(--tool-center-copy-max)
+}
+
+.tool-display-mode {
+  margin: var(--space-0) var(--space-0) var(--space-12);
+  position: relative;
+  border: var(--border-standard);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-12)
+}
+
+.tool-display-mode summary {
+  color: var(--gold);
+  font-weight: var(--font-weight-heavy);
+  cursor: pointer;
+  list-style: none;
+  padding: var(--space-10) var(--space-44) var(--space-10) var(--space-10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-10);
+  flex: 0 0 auto
+}
+
+.tool-display-mode summary::-webkit-details-marker {
+  display: none
+}
+
+.tool-display-mode summary:after {
+  content: "";
+  position: absolute;
+  right: var(--space-12);
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--space-20);
+  height: var(--space-20);
+  border: var(--border-standard);
+  border-radius: var(--radius-pill);
+  background: var(--panel-soft);
+  color: var(--gold);
+  display: inline-grid;
+  place-items: center;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
+  background-size: var(--space-7) var(--space-7);
+  background-repeat: no-repeat
+}
+
+.tool-display-mode[open] summary:after {
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+.tool-display-mode summary:active:after {
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+.tool-display-mode[open] summary:active:after {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
+}
+
+.tool-display-mode__badge {
+  width: var(--tool-display-media-size);
+  height: var(--tool-display-media-size);
+  object-fit: cover;
+  object-position: center;
+  border: var(--border-standard);
+  border-radius: var(--radius-pill);
+  background: var(--panel-soft)
+}
+
+.tool-display-mode__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-width: var(--space-0);
+  padding: var(--space-10) var(--space-14) var(--space-10) var(--space-0)
+}
+
+.tool-display-mode__character {
+  width: var(--tool-display-media-size);
+  height: var(--tool-display-media-size);
+  object-fit: contain;
+  display: block;
+  flex: 0 0 auto
+}
+
+.tool-display-mode__fullscreen-name {
+  display: none;
+  white-space: nowrap
+}
+
+.tool-display-mode__description {
+  color: var(--gold);
+  font-weight: var(--font-weight-heavy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
+}
+
+body.tool-focus-mode .tool-display-mode {
+  border-color: var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow-lg);
+  justify-content: center
+}
+
+body.tool-focus-mode .tool-display-mode__fullscreen-name {
+  display: inline
 }
 
 .side-menu a {

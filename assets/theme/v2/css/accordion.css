@@ -16,6 +16,12 @@ summary::-webkit-details-marker {
   gap: var(--space-12)
 }
 
+.accordion-stack {
+  display: grid;
+  gap: var(--space-10);
+  padding: var(--space-14)
+}
+
 details.vertical-accordion {
   border: var(--border-standard);
   border-radius: var(--radius-lg);
@@ -56,6 +62,57 @@ details.vertical-accordion summary:after {
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto
+}
+
+.horizontal-accordion-toggle {
+  --accordion-button-border: var(--line);
+  --accordion-button-background: var(--panel-soft);
+  --accordion-button-color: var(--gold);
+  min-width: var(--space-20);
+  width: var(--space-20);
+  height: var(--space-20);
+  padding: var(--space-0);
+  border: var(--border-standard);
+  border-color: var(--accordion-button-border);
+  border-radius: var(--radius-pill);
+  background: var(--accordion-button-background);
+  color: var(--accordion-button-color);
+  line-height: var(--line-height-single);
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: var(--space-0);
+  overflow: hidden;
+  position: relative
+}
+
+.horizontal-accordion-toggle:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--space-14);
+  height: var(--space-14);
+  background: currentColor;
+  clip-path: polygon(70% 50%, 30% 20%, 30% 80%);
+  transform-origin: center
+}
+
+.horizontal-accordion-toggle[aria-expanded="true"]:before {
+  transform: translate(-50%, -50%)
+}
+
+.horizontal-accordion-toggle[aria-expanded="false"]:before {
+  transform: translate(-50%, -50%) rotate(180deg)
+}
+
+.horizontal-accordion-toggle--left[aria-expanded="true"]:before {
+  transform: translate(-50%, -50%) rotate(180deg)
+}
+
+.horizontal-accordion-toggle--left[aria-expanded="false"]:before {
+  transform: translate(-50%, -50%)
 }
 
 details.vertical-accordion summary:after {

@@ -48,6 +48,17 @@
   --control-row-columns: minmax(126px, .8fr) minmax(0, 1.2fr);
   --control-row-toolbar-min: min(100%, 360px);
   --nav-submenu-min: 220px;
+  --page-hero-columns: 420px 1fr;
+  --tool-column-width: 280px;
+  --tool-column-collapsed-width: 56px;
+  --tool-column-collapsed-min-height: 180px;
+  --tool-workspace-columns: var(--tool-column-width) minmax(0, 1fr) var(--tool-column-width);
+  --tool-workspace-left-collapsed-columns: var(--tool-column-collapsed-width) minmax(0, 1fr) var(--tool-column-width);
+  --tool-workspace-right-collapsed-columns: var(--tool-column-width) minmax(0, 1fr) var(--tool-column-collapsed-width);
+  --tool-workspace-both-collapsed-columns: var(--tool-column-collapsed-width) minmax(0, 1fr) var(--tool-column-collapsed-width);
+  --tool-center-image-max: 260px;
+  --tool-center-copy-max: 540px;
+  --tool-display-media-size: 42px;
   --game-art-aspect: 16/10;
   --radius-xs: 4px;
   --radius-sm: 8px;
