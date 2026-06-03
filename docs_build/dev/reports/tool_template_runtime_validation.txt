@@ -1,0 +1,38 @@
+﻿# PR_26126_066 Tool Template Runtime Validation
+
+Scope:
+- Updated the first-class tool starter under tools/templates.
+- Updated workspace-v2 Playwright coverage/reporting so the starter is launched in the normal test lane.
+- Updated V8 coverage reporting to include the first-class tool starter template entry point.
+- No live tools outside tests/coverage plumbing were modified.
+
+Template runtime hardening:
+- Header markup now follows the Preview Generator V2 / Palette Manager-style shell pattern with body.tools-platform-tool-page, collapsible header/details, #shared-theme-header, and a tool-local header host.
+- Template now consumes src/engine/theme/main.css, src/engine/ui/hubCommon.css, src/engine/theme/accordionV2/accordionV2.css, and src/engine/theme/mount-shared-header.js.
+- Added ToolStarterShellControl to own Hide Header and Details behavior, summary state, fullscreen state classes, and summary metadata.
+- AccordionSection now uses data-accordion-v2-open, data-accordion-v2-bound, and data-accordion-v2-icon-state behavior consistent with current tool accordions.
+- Source input state now refreshes visible validation text when required input is cleared.
+
+Playwright and coverage updates:
+- Workspace-v2 Playwright now launches tools/templates/first-class-tool-starter/index.html.
+- Workspace-v2 Playwright validates template launch, header/theme links, no tools/shared script/link dependencies, Hide Header and Details behavior, accordion interactions, Run enabled/disabled state, status/log clear behavior, and missing input validation.
+- Playwright V8 coverage report now includes First-Class Tool Starter Template in the exercised tool entry points.
+- Coverage helper excludes test specs under /tests/ from changed runtime JS classification.
+
+Validation:
+- Playwright impacted: Yes
+- npm run test:workspace-v2 -> 5 passed.
+- Template-local Playwright validation: npx playwright test --config tools/templates/first-class-tool-starter/playwright.config.mjs --reporter=list -> 6 passed.
+- node --check passed for all changed starter JS/MJS files and updated Playwright/helper files.
+- git diff --check passed for scoped changed files.
+- Verified template HTML has no inline script blocks, style blocks, or inline event handlers.
+- Verified no actual tools/shared imports, script references, CSS references, or runtime dependencies were added.
+- Verified no tracked roadmap, samples, start_of_day, games, tools/shared, package, or package-lock files changed.
+
+Coverage evidence:
+- docs_build/dev/reports/playwright_v8_coverage_report.txt lists First-Class Tool Starter Template as exercised.
+- Changed runtime JS coverage includes ToolStarterApp, ToolStarterShellControl, bootstrap, and AccordionSection.
+
+Manual test notes:
+- Open tools/templates/first-class-tool-starter/index.html through a local HTTP server.
+- Confirm shared header renders, Hide Header and Details toggles the header, accordions collapse/expand, Run enables only after source input, Run writes status/output, Clear empties the status log, and clearing the source input restores the required-input message.

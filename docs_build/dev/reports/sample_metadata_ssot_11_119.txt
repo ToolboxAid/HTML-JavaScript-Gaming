@@ -1,0 +1,45 @@
+PR 11.119 - Sample Metadata SSoT
+
+Purpose
+Correct PR 11.118 by enforcing the active sample hub tile renderer contract directly.
+
+Chosen SSoT
+samples/metadata/samples.index.metadata.json
+
+Why this is the SSoT
+- samples/index.html loads samples/index.render.js.
+- samples/index.render.js fetches only ./metadata/samples.index.metadata.json for sample tile rows.
+- sample tile tool links are built from metadata fields toolHints and roundtripToolPresets.
+- No samples2tools file or generated link map is imported by samples/index.render.js.
+
+Files searched
+- docs_build/pr/BUILD_PR_LEVEL_11_119_SAMPLE_METADATA_SSOT_AND_RENDERER_GUARD_REMOVAL.md
+- samples/index.html
+- samples/index.render.js
+- samples/shared/sampleDetailPageEnhancement.js
+- samples/metadata/samples.index.metadata.json
+- samples/phase-12/1208/index.html
+- tools/shared/toolLaunchSSoT.js
+
+Files changed
+- samples/index.render.js
+- samples/shared/sampleDetailPageEnhancement.js
+- samples/phase-12/1208/index.html
+- docs_build/dev/reports/sample_metadata_ssot_11_119.txt
+- docs_build/dev/reports/renderer_toolhint_cleanup_11_119.txt
+- docs_build/dev/reports/stale_roundtrip_sources_11_119.txt
+- docs_build/dev/reports/known_bad_links_validation_11_119.txt
+
+SSoT rule enforced
+- The sample tile renderer still reads sample rows from samples/metadata/samples.index.metadata.json.
+- A visible sample tile roundtrip link now requires both:
+  - a tool id in toolHints
+  - a matching explicit presetPath in roundtripToolPresets
+- toolHints alone can no longer produce a tile Open <tool> link with only sampleId/sampleTitle.
+
+0201 evidence
+- Current metadata row for sample 0201 has toolHints=[] and roundtripToolPresets=[].
+- Targeted renderer harness result: PASS 0201 actual empty metadata and synthetic hint-only metadata render zero roundtrip links.
+
+Blockers
+- None.

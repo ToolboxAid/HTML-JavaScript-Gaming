@@ -27,7 +27,7 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 $SharedUtilsRoot = Join-Path $RepoRoot "src\shared\utils"
 $EngineUtilsRoot = Join-Path $RepoRoot "src\engine\utils"
-$ReportDir = Join-Path $RepoRoot "docs\dev\reports"
+$ReportDir = Join-Path $RepoRoot "docs_build\dev\reports"
 $CsvPath = Join-Path $ReportDir "utils_rules_audit.csv"
 
 New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
@@ -113,7 +113,7 @@ Write-Output "Utils rules audit complete."
 Write-Output "Shared utility files scanned: $($SharedUtils.Count)"
 Write-Output "Engine utility files found: $($EngineUtils.Count)"
 Write-Output "Findings: $($Findings.Count)"
-Write-Output "Report: docs/dev/reports/utils_rules_audit.csv"
+Write-Output "Report: docs_build/dev/reports/utils_rules_audit.csv"
 
 if ($Details -and $Findings.Count -gt 0) {
     Write-Output ""

@@ -1,0 +1,23 @@
+PR_26126_061-project-instructions-organization
+
+Purpose:
+Improve PROJECT_INSTRUCTIONS.md readability by inserting grouping headers only.
+
+Grouping headers added:
+- WORKFLOW & EXECUTION
+- TESTING & VALIDATION
+- RUNTIME & BEHAVIOR CONTRACTS
+- TOOL & ARCHITECTURE RULES
+
+Validation notes:
+- docs_build/dev/PROJECT_INSTRUCTIONS.md was the only target document edited.
+- Existing rule text was not modified, reordered, or deleted.
+- Diff is insertion-only: 8 inserted lines, 0 deleted lines.
+- No roadmap, code, samples, schema, package, test, or start_of_day files were modified.
+- Playwright impacted: No.
+- No Playwright impact. This PR is docs/workflow only.
+
+Manual test notes:
+- Open docs_build/dev/PROJECT_INSTRUCTIONS.md.
+- Confirm the four grouping headers improve readability.
+- Confirm all pre-existing rule sections remain in the same order.

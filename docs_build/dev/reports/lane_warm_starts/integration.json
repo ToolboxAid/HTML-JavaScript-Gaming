@@ -1,0 +1,49 @@
+{
+  "commandsHash": "21b068df3d0f7081",
+  "dependencyGraphHash": "4138c2ded15059b2",
+  "dependencyHydration": {
+    "dependencyHydrationHash": "a26bcd0115fc4315",
+    "fixtureHashes": {
+      "games/Pong/game.manifest.json": "c6b124046d3dbdf0"
+    },
+    "fixtures": [
+      "games/Pong/game.manifest.json"
+    ],
+    "helperHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ],
+    "importHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "b04700fc0f9f36ab",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ]
+  },
+  "dependencyHydrationHash": "a26bcd0115fc4315",
+  "inputHash": "5afeaa1d93e9abcd",
+  "lane": "integration",
+  "laneConfigHash": "39085728a146fe3f",
+  "laneDefinitionHash": "ebc7b556c8c310d3",
+  "manifestHash": "efd808f21c146e0b",
+  "ownership": "integration",
+  "warmStartHash": "eb7f00e3a3d91320",
+  "version": 1,
+  "generatedAt": "2026-05-26T22:17:09.952Z",
+  "manifestPath": "docs_build/dev/reports/lane_manifests/integration.json",
+  "sourceManifest": "generated"
+}

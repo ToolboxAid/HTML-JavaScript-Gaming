@@ -29,11 +29,11 @@ This repository follows a docs-first game/runtime model, combining a stable engi
 ## ▶️ Start Here
 
 1. Review the repo model in [docs/README.md](docs/README.md)
-2. Explore the roadmap in [docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md](docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md)
+2. Explore the roadmap in [docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md](docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md)
 3. Browse samples from [samples/index.html](samples/index.html)
 4. Explore tools under [tools/](tools/)
 5. Review engine and architecture boundaries in [docs/architecture/](docs/architecture/)
-6. Follow the workflow in [docs/dev/](docs/dev/) and [docs/pr/](docs/pr/)
+6. Follow the workflow in [docs_build/dev/](docs_build/dev/) and [docs_build/pr/](docs_build/pr/)
 
 ---
 
@@ -113,10 +113,10 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
 - [docs/README.md](docs/README.md) → top-level documentation index
 - [docs/architecture/](docs/architecture/) → durable architecture and boundary contracts
-- [docs/pr/](docs/pr/) → preserved PR history and architecture evolution
-- [docs/dev/](docs/dev/) → active workflow controls and implementation planning
-- [docs/dev/reports/](docs/dev/reports/) → active report artifacts
-- [docs/archive/](docs/archive/) → archived dev-ops notes and generated reports
+- [docs_build/pr/](docs_build/pr/) → preserved PR history and architecture evolution
+- [docs_build/dev/](docs_build/dev/) → active workflow controls and implementation planning
+- [docs_build/dev/reports/](docs_build/dev/reports/) → active report artifacts
+- [docs_build/archive/](docs_build/archive/) → archived dev-ops notes and generated reports
 
 ---
 

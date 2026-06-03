@@ -17,7 +17,7 @@ This document captures the durable operating model for how this repository is or
 ## Ownership Model
 - Planning/PR docs define scope and acceptance.
 - Implementation applies only approved scope.
-- `docs/pr/` is the historical PR and architecture trail and must remain intact.
+- `docs_build/pr/` is the historical PR and architecture trail and must remain intact.
 
 ## Layer Boundaries
 - `src/engine/` owns foundational reusable runtime systems.
@@ -38,12 +38,12 @@ For newly created files, include the required file header at the top with:
 - filename
 
 Exception:
-- `docs/operations/dev/commit_comment.txt` must stay header-free.
+- `docs_build/operations/dev/commit_comment.txt` must stay header-free.
 
 ## Active vs Archived Documentation
-- Active operations live in `docs/dev/` and should remain minimal.
+- Active operations live in `docs_build/dev/` and should remain minimal.
 - Durable architecture belongs in `docs/reference/architecture-standards/architecture/`.
-- Historical PR narrative belongs in `docs/pr/`.
+- Historical PR narrative belongs in `docs_build/pr/`.
 - Older operational notes and generated outputs live in:
-  - `docs/archive/dev-ops/`
-  - `docs/archive/generated-reports/`
+  - `docs_build/archive/dev-ops/`
+  - `docs_build/archive/generated-reports/`

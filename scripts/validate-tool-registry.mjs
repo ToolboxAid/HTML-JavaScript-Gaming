@@ -190,7 +190,7 @@ async function main() {
 
   console.log("TOOL_REGISTRY_VALID");
   activeNames.forEach((name) => console.log(`- ACTIVE ${name}`));
-  console.log(`- REPORT docs/dev/reports/${path.basename(reportPath)}`);
+  console.log(`- REPORT docs_build/dev/reports/${path.basename(reportPath)}`);
 }
 
 await main();

@@ -155,7 +155,7 @@ Template-local command:
 
 Every PR that creates or changes a First-Class Tool V2 must produce:
 
-- `docs/dev/reports/codex_review.diff`
-- `docs/dev/reports/codex_changed_files.txt`
-- a PR-specific report under `docs/dev/reports/`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- a PR-specific report under `docs_build/dev/reports/`
 - a repo-structured delta ZIP under `tmp/`

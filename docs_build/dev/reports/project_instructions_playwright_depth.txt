@@ -1,0 +1,39 @@
+PR_26126_055-project-instructions-playwright-depth
+
+Purpose:
+Append minimum Playwright coverage depth requirements so impacted tool PRs validate behavior, state transitions, and outcomes instead of page load only.
+
+Appended section:
+
+## PLAYWRIGHT COVERAGE DEPTH REQUIREMENT
+
+Playwright must validate behavior, not just page load.
+
+When a PR impacts a tool, Playwright tests must cover:
+- the primary user action, such as Generate Preview
+- control state transitions, such as enabled and disabled states
+- at least one failure case when applicable
+
+Playwright tests must verify actual outcomes, not just element existence.
+
+Playwright tests must not be limited to page loads without error.
+
+Each PR must state what behavior is being validated.
+
+Do NOT require:
+- full feature coverage
+- 100% code coverage
+- performance requirements
+
+
+Validation notes:
+- docs_build/dev/PROJECT_INSTRUCTIONS.md was the only target document edited.
+- Existing wording was preserved; the Playwright coverage depth requirement was appended at the end of the file.
+- No roadmap, code, samples, schema, or start_of_day files were modified for this PR.
+- Playwright impacted: No.
+- No Playwright impact. This PR is docs/workflow only.
+
+Manual test notes:
+- Open docs_build/dev/PROJECT_INSTRUCTIONS.md and confirm the Playwright Coverage Depth Requirement appears at the end of the file.
+- Confirm the section requires behavior validation, primary user action coverage, state transition coverage, applicable failure coverage, and actual outcome checks.
+- Confirm the section does not require full feature coverage, 100% code coverage, or performance requirements.

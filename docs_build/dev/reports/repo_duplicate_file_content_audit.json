@@ -1,0 +1,510 @@
+{
+  "summary": {
+    "scannedAt": "2026-04-28T22:43:21.342Z",
+    "repoRoot": "C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming",
+    "excludedDirectories": [".git", "node_modules", "tmp", "dist", "build", "coverage", ".cache", ".next"],
+    "scannedFileCount": 5038,
+    "uniqueHashCount": 4941,
+    "duplicateGroupCount": 41,
+    "duplicateFileCount": 138,
+    "duplicateContentBytes": 390107,
+    "potentialSavingsBytes": 199957
+  },
+  "classificationSummary": [
+    {
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "groups": 27,
+      "files": 109,
+      "potentialSavingsBytes": 125830
+    },
+    {
+      "classification": "report-evidence-snapshot-duplicate",
+      "cleanupRisk": "low",
+      "groups": 2,
+      "files": 4,
+      "potentialSavingsBytes": 38864
+    },
+    {
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "groups": 8,
+      "files": 17,
+      "potentialSavingsBytes": 26807
+    },
+    {
+      "classification": "general-content-duplicate",
+      "cleanupRisk": "medium",
+      "groups": 1,
+      "files": 2,
+      "potentialSavingsBytes": 7574
+    },
+    {
+      "classification": "report-artifact-duplicate",
+      "cleanupRisk": "low",
+      "groups": 2,
+      "files": 4,
+      "potentialSavingsBytes": 681
+    },
+    {
+      "classification": "documentation-duplicate",
+      "cleanupRisk": "medium",
+      "groups": 1,
+      "files": 2,
+      "potentialSavingsBytes": 201
+    }
+  ],
+  "duplicateGroups": [
+    {
+      "hash": "6a0693de21508048c639629aa42ce0cf0e1b4013bc0da151ba5a62406fe69b0a",
+      "count": 2,
+      "fileSizeBytes": 97287,
+      "duplicateBytes": 194574,
+      "potentialSavingsBytes": 97287,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/src/engine/paletteList.js", "src/engine/paletteList.js"]
+    },
+    {
+      "hash": "ef64cc68f2b5b783668f330b699f3c887cbe326f5c5c78f0ce1b2753fda8e184",
+      "count": 2,
+      "fileSizeBytes": 36486,
+      "duplicateBytes": 72972,
+      "potentialSavingsBytes": 36486,
+      "classification": "report-evidence-snapshot-duplicate",
+      "cleanupRisk": "low",
+      "rationale": "Duplicate is in report/evidence snapshot paths and is unlikely to be runtime source of truth.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/docs_build/dev/reports/level_10_6d_palette_contract_evidence/test_sample_standalone_data_flow_output.txt", "docs_build/dev/reports/level_10_6d_palette_contract_evidence/test_sample_standalone_data_flow_output.txt"]
+    },
+    {
+      "hash": "4aec342e6ea9c742a002bfef4219ad84872832d927f1b8fa0231b924ad4a714c",
+      "count": 2,
+      "fileSizeBytes": 21840,
+      "duplicateBytes": 43680,
+      "potentialSavingsBytes": 21840,
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
+      "files": ["samples/phase-02/0207/sample.0207.sprite-editor.json", "samples/phase-03/0302/sample.0302.sprite-editor.json"]
+    },
+    {
+      "hash": "971437553d342ddff26e05d4f08db82caf2277255a1c36509ea663549ab5c91a",
+      "count": 2,
+      "fileSizeBytes": 7574,
+      "duplicateBytes": 15148,
+      "potentialSavingsBytes": 7574,
+      "classification": "general-content-duplicate",
+      "cleanupRisk": "medium",
+      "rationale": "Requires targeted ownership review before cleanup.",
+      "files": ["docs/design/gdd/Capcom/Final Fight/gdd.txt", "docs/design/gdd/Capcom/Marvel_vs_Capcom/gdd.txt"]
+    },
+    {
+      "hash": "84e9d7f94ad1533bdfd8187b8323d04978a02fe4a92aa86bf2039e513f1705fc",
+      "count": 2,
+      "fileSizeBytes": 4456,
+      "duplicateBytes": 8912,
+      "potentialSavingsBytes": 4456,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/tools/shared/paletteDocumentContract.js", "tools/shared/paletteDocumentContract.js"]
+    },
+    {
+      "hash": "162cc270514e6dc712a8e488067341f083f98abba1af7a6865ecbeec92365454",
+      "count": 7,
+      "fileSizeBytes": 658,
+      "duplicateBytes": 4606,
+      "potentialSavingsBytes": 3948,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-01/0101/index.js", "samples/phase-04/0401/index.js", "samples/phase-04/0402/index.js", "samples/phase-04/0403/index.js", "samples/phase-04/0404/index.js", "samples/phase-04/0405/index.js", "samples/phase-04/0406/index.js"]
+    },
+    {
+      "hash": "e3faab0827702e6890050ad8739f18f399ec13228dd6a84009254655f60034d0",
+      "count": 2,
+      "fileSizeBytes": 2378,
+      "duplicateBytes": 4756,
+      "potentialSavingsBytes": 2378,
+      "classification": "report-evidence-snapshot-duplicate",
+      "cleanupRisk": "low",
+      "rationale": "Duplicate is in report/evidence snapshot paths and is unlikely to be runtime source of truth.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/palette_shape_diff.json", "docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/docs_build/dev/reports/level_10_6d_palette_contract_evidence/palette_shape_diff.json"]
+    },
+    {
+      "hash": "937cb7d3e5c7026dc607f3865e9c3a2aa6431e1f57230f03662901099febba6f",
+      "count": 5,
+      "fileSizeBytes": 549,
+      "duplicateBytes": 2745,
+      "potentialSavingsBytes": 2196,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-04/0408/index.js", "samples/phase-04/0409/index.js", "samples/phase-04/0410/index.js", "samples/phase-04/0411/index.js", "samples/phase-04/0412/index.js"]
+    },
+    {
+      "hash": "e473e39904ce1e3ef24b0fa540c37481004fa3670b5ae9c650c84bc0366701cf",
+      "count": 5,
+      "fileSizeBytes": 450,
+      "duplicateBytes": 2250,
+      "potentialSavingsBytes": 1800,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-09/0902/index.js", "samples/phase-09/0903/index.js", "samples/phase-09/0904/index.js", "samples/phase-09/0905/index.js", "samples/phase-09/0906/index.js"]
+    },
+    {
+      "hash": "982e2b63afb7ffbb79c3f762e90b5e8bb6243b0550d1393322eea3b25587fa5d",
+      "count": 2,
+      "fileSizeBytes": 1430,
+      "duplicateBytes": 2860,
+      "potentialSavingsBytes": 1430,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1217/assets/data/vector/mario_style_learning_backdrop.svg", "tools/Vector Asset Studio/samples/mario_style_learning_backdrop.svg"]
+    },
+    {
+      "hash": "167733ac880ed253404a5baa82a90033351a3b09f3dd86245725cbf66a92a7d6",
+      "count": 2,
+      "fileSizeBytes": 1341,
+      "duplicateBytes": 2682,
+      "potentialSavingsBytes": 1341,
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/samples/phase-02/0213/sample.0213.palette.json", "samples/phase-02/0213/sample.0213.palette.json"]
+    },
+    {
+      "hash": "7c3809e1621e8824be48252da77c4928f7413123d26c4044a251721a8b12f71b",
+      "count": 2,
+      "fileSizeBytes": 1279,
+      "duplicateBytes": 2558,
+      "potentialSavingsBytes": 1279,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1220/assets/data/parallax/mario_style_bushes_foreground.svg", "tools/Parallax Scene Studio/samples/mario_style_bushes_foreground.svg"]
+    },
+    {
+      "hash": "90b443049931c772921dbdb935bf8a27b17f8b2b0d7fc16fb8cf49447e063dd6",
+      "count": 2,
+      "fileSizeBytes": 1225,
+      "duplicateBytes": 2450,
+      "potentialSavingsBytes": 1225,
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/tools/schemas/palette.schema.json", "tools/schemas/palette.schema.json"]
+    },
+    {
+      "hash": "257ace0d842432d9a5173d4e3a8fdfe2041d4633a876aeef24e68686e48ce1cd",
+      "count": 2,
+      "fileSizeBytes": 1208,
+      "duplicateBytes": 2416,
+      "potentialSavingsBytes": 1208,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1220/assets/data/parallax/mario_style_clouds.svg", "tools/Parallax Scene Studio/samples/mario_style_clouds.svg"]
+    },
+    {
+      "hash": "e76f7162ba075f6dd0eeb1315ee638d2bdbc505621e75c5da7ec1c146f6c9785",
+      "count": 3,
+      "fileSizeBytes": 585,
+      "duplicateBytes": 1755,
+      "potentialSavingsBytes": 1170,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1218/assets/data/parallax/hero-proxy.svg", "samples/phase-12/1220/assets/data/parallax/hero-proxy.svg", "tools/Parallax Scene Studio/samples/images/hero-proxy.svg"]
+    },
+    {
+      "hash": "2df11510e899b7559b9813bd6f8d12b3dbf37f354b3172c78cf20f871ef88b16",
+      "count": 2,
+      "fileSizeBytes": 1081,
+      "duplicateBytes": 2162,
+      "potentialSavingsBytes": 1081,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1218/assets/data/parallax/foreground-occluder.svg", "tools/Parallax Scene Studio/samples/images/foreground-occluder.svg"]
+    },
+    {
+      "hash": "ceb6a130e4bcb8f2c193ce4a10cf0a591ec97adc8c3099debd198b6df3bffb54",
+      "count": 2,
+      "fileSizeBytes": 1053,
+      "duplicateBytes": 2106,
+      "potentialSavingsBytes": 1053,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1218/assets/data/parallax/cloud-bands.svg", "tools/Parallax Scene Studio/samples/images/cloud-bands.svg"]
+    },
+    {
+      "hash": "d8022975b2f9a7cce4a44232063710ecc9c09468f8942141accac0dd4911f724",
+      "count": 2,
+      "fileSizeBytes": 1012,
+      "duplicateBytes": 2024,
+      "potentialSavingsBytes": 1012,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1215/assets/data/vector/sky_gradient_scene.svg", "tools/Vector Asset Studio/samples/sky_gradient_scene.svg"]
+    },
+    {
+      "hash": "83e6f07dfc443a2f4542d5a1ee44b496e3e80a99b3c818b940e89b49f5b3e1c7",
+      "count": 3,
+      "fileSizeBytes": 412,
+      "duplicateBytes": 1236,
+      "potentialSavingsBytes": 824,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1218/assets/data/parallax/sky-gradient.svg", "samples/phase-12/1219/assets/data/parallax/sky-gradient.svg", "tools/Parallax Scene Studio/samples/images/sky-gradient.svg"]
+    },
+    {
+      "hash": "8bdc50fa968a41d735e41eaddb4bd56c80f1b0abf5d79ed3476ecd4194c96cf0",
+      "count": 2,
+      "fileSizeBytes": 812,
+      "duplicateBytes": 1624,
+      "potentialSavingsBytes": 812,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1216/assets/data/vector/mountain_range_scene.svg", "tools/Vector Asset Studio/samples/mountain_range_scene.svg"]
+    },
+    {
+      "hash": "2adef45cfa82c655c7202709cd20cfe08de0c971ce583f2294cc095977e5b28e",
+      "count": 4,
+      "fileSizeBytes": 264,
+      "duplicateBytes": 1056,
+      "potentialSavingsBytes": 792,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["games/_template/assets/parallax/data/README.md", "games/_template/assets/sprites/data/README.md", "games/_template/assets/tilemaps/data/README.md", "games/_template/assets/vectors/data/README.md"]
+    },
+    {
+      "hash": "eaebc2a6b9968c85aaf01ba971fe885dfe76b5e6a66ccb459275193eef0927b6",
+      "count": 2,
+      "fileSizeBytes": 659,
+      "duplicateBytes": 1318,
+      "potentialSavingsBytes": 659,
+      "classification": "report-artifact-duplicate",
+      "cleanupRisk": "low",
+      "rationale": "Duplicates live under reports and are likely generated artifacts or archived outputs.",
+      "files": ["docs_build/dev/reports/asset_ownership_strategy_validation.txt", "docs_build/reports/asset_ownership_strategy_validation.txt"]
+    },
+    {
+      "hash": "ff7a6cd3249ec13edb2d29c9184fb24213d893e968e2bd43871ea7fa1e4bb93d",
+      "count": 2,
+      "fileSizeBytes": 633,
+      "duplicateBytes": 1266,
+      "potentialSavingsBytes": 633,
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/samples/phase-03/0308/sample.0308.palette.json", "samples/phase-03/0308/sample.0308.palette.json"]
+    },
+    {
+      "hash": "62df597da9717276e525070fc41fe38773092245b5a720088ebea30be2ee3738",
+      "count": 2,
+      "fileSizeBytes": 633,
+      "duplicateBytes": 1266,
+      "potentialSavingsBytes": 633,
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/samples/phase-03/0313/sample.0313.palette.json", "samples/phase-03/0313/sample.0313.palette.json"]
+    },
+    {
+      "hash": "3a3c84dde6f20a5915233f6c97f97832b3101201512b424f33636ea40689d6dd",
+      "count": 2,
+      "fileSizeBytes": 624,
+      "duplicateBytes": 1248,
+      "potentialSavingsBytes": 624,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1220/assets/data/parallax/mario_style_hills.svg", "tools/Parallax Scene Studio/samples/mario_style_hills.svg"]
+    },
+    {
+      "hash": "1a90c49b06adb847bc3724fc65521c22db1cbd565acbb21b9e8bf17996f1058e",
+      "count": 2,
+      "fileSizeBytes": 624,
+      "duplicateBytes": 1248,
+      "potentialSavingsBytes": 624,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-17/1708/main.js", "samples/phase-17/1710/main.js"]
+    },
+    {
+      "hash": "680b3febde1154f88914390f151c8174c0757f008c3b724e3ac350d2068f1cdf",
+      "count": 3,
+      "fileSizeBytes": 308,
+      "duplicateBytes": 924,
+      "potentialSavingsBytes": 616,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1218/assets/data/parallax/mountain-ridge-short.svg", "samples/phase-12/1219/assets/data/parallax/mountain-ridge-short.svg", "tools/Parallax Scene Studio/samples/images/mountain-ridge-short.svg"]
+    },
+    {
+      "hash": "9feb79a83d787cea497aff4fa6b80af45ad05c8afa93bb8e8c703322bdb2fc9d",
+      "count": 2,
+      "fileSizeBytes": 615,
+      "duplicateBytes": 1230,
+      "potentialSavingsBytes": 615,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1220/assets/data/parallax/mario_style_mountains.svg", "tools/Parallax Scene Studio/samples/mario_style_mountains.svg"]
+    },
+    {
+      "hash": "cf89bcd9035a44c6dc94ada5ae51d9117e2c70479431b11952a8f51c0f3b9bcb",
+      "count": 2,
+      "fileSizeBytes": 615,
+      "duplicateBytes": 1230,
+      "potentialSavingsBytes": 615,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-17/1709/main.js", "samples/phase-17/1711/main.js"]
+    },
+    {
+      "hash": "2fb3e00d77625cf3fb3a7eaee5d2c3e649cf08c6e2c32f97eb0e5740a29a6333",
+      "count": 3,
+      "fileSizeBytes": 299,
+      "duplicateBytes": 897,
+      "potentialSavingsBytes": 598,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1218/assets/data/parallax/mountain-ridge-tall.svg", "samples/phase-12/1219/assets/data/parallax/mountain-ridge-tall.svg", "tools/Parallax Scene Studio/samples/images/mountain-ridge-tall.svg"]
+    },
+    {
+      "hash": "6435cd00ef6911273fe5045aa89c413473f5dc4172a7191bd2cdbd77713acf2a",
+      "count": 9,
+      "fileSizeBytes": 73,
+      "duplicateBytes": 657,
+      "potentialSavingsBytes": 584,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["games/AITargetDummy/rules/gameFlowRules.js", "games/Asteroids/rules/gameFlowRules.js", "games/Bouncing-ball/rules/gameFlowRules.js", "games/Breakout/rules/gameFlowRules.js", "games/GravityWell/rules/gameFlowRules.js", "games/Pong/rules/gameFlowRules.js", "games/SolarSystem/rules/gameFlowRules.js", "games/SpaceDuel/rules/gameFlowRules.js", "games/SpaceInvaders/rules/gameFlowRules.js"]
+    },
+    {
+      "hash": "9a97352ae4b6d92a3e63389056bfd7036f639105cf09a4f5c408d1388b65d092",
+      "count": 9,
+      "fileSizeBytes": 70,
+      "duplicateBytes": 630,
+      "potentialSavingsBytes": 560,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["games/Pacman/rules/gameFlowRules.js", "games/vector-arcade-sample/rules/gameFlowRules.js", "samples/phase-02/0225/rules/gameFlowRules.js", "samples/phase-03/0325/rules/gameFlowRules.js", "samples/phase-03/0326/rules/gameFlowRules.js", "samples/phase-03/0327/rules/gameFlowRules.js", "samples/phase-04/0413/rules/gameFlowRules.js", "samples/phase-06/0614/rules/gameFlowRules.js", "samples/phase-13/1320/rules/gameFlowRules.js"]
+    },
+    {
+      "hash": "df859606f030cd4c7cd9feb55f42d5dd8276620d9b0916b5d4f26beba0e46725",
+      "count": 3,
+      "fileSizeBytes": 277,
+      "duplicateBytes": 831,
+      "potentialSavingsBytes": 554,
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
+      "files": ["tools/palette-browser/tool.schema.json", "tools/vector-asset-studio/tool.schema.json", "tools/vector-map-editor/tool.schema.json"]
+    },
+    {
+      "hash": "9454a8b0c6e37bac29c1087707da7d5efa0347e44346a88cf407b6a253020820",
+      "count": 2,
+      "fileSizeBytes": 463,
+      "duplicateBytes": 926,
+      "potentialSavingsBytes": 463,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-12/1220/assets/data/parallax/mario_style_sky.svg", "tools/Parallax Scene Studio/samples/mario_style_sky.svg"]
+    },
+    {
+      "hash": "7fac6c68998c4333a3909c1e178df9feb859b9f6e82b2b301081dd612062083f",
+      "count": 2,
+      "fileSizeBytes": 444,
+      "duplicateBytes": 888,
+      "potentialSavingsBytes": 444,
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
+      "files": ["docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/tools/schemas/tools/palette-browser.schema.json", "tools/schemas/tools/palette-browser.schema.json"]
+    },
+    {
+      "hash": "3a6e82fbca1141a612374762d956c446eaab301ec58e715c04da349a47055b6e",
+      "count": 2,
+      "fileSizeBytes": 201,
+      "duplicateBytes": 402,
+      "potentialSavingsBytes": 201,
+      "classification": "documentation-duplicate",
+      "cleanupRisk": "medium",
+      "rationale": "Documentation duplicates are likely safe to consolidate, but may be intentionally archived by PR/report context.",
+      "files": ["docs_build/operations/dev/templates/CODEX_AUTO_COMMAND.md", "docs_build/operations/dev/templates/CODEX_ONE_SHOT_COMMAND.md"]
+    },
+    {
+      "hash": "a54340ac4b79fc7d1e8f2ffc03e5abad3c2062c05c65965acc30922710f2d954",
+      "count": 2,
+      "fileSizeBytes": 137,
+      "duplicateBytes": 274,
+      "potentialSavingsBytes": 137,
+      "classification": "runtime-json-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
+      "files": ["games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json", "tools/templates/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json"]
+    },
+    {
+      "hash": "f01a374e9c81e3db89b3a42940c4d6a5447684986a1296e42bf13f196eed6295",
+      "count": 24,
+      "fileSizeBytes": 5,
+      "duplicateBytes": 120,
+      "potentialSavingsBytes": 115,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["games/Pacman/assets/.gitkeep", "games/Pacman/config/.gitkeep", "games/Pacman/debug/.gitkeep", "games/Pacman/entities/.gitkeep", "games/Pacman/flow/.gitkeep", "games/Pacman/game/.gitkeep", "games/Pacman/levels/.gitkeep", "games/Pacman/platform/.gitkeep", "games/Pacman/platform/assets/.gitkeep", "games/Pacman/systems/.gitkeep", "games/Pacman/ui/.gitkeep", "games/Pacman/utils/.gitkeep", "games/SpaceDuel/assets/.gitkeep", "games/SpaceDuel/config/.gitkeep", "games/SpaceDuel/debug/.gitkeep", "games/SpaceDuel/entities/.gitkeep", "games/SpaceDuel/flow/.gitkeep", "games/SpaceDuel/game/.gitkeep", "games/SpaceDuel/levels/.gitkeep", "games/SpaceDuel/platform/.gitkeep", "games/SpaceDuel/platform/assets/.gitkeep", "games/SpaceDuel/systems/.gitkeep", "games/SpaceDuel/ui/.gitkeep", "games/SpaceDuel/utils/.gitkeep"]
+    },
+    {
+      "hash": "1a6ff34ec366593c19c45c855a52b2ce25b78c8df6f8404f6af76d96c2675c0a",
+      "count": 2,
+      "fileSizeBytes": 68,
+      "duplicateBytes": 136,
+      "potentialSavingsBytes": 68,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["samples/phase-15/1505/assets/images/hero.png", "tools/shared/samples/project-asset-registry-demo/assets/tiles/overworld-main.png"]
+    },
+    {
+      "hash": "29dc1886e7c34fbfb4cbd2dfeadb59d2be06a03f930ccee6053fdefb71025ce4",
+      "count": 2,
+      "fileSizeBytes": 22,
+      "duplicateBytes": 44,
+      "potentialSavingsBytes": 22,
+      "classification": "report-artifact-duplicate",
+      "cleanupRisk": "low",
+      "rationale": "Duplicates live under reports and are likely generated artifacts or archived outputs.",
+      "files": ["docs_build/dev/reports/tool_select_population_validation.md", "docs_build/dev/reports/tool_select_removed_validation.md"]
+    },
+    {
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "count": 4,
+      "fileSizeBytes": 0,
+      "duplicateBytes": 0,
+      "potentialSavingsBytes": 0,
+      "classification": "runtime-or-source-duplicate",
+      "cleanupRisk": "high",
+      "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
+      "files": ["docs/design/gdd/Nameco/Galaga/gdd.txt", "games/Pacman/rules/.gitkeep", "games/SpaceDuel/rules/.gitkeep", "samples/phase-15/1505/assets/audio/menu.mp3"]
+    }
+  ]
+}

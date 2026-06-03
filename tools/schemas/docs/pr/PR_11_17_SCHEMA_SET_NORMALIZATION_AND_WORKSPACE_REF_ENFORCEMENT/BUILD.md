@@ -84,7 +84,7 @@ Rules:
 
 ### 7. Validation report
 Create:
-`docs/dev/reports/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT_report.md`
+`docs_build/dev/reports/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT_report.md`
 
 Report must include:
 - schema files changed

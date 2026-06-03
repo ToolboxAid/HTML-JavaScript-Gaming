@@ -1,0 +1,41 @@
+﻿Task: workspace_direct_payload_card_status_11_149
+Date: 2026-04-30
+
+Files changed:
+- tools/Workspace Manager/main.js
+- docs_build/dev/reports/workspace_direct_payload_card_status_11_149.txt
+
+Behavior updated:
+1) Workspace Manager now derives direct-payload labels from root fields in workspaceManifest.tools[toolId] (no wrapper fields required).
+2) Direct labels are tracked in diagnostics via directPayloadLabelByToolId and applied to the mounted tool pager label.
+3) Shared status bindings are hydrated from direct payloads before launch:
+   - Palette handoff is written from direct palette JSON (palette-browser name/id/swatches).
+   - Asset handoff is written from direct tool payload root documents (vectorMapDocument, vectorAssetDocument, tileMapDocument, parallaxDocument, spriteProject, skin, assets, pipelinePayload, candidate, mapPayload, asset3d, cameraPath).
+4) Tool launch remains direct pass-through:
+   launch(toolId, payloadJson, paletteJson)
+   with the same explicit payload object and palette object (no wrapping/mutation in launch call).
+
+Card labels populated:
+- palette-browser uses direct palette name/id from payload root.
+- tool cards that resolve asset badge from shared bindings now receive direct-payload-derived labels (instead of empty/none when direct payload contains recognized root documents).
+- missing/empty payloads remain in empty/error behavior (unchanged launch contract checks still enforce object payload presence).
+
+Sample 1902 verification:
+- Manifest inspected: samples/phase-19/1902/sample.1902.workspace-all-tools.json
+- Direct payload root keys present for tool entries and covered by label extraction:
+  vectorMapDocument, vectorAssetDocument, tileMapDocument, parallaxDocument, spriteProject, assets, pipelinePayload, candidate, mapPayload, asset3d, cameraPath, and direct palette schema/name/swatches.
+- This confirms Sample 1902 direct entries map to card/status labels via Workspace Manager direct-payload extraction path.
+
+Validation commands/results:
+- node --check "tools/Workspace Manager/main.js" -> PASS
+- rg -n "runtime\.launch\(toolId, payloadJson, paletteJson\)" "tools/Workspace Manager/main.js" -> PASS (direct signature present)
+- node script (JSON parse + key coverage for Sample 1902 direct tool payload roots) -> PASS
+- git diff --name-only -> shows existing unrelated dirty files in repo plus this change; scoped changes for this task are only allowed targets.
+
+Strict scope confirmation:
+- Code changes were made only in tools/Workspace Manager/main.js.
+- Report created at docs_build/dev/reports/workspace_direct_payload_card_status_11_149.txt.
+- No schema/runtime-host/routing-outside-Workspace-Manager/sample file edits were made.
+
+Remaining blockers:
+- None identified within Workspace Manager scope for direct payload card/status/presence derivation.

@@ -1,0 +1,51 @@
+PR_26126_069-tool-template-panel-role-standardization
+
+Scope:
+- Updated the official first-class tool starter layout at tools/templates/first-class-tool-starter/.
+- Updated first-class tool template README and control/service contracts.
+- Added the panel role standard to docs_build/dev/PROJECT_INSTRUCTIONS.md under UI CONSISTENCY CONTRACT.
+- Updated existing Playwright coverage for panel role placement.
+- No live tools outside tools/templates, samples, schemas, roadmap, start_of_day folders, or tools/shared files were modified.
+
+Changes:
+- Moved the Status accordion from the left column to the bottom of the right column.
+- Kept Output Summary above Status in the right column.
+- Left column now contains only user-editable/setup controls in the starter.
+- Center column remains the primary preview/work surface.
+- Right column now owns generated output, summary, status, and logging in the starter.
+- Documented the standard three-column first-class tool layout in:
+  - tools/templates/first-class-tool-starter/README.md
+  - tools/templates/first-class-tool-starter/docs/CONTROL_SERVICE_CONTRACTS.md
+  - docs_build/dev/PROJECT_INSTRUCTIONS.md
+- Preserved Preview Generator V2 visual/theme alignment, src/engine/theme usage, and no tools/shared runtime dependency.
+- Preserved external CSS/JS only; no inline style block, inline script block, or inline event handlers were added.
+
+Validation:
+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+- node --check tools/templates/first-class-tool-starter/tests/playwright/FirstClassToolStarter.spec.mjs
+- rg check confirmed tools/templates/first-class-tool-starter/index.html has no inline style block, inline script block, or inline event handlers.
+- git diff --check
+- npm run test:workspace-v2
+- npx playwright test --config tools/templates/first-class-tool-starter/playwright.config.mjs --reporter=list
+
+Playwright impacted: Yes
+- This PR changes template UI layout and panel-role placement.
+- npm run test:workspace-v2 passed.
+- Template-local Playwright passed.
+
+Playwright behavior validated:
+- Starter left panel contains Input Source and does not contain Status.
+- Starter center panel contains Preview.
+- Starter right panel contains Output Summary and Status.
+- Status remains a working accordion and remains the last accordion in the right panel.
+- Existing starter nav modes, accordion behavior, required-field gating, primary action, and status clear behavior still work.
+
+Manual test notes:
+- Open tools/templates/first-class-tool-starter/index.html.
+- Confirm the left panel contains only Input Source.
+- Confirm the center panel contains Preview.
+- Confirm the right panel contains Output Summary above Status.
+- Confirm Status collapses/expands and Clear still empties the status log.
+
+Full samples smoke test:
+- Skipped. This PR only changes the first-class tool starter template, template documentation, project instructions wording, and targeted tests.

@@ -15,12 +15,12 @@
   Root samples directory. Defaults to "samples" relative to the current repo root.
 
 .PARAMETER CsvPath
-  Optional CSV output path. Defaults to docs/dev/reports/samples_only_palette_json_audit.csv.
+  Optional CSV output path. Defaults to docs_build/dev/reports/samples_only_palette_json_audit.csv.
 #>
 
 param(
     [string]$SamplesRoot = "samples",
-    [string]$CsvPath = "docs/dev/reports/samples_only_palette_json_audit.csv"
+    [string]$CsvPath = "docs_build/dev/reports/samples_only_palette_json_audit.csv"
 )
 
 Set-StrictMode -Version Latest

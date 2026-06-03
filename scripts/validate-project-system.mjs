@@ -64,7 +64,7 @@ const TOOL_BOOTSTRAP_CHECKS = [
   }
 ];
 
-const REPORT_PATH = path.join(repoRoot, "docs/dev/reports/project_system_validation.txt");
+const REPORT_PATH = path.join(repoRoot, "docs_build/dev/reports/project_system_validation.txt");
 
 async function pathExists(targetPath) {
   try {

@@ -15,9 +15,9 @@ engine-api-boundary.md
 - Foundational reusable state/runtime primitives remain in `src/engine/`.
 
 ## Docs and Process Boundary
-- Architecture decisions are documented in `docs/reference/architecture-standards/architecture/` and `docs/pr/`.
-- Active execution controls stay in `docs/dev/`.
-- Generated/stale outputs are moved to `docs/archive/` and not kept on active documentation surfaces.
+- Architecture decisions are documented in `docs/reference/architecture-standards/architecture/` and `docs_build/pr/`.
+- Active execution controls stay in `docs_build/dev/`.
+- Generated/stale outputs are moved to `docs_build/archive/` and not kept on active documentation surfaces.
 
 ## Section-2 Baseline Public Homes
 - Core bootstrapping and frame services: `src/engine/core/index.js`

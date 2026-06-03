@@ -24,5 +24,5 @@ Required:
 - Do not modify other samples.
 - Do not add fallback/default/hidden data.
 - Do not modify start_of_day folders.
-- Add validation report at docs/dev/reports/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT_report.md.
+- Add validation report at docs_build/dev/reports/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT_report.md.
 - Return ZIP artifact at tmp/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT_delta.zip.

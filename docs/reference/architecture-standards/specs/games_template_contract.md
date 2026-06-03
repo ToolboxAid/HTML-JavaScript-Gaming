@@ -38,6 +38,6 @@ Use:
 - `node scripts/validate-games-template-contract.mjs`
 
 The validator writes:
-- `docs/reports/games_template_contract_validation.txt`
+- `docs_build/reports/games_template_contract_validation.txt`
 
 and exits non-zero on contract violations.

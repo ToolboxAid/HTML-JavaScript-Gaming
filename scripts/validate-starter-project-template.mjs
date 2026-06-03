@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
 const TEMPLATE_MANIFEST_PATH = "tools/templates-v2/starter-project-template/config/starter.project.json";
-const REPORT_PATH = "docs/dev/reports/starter_project_template_validation.txt";
+const REPORT_PATH = "docs_build/dev/reports/starter_project_template_validation.txt";
 
 function assert(condition, message, issues) {
   if (!condition) {

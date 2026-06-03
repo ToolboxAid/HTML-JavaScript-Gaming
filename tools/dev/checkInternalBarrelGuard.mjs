@@ -7,8 +7,8 @@ const passThroughScanRoots = ["src", "samples/shared", "tools"];
 const importScanRoots = ["src", "games", "samples", "tools", "tests"];
 const ignoredDirNames = new Set(["node_modules", ".git", "tmp"]);
 const ignoredPathPrefixes = [
-  "docs/archive/",
-  "docs/dev/reports/",
+  "docs_build/archive/",
+  "docs_build/dev/reports/",
   "tests/results/"
 ];
 const baselineRelativePath = "tools/dev/checkInternalBarrelGuard.baseline.json";

@@ -1,0 +1,55 @@
+PR 11.123 - Staged Changes Review
+
+PASS
+
+Command run first
+- git diff --staged --stat
+- git diff --staged --name-only
+- git diff --staged -- schema/routing target files
+
+Staged files inspected
+- docs_build/dev/codex_commands.md
+- docs_build/dev/commit_comment.txt
+- docs_build/dev/reports/palette_schema_payload_only_11_122.txt
+- docs_build/dev/reports/tool_schema_boundary_11_122.txt
+- docs_build/dev/reports/validation_after_11_122.txt
+- docs_build/dev/reports/workspace_tool_payload_routing_11_122.txt
+- docs_build/dev/restart_notes_11_122.md
+- docs_build/pr/BUILD_PR_LEVEL_11_122_TOOL_SCHEMA_BOUNDARY_AND_PAYLOAD_ROUTING.md
+- samples/phase-19/1902/sample.1902.workspace-all-tools.json
+- scripts/validate-json-contracts.mjs
+- tests/tools/ToolSchemaStrictModeValidation.test.mjs
+- tools/Palette Browser/main.js
+- tools/Workspace Manager/main.js
+- tools/schemas/tools/palette-browser.schema.json
+- tools/shared/platformShell.js
+
+Schema/routing files staged
+- samples/phase-19/1902/sample.1902.workspace-all-tools.json
+- scripts/validate-json-contracts.mjs
+- tests/tools/ToolSchemaStrictModeValidation.test.mjs
+- tools/Palette Browser/main.js
+- tools/Workspace Manager/main.js
+- tools/schemas/tools/palette-browser.schema.json
+- tools/shared/platformShell.js
+
+Workspace manifest staged status
+- tools/schemas/workspace.manifest.schema.json was not staged and had no content diff.
+- Verification showed tools.palette-browser is { "$ref": "./tools/palette-browser.schema.json" }.
+- No palette/swatch internals were present in workspace.manifest.schema.json.
+
+Staged changes preserved
+- Palette Browser direct-palette schema change is valid separation of duties.
+- Sample 1902 direct tools.palette-browser palette payload is valid because workspace schema references the Palette Browser schema instead of inlining it.
+- Workspace Manager direct-palette classification is valid routing support for the referenced child payload.
+- platformShell direct-palette routing is valid pass-through support.
+- Validation helper updates are valid because they stop assuming every tool schema has a wrapper payload property.
+
+Staged changes reverted
+- None. No staged schema/routing file was found to violate separation of duties.
+
+Unrelated staged/modified work
+- docs_build/dev/codex_commands.md and docs_build/dev/commit_comment.txt were inspected by filename/status only and left untouched.
+
+Blockers
+- None.

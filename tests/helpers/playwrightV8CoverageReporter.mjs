@@ -6,8 +6,8 @@ import path from "node:path";
 export class PlaywrightV8CoverageReporter {
   constructor({
     repoRoot = process.cwd(),
-    reportPath = "docs/dev/reports/playwright_v8_coverage_report.txt",
-    guardrailReportPath = "docs/dev/reports/coverage_changed_js_guardrail.txt",
+    reportPath = "docs_build/dev/reports/playwright_v8_coverage_report.txt",
+    guardrailReportPath = "docs_build/dev/reports/coverage_changed_js_guardrail.txt",
     advisoryLowCoveragePercent = 50
   } = {}) {
     this.repoRoot = repoRoot;

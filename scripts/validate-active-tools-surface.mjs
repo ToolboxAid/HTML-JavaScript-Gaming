@@ -20,10 +20,10 @@ const REQUIRED_SCAN_TARGETS = [
   "tools/shared/assetUsageIntegration.js"
 ];
 const OPTIONAL_SCAN_TARGETS = [
-  "docs/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md",
+  "docs_build/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md",
   "docs/specs/asset_usage_contract.md",
-  "docs/dev/commit_comment.txt",
-  "docs/dev/reports/tool_registry_validation.txt"
+  "docs_build/dev/commit_comment.txt",
+  "docs_build/dev/reports/tool_registry_validation.txt"
 ];
 
 const NAVIGATION_SURFACE_TARGETS = [

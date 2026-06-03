@@ -18,7 +18,7 @@ const ASTEROIDS_MANIFEST_PATH = "games/Asteroids/game.manifest.json";
 const TEMPLATE_MANIFEST_PATH = "games/_template/assets/tools.manifest.json";
 const SAMPLE_ASSET_BROWSER_SCENE_PATH = "samples/phase-15/1505/AssetBrowserScene.js";
 const TOOL_DEMO_PROJECT_ASSETS_PATH = "tools/shared/samples/project-asset-registry-demo/project.assets.json";
-const REPORT_PATH = "docs/dev/reports/asset_ownership_strategy_validation.txt";
+const REPORT_PATH = "docs_build/dev/reports/asset_ownership_strategy_validation.txt";
 
 function toRepoPath(value) {
   return String(value || "").replace(/\\/g, "/");

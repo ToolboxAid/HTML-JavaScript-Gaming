@@ -1,0 +1,39 @@
+Schema Lock Enforcement Report: 11_143
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- Allowed schema files: tools/schemas/**/*.json
+- No runtime/routing/sample code changes performed
+
+Execution Summary
+1) additionalProperties strictness
+- Audited every schema under tools/schemas/**/*.json.
+- Result: all root schemas and all nested `type: object` schema nodes already define `additionalProperties: false`.
+- Check result: TOTAL_OBJECT_SCHEMA_MISSES=0
+
+2) Wrapper and parent rejection + valid payload acceptance
+- Ran per-schema contract validation over all schema JSON files using repo-local schema resolver + validator logic.
+- For each schema, tested:
+  - A valid synthesized payload -> must pass
+  - A wrapper-shaped JSON -> must fail
+  - A parent/workspace-shaped JSON -> must fail
+- Results:
+  - valid: PASS for all schemas
+  - wrapper: FAIL (expected) for all schemas
+  - parent: FAIL (expected) for all schemas
+- Summary result: SUMMARY_FAILURES=0
+
+Validation Outcome
+- PASS
+- No schema remains loose under the required checks.
+
+Files Changed
+- docs_build/dev/reports/schema_lock_enforcement_11_143.txt
+
+Strict Scope Notes
+- Runtime files: not modified
+- Routing files: not modified
+- Sample files: not modified
+- Schema JSON files: no edits were required because all checks already passed

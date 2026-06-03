@@ -1,0 +1,62 @@
+﻿BUILD_PR_LEVEL_11_106_CANONICAL_ASSET_KIND_ENFORCEMENT
+Date: 2026-04-30
+
+Scope
+- Canonicalize tool asset-kind acceptance logic.
+- Remove wildcard and alias/synonym kind matching from tool-kind resolution.
+- Normalize tool-facing asset kinds through canonical runtime normalization.
+
+Files Changed
+- tools/shared/platformShell.js
+- docs_build/dev/reports/asset_kind_canonicalization_11_106.txt
+
+1) resolveAcceptedAssetKindsForTool updated to canonical-only mapping
+Final mapping:
+- skin-editor -> ["skin"]
+- sprite-editor -> ["sprite"]
+- tile-map-editor -> ["tilemap"]
+- parallax-editor -> ["parallax"]
+- svg-asset-studio -> ["vector"]
+- vector-map-editor -> ["vector-map"]
+- 3d-asset-viewer -> ["model"]
+- 3d-camera-path-editor -> ["camera-path"]
+- asset-browser -> ["asset"]
+- asset-pipeline -> []
+- tile-model-converter -> ["tilemap", "vector", "model"]
+
+2) Removed wildcard / duplicate / alias values
+- Removed wildcard acceptance path ("*") from compatibility logic.
+- Removed synonym entries from mapping arrays:
+  - removed: "3d", "mesh", "3d-camera-path", "tileset"
+- Duplicate-kind entries per tool: none.
+
+3) Canonical runtime normalization for tool-facing asset kinds
+- normalizeAssetKind now converts tool-facing manifest/catalog kinds:
+  - image/audio/font/svg/data/other -> asset
+- Canonical concept kinds remain pass-through:
+  skin, sprite, tilemap, parallax, vector, vector-map, model, camera-path, asset
+
+Validation
+A. Mapping audit (tools/shared/platformShell.js)
+- tool_count=11
+- duplicate_kind_entries=0
+- unknown_kind_entries=0
+- alias_kind_entries=0
+
+B. Tool-facing asset kind audit (samples/games manifests + game asset catalogs)
+- asset_entries_scanned=79
+- normalized_noncanonical_entries=0
+
+C. Syntax/Schema checks
+- node --check tools/shared/platformShell.js -> PASS
+- powershell -ExecutionPolicy Bypass -File .\scripts\PS\validate-tool-schemas.ps1 -> PASS
+  - tool_payload_schema_validation: total=17 invalid=0
+- node scripts/validate-json-contracts.mjs -> PASS (script completed)
+  - tool_payload_schema_validation: total=17 invalid=0
+  - game_manifest_schema_validation: total=12 invalid=0
+  - sample_json_schema_validation: total=66 invalid=28 (pre-existing strict sample payload oneOf failures; unchanged cleanup lane)
+
+Notes
+- No schema loosening was introduced.
+- No fallback/default data was introduced.
+- No tool wildcard acceptance remains.

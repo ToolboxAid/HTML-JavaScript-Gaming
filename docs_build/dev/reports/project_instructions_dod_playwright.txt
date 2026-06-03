@@ -1,0 +1,45 @@
+PR_26126_054-project-instructions-dod-playwright
+
+Purpose:
+Append a Definition of Done Playwright contract that clearly states when Playwright is required, when it is not required, and what each PR must report.
+
+Appended section:
+
+## DEFINITION OF DONE PLAYWRIGHT CONTRACT
+
+Playwright MUST pass when the PR changes:
+- tool runtime behavior
+- UI controls or interactions
+- workspace or toolState flows
+- capture or rendering paths
+
+Playwright is NOT required when the PR is:
+- docs-only
+- naming/formatting-only
+- a pure refactor with no behavior change, when that no-behavior-change claim is justified
+
+Each PR must state:
+
+`Playwright impacted: Yes/No`
+
+If Playwright impacted is Yes:
+- `npm run test:workspace-v2` must pass.
+
+If Playwright impacted is No:
+- include `No Playwright impact. This PR is docs/workflow only.`
+
+Keep the full samples smoke test rule unchanged:
+- full samples smoke test runs only when broadly impacted.
+
+
+Validation notes:
+- docs_build/dev/PROJECT_INSTRUCTIONS.md was the only target document edited.
+- Existing wording was preserved; the Playwright DoD contract was appended at the end of the file.
+- No roadmap, code, samples, schema, or start_of_day files were modified for this PR.
+- Playwright impacted: No.
+- No Playwright impact. This PR is docs/workflow only.
+
+Manual test notes:
+- Open docs_build/dev/PROJECT_INSTRUCTIONS.md and confirm the Definition of Done Playwright Contract appears at the end of the file.
+- Confirm the section clearly states when Playwright must pass and when a PR may explicitly mark no Playwright impact.
+- Confirm the full samples smoke test rule remains unchanged.

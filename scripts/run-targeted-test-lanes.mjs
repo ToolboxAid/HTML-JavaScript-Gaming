@@ -11,34 +11,34 @@ import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
-const defaultReportPath = "docs/dev/reports/testing_lane_execution_report.md";
-const defaultDependencyGatingReportPath = "docs/dev/reports/dependency_gating_report.md";
-const defaultDiscoveryOwnershipReportPath = "docs/dev/reports/playwright_discovery_ownership_report.md";
-const defaultDiscoveryScopeReportPath = "docs/dev/reports/playwright_discovery_scope_report.md";
-const defaultDependencyHydrationReuseReportPath = "docs/dev/reports/dependency_hydration_reuse_report.md";
-const defaultFailureFingerprintReportPath = "docs/dev/reports/failure_fingerprint_report.md";
-const defaultFilesystemScanReportPath = "docs/dev/reports/filesystem_scan_reduction_report.md";
-const defaultIncrementalValidationReportPath = "docs/dev/reports/incremental_validation_report.md";
-const defaultLaneInputValidationReportPath = "docs/dev/reports/lane_input_validation_report.md";
-const defaultLaneDeduplicationReportPath = "docs/dev/reports/lane_deduplication_report.md";
-const defaultLaneCompilationReportPath = "docs/dev/reports/lane_compilation_report.md";
-const defaultLaneRuntimeOptimizationReportPath = "docs/dev/reports/lane_runtime_optimization_report.md";
-const defaultLaneSnapshotReportPath = "docs/dev/reports/lane_snapshot_report.md";
-const defaultLaneSnapshotDir = "docs/dev/reports/lane_snapshots";
-const defaultLaneWarmStartReportPath = "docs/dev/reports/lane_warm_start_report.md";
-const defaultLaneWarmStartDir = "docs/dev/reports/lane_warm_starts";
-const defaultStaticReportPath = "docs/dev/reports/static_validation_report.md";
-const defaultTargetedFileManifestReportPath = "docs/dev/reports/targeted_file_manifest_report.md";
-const defaultPersistentLaneManifestReportPath = "docs/dev/reports/persistent_lane_manifest_report.md";
-const defaultPersistentLaneManifestDir = "docs/dev/reports/lane_manifests";
-const defaultRetrySuppressionReportPath = "docs/dev/reports/retry_suppression_report.md";
-const defaultExecutionGraphReuseReportPath = "docs/dev/reports/execution_graph_reuse_report.md";
-const defaultSlowPathPruningReportPath = "docs/dev/reports/slow_path_pruning_report.md";
-const defaultMonolithTriggerRemovalReportPath = "docs/dev/reports/monolith_trigger_removal_report.md";
-const defaultTestCleanupPerformanceReportPath = "docs/dev/reports/test_cleanup_performance_report.md";
-const defaultTestCleanupRoutingReportPath = "docs/dev/reports/test_cleanup_routing_report.md";
-const defaultValidationCacheReportPath = "docs/dev/reports/validation_cache_report.md";
-const defaultZeroBrowserReportPath = "docs/dev/reports/zero_browser_preflight_report.md";
+const defaultReportPath = "docs_build/dev/reports/testing_lane_execution_report.md";
+const defaultDependencyGatingReportPath = "docs_build/dev/reports/dependency_gating_report.md";
+const defaultDiscoveryOwnershipReportPath = "docs_build/dev/reports/playwright_discovery_ownership_report.md";
+const defaultDiscoveryScopeReportPath = "docs_build/dev/reports/playwright_discovery_scope_report.md";
+const defaultDependencyHydrationReuseReportPath = "docs_build/dev/reports/dependency_hydration_reuse_report.md";
+const defaultFailureFingerprintReportPath = "docs_build/dev/reports/failure_fingerprint_report.md";
+const defaultFilesystemScanReportPath = "docs_build/dev/reports/filesystem_scan_reduction_report.md";
+const defaultIncrementalValidationReportPath = "docs_build/dev/reports/incremental_validation_report.md";
+const defaultLaneInputValidationReportPath = "docs_build/dev/reports/lane_input_validation_report.md";
+const defaultLaneDeduplicationReportPath = "docs_build/dev/reports/lane_deduplication_report.md";
+const defaultLaneCompilationReportPath = "docs_build/dev/reports/lane_compilation_report.md";
+const defaultLaneRuntimeOptimizationReportPath = "docs_build/dev/reports/lane_runtime_optimization_report.md";
+const defaultLaneSnapshotReportPath = "docs_build/dev/reports/lane_snapshot_report.md";
+const defaultLaneSnapshotDir = "docs_build/dev/reports/lane_snapshots";
+const defaultLaneWarmStartReportPath = "docs_build/dev/reports/lane_warm_start_report.md";
+const defaultLaneWarmStartDir = "docs_build/dev/reports/lane_warm_starts";
+const defaultStaticReportPath = "docs_build/dev/reports/static_validation_report.md";
+const defaultTargetedFileManifestReportPath = "docs_build/dev/reports/targeted_file_manifest_report.md";
+const defaultPersistentLaneManifestReportPath = "docs_build/dev/reports/persistent_lane_manifest_report.md";
+const defaultPersistentLaneManifestDir = "docs_build/dev/reports/lane_manifests";
+const defaultRetrySuppressionReportPath = "docs_build/dev/reports/retry_suppression_report.md";
+const defaultExecutionGraphReuseReportPath = "docs_build/dev/reports/execution_graph_reuse_report.md";
+const defaultSlowPathPruningReportPath = "docs_build/dev/reports/slow_path_pruning_report.md";
+const defaultMonolithTriggerRemovalReportPath = "docs_build/dev/reports/monolith_trigger_removal_report.md";
+const defaultTestCleanupPerformanceReportPath = "docs_build/dev/reports/test_cleanup_performance_report.md";
+const defaultTestCleanupRoutingReportPath = "docs_build/dev/reports/test_cleanup_routing_report.md";
+const defaultValidationCacheReportPath = "docs_build/dev/reports/validation_cache_report.md";
+const defaultZeroBrowserReportPath = "docs_build/dev/reports/zero_browser_preflight_report.md";
 const locationAuditScript = "scripts/audit-playwright-test-locations.mjs";
 const playwrightCli = path.join(
   repoRoot,
@@ -75,7 +75,7 @@ const pr38PerformanceEvidence = Object.freeze({
       test: "Preview Generator V2 real batch output"
     }
   ],
-  sourceReport: "docs/dev/reports/test_cleanup_performance_report.md",
+  sourceReport: "docs_build/dev/reports/test_cleanup_performance_report.md",
   totalLaneElapsedMs: 169710
 });
 
@@ -275,7 +275,7 @@ const laneDefinitions = Object.freeze({
 const representativeRoutingCases = Object.freeze([
   {
     caseName: "docs-only change",
-    changedFiles: ["docs/dev/PROJECT_INSTRUCTIONS.md"],
+    changedFiles: ["docs_build/dev/PROJECT_INSTRUCTIONS.md"],
     expectedLanes: [],
     reason: "Docs/workflow-only changes use static review evidence; runtime lanes, Workspace V2, and samples stay explicit/on-request."
   },
@@ -4407,8 +4407,8 @@ function makeZeroBrowserPreflightReport({
     `| invalid grep patterns | ${runnerPreflight.findings.some((entry) => entry.includes("grep")) ? "FAIL" : "PASS"} | ${runnerPreflight.findings.filter((entry) => entry.includes("grep")).join("; ") || "No invalid grep patterns."} |`,
     `| Windows quoting hazards | ${runnerPreflight.findings.some((entry) => entry.includes("quoting hazard")) ? "FAIL" : "PASS"} | ${runnerPreflight.notes.filter((entry) => entry.includes("grep pattern")).join("; ") || "No shell quoting hazards."} |`,
     `| invalid lane references | ${unknownLanes.length > 0 ? "FAIL" : "PASS"} | ${unknownLanes.join("; ") || "No invalid lane references."} |`,
-    `| invalid lane configuration | ${laneCompilation.status} | See docs/dev/reports/lane_compilation_report.md. |`,
-    `| deterministic dependency graph | ${dependencyGate.status} | See docs/dev/reports/dependency_gating_report.md. |`,
+    `| invalid lane configuration | ${laneCompilation.status} | See docs_build/dev/reports/lane_compilation_report.md. |`,
+    `| deterministic dependency graph | ${dependencyGate.status} | See docs_build/dev/reports/dependency_gating_report.md. |`,
     `| conflicting reusable helper ownership | ${structureAudit.status} | Shared helper filenames checked against known game names. |`,
     "",
     "## Corrected Ownership Drift",

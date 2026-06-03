@@ -1,6 +1,6 @@
 param(
   [string]$SamplesRoot = "$PSScriptRoot\..\..\samples",
-  [string]$OutputPath = "docs/dev/reports/sample_json_js_reference_audit.csv",
+  [string]$OutputPath = "docs_build/dev/reports/sample_json_js_reference_audit.csv",
   [switch]$FailOnMissing,
   [switch]$Details,
   [switch]$Ci

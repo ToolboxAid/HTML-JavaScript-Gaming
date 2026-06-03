@@ -1,6 +1,6 @@
 param(
   [string]$SamplesRoot = "samples",
-  [string]$OutputPath = "docs/dev/reports/sample_json_lockdown_audit.csv",
+  [string]$OutputPath = "docs_build/dev/reports/sample_json_lockdown_audit.csv",
   [switch]$Details,
   [switch]$Ci
 )

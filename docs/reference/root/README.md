@@ -6,14 +6,14 @@ README.md
 # Documentation Index
 
 ## Primary Areas
-- `docs/pr/`: full PR history (kept intact as historical record)
-- `docs/dev/`: active workflow controls only
-- `docs/dev/reports/`: active current reports only
+- `docs_build/pr/`: full PR history (kept intact as historical record)
+- `docs_build/dev/`: active workflow controls only
+- `docs_build/dev/reports/`: active current reports only
 - `docs/reference/architecture-standards/architecture/`: durable architecture and boundary documentation
 - `docs/reference/architecture-standards/standards/`: standards and review quality rules
 - `docs/release/`: release/readiness and showcase documentation sets
-- `docs/archive/dev-ops/`: archived operational notes and superseded workflow docs
-- `docs/archive/generated-reports/`: archived generated validation/report artifacts
+- `docs_build/archive/dev-ops/`: archived operational notes and superseded workflow docs
+- `docs_build/archive/generated-reports/`: archived generated validation/report artifacts
 
 ## Key Entry Points
 - [Docs Home](../../README.md)

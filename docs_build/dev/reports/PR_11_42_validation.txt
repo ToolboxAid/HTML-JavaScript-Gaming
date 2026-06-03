@@ -1,0 +1,69 @@
+﻿PR 11.42 Validation
+
+Status: PASS
+
+Files changed
+- tools/3D Asset Viewer/main.js
+- tools/3D Camera Path Editor/main.js
+- tools/3D JSON Payload Normalizer/main.js
+- docs_build/dev/reports/PR_11_42_validation.txt
+- docs_build/dev/reports/launch_smoke_report.md
+
+Removed buildDefaultPayload locations
+1) tools/3D Asset Viewer/main.js
+- Removed `buildDefaultPayload` function.
+- Removed boot-time default textarea fill (`refs.input.value = toPrettyJson(buildDefaultPayload())`).
+- Removed normalize fallback that returned `buildDefaultPayload()` when raw payload was missing.
+
+2) tools/3D Camera Path Editor/main.js
+- Removed `buildDefaultPayload` function.
+- Removed boot-time default textarea fill (`refs.input.value = toPrettyJson(buildDefaultPayload())`).
+- Removed normalize fallback that returned `buildDefaultPayload()` when raw payload was missing.
+- Removed add-waypoint fallback (`parseInputPayload() || buildDefaultPayload()`).
+
+3) tools/3D JSON Payload Normalizer/main.js
+- Removed `buildDefaultPayload` function.
+- Removed boot-time default textarea fill (`refs.input.value = toPrettyJson(buildDefaultPayload())`).
+- Removed normalize fallback that returned `buildDefaultPayload()` when raw payload was missing.
+
+New no-input behavior
+1) 3D Asset Viewer
+- On missing `samplePresetPath`, status now shows:
+  "No 3D asset payload loaded. Provide explicit JSON input or launch with samplePresetPath."
+- On empty textarea at boot, no payload is fabricated; same explicit-input status is shown.
+- Explicit preset/input flow remains unchanged when valid payload exists.
+
+2) 3D Camera Path Editor
+- On missing `samplePresetPath`, status now shows:
+  "No camera path payload loaded. Provide explicit JSON input or launch with samplePresetPath."
+- On empty textarea at boot, no payload is fabricated; same explicit-input status is shown.
+- Add Waypoint now requires existing explicit JSON input; if missing/invalid it shows:
+  "Cannot add waypoint: explicit camera path JSON input is required."
+- Explicit preset/input flow remains unchanged when valid payload exists.
+
+3) 3D JSON Payload Normalizer
+- On missing `samplePresetPath`, status now shows:
+  "No map payload loaded. Provide explicit JSON input or launch with samplePresetPath."
+- On empty textarea at boot, no payload is fabricated; same explicit-input status is shown.
+- Explicit preset/input flow remains unchanged when valid payload exists.
+
+Validation commands and results
+- rg -n "buildDefaultPayload" "tools/3D Asset Viewer/main.js" "tools/3D Camera Path Editor/main.js" "tools/3D JSON Payload Normalizer/main.js"
+  - Result: no matches (function fully removed from all 3 target files).
+
+- node --check "tools/3D Asset Viewer/main.js"
+  - PASS
+
+- node --check "tools/3D Camera Path Editor/main.js"
+  - PASS
+
+- node --check "tools/3D JSON Payload Normalizer/main.js"
+  - PASS
+
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --tools
+  - PASS
+  - Summary: PASS=275 FAIL=0 TOTAL=275
+
+Notes
+- No hidden/default sample geometry/camera/path payloads are auto-loaded by these three tools after this change.
+- Scope remained limited to the listed tools and reporting.

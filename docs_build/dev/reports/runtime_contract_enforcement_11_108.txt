@@ -1,0 +1,68 @@
+﻿BUILD_PR_LEVEL_11_108_RUNTIME_CONTRACT_ENFORCEMENT
+Date: 2026-04-30
+
+Scope
+- Post-11.105 runtime contract enforcement pass on sample tool references.
+- Verify each referenced tool has explicit input JSON, parseable structure, and no current strict-schema-invalid referenced preset.
+- Remove broken references only; no fallback/default data added.
+
+Files Changed
+- samples/metadata/samples.index.metadata.json
+- docs_build/dev/reports/runtime_contract_enforcement_11_108.txt
+
+Method
+1) Scanned all sample tool references (`toolHints` + `roundtripToolPresets`).
+2) For each referenced tool preset:
+   - verified preset path exists
+   - verified JSON parses
+   - verified direct tool preset `tool` field matches referenced `toolId` when applicable
+   - cross-checked referenced preset files against strict invalid list from `validate-all-json-contracts -Details`
+3) Removed references when any condition failed:
+   - input missing
+   - invalid structure (strict invalid preset)
+   - no usable contract path (missing preset)
+
+Removed References
+- 0204: 3d-asset-viewer
+- 0219: sprite-editor
+- 0221: tile-map-editor
+- 0226: skin-editor
+- 0227: skin-editor
+- 0301: sprite-editor
+- 0302: sprite-editor
+- 0305: tile-map-editor
+- 0905: sprite-editor
+- 1208: 3d-asset-viewer, parallax-editor, tile-map-editor
+- 1209: tile-map-editor
+- 1210: tile-map-editor
+- 1212: vector-map-editor
+- 1213: vector-map-editor
+- 1214: vector-map-editor
+- 1218: parallax-editor
+- 1219: parallax-editor
+- 1220: parallax-editor
+
+Validation Results
+A) Reference integrity checks (post-cleanup)
+- missing_presets: 0
+- parse_fail: 0
+- tool_mismatch: 0
+- hints_without_presets: 0
+
+B) Strict invalid overlap check
+- referenced_invalid_rows: 0
+- Result: no currently referenced preset is in the strict invalid sample preset list.
+
+C) Targeted contract checks
+- node scripts/validate-json-contracts.mjs
+  - tool_payload_schema_validation: total=17 invalid=0
+  - game_manifest_schema_validation: total=12 invalid=0
+  - sample_json_schema_validation: total=66 invalid=28 (repo-wide; non-referenced files still include pre-existing invalid samples)
+
+Guardrail Confirmation
+- No placeholder data created.
+- No fallback/default values introduced.
+- No schema loosening applied.
+
+Outcome
+- Sample tool metadata now only references presets that exist, parse, and are not currently strict-invalid in referenced paths.

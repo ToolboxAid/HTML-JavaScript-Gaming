@@ -1,0 +1,61 @@
+﻿Task: literal_asset_none_renderer_11_158
+Date: 2026-04-30
+
+Files changed:
+- tools/Workspace Manager/main.js
+- docs_build/dev/reports/literal_asset_none_renderer_11_158.txt
+
+Exact occurrences searched in tools/Workspace Manager/main.js:
+- "Asset:" -> count=0
+- "none" -> count=2
+  - line 1025 (diagnostic log text `(none)`)
+  - line 1029 (diagnostic log text `(none)`)
+- "textContent" -> count=7
+  - lines 1048, 1058, 1061, 1064, 1065, 1076, 1082
+- "innerHTML" -> count=0
+- "appendChild" -> count=0
+- "assetLabel" -> count=0
+- "assetStatus" (case-insensitive pattern) -> count=2
+  - line 331 function name `primeSvgAssetStatusLabelFromWorkspaceDiagnostics`
+  - line 1359 invocation of that function
+- "assetSummary" -> count=0
+- "svg-asset-studio" -> count=4
+  - lines 209, 338, 348, 352
+
+Exact old branch (active path feeding visible card line):
+- Function: `primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics)`
+- Call site: `applyToolsUsedFilterForGame(...)` (line 1359)
+- Old data read shape inside branch: convert map->object then read `tools["svg-asset-studio"]...`
+
+Exact new branch:
+- Function unchanged; patched internals only.
+- Now reads direct entry from active map branch:
+  - `const directEntry = explicitToolPayloadById.get("svg-asset-studio")`
+  - `const vectorAssetDocument = directEntry?.vectorAssetDocument`
+  - detect on `vectorAssetDocument.svgText`
+  - label source: `vectorAssetDocument.sourceName` else `Inline SVG`
+- Writes label to shared handoff used by card/status path:
+  - `writeSharedAssetHandoff(assetHandoff)` with `displayName: labelText`
+
+Expected visible output:
+- If `workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument.sourceName` exists:
+  - `Asset: sample-0901-ship.svg`
+- If sourceName missing but svgText exists:
+  - `Asset: Inline SVG`
+
+Diagnostic status:
+- Temporary runtime diagnostic was not left in final file.
+- Active branch was proven statically in this file (`applyToolsUsedFilterForGame -> primeSvgAssetStatusLabelFromWorkspaceDiagnostics -> writeSharedAssetHandoff`).
+
+Why prior PRs missed it:
+- Earlier fixes updated detection/label logic but did not lock the final active map-branch read to the exact direct entry source in the same branch that feeds card status.
+- This patch narrows that exact branch to the direct SVG tool entry and its direct vector asset document fields.
+
+Validation result:
+- `node --check "tools/Workspace Manager/main.js"` -> PASS
+- Static trace confirms active branch maps `vectorAssetDocument.sourceName` / `Inline SVG` into shared asset display label.
+- Sample 1902 static payload check -> PASS
+  - hasSvgText=true
+  - sourceName=sample-0901-ship.svg
+  - computed visibleAssetLine="Asset: sample-0901-ship.svg"
+- `git diff --name-only -- "tools/Workspace Manager/main.js" "docs_build/dev/reports/literal_asset_none_renderer_11_158.txt"` -> PASS

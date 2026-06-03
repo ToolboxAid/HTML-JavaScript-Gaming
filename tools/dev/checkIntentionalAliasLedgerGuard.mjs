@@ -7,8 +7,8 @@ const scanRoots = ["src", "games", "tools", "tests", "samples"];
 const sourceExtensions = new Set([".js", ".mjs"]);
 const ignoredDirNames = new Set(["node_modules", ".git", "tmp", "results", "generated", "vendor"]);
 const ignoredPathFragments = [
-  "docs/dev/reports/",
-  "docs/archive/",
+  "docs_build/dev/reports/",
+  "docs_build/archive/",
   "tests/results/"
 ];
 

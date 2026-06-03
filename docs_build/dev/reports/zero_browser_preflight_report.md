@@ -1,0 +1,51 @@
+# Zero-Browser Preflight Report
+
+Generated: 2026-06-02T20:52:58.655Z
+Status: PASS
+
+## Prevented Browser Launches
+
+Count: 0
+Reason: No deterministic pre-runtime failures were found.
+
+## Deterministic Failures Caught Pre-Runtime
+
+No deterministic setup failures.
+
+## Validation Coverage
+
+| Check | Status | Details |
+| --- | --- | --- |
+| lane ownership | PASS | Playwright structure audit passed. |
+| directory placement | PASS | tools/games/integration/engine ownership checked. |
+| invalid file naming | PASS | Game-specific filenames are blocked from generic reusable lanes. |
+| duplicate registrations | PASS | No duplicate lane registrations. |
+| invalid imports | PASS | Relative imports checked by Playwright structure audit. |
+| unresolved fixtures | PASS | No unresolved fixture findings. |
+| unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
+| targeted file manifests | PASS | workspace-contract:PASS |
+| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+| lane snapshots | PASS | workspace-contract:INVALIDATED |
+| manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
+| scoped discovery | PASS | Targets: tests/playwright/tools/WorkspaceManagerV2.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
+| invalid grep patterns | PASS | No invalid grep patterns. |
+| Windows quoting hazards | PASS | No shell quoting hazards. |
+| invalid lane references | PASS | No invalid lane references. |
+| invalid lane configuration | PASS | See docs_build/dev/reports/lane_compilation_report.md. |
+| deterministic dependency graph | PASS | See docs_build/dev/reports/dependency_gating_report.md. |
+| conflicting reusable helper ownership | PASS | Shared helper filenames checked against known game names. |
+
+## Corrected Ownership Drift
+
+- Asteroids Playwright runtime specs are enforced under `tests/playwright/games`.
+- Game index preview manifest handoff is enforced under `tests/playwright/integration`.
+- Tool-owned specs may reference games only as documented explicit fixtures.
+
+## Runtime Savings Observations
+
+- This preflight runs through Node-only validation before Playwright CLI startup.
+- Browser launch is blocked on deterministic setup failure.
+- Workspace V2, broad lane scheduling, and samples smoke are not started by preflight.
+- Invalid targeted lane setup cannot escalate into full-lane reruns.

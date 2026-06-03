@@ -5,10 +5,10 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const uatManifestPath = path.resolve("tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json");
-const roadmapPath = path.resolve("docs/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md");
-const implementationAuditPath = path.resolve("docs/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit.md");
-const implementationAuditValidationPath = path.resolve("docs/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit_validation.md");
-const canonicalSongModelAuditPath = path.resolve("docs/dev/reports/PR_26146_045-midi-studio-v2-duplicate-data-audit.md");
+const roadmapPath = path.resolve("docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md");
+const implementationAuditPath = path.resolve("docs_build/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit.md");
+const implementationAuditValidationPath = path.resolve("docs_build/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit_validation.md");
+const canonicalSongModelAuditPath = path.resolve("docs_build/dev/reports/PR_26146_045-midi-studio-v2-duplicate-data-audit.md");
 
 const validManifest = {
   schema: "html-js-gaming.game-manifest",

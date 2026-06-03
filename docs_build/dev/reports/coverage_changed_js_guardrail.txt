@@ -1,0 +1,376 @@
+Changed Runtime JS Coverage Guardrail
+
+Status: advisory only.
+Thresholds: none enforced.
+Missing changed runtime JS files are WARN, not FAIL.
+Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+Changed runtime JS files considered:
+(0%) src/engine/theme/v2/assets/js/account-controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/dev/checkStyleSystemGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/localization-studio/js/localization-studio.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_3D Asset Viewer/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_3D Camera Path Editor/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_3D JSON Payload/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Asset Pipeline/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/assetManagerMetadata.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/AssetManagerV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/assetPreviewHelpers.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/AssetCatalogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/AssetFormControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/AssetManagerShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/services/AssetSchemaValidator.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/services/WorkspaceBridge.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxControlPanel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxTileListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/ToolShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/services/AudioSfxEngine.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Logger.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Renderer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Shell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/constants.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/ActionSelectionControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/CaptureControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/DeviceListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/ExportControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/GamepadDiagnosticsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/GestureListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/SourceInventoryControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/services/EngineInputSourceService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/services/InputMappingState.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/AudioDiagnosticsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/DirectorPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/ExportPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/FutureControlsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/InstrumentGridControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/MidiSourceDetailsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/PlaybackControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/RenderedExportActionsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/SongDetailsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/SongListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/SongSetupControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/SongSheetControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/StudioTabsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/ToolShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/UnwiredControlState.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/MidiStudioV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/sectionColors.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/services/MidiPlaybackService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/services/MidiSourceInspectionService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/services/MidiStudioStateSerializer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/SourceInputControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/playwright.config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/PaletteEditorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/PaletteHarmonyControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/PaletteImportExportControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/PaletteValidationErrorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/SourcePaletteBrowserControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/UserPaletteControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/paletteHarmonyUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/PaletteHistoryStack.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/PaletteManagerApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/paletteUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/PaletteValidationService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/SwatchRow.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_palette-manager-v2/paletteManagerShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Parallax Scene Studio/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Performance Profiler/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Physics Sandbox/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/AssetFolderControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/CaptureModeControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/GeneratePreviewControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/LastGeneratedImageControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/OutputSummaryControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/PathsOrIdsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/PreviewFrameControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/RenderControlsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/RepoDestinationControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/TargetSourceControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/previewGeneratorV2.bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Capture.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Logger.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2RepoAccess.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2ShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Replay Visualizer/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Sprite Editor/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Sprite Editor/modules/colorUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Sprite Editor/modules/constants.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Sprite Editor/modules/projectModel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Sprite Editor/modules/spriteEditorApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_State Inspector/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/DataControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/DirtyControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/EntryListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/FilterControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/JsonControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2RuntimeContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/StorageInspectorV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/OutputSummaryControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/QueueControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/SpeechOptionsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/TextInputControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/TextToSpeechShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_text2speech-V2/js/TextToSpeechToolApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_Tilemap Studio/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/GameSelectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/LaunchControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/ManifestMenuControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/RepoDestinationControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/ToolTilesControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/WorkspaceSummaryControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/WorkspaceManagerV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/SourceInputControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/playwright.config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(44%) src/engine/theme/v2/assets/js/tool-display-mode.js - executed lines 105/105; executed functions 4/9
+(75%) tools/tools-page-accordions.js - executed lines 390/390; executed functions 15/20
+(85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - executed lines 180/180; executed functions 17/20
+
+Guardrail warnings:
+(0%) src/engine/theme/v2/assets/js/account-controls.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/dev/checkStyleSystemGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/localization-studio/js/localization-studio.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_3D Asset Viewer/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_3D Camera Path Editor/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_3D JSON Payload/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Asset Pipeline/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/assetManagerMetadata.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/AssetManagerV2App.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/assetPreviewHelpers.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/AssetCatalogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/AssetFormControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/AssetManagerShellControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/services/AssetSchemaValidator.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_asset-manager-v2/js/services/WorkspaceBridge.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxControlPanel.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxTileListControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/controls/ToolShellControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/services/AudioSfxEngine.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_audio-sfx-playground-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2App.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Controls.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Logger.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Renderer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Shell.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_collision-inspector-v2/js/constants.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/ActionSelectionControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/CaptureControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/DeviceListControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/ExportControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/GamepadDiagnosticsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/GestureListControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/SourceInventoryControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/services/EngineInputSourceService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/services/InputMappingState.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_input-mapping-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/AudioDiagnosticsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/DirectorPanelControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/ExportPanelControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/FutureControlsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/InstrumentGridControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/MidiSourceDetailsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/PlaybackControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/RenderedExportActionsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/SongDetailsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/SongListControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/SongSetupControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/SongSheetControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/StudioTabsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/ToolShellControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/controls/UnwiredControlState.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/MidiStudioV2App.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/sectionColors.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/services/MidiPlaybackService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/services/MidiSourceInspectionService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_midi-studio-v2/js/services/MidiStudioStateSerializer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/SourceInputControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_object-vector-studio-v2/playwright.config.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/PaletteEditorControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/PaletteHarmonyControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/PaletteImportExportControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/PaletteValidationErrorControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/SourcePaletteBrowserControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/controls/UserPaletteControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/paletteHarmonyUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/PaletteHistoryStack.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/PaletteManagerApp.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/paletteUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/PaletteValidationService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/modules/SwatchRow.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_palette-manager-v2/paletteManagerShell.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Parallax Scene Studio/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Performance Profiler/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Physics Sandbox/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/AssetFolderControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/CaptureModeControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/GeneratePreviewControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/LastGeneratedImageControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/OutputSummaryControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/PathsOrIdsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/PreviewFrameControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/RenderControlsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/RepoDestinationControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/controls/TargetSourceControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/previewGeneratorV2.bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2App.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Capture.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Logger.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2RepoAccess.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2ShellControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Replay Visualizer/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Sprite Editor/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Sprite Editor/modules/colorUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Sprite Editor/modules/constants.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Sprite Editor/modules/projectModel.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Sprite Editor/modules/spriteEditorApp.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_State Inspector/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/DataControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/DirtyControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/EntryListControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/FilterControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/JsonControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2RuntimeContract.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_storage-inspector-v2/js/StorageInspectorV2App.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/OutputSummaryControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/QueueControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/SpeechOptionsControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/TextInputControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/controls/TextToSpeechShellControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_text2speech-V2/js/TextToSpeechToolApp.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_Tilemap Studio/main.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/GameSelectorControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/LaunchControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/ManifestMenuControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/RepoDestinationControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/ToolTilesControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/controls/WorkspaceSummaryControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_workspace-manager-v2/js/WorkspaceManagerV2App.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/SourceInputControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/old_world-vector-studio-v2/playwright.config.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(44%) src/engine/theme/v2/assets/js/tool-display-mode.js - WARNING: advisory low coverage below 50%; executed lines 105/105; executed functions 4/9

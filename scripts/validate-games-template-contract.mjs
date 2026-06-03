@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
 const GAMES_ROOT = path.join(repoRoot, "games");
-const REPORT_PATH = path.join(repoRoot, "docs/dev/reports/games_template_contract_validation.txt");
+const REPORT_PATH = path.join(repoRoot, "docs_build/dev/reports/games_template_contract_validation.txt");
 const MANAGED_CANONICAL_GAMES = ["Pacman"];
 const REQUIRED_DIRS = ["assets", "game", "entities", "systems", "ui", "debug"];
 const TEMPLATE_REQUIRED_ASSET_DIRS = [

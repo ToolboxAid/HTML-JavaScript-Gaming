@@ -1,0 +1,38 @@
+PR 11.33 Validation Report (Updated)
+
+Changed files:
+- tools/shared/platformShell.css
+- docs_build/dev/reports/PR_11_33_validation.txt
+
+Actual overflow source found:
+- The overflow source was not the tile-grid column rule itself.
+- `.tools-platform-frame__accordion-content` is a grid with implicit `auto` track sizing, and its `.tools-platform-frame__bottomline` child contributed max-content width.
+- This caused `.tools-platform-frame__bottomline` -> `.tools-platform-frame__controls-stack` -> `.tools-platform-frame__nav` to compute around 1030px wide inside a ~705px header host.
+
+Why PR 11.32 had no effect:
+- PR 11.32 improved nav/grid internals, but parent grid-track sizing in `.tools-platform-frame__accordion-content` still allowed max-content expansion.
+- So child tiles could remain wider than the container even with responsive `nav` / `nav-grid` rules.
+
+Fix applied in this pass:
+- Constrained parent grid tracks:
+  - `.tools-platform-frame__accordion-content { grid-template-columns: minmax(0, 1fr); }`
+  - `.tools-platform-frame__controls-stack { grid-template-columns: minmax(0, 1fr); }`
+- Added width/min-width/max-width/box-sizing constraints on parent wrappers to prevent inherited expansion:
+  - `.tools-platform-frame__topline`, `.tools-platform-frame__bottomline`, `.tools-platform-frame__controls-stack`, `.tools-platform-frame__actions`, `.tools-platform-frame__shared-status`, `.tools-platform-frame__return-line`, `.tools-platform-frame__project`.
+- Kept previous child-level protections (row/link/badge constraints + narrow-screen one-column media rule).
+
+Before/after manual validation:
+- Before (captured by iframe DOM probe at 740px viewport):
+  - headerHost/clientWidth=705, scrollWidth=1041
+  - bottomline/clientWidth=1030
+  - nav/clientWidth=1030
+- After (same probe conditions):
+  - headerHost/clientWidth=705, scrollWidth=705
+  - bottomline/clientWidth=683
+  - nav/clientWidth=683
+- Manual browser check still required for visual confirmation in your session.
+
+Validation command results:
+- node --check tools/shared/platformShell.js -> PASS
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools -> PASS
+  - Summary: PASS=19 FAIL=0 TOTAL=19

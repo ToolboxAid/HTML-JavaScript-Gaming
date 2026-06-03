@@ -1,0 +1,24 @@
+DELETE / MOVE OUT FIRST
+
+ROOT:
+- PROJECT_TEMPLATE_SNAPSHOT.zip
+- state_11_1.txt
+
+GENERATED REPORTS (if already consumed):
+- docs_build/reports/change_summary.txt
+- docs_build/dev/reports/expansion_decision.txt
+- docs_build/reports/file_tree.txt
+- docs_build/dev/reports/readiness_decision.txt
+- docs_build/reports/validation_checklist.txt
+
+DUPLICATE / CONSOLIDATE CANDIDATES:
+- docs_build/dev/---patches-fixes.txt
+- docs_build/dev/RULES.txt
+- docs_build/dev/WORKFLOW.md
+- docs_build/dev/usage monitor.url
+- docs_build/dev/sprite_editor_RULES.txt
+- docs_build/dev/sprite_editor_RULES_updated.txt
+- docs_build/dev/sprite_editor_RULES_codex_enforced.md
+- docs_build/dev/sprite_editor_START_OF_DAY_checklist.md
+- docs_build/dev/CODEX_START_OF_DAY.md
+- docs_build/dev/START_OF_DAY.md

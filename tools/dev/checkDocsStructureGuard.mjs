@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const INVALID_PATH = 'docs/roadmaps';
-const VALID_PATH = 'docs/dev/roadmaps';
+const VALID_PATH = 'docs_build/dev/roadmaps';
 
 function fail(msg) {
   console.error('❌ DOCS STRUCTURE ERROR:\n' + msg);
@@ -27,13 +27,13 @@ if (fs.existsSync(INVALID_PATH)) {
 
 // Rule 2: valid roadmap path must exist
 if (!fs.existsSync(VALID_PATH)) {
-  fail('missing required docs/dev/roadmaps/');
+  fail('missing required docs_build/dev/roadmaps/');
 } else {
-  ok('docs/dev/roadmaps exists');
+  ok('docs_build/dev/roadmaps exists');
 }
 
 // Rule 3: prevent roadmap drift
-const devRoot = 'docs/dev';
+const devRoot = 'docs_build/dev';
 const files = fs.readdirSync(devRoot);
 
 files.forEach(f => {

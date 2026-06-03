@@ -1,0 +1,10 @@
+Toolbox Aid
+David Quesenberry
+04/06/2026
+change_summary.txt
+
+Summary
+- Added PLAN PR and BUILD PR docs for controlled docs archive cleanup
+- Defined exact keep vs move rules for docs_build/pr historical markdown files
+- Added archive destination README and exact PR move/keep manifests
+- Prepared Codex command for user-approved execute step limited to non-destructive file moves

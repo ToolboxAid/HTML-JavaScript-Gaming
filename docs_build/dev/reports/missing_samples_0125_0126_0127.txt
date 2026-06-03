@@ -1,0 +1,93 @@
+PR_26126_026-locate-missing-samples
+
+Scope:
+- Search only.
+- No code changes.
+- No sample changes.
+- Target IDs: 0125, 0126, 0127.
+
+Follow-up clarification for visible sample index cards:
+- The user-provided visible cards are Sample 0225, Sample 0226, and Sample 0227, not 0125, 0126, and 0127.
+- If the intended IDs were 0225, 0226, and 0227, they are present and are not missing.
+- Physical folders exist:
+  - samples/phase-02/0225
+  - samples/phase-02/0226
+  - samples/phase-02/0227
+- samples/index.html does not contain these card entries as static text. It provides the containers:
+  - samples/index.html:33 contains #samples-pinned-list.
+  - samples/index.html:72 contains #samples-phase-list.
+- samples/index.html:79 loads samples/index.render.js, and the rendered cards are produced from samples/metadata/samples.index.metadata.json.
+- samples/index.render.js:4 defines METADATA_PATH as "./metadata/samples.index.metadata.json".
+- samples/index.render.js:174 starts buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap).
+- samples/index.render.js:311 creates cards with class "card-link sample-card".
+- samples/index.render.js:465 reads #samples-phase-list.
+- samples/index.render.js:499 builds the rendered model from metadata.
+- Exact metadata entries for the visible cards:
+  - samples/metadata/samples.index.metadata.json:722 defines id "0225".
+  - samples/metadata/samples.index.metadata.json:724 defines title "Projectile Lab".
+  - samples/metadata/samples.index.metadata.json:726 points to "./phase-02/0225/index.html".
+  - samples/metadata/samples.index.metadata.json:734 defines id "0226".
+  - samples/metadata/samples.index.metadata.json:736 defines title "Primitive Skin Editor Breakout Readiness".
+  - samples/metadata/samples.index.metadata.json:738 points to "./phase-02/0226/index.html".
+  - samples/metadata/samples.index.metadata.json:748 defines id "0227".
+  - samples/metadata/samples.index.metadata.json:750 defines title "Primitive Skin Editor Pong Readiness".
+  - samples/metadata/samples.index.metadata.json:752 points to "./phase-02/0227/index.html".
+- No literal executeSample symbol was found in samples/index.html, samples/index.render.js, or samples/metadata/samples.index.metadata.json. The visible launch/card behavior is the rendered sample-card path above.
+
+Physical sample folder check:
+- samples/phase-01/0125: does not exist.
+- samples/phase-01/0126: does not exist.
+- samples/phase-01/0127: does not exist.
+- Recursive check under samples/phase-* found no folder named 0125, 0126, or 0127.
+- samples/phase-01 currently ends at samples/phase-01/0124.
+
+Exact ID text search:
+- Search command used:
+  rg -n --hidden --no-ignore --glob '!node_modules/**' --glob '!.git/**' --glob '!tmp/**' --glob '!**/*.svg' --glob '!**/*.png' --glob '!**/*.jpg' --glob '!**/*.jpeg' --glob '!**/*.gif' --glob '!**/*.zip' "\b(0125|0126|0127)\b" samples docs tools src scripts tests games package.json *.json *.md
+
+0125:
+- No exact text references found in searched samples, metadata, tool hints, index/registry files, docs, tools, src, scripts, tests, or games.
+
+0126:
+- No exact text references found in searched samples, metadata, tool hints, index/registry files, docs, tools, src, scripts, tests, or games.
+
+0127:
+- docs_build/pr/BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS.md:143
+  - "- works for 1215, 1216, 0127."
+- docs_build/pr/BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS.md:147
+  - "- Keep SVG Asset Studio references for samples 1215, 1216, 0127 if validation still passes and they load."
+- No physical samples/phase-01/0127 folder exists.
+- No active sample metadata, index, tool hint, registry, or generator source was found that defines sample 0127.
+
+Metadata and index findings:
+- samples/metadata/samples.index.metadata.json contains phase-01 entries through 0124.
+- samples/metadata/samples.index.metadata.json:379 defines id "0124"; no 0125, 0126, or 0127 entries appear after it.
+- samples/metadata/metadataReference.js has no 0125, 0126, or 0127 references.
+- samples/index.html has no exact 0125, 0126, or 0127 references.
+
+Generator/source findings:
+- tools/preview-generator-v2/index.html:943 starts resolveSamplePhase(phase).
+- tools/preview-generator-v2/index.html:955 enumerates phaseDir.entries().
+- tools/preview-generator-v2/index.html:956 filters to physical directory names matching four digits.
+- tools/preview-generator-v2/index.html:957 requires index.html via hasIndexHtml(handle).
+- tools/preview-generator-v2/index.html:958 only pushes entries discovered from those physical folders.
+- This means Preview Generator V2 phase-wide generation cannot synthesize 0125, 0126, or 0127 when those folders are absent.
+
+- scripts/generate-samples-index.mjs:33 discovers phase directories from the filesystem.
+- scripts/generate-samples-index.mjs:64 builds sampleIds from physical four-digit sample directories.
+- scripts/generate-samples-index.mjs:80 checks each sample directory for index.html.
+- scripts/generate-samples-index.mjs:250 validates metadata against canonical physical samples.
+- scripts/generate-samples-index.mjs:275 rejects metadata sample IDs that are not canonical physical samples.
+- This index generator does not produce missing 0125, 0126, or 0127 IDs from metadata alone.
+
+- scripts/generate-runtime-sample-previews.mjs:18 discovers phase directories from the filesystem.
+- scripts/generate-runtime-sample-previews.mjs:28 builds sampleIds from physical four-digit sample directories.
+- scripts/generate-runtime-sample-previews.mjs:34 checks each sample directory for index.html.
+- This runtime preview generator does not produce missing 0125, 0126, or 0127 IDs when folders are absent.
+
+Conclusion:
+- 0125 and 0126 are neither present physically nor referenced by searched repo text sources.
+- 0127 is referenced only by an old PR/build document and is not present physically.
+- No active metadata, index, registry, tool hint, or generator logic was found that produces 0125, 0126, or 0127.
+- If 0125, 0126, or 0127 appear in current UI/runtime output, the source is likely stale generated/test output or external input rather than current sample metadata, index, registry, or generator logic.
+- The current samples/index.html page can show 0225, 0226, and 0227 because those IDs are present in samples/metadata/samples.index.metadata.json and exist physically under samples/phase-02.

@@ -8,5 +8,5 @@ export async function run() {
     "valid",
     `Games template contract validator failed.\n${result.issues.join("\n")}`
   );
-  assert.equal(result.reportPath.endsWith("docs/dev/reports/games_template_contract_validation.txt"), true);
+  assert.equal(result.reportPath.endsWith("docs_build/dev/reports/games_template_contract_validation.txt"), true);
 }
