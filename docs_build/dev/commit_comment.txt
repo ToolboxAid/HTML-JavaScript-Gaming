@@ -1,7 +1,6 @@
-Root structure, samples/tools/theme/license cleanup - PR_26154_004-root-structure-samples-tools-theme-license
+Theme V2 public display-mode asset path fix - PR_26154_005-theme-v2-public-asset-path-fix
 
-- Rename /samples/ to /old_samples/, move /arcade/ to /games/arcade/, add the new /games/ index and placeholder game-type pages, and move /cloud/ to /tools/cloud/.
-- Move confirmed legacy tool folders/files into /old-tools/ while preserving active tools infrastructure that is still required by scripts, tests, or current tool pages.
-- Rewire active Theme V2 navigation, tool index links, helper paths, old sample references, and validation routing for old_samples, games, tools/cloud, and old-tools.
-- Add assets/theme/v1/ legacy marker, document src/engine/theme follow-up boundaries, report engine-v2 location evidence, and replace LICENSE with a restrictive proprietary notice.
-- Validate targeted paths, changed active HTML/JS/JSON/Markdown, Workspace V2, deprecated old_samples test exclusion, shared/style guards, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Update `tool-display-mode.js` so badge and character images resolve from `/assets/theme/v2/assets/images/` instead of deriving image URLs from `src/engine/theme/v2`.
+- Seed public Theme V2 badge and character PNGs under `assets/theme/v2/assets/images/`, including required `badges/index.png` and `characters/index.png` fallbacks.
+- Keep `src/engine/theme` in place and document remaining references as engine/runtime shell styling, current public Theme V2 styling/scripts, or obsolete public image-source references needing follow-up.
+- Validate changed JS, targeted asset paths/references, browser image request statuses, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.

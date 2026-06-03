@@ -1,41 +1,35 @@
 # Codex Commands
 
-Task: PR_26154_004-root-structure-samples-tools-theme-license
+Task: PR_26154_005-theme-v2-public-asset-path-fix
 
 Commands run:
 
 - `Get-Content .codex/skills/repo-build/SKILL.md`
 - `Get-Content docs_build/dev/PROJECT_INSTRUCTIONS.md`
 - `git status --short --untracked-files=all`
-- Targeted `rg`, `Get-Content`, `Select-String`, and `git diff` reads for root surfaces, games, samples, tools, Theme V2, license, docs_build references, and engine-v2 evidence.
-- Node/path move work for:
-  - `samples/` to `old_samples/`
-  - `arcade/` to `games/arcade/`
-  - `cloud/` to `tools/cloud/`
-  - confirmed legacy `tools/old*`, `tools/_templates-v2_deprecated/`, `tools/codex/`, and `tools/common/` to `old-tools/`
-- Targeted path rewrites for `old_samples/`, `games/`, `tools/cloud/`, `old-tools/`, Theme V2 route map/partials, tool accordions, old sample helpers, and validation routing.
-- Targeted path validation for required moved paths, obsolete source folders, active HTML references, Theme V2 routes, and partial assets.
-- `node --check scripts/write-codex-review-artifacts.mjs`
-- `node --check scripts/skip-deprecated-sample-tests.mjs`
-- `node tools/dev/checkSharedExtractionGuard.mjs`
-- `node tools/dev/checkStyleSystemGuard.mjs`
-- `npm run test:workspace-v2`
-- `npm run test:lane:samples`
-- Active changed-file static validation with `node --check`, JSON parsing, and HTML/Markdown readability checks.
-- Targeted reference validation for `docs_build/`, `old_samples/`, `games/`, `tools/`, `old-tools/`, `assets/theme/v1/`, `LICENSE`, and `engine-v2`.
+- Targeted `Get-Content`, `rg`, `Get-ChildItem`, and `git diff` reads for `tool-display-mode.js`, affected tool pages, public Theme V2 image assets, and remaining `src/engine/theme` references.
+- `node --check src/engine/theme/v2/assets/js/tool-display-mode.js`
+- Node copy script to seed:
+  - `assets/theme/v2/assets/images/badges/`
+  - `assets/theme/v2/assets/images/characters/`
+- Targeted public asset existence checks for:
+  - `assets/theme/v2/assets/images/badges/index.png`
+  - `assets/theme/v2/assets/images/characters/index.png`
+- Targeted reference counts for:
+  - `src/engine/theme/v2/assets/images`
+  - `assets/theme/v2/assets/images`
+  - `src/engine/theme`
+- Local browser validation of `tools/_templates-v2/index.html` with request status capture for both display-mode image requests.
 - `git diff --check`
 - `npm run codex:review-artifacts`
-- Python ZIP packaging for `tmp/PR_26154_004-root-structure-samples-tools-theme-license_delta.zip`
+- Python ZIP packaging for `tmp/PR_26154_005-theme-v2-public-asset-path-fix_delta.zip`
 
 Validation summary:
 
-- PASS targeted path validation for moved pages, required/obsolete folders, Theme V2 route map targets, and partial assets.
-- PASS active changed-file static validation - 32 JS/MJS files syntax-checked, 4 JSON files parsed, 16 active HTML files read, and 4 Markdown files read.
-- PASS `node tools/dev/checkSharedExtractionGuard.mjs`.
-- PASS `node tools/dev/checkStyleSystemGuard.mjs`.
-- PASS `npm run test:workspace-v2` - 2 Playwright checks passed for root tools future-state links and Tool Template V2 root Theme V2 loading.
-- PASS `npm run test:lane:samples` - samples lane compiled with no targets, no commands, zero browser launches, and deprecated `old_samples` excluded from active automated validation.
-- PASS targeted reference checks for active `docs_build/`, `old_samples/`, `games/`, `tools/`, `old-tools/`, `assets/theme/v1/`, `LICENSE`, and `engine-v2` surfaces.
-- SKIPPED full samples smoke test per request.
-- SKIPPED full samples/game smoke against `old_samples` and `old_games` per request.
-- WARN historical docs, protected `start_of_day`, retired tests, and deprecated `old-tools/` content still contain old path text as preserved reference material.
+- PASS `node --check src/engine/theme/v2/assets/js/tool-display-mode.js`.
+- PASS public asset checks for `badges/index.png` and `characters/index.png`.
+- PASS local browser validation: `/assets/theme/v2/assets/images/badges/index.png` and `/assets/theme/v2/assets/images/characters/index.png` both returned `200`.
+- PASS targeted reference checks completed; remaining `src/engine/theme` references are reported in `theme_v2_public_asset_path_fix_report.md`.
+- PASS `git diff --check`.
+- SKIPPED `npm run test:workspace-v2`; image resolution changed, tool launch/navigation behavior did not.
+- SKIPPED old_games, old_samples, and full samples smoke validation per request.

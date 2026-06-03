@@ -7,13 +7,23 @@
     displayMode.id = "toolDisplayMode";
     displayMode.open = true;
 
-    const currentScript = document.currentScript || document.querySelector("script[src*='tool-display-mode.js']");
-    const defaultAssetRoot = currentScript ? new URL("../images", currentScript.src).href : "../assets/images";
-    const basePath = slot.dataset.assetRoot || defaultAssetRoot;
+    const publicAssetRoot = "/assets/theme/v2/assets/images";
     const pageTitle = document.querySelector(".page-title h1");
     const toolName = pageTitle ? pageTitle.textContent.trim() : "Tool";
     const routeSlug = window.location.pathname.split("/").pop().replace(/\.html$/, "");
     const toolSlug = slot.dataset.toolSlug || (routeSlug === "publisher" ? "publish-studio" : routeSlug);
+
+    function explicitPngName(source) {
+        if (!source) return "";
+        const cleanPath = source.split("#")[0].split("?")[0].replace(/\\/g, "/");
+        const fileName = cleanPath.split("/").pop() || "";
+        return fileName.toLowerCase().endsWith(".png") ? fileName : "";
+    }
+
+    function publicImageSource(source, folder) {
+        const fileName = explicitPngName(source) || (source ? "index.png" : toolSlug + ".png");
+        return publicAssetRoot + "/" + folder + "/" + fileName;
+    }
 
     const summary = document.createElement("summary");
     summary.setAttribute("aria-label", "Tool Display Mode");
@@ -21,7 +31,7 @@
 
     const badge = document.createElement("img");
     badge.className = "tool-display-mode__badge";
-    badge.src = slot.dataset.toolIconSrc || basePath + "/badges/" + toolSlug + ".png";
+    badge.src = publicImageSource(slot.dataset.toolIconSrc, "badges");
     badge.alt = toolName + " badge";
     summary.appendChild(badge);
 
@@ -36,7 +46,7 @@
 
     const character = document.createElement("img");
     character.className = "tool-display-mode__character";
-    character.src = slot.dataset.toolCharacterSrc || basePath + "/characters/" + toolSlug + ".png";
+    character.src = publicImageSource(slot.dataset.toolCharacterSrc, "characters");
     character.alt = toolName + " character";
     body.appendChild(character);
 
