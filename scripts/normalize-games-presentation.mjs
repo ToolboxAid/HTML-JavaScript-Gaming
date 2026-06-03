@@ -7,14 +7,14 @@ normalize-games-presentation.mjs
 
 How to run:
 1) npm run normalize:games-presentation
-2) Reload /games/index.html to refresh the Class dropdown from engineClassesUsed
+2) Reload /old_games/index.html to refresh the Class dropdown from engineClassesUsed
 */
 
 import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const GAMES_DIR = path.join(ROOT, "games");
+const GAMES_DIR = path.join(ROOT, "old_games");
 const METADATA_PATH = path.join(GAMES_DIR, "metadata", "games.index.metadata.json");
 
 function readFile(filePath) {
@@ -207,7 +207,7 @@ function loadMetadata() {
 
 function toGameDirFromHref(href) {
   const normalizedHref = String(href || "").replace(/\\/g, "/").trim();
-  if (!normalizedHref.startsWith("/games/") || !normalizedHref.endsWith("/index.html")) {
+  if (!normalizedHref.startsWith("/old_games/") || !normalizedHref.endsWith("/index.html")) {
     return "";
   }
   return path.join(ROOT, normalizedHref.slice(1, -"/index.html".length));

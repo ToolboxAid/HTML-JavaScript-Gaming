@@ -28,7 +28,7 @@ export function classifyGetStateVariantLayer(filePath) {
   if (normalized.startsWith("tools/")) {
     return "tool";
   }
-  if (normalized.startsWith("src/") || normalized.startsWith("games/")) {
+  if (normalized.startsWith("src/") || normalized.startsWith("old_games/")) {
     return "runtime";
   }
   return "other";

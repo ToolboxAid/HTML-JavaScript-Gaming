@@ -8,7 +8,7 @@
     "folder": "_template"
   },
   "launch": {
-    "directPath": "/games/_template/index.html",
+    "directPath": "/old_games/_template/index.html",
     "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?workspace=uat",
     "workspaceManagerOptional": true
   },

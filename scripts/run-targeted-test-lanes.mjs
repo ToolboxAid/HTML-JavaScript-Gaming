@@ -156,31 +156,16 @@ const laneDefinitions = Object.freeze({
     reason: "Tool runtime lane validates focused tool behavior without treating unrelated stale product assertions as blockers."
   },
   "game-runtime": {
-    affectedSurface: "Game-owned Playwright runtime behavior",
-    commands: [
-      playwrightCommand(
-        "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
-        "tests/playwright/games/AsteroidsBeatTiming.spec.mjs",
-        "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs",
-        "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
-      )
-    ],
+    affectedSurface: "Deprecated old_games reference coverage",
+    commands: [],
     dependencies: [],
-    discoveryTargets: [
-      "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs",
-      "tests/playwright/games/AsteroidsBeatTiming.spec.mjs",
-      "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs",
-      "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
-    ],
-    fixtures: [
-      "explicit Asteroids manifest/page fixtures",
-      "repo-served browser pages"
-    ],
+    discoveryTargets: [],
+    fixtures: [],
     fixturePaths: [],
     ownership: "games",
-    playwrightDir: "tests/playwright/games",
-    requiresPreflight: true,
-    reason: "Game runtime lane validates explicit game-owned Playwright behavior only."
+    playwrightDir: "",
+    requiresPreflight: false,
+    reason: "old_games are deprecated playable references and are excluded from active automated runtime validation."
   },
   integration: {
     affectedSurface: "Workspace, tool, game index, and manifest handoff behavior",
@@ -286,10 +271,10 @@ const representativeRoutingCases = Object.freeze([
     reason: "Tool-owned runtime/UI changes route to the affected tool-runtime lane only."
   },
   {
-    caseName: "game change",
-    changedFiles: ["games/asteroids/asteroids.js"],
-    expectedLanes: ["game-runtime"],
-    reason: "Game-owned runtime changes route to game-runtime without treating tool lanes as blockers."
+    caseName: "deprecated game change",
+    changedFiles: ["old_games/asteroids/asteroids.js"],
+    expectedLanes: [],
+    reason: "Deprecated old_games changes do not route to active runtime test lanes."
   },
   {
     caseName: "src change",
@@ -673,8 +658,8 @@ function routeLanesForChangedFiles(changedFiles) {
     }
     if (normalized.startsWith("tests/playwright/integration/")) {
       routed.add("integration");
-    } else if (normalized.startsWith("tests/playwright/games/") || normalized.startsWith("games/")) {
-      routed.add("game-runtime");
+    } else if (normalized.startsWith("tests/playwright/games/") || normalized.startsWith("games/") || normalized.startsWith("old_games/")) {
+      continue;
     } else if (normalized.startsWith("tests/playwright/tools/") || normalized.startsWith("tools/")) {
       routed.add("tool-runtime");
     } else if (normalized.startsWith("src/")
@@ -1358,13 +1343,13 @@ function referencedFixturePaths(content) {
   const fixtures = new Set();
   const patterns = [
     /\btests\/fixtures\/[A-Za-z0-9_./-]+/g,
-    /\bgames\/[A-Za-z0-9_-]+\/game\.manifest\.json\b/g,
-    /\/games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g
+    /\bold_games\/[A-Za-z0-9_-]+\/game\.manifest\.json\b/g,
+    /\/old_games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g
   ];
   for (const pattern of patterns) {
     let match = pattern.exec(content);
     while (match) {
-      if (match[0].startsWith("/games/")) {
+      if (match[0].startsWith("/old_games/")) {
         fixtures.add(match[0].slice(1));
       } else {
         fixtures.add(match[0]);

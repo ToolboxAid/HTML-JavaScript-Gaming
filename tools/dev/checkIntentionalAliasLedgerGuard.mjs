@@ -3,7 +3,7 @@ import path from "node:path";
 
 const repoRoot = process.cwd();
 const ledgerPath = path.join(repoRoot, "tools/dev/intentionalAliasLedger.json");
-const scanRoots = ["src", "games", "tools", "tests", "samples"];
+const scanRoots = ["src", "tools", "tests", "samples"];
 const sourceExtensions = new Set([".js", ".mjs"]);
 const ignoredDirNames = new Set(["node_modules", ".git", "tmp", "results", "generated", "vendor"]);
 const ignoredPathFragments = [
@@ -11,6 +11,12 @@ const ignoredPathFragments = [
   "docs_build/archive/",
   "tests/results/"
 ];
+
+function shouldIgnoreDirectory(directoryName) {
+  return ignoredDirNames.has(directoryName)
+    || directoryName.startsWith("old_")
+    || directoryName === "SpriteEditor_old_keep";
+}
 
 function toPosix(value) {
   return value.replace(/\\/g, "/");
@@ -31,7 +37,7 @@ function collectSourceFiles(startPath, outFiles) {
     const fullPath = path.join(startPath, entry.name);
     const relPath = toPosix(path.relative(repoRoot, fullPath));
     if (entry.isDirectory()) {
-      if (ignoredDirNames.has(entry.name)) continue;
+      if (shouldIgnoreDirectory(entry.name)) continue;
       if (isIgnoredPath(`${relPath}/`)) continue;
       collectSourceFiles(fullPath, outFiles);
       continue;

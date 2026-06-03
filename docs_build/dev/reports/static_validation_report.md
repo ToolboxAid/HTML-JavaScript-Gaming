@@ -1,6 +1,6 @@
 # Static Validation Report
 
-Generated: 2026-06-02T20:52:58.646Z
+Generated: 2026-06-03T17:06:31.632Z
 Status: PASS
 Static only: No
 Dry run: No
@@ -22,12 +22,12 @@ Reason: No deterministic static validation failure was found.
 | invalid filename detection | PASS | Covered by Playwright structure audit. |
 | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | workspace-contract:206a508dc4c249d7 |
+| targeted file manifests | PASS | workspace-contract:85496f0e17683ed9 |
 | persistent lane manifests | PASS | workspace-contract:INVALIDATED |
 | lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
 | dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
 | lane input graph expansion | PASS | No inputs escaped manifest scope. |
-| scoped discovery targets | PASS | tests/playwright/tools/WorkspaceManagerV2.spec.mjs |
+| scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
 | broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
 | invalid lane target detection | PASS | No invalid lane target findings. |
 | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |

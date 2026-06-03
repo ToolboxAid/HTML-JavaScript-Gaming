@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/game.manifest.schema.json",
   "title": "Game Manifest",
-  "description": "Schema for games/**/game.manifest.json as the single source of truth. Game manifests are game-only runtime/editor data documents; Workspace Manager V2 uses this manifest plus manifest/toolState contract checks.",
+  "description": "Schema for old_games/**/game.manifest.json as the single source of truth for deprecated playable reference games. Game manifests are game-only runtime/editor data documents; Workspace Manager V2 uses this manifest plus manifest/toolState contract checks.",
   "type": "object",
   "required": ["schema", "version", "game", "launch", "tools"],
   "additionalProperties": false,

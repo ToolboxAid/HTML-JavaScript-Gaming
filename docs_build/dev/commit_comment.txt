@@ -1,7 +1,6 @@
-Separate build documentation and remove legacy GameFoundryStudio - PR_26154_002-docs-build-separation-teardown
+Normalize deprecated games, docs_build docs, and tool routes - PR_26154_003-deprecated-games-docs-tools-normalize
 
-- Move development, PR, workflow, governance, audit, and report documentation from /docs/ into /docs_build/.
-- Keep /docs/ focused on user-facing documentation and preserve protected start_of_day contents without edits.
-- Remove the obsolete legacy public folder after active Theme V2 assets already live under src/engine/theme/v2.
-- Update docs_build, active governance, script/test, and root references from docs/dev and docs/pr to docs_build/dev and docs_build/pr.
-- Validate targeted references, changed JS/HTML paths, and git diff whitespace; do not run workspace-v2 or samples smoke because launch/navigation behavior did not change.
+- Rename playable reference games from /games/ to /old_games/ and exclude deprecated game tests from active validation.
+- Move build/design/reference/release/tool/schema documentation into /docs_build/ while keeping /docs/ user-facing only.
+- Move public tool surfaces to tools/<toolname>/index.html with concise folder/page naming and update Theme V2 navigation, tool index, launch registration, and active path references.
+- Validate changed active HTML/JS/JSON/Markdown paths, root tools Workspace V2 behavior, deprecated-game test skipping, targeted references, shared extraction guard, and diff whitespace.

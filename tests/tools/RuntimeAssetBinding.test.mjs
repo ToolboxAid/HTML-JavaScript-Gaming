@@ -9,36 +9,36 @@ export async function run() {
       {
         domain: "sprites",
         assetId: "sprite.ship",
-        runtimePath: "games/asteroids/assets/sprites/sprite-ship.json",
-        toolDataPath: "games/asteroids/assets/sprites/data/sprite-ship-tool.json",
+        runtimePath: "old_games/asteroids/assets/sprites/sprite-ship.json",
+        toolDataPath: "old_games/asteroids/assets/sprites/data/sprite-ship-tool.json",
         sourceToolId: "sprite-editor"
       },
       {
         domain: "tilemaps",
         assetId: "tilemap.main",
-        runtimePath: "games/asteroids/assets/tilemaps/tilemap-main.json",
-        toolDataPath: "games/asteroids/assets/tilemaps/data/tilemap-main-tool.json",
+        runtimePath: "old_games/asteroids/assets/tilemaps/tilemap-main.json",
+        toolDataPath: "old_games/asteroids/assets/tilemaps/data/tilemap-main-tool.json",
         sourceToolId: "tile-map-editor"
       },
       {
         domain: "parallax",
         assetId: "parallax.bg",
-        runtimePath: "games/asteroids/assets/parallax/parallax-bg.json",
-        toolDataPath: "games/asteroids/assets/parallax/data/parallax-bg-tool.json",
+        runtimePath: "old_games/asteroids/assets/parallax/parallax-bg.json",
+        toolDataPath: "old_games/asteroids/assets/parallax/data/parallax-bg-tool.json",
         sourceToolId: "parallax-editor"
       },
       {
         domain: "vectors",
         assetId: "vector.ship",
-        runtimePath: "games/asteroids/assets/vectors/vector-ship.json",
-        toolDataPath: "games/asteroids/assets/vectors/data/vector-ship-tool.json",
+        runtimePath: "old_games/asteroids/assets/vectors/vector-ship.json",
+        toolDataPath: "old_games/asteroids/assets/vectors/data/vector-ship-tool.json",
         sourceToolId: "object-vector-studio-v2"
       },
       {
         domain: "sprites",
         assetId: "sprite.tool-only",
-        runtimePath: "games/asteroids/assets/sprites/data/sprite-tool-only.json",
-        toolDataPath: "games/asteroids/assets/sprites/data/sprite-tool-only-tool.json",
+        runtimePath: "old_games/asteroids/assets/sprites/data/sprite-tool-only.json",
+        toolDataPath: "old_games/asteroids/assets/sprites/data/sprite-tool-only-tool.json",
         sourceToolId: "sprite-editor"
       }
     ]
@@ -57,7 +57,7 @@ export async function run() {
   );
 
   const sprite = resolveRuntimeAsset(binding, { domain: "sprites", assetId: "sprite.ship" });
-  assert.equal(sprite.runtimePath, "games/asteroids/assets/sprites/sprite-ship.json");
+  assert.equal(sprite.runtimePath, "old_games/asteroids/assets/sprites/sprite-ship.json");
   assert.equal(resolveRuntimeAsset(binding, { domain: "sprites", assetId: "sprite.tool-only" }), null);
   assert.equal(resolveRuntimeAsset(binding, { domain: "vectors", assetId: "vector.ship" }).runtimePath.includes("/data/"), false);
 

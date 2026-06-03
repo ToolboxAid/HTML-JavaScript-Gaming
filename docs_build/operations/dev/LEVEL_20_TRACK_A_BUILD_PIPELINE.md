@@ -7,9 +7,9 @@ Define the Track A build and release-readiness command sequence used for validat
 1. Structure validation
    - `.\scripts\PS\validate\Validate-ScriptStructure.ps1`
 2. Deployment staging prep (apply mode)
-   - `.\scripts\PS\deploy\Prep-WebsiteRepoDeployment.ps1 -StagingRoot <repo>\tmp\website-deploy-track20a -IncludePaths index.html,games/index.html,samples/index.html,tools/index.html -Apply`
+   - `.\scripts\PS\deploy\Prep-WebsiteRepoDeployment.ps1 -StagingRoot <repo>\tmp\website-deploy-track20a -IncludePaths index.html,old_games/index.html,samples/index.html,tools/index.html -Apply`
 3. Deployment update + verification (apply mode)
-   - `.\scripts\PS\deploy\Update-WebsiteRepoDeployment.ps1 -StagingRoot <repo>\tmp\website-deploy-track20a -IncludePaths index.html,games/index.html,samples/index.html,tools/index.html -Apply -ConfirmDestructive`
+   - `.\scripts\PS\deploy\Update-WebsiteRepoDeployment.ps1 -StagingRoot <repo>\tmp\website-deploy-track20a -IncludePaths index.html,old_games/index.html,samples/index.html,tools/index.html -Apply -ConfirmDestructive`
 4. Deployment cleanup (apply mode)
    - `.\scripts\PS\deploy\Clean-WebsiteRepoDeployment.ps1 -StagingRoot <repo>\tmp\website-deploy-track20a -Apply -ConfirmDestructive -RemoveMetadata`
 

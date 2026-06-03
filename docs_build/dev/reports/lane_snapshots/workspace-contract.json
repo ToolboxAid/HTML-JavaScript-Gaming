@@ -1,13 +1,13 @@
 {
-  "commandsHash": "f2b9a48be591584a",
+  "commandsHash": "39e16c9d480a1e51",
   "dependencyGateStatus": "PASS",
   "dependencyGraph": {
     "dependencies": [],
-    "dependencyGraphHash": "22d43616972c1154",
+    "dependencyGraphHash": "d8b1f03418e7f315",
     "importHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "1ef2f045668d2d37",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
     },
     "imports": [
@@ -17,46 +17,18 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "dependencyGraphHash": "22d43616972c1154",
-  "executionGraphHash": "c0da103f5d6ba489",
+  "dependencyGraphHash": "d8b1f03418e7f315",
+  "executionGraphHash": "00a0b280f943d93d",
   "fixtureGraph": {
-    "fixtureHashes": {
-      "games/AITargetDummy/game.manifest.json": "2c8db43659b7eed7",
-      "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
-      "games/Bouncing-ball/game.manifest.json": "aff51c94c9677f4c",
-      "games/Breakout/game.manifest.json": "395416dbea373a08",
-      "games/GravityWell/game.manifest.json": "947361edb0b9c4cf",
-      "games/InvalidWorkspace/game.manifest.json": "missing",
-      "games/Pacman/game.manifest.json": "7761f811f990e7d2",
-      "games/Pong/game.manifest.json": "c6b124046d3dbdf0",
-      "games/SolarSystem/game.manifest.json": "1c1fd265d36b7e2e",
-      "games/SpaceDuel/game.manifest.json": "2e4fdbb109606b2a",
-      "games/SpaceInvaders/game.manifest.json": "31983bdeac0eac77",
-      "games/vector-arcade-sample/game.manifest.json": "2155d563446a5667",
-      "tests/fixtures/workspace-v2/uat.manifest.json": "4b2d4b7e04df35e3"
-    },
-    "fixtures": [
-      "games/AITargetDummy/game.manifest.json",
-      "games/Asteroids/game.manifest.json",
-      "games/Bouncing-ball/game.manifest.json",
-      "games/Breakout/game.manifest.json",
-      "games/GravityWell/game.manifest.json",
-      "games/InvalidWorkspace/game.manifest.json",
-      "games/Pacman/game.manifest.json",
-      "games/Pong/game.manifest.json",
-      "games/SolarSystem/game.manifest.json",
-      "games/SpaceDuel/game.manifest.json",
-      "games/SpaceInvaders/game.manifest.json",
-      "games/vector-arcade-sample/game.manifest.json",
-      "tests/fixtures/workspace-v2/uat.manifest.json"
-    ]
+    "fixtureHashes": {},
+    "fixtures": []
   },
-  "fixtureGraphHash": "ba8c4b150942161f",
+  "fixtureGraphHash": "6c4fac7630b0b6f3",
   "helperGraph": {
     "helperHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "1ef2f045668d2d37",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
     },
     "helpers": [
@@ -66,47 +38,20 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "helperGraphHash": "a1cf21c99a8de7b5",
-  "inputHash": "9a6b43cbeb11938b",
+  "helperGraphHash": "27270481957a2fdd",
+  "inputHash": "df46aef671d3b988",
   "lane": "workspace-contract",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "1171a3be87ecbb89",
+  "laneDefinitionHash": "fefe835fc9e6dada",
   "manifest": {
     "fileHashes": {
-      "games/AITargetDummy/game.manifest.json": "2c8db43659b7eed7",
-      "games/Asteroids/game.manifest.json": "e95aa97f885f0334",
-      "games/Bouncing-ball/game.manifest.json": "aff51c94c9677f4c",
-      "games/Breakout/game.manifest.json": "395416dbea373a08",
-      "games/GravityWell/game.manifest.json": "947361edb0b9c4cf",
-      "games/InvalidWorkspace/game.manifest.json": "missing",
-      "games/Pacman/game.manifest.json": "7761f811f990e7d2",
-      "games/Pong/game.manifest.json": "c6b124046d3dbdf0",
-      "games/SolarSystem/game.manifest.json": "1c1fd265d36b7e2e",
-      "games/SpaceDuel/game.manifest.json": "2e4fdbb109606b2a",
-      "games/SpaceInvaders/game.manifest.json": "31983bdeac0eac77",
-      "games/vector-arcade-sample/game.manifest.json": "2155d563446a5667",
-      "tests/fixtures/workspace-v2/uat.manifest.json": "4b2d4b7e04df35e3",
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-      "tests/helpers/playwrightV8CoverageReporter.mjs": "9c0ed0ab83ea6ae9",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "1ef2f045668d2d37",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/WorkspaceManagerV2.spec.mjs": "09c4fa68d4adfec2"
+      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "680da2fe51aa9833"
     },
-    "fixtures": [
-      "games/AITargetDummy/game.manifest.json",
-      "games/Asteroids/game.manifest.json",
-      "games/Bouncing-ball/game.manifest.json",
-      "games/Breakout/game.manifest.json",
-      "games/GravityWell/game.manifest.json",
-      "games/InvalidWorkspace/game.manifest.json",
-      "games/Pacman/game.manifest.json",
-      "games/Pong/game.manifest.json",
-      "games/SolarSystem/game.manifest.json",
-      "games/SpaceDuel/game.manifest.json",
-      "games/SpaceInvaders/game.manifest.json",
-      "games/vector-arcade-sample/game.manifest.json",
-      "tests/fixtures/workspace-v2/uat.manifest.json"
-    ],
+    "fixtures": [],
     "helpers": [
       "tests/helpers/playwrightRepoServer.mjs",
       "tests/helpers/playwrightStorageIsolation.mjs",
@@ -119,42 +64,42 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "206a508dc4c249d7",
+    "manifestHash": "85496f0e17683ed9",
     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
     "source": "generated",
     "tests": [
-      "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
+      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
     ]
   },
-  "manifestHash": "206a508dc4c249d7",
+  "manifestHash": "85496f0e17683ed9",
   "ownership": "tools",
   "runtimeConfiguration": {
-    "affectedSurface": "Workspace Manager V2 contract and lifecycle behavior",
+    "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
     "commands": [
       {
         "args": [
           "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
           "test",
-          "tests/playwright/tools/WorkspaceManagerV2.spec.mjs",
+          "tests/playwright/tools/RootToolsFutureState.spec.mjs",
           "--project=playwright",
           "--workers=1",
           "--reporter=list"
         ],
         "command": "C:\\nvm4w\\nodejs\\node.exe",
         "targets": [
-          "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
+          "tests/playwright/tools/RootToolsFutureState.spec.mjs"
         ],
         "type": "playwright"
       }
     ],
-    "commandsHash": "f2b9a48be591584a",
-    "laneConfigHash": "7c4e88b944af7517",
+    "commandsHash": "39e16c9d480a1e51",
+    "laneConfigHash": "3d8db02cddc33911",
     "requiresPreflight": true,
     "requiresSamplesFlag": false
   },
-  "runtimeConfigurationHash": "3fc50cc7c32e09db",
-  "snapshotHash": "b9b0963e6254481c",
+  "runtimeConfigurationHash": "c99c4343771f1683",
+  "snapshotHash": "6802b9c028f7bbb6",
   "version": 1,
-  "warmStartHash": "e5efc6aba0e39043",
-  "generatedAt": "2026-06-02T20:52:58.649Z"
+  "warmStartHash": "8cf21d8915405855",
+  "generatedAt": "2026-06-03T17:06:31.635Z"
 }

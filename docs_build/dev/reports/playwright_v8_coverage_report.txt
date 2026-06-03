@@ -21,188 +21,26 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(0%) src/engine/theme/v2/assets/js/account-controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/theme/toolboxaid-header.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/dev/checkBoundaryHardeningGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/dev/checkDocsStructureGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/dev/checkIntentionalAliasLedgerGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/dev/checkInternalBarrelGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/dev/checkSharedExtractionGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/dev/checkStyleSystemGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/localization-studio/js/localization-studio.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_3D Asset Viewer/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_3D Camera Path Editor/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_3D JSON Payload/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Asset Pipeline/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/assetManagerMetadata.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/AssetManagerV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/assetPreviewHelpers.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/AssetCatalogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/AssetFormControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/AssetManagerShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/services/AssetSchemaValidator.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_asset-manager-v2/js/services/WorkspaceBridge.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxControlPanel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxTileListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/ToolShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/services/AudioSfxEngine.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_collision-inspector-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Logger.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Renderer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Shell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_collision-inspector-v2/js/constants.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/ActionSelectionControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/CaptureControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/DeviceListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/ExportControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/GamepadDiagnosticsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/GestureListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/SourceInventoryControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/services/EngineInputSourceService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/services/InputMappingState.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_input-mapping-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/AudioDiagnosticsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/DirectorPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/ExportPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/FutureControlsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/InstrumentGridControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/MidiSourceDetailsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/PlaybackControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/RenderedExportActionsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/SongDetailsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/SongListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/SongSetupControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/SongSheetControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/StudioTabsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/ToolShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/UnwiredControlState.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/MidiStudioV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/sectionColors.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/services/MidiPlaybackService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/services/MidiSourceInspectionService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_midi-studio-v2/js/services/MidiStudioStateSerializer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/SourceInputControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_object-vector-studio-v2/playwright.config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/controls/PaletteEditorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/controls/PaletteHarmonyControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/controls/PaletteImportExportControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/controls/PaletteValidationErrorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/controls/SourcePaletteBrowserControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/controls/UserPaletteControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/modules/paletteHarmonyUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/modules/PaletteHistoryStack.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/modules/PaletteManagerApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/modules/paletteUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/modules/PaletteValidationService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/modules/SwatchRow.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_palette-manager-v2/paletteManagerShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Parallax Scene Studio/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Performance Profiler/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Physics Sandbox/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/AssetFolderControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/CaptureModeControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/GeneratePreviewControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/LastGeneratedImageControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/OutputSummaryControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/PathsOrIdsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/PreviewFrameControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/RenderControlsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/RepoDestinationControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/controls/TargetSourceControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/previewGeneratorV2.bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Capture.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Logger.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2RepoAccess.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2ShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Replay Visualizer/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Sprite Editor/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Sprite Editor/modules/colorUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Sprite Editor/modules/constants.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Sprite Editor/modules/projectModel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Sprite Editor/modules/spriteEditorApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_State Inspector/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/DataControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/DirtyControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/EntryListControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/FilterControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/JsonControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2RuntimeContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_storage-inspector-v2/js/StorageInspectorV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/controls/OutputSummaryControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/controls/QueueControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/controls/SpeechOptionsControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/controls/TextInputControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/controls/TextToSpeechShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_text2speech-V2/js/TextToSpeechToolApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_Tilemap Studio/main.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/GameSelectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/LaunchControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/ManifestMenuControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/RepoDestinationControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/ToolTilesControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/WorkspaceSummaryControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_workspace-manager-v2/js/WorkspaceManagerV2App.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/bootstrap.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/AccordionSection.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/ActionNavControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/InspectorControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/PreviewPanelControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/SourceInputControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/StatusLogControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/ToolStarterShellControl.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/services/ToolStateSerializer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/js/ToolStarterApp.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/old_world-vector-studio-v2/playwright.config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(44%) src/engine/theme/v2/assets/js/tool-display-mode.js - executed lines 105/105; executed functions 4/9
+(0%) tools/localization/js/localization-studio.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/pipeline/assetManifestLoader.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/pipeline/assetPipelineTooling.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/pipeline/gameAssetManifestCoordinator.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/pipeline/runtimeAssetLookup.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/platformShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/toolLaunchSSoT.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/vectorNativeTemplate.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/vectorTemplateSampleGame.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (75%) tools/tools-page-accordions.js - executed lines 390/390; executed functions 15/20
 (85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - executed lines 180/180; executed functions 17/20
 
@@ -212,374 +50,292 @@ Files with executed line/function counts where available:
 (85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - executed lines 180/180; executed functions 17/20
 
 Uncovered or low-coverage changed JS files:
-(0%) src/engine/theme/v2/assets/js/account-controls.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/runtime/gameImageConvention.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/theme/toolboxaid-header.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/state/getStateVariantClassification.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/dev/checkBoundaryHardeningGuard.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/dev/checkDocsStructureGuard.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/dev/checkIntentionalAliasLedgerGuard.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/dev/checkInternalBarrelGuard.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/dev/checkSharedExtractionGuard.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) tools/dev/checkStyleSystemGuard.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/localization-studio/js/localization-studio.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_3D Asset Viewer/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_3D Camera Path Editor/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_3D JSON Payload/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Asset Pipeline/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/assetManagerMetadata.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/AssetManagerV2App.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/assetPreviewHelpers.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/ActionNavControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/AssetCatalogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/AssetFormControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/AssetManagerShellControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/InspectorControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/services/AssetSchemaValidator.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_asset-manager-v2/js/services/WorkspaceBridge.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/ActionNavControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/InspectorControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxControlPanel.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxTileListControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/controls/ToolShellControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/services/AudioSfxEngine.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_audio-sfx-playground-v2/js/services/ToolStateSerializer.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_collision-inspector-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2App.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Controls.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Logger.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Renderer.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Shell.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_collision-inspector-v2/js/constants.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/ActionNavControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/ActionSelectionControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/CaptureControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/DeviceListControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/ExportControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/GamepadDiagnosticsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/GestureListControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/InspectorControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/PreviewPanelControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/SourceInventoryControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/controls/ToolStarterShellControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/services/EngineInputSourceService.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/services/InputMappingState.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_input-mapping-v2/js/ToolStarterApp.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/ActionNavControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/AudioDiagnosticsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/DirectorPanelControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/ExportPanelControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/FutureControlsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/InstrumentGridControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/MidiSourceDetailsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/PlaybackControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/RenderedExportActionsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/SongDetailsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/SongListControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/SongSetupControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/SongSheetControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/StudioTabsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/ToolShellControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/controls/UnwiredControlState.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/MidiStudioV2App.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/sectionColors.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/services/MidiPlaybackService.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/services/MidiSourceInspectionService.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_midi-studio-v2/js/services/MidiStudioStateSerializer.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/ActionNavControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/InspectorControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/PreviewPanelControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/SourceInputControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/controls/ToolStarterShellControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/services/ToolStateSerializer.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/js/ToolStarterApp.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_object-vector-studio-v2/playwright.config.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/controls/PaletteEditorControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/controls/PaletteHarmonyControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/controls/PaletteImportExportControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/controls/PaletteValidationErrorControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/controls/SourcePaletteBrowserControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/controls/UserPaletteControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/modules/paletteHarmonyUtils.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/modules/PaletteHistoryStack.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/modules/PaletteManagerApp.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/modules/paletteUtils.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/modules/PaletteValidationService.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/modules/SwatchRow.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_palette-manager-v2/paletteManagerShell.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Parallax Scene Studio/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Performance Profiler/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Physics Sandbox/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/AssetFolderControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/CaptureModeControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/GeneratePreviewControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/LastGeneratedImageControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/OutputSummaryControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/PathsOrIdsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/PreviewFrameControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/RenderControlsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/RepoDestinationControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/controls/TargetSourceControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/previewGeneratorV2.bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2App.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Capture.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Logger.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2RepoAccess.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2ShellControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Ui.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Replay Visualizer/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Sprite Editor/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Sprite Editor/modules/colorUtils.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Sprite Editor/modules/constants.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Sprite Editor/modules/projectModel.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Sprite Editor/modules/spriteEditorApp.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_State Inspector/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/DataControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/DirtyControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/EntryListControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/FilterControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/JsonControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2RuntimeContract.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_storage-inspector-v2/js/StorageInspectorV2App.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/controls/ActionNavControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/controls/OutputSummaryControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/controls/QueueControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/controls/SpeechOptionsControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/controls/TextInputControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/controls/TextToSpeechShellControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_text2speech-V2/js/TextToSpeechToolApp.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_Tilemap Studio/main.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/GameSelectorControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/LaunchControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/ManifestMenuControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/RepoDestinationControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/ToolTilesControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/controls/WorkspaceSummaryControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_workspace-manager-v2/js/WorkspaceManagerV2App.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/bootstrap.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/AccordionSection.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/ActionNavControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/InspectorControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/PreviewPanelControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/SourceInputControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/StatusLogControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/controls/ToolStarterShellControl.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/services/ToolStateSerializer.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/js/ToolStarterApp.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/old_world-vector-studio-v2/playwright.config.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) tools/toolRegistry.js - WARNING: uncovered changed runtime JS file; advisory only
-(44%) src/engine/theme/v2/assets/js/tool-display-mode.js - WARNING: advisory low coverage; executed lines 105/105
+(0%) tools/localization/js/localization-studio.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/shared/pipeline/assetManifestLoader.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/shared/pipeline/assetPipelineTooling.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/shared/pipeline/gameAssetManifestCoordinator.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/shared/pipeline/runtimeAssetLookup.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/shared/platformShell.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/shared/toolLaunchSSoT.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/shared/vectorNativeTemplate.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) tools/shared/vectorTemplateSampleGame.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/assets/samples/old_samples.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/main.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/app.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appActions.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appCommands.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appExport.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appHistory.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appInput.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appIO.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appLayers.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appMenus.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appPalette.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appPopups.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appRender.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appShell.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appTimeline.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/appViewTools.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/constants.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurface.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceBottomPanel.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceBuild.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceCommandPalette.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceDraw.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceInput.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceLayout.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceLeftPanel.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceMenus.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceRightPanel.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceTopBar.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/document.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/events/eventBus.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/events/eventDispatch.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/events/eventTypes.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/integration/integrationContracts.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/integration/integrationRegistry.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/integration/systemIntegration.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/modules/viewport.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/shared/getPaletteSignature.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/archive/tools/SpriteEditor_old_keep/shared/scoreCommandItem.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative_demoted_runtime_lookalikes/src/engine/paletteList.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative_demoted_runtime_lookalikes/tools/shared/paletteDocumentContract.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/tests/runtime/SampleStandaloneToolDataFlow.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/tools/Palette Browser/main.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/tools/toolRegistry.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/modules/PaletteManagerApp.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/game/AITargetDummyConfig.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/game/AITargetDummyController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/game/AITargetDummyDebugOverlay.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/game/AITargetDummyInputController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/game/AITargetDummyScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/game/AITargetDummyStateMachine.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/game/AITargetDummyWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/AITargetDummy/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/debug/asteroidsShowcaseDebug.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/entities/Asteroid.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/entities/Bullet.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/entities/Ship.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/entities/Ufo.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/game/asteroidObjectGeometry.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/game/AsteroidsAttractAdapter.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/game/asteroidsBeatTiming.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/game/asteroidsDebugDiagnostics.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/game/AsteroidsGameScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/game/asteroidsObjectGeometryManifest.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/game/AsteroidsSession.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/game/AsteroidsWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/index.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/systems/AsteroidsAudio.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/systems/AsteroidsHighScoreService.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/systems/AsteroidsInitialsEntry.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/systems/HighScoreStore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Asteroids/systems/ShipDebrisSystem.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/game/BouncingBallAudio.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/game/BouncingBallInputController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/game/BouncingBallScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/game/BouncingBallWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Bouncing-ball/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/game/BreakoutAudio.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/game/BreakoutInputController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/game/BreakoutScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/game/BreakoutWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Breakout/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/game/GravityWellScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/game/GravityWellWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/GravityWell/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/index.render.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIConfig.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIDebugOverlay.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIGhostController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIGhostHouseController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIGhostModeScheduler.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIGrid.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIInputController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAINavigator.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAITargeting.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/game/PacmanFullAIWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pacman/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/boot.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/game/PongAudio.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/game/PongInputController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/game/PongModeConfig.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/game/PongScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/game/PongWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/Pong/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/shared/gameManifestAssets.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/shared/gameManifestPreviewResolver.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/shared/workspaceGameBoot.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/shared/workspaceGameLaunchGuard.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/shared/workspaceGameMetadataHydrator.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/shared/workspaceGameRuntimeContext.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/shared/workspaceGameRuntimeHydrator.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/game/SolarSystemScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/game/SolarSystemWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SolarSystem/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/PhysicsController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/PlayerController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/ScoreManager.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/SoundController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/SpaceDuelAttractAdapter.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/SpaceDuelHighScoreService.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/SpaceDuelInitialsEntry.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/SpaceDuelScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/game/WaveController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceDuel/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/font8x8.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/PlayerManager.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/SpaceInvadersAudio.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/SpaceInvadersHighScoreService.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/SpaceInvadersInitialsEntry.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/SpaceInvadersInputController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/SpaceInvadersScene.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/SpaceInvadersSpriteData.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/SpaceInvadersWorld.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/UfoController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/game/WaveController.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/SpaceInvaders/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/vector-arcade-sample/flow/attract.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/vector-arcade-sample/flow/highscore.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/vector-arcade-sample/flow/intro.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/vector-arcade-sample/main.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/vector-arcade-sample/rules/flowContent.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/vector-arcade-sample/rules/flowRules.js - changed JS file not collected as browser runtime coverage
+(0%) old_games/vector-arcade-sample/rules/gameFlowRules.js - changed JS file not collected as browser runtime coverage
+(0%) scripts/audit-playwright-test-locations.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/normalize-games-presentation.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/run-node-test-files.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/run-node-tests.mjs - changed JS file not collected as browser runtime coverage
 (0%) scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/engine/theme/v2/assets/js/account-controls.js - changed JS file not collected as browser runtime coverage
+(0%) scripts/skip-deprecated-game-tests.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/sync-tool-hints-from-workspace-manager.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-active-tools-surface.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-asset-ownership-strategy.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-games-template-contract.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-json-contracts.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-project-system.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-starter-project-template.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-tool-registry.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/engine/runtime/gameImageConvention.js - changed JS file not collected as browser runtime coverage
+(0%) src/engine/theme/toolboxaid-header.js - changed JS file not collected as browser runtime coverage
 (0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/contracts/tools/toolContractsIndex.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/state/getStateVariantClassification.js - changed JS file not collected as browser runtime coverage
+(0%) tests/core/BackgroundImageAndFullscreenBezel.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/engine/ManifestRuntimeParser.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/helpers/playwrightV8CoverageReporter.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/MidiStudioV2.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/production/EnginePublicBarrelImports.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/run-tests.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/runtime/LaunchSmokeAllEntries.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/runtime/Phase17DebugOverlayBottomRightPosition.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/runtime/Phase19OverlayExpansionFramework.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/shared/ContractIndexValidation.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/shared/ContractReportStandardization.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/shared/GetStateVariantClassification.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/shared/ProjectWorkspaceMigrationGovernanceCloseoutValidation.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/AssetOwnershipStrategyCloseout.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/AssetPipelineTooling.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/AssetUsageIntegration.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/GameAssetManifestCoordinator.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/GamesTemplateContractEnforcement.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/RuntimeAssetBinding.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/RuntimeAssetLookupConsolidation.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/RuntimeAssetValidation.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/VectorAssetSystem.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/VectorGeometryRuntime.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/VectorTemplateSampleGame.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tools/dev/checkBoundaryHardeningGuard.mjs - changed JS file not collected as browser runtime coverage
+(0%) tools/dev/checkDocsStructureGuard.mjs - changed JS file not collected as browser runtime coverage
+(0%) tools/dev/checkIntentionalAliasLedgerGuard.mjs - changed JS file not collected as browser runtime coverage
+(0%) tools/dev/checkInternalBarrelGuard.mjs - changed JS file not collected as browser runtime coverage
+(0%) tools/dev/checkSharedExtractionGuard.mjs - changed JS file not collected as browser runtime coverage
 (0%) tools/dev/checkStyleSystemGuard.mjs - changed JS file not collected as browser runtime coverage
-(0%) tools/localization-studio/js/localization-studio.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_3D Asset Viewer/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_3D Camera Path Editor/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_3D JSON Payload/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Asset Pipeline/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/assetManagerMetadata.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/AssetManagerV2App.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/assetPreviewHelpers.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/controls/ActionNavControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/controls/AssetFormControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/controls/AssetManagerShellControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/controls/InspectorControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/services/AssetSchemaValidator.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_asset-manager-v2/js/services/WorkspaceBridge.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/controls/ActionNavControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/controls/InspectorControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxControlPanel.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/controls/SfxTileListControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/controls/ToolShellControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/services/AudioSfxEngine.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_audio-sfx-playground-v2/js/services/ToolStateSerializer.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_collision-inspector-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2App.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Controls.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Logger.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Renderer.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_collision-inspector-v2/js/CollisionInspectorV2Shell.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_collision-inspector-v2/js/constants.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/ActionNavControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/ActionSelectionControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/CaptureControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/DeviceListControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/ExportControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/GamepadDiagnosticsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/GestureListControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/InspectorControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/PreviewPanelControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/SourceInventoryControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/controls/ToolStarterShellControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/services/EngineInputSourceService.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/services/InputMappingState.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_input-mapping-v2/js/ToolStarterApp.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/ActionNavControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/AudioDiagnosticsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/DirectorPanelControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/ExportPanelControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/FutureControlsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/InstrumentGridControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/MidiSourceDetailsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/PlaybackControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/RenderedExportActionsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/SongDetailsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/SongListControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/SongSetupControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/SongSheetControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/StudioTabsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/ToolShellControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/controls/UnwiredControlState.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/MidiStudioV2App.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/sectionColors.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/services/MidiPlaybackService.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/services/MidiSourceInspectionService.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_midi-studio-v2/js/services/MidiStudioStateSerializer.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/controls/ActionNavControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/controls/InspectorControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/controls/PreviewPanelControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/controls/SourceInputControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/controls/ToolStarterShellControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/services/ToolStateSerializer.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/js/ToolStarterApp.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_object-vector-studio-v2/playwright.config.mjs - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/controls/PaletteEditorControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/controls/PaletteHarmonyControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/controls/PaletteImportExportControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/controls/PaletteValidationErrorControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/controls/SourcePaletteBrowserControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/controls/UserPaletteControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/modules/paletteHarmonyUtils.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/modules/PaletteHistoryStack.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/modules/PaletteManagerApp.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/modules/paletteUtils.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/modules/PaletteValidationService.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/modules/SwatchRow.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_palette-manager-v2/paletteManagerShell.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Parallax Scene Studio/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Performance Profiler/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Physics Sandbox/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/AssetFolderControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/CaptureModeControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/GeneratePreviewControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/LastGeneratedImageControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/OutputSummaryControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/PathsOrIdsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/PreviewFrameControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/RenderControlsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/RepoDestinationControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/controls/TargetSourceControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/previewGeneratorV2.bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2App.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Capture.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Logger.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2RepoAccess.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2ShellControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_preview-generator-v2/PreviewGeneratorV2Ui.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Replay Visualizer/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Sprite Editor/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Sprite Editor/modules/colorUtils.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Sprite Editor/modules/constants.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Sprite Editor/modules/projectModel.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Sprite Editor/modules/spriteEditorApp.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_State Inspector/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/controls/DataControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/controls/DirtyControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/controls/EntryListControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/controls/FilterControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/controls/JsonControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2RuntimeContract.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_storage-inspector-v2/js/StorageInspectorV2App.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/controls/ActionNavControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/controls/OutputSummaryControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/controls/QueueControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/controls/SpeechOptionsControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/controls/TextInputControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/controls/TextToSpeechShellControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_text2speech-V2/js/TextToSpeechToolApp.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_Tilemap Studio/main.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/controls/GameSelectorControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/controls/LaunchControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/controls/ManifestMenuControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/controls/RepoDestinationControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/controls/ToolTilesControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/controls/WorkspaceSummaryControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_workspace-manager-v2/js/WorkspaceManagerV2App.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/bootstrap.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/controls/AccordionSection.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/controls/ActionNavControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/controls/InspectorControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/controls/PreviewPanelControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/controls/SourceInputControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/controls/StatusLogControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/controls/ToolStarterShellControl.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/services/ToolStateSerializer.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/js/ToolStarterApp.js - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/playwright.config.mjs - changed JS file not collected as browser runtime coverage
-(0%) tools/old_world-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tools/toolRegistry.js - changed JS file not collected as browser runtime coverage
-(44%) src/engine/theme/v2/assets/js/tool-display-mode.js - changed JS file with browser V8 coverage
+(0%) tools/localization/js/localization-studio.js - changed JS file not collected as browser runtime coverage
+(0%) tools/shared/pipeline/assetManifestLoader.js - changed JS file not collected as browser runtime coverage
+(0%) tools/shared/pipeline/assetPipelineTooling.js - changed JS file not collected as browser runtime coverage
+(0%) tools/shared/pipeline/gameAssetManifestCoordinator.js - changed JS file not collected as browser runtime coverage
+(0%) tools/shared/pipeline/runtimeAssetLookup.js - changed JS file not collected as browser runtime coverage
+(0%) tools/shared/platformShell.js - changed JS file not collected as browser runtime coverage
+(0%) tools/shared/toolLaunchSSoT.js - changed JS file not collected as browser runtime coverage
+(0%) tools/shared/vectorNativeTemplate.js - changed JS file not collected as browser runtime coverage
+(0%) tools/shared/vectorTemplateSampleGame.js - changed JS file not collected as browser runtime coverage
 (75%) tools/tools-page-accordions.js - changed JS file with browser V8 coverage
 (85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - changed JS file with browser V8 coverage

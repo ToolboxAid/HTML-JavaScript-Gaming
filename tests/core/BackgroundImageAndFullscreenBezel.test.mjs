@@ -19,8 +19,8 @@ import {
   resolveRuntimeAssetUrl
 } from "../../src/engine/runtime/gameImageConvention.js";
 
-const ASTEROIDS_BACKGROUND_RUNTIME_PATH = "/games/Asteroids/assets/images/deluxe.png";
-const ASTEROIDS_BEZEL_RUNTIME_PATH = "/games/Asteroids/assets/images/bezel.png";
+const ASTEROIDS_BACKGROUND_RUNTIME_PATH = "/old_games/Asteroids/assets/images/deluxe.png";
+const ASTEROIDS_BEZEL_RUNTIME_PATH = "/old_games/Asteroids/assets/images/bezel.png";
 
 function createAssetManagerManifest({ includeBackground = true, includeBezel = true } = {}) {
   const assets = {
@@ -176,7 +176,7 @@ function assertNear(actual, expected, epsilon = 0.51) {
   assert.equal(delta <= epsilon, true);
 }
 
-function createDocumentStub(pathname = "/games/Asteroids/index.html") {
+function createDocumentStub(pathname = "/old_games/Asteroids/index.html") {
   const documentRef = {
     location: { pathname },
     body: null,
@@ -256,7 +256,7 @@ function createCanvasWithOrder(order, documentRef) {
 }
 
 async function testBackgroundManifestRenderOrder() {
-  const documentRef = { location: { pathname: "/games/Asteroids/index.html" } };
+  const documentRef = { location: { pathname: "/old_games/Asteroids/index.html" } };
   const manifestPayload = createAssetManagerManifest();
   const paths = resolveGameImageConventionPaths({ documentRef });
   assert.equal(paths.backgroundPath, "");
@@ -308,33 +308,33 @@ async function testBackgroundManifestRenderOrder() {
 
 async function testGameImageConventionsAreGameAgnostic() {
   const asteroidsPaths = resolveGameImageConventionPaths({
-    documentRef: { location: { pathname: "/games/Asteroids/index.html" } }
+    documentRef: { location: { pathname: "/old_games/Asteroids/index.html" } }
   });
   assert.equal(asteroidsPaths.backgroundPath, "");
   assert.equal(asteroidsPaths.bezelPath, "");
   assert.equal(
-    resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/games/Asteroids/index.html" } } }),
-    "/games/Asteroids/game.manifest.json"
+    resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/old_games/Asteroids/index.html" } } }),
+    "/old_games/Asteroids/game.manifest.json"
   );
   const asteroidsManifestPaths = await resolveManifestChromeAssetPaths({
-    documentRef: { location: { pathname: "/games/Asteroids/index.html" } },
+    documentRef: { location: { pathname: "/old_games/Asteroids/index.html" } },
     manifestPayload: createAssetManagerManifest()
   });
   assert.equal(asteroidsManifestPaths.backgroundPath, ASTEROIDS_BACKGROUND_RUNTIME_PATH);
 
   const templatePaths = resolveGameImageConventionPaths({
-    documentRef: { location: { pathname: "/games/_template/index.html" } }
+    documentRef: { location: { pathname: "/old_games/_template/index.html" } }
   });
   assert.equal(templatePaths.backgroundPath, "");
   assert.equal(templatePaths.bezelPath, "");
   assert.equal(
-    resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/games/_template/index.html" } } }),
-    "/games/_template/game.manifest.json"
+    resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/old_games/_template/index.html" } } }),
+    "/old_games/_template/game.manifest.json"
   );
 }
 
 function testResolvePreferredFullscreenTargetKeepsCanvasOnlyParent() {
-  const documentRef = createDocumentStub("/games/Gravity/index.html");
+  const documentRef = createDocumentStub("/old_games/Gravity/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
   host.appendChild(canvas);
@@ -347,7 +347,7 @@ function testResolvePreferredFullscreenTargetKeepsCanvasOnlyParent() {
 }
 
 function testResolvePreferredFullscreenTargetCreatesCanvasOnlyHost() {
-  const documentRef = createDocumentStub("/games/Gravity/index.html");
+  const documentRef = createDocumentStub("/old_games/Gravity/index.html");
   const main = createElement("main", documentRef);
   const heading = createElement("h1", documentRef);
   const canvas = createElement("canvas", documentRef);
@@ -369,7 +369,7 @@ function testResolvePreferredFullscreenTargetCreatesCanvasOnlyHost() {
 async function testNoOpWhenBackgroundMissing() {
   let imageCreateCount = 0;
   const layer = new backgroundImage({
-    documentRef: { location: { pathname: "/games/MissingGame/index.html" } },
+    documentRef: { location: { pathname: "/old_games/MissingGame/index.html" } },
     manifestPayload: createAssetManagerManifest({ includeBackground: false }),
     imageFactory: createImageFactory(new Set(), () => {
       imageCreateCount += 1;
@@ -389,7 +389,7 @@ async function testNoOpWhenBackgroundMissing() {
 }
 
 async function testSampleGameBackgroundAndBezelNoOpWhenMissing() {
-  const documentRef = createDocumentStub("/games/SpaceInvaders/index.html");
+  const documentRef = createDocumentStub("/old_games/SpaceInvaders/index.html");
   const paths = resolveGameImageConventionPaths({ documentRef });
   assert.equal(paths.backgroundPath, "");
   assert.equal(paths.bezelPath, "");
@@ -440,7 +440,7 @@ async function testFullscreenBezelVisibilityAndHtmlAttachment() {
   assert.equal(bezel.element.parentElement, host);
   assert.equal(bezel.element.attributes["data-runtime-overlay"], "fullscreenBezel");
   assert.equal(bezel.element.src, ASTEROIDS_BEZEL_RUNTIME_PATH);
-  assert.equal(bezel.element.src.includes("/games/Asteroids/games/Asteroids/"), false);
+  assert.equal(bezel.element.src.includes("/old_games/Asteroids/old_games/Asteroids/"), false);
 
   bezel.element.onload?.();
   let result = bezel.sync({ fullscreenActive: false, fullscreenElement: host });
@@ -464,7 +464,7 @@ async function testFullscreenBezelVisibilityAndHtmlAttachment() {
 }
 
 async function testNoOpWhenBezelMissing() {
-  const documentRef = createDocumentStub("/games/MissingGame/index.html");
+  const documentRef = createDocumentStub("/old_games/MissingGame/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
   canvas.width = 960;
@@ -487,7 +487,7 @@ async function testNoOpWhenBezelMissing() {
 }
 
 function testMalformedBezelImageIsTreatedAsUnavailable() {
-  const documentRef = createDocumentStub("/games/Asteroids/index.html");
+  const documentRef = createDocumentStub("/old_games/Asteroids/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
   canvas.width = 960;
@@ -548,8 +548,8 @@ function testTransparentWindowDetectionAndAspectFit() {
   assert.equal(bestFit.width <= 1000.01, true);
   assert.equal(bestFit.height <= 500.01, true);
   assert.equal(
-    resolveBezelStretchConfigPath("games/Asteroids/assets/images/bezel.png"),
-    "games/Asteroids/game.manifest.json#tools.asset-browser.assets.image.asteroids.bezel.stretchOverride"
+    resolveBezelStretchConfigPath("old_games/Asteroids/assets/images/bezel.png"),
+    "old_games/Asteroids/game.manifest.json#tools.asset-browser.assets.image.asteroids.bezel.stretchOverride"
   );
 }
 
@@ -653,7 +653,7 @@ function testFullscreenBezelSharedStretchAffectsAllSides() {
 }
 
 function testFullscreenBezelCyclesAndResizeKeepLayoutStable() {
-  const documentRef = createDocumentStub("/games/Asteroids/index.html");
+  const documentRef = createDocumentStub("/old_games/Asteroids/index.html");
   const host = createElement("div", documentRef);
   host.clientWidth = 1600;
   host.clientHeight = 900;
@@ -703,7 +703,7 @@ function testFullscreenBezelCyclesAndResizeKeepLayoutStable() {
 }
 
 function testMalformedAndExtremeStretchConfigValuesAreSafe() {
-  const documentRef = createDocumentStub("/games/Asteroids/index.html");
+  const documentRef = createDocumentStub("/old_games/Asteroids/index.html");
   const host = createElement("div", documentRef);
   host.clientWidth = 1600;
   host.clientHeight = 900;
@@ -748,7 +748,7 @@ function testMalformedAndExtremeStretchConfigValuesAreSafe() {
 
 async function testBezelStretchConfigAutoCreate() {
   const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-stretch-config-"));
-  const configPath = "games/TestGame/assets/images/bezel.stretch.override.json";
+  const configPath = "old_games/TestGame/assets/images/bezel.stretch.override.json";
 
   try {
     const config = await ensureBezelStretchConfigFile(configPath, {
@@ -779,7 +779,7 @@ async function testBezelStretchConfigAutoCreate() {
 
 async function testBezelDetectionTriggersStretchConfigAutoCreate() {
   const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-detected-config-"));
-  const documentRef = createDocumentStub("/games/_template/index.html");
+  const documentRef = createDocumentStub("/old_games/_template/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
   canvas.width = 960;
@@ -813,10 +813,10 @@ async function testBezelDetectionTriggersStretchConfigAutoCreate() {
       await bezel.stretchConfigPromise;
     }
 
-    const createdPath = path.resolve(tempRoot, "games/_template/assets/images/bezel.stretch.override.json");
+    const createdPath = path.resolve(tempRoot, "old_games/_template/assets/images/bezel.stretch.override.json");
     const saved = JSON.parse(await readFile(createdPath, "utf8"));
     assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
-    assert.equal(bezel.getState().stretchConfigPath, "games/_template/assets/images/bezel.stretch.override.json");
+    assert.equal(bezel.getState().stretchConfigPath, "old_games/_template/assets/images/bezel.stretch.override.json");
     assert.equal(bezel.getState().stretchConfigInitialized, true);
   } finally {
     await rm(tempRoot, { recursive: true, force: true });
@@ -825,7 +825,7 @@ async function testBezelDetectionTriggersStretchConfigAutoCreate() {
 
 async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
   const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-detected-existing-config-"));
-  const documentRef = createDocumentStub("/games/_template/index.html");
+  const documentRef = createDocumentStub("/old_games/_template/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
   canvas.width = 960;
@@ -835,7 +835,7 @@ async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
 
   try {
     const expectedConfig = { uniformEdgeStretchPx: 14 };
-    const configPath = path.resolve(tempRoot, "games/_template/assets/images/bezel.stretch.override.json");
+    const configPath = path.resolve(tempRoot, "old_games/_template/assets/images/bezel.stretch.override.json");
     await mkdir(path.dirname(configPath), { recursive: true });
     await writeFile(configPath, `${JSON.stringify(expectedConfig, null, 2)}\n`, "utf8");
 
@@ -868,13 +868,13 @@ async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
 
 async function testMalformedStretchConfigFileFallsBackWithoutOverwrite() {
   const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-malformed-config-"));
-  const configPath = path.resolve(tempRoot, "games/TestGame/assets/images/bezel.stretch.override.json");
+  const configPath = path.resolve(tempRoot, "old_games/TestGame/assets/images/bezel.stretch.override.json");
   try {
     await mkdir(path.dirname(configPath), { recursive: true });
     const malformedContent = "{not-valid-json";
     await writeFile(configPath, malformedContent, "utf8");
 
-    const loaded = await ensureBezelStretchConfigFile("games/TestGame/assets/images/bezel.stretch.override.json", {
+    const loaded = await ensureBezelStretchConfigFile("old_games/TestGame/assets/images/bezel.stretch.override.json", {
       cwd: tempRoot,
       fsModule: { mkdir, readFile, writeFile },
       pathModule: path
@@ -889,7 +889,7 @@ async function testMalformedStretchConfigFileFallsBackWithoutOverwrite() {
 
 async function testSampleGameBezelDetectionCreatesStretchConfig() {
   const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-detected-spaceinvaders-config-"));
-  const documentRef = createDocumentStub("/games/SpaceInvaders/index.html");
+  const documentRef = createDocumentStub("/old_games/SpaceInvaders/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
   canvas.width = 960;
@@ -918,10 +918,10 @@ async function testSampleGameBezelDetectionCreatesStretchConfig() {
       await bezel.stretchConfigPromise;
     }
 
-    const createdPath = path.resolve(tempRoot, "games/SpaceInvaders/assets/images/bezel.stretch.override.json");
+    const createdPath = path.resolve(tempRoot, "old_games/SpaceInvaders/assets/images/bezel.stretch.override.json");
     const saved = JSON.parse(await readFile(createdPath, "utf8"));
     assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
-    assert.equal(bezel.getState().stretchConfigPath, "games/SpaceInvaders/assets/images/bezel.stretch.override.json");
+    assert.equal(bezel.getState().stretchConfigPath, "old_games/SpaceInvaders/assets/images/bezel.stretch.override.json");
   } finally {
     await rm(tempRoot, { recursive: true, force: true });
   }
@@ -944,12 +944,12 @@ async function testEngineRuntimeIntegration() {
 
     const availablePaths = new Set([
       ASTEROIDS_BACKGROUND_RUNTIME_PATH,
-      "/games/Asteroids/assets/images/bezel.png"
+      "/old_games/Asteroids/assets/images/bezel.png"
     ]);
     const manifestPayload = createAssetManagerManifest();
     globalThis.fetch = async (url) => {
       const requestUrl = String(url?.url || url || "");
-      if (requestUrl.endsWith("/games/Asteroids/game.manifest.json")) {
+      if (requestUrl.endsWith("/old_games/Asteroids/game.manifest.json")) {
         return {
           ok: true,
           async json() {
@@ -1056,7 +1056,7 @@ async function testEngineRuntimeIntegration() {
       "scene"
     ]);
     assert.equal(engine.fullscreenBezelLayer.element.src, ASTEROIDS_BEZEL_RUNTIME_PATH);
-    assert.equal(engine.fullscreenBezelLayer.element.src.includes("/games/Asteroids/games/Asteroids/"), false);
+    assert.equal(engine.fullscreenBezelLayer.element.src.includes("/old_games/Asteroids/old_games/Asteroids/"), false);
 
     scene.session.mode = "playing";
     order.length = 0;

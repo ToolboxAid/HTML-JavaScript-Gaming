@@ -1,6 +1,6 @@
 # Playwright Structure Audit
 
-Generated: 2026-06-02T20:52:58.631Z
+Generated: 2026-06-03T17:06:31.597Z
 Status: PASS
 
 ## Lane Directories
@@ -10,7 +10,7 @@ Status: PASS
 | tests/playwright/engine | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 | tests/playwright/games | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 | tests/playwright/integration | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
-| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/WorkspaceManagerV2.spec.mjs. |
+| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/RootToolsFutureState.spec.mjs. |
 
 ## Blocking Findings
 
@@ -30,13 +30,13 @@ No blocking structural findings.
 
 | Lane | File | Referenced Game Fixture(s) | Reason |
 | --- | --- | --- | --- |
-| tools | tests/playwright/tools/WorkspaceManagerV2.spec.mjs | AITargetDummy, Asteroids, Bouncing-ball, Breakout, GravityWell, InvalidWorkspace, MissingGame, Pacman, Pong, SolarSystem, SpaceDuel, SpaceInvaders, Synthetic, vector-arcade-sample | Workspace contract validation uses game manifests as explicit launch/toolState fixtures. |
+| none | none | none | No Playwright lane uses game fixtures. |
 
 ## Import Targets
 
 | File | Status | Missing Relative Imports |
 | --- | --- | --- |
-| tests/playwright/tools/WorkspaceManagerV2.spec.mjs | PASS | none |
+| tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | none |
 | tests/helpers/playwrightRepoServer.mjs | PASS | none |
 | tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
 | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |

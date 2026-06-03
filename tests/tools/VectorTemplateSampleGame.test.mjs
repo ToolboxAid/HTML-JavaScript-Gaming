@@ -3,7 +3,7 @@ import { buildVectorTemplateSampleGame, createVectorTemplateSampleGameDefinition
 
 export async function run() {
   const definition = createVectorTemplateSampleGameDefinition();
-  assert.equal(definition.gamePath, "games/vector-arcade-sample/");
+  assert.equal(definition.gamePath, "old_games/vector-arcade-sample/");
   assert.equal(definition.registry.projectId, "vector-arcade-sample");
   assert.equal(definition.registry.sprites.length, 0);
 

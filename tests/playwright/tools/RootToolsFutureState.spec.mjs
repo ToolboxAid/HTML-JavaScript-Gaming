@@ -44,9 +44,9 @@ test("root tools surface links current tool pages without old_* routes", async (
   try {
     await expect(page.locator("[data-tools-accordion-list] .control-card")).not.toHaveCount(0);
     const localizationCard = page.locator(".control-card").filter({
-      has: page.locator("h3", { hasText: "Localization Studio" })
+      has: page.locator("h3", { hasText: "Localization" })
     });
-    await expect(localizationCard.locator("a.btn")).toHaveAttribute("href", "../tools/localization-studio/index.html");
+    await expect(localizationCard.locator("a.btn")).toHaveAttribute("href", "../tools/localization/index.html");
     const hrefs = await page.locator("a[href]").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     expect(hrefs.filter((href) => href && /(^|\/|\.\.\/)tools\/old_/.test(href))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/tools/old_"))).toEqual([]);

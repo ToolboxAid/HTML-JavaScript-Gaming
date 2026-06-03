@@ -233,7 +233,7 @@ function createRuntimeAssetSources(registry) {
       kind: "tilemap",
       file: "tools/_templates-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
       runtimeEntry: {
-        modulePath: "games/Asteroids/main.js",
+        modulePath: "old_games/Asteroids/main.js",
         exportName: "bootAsteroids",
         canvasId: "game"
       },
@@ -423,4 +423,3 @@ export async function buildVectorNativeTemplate(options = {}) {
     }
   };
 }
-

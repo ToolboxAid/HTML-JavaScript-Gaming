@@ -7,15 +7,15 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
 const STRATEGY_PATH_CANDIDATES = [
-  "docs/reference/architecture-standards/specs/asset_ownership_strategy.md",
+  "docs_build/reference/architecture-standards/specs/asset_ownership_strategy.md",
   "docs/specs/asset_ownership_strategy.md"
 ];
 const REGISTRY_PATH_CANDIDATES = [
-  "docs/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
+  "docs_build/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
   "docs/specs/shared_asset_promotion_registry.json"
 ];
-const ASTEROIDS_MANIFEST_PATH = "games/Asteroids/game.manifest.json";
-const TEMPLATE_MANIFEST_PATH = "games/_template/assets/tools.manifest.json";
+const ASTEROIDS_MANIFEST_PATH = "old_games/Asteroids/game.manifest.json";
+const TEMPLATE_MANIFEST_PATH = "old_games/_template/assets/tools.manifest.json";
 const SAMPLE_ASSET_BROWSER_SCENE_PATH = "samples/phase-15/1505/AssetBrowserScene.js";
 const TOOL_DEMO_PROJECT_ASSETS_PATH = "tools/shared/samples/project-asset-registry-demo/project.assets.json";
 const REPORT_PATH = "docs_build/dev/reports/asset_ownership_strategy_validation.txt";
@@ -57,8 +57,8 @@ function ownerPrefixForPath(repoPath) {
   if (segments.length < 2) {
     return "";
   }
-  if (segments[0] === "games" && segments.length >= 2) {
-    return `games/${segments[1]}`;
+  if (segments[0] === "old_games" && segments.length >= 2) {
+    return `old_games/${segments[1]}`;
   }
   if (segments[0] === "samples" && segments.length >= 3) {
     return `samples/${segments[1]}/${segments[2]}`;
@@ -121,10 +121,10 @@ function validateAsteroidsManifest(asteroidsManifest, issues) {
     for (const entry of entries) {
       const runtimePath = toRepoPath(entry?.runtimePath || "");
       const toolDataPath = toRepoPath(entry?.toolDataPath || "");
-      if (!runtimePath.startsWith("games/Asteroids/game.manifest.json#")) {
+      if (!runtimePath.startsWith("old_games/Asteroids/game.manifest.json#")) {
         issues.push(`Asteroids runtime path is not game-local: ${runtimePath}`);
       }
-      if (!toolDataPath.startsWith("games/Asteroids/game.manifest.json#")) {
+      if (!toolDataPath.startsWith("old_games/Asteroids/game.manifest.json#")) {
         issues.push(`Asteroids tool-data path is not game-local: ${toolDataPath}`);
       }
       if (runtimePath.includes("/data/")) {

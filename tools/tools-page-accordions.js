@@ -12,9 +12,9 @@
             group: "Objects",
             tools: [
                 {
-                    title: "Object Vector Studio",
+                    title: "Object Vector",
                     subgroup: "Vector",
-                    href: "../tools/object-vector-studio.html",
+                    href: "../tools/object-vector/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/object-vector-studio.png",
                     description: "Create object-ready vector assets and reusable scene pieces.",
                     role: "Pixel Smith",
@@ -22,9 +22,9 @@
                     theme: "pixel"
                 },
                 {
-                    title: "Asset Studio",
+                    title: "Assets",
                     subgroup: "Sprite",
-                    href: "../tools/asset-studio.html",
+                    href: "../tools/assets/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/asset-studio.png",
                     description: "Create sprites, animations, vectors and palettes.",
                     role: "Pixel Smith",
@@ -32,9 +32,9 @@
                     theme: "pixel"
                 },
                 {
-                    title: "Animation Studio",
+                    title: "Animation",
                     subgroup: "Animated Sprite",
-                    href: "../tools/animation-studio.html",
+                    href: "../tools/animation/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/animation-studio.png",
                     description: "Create timing, animation states, and motion workflows.",
                     role: "Spark",
@@ -44,7 +44,7 @@
                 {
                     title: "Custom Extensions",
                     subgroup: "Custom Extensions",
-                    href: "../tools/code-studio.html",
+                    href: "../tools/code/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/code-studio.png",
                     description: "Register approved Engine V2 extension hooks and creator-private custom logic.",
                     role: "Foundry Bot",
@@ -57,9 +57,9 @@
             group: "Worlds",
             tools: [
                 {
-                    title: "World Vector Studio",
+                    title: "World Vector",
                     subgroup: "Vector",
-                    href: "../tools/world-vector-studio.html",
+                    href: "../tools/world-vector/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/world-vector-studio.png",
                     description: "Shape world layouts, maps, terrain, and scene geometry.",
                     role: "Pixel Smith",
@@ -69,7 +69,7 @@
                 {
                     title: "Game Builder",
                     subgroup: "Tilemap",
-                    href: "../tools/game-builder.html",
+                    href: "../tools/game-builder/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/game-builder.png",
                     description: "Assemble components and build your game from scratch.",
                     role: "ForgeBot",
@@ -77,9 +77,9 @@
                     theme: "forge"
                 },
                 {
-                    title: "Particle Studio",
+                    title: "Particles",
                     subgroup: "Isometric",
-                    href: "../tools/particle-studio.html",
+                    href: "../tools/particles/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/particle-studio.png",
                     description: "Author visual effects, emitters, and particle looks.",
                     role: "Spark",
@@ -87,9 +87,9 @@
                     theme: "pixel"
                 },
                 {
-                    title: "Game Design Studio",
+                    title: "Game Design",
                     subgroup: "Hybrid",
-                    href: "../tools/game-design-studio.html",
+                    href: "../tools/game-design/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/game-design-studio.png",
                     description: "Design gameplay, systems, rules, and player experience.",
                     role: "ForgeBot",
@@ -102,8 +102,8 @@
             group: "Audio",
             tools: [
                 {
-                    title: "MIDI Studio",
-                    href: "../tools/midi-studio.html",
+                    title: "MIDI",
+                    href: "../tools/midi/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/midi-studio.png",
                     description: "Build MIDI-driven audio and music interaction flows.",
                     role: "Foundry Bot",
@@ -111,8 +111,8 @@
                     theme: "bot"
                 },
                 {
-                    title: "Sound Studio",
-                    href: "../tools/sound-studio.html",
+                    title: "Sound",
+                    href: "../tools/sound/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/sound-studio.png",
                     description: "Prepare audio, sound effects, and game sound workflows.",
                     role: "Foundry Bot",
@@ -125,8 +125,8 @@
             group: "Input",
             tools: [
                 {
-                    title: "Input Studio",
-                    href: "../tools/input-studio.html",
+                    title: "Input",
+                    href: "../tools/input/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/input-studio.png",
                     description: "Map player controls and configure input workflows.",
                     role: "Foundry Bot",
@@ -140,7 +140,7 @@
             tools: [
                 {
                     title: "AI Assistant",
-                    href: "../tools/ai-assistant.html",
+                    href: "../tools/ai-assistant/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/ai-assistant.png",
                     description: "Get guided technical help for game creation workflows.",
                     role: "Foundry Bot",
@@ -154,7 +154,7 @@
             tools: [
                 {
                     title: "Palette Manager",
-                    href: "../tools/palette-manager.html",
+                    href: "../tools/palette/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/palette-manager.png",
                     description: "Craft and manage color palettes for your games.",
                     role: "Pixel Smith",
@@ -168,7 +168,7 @@
             tools: [
                 {
                     title: "Storage Inspector",
-                    href: "../tools/storage-inspector.html",
+                    href: "../tools/storage/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/storage-inspector.png",
                     description: "Inspect local storage, saved state, and tool data.",
                     role: "Foundry Bot",
@@ -176,8 +176,8 @@
                     theme: "bot"
                 },
                 {
-                    title: "Publish Studio",
-                    href: "../tools/publisher.html",
+                    title: "Publish",
+                    href: "../tools/publish/index.html",
                     image: "../src/engine/theme/v2/assets/images/tools/publish-studio.png",
                     description: "Prepare publishing workflows and release-ready game packages.",
                     role: "ForgeBot",
@@ -185,9 +185,9 @@
                     theme: "forge"
                 },
                 {
-                    title: "Localization Studio",
-                    href: "../tools/localization-studio/index.html",
-                    image: "../src/engine/theme/v2/assets/images/tools/localization-studio.png",
+                    title: "Localization",
+                    href: "../tools/localization/index.html",
+                    image: "../src/engine/theme/v2/assets/images/tools/localization.png",
                     description: "Plan game translation, language coverage, and contributor review workflows.",
                     role: "Community / Media",
                     mascot: "localization-studio",
@@ -233,7 +233,7 @@
         "Assets": "swatch-gold"
     };
     const badgeMap = {
-        "Publish Studio": "publish-studio"
+        "Publish": "publish-studio"
     };
     const allTools = toolGroups.flatMap((group) => group.tools.map((tool) => ({
         ...tool,

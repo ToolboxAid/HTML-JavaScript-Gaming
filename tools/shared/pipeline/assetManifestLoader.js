@@ -33,7 +33,7 @@ export function getAssetManifestRelativePath(gameId) {
   if (!normalizedGameId) {
     throw new Error("gameId is required to resolve asset manifest path.");
   }
-  return `games/${normalizedGameId}/assets/tools.manifest.json`;
+  return `old_games/${normalizedGameId}/assets/tools.manifest.json`;
 }
 
 export async function loadAssetManifest(gameId, options = {}) {

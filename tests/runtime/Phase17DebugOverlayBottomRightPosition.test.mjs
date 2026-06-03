@@ -11,7 +11,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createBottomRightDebugPanelStack, getNextBottomRightDebugPanelRect } from '../../src/engine/debug/DebugOverlayLayout.js';
 
 const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
-const ROOT_ALIASES = ['/src/', '/games/', '/tools/', '/samples/'];
+const ROOT_ALIASES = ['/src/', '/old_games/', '/tools/', '/samples/'];
 
 registerHooks({
   resolve(specifier, context, nextResolve) {

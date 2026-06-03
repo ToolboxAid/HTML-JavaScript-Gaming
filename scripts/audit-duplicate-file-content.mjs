@@ -18,8 +18,8 @@ const EXCLUDED_DIRS = new Set([
   ".next"
 ]);
 
-const JSON_REPORT_PATH = path.join(repoRoot, "docs", "dev", "reports", "repo_duplicate_file_content_audit.json");
-const MD_REPORT_PATH = path.join(repoRoot, "docs", "dev", "reports", "PR_10_26_REPO_DUPLICATE_FILE_CONTENT_AUDIT_report.md");
+const JSON_REPORT_PATH = path.join(repoRoot, "docs_build", "dev", "reports", "repo_duplicate_file_content_audit.json");
+const MD_REPORT_PATH = path.join(repoRoot, "docs_build", "dev", "reports", "PR_10_26_REPO_DUPLICATE_FILE_CONTENT_AUDIT_report.md");
 
 function toPosixPath(value) {
   return value.split(path.sep).join("/");
@@ -35,7 +35,7 @@ function classifyDuplicateGroup(files) {
   const inDocs = normalized.every((value) => value.startsWith("docs/"));
   const inReports = normalized.every((value) => value.includes("/reports/"));
   const inEvidenceSnapshot = normalized.some((value) => value.includes("/repo_relative/") || value.includes("/evidence/"));
-  const touchesRuntime = normalized.some((value) => value.startsWith("src/") || value.startsWith("tools/") || value.startsWith("games/") || value.startsWith("samples/"));
+  const touchesRuntime = normalized.some((value) => value.startsWith("src/") || value.startsWith("tools/") || value.startsWith("old_games/") || value.startsWith("samples/"));
   const inTestsOnly = normalized.every((value) => value.startsWith("tests/"));
   const extensionSet = new Set(files.map((value) => getExtension(value)));
   const allJson = extensionSet.size === 1 && extensionSet.has(".json");

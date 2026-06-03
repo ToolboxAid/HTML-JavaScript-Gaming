@@ -21,7 +21,7 @@ export function createValidManifestRuntimePayload() {
       folder: "ConfigPilot",
     },
     launch: {
-      directPath: "/games/ConfigPilot/index.html",
+      directPath: "/old_games/ConfigPilot/index.html",
       workspaceManagerPath: "/tools/workspace-manager-v2/index.html?gameId=ConfigPilot",
       workspaceManagerOptional: true,
     },
@@ -52,15 +52,15 @@ export function createValidManifestRuntimePayload() {
 export function run() {
   const payload = createValidManifestRuntimePayload();
   const validation = parseManifestRuntimePayload(payload, {
-    sourcePath: "games/ConfigPilot/game.manifest.json",
+    sourcePath: "old_games/ConfigPilot/game.manifest.json",
   });
 
   assert.equal(validation.valid, true);
   assert.equal(validation.errors.length, 0);
-  assert.equal(validation.manifest.sourcePath, "games/ConfigPilot/game.manifest.json");
+  assert.equal(validation.manifest.sourcePath, "old_games/ConfigPilot/game.manifest.json");
   assert.equal(validation.manifest.schema, MANIFEST_RUNTIME_SCHEMA);
   assert.equal(validation.manifest.game.id, "ConfigPilot");
-  assert.equal(validation.manifest.launch.directPath, "/games/ConfigPilot/index.html");
+  assert.equal(validation.manifest.launch.directPath, "/old_games/ConfigPilot/index.html");
   assert.deepEqual(validation.manifest.screen, { width: 960, height: 540 });
   assert.deepEqual(Object.keys(validation.manifest.objects), ["object.config.player"]);
   assert.deepEqual(Object.keys(validation.manifest.rules), ["movement.player"]);

@@ -8,7 +8,7 @@
 - `docs_build/operations/dev/ENGINE_MATURITY_VERSIONING_STRATEGY.md`
 - `docs_build/operations/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md`
 - `docs_build/operations/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md`
-- `docs/reference/architecture-standards/architecture/debug-surfaces-external-integration.md`
+- `docs_build/reference/architecture-standards/architecture/debug-surfaces-external-integration.md`
 
 ## Ownership
 - `docs_build/pr`: phase history and implementation intent

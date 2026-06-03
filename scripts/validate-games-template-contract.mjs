@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
-const GAMES_ROOT = path.join(repoRoot, "games");
+const GAMES_ROOT = path.join(repoRoot, "old_games");
 const REPORT_PATH = path.join(repoRoot, "docs_build/dev/reports/games_template_contract_validation.txt");
 const MANAGED_CANONICAL_GAMES = ["Pacman"];
 const REQUIRED_DIRS = ["assets", "game", "entities", "systems", "ui", "debug"];
@@ -70,7 +70,7 @@ async function resolveContractTargets() {
 
   for (const requiredTarget of requiredStaticTargets) {
     if (!entryNames.has(requiredTarget)) {
-      throw new Error(`Required contract target is missing: games/${requiredTarget}`);
+      throw new Error(`Required contract target is missing: old_games/${requiredTarget}`);
     }
   }
 
@@ -120,7 +120,7 @@ async function listFilesRecursively(rootPath) {
 
 function collectQuotedGamePathViolations({ gameName, repoRelativePath, text }) {
   const issues = [];
-  const matches = text.matchAll(/["'`](\/games\/([^\/"'`]+)\/[^"'`]*)["'`]/g);
+  const matches = text.matchAll(/["'`](\/old_games\/([^\/"'`]+)\/[^"'`]*)["'`]/g);
   for (const match of matches) {
     const referencedGame = match[2];
     const referencedPath = match[1];
@@ -202,7 +202,7 @@ export async function validateGamesTemplateContract({ emitLogs = true } = {}) {
 
   const targets = await resolveContractTargets();
   if (targets.length === 0) {
-    issues.push("No contract-managed game targets found under games/.");
+    issues.push("No contract-managed game targets found under old_games/.");
   }
 
   for (const target of targets) {
@@ -217,7 +217,7 @@ export async function validateGamesTemplateContract({ emitLogs = true } = {}) {
     issues.length === 0 ? "STATUS: PASS" : "STATUS: FAIL",
     "",
     "Targets:",
-    ...targets.map((target) => `- games/${target.gameName}`),
+    ...targets.map((target) => `- old_games/${target.gameName}`),
     "",
     "Checks:",
     ...notes.map((note) => `- ${note}`),

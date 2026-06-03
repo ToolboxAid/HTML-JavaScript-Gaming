@@ -87,7 +87,7 @@ export function coordinateGameAssetManifest(options = {}) {
   })).filter((entry) => Boolean(entry.domain));
   const coordinatorPath = safeString(
     options.coordinatorPath,
-    `games/${gameId}/assets/tools.manifest.json`
+    `old_games/${gameId}/assets/tools.manifest.json`
   );
 
   const normalizedExisting = normalizeExistingManifest(options.existingManifest, gameId);

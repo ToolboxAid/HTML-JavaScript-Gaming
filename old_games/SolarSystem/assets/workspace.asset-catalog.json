@@ -1,0 +1,12 @@
+{
+  "schema": "html-js-gaming.game-asset-catalog",
+  "version": 1,
+  "gameId": "solarsystem",
+  "assets": {
+    "palette.solar-system.classic": {
+      "path": "/old_old_games/SolarSystem/assets/palettes/solar-system-classic.palette.json",
+      "kind": "palette",
+      "source": "workspace-manager"
+    }
+  }
+}

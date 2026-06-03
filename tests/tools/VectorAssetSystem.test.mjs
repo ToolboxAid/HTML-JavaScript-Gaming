@@ -10,7 +10,7 @@ export async function run() {
   const normalized = normalizeSvgToVectorAsset({
     id: "vector.test.ship",
     name: "Test Ship",
-    path: "games/Asteroids/assets/vectors/test-ship.vector.json",
+    path: "old_games/Asteroids/assets/vectors/test-ship.vector.json",
     paletteId: "palette.hero",
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 20 20"><path d="M 0 -8 L 6 8 L 0 4 L -6 8 Z" /></svg>'
   });
@@ -65,7 +65,7 @@ export async function run() {
         {
           id: "vector.broken",
           name: "Broken",
-          path: "games/Asteroids/assets/vectors/broken.vector.json",
+          path: "old_games/Asteroids/assets/vectors/broken.vector.json",
           paletteId: "palette.vector-demo",
           source: { kind: "json", path: "" },
           format: VECTOR_ASSET_FORMAT,

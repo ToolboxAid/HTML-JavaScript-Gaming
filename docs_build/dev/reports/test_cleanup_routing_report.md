@@ -1,6 +1,6 @@
 # Test Cleanup Routing Report
 
-Generated: 2026-06-02T20:52:58.656Z
+Generated: 2026-06-03T17:06:42.970Z
 Status: PASS
 
 ## Representative Routing Cases
@@ -9,7 +9,7 @@ Status: PASS
 | --- | --- | --- | --- | --- | --- |
 | docs-only change | docs_build/dev/PROJECT_INSTRUCTIONS.md | none | none | PASS | Docs/workflow-only changes use static review evidence; runtime lanes, Workspace V2, and samples stay explicit/on-request. |
 | tool change | tools/audio-sfx-playground-v2/index.js | tool-runtime | tool-runtime | PASS | Tool-owned runtime/UI changes route to the affected tool-runtime lane only. |
-| game change | games/asteroids/asteroids.js | game-runtime | game-runtime | PASS | Game-owned runtime changes route to game-runtime without treating tool lanes as blockers. |
+| deprecated game change | old_games/asteroids/asteroids.js | none | none | PASS | Deprecated old_games changes do not route to active runtime test lanes. |
 | src change | src/input/InputMap.js | engine-src | engine-src | PASS | Reusable src/ capability changes route to engine-src validation first. |
 | integration change | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | integration | integration | PASS | Cross-surface handoff coverage routes to the integration lane only. |
 
@@ -19,7 +19,7 @@ Workspace V2 explicit/on-request only: PASS
 Full samples smoke explicit/on-request only: PASS
 Misplaced test preflight fast-fail: PASS
 Scheduled runtime lanes: workspace-contract
-Full samples smoke decision: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.
+Full samples smoke decision: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
 
 ## Lane Script Routing
 

@@ -1,15 +1,15 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-02T20:50:23.811Z
+Generated: 2026-06-03T17:06:42.999Z
 Dry run: No
 
 ## Summary
 
-PASS: 0
+PASS: 1
 WARN: 0
-FAIL: 1
+FAIL: 0
 SKIP: 5
-Total lane elapsed time: 101.74s
+Total lane elapsed time: 11.29s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -21,7 +21,7 @@ Reason: Skipped because changed files do not modify sample JSON or shared sample
 
 Status: PASS
 Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
-Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/WorkspaceManagerV2.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs --fixtures games/AITargetDummy/game.manifest.json,games/Asteroids/game.manifest.json,games/Bouncing-ball/game.manifest.json,games/Breakout/game.manifest.json,games/GravityWell/game.manifest.json,games/InvalidWorkspace/game.manifest.json,games/Pacman/game.manifest.json,games/Pong/game.manifest.json,games/SolarSystem/game.manifest.json,games/SpaceDuel/game.manifest.json,games/SpaceInvaders/game.manifest.json,games/vector-arcade-sample/game.manifest.json,tests/fixtures/workspace-v2/uat.manifest.json
+Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
 Details: none
 
 ## Dependency Gate
@@ -49,9 +49,9 @@ Validation computations: 10
 
 ## Failure Fingerprints
 
-Status: WARN
+Status: PASS
 Deterministic setup failures: 0
-Runtime failures: 1
+Runtime failures: 0
 Flaky/transient failures: 0
 Infrastructure failures: 0
 Prevented reruns: 0
@@ -61,9 +61,9 @@ Prevented broad lane escalation: 0
 ## Discovery Scope
 
 Status: PASS
-Target files: tests/playwright/tools/WorkspaceManagerV2.spec.mjs
+Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
 Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
-Required fixtures: games/AITargetDummy/game.manifest.json, games/Asteroids/game.manifest.json, games/Bouncing-ball/game.manifest.json, games/Breakout/game.manifest.json, games/GravityWell/game.manifest.json, games/InvalidWorkspace/game.manifest.json, games/Pacman/game.manifest.json, games/Pong/game.manifest.json, games/SolarSystem/game.manifest.json, games/SpaceDuel/game.manifest.json, games/SpaceInvaders/game.manifest.json, games/vector-arcade-sample/game.manifest.json, tests/fixtures/workspace-v2/uat.manifest.json
+Required fixtures: none
 Targeted file/helper reads: 5
 Cached discovery reuse: Yes
 Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
@@ -105,9 +105,9 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | FAIL | 101.74s | 1 | Workspace V2 contract lane validates launch, manifest handoff, toolState open/save, and lifecycle contracts. | Workspace Manager V2 contract and lifecycle behavior | tests/fixtures/workspace-v2/uat.manifest.json; mocked File System Access repo handles; explicit game manifest/toolState payloads |
+| workspace-contract | PASS | 11.29s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated tools/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | First-class tool runtime behavior | tool-specific mocked repo/file picker inputs; explicit manifest/toolState launch contexts |
-| game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game-owned Playwright runtime behavior | explicit Asteroids manifest/page fixtures; repo-served browser pages |
+| game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated old_games reference coverage |  |
 | integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Workspace, tool, game index, and manifest handoff behavior | repo game manifests; manifest preview asset roles; repo-served browser pages |
 | engine-src | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | src/ engine and shared runtime capability behavior | explicit node unit fixtures; fresh in-memory localStorage/sessionStorage mocks per file |
 | samples | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Affected samples lane, on request only | sample metadata and validation artifacts; sample structure fixtures |
@@ -116,16 +116,13 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| workspace-contract | 36.80s | tests\playwright\tools\WorkspaceManagerV2.spec.mjs:12839:3 > Workspace Manager V2 bootstrap > uses header lifecycle controls and launches tools from fixed Workspace Manager V2 tiles |
-| workspace-contract | 28.70s | tests\playwright\tools\WorkspaceManagerV2.spec.mjs:3151:3 > Workspace Manager V2 bootstrap > launches Input Mapping V2 and captures keyboard mappings |
-| workspace-contract | 10.00s | tests\playwright\tools\WorkspaceManagerV2.spec.mjs:11874:3 > Workspace Manager V2 bootstrap > launches Storage Inspector V2 with V2 labels, accordions, theme, and delete controls |
-| workspace-contract | 2.90s | tests\playwright\tools\WorkspaceManagerV2.spec.mjs:15357:3 > Workspace Manager V2 bootstrap > owns temporary UAT manifest seeding and launches Asset Manager V2 through session context |
-| workspace-contract | 2.50s | tests\playwright\tools\WorkspaceManagerV2.spec.mjs:3932:3 > Workspace Manager V2 bootstrap > launches World Vector Studio V2 and Object Vector Studio V2 copied tool shells |
+| workspace-contract | 2.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes |
+| workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:60:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Commands
 
 ### workspace-contract
-- FAIL 101.73s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep launch
+- PASS 11.29s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### tool-runtime
 - SKIP

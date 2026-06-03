@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game Builder — Game Foundry Studio</title>
+    <meta name="description" content="Game Foundry Studio: Build. Play. Share.">
+    <link rel="icon" href="../../src/engine/theme/v2/assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../src/engine/theme/v2/assets/css/styles.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">ForgeBot</div>
+                <h1>Game Builder</h1>
+                <p class="lede">How is the game assembled?</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <div class="tool-workspace">
+                    <aside class="tool-column tool-group-build-create">
+                        <div class="tool-column-header molten-orange">
+                            <h2>Toolbox</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Structure</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label>Screens <textarea rows="3" placeholder="Title, menu, gameplay, pause, results"></textarea></label>
+                                        <label>Levels <textarea rows="3" placeholder="Level names, order, and layout notes"></textarea></label>
+                                        <label>Objects <textarea rows="3" placeholder="Player, enemies, pickups, hazards, platforms"></textarea></label>
+                                        <label>Assets <textarea rows="3" placeholder="Images, sprites, tiles, UI, effects"></textarea></label>
+                                        <label>Audio <textarea rows="3" placeholder="Music, sound effects, ambience"></textarea></label>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Runtime Plan</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label>Input Mapping <textarea rows="3" placeholder="Keyboard, gamepad, touch, pointer"></textarea></label>
+                                        <label>Physics <textarea rows="3" placeholder="Gravity, collision, speed, friction"></textarea></label>
+                                        <label>Behaviors <textarea rows="3" placeholder="Movement, attacks, triggers, AI"></textarea></label>
+                                        <label>Object Types <textarea rows="3" placeholder="Dynamic, static, trigger, volume"></textarea></label>
+                                        <label>State Transitions <textarea rows="3" placeholder="Menu to play, play to win, play to lose"></textarea></label>
+                                    </form>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode></div>
+                    <section class="tool-center-panel"><img src="../../src/engine/theme/v2/assets/images/forge-bot-single.png" alt="ForgeBot">
+                        <h2>Workspace</h2>
+                        <p>Game Builder turns the design document into a build plan. The workflow reads the GDD, identifies the required game pieces, and assembles them into a manifest.</p>
+                        <details class="vertical-accordion" open>
+                            <summary>GDD -> Manifest Workflow</summary>
+                            <div class="accordion-body">
+                                <p>The builder interprets <code>game.gdd.json</code>, maps design intent to concrete screens, assets, objects, behaviors, and transitions, then produces the runtime assembly contract.</p>
+                                <p>The output is the implementation manifest: <code>game.manifest.json</code>.</p>
+                            </div>
+                        </details>
+                        <details class="vertical-accordion">
+                            <summary>Construction Crew</summary>
+                            <div class="accordion-body">
+                                <p>Game Builder is the construction crew. It follows the blueprint from Game Design and decides what pieces are needed, where they go, and how they connect.</p>
+                            </div>
+                        </details>
+                    </section>
+                    <aside class="tool-column tool-group-build-create">
+                        <div class="tool-column-header forge-gold">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Object Examples</summary>
+                                <div class="accordion-body">
+                                    <dl>
+                                        <dt>Hero</dt>
+                                        <dd>Dynamic Killable</dd>
+                                        <dt>Enemy</dt>
+                                        <dd>Dynamic Killable</dd>
+                                        <dt>Ice Block</dt>
+                                        <dd>Static Breakable</dd>
+                                        <dt>Water</dt>
+                                        <dd>Damage Volume</dd>
+                                    </dl>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Output</summary>
+                                <div class="accordion-body">
+                                    <p><strong>game.manifest.json</strong></p>
+                                    <pre><code>{
+  "screens": [],
+  "levels": [],
+  "objects": [],
+  "assets": [],
+  "audio": [],
+  "input": {},
+  "physics": {},
+  "behaviors": []
+}</code></pre>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="../../src/engine/theme/v2/assets/js/gamefoundry-partials.js" defer></script>
+    <script src="../../src/engine/theme/v2/assets/js/tool-display-mode.js" defer></script>
+</body>
+
+</html>

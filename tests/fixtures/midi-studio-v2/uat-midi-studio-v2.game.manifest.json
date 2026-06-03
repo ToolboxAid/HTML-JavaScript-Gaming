@@ -7,7 +7,7 @@
     "folder": "midi-studio-v2-uat"
   },
   "launch": {
-    "directPath": "games/midi-studio-v2-uat/index.html"
+    "directPath": "old_games/midi-studio-v2-uat/index.html"
   },
   "tools": {
     "midi-studio-v2": {

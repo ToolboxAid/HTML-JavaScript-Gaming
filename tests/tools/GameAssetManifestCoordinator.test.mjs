@@ -10,14 +10,14 @@ export async function run() {
         sprites: [
           {
             assetId: "sprite.legacy",
-            runtimePath: "games/asteroids/assets/sprites/sprite-legacy.json",
-            toolDataPath: "games/asteroids/assets/sprites/data/sprite-legacy-tool.json",
+            runtimePath: "old_games/asteroids/assets/sprites/sprite-legacy.json",
+            toolDataPath: "old_games/asteroids/assets/sprites/data/sprite-legacy-tool.json",
             sourceToolId: "sprite-editor"
           },
           {
             assetId: "sprite.ship",
-            runtimePath: "games/asteroids/assets/sprites/sprite-ship-old.json",
-            toolDataPath: "games/asteroids/assets/sprites/data/sprite-ship-old-tool.json",
+            runtimePath: "old_games/asteroids/assets/sprites/sprite-ship-old.json",
+            toolDataPath: "old_games/asteroids/assets/sprites/data/sprite-ship-old-tool.json",
             sourceToolId: "sprite-editor"
           }
         ]
@@ -27,22 +27,22 @@ export async function run() {
       {
         domain: "sprites",
         assetId: "sprite.ship",
-        runtimePath: "games/asteroids/assets/sprites/sprite-ship.json",
-        toolDataPath: "games/asteroids/assets/sprites/data/sprite-ship-tool.json",
+        runtimePath: "old_games/asteroids/assets/sprites/sprite-ship.json",
+        toolDataPath: "old_games/asteroids/assets/sprites/data/sprite-ship-tool.json",
         sourceToolId: "sprite-editor"
       },
       {
         domain: "vectors",
         assetId: "vector.ship",
-        runtimePath: "games/asteroids/assets/vectors/vector-ship.json",
-        toolDataPath: "games/asteroids/assets/vectors/data/vector-ship-tool.json",
+        runtimePath: "old_games/asteroids/assets/vectors/vector-ship.json",
+        toolDataPath: "old_games/asteroids/assets/vectors/data/vector-ship-tool.json",
         sourceToolId: "object-vector-studio-v2"
       }
     ]
   });
 
   assert.equal(coordinated.status, "ready");
-  assert.equal(coordinated.filePath, "games/asteroids/assets/tools.manifest.json");
+  assert.equal(coordinated.filePath, "old_games/asteroids/assets/tools.manifest.json");
   assert.equal(coordinated.summary.totalAssets, 3);
   assert.deepEqual(
     coordinated.manifest.domains.sprites.map((entry) => entry.assetId),
@@ -50,7 +50,7 @@ export async function run() {
   );
   assert.equal(
     coordinated.manifest.domains.sprites.find((entry) => entry.assetId === "sprite.ship").runtimePath,
-    "games/asteroids/assets/sprites/sprite-ship.json"
+    "old_games/asteroids/assets/sprites/sprite-ship.json"
   );
   assert.equal(coordinated.manifest.domains.vectors[0].assetId, "vector.ship");
 }

@@ -10,10 +10,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const REPO_ROOT = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const SCAN_ROOTS = ['samples', 'games'];
-const IGNORED_PATH_SEGMENTS = [
-  'games/SpaceInvaders/assets/do not delete/',
-];
+const SCAN_ROOTS = ['samples'];
+const IGNORED_PATH_SEGMENTS = [];
 const IMPORT_PATTERN = /(?:import\s+[^'"]*?\sfrom\s+|export\s+[^'"]*?\sfrom\s+|import\s*\()\s*['"](?<path>[^'"]*engine\/[^'"]+)['"]/g;
 const APPROVED_DIRECT_IMPORTS = new Set([
   'engine/core/Engine.js',

@@ -66,7 +66,7 @@ An external launch is any launch that begins from:
 
 - `samples/index.html`
 - any sample page
-- `games/index.html`
+- `old_games/index.html`
 - any game page
 
 External launches MUST clear launch memory before loading the target tool or workspace.
@@ -113,7 +113,7 @@ If required launch data is missing, the launch must fail visibly and diagnostica
 Primary UAT flow:
 
 ```text
-games/index.html
+old_games/index.html
   -> Open with Workspace Manager
   -> tools/Workspace Manager/index.html?gameId=<id>&mount=game
   -> external memory is cleared

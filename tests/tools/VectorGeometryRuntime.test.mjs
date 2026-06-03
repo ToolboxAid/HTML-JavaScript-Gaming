@@ -25,12 +25,12 @@ function createContractAsset() {
     assetId: "vector.contract.sample",
     name: "Contract Sample",
     type: "vector",
-    path: "games/vector-arcade-sample/assets/vectors/contract-sample.vector.json",
+    path: "old_games/vector-arcade-sample/assets/vectors/contract-sample.vector.json",
     paletteId: "palette.vector-native.primary",
     sourceTool: "object-vector-studio-v2",
     source: {
       kind: "svg",
-      path: "games/vector-arcade-sample/assets/vectors/contract-sample.vector.json"
+      path: "old_games/vector-arcade-sample/assets/vectors/contract-sample.vector.json"
     },
     viewport: {
       x: -20,
@@ -166,7 +166,7 @@ export async function run() {
   const legacyAsset = normalizeSvgToVectorAsset({
     id: "vector.legacy.sample",
     name: "Legacy Sample",
-    path: "games/vector-arcade-sample/assets/vectors/legacy-sample.vector.json",
+    path: "old_games/vector-arcade-sample/assets/vectors/legacy-sample.vector.json",
     paletteId: "palette.vector-native.primary",
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 20 20"><path d="M 0 -8 L 6 8 L -6 8 Z" /></svg>'
   });
@@ -179,7 +179,7 @@ export async function run() {
     format: VECTOR_ASSET_FORMAT,
     version: 1,
     assetId: "vector.invalid",
-    source: { kind: "svg", path: "games/vector-arcade-sample/assets/vectors/invalid.vector.json" },
+    source: { kind: "svg", path: "old_games/vector-arcade-sample/assets/vectors/invalid.vector.json" },
     viewport: { x: 0, y: 0, width: 0, height: 0 },
     origin: { name: "center", x: 0, y: 0 },
     layers: []
@@ -203,7 +203,7 @@ export async function run() {
           {
             id: "vector.contract.sample",
             type: "vector",
-            path: "games/vector-arcade-sample/assets/vectors/contract-sample.vector.json",
+            path: "old_games/vector-arcade-sample/assets/vectors/contract-sample.vector.json",
             sourceTool: "object-vector-studio-v2"
           }
         ],

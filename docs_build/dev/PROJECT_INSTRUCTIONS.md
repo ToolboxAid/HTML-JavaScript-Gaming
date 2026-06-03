@@ -116,7 +116,7 @@ New rules should extend existing authoritative sections whenever possible.
 Avoid introducing parallel governance systems or duplicate rule sets.
 
 Anti-drift governance:
-- avoid capability drift across `src/`, `games/`, `samples/`, and `tools/`
+- avoid capability drift across `src/`, deprecated `old_games/`, `samples/`, and `tools/`
 - avoid workflow drift across overlapping sections
 - avoid validation drift between engine, tool, and integration lanes
 - avoid UI/UX drift from Workspace V2 ecosystem contracts
@@ -711,17 +711,17 @@ Boundary rules:
 - the authoritative term for reusable shared behavior is `src/` shared capability
 - `src/` is the living shared foundation for reusable runtime, engine, utility, parsing, rendering, audio, input, timing, asset, and validation capabilities
 - reusable behavior belongs in `src/` unless it is intentionally local and documented
-- games, samples, and tools must not override, hide, shadow, or reimplement behavior that already exists in `src/`
-- games, samples, and tools must not implement behavior that clearly belongs in `src/` just to avoid shared-source changes
+- deprecated reference games, samples, and tools must not override, hide, shadow, or reimplement behavior that already exists in `src/`
+- deprecated reference games, samples, and tools must not implement behavior that clearly belongs in `src/` just to avoid shared-source changes
 
 Authoritative `src/` boundary rules:
 - `src/` is the authoritative reusable implementation surface
 - reusable logic should converge into `src/` over time
-- `games/`, `samples/`, and `tools/` are consumers or extensions of `src/`, not alternate engine layers
-- `games/`, `samples/`, and `tools/` must not become parallel runtime frameworks
+- `old_games/`, `samples/`, and `tools/` are consumers or extensions of `src/`, not alternate engine layers
+- `old_games/`, `samples/`, and `tools/` must not become parallel runtime frameworks
 
 Mandatory capability discovery rule:
-- before Codex writes new behavior into `games/`, `samples/`, or `tools/`, Codex must check whether equivalent or reusable capability already exists in `src/`
+- before Codex writes new behavior into deprecated `old_games/`, `samples/`, or `tools/`, Codex must check whether equivalent or reusable capability already exists in `src/`
 - Codex must reuse or extend existing `src/` capability when appropriate
 - if capability belongs in `src/` but does not exist, Codex must state that and either add or update `src/` when PR scope authorizes it, or document the required `src/` follow-up instead of creating a local workaround
 

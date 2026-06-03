@@ -12,8 +12,8 @@
             group: "Content & Assets",
             tools: [
                 {
-                    title: "Asset Studio",
-                    href: "../tools/asset-studio.html",
+                    title: "Assets",
+                    href: "../tools/assets/index.html",
                     image: "assets/images/tools/asset-studio.png",
                     description: "Create sprites, animations, vectors and palettes.",
                     role: "Pixel Smith",
@@ -26,8 +26,8 @@
             group: "Build & Create",
             tools: [
                 {
-                    title: "Object Vector Studio",
-                    href: "../tools/object-vector-studio.html",
+                    title: "Object Vector",
+                    href: "../tools/object-vector/index.html",
                     image: "assets/images/tools/object-vector-studio.png",
                     description: "Create object-ready vector assets and reusable scene pieces.",
                     role: "Pixel Smith",
@@ -35,8 +35,8 @@
                     theme: "pixel"
                 },
                 {
-                    title: "World Vector Studio",
-                    href: "tools/world-vector-studio.html",
+                    title: "World Vector",
+                    href: "tools/world-vector/index.html",
                     image: "assets/images/tools/world-vector-studio.png",
                     description: "Shape world layouts, maps, terrain, and scene geometry.",
                     role: "Pixel Smith",
@@ -50,7 +50,7 @@
             tools: [
                 {
                     title: "Palette Manager",
-                    href: "../tools/palette-manager.html",
+                    href: "../tools/palette/index.html",
                     image: "assets/images/tools/palette-manager.png",
                     description: "Craft and manage color palettes for your games.",
                     role: "Pixel Smith",
@@ -64,7 +64,7 @@
             tools: [
                 {
                     title: "Game Builder",
-                    href: "tools/game-builder.html",
+                    href: "tools/game-builder/index.html",
                     image: "assets/images/tools/game-builder.png",
                     description: "Assemble components and build your game from scratch.",
                     role: "ForgeBot",
@@ -77,8 +77,8 @@
             group: "Build & Create",
             tools: [
                 {
-                    title: "Game Design Studio",
-                    href: "tools/game-design-studio.html",
+                    title: "Game Design",
+                    href: "tools/game-design/index.html",
                     image: "assets/images/tools/game-design-studio.png",
                     description: "Design gameplay, systems, rules, and player experience.",
                     role: "ForgeBot",
@@ -91,8 +91,8 @@
             group: "Platform & Cloud",
             tools: [
                 {
-                    title: "Publish Studio",
-                    href: "tools/publisher.html",
+                    title: "Publish",
+                    href: "tools/publish/index.html",
                     image: "assets/images/tools/publish-studio.png",
                     description: "Prepare publishing workflows and release-ready game packages.",
                     role: "ForgeBot",
@@ -105,8 +105,8 @@
             group: "Build & Create",
             tools: [
                 {
-                    title: "Animation Studio",
-                    href: "../tools/animation-studio.html",
+                    title: "Animation",
+                    href: "../tools/animation/index.html",
                     image: "assets/images/tools/animation-studio.png",
                     description: "Create timing, animation states, and motion workflows.",
                     role: "Spark",
@@ -114,8 +114,8 @@
                     theme: "pixel"
                 },
                 {
-                    title: "Particle Studio",
-                    href: "../tools/particle-studio.html",
+                    title: "Particles",
+                    href: "../tools/particles/index.html",
                     image: "assets/images/tools/particle-studio.png",
                     description: "Author visual effects, emitters, and particle looks.",
                     role: "Spark",
@@ -128,8 +128,8 @@
             group: "Media & Audio",
             tools: [
                 {
-                    title: "MIDI Studio",
-                    href: "../tools/midi-studio.html",
+                    title: "MIDI",
+                    href: "../tools/midi/index.html",
                     image: "assets/images/tools/midi-studio.png",
                     description: "Build MIDI-driven audio and music interaction flows.",
                     role: "Foundry Bot",
@@ -137,8 +137,8 @@
                     theme: "bot"
                 },
                 {
-                    title: "Sound Studio",
-                    href: "../tools/sound-studio.html",
+                    title: "Sound",
+                    href: "../tools/sound/index.html",
                     image: "assets/images/tools/sound-studio.png",
                     description: "Prepare audio, sound effects, and game sound workflows.",
                     role: "Foundry Bot",
@@ -152,7 +152,7 @@
             tools: [
                 {
                     title: "AI Assistant",
-                    href: "../tools/ai-assistant.html",
+                    href: "../tools/ai-assistant/index.html",
                     image: "assets/images/tools/ai-assistant.png",
                     description: "Get guided technical help for game creation workflows.",
                     role: "Foundry Bot",
@@ -166,7 +166,7 @@
             tools: [
                 {
                     title: "Custom Extensions",
-                    href: "../tools/code-studio.html",
+                    href: "../tools/code/index.html",
                     image: "assets/images/tools/code-studio.png",
                     description: "Register approved Engine V2 extension hooks and creator-private custom logic.",
                     role: "Foundry Bot",
@@ -174,8 +174,8 @@
                     theme: "bot"
                 },
                 {
-                    title: "Input Studio",
-                    href: "../tools/input-studio.html",
+                    title: "Input",
+                    href: "../tools/input/index.html",
                     image: "assets/images/tools/input-studio.png",
                     description: "Map player controls and configure input workflows.",
                     role: "Foundry Bot",
@@ -202,9 +202,9 @@
             group: "Community / Media",
             tools: [
                 {
-                    title: "Localization Studio",
-                    href: "tools/localization-studio/index.html",
-                    image: "assets/images/tools/localization-studio.png",
+                    title: "Localization",
+                    href: "tools/localization/index.html",
+                    image: "assets/images/tools/localization.png",
                     description: "Plan game translation, language coverage, and contributor review workflows.",
                     role: "Community / Media",
                     mascot: "localization-studio",
@@ -231,7 +231,7 @@
             tools: [
                 {
                     title: "Storage Inspector",
-                    href: "../tools/storage-inspector.html",
+                    href: "../tools/storage/index.html",
                     image: "assets/images/tools/storage-inspector.png",
                     description: "Inspect local storage, saved state, and tool data.",
                     role: "Foundry Bot",
@@ -264,7 +264,7 @@
         "Play": "swatch-green"
     };
     const badgeMap = {
-        "Publish Studio": "publish-studio"
+        "Publish": "publish-studio"
     };
     const allTools = toolGroups.flatMap((group) => group.tools.map((tool) => ({
         ...tool,

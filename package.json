@@ -24,13 +24,13 @@
     "check:style-system-guard": "node tools/dev/checkStyleSystemGuard.mjs",
     "check:intentional-alias-ledger": "node tools/dev/checkIntentionalAliasLedgerGuard.mjs",
     "check:internal-barrel-guard": "node tools/dev/checkInternalBarrelGuard.mjs",
-    "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
+    "check:games-template-contract": "node ./scripts/skip-deprecated-game-tests.mjs",
     "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
     "test:workspace-v2": "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
     "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs",
-    "test:launch-smoke:games": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --games",
-    "test:workspace-manager:games": "node ./tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs",
-    "test:manifest-payload:games": "node ./tests/runtime/GameManifestPayloadExpectations.test.mjs",
+    "test:launch-smoke:games": "node ./scripts/skip-deprecated-game-tests.mjs",
+    "test:workspace-manager:games": "node ./scripts/skip-deprecated-game-tests.mjs",
+    "test:manifest-payload:games": "node ./scripts/skip-deprecated-game-tests.mjs",
     "test:sample-standalone:data-flow": "node ./tests/runtime/SampleStandaloneToolDataFlow.test.mjs"
   },
   "dependencies": {

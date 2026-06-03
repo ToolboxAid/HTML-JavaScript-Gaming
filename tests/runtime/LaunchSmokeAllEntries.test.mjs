@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..', '..');
-const reportsDir = path.join(repoRoot, 'docs', 'dev', 'reports');
+const reportsDir = path.join(repoRoot, 'docs_build', 'dev', 'reports');
 const reportPath = path.join(reportsDir, 'launch_smoke_report.md');
 
 const tmpRoot = path.join(repoRoot, 'tmp');
@@ -130,7 +130,7 @@ function parseCliArgs(argv) {
   const anyExplicitFilter = includeGames || includeSamples || includeTools;
 
   return {
-    includeGames: anyExplicitFilter ? includeGames : true,
+    includeGames: anyExplicitFilter ? includeGames : false,
     includeSamples: anyExplicitFilter ? includeSamples : true,
     includeTools: anyExplicitFilter ? includeTools : true,
     sampleRange

@@ -11,7 +11,7 @@ import { registerHooks } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
-const ROOT_ALIASES = ['/src/', '/games/', '/tools/', '/samples/'];
+const ROOT_ALIASES = ['/src/', '/old_games/', '/tools/', '/samples/'];
 
 registerHooks({
   resolve(specifier, context, nextResolve) {

@@ -2,21 +2,26 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const SCAN_ROOTS = ['src/engine', 'src/shared', 'games', 'tools'];
+const SCAN_ROOTS = ['src/engine', 'src/shared', 'tools'];
 const EXTENSIONS = new Set(['.js', '.mjs']);
+const IGNORED_DIR_NAMES = new Set(['node_modules', '.git', 'tmp']);
+
+function shouldIgnoreDirectory(directoryName) {
+  return IGNORED_DIR_NAMES.has(directoryName)
+    || directoryName.startsWith('old_')
+    || directoryName === 'SpriteEditor_old_keep';
+}
 
 const LAYER_BY_PREFIX = Object.freeze([
   ['src/engine/', 'engine'],
   ['src/shared/', 'shared'],
-  ['games/', 'games'],
   ['tools/', 'tools'],
 ]);
 
 const FORBIDDEN_TARGETS_BY_SOURCE = Object.freeze({
-  engine: new Set(['games', 'tools', 'samples', 'docs']),
-  shared: new Set(['engine', 'games', 'tools', 'samples', 'docs']),
-  games: new Set(['tools', 'samples', 'docs']),
-  tools: new Set(['games', 'samples', 'docs']),
+  engine: new Set(['tools', 'samples', 'docs']),
+  shared: new Set(['engine', 'tools', 'samples', 'docs']),
+  tools: new Set(['samples', 'docs']),
 });
 
 const IMPORT_SPECIFIER_RE = /(?:^\s*import[\s\S]*?\sfrom\s*['"]([^'"]+)['"]\s*;?$|^\s*import\s*\(\s*['"]([^'"]+)['"]\s*\)|^\s*(?:const|let|var)\s+[\s\S]*?\s=\s*require\(\s*['"]([^'"]+)['"]\s*\))/gm;
@@ -41,6 +46,9 @@ function listSourceFiles(rootRelative) {
     for (const entry of entries) {
       const entryAbsolute = path.join(next, entry.name);
       if (entry.isDirectory()) {
+        if (shouldIgnoreDirectory(entry.name)) {
+          continue;
+        }
         stack.push(entryAbsolute);
         continue;
       }

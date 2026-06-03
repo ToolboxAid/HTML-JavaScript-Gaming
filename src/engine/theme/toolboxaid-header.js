@@ -6,7 +6,7 @@ function resolveNavSection(pathname) {
   if (path === '/' || path === '/index.html') {
     return 'home';
   }
-  if (path.startsWith('/games/')) {
+  if (path.startsWith('/old_games/')) {
     return 'games';
   }
   if (path.startsWith('/samples/')) {
@@ -26,7 +26,7 @@ function applyActiveNavState(header) {
   const section = resolveNavSection(window?.location?.pathname);
   const sectionHrefMap = {
     home: '/index.html',
-    games: '/games/index.html',
+    games: '/old_games/index.html',
     samples: '/samples/index.html',
     tools: '/tools/index.html'
   };

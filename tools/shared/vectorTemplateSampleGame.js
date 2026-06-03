@@ -21,7 +21,7 @@ function createReport(level, code, message) {
 }
 
 function remapPath(pathValue) {
-  return normalizeString(pathValue).replace("tools/_templates-v2/vector-native-arcade/", "games/vector-arcade-sample/");
+  return normalizeString(pathValue).replace("tools/_templates-v2/vector-native-arcade/", "old_games/vector-arcade-sample/");
 }
 
 function remapRegistry(registry) {
@@ -60,18 +60,18 @@ function remapRuntimeSources(sources) {
 export function createVectorTemplateSampleGameDefinition() {
   const template = createVectorNativeTemplateDefinition();
   return {
-    gamePath: "games/vector-arcade-sample/",
+    gamePath: "old_games/vector-arcade-sample/",
     registry: remapRegistry(template.registry),
     vectorDocument: cloneJson(template.vectorDocument),
     tileMapDocument: cloneJson(template.tileMapDocument),
     parallaxDocument: cloneJson(template.parallaxDocument),
     runtimeAssetSources: remapRuntimeSources(template.runtimeAssetSources),
-    configPath: "games/vector-arcade-sample/config/sample.project.json",
-    runtimeBootstrapPath: "games/vector-arcade-sample/runtime/bootstrap.runtime.json",
-    docsPath: "games/vector-arcade-sample/docs/STARTER_GUIDE.md",
-    rollbackNotesPath: "games/vector-arcade-sample/docs/ROLLBACK_NOTES.md",
+    configPath: "old_games/vector-arcade-sample/config/sample.project.json",
+    runtimeBootstrapPath: "old_games/vector-arcade-sample/runtime/bootstrap.runtime.json",
+    docsPath: "old_games/vector-arcade-sample/docs/STARTER_GUIDE.md",
+    rollbackNotesPath: "old_games/vector-arcade-sample/docs/ROLLBACK_NOTES.md",
     runtimeEntry: {
-      modulePath: "games/vector-arcade-sample/main.js",
+      modulePath: "old_games/vector-arcade-sample/main.js",
       exportName: "bootVectorArcadeSample"
     }
   };
@@ -218,4 +218,3 @@ export async function buildVectorTemplateSampleGame(options = {}) {
     }
   };
 }
-

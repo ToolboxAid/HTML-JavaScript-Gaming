@@ -6,10 +6,10 @@ const repoRoot = process.cwd();
 const styleSystemPages = [
   "index.html",
   "samples/index.html",
-  "games/index.html",
+  "old_games/index.html",
   "tools/index.html",
   "tools/_templates-v2/index.html",
-  "tools/localization-studio/index.html"
+  "tools/localization/index.html"
 ];
 
 const requiredThemeFiles = [

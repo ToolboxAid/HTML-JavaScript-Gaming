@@ -12,7 +12,7 @@
     "height": 720
   },
   "launch": {
-    "directPath": "/games/_starter-template/index.html",
+    "directPath": "/old_games/_starter-template/index.html",
     "workspaceManagerPath": "/tools/workspace-manager-v2/index.html",
     "workspaceManagerOptional": true
   },

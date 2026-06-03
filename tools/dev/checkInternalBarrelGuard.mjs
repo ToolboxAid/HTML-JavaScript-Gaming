@@ -4,7 +4,7 @@ import path from "node:path";
 const repoRoot = process.cwd();
 const sourceExtensions = new Set([".js", ".mjs"]);
 const passThroughScanRoots = ["src", "samples/shared", "tools"];
-const importScanRoots = ["src", "games", "samples", "tools", "tests"];
+const importScanRoots = ["src", "samples", "tools", "tests"];
 const ignoredDirNames = new Set(["node_modules", ".git", "tmp"]);
 const ignoredPathPrefixes = [
   "docs_build/archive/",
@@ -12,6 +12,12 @@ const ignoredPathPrefixes = [
   "tests/results/"
 ];
 const baselineRelativePath = "tools/dev/checkInternalBarrelGuard.baseline.json";
+
+function shouldIgnoreDirectory(directoryName) {
+  return ignoredDirNames.has(directoryName)
+    || directoryName.startsWith("old_")
+    || directoryName === "SpriteEditor_old_keep";
+}
 
 function toPosix(value) {
   return value.replace(/\\/g, "/");
@@ -28,7 +34,7 @@ function collectSourceFiles(startPath, outFiles) {
     const fullPath = path.join(startPath, entry.name);
     const relativePath = toPosix(path.relative(repoRoot, fullPath));
     if (entry.isDirectory()) {
-      if (ignoredDirNames.has(entry.name)) continue;
+      if (shouldIgnoreDirectory(entry.name)) continue;
       if (isIgnoredPath(`${relativePath}/`)) continue;
       collectSourceFiles(fullPath, outFiles);
       continue;
@@ -145,7 +151,7 @@ function getImportSpecifiers(statement) {
 }
 
 function isGameEntryIndex(relativePath) {
-  return /^games\/[^/]+\/index\.js$/.test(relativePath);
+  return /^old_games\/[^/]+\/index\.js$/.test(relativePath);
 }
 
 function isSampleEntryIndex(relativePath) {

@@ -1,0 +1,49 @@
+﻿<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bouncing Ball</title>
+  <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <script type="module">
+    import { bootWorkspaceGame } from "/old_old_games/shared/workspaceGameBoot.js";
+    bootWorkspaceGame("Bouncing-ball");
+  </script>
+
+</head>
+<body class="hub-page-games">
+  <div id="shared-theme-header"></div>
+  <main>
+    <h1>Bouncing Ball</h1>
+    <p>A minimal arcade-style ball motion test built as a standalone game: one ball, one rectangular arena, clean wall bounces, and no gravity.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>Space</code> or <code>Enter</code> starts. <code>P</code> pauses. <code>R</code> resets to the title state. Gamepads use south button to start and start to pause.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <p>Start the ball and watch it rebound around the bounded playfield. This build is about motion and collision stability only, with no gravity or scoring yet.</p>
+    </section>    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>core / Engine</li>
+        <li>render / CanvasRenderer</li>
+        <li>input / InputService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+        <li>input / GamepadInputAdapter</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>
+

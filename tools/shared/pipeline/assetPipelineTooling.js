@@ -70,8 +70,8 @@ function createDomainPaths(gameId, domain, runtimeFileName, toolDataFileName) {
   const runtimeName = toSlug(runtimeFileName.replace(/\.json$/i, ""), `${normalizedDomain}-asset`) + ".json";
   const toolName = toSlug(toolDataFileName.replace(/\.json$/i, ""), `${normalizedDomain}-asset-tool`) + ".json";
   return {
-    runtimePath: `games/${normalizedGameId}/assets/${normalizedDomain}/${runtimeName}`,
-    toolDataPath: `games/${normalizedGameId}/assets/${normalizedDomain}/data/${toolName}`
+    runtimePath: `old_games/${normalizedGameId}/assets/${normalizedDomain}/${runtimeName}`,
+    toolDataPath: `old_games/${normalizedGameId}/assets/${normalizedDomain}/data/${toolName}`
   };
 }
 
@@ -216,7 +216,7 @@ export function runAssetPipelineTooling(options = {}) {
   const coordinator = buildCoordinator(gameId, normalizedRecords);
   const gameAssetManifest = coordinateGameAssetManifest({
     gameId,
-    coordinatorPath: `games/${gameId}/assets/tools.manifest.json`,
+    coordinatorPath: `old_games/${gameId}/assets/tools.manifest.json`,
     records: normalizedRecords,
     existingManifest: options.existingManifest
   });

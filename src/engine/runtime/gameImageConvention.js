@@ -14,7 +14,7 @@ function discoverGameIdFromDocument(documentRef) {
   if (!pathname) {
     return "";
   }
-  const match = pathname.match(/\/games\/([^/]+)\//i);
+  const match = pathname.match(/\/old_games\/([^/]+)\//i);
   return match ? safeText(match[1], "") : "";
 }
 
@@ -34,7 +34,7 @@ function deriveManifestPathFromGameId(gameId) {
   if (!safeGameId) {
     return "";
   }
-  return `/games/${safeGameId}/game.manifest.json`;
+  return `/old_games/${safeGameId}/game.manifest.json`;
 }
 
 function deriveManifestPath(options = {}) {

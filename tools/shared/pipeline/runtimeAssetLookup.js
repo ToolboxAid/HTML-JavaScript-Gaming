@@ -58,7 +58,7 @@ function normalizeRuntimeRecord(gameId, assetId, source, options) {
     domain,
     assetId: safeString(assetId, ""),
     runtimePath,
-    toolDataPath: `games/${toSlug(gameId, "game")}/assets/${domain}/data/${toSlug(assetId, `${domain}-asset`)}.tool.json`,
+    toolDataPath: `old_games/${toSlug(gameId, "game")}/assets/${domain}/data/${toSlug(assetId, `${domain}-asset`)}.tool.json`,
     sourceToolId: safeString(options.sourceToolId, "runtime-asset-lookup")
   };
 }

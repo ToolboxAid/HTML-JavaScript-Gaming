@@ -2,12 +2,12 @@
 
 ## Required Validation
 1. Import checks pass for:
-   - games/network_sample_c/main.js
-   - games/network_sample_c/game/FakeDivergenceTraceNetworkModel.js
-   - games/network_sample_c/game/NetworkSampleCScene.js
-   - games/network_sample_c/game/StateTimelineBuffer.js
-   - games/network_sample_c/game/ReconciliationLayerAdapter.js
-   - games/network_sample_c/debug/networkSampleCDebug.js
+   - old_games/network_sample_c/main.js
+   - old_games/network_sample_c/game/FakeDivergenceTraceNetworkModel.js
+   - old_games/network_sample_c/game/NetworkSampleCScene.js
+   - old_games/network_sample_c/game/StateTimelineBuffer.js
+   - old_games/network_sample_c/game/ReconciliationLayerAdapter.js
+   - old_games/network_sample_c/debug/networkSampleCDebug.js
 
 2. Smoke validation confirms:
    - rewind prep status becomes `ready` under divergence

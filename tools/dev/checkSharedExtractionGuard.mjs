@@ -1,13 +1,19 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const SCAN_ROOTS = ["src", "games", "samples", "tools"];
+const SCAN_ROOTS = ["src", "samples", "tools"];
 const ALLOWED_EXTENSIONS = new Set([".js", ".mjs"]);
 const IGNORED_DIRS = new Set(["node_modules", ".git", "tmp"]);
 // Selftest intentionally contains violating fixtures and should not affect repo guard status.
 const IGNORED_FILES = new Set(["tools/dev/checkSharedExtractionGuard.selftest.mjs"]);
 // Backlog is tracked in a baseline so pretest can fail only on regressions.
 const BASELINE_RELATIVE_PATH = "tools/dev/checkSharedExtractionGuard.baseline.json";
+
+function shouldIgnoreDirectory(directoryName) {
+  return IGNORED_DIRS.has(directoryName)
+    || directoryName.startsWith("old_")
+    || directoryName === "SpriteEditor_old_keep";
+}
 
 const LOCAL_HELPER_RULES = [
   { rule: "local-helper-definition", regex: /function\s+asFiniteNumber\s*\(/g, label: "rule:helper-fn-asFiniteNumber" },
@@ -58,7 +64,7 @@ async function collectSourceFiles(startDir, outFiles) {
   for (const entry of entries) {
     const entryPath = path.join(startDir, entry.name);
     if (entry.isDirectory()) {
-      if (IGNORED_DIRS.has(entry.name)) continue;
+      if (shouldIgnoreDirectory(entry.name)) continue;
       await collectSourceFiles(entryPath, outFiles);
       continue;
     }

@@ -7,7 +7,7 @@ sync-tool-hints-from-workspace-manager.mjs
 
 How to run:
 1) npm run sync:tool-hints
-   - Sync toolsUsed into games/metadata/games.index.metadata.json from per-game manifests
+   - Sync toolsUsed into old_games/metadata/games.index.metadata.json from per-game manifests
 2) node ./scripts/sync-tool-hints-from-workspace-manager.mjs --dry-run
    - Validate and print what would change without writing
 */
@@ -17,7 +17,7 @@ import path from "node:path";
 import { getToolRegistry } from "../tools/toolRegistry.js";
 
 const ROOT = process.cwd();
-const METADATA_PATH = path.join(ROOT, "games", "metadata", "games.index.metadata.json");
+const METADATA_PATH = path.join(ROOT, "old_games", "metadata", "games.index.metadata.json");
 
 const GAME_MANIFEST_FILENAME = "game.manifest.json";
 const GAME_MANIFEST_SCHEMA = "html-js-gaming.game-manifest";
@@ -105,7 +105,7 @@ function loadMetadata() {
 
 function normalizeGameHref(value) {
   const href = normalizeText(value).replace(/\\/g, "/");
-  if (!href || !href.startsWith("/games/") || href.includes("..")) {
+  if (!href || !href.startsWith("/old_games/") || href.includes("..")) {
     return "";
   }
   return href;

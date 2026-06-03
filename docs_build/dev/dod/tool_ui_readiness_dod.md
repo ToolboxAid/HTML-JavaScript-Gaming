@@ -6,7 +6,7 @@ BUILD_PR_LEVEL_10_6P_COMPLETE_TOOL_UI_READINESS_DOD
 ## Purpose
 Finish the tool Definition of Done so UAT can validate tools systematically instead of picking failures one by one.
 
-This DoD applies to tools opened from `games/index.html`, `samples/index.html`, Workspace Manager, and any sample/game manifest-driven launch.
+This DoD applies to tools opened from `old_games/index.html`, `samples/index.html`, Workspace Manager, and any sample/game manifest-driven launch.
 
 ## Global success rule
 
