@@ -3,39 +3,29 @@
 
 <head>
   <meta charset="utf-8">
+  <base href="../../../../../GameFoundryStudio/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tool Template V2 - Game Foundry Studio</title>
-  <meta name="description" content="Theme V2 tool template foundation.">
-  <link rel="stylesheet" href="../theme.css">
+  <meta name="description" content="Theme V2 production tool page template.">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/theme/v2/theme.css">
 </head>
 
 <body class="meaning-molten-orange">
-  <header class="site-header" aria-label="Site header">
-    <div class="container nav">
-      <a class="brand" href="#">
-        <span>Game Foundry Studio</span>
-      </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#">Toolbox</a>
-        <a href="#">Games</a>
-        <a href="#">Marketplace</a>
-      </nav>
-    </div>
-  </header>
-
+  <div data-partial="header-nav"></div>
   <main>
     <section class="page-title">
       <div class="container">
-        <div class="kicker">Template Tool Group</div>
+        <div class="kicker">Tool Category</div>
         <h1>Tool Name</h1>
-        <p class="lede">Tool purpose and expected creator outcome.</p>
+        <p class="lede">Production-ready tool purpose and creator outcome.</p>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
         <div class="tool-workspace">
-          <aside class="tool-column">
+          <aside class="tool-column tool-group-build-create">
             <div class="tool-column-header molten-orange">
               <h2>Toolbox</h2>
             </div>
@@ -43,43 +33,103 @@
               <details class="vertical-accordion" open>
                 <summary>Setup</summary>
                 <div class="accordion-body">
-                  <p>Setup controls and required inputs.</p>
+                  <form aria-label="Tool setup form">
+                    <div class="field-group">
+                      <label for="template-tool-name">Name</label>
+                      <input id="template-tool-name" name="template-tool-name" type="text" value="Untitled Project">
+                      <p class="field-hint">Required project or output name.</p>
+                    </div>
+                    <div class="field-group">
+                      <label for="template-tool-mode">Mode</label>
+                      <select id="template-tool-mode" name="template-tool-mode">
+                        <option>Draft</option>
+                        <option>Review</option>
+                        <option>Export</option>
+                      </select>
+                      <p class="field-hint">Use approved Theme V2 form controls only.</p>
+                    </div>
+                  </form>
                 </div>
               </details>
               <details class="vertical-accordion">
                 <summary>Options</summary>
                 <div class="accordion-body">
-                  <p>Secondary controls and configuration.</p>
+                  <div class="feedback">
+                    <strong class="feedback-title">Ready</strong>
+                    <p class="feedback-message">Tool options belong in this left column.</p>
+                  </div>
                 </div>
               </details>
             </div>
           </aside>
 
-          <section class="tool-center-panel" aria-labelledby="tool-workspace-title">
-            <img src="../assets/image-missing.svg" alt="Tool preview placeholder">
-            <h2 id="tool-workspace-title">Workspace</h2>
-            <p>Primary work area, preview, canvas, editor, or generated output.</p>
+          <section class="tool-center-panel" aria-labelledby="template-workspace-title">
+            <img src="../src/engine/theme/v2/assets/image-missing.svg" alt="Tool preview placeholder">
+            <h2 id="template-workspace-title">Workspace</h2>
+            <p>Primary tool work area for canvas, editor, preview, or generated output.</p>
             <div class="button-row" aria-label="Tool actions">
-              <button class="btn primary" type="button">Primary Action</button>
-              <button class="btn" type="button">Secondary Action</button>
+              <button class="btn primary" type="button">Save Draft</button>
+              <button class="btn" type="button">Preview</button>
+            </div>
+            <div class="surface" aria-labelledby="template-output-title">
+              <div class="surface-header">
+                <div class="kicker">Output</div>
+                <h2 id="template-output-title">Current Result</h2>
+              </div>
+              <div class="surface-body">
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <caption>Tool output summary</caption>
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Manifest handoff</td>
+                        <td>Pending</td>
+                      </tr>
+                      <tr>
+                        <td>Tool state</td>
+                        <td>Draft</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </section>
 
-          <aside class="tool-column">
+          <aside class="tool-column tool-group-build-create">
             <div class="tool-column-header forge-gold">
               <h2>Inspector</h2>
             </div>
             <div class="accordion-stack">
               <details class="vertical-accordion" open>
-                <summary>Output</summary>
+                <summary>Status</summary>
                 <div class="accordion-body">
-                  <p>Status, validation messages, or selected item details.</p>
+                  <div class="event-log" aria-label="Tool status log">
+                    <div class="event-log-entry">PASS Theme V2 shell loaded.</div>
+                    <div class="event-log-entry">WAIT Tool implementation not attached.</div>
+                  </div>
                 </div>
               </details>
               <details class="vertical-accordion">
-                <summary>History</summary>
+                <summary>Dialog Contract</summary>
                 <div class="accordion-body">
-                  <p>Recent actions, logs, or export records.</p>
+                  <dialog aria-labelledby="template-dialog-title">
+                    <div class="surface">
+                      <div class="surface-header">
+                        <h2 id="template-dialog-title">Dialog Title</h2>
+                      </div>
+                      <div class="surface-body">
+                        <p>Dialog content uses Theme V2 dialog ownership when implemented.</p>
+                      </div>
+                    </div>
+                  </dialog>
+                  <p>Dialog markup is present as a closed production placeholder.</p>
                 </div>
               </details>
             </div>
@@ -88,12 +138,8 @@
       </div>
     </section>
   </main>
-
-  <footer class="footer">
-    <div class="container footer__inner">
-      <div class="footer__tagline">Build &middot; Play &middot; Share</div>
-    </div>
-  </footer>
+  <div data-partial="footer"></div>
+  <script src="assets/js/gamefoundry-partials.js" defer></script>
 </body>
 
 </html>

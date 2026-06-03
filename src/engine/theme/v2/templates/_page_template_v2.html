@@ -3,41 +3,31 @@
 
 <head>
   <meta charset="utf-8">
+  <base href="../../../../../GameFoundryStudio/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Page Template V2 - Game Foundry Studio</title>
-  <meta name="description" content="Theme V2 page template foundation.">
-  <link rel="stylesheet" href="../theme.css">
+  <meta name="description" content="Theme V2 production content page template.">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/theme/v2/theme.css">
 </head>
 
 <body>
-  <header class="site-header" aria-label="Site header">
-    <div class="container nav">
-      <a class="brand" href="#">
-        <span>Game Foundry Studio</span>
-      </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#">Toolbox</a>
-        <a href="#">Games</a>
-        <a href="#">Marketplace</a>
-      </nav>
-    </div>
-  </header>
-
+  <div data-partial="header-nav"></div>
   <main>
     <section class="page-title">
       <div class="container">
         <div class="kicker">Page Category</div>
         <h1>Page Title</h1>
-        <p class="lede">Page purpose and key visitor outcome.</p>
+        <p class="lede">Production-ready page purpose and visitor outcome.</p>
       </div>
     </section>
 
     <section class="section">
       <div class="container page-hero">
-        <img src="../assets/image-missing.svg" alt="Page hero placeholder">
+        <img src="../src/engine/theme/v2/assets/image-missing.svg" alt="Page hero placeholder">
         <div>
           <h2>Primary page message.</h2>
-          <p class="lede">Supporting context for the page experience.</p>
+          <p class="lede">A concise production page summary that supports the headline.</p>
           <a class="btn primary" href="#template-content">Primary Link</a>
         </div>
       </div>
@@ -45,29 +35,97 @@
 
     <section class="section" id="template-content">
       <div class="container">
-        <div class="grid cols-3">
-          <article class="callout">
-            <h2>Section One</h2>
-            <p>Short content block for the first page focus.</p>
-          </article>
-          <article class="callout">
-            <h2>Section Two</h2>
-            <p>Short content block for the second page focus.</p>
-          </article>
-          <article class="callout">
-            <h2>Section Three</h2>
-            <p>Short content block for the third page focus.</p>
-          </article>
+        <div class="surface">
+          <div class="surface-header">
+            <div class="kicker">Overview</div>
+            <h2>Page section heading</h2>
+          </div>
+          <div class="surface-body">
+            <div class="grid cols-3">
+              <article class="callout">
+                <h2>Purpose</h2>
+                <p>Describe the page responsibility.</p>
+              </article>
+              <article class="callout">
+                <h2>Status</h2>
+                <p>Summarize current availability or lifecycle state.</p>
+              </article>
+              <article class="callout">
+                <h2>Next Step</h2>
+                <p>Route users to the next approved action.</p>
+              </article>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  </main>
 
-  <footer class="footer">
-    <div class="container footer__inner">
-      <div class="footer__tagline">Build &middot; Play &middot; Share</div>
-    </div>
-  </footer>
+    <section class="section">
+      <div class="container">
+        <div class="accordion-group">
+          <details class="vertical-accordion" open>
+            <summary>Details</summary>
+            <div class="accordion-body">
+              <form aria-label="Template page form">
+                <div class="field-group">
+                  <label for="template-page-title">Title</label>
+                  <input id="template-page-title" name="template-page-title" type="text" value="Page Draft">
+                  <p class="field-hint">Use Theme V2 form structure for settings and filters.</p>
+                </div>
+              </form>
+            </div>
+          </details>
+          <details class="vertical-accordion">
+            <summary>Status</summary>
+            <div class="accordion-body">
+              <div class="feedback">
+                <strong class="feedback-title">Ready</strong>
+                <p class="feedback-message">This page template uses shared Theme V2 chrome and components.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="table-wrapper">
+          <table class="data-table">
+            <caption>Page metadata summary</caption>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Template Type</td>
+                <td>Theme V2 Page</td>
+              </tr>
+              <tr>
+                <td>Chrome</td>
+                <td>Shared partials</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <dialog aria-labelledby="template-page-dialog-title">
+          <div class="surface">
+            <div class="surface-header">
+              <h2 id="template-page-dialog-title">Dialog Title</h2>
+            </div>
+            <div class="surface-body">
+              <p>Dialog content uses Theme V2 dialog ownership when implemented.</p>
+            </div>
+          </div>
+        </dialog>
+      </div>
+    </section>
+  </main>
+  <div data-partial="footer"></div>
+  <script src="assets/js/gamefoundry-partials.js" defer></script>
 </body>
 
 </html>
