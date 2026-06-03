@@ -1,6 +1,6 @@
-Rename public Theme V2 asset root to assets/theme-v2 - PR_26154_029-theme-v2-root-rename
+Close out toolbox nav coverage and ToolDisplayMode character sizing - PR_26154_030-toolbox-nav-character-closeout
 
-- Move the public Theme V2 asset root to `assets/theme-v2/`.
-- Update active pages, toolbox pages, templates, JS helpers, partials, tests, and Theme V2 governance docs to the new root.
-- Keep deprecated old-tools and historical reports isolated without rewriting them.
-- Validate active references, template consistency, static changed files, Workspace V2, diff hygiene, and review artifacts.
+- Set shared Theme V2 `.tool-display-mode__character` rendering to 150px by 150px with 15px adjacent spacing.
+- Add all active toolbox tools to the shared header Toolbox navigation, including grouped Audio, Assets, Objects, Tooling, and Worlds submenus.
+- Remove Marketplace from the active toolbox index data while preserving Marketplace as a product/footer destination.
+- Validate active toolbox nav coverage, template consistency, Workspace V2, static changed files, diff hygiene, and review artifacts.
