@@ -100,7 +100,6 @@ import { run as runVectorGeometryRuntime } from './tools/VectorGeometryRuntime.t
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runReplayTimeline } from './replay/ReplayTimeline.test.mjs';
-import './theme.test.js';
 import { run as runLaunchSmokeAllEntries } from './runtime/LaunchSmokeAllEntries.test.mjs';
 import { run as runRuntimeMonitoringHooks } from './runtime/RuntimeMonitoringHooks.test.mjs';
 import { run as runPhase19RuntimeLifecycleValidation } from './runtime/Phase19RuntimeLifecycleValidation.test.mjs';

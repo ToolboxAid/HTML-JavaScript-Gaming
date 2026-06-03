@@ -1,8 +1,7 @@
-Normalize Cloud template and remove active styles.css usage - PR_26154_025-cloud-template-styles-cleanup
+Close template, Theme V2, and legacy cleanup gaps - PR_26154_026-028-template-theme-legacy-closeout
 
-- Rebuild `toolbox/cloud/index.html` as an active tool-template page with ToolDisplayMode, tool workspace shell, and left/center/right panels.
-- Promote reusable page hero, accordion stack, semantic color, and public tool shell styling into approved Theme V2 CSS modules.
-- Restore compact tool column header text sizing after moving active pages off the aggregate stylesheet.
-- Remove active `styles.css` references from public/root pages, active toolbox pages, the active tool template, and the rebuilt Localization template.
-- Leave deprecated-only `styles.css` references documented while confirming zero active consumers remain.
-- Validate Cloud wiring, Theme V2 CSS imports, template consistency counts, Workspace V2 launch/navigation behavior, static paths, and diff hygiene.
+- Close remaining public/root template markers and active toolbox ToolDisplayMode data attributes.
+- Wire Font Awesome through the active Theme V2 entry point.
+- Remove obsolete V1 theme test coverage that imports deleted `src/engine/theme` files.
+- Report remaining Theme V2 unwired assets, ambiguous toolbox legacy surfaces, and stale test candidates.
+- Validate template counts, active path references, static changed files, Workspace V2, diff hygiene, and review artifacts.
