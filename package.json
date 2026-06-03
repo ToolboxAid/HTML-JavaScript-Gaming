@@ -15,23 +15,14 @@
     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
-    "build:manifest": "node ./scripts/generate-sample-manifest.mjs",
-    "build:curriculum-validation-artifact": "node ./scripts/generate-curriculum-validation-artifact.mjs",
-    "sync:tool-hints": "node ./scripts/sync-tool-hints-from-workspace-manager.mjs",
-    "normalize:games-presentation": "node ./scripts/normalize-games-presentation.mjs",
     "check:shared-extraction-guard": "node tools/dev/checkSharedExtractionGuard.mjs",
     "check:phase24-closeout-guard": "node tools/dev/checkPhase24CloseoutExecutionGuard.mjs",
     "check:style-system-guard": "node tools/dev/checkStyleSystemGuard.mjs",
     "check:intentional-alias-ledger": "node tools/dev/checkIntentionalAliasLedgerGuard.mjs",
     "check:internal-barrel-guard": "node tools/dev/checkInternalBarrelGuard.mjs",
-    "check:games-template-contract": "node ./tests/validation/skip-deprecated-game-tests.mjs",
     "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
     "test:workspace-v2": "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
-    "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs",
-    "test:launch-smoke:games": "node ./tests/validation/skip-deprecated-game-tests.mjs",
-    "test:workspace-manager:games": "node ./tests/validation/skip-deprecated-game-tests.mjs",
-    "test:manifest-payload:games": "node ./tests/validation/skip-deprecated-game-tests.mjs",
-    "test:sample-standalone:data-flow": "node ./tests/validation/skip-deprecated-sample-tests.mjs"
+    "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs"
   },
   "dependencies": {
     "ws": "^8.20.0"

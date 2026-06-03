@@ -141,9 +141,9 @@ The product guidance phrase is:
 `Build · Play · Share`
 
 Use that phrase as a compact IA and copywriting anchor:
-- Build: creator tools, asset creation, prototypes, systems, and publishing preparation.
-- Play: playable games, arcade browsing, testing, saves, and discovery.
-- Share: marketplace assets, tutorials, community visibility, publishing, and creator identity.
+- Build: tools and creation flow, including asset creation, prototypes, systems, and publishing preparation.
+- Play: games and discovery, including playable games, arcade browsing, testing, and saves.
+- Share: public game pages, share links, creator profiles, marketplace assets, tutorials/community, ratings, and future publish/export flows.
 
 ## GAMEFOUNDRYSTUDIO THEME V2 GOVERNANCE
 

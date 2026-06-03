@@ -1,10 +1,8 @@
-Normalize Theme V2 CSS wiring and retire obsolete tool legacy references - PR_26154_018-020-theme-tools-css-stack
+Clean up migration scripts, deprecated test wiring, and Share guidance - PR_26154_021-migration-cleanup-share-tools-scripts
 
-- Remove Arcade from the active Tools index data.
-- Delete unreferenced `src/engine/ui/toolboxaid-header.html`.
-- Delete obsolete `tools/shared/tooling/CapturePreviewRuntime.js` after active reference audit.
-- Move Theme V2 core CSS from `assets/theme/v2/css/theme/v2/` to `assets/theme/v2/css/`.
-- Preserve `styles.css` bundle behavior through `site-colors.css` and `site-controls.css`.
-- Move deprecated old game/sample test skip shims to `tests/validation/` and update package scripts.
-- Fix Marketplace Toolbox nested submenu behavior on the `styles.css` path.
-- Report Theme V2 asset wiring, Font Awesome unused/stale status, legacy tools review, and CSS structure normalization.
+- Add a display-only Staff Picks section under Trending Games on the root home page.
+- Remove deprecated-only old game/sample script commands, generators, audits, and skip wrappers.
+- Remove old game template contract test wiring retained only for deprecated coverage.
+- Remove the unreferenced duplicate Theme V2 tools accordion script that still listed Arcade.
+- Confirm active Tools index excludes Arcade and CapturePreviewRuntime has no active dependency.
+- Expand Build · Play · Share documentation for tools, games, and Share surfaces.
