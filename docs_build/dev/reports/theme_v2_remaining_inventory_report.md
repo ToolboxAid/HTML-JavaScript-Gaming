@@ -2,18 +2,18 @@
 
 ## Summary
 
-Audited the remaining `src/engine/theme/v2/` surface after template cleanup.
+Audited the remaining `assets/theme/v2/` surface after template cleanup.
 
 The folder still contains active public/root Theme V2 CSS, JS, partials, and one placeholder asset. No files under this folder are classified as runtime engine ownership for this PR; runtime engine styling remains outside this folder under `src/engine/theme/`.
 
 ## Remaining Folders
 
-- `src/engine/theme/v2/assets/`
-- `src/engine/theme/v2/assets/css/`
-- `src/engine/theme/v2/assets/css/theme/v2/`
-- `src/engine/theme/v2/assets/css/tools/grouping/`
-- `src/engine/theme/v2/assets/js/`
-- `src/engine/theme/v2/assets/partials/`
+- `assets/theme/v2/`
+- `assets/theme/v2/css/`
+- `assets/theme/v2/css/theme/v2/`
+- `assets/theme/v2/css/tools/grouping/`
+- `assets/theme/v2/js/`
+- `assets/theme/v2/partials/`
 
 The old templates folder no longer exists.
 
@@ -62,13 +62,13 @@ The old templates folder no longer exists.
 
 ## Runtime Engine Ownership
 
-No remaining file under `src/engine/theme/v2/` was classified as runtime engine ownership in this PR.
+No remaining file under `assets/theme/v2/` was classified as runtime engine ownership in this PR.
 
 Runtime engine styling remains under `src/engine/theme/`, including the shared engine/runtime shell styling called out by project governance. This PR did not move or modify that runtime engine surface.
 
 ## Recommended Next Moves
 
-1. Decide whether public Theme V2 CSS/JS/partials should remain served from `src/engine/theme/v2/assets/` or move to a public asset root in a dedicated ownership PR.
+1. Decide whether public Theme V2 CSS/JS/partials should remain served from `assets/theme/v2/` or move to a public asset root in a dedicated ownership PR.
 2. If public asset ownership moves, migrate active public files as a unit: CSS entrypoints/modules, public JS helpers, header/footer partials, and `image-missing.svg`.
 3. Consolidate active legacy wrapper CSS modules into the approved Theme V2 module set instead of keeping parallel top-level CSS ownership indefinitely.
 4. Remove or explicitly revive the unused page/tool shell partial stubs in a separate PR after confirming no planned consumer needs them.

@@ -21,7 +21,7 @@ Option A IA
 - No unrelated games, samples, engine code, or start_of_day folders were migrated.
 
 Path Adjustments
-- src/engine/theme/v2/assets/js/gamefoundry-partials.js
+- assets/theme/v2/js/gamefoundry-partials.js
   - root segment detection updated from Account/Company/Community/Legal to account/company/community/legal.
   - route map already resolves moved group pages through lowercase account/, community/, company/, legal/, docs/, tools/.
 - tools/tools-page-accordions.js
@@ -31,7 +31,7 @@ Path Adjustments
 
 Validation
 - PASS node --check:
-  src/engine/theme/v2/assets/js/gamefoundry-partials.js
+  assets/theme/v2/js/gamefoundry-partials.js
   tools/tools-page-accordions.js
   tools/toolRegistry.js
   tools/dev/checkStyleSystemGuard.mjs

@@ -10,7 +10,7 @@ Changed runtime JS files considered:
 (0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/engine/theme/mount-shared-header.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/engine/theme/toolboxaid-header.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme/v2/js/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/dev/checkBoundaryHardeningGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -32,14 +32,14 @@ Changed runtime JS files considered:
 (0%) tools/shared/vectorTemplateSampleGame.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (75%) tools/tools-page-accordions.js - executed lines 399/399; executed functions 15/20
-(85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - executed lines 181/181; executed functions 17/20
+(85%) assets/theme/v2/js/gamefoundry-partials.js - executed lines 181/181; executed functions 17/20
 
 Guardrail warnings:
 (0%) src/engine/release/DistributionPackager.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/engine/theme/mount-shared-header.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/engine/theme/toolboxaid-header.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme/v2/js/tools-page-accordions.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/dev/checkBoundaryHardeningGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

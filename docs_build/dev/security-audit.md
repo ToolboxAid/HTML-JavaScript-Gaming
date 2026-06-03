@@ -21,7 +21,7 @@ Searched for:
 ## Decision
 
 The trusted local partial `innerHTML` usage remains because it loads static partial files from
-`src/engine/theme/v2/assets/partials`. It is documented in `docs_build/security/js-injection-policy.md` and must not be reused for
+`assets/theme/v2/partials`. It is documented in `docs_build/security/js-injection-policy.md` and must not be reused for
 user content.
 
 ## Validation

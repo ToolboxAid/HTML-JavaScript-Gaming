@@ -5,7 +5,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 ## Summary
 
 - Pre-stack legacy asset files under `GameFoundryStudio/assets`: 146
-- Pre-stack Theme V2 asset files under `src/engine/theme/v2/assets`: 1
+- Pre-stack Theme V2 asset files under `assets/theme/v2/assets`: 1
 - Active pre-stack page/template/tool files with legacy asset references: 58
 - Pre-stack legacy-only asset paths to copy/migrate: 146
 - Pre-stack destination-only Theme V2 asset paths: 1

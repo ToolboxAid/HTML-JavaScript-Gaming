@@ -25,7 +25,7 @@ Changed runtime JS files covered:
 (0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/engine/theme/mount-shared-header.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/engine/theme/toolboxaid-header.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme/v2/js/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/dev/checkBoundaryHardeningGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -47,19 +47,19 @@ Changed runtime JS files covered:
 (0%) tools/shared/vectorTemplateSampleGame.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (75%) tools/tools-page-accordions.js - executed lines 399/399; executed functions 15/20
-(85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - executed lines 181/181; executed functions 17/20
+(85%) assets/theme/v2/js/gamefoundry-partials.js - executed lines 181/181; executed functions 17/20
 
 Files with executed line/function counts where available:
-(44%) src/engine/theme/v2/assets/js/tool-display-mode.js - executed lines 105/105; executed functions 4/9
+(44%) assets/theme/v2/js/tool-display-mode.js - executed lines 105/105; executed functions 4/9
 (75%) tools/tools-page-accordions.js - executed lines 399/399; executed functions 15/20
-(85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - executed lines 181/181; executed functions 17/20
+(85%) assets/theme/v2/js/gamefoundry-partials.js - executed lines 181/181; executed functions 17/20
 
 Uncovered or low-coverage changed JS files:
 (0%) src/engine/release/DistributionPackager.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/engine/runtime/gameImageConvention.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/engine/theme/mount-shared-header.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/engine/theme/toolboxaid-header.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) assets/theme/v2/js/tools-page-accordions.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/shared/state/getStateVariantClassification.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) tools/dev/checkBoundaryHardeningGuard.mjs - WARNING: uncovered changed runtime JS file; advisory only
@@ -1145,7 +1145,7 @@ Changed JS files considered:
 (0%) src/engine/runtime/gameImageConvention.js - changed JS file not collected as browser runtime coverage
 (0%) src/engine/theme/mount-shared-header.js - changed JS file not collected as browser runtime coverage
 (0%) src/engine/theme/toolboxaid-header.js - changed JS file not collected as browser runtime coverage
-(0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
+(0%) assets/theme/v2/js/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
 (0%) src/shared/contracts/tools/toolContractsIndex.js - changed JS file not collected as browser runtime coverage
 (0%) src/shared/state/getStateVariantClassification.js - changed JS file not collected as browser runtime coverage
 (0%) tests/core/BackgroundImageAndFullscreenBezel.test.mjs - changed JS file not collected as browser runtime coverage
@@ -1187,4 +1187,4 @@ Changed JS files considered:
 (0%) tools/shared/vectorTemplateSampleGame.js - changed JS file not collected as browser runtime coverage
 (0%) tools/toolRegistry.js - changed JS file not collected as browser runtime coverage
 (75%) tools/tools-page-accordions.js - changed JS file with browser V8 coverage
-(85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(85%) assets/theme/v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage

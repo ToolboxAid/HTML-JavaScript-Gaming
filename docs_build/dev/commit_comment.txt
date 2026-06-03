@@ -1,8 +1,7 @@
-Theme V2 template cleanup - PR_26154_007-theme-v2-template-cleanup
+Theme V2 public asset teardown - PR_26154_008-theme-v2-public-asset-teardown
 
-- Move the Theme V2 page template to the repository root as `/_page_template_v2.html`.
-- Delete the retired Theme V2 tool template and remove the empty old template folder.
-- Normalize historical report references to the old template location and retired tool template.
-- Fix the shared header partial logo path so the relocated root page template resolves cleanly.
-- Inventory remaining files under `src/engine/theme/v2/`, classify ownership, and recommend next cleanup moves.
-- Validate targeted template references, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Move remaining public/root Theme V2 CSS, JS helpers, partials, and `image-missing.svg` into `assets/theme/v2/`.
+- Update public/root pages, templates, tool pages, old tool reference, and docs to consume `assets/theme/v2/`.
+- Remove the empty former Theme V2 source folder after confirming no references remain outside generated artifacts.
+- Keep unrelated `src/engine` runtime files in place.
+- Validate targeted references, changed static files, browser loading of moved assets, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.

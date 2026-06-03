@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Audited copy readiness from `GameFoundryStudio/assets` to `src/engine/theme/v2`.
+- Audited copy readiness from `GameFoundryStudio/assets` to `assets/theme/v2`.
 - Compared files by relative path and SHA-256 content hash where both sides exist.
 - No files were copied, replaced, deleted, or deprecated.
 - No CSS was added.
@@ -13,14 +13,14 @@
 | Path | Status |
 |---|---|
 | `GameFoundryStudio/assets` | Exists |
-| `src/engine/theme/v2` | Missing |
+| `assets/theme/v2` | Missing |
 
 ## Summary
 
 | Category | Count |
 |---|---:|
 | Files only in `GameFoundryStudio/assets` | 146 |
-| Files only in `src/engine/theme/v2` | 0 |
+| Files only in `assets/theme/v2` | 0 |
 | Files in both and identical | 0 |
 | Files in both but different | 0 |
 | Files that would overwrite destination content if copied | 0 |
@@ -40,7 +40,7 @@
 - The destination directory is missing, so there are no destination-only, identical, different, or overwrite candidates in this audit.
 - Source files under `css/theme/v2/` are marked `copy-new` because they are the direct Theme V2 source candidates.
 - Source files under other `css/` paths are marked `deprecated-source` for copy-readiness purposes because V1/legacy CSS must not be copied into Theme V2.
-- Non-CSS source files are marked `review-different` because ownership under `src/engine/theme/v2` requires review before copy.
+- Non-CSS source files are marked `review-different` because ownership under `assets/theme/v2` requires review before copy.
 - `GameFoundryStudio/assets` is not marked deprecated by this audit.
 
 ## Files Only In GameFoundryStudio Assets

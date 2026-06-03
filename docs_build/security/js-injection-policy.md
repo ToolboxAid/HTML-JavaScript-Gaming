@@ -18,5 +18,5 @@ marketplace metadata, account fields, and imported files must be treated as untr
 ## Local Partials
 
 `gamefoundry-partials.js` currently uses `innerHTML` to parse trusted, repository-local partial HTML loaded from
-`src/engine/theme/v2/assets/partials`. This path is allowed only for trusted local partials and must not be reused for
+`assets/theme/v2/partials`. This path is allowed only for trusted local partials and must not be reused for
 user content, manifest content, marketplace content, account content, or imported project data.

@@ -9,7 +9,7 @@ Completed the focused Theme V2 image ownership normalization.
 - Removed the temporary nested public image folder and did not recreate it.
 - Updated active HTML, JS, template, and report references to resolve public Theme V2 images through `assets/theme/v2/images/`.
 - Updated `tool-display-mode.js` so badge and character requests resolve from `/assets/theme/v2/images/`.
-- Preserved `src/engine/theme/v2/` because it still contains non-image Theme V2 CSS, JS, partial, template, and placeholder assets.
+- Preserved `assets/theme/v2/` because it still contains non-image Theme V2 CSS, JS, partial, template, and placeholder assets.
 
 ## Asset Move
 
@@ -28,15 +28,15 @@ Updated affected public/root pages, tool pages, templates, and scripts so image 
 
 Notable runtime/helper updates:
 
-- `src/engine/theme/v2/assets/js/tool-display-mode.js` uses `/assets/theme/v2/images` as its badge and character root.
+- `assets/theme/v2/js/tool-display-mode.js` uses `/assets/theme/v2/images` as its badge and character root.
 - `retired Theme V2 tool template` and `tools/_templates-v2/index.html` use `data-asset-root="assets/theme/v2/images"`.
 - `tools/tools-page-accordions.js` points generated tool-card and badge images at `../assets/theme/v2/images/...`.
 
 No layout, CSS, ToolDisplayMode behavior, Storage Inspector runtime, or unrelated tool implementation work was changed.
 
-## Remaining src/engine/theme/v2 Surface
+## Remaining assets/theme/v2 Surface
 
-`src/engine/theme/v2/` remains in place and is not empty.
+`assets/theme/v2/` remains in place and is not empty.
 
 Remaining folders:
 

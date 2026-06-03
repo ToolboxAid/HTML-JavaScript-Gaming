@@ -12,7 +12,7 @@ Task: PR_26152_282-theme-v2-legacy-assets-deprecation
 ## Deprecated Surface
 
 - Legacy path: `GameFoundryStudio/assets`
-- New SSoT path: `src/engine/theme/v2/assets`
+- New SSoT path: `assets/theme/v2/assets`
 
 ## Deletion
 

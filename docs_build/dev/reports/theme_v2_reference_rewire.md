@@ -5,7 +5,7 @@ Task: PR_26152_280-theme-v2-reference-rewire
 ## Summary
 
 - Active HTML/JS files mechanically rewired: 58
-- Active page/template/tool asset references now resolve through `src/engine/theme/v2/assets`.
+- Active page/template/tool asset references now resolve through `assets/theme/v2/assets`.
 - No template redesign, Storage Inspector rebuild, or CSS authoring was performed.
 
 ## Rewired Files
@@ -71,6 +71,6 @@ Task: PR_26152_280-theme-v2-reference-rewire
 
 ## Runtime Helper Adjustments
 
-- `src/engine/theme/v2/assets/js/gamefoundry-partials.js`: resolves partial fetches and partial image rewrites from the Theme V2 asset script root.
-- `src/engine/theme/v2/assets/js/tool-display-mode.js`: derives default image assets from the Theme V2 asset script root and allows a template placeholder character source.
+- `assets/theme/v2/js/gamefoundry-partials.js`: resolves partial fetches and partial image rewrites from the Theme V2 asset script root.
+- `assets/theme/v2/js/tool-display-mode.js`: derives default image assets from the Theme V2 asset script root and allows a template placeholder character source.
 - `tools/tools-page-accordions.js`: active generated image and badge paths now point to `../assets/theme/v2/images/...`.

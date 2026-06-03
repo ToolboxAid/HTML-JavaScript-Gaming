@@ -98,7 +98,7 @@ No files were moved into `assets/theme/v1/` because the repository did not conta
 
 `src/engine/theme/` was not moved. Current evidence shows it contains mixed responsibilities:
 
-- `src/engine/theme/v2/assets/` is the public Theme V2 styling, partial, image, and script surface used by public pages and tools.
+- `assets/theme/v2/` is the public Theme V2 styling, partial, image, and script surface used by public pages and tools.
 - sibling files under `src/engine/theme/` and `src/engine/ui/` act more like runtime/engine shell helpers and shared header integrations.
 
 Recommended follow-up: split or explicitly document public Theme V2 SSoT versus runtime engine shell styling before moving any `src/engine/theme/` content.

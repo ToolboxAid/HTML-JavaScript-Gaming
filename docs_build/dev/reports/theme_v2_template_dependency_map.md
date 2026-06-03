@@ -29,7 +29,7 @@
 | Dependency | Used By | Purpose | Status |
 |---|---|---|---|
 | `GameFoundryStudio/assets/images/favicon.svg` | Both templates | Existing site favicon | Existing |
-| `src/engine/theme/v2/assets/image-missing.svg` | Both templates | Shared Theme V2 template placeholder | Existing from PR_26152_273 |
+| `assets/theme/v2/images/image-missing.svg` | Both templates | Shared Theme V2 template placeholder | Existing from PR_26152_273 |
 
 ## Explicit Non-Dependencies
 

@@ -5,7 +5,7 @@
 Completed the focused public asset path fix for `tool-display-mode.js`.
 
 - Badge and character image URLs now resolve from `/assets/theme/v2/images/`.
-- `tool-display-mode.js` no longer derives badge/character image URLs from the script location under `src/engine/theme/v2`.
+- `tool-display-mode.js` no longer derives badge/character image URLs from the script location under `assets/theme/v2`.
 - Legacy `data-tool-icon-src` PNG filenames are preserved as filenames only, then resolved through the public Theme V2 asset root.
 - Non-PNG display-mode image overrides, such as the template `image-missing.svg` placeholder, resolve to the public `index.png` fallback.
 
@@ -51,7 +51,7 @@ Results excluding `start_of_day/`, `old_samples/`, `old_games/`, `old-tools/`, `
 
 - `assets/theme/v2/images` references remaining: 151
 - `src/engine/theme` references remaining: 431
-- `assets/theme/v2/images` code references: 1, in `src/engine/theme/v2/assets/js/tool-display-mode.js`
+- `assets/theme/v2/images` code references: 1, in `assets/theme/v2/js/tool-display-mode.js`
 
 Required public asset paths exist:
 
@@ -72,12 +72,12 @@ Current reference classification:
   - `src/engine/theme/accordionV2/*`
   - `src/engine/theme/toolboxaid-header.*`
 - Public Theme V2 styling/scripts still referenced from public/root pages:
-  - `src/engine/theme/v2/assets/css/*`
-  - `src/engine/theme/v2/assets/css/theme/v2/*`
-  - `src/engine/theme/v2/assets/js/gamefoundry-partials.js`
-  - `src/engine/theme/v2/assets/js/tool-display-mode.js`
-  - `src/engine/theme/v2/assets/js/tools-page-accordions.js`
-  - `src/engine/theme/v2/assets/partials/*`
+  - `assets/theme/v2/css/*`
+  - `assets/theme/v2/css/theme/v2/*`
+  - `assets/theme/v2/js/gamefoundry-partials.js`
+  - `assets/theme/v2/js/tool-display-mode.js`
+  - `assets/theme/v2/js/tools-page-accordions.js`
+  - `assets/theme/v2/partials/*`
 - Public image references:
   - public/root pages and tool pages now reference the canonical public Theme V2 image root for favicons, page art, tool cards, and hero images.
 
@@ -87,7 +87,7 @@ Recommended follow-up: keep `src/engine/theme/` in place until the runtime shell
 
 Passed:
 
-- `node --check src/engine/theme/v2/assets/js/tool-display-mode.js`
+- `node --check assets/theme/v2/js/tool-display-mode.js`
 - Required public asset existence checks for `badges/index.png` and `characters/index.png`
 - Targeted reference checks for the public Theme V2 image root, `badges/index.png`, and `characters/index.png`
 - Static validation for the changed JS file

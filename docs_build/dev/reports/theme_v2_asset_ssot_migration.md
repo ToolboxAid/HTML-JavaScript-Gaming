@@ -174,8 +174,8 @@ Task: PR_26152_279-theme-v2-asset-ssot-migration
 
 ## Manual-Review Files
 
-- `src/engine/theme/v2/assets/js/gamefoundry-partials.js - copied then adjusted to resolve partials and partial images from its own Theme V2 asset root.`
-- `src/engine/theme/v2/assets/js/tool-display-mode.js - copied then adjusted to derive its default image root from its own Theme V2 script root and support template placeholder character assets.`
+- `assets/theme/v2/js/gamefoundry-partials.js - copied then adjusted to resolve partials and partial images from its own Theme V2 asset root.`
+- `assets/theme/v2/js/tool-display-mode.js - copied then adjusted to derive its default image root from its own Theme V2 script root and support template placeholder character assets.`
 
 ## Deletion
 

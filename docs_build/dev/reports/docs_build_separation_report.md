@@ -8,7 +8,7 @@ Task: PR_26154_002-docs-build-separation-teardown
 - Kept `/docs/` as the public/user-facing documentation surface.
 - Removed the legacy `GameFoundryStudio/` folder after confirming active Theme V2 references no longer require it.
 - Updated active references from `docs/dev/` to `docs_build/dev/` and from `docs/pr/` to `docs_build/pr/`.
-- Updated active Theme V2 governance references to `src/engine/theme/v2`.
+- Updated active Theme V2 governance references to `assets/theme/v2`.
 
 ## Moved Folders
 
@@ -39,7 +39,7 @@ The remaining `/docs/` surface is limited to public docs and user-facing documen
 ## Legacy Folder Teardown
 
 - Removed `GameFoundryStudio/`.
-- Active asset and Theme V2 documentation now points to `src/engine/theme/v2`.
+- Active asset and Theme V2 documentation now points to `assets/theme/v2`.
 - Remaining `GameFoundryStudio/` literals are historical report references, protected `start_of_day` references, or guard assertions that intentionally check the old path is not used.
 
 ## Path Adjustments

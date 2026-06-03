@@ -56,7 +56,7 @@ The `tools/` root now retains only `tools/index.html` as a root HTML page.
 
 ### Theme V2 and Navigation
 
-- Updated Theme V2 route mapping in `src/engine/theme/v2/assets/js/gamefoundry-partials.js`.
+- Updated Theme V2 route mapping in `assets/theme/v2/js/gamefoundry-partials.js`.
 - Updated shared Theme V2 header/footer partial links for moved tool pages.
 - Corrected public Reference route from `docs_build/reference.html` to `docs/reference.html`.
 - Kept public Games navigation on `arcade/index.html`; deprecated playable reference games live under `old_games/` and are not the active public games hub.

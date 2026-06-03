@@ -2,7 +2,7 @@
 
 ## Method
 
-- Relative paths were compared from `GameFoundryStudio/assets` to `src/engine/theme/v2`.
+- Relative paths were compared from `GameFoundryStudio/assets` to `assets/theme/v2`.
 - SHA-256 hashes were computed for existing files.
 - No content was copied or changed outside this report.
 
