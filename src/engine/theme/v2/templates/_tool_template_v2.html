@@ -24,49 +24,55 @@
 
     <section class="section">
       <div class="container">
-        <div class="tool-workspace">
-          <aside class="tool-column tool-group-build-create">
+        <div class="tool-workspace grid cols-3">
+          <aside class="tool-column tool-group-build-create" aria-label="Left column selection input and configuration">
             <div class="tool-column-header molten-orange">
-              <h2>Toolbox</h2>
+              <h2>Left Column</h2>
             </div>
-            <div class="accordion-stack">
-              <details class="vertical-accordion" open>
-                <summary>Setup</summary>
-                <div class="accordion-body">
-                  <form aria-label="Tool setup form">
-                    <div class="field-group">
-                      <label for="template-tool-name">Name</label>
-                      <input id="template-tool-name" name="template-tool-name" type="text" value="Untitled Project">
-                      <p class="field-hint">Required project or output name.</p>
-                    </div>
-                    <div class="field-group">
-                      <label for="template-tool-mode">Mode</label>
-                      <select id="template-tool-mode" name="template-tool-mode">
-                        <option>Draft</option>
-                        <option>Review</option>
-                        <option>Export</option>
-                      </select>
-                      <p class="field-hint">Use approved Theme V2 form controls only.</p>
-                    </div>
-                  </form>
-                </div>
-              </details>
-              <details class="vertical-accordion">
-                <summary>Options</summary>
-                <div class="accordion-body">
-                  <div class="feedback">
-                    <strong class="feedback-title">Ready</strong>
-                    <p class="feedback-message">Tool options belong in this left column.</p>
+            <div class="surface" aria-labelledby="template-selection-title">
+              <div class="surface-header">
+                <div class="kicker">Selection / Input / Configuration</div>
+                <h2 id="template-selection-title">Input and Configuration</h2>
+              </div>
+              <div class="surface-body">
+                <form aria-label="Tool selection and configuration form">
+                  <div class="field-group">
+                    <label for="template-tool-source">Source</label>
+                    <select id="template-tool-source" name="template-tool-source">
+                      <option>Project Store</option>
+                      <option>Tool State</option>
+                      <option>Manifest</option>
+                    </select>
+                    <p class="field-hint">Select the active record or input surface.</p>
                   </div>
-                </div>
-              </details>
+                  <div class="field-group">
+                    <label for="template-tool-filter">Filter</label>
+                    <input id="template-tool-filter" name="template-tool-filter" type="search" value="">
+                    <p class="field-hint">Filter or narrow the current selection.</p>
+                  </div>
+                  <div class="field-group">
+                    <label for="template-tool-mode">Mode</label>
+                    <select id="template-tool-mode" name="template-tool-mode">
+                      <option>Draft</option>
+                      <option>Review</option>
+                      <option>Export</option>
+                    </select>
+                    <p class="field-hint">Configuration remains visible while the center changes display modes.</p>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="feedback">
+              <strong class="feedback-title">Selection Contract</strong>
+              <p class="feedback-message">Left column owns persistent selection, input, and configuration.</p>
             </div>
           </aside>
 
           <section class="tool-center-panel" aria-labelledby="template-workspace-title">
+            <div data-tool-display-mode data-asset-root="../src/engine/theme/v2/assets" data-tool-slug="tool-template-v2" data-tool-icon-src="../src/engine/theme/v2/assets/image-missing.svg"></div>
             <img src="../src/engine/theme/v2/assets/image-missing.svg" alt="Tool preview placeholder">
-            <h2 id="template-workspace-title">Workspace</h2>
-            <p>Primary tool work area for canvas, editor, preview, or generated output.</p>
+            <h2 id="template-workspace-title">Center Column</h2>
+            <p>Primary tool display area with the toolDisplayMode host for tiles, lists, trees, JSON summaries, canvas, editor, preview, or generated output.</p>
             <div class="button-row" aria-label="Tool actions">
               <button class="btn primary" type="button">Save Draft</button>
               <button class="btn" type="button">Preview</button>
@@ -102,36 +108,44 @@
             </div>
           </section>
 
-          <aside class="tool-column tool-group-build-create">
+          <aside class="tool-column tool-group-build-create" aria-label="Right column output status diagnostics and details">
             <div class="tool-column-header forge-gold">
-              <h2>Inspector</h2>
+              <h2>Right Column</h2>
             </div>
-            <div class="accordion-stack">
-              <details class="vertical-accordion" open>
-                <summary>Status</summary>
-                <div class="accordion-body">
-                  <div class="event-log" aria-label="Tool status log">
-                    <div class="event-log-entry">PASS Theme V2 shell loaded.</div>
-                    <div class="event-log-entry">WAIT Tool implementation not attached.</div>
-                  </div>
+            <div class="surface" aria-labelledby="template-details-title">
+              <div class="surface-header">
+                <div class="kicker">Output / Status / Diagnostics / Details</div>
+                <h2 id="template-details-title">Status and Diagnostics</h2>
+              </div>
+              <div class="surface-body">
+                <div class="feedback">
+                  <strong class="feedback-title">Selected Record</strong>
+                  <p class="feedback-message">Right column owns selected output, diagnostics, metadata, and details.</p>
                 </div>
-              </details>
-              <details class="vertical-accordion">
-                <summary>Dialog Contract</summary>
-                <div class="accordion-body">
-                  <dialog aria-labelledby="template-dialog-title">
-                    <div class="surface">
-                      <div class="surface-header">
-                        <h2 id="template-dialog-title">Dialog Title</h2>
-                      </div>
-                      <div class="surface-body">
-                        <p>Dialog content uses Theme V2 dialog ownership when implemented.</p>
-                      </div>
+                <div class="event-log" aria-label="Tool status log">
+                  <div class="event-log-entry">PASS Theme V2 shell loaded.</div>
+                  <div class="event-log-entry">WAIT Tool implementation not attached.</div>
+                </div>
+              </div>
+            </div>
+            <div class="surface" aria-labelledby="template-dialog-title">
+              <div class="surface-header">
+                <div class="kicker">Dialog Contract</div>
+                <h2 id="template-dialog-title">Dialog Placeholder</h2>
+              </div>
+              <div class="surface-body">
+                <dialog aria-labelledby="template-dialog-heading">
+                  <div class="surface">
+                    <div class="surface-header">
+                      <h2 id="template-dialog-heading">Dialog Title</h2>
                     </div>
-                  </dialog>
-                  <p>Dialog markup is present as a closed production placeholder.</p>
-                </div>
-              </details>
+                    <div class="surface-body">
+                      <p>Dialog content uses Theme V2 dialog ownership when implemented.</p>
+                    </div>
+                  </div>
+                </dialog>
+                <p>Closed dialog markup documents the approved Theme V2 dialog surface.</p>
+              </div>
             </div>
           </aside>
         </div>
@@ -140,6 +154,7 @@
   </main>
   <div data-partial="footer"></div>
   <script src="assets/js/gamefoundry-partials.js" defer></script>
+  <script src="assets/js/tool-display-mode.js" defer></script>
 </body>
 
 </html>
