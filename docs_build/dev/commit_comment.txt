@@ -1,6 +1,7 @@
-Theme V1 assets, games images, and favicon cleanup - PR_26154_009-theme-v1-assets-games-favicon-cleanup
+SVG favicon normalization - PR_26154_010-svg-favicon-normalization
 
-- Canonicalize active HTML favicon links to root `/favicon.ico` and confirm no duplicate `.ico` files exist.
-- Move Theme V2 games art into `games/assets/images/` and update active game image references.
-- Move confirmed static V1 companions into `assets/theme/v1/` while keeping active `src/engine/theme` runtime shell styling/code in place.
-- Validate targeted references, static paths, root HTTP asset resolution, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Move the canonical site icon from `assets/theme/v2/images/favicon.svg` to root `/favicon.svg`.
+- Remove obsolete root `/favicon.ico`.
+- Update active HTML favicon links and the website deployment include list to use `/favicon.svg`.
+- Report historical favicon references and additional root-level branding candidates without moving unrelated assets.
+- Validate targeted references, root HTTP loading, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
