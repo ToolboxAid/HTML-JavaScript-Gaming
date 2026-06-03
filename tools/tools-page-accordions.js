@@ -9,24 +9,11 @@
     let currentMode = "ascending";
     const toolGroups = [
         {
-            group: "Content & Assets",
-            tools: [
-                {
-                    title: "Asset Studio",
-                    href: "../tools/asset-studio.html",
-                    image: "assets/images/tools/asset-studio.png",
-                    description: "Create sprites, animations, vectors and palettes.",
-                    role: "Pixel Smith",
-                    mascot: "pixel-smith",
-                    theme: "pixel"
-                }
-            ]
-        },
-        {
-            group: "Build & Create",
+            group: "Objects",
             tools: [
                 {
                     title: "Object Vector Studio",
+                    subgroup: "Vector",
                     href: "../tools/object-vector-studio.html",
                     image: "assets/images/tools/object-vector-studio.png",
                     description: "Create object-ready vector assets and reusable scene pieces.",
@@ -35,49 +22,73 @@
                     theme: "pixel"
                 },
                 {
+                    title: "Asset Studio",
+                    subgroup: "Sprite",
+                    href: "../tools/asset-studio.html",
+                    image: "assets/images/tools/asset-studio.png",
+                    description: "Create sprites, animations, vectors and palettes.",
+                    role: "Pixel Smith",
+                    mascot: "pixel-smith",
+                    theme: "pixel"
+                },
+                {
+                    title: "Animation Studio",
+                    subgroup: "Animated Sprite",
+                    href: "../tools/animation-studio.html",
+                    image: "assets/images/tools/animation-studio.png",
+                    description: "Create timing, animation states, and motion workflows.",
+                    role: "Spark",
+                    mascot: "spark",
+                    theme: "pixel"
+                },
+                {
+                    title: "Code Studio",
+                    subgroup: "UI",
+                    href: "../tools/code-studio.html",
+                    image: "assets/images/tools/code-studio.png",
+                    description: "Write code, extend systems and build custom logic.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                }
+            ]
+        },
+        {
+            group: "Worlds",
+            tools: [
+                {
                     title: "World Vector Studio",
+                    subgroup: "Vector",
                     href: "../tools/world-vector-studio.html",
                     image: "assets/images/tools/world-vector-studio.png",
                     description: "Shape world layouts, maps, terrain, and scene geometry.",
                     role: "Pixel Smith",
                     mascot: "pixel-smith",
                     theme: "pixel"
-                }
-            ]
-        },
-        {
-            group: "Content & Assets",
-            tools: [
-                {
-                    title: "Palette Manager",
-                    href: "../tools/palette-manager.html",
-                    image: "assets/images/tools/palette-manager.png",
-                    description: "Craft and manage color palettes for your games.",
-                    role: "Pixel Smith",
-                    mascot: "pixel-smith",
-                    theme: "pixel"
-                }
-            ]
-        },
-        {
-            group: "Build & Create",
-            tools: [
+                },
                 {
                     title: "Game Builder",
+                    subgroup: "Tilemap",
                     href: "../tools/game-builder.html",
                     image: "assets/images/tools/game-builder.png",
                     description: "Assemble components and build your game from scratch.",
                     role: "ForgeBot",
                     mascot: "forgebot",
                     theme: "forge"
-                }
-            ]
-        },
-        {
-            group: "Build & Create",
-            tools: [
+                },
+                {
+                    title: "Particle Studio",
+                    subgroup: "Isometric",
+                    href: "../tools/particle-studio.html",
+                    image: "assets/images/tools/particle-studio.png",
+                    description: "Author visual effects, emitters, and particle looks.",
+                    role: "Spark",
+                    mascot: "spark",
+                    theme: "pixel"
+                },
                 {
                     title: "Game Design Studio",
+                    subgroup: "Hybrid",
                     href: "../tools/game-design-studio.html",
                     image: "assets/images/tools/game-design-studio.png",
                     description: "Design gameplay, systems, rules, and player experience.",
@@ -88,44 +99,7 @@
             ]
         },
         {
-            group: "Platform & Cloud",
-            tools: [
-                {
-                    title: "Publish Studio",
-                    href: "../tools/publisher.html",
-                    image: "assets/images/tools/publish-studio.png",
-                    description: "Prepare publishing workflows and release-ready game packages.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                }
-            ]
-        },
-        {
-            group: "Build & Create",
-            tools: [
-                {
-                    title: "Animation Studio",
-                    href: "../tools/animation-studio.html",
-                    image: "assets/images/tools/animation-studio.png",
-                    description: "Create timing, animation states, and motion workflows.",
-                    role: "Spark",
-                    mascot: "spark",
-                    theme: "pixel"
-                },
-                {
-                    title: "Particle Studio",
-                    href: "../tools/particle-studio.html",
-                    image: "assets/images/tools/particle-studio.png",
-                    description: "Author visual effects, emitters, and particle looks.",
-                    role: "Spark",
-                    mascot: "spark",
-                    theme: "pixel"
-                }
-            ]
-        },
-        {
-            group: "Media & Audio",
+            group: "Audio",
             tools: [
                 {
                     title: "MIDI Studio",
@@ -148,7 +122,21 @@
             ]
         },
         {
-            group: "AI & Learning",
+            group: "Input",
+            tools: [
+                {
+                    title: "Input Studio",
+                    href: "../tools/input-studio.html",
+                    image: "assets/images/tools/input-studio.png",
+                    description: "Map player controls and configure input workflows.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                }
+            ]
+        },
+        {
+            group: "AI",
             tools: [
                 {
                     title: "AI Assistant",
@@ -162,45 +150,40 @@
             ]
         },
         {
-            group: "Development & System",
+            group: "Colors",
             tools: [
                 {
-                    title: "Code Studio",
-                    href: "../tools/code-studio.html",
-                    image: "assets/images/tools/code-studio.png",
-                    description: "Write code, extend systems and build custom logic.",
+                    title: "Palette Manager",
+                    href: "../tools/palette-manager.html",
+                    image: "assets/images/tools/palette-manager.png",
+                    description: "Craft and manage color palettes for your games.",
+                    role: "Pixel Smith",
+                    mascot: "pixel-smith",
+                    theme: "pixel"
+                }
+            ]
+        },
+        {
+            group: "Assets",
+            tools: [
+                {
+                    title: "Storage Inspector",
+                    href: "../tools/storage-inspector.html",
+                    image: "assets/images/tools/storage-inspector.png",
+                    description: "Inspect local storage, saved state, and tool data.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
                     theme: "bot"
                 },
                 {
-                    title: "Input Studio",
-                    href: "../tools/input-studio.html",
-                    image: "assets/images/tools/input-studio.png",
-                    description: "Map player controls and configure input workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                }
-            ]
-        },
-        {
-            group: "Community & Marketplace",
-            tools: [
-                {
-                    title: "Marketplace",
-                    href: "marketplace/index.html",
-                    image: "assets/images/tools/marketplace.png",
-                    description: "Browse community-ready tools, assets, listings, and distribution surfaces.",
-                    role: "Community",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                }
-            ]
-        },
-        {
-            group: "Community / Media",
-            tools: [
+                    title: "Publish Studio",
+                    href: "../tools/publisher.html",
+                    image: "assets/images/tools/publish-studio.png",
+                    description: "Prepare publishing workflows and release-ready game packages.",
+                    role: "ForgeBot",
+                    mascot: "forgebot",
+                    theme: "forge"
+                },
                 {
                     title: "Localization Studio",
                     href: "../tools/localization-studio/index.html",
@@ -209,12 +192,16 @@
                     role: "Community / Media",
                     mascot: "localization-studio",
                     theme: "bot"
-                }
-            ]
-        },
-        {
-            group: "Play",
-            tools: [
+                },
+                {
+                    title: "Marketplace",
+                    href: "marketplace/index.html",
+                    image: "assets/images/tools/marketplace.png",
+                    description: "Browse community-ready tools, assets, listings, and distribution surfaces.",
+                    role: "Community",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
                 {
                     title: "Arcade",
                     href: "arcade/index.html",
@@ -225,43 +212,25 @@
                     theme: "forge"
                 }
             ]
-        },
-        {
-            group: "Platform & Cloud",
-            tools: [
-                {
-                    title: "Storage Inspector",
-                    href: "../tools/storage-inspector.html",
-                    image: "assets/images/tools/storage-inspector.png",
-                    description: "Inspect local storage, saved state, and tool data.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                }
-            ]
         }
     ];
     const groupClassMap = {
-        "Build & Create": "tool-group-build-create",
-        "Content & Assets": "tool-group-content-assets",
-        "Media & Audio": "tool-group-media-audio",
-        "AI & Learning": "tool-group-ai-learning",
-        "Platform & Cloud": "tool-group-platform-cloud",
-        "Development & System": "tool-group-development-system",
-        "Community / Media": "tool-group-community-marketplace",
-        "Community & Marketplace": "tool-group-community-marketplace",
-        "Play": "tool-group-play"
+        "Objects": "tool-group-build-create",
+        "Worlds": "tool-group-content-assets",
+        "Audio": "tool-group-media-audio",
+        "Input": "tool-group-development-system",
+        "AI": "tool-group-ai-learning",
+        "Colors": "tool-group-platform-cloud",
+        "Assets": "tool-group-community-marketplace"
     };
     const groupSwatchMap = {
-        "Build & Create": "swatch-pink",
-        "Content & Assets": "swatch-orange",
-        "Media & Audio": "swatch-red",
-        "AI & Learning": "swatch-purple",
-        "Platform & Cloud": "swatch-blue",
-        "Development & System": "swatch-gray",
-        "Community / Media": "swatch-gold",
-        "Community & Marketplace": "swatch-gold",
-        "Play": "swatch-green"
+        "Objects": "swatch-pink",
+        "Worlds": "swatch-orange",
+        "Audio": "swatch-red",
+        "Input": "swatch-gray",
+        "AI": "swatch-purple",
+        "Colors": "swatch-blue",
+        "Assets": "swatch-gold"
     };
     const badgeMap = {
         "Publish Studio": "publish-studio"
@@ -370,7 +339,7 @@
 
         const group = document.createElement("div");
         group.className = "kicker";
-        group.textContent = tool.group;
+        group.textContent = tool.subgroup ? `${tool.group} - ${tool.subgroup}` : tool.group;
 
         const title = document.createElement("h3");
         title.textContent = tool.title;

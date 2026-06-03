@@ -1274,6 +1274,42 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await workspaceV2CoverageReporter.writeReport();
   });
 
+  test("navigation toolbox menu shows Toolbox IA grouping", async ({ page }) => {
+    const pageErrors = [];
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    const server = await openToolsIndex(page);
+
+    try {
+      await expect(page.locator("[data-nav-link][data-route='tools']")).toContainText("Toolbox");
+      await expect(page.locator(".footer [data-route='tools']")).toHaveText("Toolbox");
+      await expect(page.locator(".page-title")).toContainText("The Toolbox");
+
+      await page.locator("[data-tools-sort='grouped']").click();
+      const toolboxState = await page.evaluate(() => ({
+        groupNames: Array.from(document.querySelectorAll("[data-tools-accordion]"))
+          .map((entry) => entry.getAttribute("data-tools-accordion")),
+        cardGroups: Array.from(document.querySelectorAll(".control-card .kicker"))
+          .map((entry) => entry.textContent.trim())
+      }));
+
+      expect(toolboxState.groupNames).toEqual(["Objects", "Worlds", "Audio", "Input", "AI", "Colors", "Assets"]);
+      expect(toolboxState.cardGroups).toContain("Objects - Vector");
+      expect(toolboxState.cardGroups).toContain("Objects - Sprite");
+      expect(toolboxState.cardGroups).toContain("Objects - Animated Sprite");
+      expect(toolboxState.cardGroups).toContain("Objects - UI");
+      expect(toolboxState.cardGroups).toContain("Worlds - Vector");
+      expect(toolboxState.cardGroups).toContain("Worlds - Tilemap");
+      expect(toolboxState.cardGroups).toContain("Worlds - Isometric");
+      expect(toolboxState.cardGroups).toContain("Worlds - Hybrid");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("registers Workspace Manager V2 from the tools index", async ({ page }) => {
     const server = await openToolsIndex(page);
     const pageErrors = [];
