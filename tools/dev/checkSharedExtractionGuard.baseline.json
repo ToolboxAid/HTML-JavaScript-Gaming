@@ -2877,11 +2877,6 @@
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/theme/mount-shared-header.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
       "file": "src/shared/contracts/auditEventContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"

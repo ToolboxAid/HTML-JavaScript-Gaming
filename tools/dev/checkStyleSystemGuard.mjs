@@ -5,25 +5,26 @@ const repoRoot = process.cwd();
 
 const styleSystemPages = [
   "index.html",
-  "old_samples/index.html",
-  "old_games/index.html",
+  "games/index.html",
   "tools/index.html",
-  "tools/_templates-v2/index.html",
+  "docs/index.html",
   "tools/localization/index.html"
 ];
 
 const requiredThemeFiles = [
-  "src/engine/theme/main.css",
-  "src/engine/theme/tokens.css",
-  "src/engine/theme/layout.css",
-  "src/engine/theme/header.css",
-  "src/engine/theme/nav.css",
-  "src/engine/theme/pages.css",
-  "src/engine/theme/accordion.css",
-  "src/engine/theme/tool-shell.css",
-  "src/engine/theme/tools.css",
-  "src/engine/theme/games.css",
-  "src/engine/theme/samples.css"
+  "assets/theme/v2/css/theme/v2/theme.css",
+  "assets/theme/v2/css/theme/v2/colors.css",
+  "assets/theme/v2/css/theme/v2/spacing.css",
+  "assets/theme/v2/css/theme/v2/typography.css",
+  "assets/theme/v2/css/theme/v2/layout.css",
+  "assets/theme/v2/css/theme/v2/buttons.css",
+  "assets/theme/v2/css/theme/v2/forms.css",
+  "assets/theme/v2/css/theme/v2/controls.css",
+  "assets/theme/v2/css/theme/v2/panels.css",
+  "assets/theme/v2/css/theme/v2/accordion.css",
+  "assets/theme/v2/css/theme/v2/status.css",
+  "assets/theme/v2/css/theme/v2/tables.css",
+  "assets/theme/v2/css/theme/v2/dialogs.css"
 ];
 
 function readUtf8(relativePath) {

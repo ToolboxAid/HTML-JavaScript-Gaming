@@ -1,9 +1,9 @@
-Theme V1 removal and Font Awesome V2 migration
+Final theme engine removal and active structure cleanup
 
-PR: PR_26154_015-theme-v1-removal-fontawesome-v2
+PR: PR_26154_016-final-theme-engine-removal-and-active-structure-cleanup
 
-- Move `assets/theme/v1/fontawesome/` to `assets/theme/v2/fonts/fontawesome/`.
-- Update `src/engine/theme/main.css` to import Font Awesome from the V2 fonts path.
-- Keep `assets/theme/v1/` because two active runtime header templates still consume `images/toolboxaid-header.png`.
-- Confirm `src/engine/theme/CapturePreviewRuntime.js` is already absent and `src/engine/theme/` remains non-empty/runtime-owned.
-- Validate targeted references, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Move the final V1 header image to `assets/theme/v2/images/toolboxaid-header.png`.
+- Delete `assets/theme/v1/` and `src/engine/theme/` after active reference removal.
+- Remove active `src/engine/theme` dependencies from capture tooling and dev guards.
+- Produce final active-vs-deprecated ownership inventory and cleanup candidate report.
+- Validate targeted active references, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.

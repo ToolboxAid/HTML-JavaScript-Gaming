@@ -6,8 +6,35 @@ CapturePreviewRuntime.js
 */
 import Engine from '../../../src/engine/core/Engine.js';
 import InputService from '../../../src/engine/input/InputService.js';
-import { Theme } from '../../../src/engine/theme/Theme.js';
-import { ThemeTokens } from '../../../src/engine/theme/ThemeTokens.js';
+
+const capturePreviewTheme = {
+  color: {
+    textPrimary: '#333333',
+  },
+  document: {
+    background: 'linear-gradient(to bottom, #e2e0ff, #6259ab)',
+    height: '100%',
+  },
+};
+
+function applyCapturePreviewDocumentTheme() {
+  const root = document.documentElement;
+  const body = document.body;
+  const doc = capturePreviewTheme.document;
+
+  if (!root || !body || !doc) {
+    return;
+  }
+
+  root.style.height = doc.height;
+  body.style.height = doc.height;
+  body.style.margin = '0';
+  body.style.background = doc.background;
+
+  if (capturePreviewTheme.color.textPrimary) {
+    body.style.color = capturePreviewTheme.color.textPrimary;
+  }
+}
 
 export async function bootCapturePreview({
   canvas,
@@ -22,8 +49,7 @@ export async function bootCapturePreview({
     throw new Error('Capture preview requires a canvas and createScene function.');
   }
 
-  const theme = new Theme(ThemeTokens);
-  theme.applyDocumentTheme();
+  applyCapturePreviewDocumentTheme();
 
   if (fontSpec && document.fonts?.load) {
     try {
