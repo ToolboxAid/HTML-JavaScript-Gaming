@@ -1,0 +1,4 @@
+.tool-group-play {
+  --tool-group-color: var(--green);
+  --tool-group-accent: var(--green)
+}

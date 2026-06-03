@@ -1,0 +1,100 @@
+.control-demo {
+  display: grid;
+  gap: var(--space-12)
+}
+
+.control-row>label,
+.control-row__label {
+  margin: var(--space-0);
+  color: var(--muted);
+  font-weight: var(--font-weight-bold)
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  color: var(--muted)
+}
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  width: var(--size-control-switch-width);
+  height: var(--size-control-switch-height)
+}
+
+.switch input {
+  opacity: var(--opacity-hidden);
+  width: var(--space-0);
+  height: var(--space-0)
+}
+
+.slider {
+  position: absolute;
+  inset: var(--space-0);
+  border: var(--border-standard);
+  border-radius: var(--radius-pill);
+  background: var(--switch-off);
+  transition: var(--transition-duration-fast)
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  width: var(--size-control-switch-thumb);
+  height: var(--size-control-switch-thumb);
+  left: var(--size-control-switch-offset);
+  top: var(--size-control-switch-offset);
+  border-radius: 50%;
+  background: var(--white);
+  transition: var(--transition-duration-fast)
+}
+
+.switch input:checked+.slider {
+  background: color-mix(in srgb, var(--accent) 70%, var(--panel));
+  border-color: var(--accent)
+}
+
+.switch input:checked+.slider:before {
+  transform: translateX(var(--size-control-switch-shift))
+}
+
+.control-lab[class*="tool-group-"] .control-card {
+  --accent: var(--tool-group-color);
+  border-color: var(--tool-group-accent)
+}
+
+.control-card[class*="tool-group-"] {
+  --accent: var(--tool-group-color);
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] input[type="checkbox"],
+.control-lab[class*="tool-group-"] input[type="radio"],
+.control-lab[class*="tool-group-"] input[type="range"] {
+  accent-color: var(--tool-group-color)
+}
+
+.control-lab[class*="tool-group-"] input[type="range"]::-webkit-slider-thumb {
+  background: var(--tool-group-color);
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] input[type="range"]::-moz-range-thumb {
+  background: var(--tool-group-color);
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] input[type="range"]::-webkit-slider-runnable-track {
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] input[type="range"]::-moz-range-track {
+  border-color: var(--tool-group-accent)
+}
+
+.control-lab[class*="tool-group-"] .switch input:checked+.slider {
+  background: color-mix(in srgb, var(--tool-group-color) 70%, var(--panel));
+  border-color: var(--tool-group-accent)
+}

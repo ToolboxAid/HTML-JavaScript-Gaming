@@ -1,0 +1,177 @@
+:root {
+  --iron-black: #121212;
+  --foundry-space: #070a12;
+  --panel-slate: #0f172a;
+  --steel-gray: #6b7280;
+  --molten-orange: #ff7a00;
+  --forge-orange: #ff8a2a;
+  --forge-gold: #ffc857;
+  --electric-blue: #4da3ff;
+  --arcade-cyan: #22d3ee;
+  --bot-cyan: #20d6ff;
+  --purple: #b877ff;
+  --green: #7dd957;
+  --pink: #ff4f8b;
+  --red: #ff4d4d;
+  --deep-red: #ff5757;
+  --mint: #22c55e;
+  --white: #ffffff;
+  --button-primary-end: #b83b00;
+  --button-cyan-start: #0891b2;
+  --button-cyan-end: #0e7490;
+  --switch-off: #1f2937;
+  --tool-image-bg: #080d14;
+  --dialog-bg: #0c111a;
+  --bg: #090b0f;
+  --panel: #111722;
+  --panel2: #151b25;
+  --panel-soft: rgba(255, 255, 255, .04);
+  --panel-soft-strong: rgba(255, 255, 255, .055);
+  --panel-soft-subtle: rgba(255, 255, 255, .025);
+  --panel-overlay: rgba(7, 10, 18, .48);
+  --panel-overlay-strong: rgba(7, 10, 18, .58);
+  --header-bg: rgba(9, 11, 15, .82);
+  --submenu-bg: rgba(9, 11, 15, .98);
+  --orange-soft: rgba(255, 122, 0, .08);
+  --orange-soft-medium: rgba(255, 122, 0, .10);
+  --orange-soft-strong: rgba(255, 122, 0, .14);
+  --gold-soft: rgba(255, 200, 87, .10);
+  --blue-soft: rgba(77, 163, 255, .10);
+  --cyan-soft: rgba(34, 211, 238, .10);
+  --purple-soft: rgba(184, 119, 255, .08);
+  --steel-soft: rgba(107, 114, 128, .14);
+  --transparent: transparent;
+  --body-background: radial-gradient(circle at 20% 0%, rgba(255, 122, 0, .16), var(--transparent) 28%), radial-gradient(circle at 80% 10%, rgba(32, 214, 255, .10), var(--transparent) 24%), var(--bg);
+  --card-background: linear-gradient(180deg, var(--panel-soft-strong), var(--panel-soft-subtle));
+  --game-art-background: linear-gradient(135deg, rgba(255, 122, 0, .22), rgba(77, 163, 255, .15));
+  --cta-background: linear-gradient(135deg, rgba(255, 122, 0, .18), rgba(77, 163, 255, .11));
+  --icon-background: linear-gradient(135deg, rgba(255, 122, 0, .28), rgba(77, 163, 255, .16));
+  --release-current-background: color-mix(in srgb, var(--gold) 14%, var(--panel));
+  --about-hero-background-image: url("../../../images/forge-bot-single.png");
+  --about-hero-background: linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 86%, transparent) 42%, color-mix(in srgb, var(--bg) 38%, transparent) 100%), var(--about-hero-background-image) right center / min(50vw, 620px) auto no-repeat;
+  --about-hero-mobile-background: linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 100%), var(--about-hero-background-image) center bottom / 340px auto no-repeat;
+  --forgebot-stage-background: radial-gradient(circle at 50% 55%, rgba(255, 122, 0, .25), var(--transparent) 48%), linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025));
+  --button-primary-background: linear-gradient(135deg, var(--orange), var(--button-primary-end));
+  --button-cyan-background: linear-gradient(135deg, var(--button-cyan-start), var(--button-cyan-end));
+  --text: #f5f7fb;
+  --muted: #aeb6c2;
+  --orange: var(--molten-orange);
+  --gold: var(--forge-gold);
+  --cyan: var(--bot-cyan);
+  --line: rgba(255, 255, 255, .12);
+  --swatch-border: rgba(255, 255, 255, .28);
+  --swatch-shadow-color: rgba(0, 0, 0, .16);
+  --shadow-color: rgba(0, 0, 0, .28);
+  --shadow-color-strong: rgba(0, 0, 0, .45);
+  --orange-shadow-color: rgba(255, 122, 0, .24);
+  --orange-border: rgba(255, 122, 0, .38);
+  --orange-border-strong: rgba(255, 122, 0, .60);
+  --orange-border-muted: rgba(255, 122, 0, .35);
+  --gold-border-muted: rgba(255, 200, 87, .35);
+  --cyan-border-muted: rgba(32, 214, 255, .35);
+  --forgebot-stage-border: rgba(255, 122, 0, .32)
+}
+
+.swatch-orange {
+  background: var(--molten-orange)
+}
+
+.swatch-gold {
+  background: var(--forge-gold)
+}
+
+.swatch-black {
+  background: var(--bg)
+}
+
+.swatch-cyan {
+  background: var(--bot-cyan)
+}
+
+.swatch-green {
+  background: var(--green)
+}
+
+.swatch-pink {
+  background: var(--pink)
+}
+
+.swatch-red {
+  background: var(--red)
+}
+
+.swatch-purple {
+  background: var(--purple)
+}
+
+.swatch-blue {
+  background: var(--electric-blue)
+}
+
+.swatch-gray {
+  background: var(--steel-gray)
+}
+
+.side-orange {
+  --accent: var(--orange)
+}
+
+.side-gold {
+  --accent: var(--gold)
+}
+
+.side-blue {
+  --accent: var(--electric-blue)
+}
+
+.side-cyan {
+  --accent: var(--cyan)
+}
+
+.side-green {
+  --accent: var(--green)
+}
+
+.side-pink {
+  --accent: var(--pink)
+}
+
+.tool-group-build-create {
+  --tool-group-color: var(--pink);
+  --tool-group-accent: var(--pink)
+}
+
+.tool-group-content-assets {
+  --tool-group-color: var(--orange);
+  --tool-group-accent: var(--orange)
+}
+
+.tool-group-media-audio {
+  --tool-group-color: var(--red);
+  --tool-group-accent: var(--red)
+}
+
+.tool-group-ai-learning {
+  --tool-group-color: var(--purple);
+  --tool-group-accent: var(--purple)
+}
+
+.tool-group-platform-cloud {
+  --tool-group-color: var(--electric-blue);
+  --tool-group-accent: var(--electric-blue)
+}
+
+.tool-group-development-system {
+  --tool-group-color: var(--steel-gray);
+  --tool-group-accent: var(--steel-gray)
+}
+
+.tool-group-community-marketplace {
+  --tool-group-color: var(--gold);
+  --tool-group-accent: var(--gold)
+}
+
+.tool-group-play {
+  --tool-group-color: var(--green);
+  --tool-group-accent: var(--green)
+}

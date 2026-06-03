@@ -1,0 +1,85 @@
+details {
+  overflow: hidden
+}
+
+summary {
+  cursor: pointer;
+  list-style: none
+}
+
+summary::-webkit-details-marker {
+  display: none
+}
+
+.accordion-group {
+  display: grid;
+  gap: var(--space-12)
+}
+
+details.vertical-accordion {
+  border: var(--border-standard);
+  border-radius: var(--radius-lg);
+  background: var(--panel-overlay-strong);
+  overflow: hidden
+}
+
+details.vertical-accordion summary {
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+  padding: var(--space-14);
+  font-weight: var(--font-weight-strong);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12)
+}
+
+details.vertical-accordion summary::-webkit-details-marker {
+  display: none
+}
+
+details.vertical-accordion summary:after {
+  --accordion-button-border: var(--line);
+  --accordion-button-background: var(--panel-soft);
+  --accordion-button-color: var(--gold);
+  min-width: var(--space-20);
+  width: var(--space-20);
+  height: var(--space-20);
+  padding: var(--space-0);
+  border: var(--border-standard);
+  border-color: var(--accordion-button-border);
+  border-radius: var(--radius-pill);
+  background: var(--accordion-button-background);
+  color: var(--accordion-button-color);
+  line-height: var(--line-height-single);
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto
+}
+
+details.vertical-accordion summary:after {
+  content: "";
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
+  background-size: var(--space-7) var(--space-7);
+  background-repeat: no-repeat
+}
+
+details.vertical-accordion[open] summary:after {
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+details.vertical-accordion summary:active:after {
+  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+}
+
+details.vertical-accordion[open] summary:active:after {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
+}
+
+.accordion-body {
+  padding: var(--space-0) var(--space-14) var(--space-14);
+  color: var(--muted);
+  line-height: 1.5
+}

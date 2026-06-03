@@ -1,0 +1,12 @@
+body {
+  background: var(--body-background);
+  color: var(--text)
+}
+
+p {
+  color: var(--muted)
+}
+
+a {
+  color: inherit
+}
