@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const SAMPLES_DIR = path.join(ROOT, 'samples');
+const SAMPLES_DIR = path.join(ROOT, 'old_samples');
 const METADATA_PATH = path.join(SAMPLES_DIR, 'metadata', 'samples.index.metadata.json');
 
 function readFile(filePath) {
@@ -312,7 +312,7 @@ function normalizeMetadataAndPreviews() {
 
     const engineClassesUsed = collectEngineClassReferencesFromJs(sample.sampleDir).map(normalizeEngineReference).filter(Boolean);
     const tags = buildTagsFromEngineClasses(engineClassesUsed, sample, titleFromPage);
-    const previewPath = '/samples/phase' + sample.phase + '/' + sample.id + '/assets/preview.svg';
+    const previewPath = '/old_samples/phase' + sample.phase + '/' + sample.id + '/assets/preview.svg';
     const previewFilePath = path.join(ROOT, previewPath.replace(/^\//, '').replace(/\//g, path.sep));
     if (!fs.existsSync(previewFilePath)) {
       throw new Error('Missing runtime preview asset for sample ' + sample.id + ': ' + path.relative(ROOT, previewFilePath));

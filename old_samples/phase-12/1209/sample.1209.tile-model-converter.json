@@ -1,0 +1,19 @@
+{
+  "tool": "tile-model-converter",
+  "version": "1",
+  "payload": {
+    "candidate": {
+      "id": "sample-1209-tilemap-basic",
+      "name": "sample-1209-tilemap-basic",
+      "section": "tilemaps",
+      "type": "tilemap",
+      "path": "old_samples/phase-12/1209/sample-1209-tile-map-editor-document.json",
+      "sourceSampleId": "1209",
+      "sourceToolId": "tile-map-editor"
+    },
+    "conversion": {
+      "targetSection": "vectors",
+      "targetType": "vector"
+    }
+  }
+}

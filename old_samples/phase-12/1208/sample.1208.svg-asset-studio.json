@@ -1,0 +1,11 @@
+{
+  "tool": "svg-asset-studio",
+  "version": "1",
+  "payload": {
+    "vectorAssetDocument": {
+      "sourceName": "sample-1208-near-forest.svg",
+      "svgPath": "/old_samples/phase-12/1208/assets/data/parallax/layer-near-forest.svg",
+      "editorOptions": {}
+    }
+  }
+}

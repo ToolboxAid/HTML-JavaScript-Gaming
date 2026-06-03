@@ -9,7 +9,7 @@ function resolveNavSection(pathname) {
   if (path.startsWith('/old_games/')) {
     return 'games';
   }
-  if (path.startsWith('/samples/')) {
+  if (path.startsWith('/old_samples/')) {
     return 'samples';
   }
   if (path.startsWith('/tools/')) {
@@ -27,7 +27,7 @@ function applyActiveNavState(header) {
   const sectionHrefMap = {
     home: '/index.html',
     games: '/old_games/index.html',
-    samples: '/samples/index.html',
+    samples: '/old_samples/index.html',
     tools: '/tools/index.html'
   };
   const activeHref = sectionHrefMap[section];

@@ -232,28 +232,15 @@ const laneDefinitions = Object.freeze({
     reason: "Engine/src lane validates reusable runtime surfaces through targeted node tests."
   },
   samples: {
-    affectedSurface: "Affected samples lane, on request only",
-    commands: [
-      nodeCommand(
-        "scripts/run-node-test-files.mjs",
-        "tests/samples/SamplesProgramCombinedPass.test.mjs",
-        "tests/samples/FullscreenRuleEnforcement.test.mjs"
-      )
-    ],
+    affectedSurface: "Deprecated old_samples reference coverage",
+    commands: [],
     dependencies: [],
-    discoveryTargets: [
-      "tests/samples/FullscreenRuleEnforcement.test.mjs",
-      "tests/samples/SamplesProgramCombinedPass.test.mjs"
-    ],
-    fixtures: [
-      "sample metadata and validation artifacts",
-      "sample structure fixtures"
-    ],
+    discoveryTargets: [],
+    fixtures: [],
     fixturePaths: [],
     ownership: "samples",
-    reason: "Samples lane is on-request or affected-sample only and is not the full samples smoke test.",
-    requiresPreflight: true,
-    requiresSamplesFlag: true
+    reason: "old_samples are deprecated playable references and are excluded from active automated validation.",
+    requiresPreflight: false
   }
 });
 
@@ -669,8 +656,8 @@ function routeLanesForChangedFiles(changedFiles) {
       || normalized.startsWith("tests/input/")
       || normalized.startsWith("tests/render/")) {
       routed.add("engine-src");
-    } else if (normalized.startsWith("samples/") || normalized.startsWith("tests/samples/")) {
-      routed.add("samples");
+    } else if (normalized.startsWith("samples/") || normalized.startsWith("old_samples/") || normalized.startsWith("tests/samples/")) {
+      continue;
     }
   }
   const laneOrder = Object.keys(laneDefinitions);

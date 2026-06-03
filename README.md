@@ -16,7 +16,7 @@ This repository follows a docs-first game/runtime model, combining a stable engi
 ## ✨ Features
 
 - Reusable 2D → 3D browser game engine
-- Structured learning samples with progressive complexity
+- Deprecated reference samples with progressive complexity
 - Integrated visual editors, inspectors, profiling, preview, and asset tools
 - Playable game projects and sample-driven development
 - Testable and repeatable engine and gameplay patterns
@@ -30,7 +30,7 @@ This repository follows a docs-first game/runtime model, combining a stable engi
 
 1. Review the repo model in [docs/README.md](docs/README.md)
 2. Explore the roadmap in [docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md](docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md)
-3. Browse samples from [samples/index.html](samples/index.html)
+3. Browse deprecated reference samples from [old_samples/index.html](old_samples/index.html)
 4. Explore tools under [tools/](tools/)
 5. Review engine and architecture boundaries in [docs/architecture/](docs/architecture/)
 6. Follow the workflow in [docs_build/dev/](docs_build/dev/) and [docs_build/pr/](docs_build/pr/)

@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "d8b1f03418e7f315",
-  "executionGraphHash": "00a0b280f943d93d",
+  "executionGraphHash": "96fbf7e0c831e8c4",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -39,10 +39,10 @@
     ]
   },
   "helperGraphHash": "27270481957a2fdd",
-  "inputHash": "df46aef671d3b988",
+  "inputHash": "34bdb7c363909b7d",
   "lane": "workspace-contract",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "fefe835fc9e6dada",
+  "laneDefinitionHash": "537c8dc9fb34a8b2",
   "manifest": {
     "fileHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
@@ -64,14 +64,14 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "85496f0e17683ed9",
+    "manifestHash": "7d47aea504dbbefc",
     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
     "source": "generated",
     "tests": [
       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
     ]
   },
-  "manifestHash": "85496f0e17683ed9",
+  "manifestHash": "7d47aea504dbbefc",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
@@ -98,8 +98,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "c99c4343771f1683",
-  "snapshotHash": "6802b9c028f7bbb6",
+  "snapshotHash": "3914dcc5b8f8e602",
   "version": 1,
-  "warmStartHash": "8cf21d8915405855",
-  "generatedAt": "2026-06-03T17:06:31.635Z"
+  "warmStartHash": "a0aca9657f76159c",
+  "generatedAt": "2026-06-03T17:54:09.149Z"
 }

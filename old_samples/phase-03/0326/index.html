@@ -1,0 +1,44 @@
+﻿<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Paddle Intercept</title>
+  <link rel="stylesheet" href="/old_samples/shared/sampleBaseLayout.css" />
+  <link rel="stylesheet" href="../../../src/engine/theme/main.css" />
+</head>
+<body class="hub-page-samples">
+  <div id="shared-theme-header"></div>
+  <main>
+    <h1>Paddle Intercept</h1>
+    <p>A bounded one-ball interception game where the paddle predicts the future arrival lane using time-to-intercept math and wall-aware Y reflection.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>Space</code> or <code>Enter</code> starts. <code>P</code> pauses. <code>R</code> resets. Gamepads use the south button to start, Start to pause, and B/East to reset.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <p>Watch the ball bounce through the chamber while the paddle solves a future intercept point on the right side. The green marker shows the current predicted impact height.</p>
+    </section>    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>core / Engine</li>
+        <li>render / CanvasRenderer</li>
+        <li>input / InputService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+        <li>input / GamepadInputAdapter</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>
+

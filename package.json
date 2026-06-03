@@ -31,7 +31,7 @@
     "test:launch-smoke:games": "node ./scripts/skip-deprecated-game-tests.mjs",
     "test:workspace-manager:games": "node ./scripts/skip-deprecated-game-tests.mjs",
     "test:manifest-payload:games": "node ./scripts/skip-deprecated-game-tests.mjs",
-    "test:sample-standalone:data-flow": "node ./tests/runtime/SampleStandaloneToolDataFlow.test.mjs"
+    "test:sample-standalone:data-flow": "node ./scripts/skip-deprecated-sample-tests.mjs"
   },
   "dependencies": {
     "ws": "^8.20.0"
@@ -50,7 +50,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/ToolboxAid/HTML-JavaScript-Gaming/issues"
   },

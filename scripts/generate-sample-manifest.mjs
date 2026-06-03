@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const samplesDir = path.join(root, 'samples');
+const samplesDir = path.join(root, 'old_samples');
 const outputDir = path.join(root, 'docs', 'build');
 const outputFile = path.join(outputDir, 'sample-manifest.json');
 
@@ -18,7 +18,7 @@ const samples = entries
   .filter((entry) => entry.isDirectory() && entry.name.startsWith('sample'))
   .map((entry) => ({
     id: entry.name,
-    indexHtml: `samples/${entry.name}/index.html`,
+    indexHtml: `old_samples/${entry.name}/index.html`,
   }))
   .sort((a, b) => a.id.localeCompare(b.id));
 

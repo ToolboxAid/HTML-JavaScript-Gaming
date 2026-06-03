@@ -31,15 +31,15 @@
     ]
   },
   "dependencyHydrationHash": "7b3ad8c569077d12",
-  "inputHash": "df46aef671d3b988",
+  "inputHash": "34bdb7c363909b7d",
   "lane": "workspace-contract",
   "laneConfigHash": "3d8db02cddc33911",
-  "laneDefinitionHash": "fefe835fc9e6dada",
-  "manifestHash": "85496f0e17683ed9",
+  "laneDefinitionHash": "537c8dc9fb34a8b2",
+  "manifestHash": "7d47aea504dbbefc",
   "ownership": "tools",
-  "warmStartHash": "8cf21d8915405855",
+  "warmStartHash": "a0aca9657f76159c",
   "version": 1,
-  "generatedAt": "2026-06-03T17:06:30.619Z",
+  "generatedAt": "2026-06-03T17:54:08.259Z",
   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
   "sourceManifest": "generated"
 }

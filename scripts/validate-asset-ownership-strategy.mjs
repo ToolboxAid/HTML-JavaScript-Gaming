@@ -16,7 +16,7 @@ const REGISTRY_PATH_CANDIDATES = [
 ];
 const ASTEROIDS_MANIFEST_PATH = "old_games/Asteroids/game.manifest.json";
 const TEMPLATE_MANIFEST_PATH = "old_games/_template/assets/tools.manifest.json";
-const SAMPLE_ASSET_BROWSER_SCENE_PATH = "samples/phase-15/1505/AssetBrowserScene.js";
+const SAMPLE_ASSET_BROWSER_SCENE_PATH = "old_samples/phase-15/1505/AssetBrowserScene.js";
 const TOOL_DEMO_PROJECT_ASSETS_PATH = "tools/shared/samples/project-asset-registry-demo/project.assets.json";
 const REPORT_PATH = "docs_build/dev/reports/asset_ownership_strategy_validation.txt";
 
@@ -60,8 +60,8 @@ function ownerPrefixForPath(repoPath) {
   if (segments[0] === "old_games" && segments.length >= 2) {
     return `old_games/${segments[1]}`;
   }
-  if (segments[0] === "samples" && segments.length >= 3) {
-    return `samples/${segments[1]}/${segments[2]}`;
+  if (segments[0] === "old_samples" && segments.length >= 3) {
+    return `old_samples/${segments[1]}/${segments[2]}`;
   }
   if (segments[0] === "tools" && segments.length >= 2) {
     // keep demo ownership under the tool/demo root path depth
@@ -183,7 +183,7 @@ export async function validateAssetOwnershipStrategy({ emitLogs = true } = {}) {
 
   const sampleSource = await fs.readFile(toAbsolutePath(SAMPLE_ASSET_BROWSER_SCENE_PATH), "utf8");
   const sampleAssetPaths = collectSampleAssetPaths(sampleSource);
-  const sampleOwnerPrefix = "samples/phase-15/1505";
+  const sampleOwnerPrefix = "old_samples/phase-15/1505";
   if (sampleAssetPaths.length === 0) {
     issues.push(`No sample asset paths detected in ${SAMPLE_ASSET_BROWSER_SCENE_PATH}`);
   }

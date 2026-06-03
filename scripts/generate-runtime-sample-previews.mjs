@@ -4,7 +4,7 @@ import http from 'node:http';
 import { spawn } from 'node:child_process';
 
 const ROOT = process.cwd();
-const SAMPLES_DIR = path.join(ROOT, 'samples');
+const SAMPLES_DIR = path.join(ROOT, 'old_samples');
 const CAPTURE_PAGE_PATH = '/tools/preview/preview_svg_generator.html';
 const OUTPUT_WIDTH = 640;
 const OUTPUT_HEIGHT = 360;
@@ -219,7 +219,7 @@ function statusFromPng(filePath) {
 }
 
 function buildCaptureUrl(port, sample) {
-  const samplePath = '/samples/' + sample.phaseDir + '/' + sample.id + '/index.html';
+  const samplePath = '/old_samples/' + sample.phaseDir + '/' + sample.id + '/index.html';
   const params = new URLSearchParams();
   params.set('mode', 'runtime');
   params.set('sample', samplePath);

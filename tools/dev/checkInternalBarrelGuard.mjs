@@ -3,7 +3,7 @@ import path from "node:path";
 
 const repoRoot = process.cwd();
 const sourceExtensions = new Set([".js", ".mjs"]);
-const passThroughScanRoots = ["src", "samples/shared", "tools"];
+const passThroughScanRoots = ["src", "old_samples/shared", "tools"];
 const importScanRoots = ["src", "samples", "tools", "tests"];
 const ignoredDirNames = new Set(["node_modules", ".git", "tmp"]);
 const ignoredPathPrefixes = [

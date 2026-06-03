@@ -22,8 +22,8 @@
     <label for="sampleList">Paths or IDs</label>
     <textarea id="sampleList" placeholder="Paste sample paths or IDs here, one per line.
 Examples:
-samples/phase01/0102/index.html
-samples/phase13/1303/index.html
+old_samples/phase01/0102/index.html
+old_samples/phase13/1303/index.html
 0107
 1305"></textarea>
   </div>
@@ -116,7 +116,7 @@ samples/phase13/1303/index.html
         return {
           id,
           phase,
-          samplePath: `samples/phase${phase}/${id}/index.html`
+          samplePath: `old_samples/phase${phase}/${id}/index.html`
         };
       }
 
@@ -125,7 +125,7 @@ samples/phase13/1303/index.html
         return {
           id: pathMatch[2],
           phase: pathMatch[1],
-          samplePath: `samples/phase${pathMatch[1]}/${pathMatch[2]}/index.html`
+          samplePath: `old_samples/phase${pathMatch[1]}/${pathMatch[2]}/index.html`
         };
       }
 

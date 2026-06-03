@@ -5,7 +5,7 @@ const repoRoot = process.cwd();
 
 const styleSystemPages = [
   "index.html",
-  "samples/index.html",
+  "old_samples/index.html",
   "old_games/index.html",
   "tools/index.html",
   "tools/_templates-v2/index.html",

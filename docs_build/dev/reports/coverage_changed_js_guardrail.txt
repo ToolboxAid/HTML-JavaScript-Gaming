@@ -6,47 +6,57 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
+(0%) src/engine/release/DistributionPackager.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/theme/mount-shared-header.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/engine/theme/toolboxaid-header.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/dev/checkBoundaryHardeningGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) tools/dev/checkDocsStructureGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/dev/checkIntentionalAliasLedgerGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/dev/checkInternalBarrelGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/dev/checkPhase24CloseoutExecutionGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/dev/checkSharedExtractionGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/dev/checkStyleSystemGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/localization/js/localization-studio.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/renderToolsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/shared/pipeline/assetManifestLoader.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/shared/pipeline/assetPipelineTooling.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/shared/pipeline/gameAssetManifestCoordinator.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/shared/pipeline/runtimeAssetLookup.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/shared/platformShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/shared/toolLaunchSSoT.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) tools/shared/toolSampleCatalog.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/shared/vectorNativeTemplate.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) tools/shared/vectorTemplateSampleGame.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(75%) tools/tools-page-accordions.js - executed lines 390/390; executed functions 15/20
-(85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - executed lines 180/180; executed functions 17/20
+(0%) tools/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(75%) tools/tools-page-accordions.js - executed lines 399/399; executed functions 15/20
+(85%) src/engine/theme/v2/assets/js/gamefoundry-partials.js - executed lines 181/181; executed functions 17/20
 
 Guardrail warnings:
+(0%) src/engine/release/DistributionPackager.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/theme/mount-shared-header.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/engine/theme/toolboxaid-header.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/engine/theme/v2/assets/js/tools-page-accordions.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/dev/checkBoundaryHardeningGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) tools/dev/checkDocsStructureGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/dev/checkIntentionalAliasLedgerGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/dev/checkInternalBarrelGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/dev/checkPhase24CloseoutExecutionGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/dev/checkSharedExtractionGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/dev/checkStyleSystemGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/localization/js/localization-studio.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/renderToolsIndex.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/shared/pipeline/assetManifestLoader.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/shared/pipeline/assetPipelineTooling.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/shared/pipeline/gameAssetManifestCoordinator.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/shared/pipeline/runtimeAssetLookup.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/shared/platformShell.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/shared/toolLaunchSSoT.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/shared/toolSampleCatalog.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/shared/vectorNativeTemplate.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) tools/shared/vectorTemplateSampleGame.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) tools/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only

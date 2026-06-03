@@ -19,14 +19,15 @@
         "storage-inspector": "tools/storage/index.html",
         "world-vector-studio": "tools/world-vector/index.html",
         "configuration-admin": "tools/configuration-admin/index.html",
-        games: "arcade/index.html",
-        arcade: "arcade/index.html",
-        "game-action": "arcade/index.html#action",
-        "game-adventure": "arcade/index.html#adventure",
-        "game-puzzle": "arcade/index.html#puzzle",
-        "game-racing": "arcade/index.html#racing",
-        "game-retro": "arcade/index.html#retro",
-        "game-strategy": "arcade/index.html#strategy",
+        cloud: "tools/cloud/index.html",
+        games: "games/index.html",
+        arcade: "games/arcade/index.html",
+        "game-action": "games/action/index.html",
+        "game-adventure": "games/adventure/index.html",
+        "game-puzzle": "games/puzzle/index.html",
+        "game-racing": "games/racing/index.html",
+        "game-retro": "games/retro/index.html",
+        "game-strategy": "games/strategy/index.html",
         marketplace: "marketplace/index.html",
         learn: "learn/index.html",
         community: "community/index.html",
@@ -77,7 +78,7 @@
 
     const rootSegments = new Set([
         "account", "company", "community", "legal",
-        "admin", "arcade", "cloud", "docs", "learn", "marketplace", "tools"
+        "admin", "docs", "games", "learn", "marketplace", "tools"
     ]);
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
@@ -125,7 +126,7 @@
         root.querySelectorAll("[data-nav-link]").forEach(function (link) {
             const route = routeMap[link.dataset.route] || "";
             const isToolChild = pagePath.indexOf("tools/") === 0 && link.dataset.route === "tools";
-            const isGameChild = pagePath.indexOf("arcade/") === 0 && link.dataset.route === "games";
+            const isGameChild = pagePath.indexOf("games/") === 0 && link.dataset.route === "games";
             const isAccountChild = pagePath.indexOf("account/") === 0 && link.dataset.route === "account";
             const isAdminChild = pagePath.indexOf("admin/") === 0 && link.dataset.route === "admin";
             if (route === pagePath || isToolChild || isGameChild || isAccountChild || isAdminChild) {

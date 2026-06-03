@@ -7,12 +7,12 @@ if (target) {
 
 async function mountSampleDetailEnhancementIfNeeded() {
   const path = String(window.location.pathname || '');
-  const isSampleDetailRoute = /\/samples\/phase-?\d{2}\/\d{4}(?:\/index\.html)?\/?$/i.test(path);
+  const isSampleDetailRoute = /\/old_samples\/phase-?\d{2}\/\d{4}(?:\/index\.html)?\/?$/i.test(path);
   if (!isSampleDetailRoute) {
     return;
   }
   try {
-    const module = await import('/samples/shared/sampleDetailPageEnhancement.js');
+    const module = await import('/old_samples/shared/sampleDetailPageEnhancement.js');
     if (typeof module.applySampleDetailEnhancement === 'function') {
       await module.applySampleDetailEnhancement();
     }

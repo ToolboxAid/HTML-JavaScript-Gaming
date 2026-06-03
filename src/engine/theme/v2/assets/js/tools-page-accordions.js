@@ -91,6 +91,15 @@
             group: "Platform & Cloud",
             tools: [
                 {
+                    title: "Cloud",
+                    href: "tools/cloud/index.html",
+                    image: "assets/images/tools/cloud-studio.png",
+                    description: "Manage connected storage, sync, and publishing support.",
+                    role: "ForgeBot",
+                    mascot: "forgebot",
+                    theme: "forge"
+                },
+                {
                     title: "Publish",
                     href: "tools/publish/index.html",
                     image: "assets/images/tools/publish-studio.png",
@@ -217,7 +226,7 @@
             tools: [
                 {
                     title: "Arcade",
-                    href: "arcade/index.html",
+                    href: "games/arcade/index.html",
                     image: "assets/images/tools/arcade.png",
                     description: "Play and review available games from the Game Foundry arcade.",
                     role: "Play",

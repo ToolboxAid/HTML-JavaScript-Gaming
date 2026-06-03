@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const SAMPLES_DIR = path.join(ROOT, 'samples');
+const SAMPLES_DIR = path.join(ROOT, 'old_samples');
 const INDEX_PATH = path.join(SAMPLES_DIR, 'index.html');
 const METADATA_PATH = path.join(SAMPLES_DIR, 'metadata', 'samples.index.metadata.json');
 const START_MARKER = '<!-- AUTO-GENERATED SAMPLE SECTIONS START -->';
@@ -330,23 +330,23 @@ function replaceGeneratedBlock(html, generatedSections) {
   const phase16Header = '<h2>Phase 16';
   const firstPhaseHeaderIndex = html.indexOf(firstPhaseHeader);
   if (firstPhaseHeaderIndex < 0) {
-    throw new Error('Could not locate Phase 01 section in samples/index.html');
+    throw new Error('Could not locate Phase 01 section in old_samples/index.html');
   }
 
   const firstSectionStart = html.lastIndexOf('<section>', firstPhaseHeaderIndex);
   if (firstSectionStart < 0) {
-    throw new Error('Could not locate section start for Phase 01 in samples/index.html');
+    throw new Error('Could not locate section start for Phase 01 in old_samples/index.html');
   }
 
   const phase16HeaderIndex = html.indexOf(phase16Header);
   const phase16SectionStart = phase16HeaderIndex >= 0 ? html.lastIndexOf('<section>', phase16HeaderIndex) : -1;
   if (phase16HeaderIndex >= 0 && phase16SectionStart < 0) {
-    throw new Error('Could not locate section start for Phase 16 in samples/index.html');
+    throw new Error('Could not locate section start for Phase 16 in old_samples/index.html');
   }
 
   const splitIndex = phase16SectionStart >= 0 ? phase16SectionStart : html.indexOf('</div>\n</body>');
   if (splitIndex < 0) {
-    throw new Error('Could not locate insertion boundary in samples/index.html');
+    throw new Error('Could not locate insertion boundary in old_samples/index.html');
   }
 
   const prefix = html.slice(0, firstSectionStart);

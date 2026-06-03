@@ -201,7 +201,7 @@ export const TOOL_INDEX_ROOT_CARD_COVERAGE = Object.freeze([
   createRootCardCoverage("Input", "input-studio", "contracted", ""),
   createRootCardCoverage("Marketplace", "", "skipped", "Tools Index card targets marketplace/index.html, which is a marketplace page rather than a first-class tool contract."),
   createRootCardCoverage("Localization", "localization-studio", "contracted", ""),
-  createRootCardCoverage("Arcade", "", "skipped", "Tools Index card targets arcade/index.html, which is a play surface rather than a first-class tool contract."),
+  createRootCardCoverage("Arcade", "", "skipped", "Tools Index card targets games/arcade/index.html, which is a play surface rather than a first-class tool contract."),
   createRootCardCoverage("Storage Inspector", "storage-inspector-v2", "mapped", "Root card links tools/storage/index.html; first-class contract is storage-inspector-v2."),
 ]);
 

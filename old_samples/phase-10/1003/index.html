@@ -1,0 +1,43 @@
+﻿<!--
+Toolbox Aid
+David Quesenberry
+03/22/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>sample 1003 - Audio Playlist / Track Management</title>
+  <link rel="stylesheet" href="../../../src/engine/ui/baseLayout.css" />
+  <link rel="stylesheet" href="../../../src/engine/theme/main.css" />
+</head>
+<body class="hub-page-samples">
+  <div id="shared-theme-header"></div>
+  <main>
+    <h1>sample 1003 - Audio Playlist / Track Management</h1>
+    <p>Demonstrates track ordering and playlist-style audio control.</p>
+    <canvas id="game" width="960" height="540"></canvas>
+    <section>
+      <button id="playlist-play" type="button">Play</button>
+      <button id="playlist-pause" type="button">Pause</button>
+      <button id="playlist-previous" type="button">Previous</button>
+      <button id="playlist-next" type="button">Next</button>
+    </section>
+      <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>Engine</li>
+        <li>Theme</li>
+        <li>MediaTrackService</li>
+        <li>PlaylistManager</li>
+        <li>Scene</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="/old_samples/shared/sampleDetailPageEnhancement.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>
+

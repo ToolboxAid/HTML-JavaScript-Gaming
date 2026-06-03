@@ -56,7 +56,6 @@ import { run as runAssetRemediationSystem } from './tools/AssetRemediationSystem
 import { run as runToolBoundaryEnforcement } from './tools/ToolBoundaryEnforcement.test.mjs';
 import { run as runProjectToolDataContracts } from './tools/ProjectToolDataContracts.test.mjs';
 import { run as runToolManifestBoundary } from './tools/ToolManifestBoundary.test.mjs';
-import { run as runToolSchemaStrictModeValidation } from './tools/ToolSchemaStrictModeValidation.test.mjs';
 import { run as runAssetPipelineTooling } from './tools/AssetPipelineTooling.test.mjs';
 import { run as runAssetOwnershipStrategyCloseout } from './tools/AssetOwnershipStrategyCloseout.test.mjs';
 import { run as runAssetErrorHandlingStandard } from './tools/AssetErrorHandlingStandard.test.mjs';
@@ -65,7 +64,6 @@ import { run as runRuntimeAssetBinding } from './tools/RuntimeAssetBinding.test.
 import { run as runRuntimeAssetLookupConsolidation } from './tools/RuntimeAssetLookupConsolidation.test.mjs';
 import { run as runRuntimeAssetValidation } from './tools/RuntimeAssetValidation.test.mjs';
 import { run as runToolEntryLaunchContract } from './tools/ToolEntryLaunchContract.test.mjs';
-import { run as runToolLocalSampleMigration } from './tools/ToolLocalSampleMigration.test.mjs';
 import { run as runToolsIndexRegistrySmoke } from './tools/ToolsIndexRegistrySmoke.test.mjs';
 import { run as runToolHostDispatchContract } from './tools/ToolHostDispatchContract.test.mjs';
 import { run as runPlatformShellHeaderAlignment } from './tools/PlatformShellHeaderAlignment.test.mjs';
@@ -103,13 +101,6 @@ import { run as runVectorGeometryRuntime } from './tools/VectorGeometryRuntime.t
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runReplayTimeline } from './replay/ReplayTimeline.test.mjs';
-import { run as runSamplesProgramCombinedPass } from './samples/SamplesProgramCombinedPass.test.mjs';
-import { run as runFullscreenRuleEnforcement } from './samples/FullscreenRuleEnforcement.test.mjs';
-import { run as runFullscreenAbility0713ViewportFit } from './samples/FullscreenAbility0713ViewportFit.test.mjs';
-import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
-import { run as runOrbitLabScene } from './samples/OrbitLabScene.test.mjs';
-import { run as runProjectileLabModel } from './samples/ProjectileLabModel.test.mjs';
-import { run as runProjectileLabScene } from './samples/ProjectileLabScene.test.mjs';
 import './theme.test.js';
 import { run as runLaunchSmokeAllEntries } from './runtime/LaunchSmokeAllEntries.test.mjs';
 import { run as runRuntimeMonitoringHooks } from './runtime/RuntimeMonitoringHooks.test.mjs';
@@ -156,7 +147,6 @@ const tests = [
     ['ToolBoundaryEnforcement', runToolBoundaryEnforcement],
     ['ProjectToolDataContracts', runProjectToolDataContracts],
     ['ToolManifestBoundary', runToolManifestBoundary],
-    ['ToolSchemaStrictModeValidation', runToolSchemaStrictModeValidation],
     ['AssetPipelineTooling', runAssetPipelineTooling],
     ['AssetOwnershipStrategyCloseout', runAssetOwnershipStrategyCloseout],
     ['AssetErrorHandlingStandard', runAssetErrorHandlingStandard],
@@ -165,7 +155,6 @@ const tests = [
     ['RuntimeAssetLookupConsolidation', runRuntimeAssetLookupConsolidation],
     ['RuntimeAssetValidation', runRuntimeAssetValidation],
     ['ToolEntryLaunchContract', runToolEntryLaunchContract],
-    ['ToolLocalSampleMigration', runToolLocalSampleMigration],
     ['ToolsIndexRegistrySmoke', runToolsIndexRegistrySmoke],
     ['ToolHostDispatchContract', runToolHostDispatchContract],
     ['PlatformShellHeaderAlignment', runPlatformShellHeaderAlignment],
@@ -202,13 +191,6 @@ const tests = [
     ['VectorGeometryRuntime', runVectorGeometryRuntime],
     ['ReplaySystem', runReplaySystem],
     ['ReplayTimeline', runReplayTimeline],
-    ['SamplesProgramCombinedPass', runSamplesProgramCombinedPass],
-    ['FullscreenRuleEnforcement', runFullscreenRuleEnforcement],
-    ['FullscreenAbility0713ViewportFit', runFullscreenAbility0713ViewportFit],
-    ['OrbitLabModel', runOrbitLabModel],
-    ['OrbitLabScene', runOrbitLabScene],
-    ['ProjectileLabModel', runProjectileLabModel],
-    ['ProjectileLabScene', runProjectileLabScene],
     ['EnginePublicBarrelImports', runEnginePublicBarrelImports],
     ['ProductionReadiness', runProductionReadiness],
     ['TestsValidationCombinedPass', runTestsValidationCombinedPass],

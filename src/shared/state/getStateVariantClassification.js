@@ -22,7 +22,7 @@ export function classifyGetStateVariantDomain(name) {
 
 export function classifyGetStateVariantLayer(filePath) {
   const normalized = String(filePath || "").replaceAll("\\", "/");
-  if (normalized.startsWith("samples/")) {
+  if (normalized.startsWith("old_samples/")) {
     return "sample";
   }
   if (normalized.startsWith("tools/")) {

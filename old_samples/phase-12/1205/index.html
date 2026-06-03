@@ -1,0 +1,43 @@
+﻿<!--
+Toolbox Aid
+David Quesenberry
+03/31/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sample 1205 - Multi-System Demo</title>
+  <link rel="stylesheet" href="../../../src/engine/ui/baseLayout.css" />
+  <link rel="stylesheet" href="../../../src/engine/theme/main.css" />
+</head>
+<body class="hub-page-samples">
+  <div id="shared-theme-header"></div>
+<!--
+Demo: Sample 1205 - Multi-System Demo
+Description: Preserves the Sample 1204 hero runtime while adding collectible pickups and a counter.
+-->
+  <main>
+    <h1>Sample 1205 - Multi-System Demo</h1>
+    <p>Move with Left/Right and jump with Space. Collect the pickups while traversal, collision, camera follow, and parallax remain active. Debug is production-safe and opt-in: use <code>?debug=1</code> (and optionally <code>&amp;debugMode=qa</code>) to enable console/overlay.</p>
+    <canvas id="game" width="960" height="540"></canvas>
+
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>Engine</li>
+        <li>Scene</li>
+        <li>InputService</li>
+        <li>Tilemap</li>
+        <li>TilemapCollision</li>
+        <li>Camera2D</li>
+      </ul>
+    </section>
+  </main>
+
+  <script type="module" src="/old_samples/shared/sampleDetailPageEnhancement.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

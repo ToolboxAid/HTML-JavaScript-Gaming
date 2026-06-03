@@ -1,0 +1,18 @@
+{
+  "commandsHash": "4f53cda18c2baa0c",
+  "dependencies": [],
+  "dependencyGraphHash": "7558476a74bf35dc",
+  "fileHashes": {},
+  "fixtures": [],
+  "helpers": [],
+  "imports": [],
+  "inputHash": "fdf4ca6c755dd6ef",
+  "lane": "samples",
+  "laneDefinitionHash": "537c8dc9fb34a8b2",
+  "manifestHash": "6d80106379a1bc2b",
+  "ownership": "samples",
+  "tests": [],
+  "version": 1,
+  "generatedAt": "2026-06-03T17:55:20.020Z",
+  "source": "generated"
+}

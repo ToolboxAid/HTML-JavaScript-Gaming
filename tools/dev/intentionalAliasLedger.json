@@ -80,7 +80,7 @@
         "tests/runtime/Phase19OverlayExpansionFramework.test.mjs"
       ],
       "statements": [
-        "import * as overlayRuntimeModule from '../../samples/phase-17/shared/overlayGameplayRuntime.js';"
+        "import * as overlayRuntimeModule from '../../old_samples/phase-17/shared/overlayGameplayRuntime.js';"
       ],
       "reason": "Overlay framework test intentionally validates the sampled runtime module surface as a namespace."
     },

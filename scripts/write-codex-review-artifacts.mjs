@@ -4,14 +4,15 @@ import { dirname, resolve } from "node:path";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const reportsDirectory = resolve(repoRoot, "docs", "dev", "reports");
+const reportsDirectory = resolve(repoRoot, "docs_build", "dev", "reports");
 const reviewDiffPath = resolve(reportsDirectory, "codex_review.diff");
 const changedFilesPath = resolve(reportsDirectory, "codex_changed_files.txt");
 
 function runGit(args) {
   const result = spawnSync("git", args, {
     cwd: repoRoot,
-    encoding: "utf8"
+    encoding: "utf8",
+    maxBuffer: 1024 * 1024 * 256
   });
   if (result.error) {
     throw result.error;

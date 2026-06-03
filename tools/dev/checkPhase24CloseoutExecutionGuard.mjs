@@ -74,7 +74,7 @@ function runGuard() {
     }
   }
 
-  const samplesRoot = path.join(repoRoot, "samples");
+  const samplesRoot = path.join(repoRoot, "old_samples");
   const allowedRoot = path.join(repoRoot, baseline.fullscreenAllowedRoot);
   const patterns = (baseline.fullscreenPatterns || []).map((token) => ({ token, re: new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g") }));
   const hitsOutsideAllowed = [];

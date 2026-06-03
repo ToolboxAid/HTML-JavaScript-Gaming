@@ -1,27 +1,27 @@
 # Persistent Lane Manifest Report
 
-Generated: 2026-06-03T17:06:31.641Z
+Generated: 2026-06-03T17:55:20.031Z
 Status: PASS
 Manifest directory: docs_build/dev/reports/lane_manifests
 
 ## Summary
 
 Reused manifests: 0
-Invalidated manifests: 1
-Generated manifests: 0
+Invalidated manifests: 0
+Generated manifests: 1
 Prevented discovery scans: 0
 
 ## Manifest Events
 
 | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | df46aef671d3b988 | 85496f0e17683ed9 | Persistent manifest lane definition hash changed for workspace-contract. |
+| samples | GENERATED | docs_build/dev/reports/lane_manifests/samples.json | fdf4ca6c755dd6ef | 6d80106379a1bc2b | No persisted manifest existed for this lane. |
 
 ## Persisted Manifest Files
 
 | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | d8b1f03418e7f315 | 85496f0e17683ed9 |
+| samples | samples | generated | none | none | none | 7558476a74bf35dc | 6d80106379a1bc2b |
 
 ## Fast-Fail Enforcement
 

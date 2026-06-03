@@ -103,7 +103,7 @@ function normalizeForwardedLaunchParam(key, value) {
     return "";
   }
   if (key === "returnTo") {
-    return normalizeLocalHref(normalizedValue, ["/old_games/", "/samples/"]);
+    return normalizeLocalHref(normalizedValue, ["/old_games/", "/old_samples/"]);
   }
   if (key === "samplePresetPath") {
     return normalizeSamplePresetPath(normalizedValue);
@@ -442,7 +442,7 @@ function buildWorkspaceHrefFromGameId() {
 }
 
 function normalizeSamplePresetPath(value) {
-  return normalizeLocalHref(value, ["/samples/", "/old_games/"]);
+  return normalizeLocalHref(value, ["/old_samples/", "/old_games/"]);
 }
 
 function normalizeFetchRequestPath(input) {
