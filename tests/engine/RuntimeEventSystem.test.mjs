@@ -1,0 +1,48 @@
+/*
+Toolbox Aid
+David Quesenberry
+06/02/2026
+RuntimeEventSystem.test.mjs
+*/
+
+import assert from "node:assert/strict";
+import { evaluateRuntimeConditions } from "../../src/engine/runtime/runtimeConditionSystem.js";
+import {
+  RUNTIME_EVENT_ERRORS,
+  publishRuntimeEvents,
+} from "../../src/engine/runtime/runtimeEventSystem.js";
+import { createRuntimeGameRuleFixture } from "./RuntimeGameRuleFixture.mjs";
+
+export function run() {
+  const fixture = createRuntimeGameRuleFixture();
+  const conditionResult = evaluateRuntimeConditions(fixture.conditionDefinitions, fixture.runtimeFacts);
+  const eventResult = publishRuntimeEvents(conditionResult.conditionMatches, fixture.runtimeEvents);
+
+  assert.equal(eventResult.valid, true);
+  assert.equal(eventResult.publishedEvents.length, 6);
+  assert.equal(eventResult.runtimeEvents.length, 7);
+  assert.equal(eventResult.runtimeEvents[0].eventId, "event.runtime.frameStart.0");
+  assert.equal(eventResult.publishedEvents[0].eventId, "event.event.coinCollision.condition.coin.collision.0");
+  assert.deepEqual(eventResult.publishedEvents.map((event) => event.eventType), [
+    "event.coinCollision",
+    "event.exitOverlap",
+    "event.timerReady",
+    "event.scoreReady",
+    "event.enemyDestroyed",
+    "event.coinSpawned",
+  ]);
+
+  const invalidResult = publishRuntimeEvents([
+    {
+      conditionId: "condition.invalid",
+      payload: {},
+    },
+  ], []);
+
+  assert.equal(invalidResult.valid, false);
+  assert.deepEqual(invalidResult.errors.map((error) => error.code), [RUNTIME_EVENT_ERRORS.EVENT_TYPE_REQUIRED]);
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  run();
+}
