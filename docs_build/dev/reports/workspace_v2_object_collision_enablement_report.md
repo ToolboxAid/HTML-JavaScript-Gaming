@@ -15,7 +15,7 @@
 - Games without confident object-vector geometry remain without `object-vector-studio-v2` payloads and keep Object Vector Studio V2 / Collision Inspector V2 disabled.
 
 ## Validation
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` passed.
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` passed.
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs` passed.
 - `node --input-type=module -e "await import('./tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js'); console.log('WorkspaceManagerV2ContextService import OK');"` passed.
 - `node scripts/validate-json-contracts.mjs --mode games --details` reported `game_manifest_schema_validation: total=12 invalid=0`.

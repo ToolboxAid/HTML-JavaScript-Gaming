@@ -1,6 +1,6 @@
 PR 11.125 - Enforced Write Report
 
-File: tools/schemas/workspace.manifest.schema.json
+File: toolbox/schemas/workspace.manifest.schema.json
 Status: SUCCESS
 
 BEFORE snippet:
@@ -31,12 +31,12 @@ Diff summary:
 
 ------------------------------------------------------------------------
 
-File: tools/schemas/tools/palette-browser.schema.json
+File: toolbox/schemas/tools/palette-browser.schema.json
 Status: SUCCESS
 
 BEFORE snippet:
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tools/schemas/tools/palette-browser.schema.json",
+  "$id": "toolbox/schemas/tools/palette-browser.schema.json",
   "title": "Palette Browser Direct Palette Payload",
   "type": "object",
   "required": ["schema", "version", "name", "swatches"],
@@ -44,7 +44,7 @@ BEFORE snippet:
 
 AFTER snippet:
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tools/schemas/tools/palette-browser.schema.json",
+  "$id": "toolbox/schemas/tools/palette-browser.schema.json",
   "title": "Palette Browser Direct Palette Payload",
   "type": "object",
   "required": ["schema", "version", "name", "swatches"],

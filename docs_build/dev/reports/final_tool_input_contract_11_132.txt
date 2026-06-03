@@ -9,8 +9,8 @@ Objective
 - Remove implicit/global launch inputs and hidden dependencies.
 
 Routing files changed
-- tools/shared/toolHostRuntime.js
-- tools/Workspace Manager/main.js
+- toolbox/shared/toolHostRuntime.js
+- toolbox/Workspace Manager/main.js
 
 Changes
 1) Tool launch API contract
@@ -31,8 +31,8 @@ Changes
 
 Verification
 A) Syntax/parse
-- node --check tools/shared/toolHostRuntime.js: PASS
-- node --check tools/Workspace Manager/main.js: PASS
+- node --check toolbox/shared/toolHostRuntime.js: PASS
+- node --check toolbox/Workspace Manager/main.js: PASS
 
 B) Signature and call path checks
 - toolHostRuntime has launch signature:

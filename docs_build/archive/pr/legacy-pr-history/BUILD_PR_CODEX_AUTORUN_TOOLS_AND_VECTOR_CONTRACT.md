@@ -3,7 +3,7 @@
 ## Purpose
 Execute the full sequence with **no manual intervention**:
 
-1. Consolidate renamed/duplicate tool folders under `tools/`
+1. Consolidate renamed/duplicate tool folders under `toolbox/`
 2. Validate the repo after consolidation and repair any broken paths/imports/references caused by that consolidation
 3. Produce the docs-first planning bundle for `PLAN_PR_VECTOR_ASSET_CONTRACT`
 
@@ -11,7 +11,7 @@ This PR bundle is intended for Codex execution only. The goal is to let Codex pe
 
 ## Scope
 ### In scope
-- Tool-folder consolidation under `tools/`
+- Tool-folder consolidation under `toolbox/`
 - Canonical path selection for current tool folders
 - File movement/merging into canonical tool folders
 - Reference/path/import updates caused by consolidation
@@ -29,7 +29,7 @@ This PR bundle is intended for Codex execution only. The goal is to let Codex pe
 ## Required execution order
 ### Phase 1 — Consolidate tools folders
 Codex must:
-- inventory folders directly under `tools/`
+- inventory folders directly under `toolbox/`
 - identify duplicate/renamed folders created by rename drift
 - choose the canonical current folder for each tool based on newer approved naming
 - merge/move files into canonical folders
@@ -89,7 +89,7 @@ The vector asset contract plan must define the future planning/documentation nee
 - refreshed `docs_build/operations/dev/commit_comment.txt`
 
 ## Success criteria
-- One canonical folder per active tool under `tools/`
+- One canonical folder per active tool under `toolbox/`
 - Duplicate rename-created folders removed after consolidation
 - Old SpriteEditor ignored as legacy/out-of-scope except required path cleanup
 - Active tool paths work from canonical names

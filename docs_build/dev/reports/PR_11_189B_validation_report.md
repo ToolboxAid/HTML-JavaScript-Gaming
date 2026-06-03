@@ -4,7 +4,7 @@
 Correct SVG Asset Studio v2 so its top header uses the same shared theme header mount convention as `/index.html`.
 
 ## Changed Files
-- `tools/SVG Asset Studio v2/main.js`
+- `toolbox/SVG Asset Studio v2/main.js`
 - `docs_build/dev/reports/PR_11_189B_validation_report.md`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
@@ -12,7 +12,7 @@ Existing PR source doc was present in the worktree and included in the ZIP:
 
 ## Scope Guard
 Edited implementation file only:
-- `tools/SVG Asset Studio v2/main.js`
+- `toolbox/SVG Asset Studio v2/main.js`
 
 No changes were made to:
 - schemas
@@ -20,8 +20,8 @@ No changes were made to:
 - games
 - `start_of_day/**`
 - Workspace Manager v1
-- legacy `tools/SVG Asset Studio/**`
-- `tools/shared/**`
+- legacy `toolbox/SVG Asset Studio/**`
+- `toolbox/shared/**`
 - `platformShell`
 - Palette Manager files
 - legacy Palette Browser files
@@ -50,7 +50,7 @@ Preserved constraints:
 - no imports
 - no `platformShell`
 - no `assetUsageIntegration`
-- no `tools/shared/*`
+- no `toolbox/shared/*`
 - no Workspace Manager v1 wiring
 - no fallback/default/demo data
 - session-backed SVG loading only
@@ -59,7 +59,7 @@ Preserved constraints:
 Command:
 
 ```powershell
-node --check "tools/SVG Asset Studio v2/main.js"
+node --check "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result: passed.
@@ -68,7 +68,7 @@ Result: passed.
 Command:
 
 ```powershell
-rg -n "page-intro|<h1>SVG Asset Studio v2|platformShell|assetUsageIntegration|tools/shared|Workspace Manager|tool alias|handoff|fallback|demo data|^import |^export " -- "tools/SVG Asset Studio v2/main.js"
+rg -n "page-intro|<h1>SVG Asset Studio v2|platformShell|assetUsageIntegration|tools/shared|Workspace Manager|tool alias|handoff|fallback|demo data|^import |^export " -- "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result: passed. No matches.
@@ -77,7 +77,7 @@ Result: passed. No matches.
 Command:
 
 ```powershell
-rg -n "shared-theme-header|mount-shared-header|is-collapsible|\[SVG_V2_ENTRY\]|\[SESSION_CONTEXT_READ\]|\[SVG_V2_CONTRACT_LOADED\]" -- "tools/SVG Asset Studio v2/main.js"
+rg -n "shared-theme-header|mount-shared-header|is-collapsible|\[SVG_V2_ENTRY\]|\[SESSION_CONTEXT_READ\]|\[SVG_V2_CONTRACT_LOADED\]" -- "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result: passed. Evidence found for:

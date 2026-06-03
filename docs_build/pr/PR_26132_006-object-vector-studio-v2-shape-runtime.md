@@ -37,11 +37,11 @@ Result:
 Additional checks:
 
 ```powershell
-node --check tools/object-vector-studio-v2/js/ToolStarterApp.js
-node --check tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
-node --check tools/object-vector-studio-v2/js/bootstrap.js
+node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+node --check toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+node --check toolbox/object-vector-studio-v2/js/bootstrap.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-node --check tools/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs
+node --check toolbox/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs
 git diff --check
 ```
 
@@ -86,10 +86,10 @@ docs_build/dev/reports/coverage_changed_js_guardrail.txt
 Changed runtime JavaScript coverage includes:
 
 ```text
-(57%) tools/object-vector-studio-v2/js/controls/StatusLogControl.js
-(90%) tools/object-vector-studio-v2/js/ToolStarterApp.js
-(93%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
-(100%) tools/object-vector-studio-v2/js/bootstrap.js
+(57%) toolbox/object-vector-studio-v2/js/controls/StatusLogControl.js
+(90%) toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+(93%) toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+(100%) toolbox/object-vector-studio-v2/js/bootstrap.js
 ```
 
 The coverage guardrail reported no changed-runtime-JS warnings.
@@ -100,7 +100,7 @@ Skipped. This PR is limited to Object Vector Studio V2 shape runtime foundation 
 
 ## Manual Test Steps
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Import a valid payload with `palette.swatches` and `objects[]`.
 3. Select an object tile.
 4. Create rectangle, circle, ellipse, line, polygon, arc, and text primitives from Shape/Tools.

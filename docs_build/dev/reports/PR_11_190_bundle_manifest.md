@@ -21,4 +21,4 @@ ChatGPT does not write implementation code in this bundle.
 - Palette active V2 name is `Palette Manager V2`.
 - V2 tools must use `<div id="shared-theme-header"></div>`.
 - Re-engineer the V2 shell; do not copy/paste legacy tool code.
-- No schemas, samples, games, Workspace Manager v1, platformShell, or tools/shared changes.
+- No schemas, samples, games, Workspace Manager v1, platformShell, or toolbox/shared changes.

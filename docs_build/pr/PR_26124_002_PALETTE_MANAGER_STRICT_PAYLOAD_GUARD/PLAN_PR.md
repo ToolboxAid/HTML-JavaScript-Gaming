@@ -10,7 +10,7 @@ Fix the next failing tool from `tool_completion_audit.md` with a minimal single-
 - Legacy palette payload key `payloadJson.paletteDocument.colors` must be rejected before render.
 
 ## Planned Change
-1. Add an explicit pre-render validation guard in `tools/palette-manager-v2/index.js`:
+1. Add an explicit pre-render validation guard in `toolbox/palette-manager-v2/index.js`:
    - reject `payloadJson.paletteDocument.colors`
    - show clear visible actionable error
 
@@ -20,5 +20,5 @@ Fix the next failing tool from `tool_completion_audit.md` with a minimal single-
 - No new features
 
 ## Validation
-- `node --check tools/palette-manager-v2/index.js`
+- `node --check toolbox/palette-manager-v2/index.js`
 - `npm run test:workspace-v2`

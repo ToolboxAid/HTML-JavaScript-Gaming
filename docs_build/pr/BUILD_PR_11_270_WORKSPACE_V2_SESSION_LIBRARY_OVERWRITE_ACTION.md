@@ -4,7 +4,7 @@
 Implement card-level overwrite for existing saved sessions in Workspace V2 Session Library.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2SessionLibraryActions.test.mjs
@@ -25,7 +25,7 @@ Implement card-level overwrite for existing saved sessions in Workspace V2 Sessi
 - Status text is current-state and non-stale.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
 - node --check tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - node --check tests/runtime/V2SessionLibraryActions.test.mjs

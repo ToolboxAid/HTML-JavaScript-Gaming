@@ -11,8 +11,8 @@ Implement the first runtime slice of the launch SSoT contract with exact UI laun
 
 One PR purpose only:
 
-- route sample-launched tools through explicit `tools/<tool>/index.html` targets via `Open <tool>`
-- route game-launched workspace flows through `tools/Workspace Manager/index.html` via `Open with Workspace Manager`
+- route sample-launched tools through explicit `toolbox/<tool>/index.html` targets via `Open <tool>`
+- route game-launched workspace flows through `toolbox/Workspace Manager/index.html` via `Open with Workspace Manager`
 - clear launch memory for external launches from samples or games
 - remove default/fallback launch behavior only where touched by this launch path
 
@@ -95,9 +95,9 @@ Codex must document validation in:
 Validation must include:
 
 - sample tile/action labels use `Open <tool>`
-- sample tile/action launches resolve to explicit `tools/<tool>/index.html`
+- sample tile/action launches resolve to explicit `toolbox/<tool>/index.html`
 - game tile/action labels use `Open with Workspace Manager`
-- game tile/action launches resolve to `tools/Workspace Manager/index.html`
+- game tile/action launches resolve to `toolbox/Workspace Manager/index.html`
 - external launch memory is cleared before loading
 - missing launch data fails visibly
 - no default/fallback path remains in touched launch flow

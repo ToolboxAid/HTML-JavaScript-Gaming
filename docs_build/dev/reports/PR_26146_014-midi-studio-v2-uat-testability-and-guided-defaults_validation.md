@@ -10,17 +10,17 @@
 
 ## Validation
 
-- PASS: `node --check tools/midi-studio-v2/js/controls/ActionNavControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/SongDetailsControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/ActionNavControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/SongDetailsControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: `cmd /c "set PLAYWRIGHT_BROWSERS_PATH=0&& npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs"` passed 30 tests.
 - PASS: `git diff --check` completed with only line-ending normalization warnings.
-- PASS: `Select-String -Path tools/midi-studio-v2/index.html -Pattern '<script(?![^>]*src=)|<style|\son[a-z]+\s*='` returned no inline script/style/event handler matches.
+- PASS: `Select-String -Path toolbox/midi-studio-v2/index.html -Pattern '<script(?![^>]*src=)|<style|\son[a-z]+\s*='` returned no inline script/style/event handler matches.
 
 ## Playwright Coverage
 

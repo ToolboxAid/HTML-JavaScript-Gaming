@@ -48,11 +48,11 @@ The current GameFoundryStudio implementation is partially aligned with the inten
 
 ## PARTIAL
 
-- Six meaning/category pages exist in both root-level and nested `tools/groups/` forms:
+- Six meaning/category pages exist in both root-level and nested `toolbox/groups/` forms:
   - root: `building-creation.html`, `technology-system.html`, `assets-content.html`, `media-community.html`, `design-animation.html`, `configuration-admin.html`
-  - nested: `tools/groups/building-creation.html`, `tools/groups/technology-system.html`, `tools/groups/assets-content.html`, `tools/groups/media-community.html`, `tools/groups/design-animation.html`, `tools/groups/configuration-admin.html`
+  - nested: `toolbox/groups/building-creation.html`, `toolbox/groups/technology-system.html`, `toolbox/groups/assets-content.html`, `toolbox/groups/media-community.html`, `toolbox/groups/design-animation.html`, `toolbox/groups/configuration-admin.html`
 - The nested category pages use shared partial slots. The root-level category pages still carry hardcoded header/footer markup and are legacy duplicates.
-- Root-level `tool-builder.html`, `tool-creator.html`, and `tool-publisher.html` exist, but the shared header routes now point to nested `tools/tool-*.html` pages. The root-level tool pages remain duplicate/legacy surfaces.
+- Root-level `tool-builder.html`, `tool-creator.html`, and `tool-publisher.html` exist, but the shared header routes now point to nested `toolbox/tool-*.html` pages. The root-level tool pages remain duplicate/legacy surfaces.
 - Root-level `controls.html` exists, but the shared Account submenu points to `account/controls.html`. The root-level controls page still has hardcoded navigation and no shared partial slot.
 - `page-shell.html` and `tool-page-shell.html` exist as partials, but audited pages do not consume those shell partials directly. Pages use shared header/footer slots and local `<main>` / `.tool-workspace` markup.
 - CSS ownership is split across `base.css`, `pages.css`, `tools.css`, and color files. There is no separate controls-specific ownership file.
@@ -60,7 +60,7 @@ The current GameFoundryStudio implementation is partially aligned with the inten
 ## BROKEN
 
 - Legacy root-level pages contain stale hardcoded navigation that does not include the Account submenu with Branding and Controls.
-- Several legacy root-level pages still link old root routes such as `tools.html`, `games.html`, `account.html`, and root-level category pages while the shared route map points to nested `tools/index.html`, `arcade/index.html`, `account/index.html`, and `tools/groups/*.html`.
+- Several legacy root-level pages still link old root routes such as `tools.html`, `games.html`, `account.html`, and root-level category pages while the shared route map points to nested `toolbox/index.html`, `arcade/index.html`, `account/index.html`, and `toolbox/groups/*.html`.
 - Root-level duplicate pages can drift from the shared header/nav/footer SSoT because they do not use `data-partial="header-nav"` and `data-partial="footer"`.
 - `tool-page-shell.html` is present, but there is no corresponding `tool-shell.html`; any expected `tool-shell.html` consumer would fail until the intended shell name is clarified or implemented.
 

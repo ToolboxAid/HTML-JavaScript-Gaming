@@ -6,11 +6,11 @@ Perform a batch correction for the active V2 tools so the UI shell lives in HTML
 ## Files Codex May Modify
 Only these folders may be modified if present:
 
-- `tools/palette-manager-v2/`
-- `tools/svg-asset-studio-v2/`
-- `tools/vector-map-editor-v2/`
-- `tools/tilemap-studio-v2/`
-- `tools/asset-manager-v2/`
+- `toolbox/palette-manager-v2/`
+- `toolbox/svg-asset-studio-v2/`
+- `toolbox/vector-map-editor-v2/`
+- `toolbox/tilemap-studio-v2/`
+- `toolbox/asset-manager-v2/`
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` status markers only
 - `docs_build/dev/reports/` for evidence only
 
@@ -21,9 +21,9 @@ Only these folders may be modified if present:
 - Workspace Manager v1
 - legacy tools without `-v2`
 - `platformShell`
-- `tools/shared/*`
+- `toolbox/shared/*`
 - root `/index.html`
-- `/tools/index.html`
+- `/toolbox/index.html`
 
 ## Implementation Requirements
 For each active V2 tool folder listed above that exists:
@@ -69,11 +69,11 @@ For each active V2 tool folder listed above that exists:
 Run targeted checks only:
 
 ```powershell
-node --check tools/palette-manager-v2/index.js
-node --check tools/svg-asset-studio-v2/index.js
-node --check tools/vector-map-editor-v2/index.js
-node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-manager-v2/index.js
+node --check toolbox/palette-manager-v2/index.js
+node --check toolbox/svg-asset-studio-v2/index.js
+node --check toolbox/vector-map-editor-v2/index.js
+node --check toolbox/tilemap-studio-v2/index.js
+node --check toolbox/asset-manager-v2/index.js
 ```
 
 If a listed folder does not exist yet, record it as `NOT PRESENT - SKIPPED` in the report and do not create unrelated scaffolding unless this PR's tool folder already exists in the active V2 lane.

@@ -7,7 +7,7 @@ Scope
 - toolHostRuntime.js
 
 File Updated
-- tools/shared/toolHostRuntime.js
+- toolbox/shared/toolHostRuntime.js
 
 Changes Applied
 1) Located `validateInput` and reduced it to minimal checks only:
@@ -29,7 +29,7 @@ Verification
 - `validateInput` is minimal: PASS
   - only the two required object checks remain.
 - Syntax check: PASS
-  - `node --check tools/shared/toolHostRuntime.js`
+  - `node --check toolbox/shared/toolHostRuntime.js`
 
 Result
 - PASS

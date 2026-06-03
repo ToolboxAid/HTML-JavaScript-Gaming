@@ -5,7 +5,7 @@ Restore `npm test` by eliminating the current unexpected `checkSharedExtractionG
 
 ## Current observed state
 - `npm test --ignore-scripts` reaches and runs the node test suite successfully.
-- `npm test` stops in `pretest` at `tools/dev/checkSharedExtractionGuard.mjs`. fileciteturn0file0
+- `npm test` stops in `pretest` at `toolbox/dev/checkSharedExtractionGuard.mjs`. fileciteturn0file0
 - The guard currently reports 93 unexpected violations across these categories: deep-relative-shared-traversal, direct-shared-relative-import, inline-helper-clone, and local-helper-definition. fileciteturn0file0
 - A separate runner issue around `LaunchSmokeAllEntries.test.mjs` was resolved, allowing the node suite to execute successfully with `--ignore-scripts`. fileciteturn2file0
 
@@ -38,7 +38,7 @@ Highest-priority violations concentrated in:
 Violations span:
 - selected phase 12 / phase 13 sample files
 - multiple tool entry points
-- `tools/shared/vector/vectorSafeValueUtils.js` fileciteturn0file0
+- `toolbox/shared/vector/vectorSafeValueUtils.js` fileciteturn0file0
 
 **Intent:** normalize imports so samples/tools do not reach shared internals through forbidden relative depth patterns.
 
@@ -47,7 +47,7 @@ Mainly repeated `Number.isFinite` / numeric normalization patterns across:
 - sample enhancement files
 - phase 13 network files
 - performance/replay tools
-- `tools/shared/debugInspectorData.js` fileciteturn0file0
+- `toolbox/shared/debugInspectorData.js` fileciteturn0file0
 
 **Intent:** extract one or more approved reusable numeric helpers and consume them consistently.
 
@@ -118,15 +118,15 @@ Additional sample/tool targets:
 - `samples/phase13/1303/AsteroidsWorldSystemsScene.js`
 - `samples/phase13/1309/SpaceInvadersWorldSystemsScene.js`
 - `samples/phase13/1313/PacmanLiteWorldSystemsScene.js`
-- `tools/Performance Profiler/main.js`
-- `tools/Replay Visualizer/main.js`
-- `tools/Sprite Editor/main.js`
-- `tools/State Inspector/main.js`
-- `tools/Tool Host/main.js`
-- `tools/Vector Asset Studio/main.js`
-- `tools/Vector Map Editor/main.js`
-- `tools/shared/vector/vectorSafeValueUtils.js`
-- `tools/shared/debugInspectorData.js` fileciteturn0file0
+- `toolbox/Performance Profiler/main.js`
+- `toolbox/Replay Visualizer/main.js`
+- `toolbox/Sprite Editor/main.js`
+- `toolbox/State Inspector/main.js`
+- `toolbox/Tool Host/main.js`
+- `toolbox/Vector Asset Studio/main.js`
+- `toolbox/Vector Map Editor/main.js`
+- `toolbox/shared/vector/vectorSafeValueUtils.js`
+- `toolbox/shared/debugInspectorData.js` fileciteturn0file0
 
 ## Acceptance criteria
 - `npm test` reaches and passes `pretest` without new or remaining unexpected violations.
@@ -148,7 +148,7 @@ Additional sample/tool targets:
 
 ## Validation plan
 Run in this order:
-1. `node tools/dev/checkSharedExtractionGuard.mjs`
+1. `node toolbox/dev/checkSharedExtractionGuard.mjs`
 2. `npm test --ignore-scripts`
 3. `npm test`
 4. If needed, targeted reruns for touched samples/tools

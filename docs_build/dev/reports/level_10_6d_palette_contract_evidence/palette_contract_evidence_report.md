@@ -28,8 +28,8 @@
 - test expectation source:
   - `tests/runtime/SampleStandaloneToolDataFlow.test.mjs:1162-1168` reads `testCase.presetPayload?.config?.palette` and requires non-empty `name` and `swatches`.
 - runtime ingestion source:
-  - `tools/Palette Browser/main.js:531-553` extracts palette payload via aliases (`payload.palette`, `config.palette`, `payload.swatches`, `config.swatches`).
-  - `tools/Palette Browser/main.js:506-529` validates/normalizes imported palette shape.
+  - `toolbox/Palette Browser/main.js:531-553` extracts palette payload via aliases (`payload.palette`, `config.palette`, `payload.swatches`, `config.swatches`).
+  - `toolbox/Palette Browser/main.js:506-529` validates/normalizes imported palette shape.
 - comparison (manifest palette object vs paired `sample.<id>.palette.json`):
 - Sample 0213:
   - swatchesMatch: true
@@ -68,8 +68,8 @@
 
 ## required status checks
 - `$schema` remains: yes.
-  - Tool payload files contain top-level `$schema` references to `tools/schemas/tools/palette-browser.schema.json`.
-  - Sample palette files contain top-level `$schema` references to `tools/schemas/palette.schema.json`.
+  - Tool payload files contain top-level `$schema` references to `toolbox/schemas/tools/palette-browser.schema.json`.
+  - Sample palette files contain top-level `$schema` references to `toolbox/schemas/palette.schema.json`.
 - `engine` / `paletteList` remains: yes.
   - Sample 0213 palette source remains `engine/paletteList`.
   - Palette Browser still loads `../../src/engine/paletteList.js` and reads `globalThis.palettesList`.

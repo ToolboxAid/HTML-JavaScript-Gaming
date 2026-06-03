@@ -5,7 +5,7 @@ Validate user acceptance readiness for Performance Profiler across launch, core 
 
 ## Scope
 - Tool: `performance-profiler`
-- Entry point: `tools/Performance Profiler/index.html`
+- Entry point: `toolbox/Performance Profiler/index.html`
 
 ## Validation Scenarios
 

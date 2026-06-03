@@ -21,11 +21,11 @@
 12. Confirm that `palette-browser` is a tool payload, while `sample.<id>.palette.json` is shared data. Tool payloads should only exist for tools that the sample explicitly launches.
 
 ### Deletion / Cleanup Questions
-13. Can delete `tools/codex/sample_maaping_example.json`?
-14. Can delete `tools/dev/checkPhase24*` and `tools/dev/checkSharedExt*.json`?
-15. Can delete `tools/samples/*`?
-16. Can delete `tools/shared/samples/*`?
-17. Audit the rest of `tools/` and any unused JSON files; delete only if not used.
+13. Can delete `toolbox/codex/sample_maaping_example.json`?
+14. Can delete `toolbox/dev/checkPhase24*` and `toolbox/dev/checkSharedExt*.json`?
+15. Can delete `toolbox/samples/*`?
+16. Can delete `toolbox/shared/samples/*`?
+17. Audit the rest of `toolbox/` and any unused JSON files; delete only if not used.
 18. Remove all sample dropdown/select support in tools. Samples should only live under `/samples`.
 19. If a sample only lives inside a tool folder, migrate it to the correct `/samples/phase-*` folder.
 20. Files should be used by a sample or game. If not wired, wire it or mark it for deletion.
@@ -113,12 +113,12 @@ Normalize palette swatch hex:
 
 ### F. Deletion Candidate Audit
 Audit and report before deletion:
-- `tools/codex/sample_maaping_example.json`
-- `tools/dev/checkPhase24*`
-- `tools/dev/checkSharedExt*.json`
-- `tools/samples/*`
-- `tools/shared/samples/*`
-- any other JSON in `tools/` not used by samples, games, tools, docs, or tests
+- `toolbox/codex/sample_maaping_example.json`
+- `toolbox/dev/checkPhase24*`
+- `toolbox/dev/checkSharedExt*.json`
+- `toolbox/samples/*`
+- `toolbox/shared/samples/*`
+- any other JSON in `toolbox/` not used by samples, games, tools, docs, or tests
 
 Delete only if:
 - not imported/referenced

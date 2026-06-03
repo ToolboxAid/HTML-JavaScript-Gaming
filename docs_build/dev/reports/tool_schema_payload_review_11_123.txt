@@ -3,7 +3,7 @@ PR 11.123 - Tool Schema Payload Review
 PASS
 
 Scope reviewed
-- tools/schemas/tools/*.schema.json
+- toolbox/schemas/tools/*.schema.json
 
 Review criteria
 - Root schema is an object.

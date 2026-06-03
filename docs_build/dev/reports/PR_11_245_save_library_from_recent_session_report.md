@@ -4,7 +4,7 @@
 Updated Workspace V2 Session Library Save/Overwrite behavior so an entered Recent Session `hostContextId` can resolve to a valid session payload (from recent/sessionStorage) and be saved/overwritten in `v2-session-library`, even when no separate active Workspace V2 session exists.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SaveLibraryFromRecentSession.test.mjs`
 
 ## Implementation Details
@@ -30,7 +30,7 @@ Updated Workspace V2 Session Library Save/Overwrite behavior so an entered Recen
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
 node --check tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
 node tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
@@ -38,7 +38,7 @@ node tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2SaveLibraryFromRecentSession.test.mjs` -> PASS
 - `node --check tests/runtime/V2SavedSessionDeleteFeedback.test.mjs` -> PASS
 - `node tests/runtime/V2SaveLibraryFromRecentSession.test.mjs` -> PASS

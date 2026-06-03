@@ -19,9 +19,9 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/ExportPanelControl.js; node --check tools/midi-studio-v2/js/bootstrap.js; node --check tools/midi-studio-v2/js/MidiStudioV2App.js; node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-rg -n -P '<script(?![^>]*\bsrc=)' tools/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
-rg -n '<style| on[a-z]+=' tools/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
+node --check toolbox/midi-studio-v2/js/controls/ExportPanelControl.js; node --check toolbox/midi-studio-v2/js/bootstrap.js; node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js; node --check tests/playwright/tools/MidiStudioV2.spec.mjs
+rg -n -P '<script(?![^>]*\bsrc=)' toolbox/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
+rg -n '<style| on[a-z]+=' toolbox/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "keeps Export tab usable|enforces SSoT export ownership|canvas note editing flow supports hover click drag paint erase and playback|canvas octave timeline edits canonical data"
 git diff --check
 ```

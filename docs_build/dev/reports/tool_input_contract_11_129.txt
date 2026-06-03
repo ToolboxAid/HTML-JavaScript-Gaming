@@ -4,11 +4,11 @@ Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
 Mode: STRICT SCOPE
 
 Scope
-- Allowed schema files: tools/schemas/tools/*.json
+- Allowed schema files: toolbox/schemas/tools/*.json
 - Routing files: not modified (not needed)
 
 Execution
-For each tool schema under tools/schemas/tools/*.json:
+For each tool schema under toolbox/schemas/tools/*.json:
 1. Loaded schema.
 2. Tested:
    A: valid direct tool JSON generated from required root contract.

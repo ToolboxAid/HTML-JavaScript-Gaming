@@ -7,16 +7,16 @@ Remove the remaining inline `style=""` attributes and move them into shared CSS 
 Eliminate the last known inline style-attribute violations without redesigning layout.
 
 ## Targeted Files
-- `tools/Tool Host/index.html`
-- `tools/Vector Map Editor/how_to_use.html`
+- `toolbox/Tool Host/index.html`
+- `toolbox/Vector Map Editor/how_to_use.html`
 
 ## Confirmed Remaining Inline Style Targets
-### `tools/Tool Host/index.html`
+### `toolbox/Tool Host/index.html`
 - `<label class="field" style="width:100%;">`
 - `<textarea ... style="width:100%;">`
 - `<div data-tool-host-mount-container ... style="min-height: 420px; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 10px; overflow: hidden; background: rgba(15, 23, 42, 0.45);"></div>`
 
-### `tools/Vector Map Editor/how_to_use.html`
+### `toolbox/Vector Map Editor/how_to_use.html`
 - `<div class="callout" style="margin-top: 16px;">`
 
 ## Required Rule

@@ -9,20 +9,20 @@
 - `npm run test:launch-smoke -- --tools`
   - Result: PASS (`9/9` tools)
   - Includes standalone launches for active tools and `SpriteEditor_old_keep`
-  - Includes host page launch: `tools/Tool Host/index.html`
+  - Includes host page launch: `toolbox/Tool Host/index.html`
 - Host selected-tool load + switch check (CDP):
-  - Loaded `tools/Tool Host/index.html?tool=asset-browser`
-  - Verified mounted iframe target: `tools/Asset Browser/index.html`
+  - Loaded `toolbox/Tool Host/index.html?tool=asset-browser`
+  - Verified mounted iframe target: `toolbox/Asset Browser/index.html`
   - Switched selection to `palette-browser`
-  - Verified remounted iframe target: `tools/Palette Browser/index.html`
+  - Verified remounted iframe target: `toolbox/Palette Browser/index.html`
   - Verified single mounted frame after switch
   - Console/runtime errors: none
 
 ## Files Changed
-- `tools/renderToolsIndex.js`
-- `tools/shared/toolHostManifest.js`
-- `tools/shared/toolHostRuntime.js`
-- `tools/Tool Host/index.html`
-- `tools/Tool Host/main.js`
+- `toolbox/renderToolsIndex.js`
+- `toolbox/shared/toolHostManifest.js`
+- `toolbox/shared/toolHostRuntime.js`
+- `toolbox/Tool Host/index.html`
+- `toolbox/Tool Host/main.js`
 - `docs_build/reports/launch_smoke_report.md`
 - `docs_build/reports/BUILD_PR_TOOL_HOST_FOUNDATION_report.md`

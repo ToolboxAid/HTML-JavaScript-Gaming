@@ -33,7 +33,7 @@ Full samples smoke test
 - Reason: this PR is a targeted Preview Generator V2 accordion edge-case coverage pass and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
 
 Manual validation
-- Open tools/preview-generator-v2/index.html.
+- Open toolbox/preview-generator-v2/index.html.
 - On first click, collapse each accordion and confirm it immediately closes.
 - Confirm no hidden content leaves a visible gap.
 - Reopen Status, Paths or IDs, and Last Generated Image and confirm each restores its expected layout.

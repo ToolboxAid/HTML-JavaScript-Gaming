@@ -1,8 +1,8 @@
-Clean up migration scripts, deprecated test wiring, and Share guidance - PR_26154_021-migration-cleanup-share-tools-scripts
+Rename active tools surface to toolbox and align footer/template wiring - PR_26154_022-toolbox-footer-template-consistency-bundle
 
-- Add a display-only Staff Picks section under Trending Games on the root home page.
-- Remove deprecated-only old game/sample script commands, generators, audits, and skip wrappers.
-- Remove old game template contract test wiring retained only for deprecated coverage.
-- Remove the unreferenced duplicate Theme V2 tools accordion script that still listed Arcade.
-- Confirm active Tools index excludes Arcade and CapturePreviewRuntime has no active dependency.
-- Expand Build · Play · Share documentation for tools, games, and Share surfaces.
+- Rename active `tools/` surface to `toolbox/` and update active routes, docs, scripts, tests, and Workspace/tool launch references.
+- Rename the active tool template source to `toolbox/_tool_template-v2/` and update project instructions.
+- Align shared footer IA to the requested Product, Community, Docs & Help, Account, Legal, and Company groups.
+- Add Theme V2 CSS wiring to marketplace and verify Toolbox, Objects, and Worlds menu behavior there.
+- Produce template consistency audit and bundle reports with remaining mismatches documented.
+- Validate with targeted path/static checks, `git diff --check`, and `npm run test:workspace-v2`.

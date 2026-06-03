@@ -1,7 +1,7 @@
 # PR 10.11 Vector Asset Studio UAT Report
 
 ## Scope
-- Tool: `tools/Vector Asset Studio`
+- Tool: `toolbox/Vector Asset Studio`
 - Goal: implement only PR 10.11 UAT behavior fixes.
 - Constraints honored: no vector data schema/data-layer changes, no feature additions.
 
@@ -37,9 +37,9 @@
 - Workspace stability (no reset/reload behavior introduced): PASS
 
 ## Files Changed
-- `tools/Vector Asset Studio/main.js`
+- `toolbox/Vector Asset Studio/main.js`
 
 ## Validation
-- `node --check tools/Vector Asset Studio/main.js` PASS
+- `node --check toolbox/Vector Asset Studio/main.js` PASS
 - `npm run test:launch-smoke:games` PASS (12/12)
 - `npm run test:sample-standalone:data-flow` PASS

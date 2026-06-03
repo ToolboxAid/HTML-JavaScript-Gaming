@@ -9,7 +9,7 @@ PASS
 - Applied to both normal and fullscreen states.
 
 ## Files Changed
-- `tools/shared/platformShell.css`
+- `toolbox/shared/platformShell.css`
 - `docs_build/dev/reports/PR_11_5_WORKSPACE_HEADER_BUTTON_NORMALIZATION_report.md`
 
 ## Changes Applied

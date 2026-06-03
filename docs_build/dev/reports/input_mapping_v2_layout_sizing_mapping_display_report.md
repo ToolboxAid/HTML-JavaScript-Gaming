@@ -22,10 +22,10 @@ Task: PR_26140_107-polish-input-mapping-v2-layout-sizing-and-mapping-display
 - Updated focused Playwright coverage for column sizing, safe empty states, single-line comma-separated tile display, and live-used highlighting for keyboard, mouse, wheel, and mocked game controller input.
 
 ## Validation
-- PASS: `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-- PASS: `node --check tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
-- PASS: `node --check tools/input-mapping-v2/js/controls/DeviceListControl.js`
-- PASS: `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`
+- PASS: `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- PASS: `node --check toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- PASS: `node --check toolbox/input-mapping-v2/js/controls/DeviceListControl.js`
+- PASS: `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
 - PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs -g "Input Mapping V2"`
 - PASS: `npm run test:workspace-v2` (64 passed)

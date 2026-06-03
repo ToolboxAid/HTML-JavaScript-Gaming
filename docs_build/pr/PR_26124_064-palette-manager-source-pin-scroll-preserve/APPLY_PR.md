@@ -4,14 +4,14 @@
 Updated Palette Manager V2 source grid scroll preservation so individual source pin/unpin restores scroll position after render.
 
 ## Applied Changes
-- Updated `preserveSourceScrollDuring` in `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`.
+- Updated `preserveSourceScrollDuring` in `toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`.
 - Preserved `sourceSwatchList.scrollTop` before the existing pin/unpin action.
 - Restored `sourceSwatchList.scrollTop` inside `requestAnimationFrame` after render.
 - Kept existing pin/unpin behavior unchanged.
 - Did not change Clear checkbox behavior, tag sorting, pin button size, or Validation/Error Viewer behavior.
 
 ## Validation
-- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
 - Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

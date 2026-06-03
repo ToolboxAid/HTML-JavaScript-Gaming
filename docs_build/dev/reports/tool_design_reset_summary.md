@@ -3,7 +3,7 @@
 Task: PR_26124_021-tool-folder-design-reset
 
 ## Scope Completed
-- Created or rebuilt one design doc for every immediate `tools/*` folder.
+- Created or rebuilt one design doc for every immediate `toolbox/*` folder.
 - Rebuilt `docs/design/tools/TOOLS_REENGINEERING_INDEX.md` with the requested classifications.
 - Rebuilt `docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` as a clean tool rebuild roadmap starting with Palette / Palette Browser.
 - Kept the work documentation/design-only: no runtime code, schema files, sample JSON, game files, tool folders, or start_of_day folders were modified.
@@ -52,5 +52,5 @@ Task: PR_26124_021-tool-folder-design-reset
 
 ## Validation Expected
 - Confirm all generated docs are markdown.
-- Confirm every immediate `tools/*` folder has a corresponding `docs/design/tools/<tool-id>/REENGINEERING_DESIGN.md`.
+- Confirm every immediate `toolbox/*` folder has a corresponding `docs/design/tools/<tool-id>/REENGINEERING_DESIGN.md`.
 - No Playwright impact is expected for this documentation-only PR.

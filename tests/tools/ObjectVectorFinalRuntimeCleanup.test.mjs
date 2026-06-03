@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getToolById } from "../../tools/toolRegistry.js";
+import { getToolById } from "../../toolbox/toolRegistry.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const ACTIVE_OBJECT_VECTOR_PATHS = Object.freeze([
@@ -10,11 +10,11 @@ const ACTIVE_OBJECT_VECTOR_PATHS = Object.freeze([
   "games/Asteroids/entities",
   "games/Asteroids/systems",
   "games/Asteroids/flow",
-  "tools/workspace-manager-v2/js",
-  "tools/object-vector-studio-v2/js",
+  "toolbox/workspace-manager-v2/js",
+  "toolbox/object-vector-studio-v2/js",
   "src/engine/rendering/ObjectVectorRuntimeAssetService.js"
 ]);
-const DEPRECATED_VECTOR_MAPS_GUARD = "tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js";
+const DEPRECATED_VECTOR_MAPS_GUARD = "toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js";
 
 function readRepoFile(repoPath) {
   return readFileSync(path.join(REPO_ROOT, repoPath), "utf8");

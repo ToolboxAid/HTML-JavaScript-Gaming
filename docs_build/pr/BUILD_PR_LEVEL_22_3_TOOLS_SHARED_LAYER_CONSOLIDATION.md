@@ -5,22 +5,22 @@ Consolidate the tools shared layer so there is exactly one authoritative shared 
 
 ## Problem
 The repo currently has overlapping shared surfaces under:
-- `tools/shared/`
-- `tools/dev/shared/`
+- `toolbox/shared/`
+- `toolbox/dev/shared/`
 
 This creates ambiguity, duplication risk, and unstable placement for future shared tool logic.
 
 ## Goal
 Normalize to a single authoritative shared layer:
 
-- keep: `tools/shared/`
-- eliminate: `tools/dev/shared/`
+- keep: `toolbox/shared/`
+- eliminate: `toolbox/dev/shared/`
 
 ## Scope
 Included:
 - inventory files in both shared locations
 - classify duplicates / overlaps / unique files
-- move or merge valid shared files from `tools/dev/shared/` into `tools/shared/`
+- move or merge valid shared files from `toolbox/dev/shared/` into `toolbox/shared/`
 - delete obsolete duplicates only after content preservation
 - update imports and references
 - validate affected tools still resolve and load
@@ -42,18 +42,18 @@ Excluded:
 
 ### 1. Shared layer inventory
 Inventory:
-- all files under `tools/shared/`
-- all files under `tools/dev/shared/`
+- all files under `toolbox/shared/`
+- all files under `toolbox/dev/shared/`
 
 For each file classify as one of:
-- keep in `tools/shared`
-- move from `tools/dev/shared` to `tools/shared`
-- merge into existing `tools/shared` file
+- keep in `toolbox/shared`
+- move from `toolbox/dev/shared` to `toolbox/shared`
+- merge into existing `toolbox/shared` file
 - remove as obsolete duplicate
 
 ### 2. Consolidation rules
-- `tools/shared/` becomes the only shared location
-- no file may remain under `tools/dev/shared/` after consolidation unless explicitly justified in validation
+- `toolbox/shared/` becomes the only shared location
+- no file may remain under `toolbox/dev/shared/` after consolidation unless explicitly justified in validation
 - if two files overlap, preserve the authoritative implementation before removing anything
 - record all merge/dedupe decisions
 
@@ -68,14 +68,14 @@ Update:
 Validate at minimum:
 - no broken imports from moved files
 - affected tools still load
-- no unresolved references to `tools/dev/shared/`
+- no unresolved references to `toolbox/dev/shared/`
 - no start_of_day changes
 - unrelated working-tree changes preserved
 
 ## Acceptance
 - one authoritative shared tool layer exists
-- `tools/shared/` is authoritative
-- `tools/dev/shared/` is eliminated or reduced to zero in-scope files
+- `toolbox/shared/` is authoritative
+- `toolbox/dev/shared/` is eliminated or reduced to zero in-scope files
 - imports/references updated
 - validation proves no breakage
 

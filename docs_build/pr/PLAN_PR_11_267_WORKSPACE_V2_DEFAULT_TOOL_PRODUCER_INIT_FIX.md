@@ -4,8 +4,8 @@
 Fix Workspace V2 default tool selection and producer initialization so Save Session works immediately after load.
 
 ## Scope
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
 - docs/report only
 
@@ -21,7 +21,7 @@ Fix Workspace V2 default tool selection and producer initialization so Save Sess
 - No fallback/default demo data
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
 - node tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
 - node tests/runtime/V2SessionLibraryActions.test.mjs

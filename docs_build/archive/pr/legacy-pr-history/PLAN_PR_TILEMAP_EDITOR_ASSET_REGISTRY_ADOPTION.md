@@ -116,9 +116,9 @@ Expected additive groups:
 ```
 
 ## Likely files for Codex to inspect
-- `tools/Tilemap Studio/index.html`
-- `tools/Tilemap Studio/main.js`
-- `tools/Tilemap Studio/modules/*`
+- `toolbox/Tilemap Studio/index.html`
+- `toolbox/Tilemap Studio/main.js`
+- `toolbox/Tilemap Studio/modules/*`
 - `shared/projectAssetRegistry.js`
 - any repo docs already describing project JSON or asset packaging
 

@@ -4,7 +4,7 @@
 Implement one scoped Palette Manager V2 CSS update: center the JSON action buttons in the `menuSample` nav.
 
 ## Scope
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -15,7 +15,7 @@ Implement one scoped Palette Manager V2 CSS update: center the JSON action butto
 5. Maintain existing spacing and button behavior.
 
 ## Boundaries
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not change button IDs, markup, or JavaScript behavior.
 - Do not affect other layout sections.
 - Do not add dependencies.

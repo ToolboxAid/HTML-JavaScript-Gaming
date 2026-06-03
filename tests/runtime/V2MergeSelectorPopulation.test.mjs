@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-merge-selector-population-results.json");
 
 function readText(filePath) {
@@ -200,7 +200,7 @@ export function run() {
   const hasConfirmGuard = workspaceJsText.includes("Merge apply blocked. Confirm preview before apply.");
   const hasAuditWrite = workspaceJsText.includes("recordMergeAuditEntry(preview)");
 
-  if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
+  if (!workspaceJsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
   if (!syntaxValid) failures.push("workspace-v2/index.js failed syntax check.");
   if (!usesHistorySource) failures.push("Merge candidates are not populated from Workspace V2 session history.");
   if (!hasRequiredGateMessage) failures.push("Missing required under-two-sessions message.");

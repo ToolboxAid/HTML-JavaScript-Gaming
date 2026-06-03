@@ -67,7 +67,7 @@ One PR purpose only:
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=SolarSystem&mount=game
+toolbox/Workspace Manager/index.html?gameId=SolarSystem&mount=game
 ```
 
 Workspace Manager must:
@@ -111,8 +111,8 @@ Allowed:
 
 Likely files:
 
-- `tools/Workspace Manager/main.js`
-- `tools/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/index.html`
 - Workspace Manager CSS only if the existing layout requires it
 
 ## Forbidden Changes
@@ -128,7 +128,7 @@ Codex must NOT:
 - route games directly to tools
 - create a second SSoT
 - broad refactor Workspace Manager
-- modify unrelated tools/games/samples
+- modify unrelated toolbox/games/samples
 - modify `start_of_day`
 - rewrite roadmap text outside status markers
 

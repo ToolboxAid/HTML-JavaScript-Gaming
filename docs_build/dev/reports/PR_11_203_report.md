@@ -4,16 +4,16 @@
 - `docs_build/dev/reports/PR_11_203_report.md`
 
 ## Tools Validated
-- `tools/asset-manager-v2/index.html`
-- `tools/palette-manager-v2/index.html`
-- `tools/svg-asset-studio-v2/index.html`
-- `tools/tilemap-studio-v2/index.html`
-- `tools/vector-map-editor-v2/index.html`
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.html`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/svg-asset-studio-v2/index.html`
+- `toolbox/tilemap-studio-v2/index.html`
+- `toolbox/vector-map-editor-v2/index.html`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 
 ## Header Consistency Check
 - All V2 tools include exactly one shared header mount node:
@@ -38,13 +38,13 @@
 
 ## Validation Commands
 - Attempted as specified:
-  - `node --check tools/*-v2/index.js` -> fails in this PowerShell context because Node does not resolve wildcard path input for `--check`.
+  - `node --check toolbox/*-v2/index.js` -> fails in this PowerShell context because Node does not resolve wildcard path input for `--check`.
 - Executed equivalent per-file validation:
-  - `node --check tools/asset-manager-v2/index.js` -> **PASS**
-  - `node --check tools/palette-manager-v2/index.js` -> **PASS**
-  - `node --check tools/svg-asset-studio-v2/index.js` -> **PASS**
-  - `node --check tools/tilemap-studio-v2/index.js` -> **PASS**
-  - `node --check tools/vector-map-editor-v2/index.js` -> **PASS**
+  - `node --check toolbox/asset-manager-v2/index.js` -> **PASS**
+  - `node --check toolbox/palette-manager-v2/index.js` -> **PASS**
+  - `node --check toolbox/svg-asset-studio-v2/index.js` -> **PASS**
+  - `node --check toolbox/tilemap-studio-v2/index.js` -> **PASS**
+  - `node --check toolbox/vector-map-editor-v2/index.js` -> **PASS**
 
 ## Result
 - Header and theme usage across all V2 tools is already normalized and consistent.

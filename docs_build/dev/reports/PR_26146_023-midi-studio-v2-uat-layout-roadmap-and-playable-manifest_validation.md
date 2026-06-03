@@ -28,19 +28,19 @@
 - samples: skipped because no sample JSON was modified and full samples smoke was explicitly out of scope.
 
 ## Validation Commands
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/ActionNavControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/PlaybackControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/StudioTabsControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/ActionNavControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/PlaybackControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/StudioTabsControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: JSON parse for `tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json`
-- PASS: JSON parse for `tools/schemas/tools/midi-studio-v2.schema.json`
-- PASS: HTML external-only guard for `tools/midi-studio-v2/index.html`; no inline `<script>`, `<style>`, or inline event handlers found.
-- PASS: `rg -n "imageDataUrl" tools/midi-studio-v2 tests/fixtures/midi-studio-v2 tools/schemas/tools/midi-studio-v2.schema.json` returned no matches.
-- PASS: `rg -n "Load Example|Use Example|EXAMPLE_TOOL_STATE|Twinkle" tools/midi-studio-v2 tests/fixtures/midi-studio-v2` returned no matches.
+- PASS: JSON parse for `toolbox/schemas/tools/midi-studio-v2.schema.json`
+- PASS: HTML external-only guard for `toolbox/midi-studio-v2/index.html`; no inline `<script>`, `<style>`, or inline event handlers found.
+- PASS: `rg -n "imageDataUrl" toolbox/midi-studio-v2 tests/fixtures/midi-studio-v2 toolbox/schemas/tools/midi-studio-v2.schema.json` returned no matches.
+- PASS: `rg -n "Load Example|Use Example|EXAMPLE_TOOL_STATE|Twinkle" toolbox/midi-studio-v2 tests/fixtures/midi-studio-v2` returned no matches.
 - PASS: `$env:PLAYWRIGHT_BROWSERS_PATH='0'; npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --grep "imports UAT manifest and plays|roadmap exists|launches and renders|expands and restores|updates play and stop control state|rejects invalid payloads before render"`
   - Result: 6 passed.
   - Proved UAT manifest JSON import, multiple listed songs, upbeat song selection, visible Studio tracks and note/clip blocks, Play audible preview state, Stop playback reset, roadmap status markers, removed Load Example controls, tab-aware expanded view, rendered-preview compatibility, and invalid-payload handling.
@@ -53,7 +53,7 @@
 - Guardrail status: advisory PASS, no changed runtime JS coverage warnings.
 
 ## Manual UAT Steps
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. Click `Import JSON Manifest`.
 3. Choose `tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json`.
 4. Select `Camptown Races UAT Reel`.

@@ -5,8 +5,8 @@ Date: 2026-05-06
 ## Validation Performed
 
 - Ran `npm run test:workspace-v2`.
-- Ran a local Playwright/Chromium computed-style comparison between `tools/templates-v2/index.html` and `tools/asset-manager-v2/index.html`.
-- Searched runtime/test/script targets for the removed `tools/schemas/tool.manifest.schema.json` dependency.
+- Ran a local Playwright/Chromium computed-style comparison between `toolbox/templates-v2/index.html` and `toolbox/asset-manager-v2/index.html`.
+- Searched runtime/test/script targets for the removed `toolbox/schemas/tool.manifest.schema.json` dependency.
 - Checked changed files to confirm sample JSON was not modified.
 
 ## Results
@@ -16,8 +16,8 @@ Date: 2026-05-06
 - Asset Manager V2 workspace mode: passed through the workspace-v2 Playwright test. Workspace V2 launched Asset Manager V2 with `launch=workspace`, hid tool actions, showed workspace actions, inserted an approved audio asset into `tools.asset-browser.assets`, and did not create `asset-manager-v2` or `workspace-v2` tool payloads in the workspace manifest.
 - Theme parity: passed. Asset Manager V2 body, app shell, panels, accordions, inputs, menu, status clear button, and local shell frame matched Templates V2 computed theme values.
 - Schema relocation: passed. The test-only manifest schema now lives at `tests/schemas/tool.manifest.schema.json`, and the boundary test reference points to that path.
-- Runtime schema dependency check: passed. No `tests`, `tools`, or `scripts` references to `tools/schemas/tool.manifest.schema.json` remain.
-- Asset Browser logic reuse check: passed. Asset Manager V2 continues to use the asset-browser schema/workspace payload key only; no legacy `tools/Asset Browser` implementation is imported or reused.
+- Runtime schema dependency check: passed. No `tests`, `tools`, or `scripts` references to `toolbox/schemas/tool.manifest.schema.json` remain.
+- Asset Browser logic reuse check: passed. Asset Manager V2 continues to use the asset-browser schema/workspace payload key only; no legacy `toolbox/Asset Browser` implementation is imported or reused.
 - Sample JSON check: passed. No sample JSON files were modified.
 
 ## Reports

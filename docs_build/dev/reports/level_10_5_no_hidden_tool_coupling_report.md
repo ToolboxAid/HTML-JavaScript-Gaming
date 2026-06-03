@@ -4,9 +4,9 @@
 - `BUILD_PR_LEVEL_10_5_NO_HIDDEN_TOOL_COUPLING_VALIDATION`
 
 ## Changed Files
-- `tools/Asset Browser/main.js`
-- `tools/Asset Pipeline Tool/main.js`
-- `tools/Skin Editor/main.js`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Asset Pipeline Tool/main.js`
+- `toolbox/Skin Editor/main.js`
 - `tests/tools/NoHiddenToolCouplingValidation.test.mjs`
 - `docs_build/dev/reports/level_10_5_no_hidden_tool_coupling_report.md`
 - `docs_build/dev/reports/level_10_5_hardcoded_asset_path_audit.md`

@@ -1,7 +1,7 @@
 # PR 10.9 Sprite Editor UAT Report
 
 ## Scope
-- Tool: `tools/Sprite Editor`
+- Tool: `toolbox/Sprite Editor`
 - Goal: apply only PR 10.9 UAT behavior updates.
 - Constraints honored: no sprite data/schema changes, no unrelated refactor.
 
@@ -36,10 +36,10 @@
 - Workspace stability preserved (no reload behavior added): PASS
 
 ## Files Changed
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
-- `tools/Sprite Editor/spriteEditor.css`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Sprite Editor/spriteEditor.css`
 
 ## Validation
-- `node --check tools/Sprite Editor/modules/spriteEditorApp.js` PASS
+- `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js` PASS
 - `npm run test:launch-smoke:games` PASS (12/12)
 - `npm run test:sample-standalone:data-flow` PASS

@@ -9,7 +9,7 @@ Scope: Final docs-only confirmation gate for Phase 19 Track E (`confirm no tool-
 
 ## Historical Comparison
 - 19_23: **FAIL** for tool-specific logic in engine due to `src/engine/editor`, `src/engine/tooling`, `src/engine/pipeline`.
-- 19_24: Remediation moved those surfaces to `tools/shared/*`, removed legacy engine directories, and passed focused validation.
+- 19_24: Remediation moved those surfaces to `toolbox/shared/*`, removed legacy engine directories, and passed focused validation.
 
 ## Final Re-Validation (This PR)
 Validation target: `src/engine` only.
@@ -21,7 +21,7 @@ Checks executed:
 - `src/engine/pipeline`
 
 2. Engine import leakage to tools?
-- any `import/require` references from `src/engine` into `/tools/`.
+- any `import/require` references from `src/engine` into `/toolbox/`.
 
 3. Engine import leakage to removed legacy layers?
 - any references to `/src/engine/editor/`, `/src/engine/tooling/`, `/src/engine/pipeline/` or local `./editor|./tooling|./pipeline` patterns.

@@ -1,7 +1,7 @@
 # PR_26126_103 Manual Validation Notes
 
 ## Commands
-- `node --check tools/asset-manager-v2/js/controls/AssetCatalogControl.js`
+- `node --check toolbox/asset-manager-v2/js/controls/AssetCatalogControl.js`
 - `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
 - `npm run test:workspace-v2`
 - `git diff --check`

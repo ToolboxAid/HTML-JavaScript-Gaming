@@ -4,7 +4,7 @@
 Harden Asset Manager V2 add/remove behavior with explicit rejection paths while preserving existing valid persistence behavior.
 
 ## Files Changed
-- `tools/asset-manager-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
 - `tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs`
 - `docs_build/pr/PR_11_316_ASSET_MANAGER_ADD_REMOVE_HARDENING/PLAN_PR.md`
 - `docs_build/pr/PR_11_316_ASSET_MANAGER_ADD_REMOVE_HARDENING/BUILD_PR.md`
@@ -20,7 +20,7 @@ Harden Asset Manager V2 add/remove behavior with explicit rejection paths while 
 - No schema or manifest contract changes.
 
 ## Validation Commands
-- `node --check tools/asset-manager-v2/index.js` -> **PASS**
+- `node --check toolbox/asset-manager-v2/index.js` -> **PASS**
 - `node --check tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs` -> **PASS**
 - `node tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs` -> **PASS**
 

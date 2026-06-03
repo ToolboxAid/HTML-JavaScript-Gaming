@@ -2,7 +2,7 @@
 
 ## Changes
 - Copied the Preview Generator V2 Repo Destination control UI into the top-left Workspace Manager V2 column.
-- Added `tools/workspace-manager-v2/js/controls/RepoDestinationControl.js` with the same display/visibility/pick-handler control pattern used by Preview Generator V2.
+- Added `toolbox/workspace-manager-v2/js/controls/RepoDestinationControl.js` with the same display/visibility/pick-handler control pattern used by Preview Generator V2.
 - Wired the Workspace Manager V2 control locally through `bootstrap.js` and `WorkspaceManagerV2App.js`.
 - The Workspace Manager V2 picker updates only the visible Repo selected value and status log.
 

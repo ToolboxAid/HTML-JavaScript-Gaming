@@ -15,10 +15,10 @@ Added Palette heading actions, User Palette selection Clear, and Sample Palette 
 - Preserved Sample Palette grid scroll position for Pin All.
 
 ## Validation
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
 - Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

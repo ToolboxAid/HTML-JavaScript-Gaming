@@ -16,7 +16,7 @@ This confirms the problem is not data loading. It is the tile/card summary displ
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/workspace-manager/main.js
+- toolbox/workspace-manager/main.js
 - docs_build/dev/reports/workspace_tile_summary_display_model_11_157.txt
 
 ### ALLOWED CHANGES
@@ -82,7 +82,7 @@ Codex must identify:
 Run targeted validation only.
 
 Required:
-- `node --check tools/workspace-manager/main.js`
+- `node --check toolbox/workspace-manager/main.js`
 - static verification that SVG tile summary maps loaded `vectorAssetDocument.sourceName` to the visible `Asset:` field
 - no sample/schema/runtime files changed
 - `git diff --name-only` contains only ALLOWED FILES

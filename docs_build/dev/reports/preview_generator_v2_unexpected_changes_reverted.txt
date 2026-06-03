@@ -4,7 +4,7 @@ Reviewed source:
 - docs_build/dev/reports/codex_changed_files.txt
 
 Allowed scope for PR_26126_038:
-- tools/preview-generator-v2/*
+- toolbox/preview-generator-v2/*
 - common/*
 - docs_build/dev/reports/*
 
@@ -26,8 +26,8 @@ Revert actions:
 - No start_of_day folders were modified.
 
 Preview Generator V2 validation:
-- JS syntax check passed for tools/preview-generator-v2.
-- tools/shared dependency search passed with no matches.
+- JS syntax check passed for toolbox/preview-generator-v2.
+- toolbox/shared dependency search passed with no matches.
 - Targeted Playwright command passed:
   npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list
 - Result: 1 passed.

@@ -15,12 +15,12 @@ Implemented Palette Manager V2 Sample Palette Swatch `Pin All` for currently vis
 - Individual source pin/unpin behavior remains intact.
 
 ## Validation
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
 - Targeted served-browser Palette Manager V2 source sort and `Pin All` validation: PASS.
 - Targeted served-browser `Pin All` source dropdown placement and size validation: PASS.
-- `git diff --check`: PASS with Git LF-to-CRLF warning for `tools/palette-manager-v2/index.html`.
+- `git diff --check`: PASS with Git LF-to-CRLF warning for `toolbox/palette-manager-v2/index.html`.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 - Full samples smoke test: skipped by instruction.
 

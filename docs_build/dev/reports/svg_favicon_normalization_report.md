@@ -29,7 +29,7 @@ Updated surfaces:
 - Root page/template: `index.html`, `_page_template_v2.html`
 - Root groups: `account/`, `admin/`, `community/`, `company/`, `docs/`, `learn/`, `legal/`, `marketplace/`
 - Games pages: `games/index.html`, `games/action/index.html`, `games/adventure/index.html`, `games/arcade/index.html`, `games/puzzle/index.html`, `games/racing/index.html`, `games/retro/index.html`, `games/strategy/index.html`
-- Tool pages: `tools/index.html`, active tool `index.html` files, `tools/_templates-v2/index.html`
+- Tool pages: `toolbox/index.html`, active tool `index.html` files, `toolbox/_tool_template-v2/index.html`
 - Deprecated old tool reference touched only for favicon normalization: `old-tools/old_localization-studio/index.html`
 
 Theme V2 references:

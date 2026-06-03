@@ -22,7 +22,7 @@ export function createValidManifestRuntimePayload() {
     },
     launch: {
       directPath: "/old_games/ConfigPilot/index.html",
-      workspaceManagerPath: "/tools/workspace-manager-v2/index.html?gameId=ConfigPilot",
+      workspaceManagerPath: "/toolbox/workspace-manager-v2/index.html?gameId=ConfigPilot",
       workspaceManagerOptional: true,
     },
     screen: {

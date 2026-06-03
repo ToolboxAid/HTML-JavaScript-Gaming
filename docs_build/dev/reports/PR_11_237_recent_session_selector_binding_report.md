@@ -1,7 +1,7 @@
 # PR_11_237 — Bind Diff And Merge Selectors To Visible Recent Session Inventory
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2RecentSessionSelectorBinding.test.mjs`
 
 ## Implementation Summary
@@ -31,12 +31,12 @@
   - audit trail retained on successful apply
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2RecentSessionSelectorBinding.test.mjs`
 - `node tests/runtime/V2RecentSessionSelectorBinding.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2RecentSessionSelectorBinding.test.mjs` → PASS
 - `node tests/runtime/V2RecentSessionSelectorBinding.test.mjs` → PASS
 
@@ -64,4 +64,4 @@ Runtime artifact:
 - No game changes
 - No Workspace Manager v1 work
 - No legacy tool fixes
-- No `platformShell` / `tools/shared/*` work
+- No `platformShell` / `toolbox/shared/*` work

@@ -32,7 +32,7 @@ Codex may quote/summarize these results in the reports, but should not rerun bro
 - Do **not** create or move any `legacy class-retention marker path` directory.
 - Do **not** modify `templates/`.
 - Do **not** modify `docs_build/archive/`.
-- Do **not** modify `tools/SpriteEditor_old_keep/` or its archived successor.
+- Do **not** modify `toolbox/SpriteEditor_old_keep/` or its archived successor.
 - Do **not** mix in runtime feature work or unrelated cleanup targets.
 - Do **not** rewrite roadmap wording, reorder roadmap items, collapse roadmap sections, or replace roadmap content.
 - If roadmap updates are applied, they must be bracket-only and only where exact text already exists.

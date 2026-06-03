@@ -8,16 +8,16 @@ Scope:
 - Preserved canonical song model, generated ID behavior, canvas-backed Octave Timeline, Song Sheet sequence builder, instrument ownership, export ownership, and launch split.
 
 Changed files:
-- `tools/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
-- `tools/midi-studio-v2/js/controls/StatusLogControl.js`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
+- `toolbox/midi-studio-v2/js/controls/StatusLogControl.js`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 
 Validation:
 - PASS changed-file syntax checks:
-  - `node --check tools/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
-  - `node --check tools/midi-studio-v2/js/controls/StatusLogControl.js`
-  - `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
+  - `node --check toolbox/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/StatusLogControl.js`
+  - `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
   - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS targeted MIDI Studio Playwright validation:
   - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR133-140" --reporter=line`

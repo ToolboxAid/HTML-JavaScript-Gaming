@@ -91,11 +91,11 @@ Additional checks passed:
 
 ```text
 node --check src/engine/audio/TextToSpeechDefaults.js
-node --check tools/text2speach-V2/js/controls/SpeechOptionsControl.js
-node --check tools/text2speach-V2/js/TextToSpeechToolApp.js
+node --check toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js
+node --check toolbox/text2speach-V2/js/TextToSpeechToolApp.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-node -e "JSON.parse(require('node:fs').readFileSync('tools/schemas/tools/text2speach-V2.schema.json','utf8'));"
-rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" tools/text2speach-V2/index.html
+node -e "JSON.parse(require('node:fs').readFileSync('toolbox/schemas/tools/text2speach-V2.schema.json','utf8'));"
+rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" toolbox/text2speach-V2/index.html
 git diff --check HEAD -- .
 ```
 
@@ -118,7 +118,7 @@ tmp/PR_26130_011-text2speach-v2-control-dependency-order-header_delta.zip
 
 ## Manual Validation Steps
 
-1. Open `tools/text2speach-V2/index.html`.
+1. Open `toolbox/text2speach-V2/index.html`.
 2. Confirm the visible control order matches the numbered dependency order in this report.
 3. Confirm Gender options are `Any`, `Male Preferred`, and `Female Preferred`.
 4. Select `Male Preferred` and confirm unknown voices remain available while explicitly female voices are omitted.
@@ -136,10 +136,10 @@ Expected outcome: control order reads top-down by dependency, helper filtering i
 
 - `src/engine/audio/TextToSpeechDefaults.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/text2speach-V2/index.html`
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js`
-- `tools/text2speach-V2/js/controls/SpeechOptionsControl.js`
-- `tools/text2speach-V2/styles/text2speach-V2.css`
+- `toolbox/text2speach-V2/index.html`
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js`
+- `toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js`
+- `toolbox/text2speach-V2/styles/text2speach-V2.css`
 - `docs_build/dev/reports/PR_26130_011-text2speach-v2-control-dependency-order.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`

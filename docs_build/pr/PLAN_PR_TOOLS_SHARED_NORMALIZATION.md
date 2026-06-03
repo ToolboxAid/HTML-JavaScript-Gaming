@@ -1,7 +1,7 @@
 # PLAN_PR_TOOLS_SHARED_NORMALIZATION
 
 ## PR Purpose
-Normalize `tools/shared` boundaries and tool structure contracts using a docs-first plan, while explicitly prioritizing reuse of existing engine theme/UI assets before introducing any new tool-local `styles.css`.
+Normalize `toolbox/shared` boundaries and tool structure contracts using a docs-first plan, while explicitly prioritizing reuse of existing engine theme/UI assets before introducing any new tool-local `styles.css`.
 
 ## User Priority Applied
 - Reuse engine theme over new CSS wherever practical.
@@ -11,7 +11,7 @@ Normalize `tools/shared` boundaries and tool structure contracts using a docs-fi
 
 ## Why This PR Now
 The repo now has:
-- active `tools/shared`
+- active `toolbox/shared`
 - multiple standalone tools with separate CSS and boot patterns
 - engine theme/UI assets already present under `src/engine/theme` and `src/engine/ui`
 
@@ -19,10 +19,10 @@ Without a boundary-normalization pass, tool duplication and style drift will con
 
 ## Current Repo Signals Anchoring This Plan
 Existing shared/tooling surface:
-- `tools/shared/platformShell.js`
-- `tools/shared/platformShell.css`
-- vector helpers under `tools/shared/vector/*`
-- project/runtime helper modules already under `tools/shared/*`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/platformShell.css`
+- vector helpers under `toolbox/shared/vector/*`
+- project/runtime helper modules already under `toolbox/shared/*`
 
 Existing engine theme/UI surface to prioritize:
 - `src/engine/theme/Theme.js`
@@ -32,16 +32,16 @@ Existing engine theme/UI surface to prioritize:
 - `src/engine/ui/spriteEditor.css`
 
 Existing tool-local CSS currently in play:
-- `tools/Asset Browser/assetBrowser.css`
-- `tools/Palette Browser/paletteBrowser.css`
-- `tools/Parallax Scene Studio/parallaxEditor.css`
-- `tools/Sprite Editor/spriteEditor.css`
-- `tools/Tilemap Studio/tileMapEditor.css`
-- `tools/Vector Asset Studio/svgBackgroundEditor.css`
-- `tools/Vector Map Editor/vectorMapEditor.css`
+- `toolbox/Asset Browser/assetBrowser.css`
+- `toolbox/Palette Browser/paletteBrowser.css`
+- `toolbox/Parallax Scene Studio/parallaxEditor.css`
+- `toolbox/Sprite Editor/spriteEditor.css`
+- `toolbox/Tilemap Studio/tileMapEditor.css`
+- `toolbox/Vector Asset Studio/svgBackgroundEditor.css`
+- `toolbox/Vector Map Editor/vectorMapEditor.css`
 
 ## PR Goals
-1. Define what belongs in `tools/shared`.
+1. Define what belongs in `toolbox/shared`.
 2. Define what must remain tool-local.
 3. Define a standard tool structure and boot contract.
 4. Define theme/style reuse order, with engine theme first.
@@ -61,7 +61,7 @@ Before any new tool-local stylesheet is introduced or expanded, the following re
 
 1. Reuse `src/engine/theme/*` tokens and theme contracts.
 2. Reuse `src/engine/ui/*` shared layout and UI primitives.
-3. Reuse `tools/shared/platformShell.css` only for tool-shell concerns not already handled by engine theme/UI.
+3. Reuse `toolbox/shared/platformShell.css` only for tool-shell concerns not already handled by engine theme/UI.
 4. Keep residual tool-local CSS only for truly tool-specific surfaces.
 
 ### Meaning In Practice
@@ -71,7 +71,7 @@ Before any new tool-local stylesheet is introduced or expanded, the following re
 
 ## Proposed Tool Boundary Contract
 
-### Belongs In `tools/shared`
+### Belongs In `toolbox/shared`
 - platform shell / shared chrome
 - file IO adapters
 - common preview helpers
@@ -92,7 +92,7 @@ Before any new tool-local stylesheet is introduced or expanded, the following re
 - tool-exclusive commands
 - tool-exclusive sample/demo content unless deliberately promoted
 
-### Not For `tools/shared`
+### Not For `toolbox/shared`
 - speculative future abstractions without multi-tool evidence
 - game/runtime behavior that belongs under engine or shared runtime
 - raw archive/legacy scripts that have no active reuse path
@@ -101,7 +101,7 @@ Before any new tool-local stylesheet is introduced or expanded, the following re
 Each active tool should trend toward:
 
 ```text
-tools/<Tool Name>/
+toolbox/<Tool Name>/
   index.html
   main.js
   <tool>.css                # only tool-specific residual CSS
@@ -111,7 +111,7 @@ tools/<Tool Name>/
 
 Shared dependencies should trend toward:
 ```text
-tools/shared/
+toolbox/shared/
   platformShell.js
   platformShell.css
   vector/
@@ -188,7 +188,7 @@ Every later BUILD lane must validate:
 - Preserve `SpriteEditor_old_keep`.
 
 ## Acceptance For This PLAN PR
-- singular purpose remains tools/shared normalization
+- singular purpose remains toolbox/shared normalization
 - theme reuse priority is explicit
 - candidate extraction sequence is explicit
 - active tool inventory is reflected in reports

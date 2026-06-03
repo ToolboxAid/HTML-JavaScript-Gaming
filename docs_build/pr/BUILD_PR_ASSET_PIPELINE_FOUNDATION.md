@@ -37,27 +37,27 @@ The previous lane unified project-level tool integration. The next highest-lever
 - deleting legacy assets or folders
 
 ## Active Tool Targets
-- tools/Asset Browser
-- tools/Palette Browser
-- tools/Parallax Scene Studio
-- tools/Sprite Editor
-- tools/Tilemap Studio
-- tools/Vector Asset Studio
-- tools/Vector Map Editor
+- toolbox/Asset Browser
+- toolbox/Palette Browser
+- toolbox/Parallax Scene Studio
+- toolbox/Sprite Editor
+- toolbox/Tilemap Studio
+- toolbox/Vector Asset Studio
+- toolbox/Vector Map Editor
 
 ## Shared Reuse Priority
 Reuse current shared layers first:
-- tools/shared/projectSystem.js
-- tools/shared/projectSystemAdapters.js
-- tools/shared/projectSystemValueUtils.js
-- tools/shared/runtimeAssetLoader.js
-- tools/shared/runtimeAssetValidationUtils.js
-- any current tools/shared asset/registry helpers already proven in prior lanes
+- toolbox/shared/projectSystem.js
+- toolbox/shared/projectSystemAdapters.js
+- toolbox/shared/projectSystemValueUtils.js
+- toolbox/shared/runtimeAssetLoader.js
+- toolbox/shared/runtimeAssetValidationUtils.js
+- any current toolbox/shared asset/registry helpers already proven in prior lanes
 
 ## Build Strategy
 
 ### Step 1 — Inventory Existing Asset Ingest Paths
-Read only the active tool import/load paths and current tools/shared asset/project helpers.
+Read only the active tool import/load paths and current toolbox/shared asset/project helpers.
 
 ### Step 2 — Define Minimal Shared Pipeline Stages
 Converge only on the first safe shared stages:

@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-inventory-diff-merge-results.json");
 
 function readText(filePath) {
@@ -180,7 +180,7 @@ export function run() {
   const hasDiffSameBlock = workspaceJsText.includes("Diff blocked. Session A and Session B must be different sessions.");
   const hasMergeSameBlock = workspaceJsText.includes("Merge preview blocked. Session A and Session B must be different sessions.");
 
-  if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
+  if (!workspaceJsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
   if (!syntaxValid) failures.push("workspace-v2/index.js failed syntax check.");
   if (!hasSharedResolver) failures.push("Missing centralized session inventory resolver.");
   if (!diffUsesResolver) failures.push("Diff does not use centralized inventory resolver.");

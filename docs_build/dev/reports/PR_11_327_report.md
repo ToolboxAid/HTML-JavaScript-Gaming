@@ -6,7 +6,7 @@
 - No cross-tool behavior changes
 
 ## Files Changed
-- `tools/palette-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
 - `docs_build/pr/PR_11_327_PALETTE_MANAGER_LABEL_CONTRACT_ALIGNMENT/PLAN_PR.md`
 - `docs_build/pr/PR_11_327_PALETTE_MANAGER_LABEL_CONTRACT_ALIGNMENT/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_327_report.md`
@@ -18,7 +18,7 @@
   - `asset-manager-v2` now displays as `Asset Manager V2` in Palette Manager V2 navigation labels.
 
 ## Validation
-- `node --check tools/palette-manager-v2/index.js` -> PASS
+- `node --check toolbox/palette-manager-v2/index.js` -> PASS
 - `npm run test:workspace-v2` -> PASS
   - `1 passed`
   - `Workspace V2 Playwright Gate Summary: passed=1 failed=0`

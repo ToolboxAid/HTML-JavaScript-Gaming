@@ -12,7 +12,7 @@ Completed the Palette Manager V2 CSS dead override cleanup without changing visu
 
 ## Validation
 - CSS structural cleanup validation: PASS.
-- `git diff --check -- tools/palette-manager-v2/paletteManagerV2.css`: PASS with Git LF-to-CRLF warning for the CSS file.
+- `git diff --check -- toolbox/palette-manager-v2/paletteManagerV2.css`: PASS with Git LF-to-CRLF warning for the CSS file.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 - Full samples smoke test: skipped by instruction.
 

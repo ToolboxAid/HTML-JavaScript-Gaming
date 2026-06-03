@@ -26,8 +26,8 @@ Commands run:
 - `node --check src/engine/rendering/index.js`
 - `node --check games/Asteroids/index.js`
 - `node --check games/Asteroids/game/AsteroidsGameScene.js`
-- `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- `node --check tools/object-vector-studio-v2/js/bootstrap.js`
+- `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- `node --check toolbox/object-vector-studio-v2/js/bootstrap.js`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "Object Vector Studio V2 animation|loads Object Vector Studio V2 runtime"`
 - `npm run test:workspace-v2`
 
@@ -60,7 +60,7 @@ Expected fail behavior:
 
 ## Manual Validation
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Load a schema-valid Object Vector Studio V2 payload and runtime palette.
 3. Select an object, state, and frame, then click `Runtime Preview`.
 4. Open Asteroids and start gameplay.

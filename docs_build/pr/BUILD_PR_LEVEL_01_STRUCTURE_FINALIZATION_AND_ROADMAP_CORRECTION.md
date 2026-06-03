@@ -9,7 +9,7 @@ Finalize the remaining planning/definition work for roadmap section 1 and re-anc
 - no implementation code or broad file churn
 
 ## Evidence Snapshot (Current Repo State)
-- Root structure contains `src/`, `games/`, `samples/`, `tools/`, `scripts/`, `docs/`, `tests/`.
+- Root structure contains `src/`, `games/`, `samples/`, `toolbox/`, `scripts/`, `docs/`, `tests/`.
 - Legacy root folders targeted by section-1 move-map are already absent at root: `engine/`, `shared/`, `templates/`.
 - Structure-target evidence:
   - `samples/phase-01` exists.
@@ -20,7 +20,7 @@ Finalize the remaining planning/definition work for roadmap section 1 and re-anc
 ## Folder Inventory To Target Homes (Definition Closeout)
 - Root runtime/shared home: `src/`
 - Game ownership home: `games/`
-- Tool ownership home: `tools/`
+- Tool ownership home: `toolbox/`
 - Sample ownership home: `samples/`
 - Docs/archive retention home: `docs_build/archive/`
 

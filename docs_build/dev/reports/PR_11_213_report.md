@@ -4,17 +4,17 @@
 - `asset-manager-v2`
   - UI action: `Open in SVG Asset Studio V2`
   - Control: `#assetBrowserV2OpenSvgAssetStudioV2Button`
-  - Target: `tools/svg-asset-studio-v2/index.html?hostContextId=<id>`
+  - Target: `toolbox/svg-asset-studio-v2/index.html?hostContextId=<id>`
 
 - `palette-manager-v2`
   - UI action: `Open in Vector Map Editor V2`
   - Control: `#paletteManagerOpenVectorMapEditorV2Button`
-  - Target: `tools/vector-map-editor-v2/index.html?hostContextId=<id>`
+  - Target: `toolbox/vector-map-editor-v2/index.html?hostContextId=<id>`
 
 - `tilemap-studio-v2`
   - UI action: `Open in Asset Browser V2`
   - Control: `#tilemapV2OpenAssetBrowserV2Button`
-  - Target: `tools/asset-manager-v2/index.html?hostContextId=<id>`
+  - Target: `toolbox/asset-manager-v2/index.html?hostContextId=<id>`
 
 All actions preserve `hostContextId`, do not mutate payload, and do not write fallback data.
 
@@ -40,12 +40,12 @@ Result output:
 - Tilemap Studio V2 -> Asset Browser V2: **PASS**
 
 ## Files Changed
-- `tools/asset-manager-v2/index.html`
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/index.js`
-- `tools/tilemap-studio-v2/index.html`
-- `tools/tilemap-studio-v2/index.js`
+- `toolbox/asset-manager-v2/index.html`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.html`
+- `toolbox/tilemap-studio-v2/index.js`
 - `tests/runtime/V2ToolActionFlow.test.mjs`
 - `docs_build/dev/reports/PR_11_213_report.md`
 
@@ -54,14 +54,14 @@ Result output:
    - Result: **PASS**
 2. `node tests/runtime/V2ToolActionFlow.test.mjs`
    - Result: **PASS**
-3. `node --check tools/*-v2/index.js`
+3. `node --check toolbox/*-v2/index.js`
    - Result: **FAIL** in PowerShell wildcard expansion (`*` passed literally to Node)
 4. Equivalent per-tool syntax checks:
-   - `node --check tools/asset-manager-v2/index.js` — **PASS**
-   - `node --check tools/palette-manager-v2/index.js` — **PASS**
-   - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
-   - `node --check tools/tilemap-studio-v2/index.js` — **PASS**
-   - `node --check tools/vector-map-editor-v2/index.js` — **PASS**
+   - `node --check toolbox/asset-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/palette-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/svg-asset-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/tilemap-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/vector-map-editor-v2/index.js` — **PASS**
 
 ## Fallback Confirmation
 - No fallback/default/demo data introduced.

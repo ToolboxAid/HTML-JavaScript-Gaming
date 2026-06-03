@@ -6,18 +6,18 @@ import {
   getToolRegistry,
   getToolById,
   getVisibleActiveToolRegistry
-} from "../tools/toolRegistry.js";
+} from "../toolbox/toolRegistry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolboxRoot = path.join(repoRoot, "toolbox");
 const REQUIRED_SCAN_TARGETS = [
-  "tools/index.html",
-  "tools/renderToolsIndex.js",
-  "tools/shared/platformShell.js",
-  "tools/shared/platformShell.css",
-  "tools/shared/assetUsageIntegration.js"
+  "toolbox/index.html",
+  "toolbox/renderToolsIndex.js",
+  "toolbox/shared/platformShell.js",
+  "toolbox/shared/platformShell.css",
+  "toolbox/shared/assetUsageIntegration.js"
 ];
 const OPTIONAL_SCAN_TARGETS = [
   "docs_build/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md",
@@ -27,8 +27,8 @@ const OPTIONAL_SCAN_TARGETS = [
 ];
 
 const NAVIGATION_SURFACE_TARGETS = [
-  "tools/index.html",
-  "tools/renderToolsIndex.js"
+  "toolbox/index.html",
+  "toolbox/renderToolsIndex.js"
 ];
 
 async function pathExists(targetPath) {
@@ -55,13 +55,13 @@ async function main() {
   }
 
   for (const tool of visibleActiveTools) {
-    const folderPath = path.join(repoRoot, "tools", tool.folderName);
-    const entryPointPath = path.join(repoRoot, "tools", tool.entryPoint);
+    const folderPath = path.join(toolboxRoot, tool.folderName);
+    const entryPointPath = path.join(toolboxRoot, tool.entryPoint);
     if (!(await pathExists(folderPath))) {
-      issues.push(`Missing active tool folder: tools/${tool.folderName}`);
+      issues.push(`Missing active tool folder: toolbox/${tool.folderName}`);
     }
     if (!(await pathExists(entryPointPath))) {
-      issues.push(`Missing active tool entry point: tools/${tool.entryPoint}`);
+      issues.push(`Missing active tool entry point: toolbox/${tool.entryPoint}`);
     }
     const isAllowedNamedV2 = tool.id === "palette-manager-v2";
     if (!isAllowedNamedV2 && (TOOL_NAME_SUFFIX_PATTERN.test(tool.displayName) || TOOL_NAME_SUFFIX_PATTERN.test(tool.folderName))) {
@@ -69,7 +69,7 @@ async function main() {
     }
     const sampleEntryPoints = Array.isArray(tool.sampleEntryPoints) ? tool.sampleEntryPoints : [];
     for (const sampleEntry of sampleEntryPoints) {
-      const samplePath = path.resolve(toolsRoot, sampleEntry.path);
+      const samplePath = path.resolve(toolboxRoot, sampleEntry.path);
       if (!(await pathExists(samplePath))) {
         issues.push(`Missing showcase sample/help entry point for ${tool.displayName}: ${sampleEntry.path}`);
       }
@@ -97,7 +97,7 @@ async function main() {
       continue;
     }
     const text = await readText(target);
-    if (/Sprite Editor V3|tools\/Sprite Editor V3|tools\\Sprite Editor V3/.test(text)) {
+    if (/Sprite Editor V3|toolbox\/Sprite Editor V3|toolbox\\Sprite Editor V3/.test(text)) {
       issues.push(`Stale Sprite Editor V3 reference detected in ${target}`);
     }
   }
@@ -106,12 +106,12 @@ async function main() {
       continue;
     }
     const text = await readText(target);
-    if (/Sprite Editor V3|tools\/Sprite Editor V3|tools\\Sprite Editor V3/.test(text)) {
+    if (/Sprite Editor V3|toolbox\/Sprite Editor V3|toolbox\\Sprite Editor V3/.test(text)) {
       issues.push(`Stale Sprite Editor V3 reference detected in optional target ${target}`);
     }
   }
 
-  const assetUsageIntegration = await readText("tools/shared/assetUsageIntegration.js");
+  const assetUsageIntegration = await readText("toolbox/shared/assetUsageIntegration.js");
   for (const label of ["Browse Assets", "Import Assets", "Browse Palettes", "Manage Palettes"]) {
     if (!assetUsageIntegration.includes(label)) {
       issues.push(`Shared asset usage action label missing from assetUsageIntegration.js: ${label}`);
@@ -132,7 +132,7 @@ async function main() {
   }
 
   for (const tool of visibleActiveTools) {
-    const target = `tools/${tool.entryPoint}`;
+    const target = `toolbox/${tool.entryPoint}`;
     const text = await readText(target);
     if (!text.includes("../../src/engine/ui/hubCommon.css")) {
       issues.push(`Engine theme stylesheet missing from active tool page: ${target}`);
@@ -145,24 +145,24 @@ async function main() {
     }
   }
 
-  const toolsLandingPage = await readText("tools/index.html");
-  if (/Asset Browser \/ Import Helper/.test(toolsLandingPage)) {
-    issues.push('Stale "Asset Browser / Import Helper" placeholder remains on tools landing page.');
+  const toolboxLandingPage = await readText("toolbox/index.html");
+  if (/Asset Browser \/ Import Helper/.test(toolboxLandingPage)) {
+    issues.push('Stale "Asset Browser / Import Helper" placeholder remains on toolbox landing page.');
   }
-  if (/Palette Browser \/ Manager/.test(toolsLandingPage)) {
+  if (/Palette Browser \/ Manager/.test(toolboxLandingPage)) {
     issues.push('Palette Browser / Manager should not remain as a static placeholder card.');
   }
-  if (/Asset Browser \/ Import Hub/.test(toolsLandingPage)) {
+  if (/Asset Browser \/ Import Hub/.test(toolboxLandingPage)) {
     issues.push('Asset Browser / Import Hub should be registry-rendered, not left behind as a static placeholder card.');
   }
-  if (!toolsLandingPage.includes("../src/engine/ui/hubCommon.css")) {
-    issues.push("Engine theme stylesheet missing from tools landing page.");
+  if (!toolboxLandingPage.includes("../src/engine/ui/hubCommon.css")) {
+    issues.push("Engine theme stylesheet missing from toolbox landing page.");
   }
-  if (!toolsLandingPage.includes("./shared/platformShell.css")) {
-    issues.push("Shared platform shell stylesheet missing from tools landing page.");
+  if (!toolboxLandingPage.includes("./shared/platformShell.css")) {
+    issues.push("Shared platform shell stylesheet missing from toolbox landing page.");
   }
-  if (!toolsLandingPage.includes("./shared/platformShell.js")) {
-    issues.push("Shared platform shell module missing from tools landing page.");
+  if (!toolboxLandingPage.includes("./shared/platformShell.js")) {
+    issues.push("Shared platform shell module missing from toolbox landing page.");
   }
 
   if (issues.length > 0) {
@@ -174,7 +174,7 @@ async function main() {
 
   console.log("ACTIVE_TOOLS_SURFACE_VALID");
   visibleActiveTools.forEach((tool) => {
-    console.log(`- ${tool.displayName} -> tools/${tool.entryPoint}`);
+    console.log(`- ${tool.displayName} -> toolbox/${tool.entryPoint}`);
   });
 }
 

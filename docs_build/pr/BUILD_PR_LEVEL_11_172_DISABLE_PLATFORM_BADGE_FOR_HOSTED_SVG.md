@@ -68,7 +68,7 @@ Required effect:
 - The console must not show `platformShell.js ... renderToolAssetBadge ... toolId: 'svg-asset-studio', label: 'none'` for hosted SVG.
 
 ### 2. workspaceShell active path
-Ensure `tools/shared/workspaceShell.js` is loaded and called by hosted SVG.
+Ensure `toolbox/shared/workspaceShell.js` is loaded and called by hosted SVG.
 
 It must log or report:
 - `[WORKSPACE_SHELL_STATE]`
@@ -106,7 +106,7 @@ Payload:
 - includes `contractType`
 
 ### 5. Workspace Manager tile update
-In `tools/Workspace Manager/main.js`:
+In `toolbox/Workspace Manager/main.js`:
 - listen for `tools:workspace-shell-state`
 - accept only trusted/same-window child messages as currently appropriate for this app
 - match by:
@@ -145,10 +145,10 @@ Manual UAT on sample 1902:
 
 ## Validation
 Run:
-- `node --check tools/shared/workspaceShell.js`
-- `node --check tools/shared/platformShell.js`
-- `node --check "tools/Workspace Manager/main.js"`
-- `node --check "tools/SVG Asset Studio/main.js"`
+- `node --check toolbox/shared/workspaceShell.js`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
 
 Full samples smoke:
 - Skip by default.

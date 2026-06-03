@@ -11,13 +11,13 @@ Fix the next failing tool from `tool_completion_audit.md` with a single-tool, mi
 - `toolLabel("asset-manager-v2")` still returned `"Asset Browser V2"`.
 
 ## Scoped Implementation
-1. Update `tools/palette-manager-v2/index.js` label mapping:
+1. Update `toolbox/palette-manager-v2/index.js` label mapping:
    - `asset-manager-v2` -> `"Asset Manager V2"`
 2. No schema changes.
 3. No cross-tool/runtime refactors.
 
 ## Validation
-1. `node --check tools/palette-manager-v2/index.js`
+1. `node --check toolbox/palette-manager-v2/index.js`
 2. `npm run test:workspace-v2`
 
 ## Packaging

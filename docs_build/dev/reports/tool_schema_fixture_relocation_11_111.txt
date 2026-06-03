@@ -7,9 +7,9 @@ Summary
 - Removed duplicate runtime copies.
 
 Files moved
-- tools/palette-editor/tool.schema.json -> tests/fixtures/tool-schemas/palette-editor/tool.schema.json
-- tools/vector-asset-studio/tool.schema.json -> tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
-- tools/vector-map-editor/tool.schema.json -> tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
+- toolbox/palette-editor/tool.schema.json -> tests/fixtures/tool-schemas/palette-editor/tool.schema.json
+- toolbox/vector-asset-studio/tool.schema.json -> tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
+- toolbox/vector-map-editor/tool.schema.json -> tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
 
 References updated
 - tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
@@ -25,12 +25,12 @@ Targeted validation
 - JSON_OK tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
 
 2) Old runtime copies removed
-- MISSING_OK tools/palette-editor/tool.schema.json
-- MISSING_OK tools/vector-asset-studio/tool.schema.json
-- MISSING_OK tools/vector-map-editor/tool.schema.json
+- MISSING_OK toolbox/palette-editor/tool.schema.json
+- MISSING_OK toolbox/vector-asset-studio/tool.schema.json
+- MISSING_OK toolbox/vector-map-editor/tool.schema.json
 
 3) Tests/scripts no longer reference old runtime paths
-- Command: rg -n "tools/(palette-editor|vector-asset-studio|vector-map-editor)/tool\.schema\.json" tests scripts
+- Command: rg -n "toolbox/(palette-editor|vector-asset-studio|vector-map-editor)/tool\.schema\.json" tests scripts
 - Result: no matches
 
 4) Updated targeted boundary test passes

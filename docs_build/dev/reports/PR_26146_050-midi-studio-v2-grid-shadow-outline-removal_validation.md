@@ -11,15 +11,15 @@ Status: PASS
 
 ## Changed Files
 
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 
 ## Validation Commands
 
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/ActionNavControl.js`
-- PASS: CSS brace check for `tools/midi-studio-v2/styles/midiStudioV2.css`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/ActionNavControl.js`
+- PASS: CSS brace check for `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - PASS: `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync|launches and renders a valid multi-song manifest payload|separates Workspace launch save ownership from Tool Mode standalone save" --config=codex_playwright_system_chrome.config.cjs --reporter=list --workers=1 --timeout=60000`
 - PASS: `git diff --check`
 

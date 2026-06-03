@@ -3,7 +3,7 @@
 ## Scope
 
 - Targeted tool: Preview Generator V2.
-- Implementation scope used: `tools/preview-generator-v2/*` and `docs_build/dev/reports/*`.
+- Implementation scope used: `toolbox/preview-generator-v2/*` and `docs_build/dev/reports/*`.
 - `common/*` was allowed by the PR, but no `common` directory exists in this repo checkout and no common changes were needed.
 - Workspace manifest/schema structures were not modified.
 
@@ -32,7 +32,7 @@ Expected fail behavior:
 
 ## Validation
 
-- PASS: `node --check tools/preview-generator-v2/PreviewGeneratorV2App.js`
+- PASS: `node --check toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
 - PASS: `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "Preview Generator V2 (output path resolution failures|repo-root selection failures without fallback)"` (2/2)
 - PASS: `npm run test:workspace-v2` (56/56)
 - SKIPPED: full samples smoke test, per PR instruction and project testing rules; this change is limited to Preview Generator V2 path-state failure handling.

@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-producer-results.json");
 
 const TOOLS = [
@@ -65,13 +65,13 @@ function generateHostContextId(toolId) {
 }
 
 function buildToolUrl(toolId, hostContextId) {
-  return `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId)}`;
+  return `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId)}`;
 }
 
 function validateTool(toolId) {
   const fixturePath = path.join(fixturesRoot, `${toolId}.json`);
-  const toolJsPath = path.join(repoRoot, "tools", toolId, "index.js");
-  const toolHtmlPath = path.join(repoRoot, "tools", toolId, "index.html");
+  const toolJsPath = path.join(repoRoot, "toolbox", toolId, "index.js");
+  const toolHtmlPath = path.join(repoRoot, "toolbox", toolId, "index.html");
   const failures = [];
   const fixtureExists = fs.existsSync(fixturePath);
   const toolJsExists = fs.existsSync(toolJsPath);
@@ -119,7 +119,7 @@ function validateTool(toolId) {
 
   if (!toolHtmlExists) failures.push("Target tool index.html is missing.");
   if (!toolJsExists) failures.push("Target tool index.js is missing.");
-  if (!launchUrl.includes(`tools/${toolId}/index.html?hostContextId=`)) failures.push("Launch URL does not match expected V2 path format.");
+  if (!launchUrl.includes(`toolbox/${toolId}/index.html?hostContextId=`)) failures.push("Launch URL does not match expected V2 path format.");
   if (parsedHostContextId !== hostContextId) failures.push("Launch URL hostContextId does not match generated value.");
   if (!storedValue) failures.push("Session storage entry was not written.");
   if (!storedPayloadParseable) failures.push("Session storage entry is not valid serialized JSON payload.");

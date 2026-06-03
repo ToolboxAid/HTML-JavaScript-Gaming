@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
+const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "v2-reset-state-results.json");
 
 class MemoryStorage {
@@ -88,7 +88,7 @@ function runResetSimulation() {
   const sessionStorageLike = new MemoryStorage();
   const localStorageLike = new MemoryStorage();
   const state = {
-    currentUrl: "https://example.test/tools/workspace-v2/index.html?hostContextId=reset-host-1&panel=diagnostics",
+    currentUrl: "https://example.test/toolbox/workspace-v2/index.html?hostContextId=reset-host-1&panel=diagnostics",
     currentHostContextId: "reset-host-1",
     currentSessionPayload: {
       toolId: "tilemap-studio-v2",
@@ -178,9 +178,9 @@ export function run() {
   const jsRemovesErrorLogs = workspaceJsText.includes("localStorage.removeItem(this.errorLogsStorageKey)");
   const jsClearsSessionStorage = workspaceJsText.includes("sessionStorage.clear()");
 
-  if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!workspaceHtmlExists) failures.push("Missing tools/workspace-v2/index.html.");
-  if (!syntaxValid) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!workspaceJsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!workspaceHtmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+  if (!syntaxValid) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
   if (!htmlHasResetControls) failures.push("Reset controls markup is missing required buttons.");
   if (!jsHasClearSessionStorage) failures.push("Missing clearSessionStorage(emitStatus = true).");
   if (!jsHasClearSavedSessions) failures.push("Missing clearSavedSessions(emitStatus = true).");

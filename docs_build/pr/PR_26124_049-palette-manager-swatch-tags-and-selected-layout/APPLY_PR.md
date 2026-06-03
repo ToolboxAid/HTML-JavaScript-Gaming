@@ -13,15 +13,15 @@
 - Preserved pin/unpin, sort, search, size, import/export, accordionV2, and shared/tool shell behavior.
 
 ## Files Changed
-- `tools/schemas/tools/palette-browser.schema.json`
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/README.md`
-- `tools/palette-manager-v2/how_to_use.html`
-- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/modules/PaletteValidationService.js`
-- `tools/palette-manager-v2/modules/SwatchRow.js`
-- `tools/palette-manager-v2/modules/paletteUtils.js`
+- `toolbox/schemas/tools/palette-browser.schema.json`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/README.md`
+- `toolbox/palette-manager-v2/how_to_use.html`
+- `toolbox/palette-manager-v2/controls/PaletteEditorControl.js`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/modules/PaletteValidationService.js`
+- `toolbox/palette-manager-v2/modules/SwatchRow.js`
+- `toolbox/palette-manager-v2/modules/paletteUtils.js`
 - PR workflow docs and report artifacts.
 
 ## Validation

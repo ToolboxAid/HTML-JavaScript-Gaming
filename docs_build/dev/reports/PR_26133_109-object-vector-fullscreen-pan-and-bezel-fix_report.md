@@ -9,13 +9,13 @@
 
 ## Changed Files
 - `src/engine/runtime/fullscreenBezel.js`
-- `tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- `tools/object-vector-studio-v2/styles/toolStarter.css`
+- `toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- `toolbox/object-vector-studio-v2/styles/toolStarter.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
 ## Validation
 - PASS: `node --check src/engine/runtime/fullscreenBezel.js`
-- PASS: `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
+- PASS: `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
 - PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - PASS: `git diff --check` (CRLF warnings only for existing line-ending behavior in the Playwright spec/CSS)
 - PASS: `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "supports Object Vector Studio V2 animation states and frame timeline foundation|drags selected Object Vector Studio V2 shapes from preview selection bounds|fits the game canvas inside the fullscreen play area|loads Object Vector Studio V2 runtime assets into Asteroids gameplay rendering"` (4 passed)

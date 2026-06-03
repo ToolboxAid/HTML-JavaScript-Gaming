@@ -4,7 +4,7 @@
 Implement the platform-level validation suite defined in `PLAN_PR_PLATFORM_VALIDATION_SUITE` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared repeatable platform validation suite runner in `tools/shared/platformValidationSuite.js`
+- Added shared repeatable platform validation suite runner in `toolbox/shared/platformValidationSuite.js`
   - validates full-flow golden-path authoring, validation, packaging, and runtime behavior
   - validates invalid reference enforcement boundaries
   - validates remediation recoverability
@@ -32,7 +32,7 @@ Implement the platform-level validation suite defined in `PLAN_PR_PLATFORM_VALID
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/platformValidationSuite.js`
+  - `node --check toolbox/shared/platformValidationSuite.js`
   - `node --check tests/tools/PlatformValidationSuite.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

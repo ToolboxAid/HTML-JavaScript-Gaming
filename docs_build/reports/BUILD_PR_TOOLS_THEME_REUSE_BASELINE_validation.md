@@ -12,13 +12,13 @@ Branch: main
 Command: Node import contract check on target tool `index.html` files.
 
 Result:
-- PASS tools/Asset Browser/index.html
-- PASS tools/Palette Browser/index.html
-- PASS tools/Parallax Scene Studio/index.html
-- PASS tools/Sprite Editor/index.html
-- PASS tools/Tilemap Studio/index.html
-- PASS tools/Vector Asset Studio/index.html
-- PASS tools/Vector Map Editor/index.html
+- PASS toolbox/Asset Browser/index.html
+- PASS toolbox/Palette Browser/index.html
+- PASS toolbox/Parallax Scene Studio/index.html
+- PASS toolbox/Sprite Editor/index.html
+- PASS toolbox/Tilemap Studio/index.html
+- PASS toolbox/Vector Asset Studio/index.html
+- PASS toolbox/Vector Map Editor/index.html
 
 Verified required shared assets are referenced in each file:
 - `../../src/engine/ui/hubCommon.css`
@@ -29,25 +29,25 @@ Verified required shared assets are referenced in each file:
 Command: Node selector-presence check for key layout selectors in each touched CSS file.
 
 Result:
-- PASS tools/Asset Browser/assetBrowser.css
-- PASS tools/Palette Browser/paletteBrowser.css
-- PASS tools/Parallax Scene Studio/parallaxEditor.css
-- PASS tools/Sprite Editor/spriteEditor.css
-- PASS tools/Tilemap Studio/tileMapEditor.css
-- PASS tools/Vector Asset Studio/svgBackgroundEditor.css
-- PASS tools/Vector Map Editor/vectorMapEditor.css
+- PASS toolbox/Asset Browser/assetBrowser.css
+- PASS toolbox/Palette Browser/paletteBrowser.css
+- PASS toolbox/Parallax Scene Studio/parallaxEditor.css
+- PASS toolbox/Sprite Editor/spriteEditor.css
+- PASS toolbox/Tilemap Studio/tileMapEditor.css
+- PASS toolbox/Vector Asset Studio/svgBackgroundEditor.css
+- PASS toolbox/Vector Map Editor/vectorMapEditor.css
 
 ## Static Reference Existence Validation
 Command: Node link/src existence check for local `link[href]` and `script[src]` references in each target tool `index.html`.
 
 Result:
-- PASS tools/Asset Browser/index.html
-- PASS tools/Palette Browser/index.html
-- PASS tools/Parallax Scene Studio/index.html
-- PASS tools/Sprite Editor/index.html
-- PASS tools/Tilemap Studio/index.html
-- PASS tools/Vector Asset Studio/index.html
-- PASS tools/Vector Map Editor/index.html
+- PASS toolbox/Asset Browser/index.html
+- PASS toolbox/Palette Browser/index.html
+- PASS toolbox/Parallax Scene Studio/index.html
+- PASS toolbox/Sprite Editor/index.html
+- PASS toolbox/Tilemap Studio/index.html
+- PASS toolbox/Vector Asset Studio/index.html
+- PASS toolbox/Vector Map Editor/index.html
 
 ## Runtime Smoke Validation
 - Browser runtime smoke tests were NOT executed in this environment (no Playwright/Puppeteer installed).

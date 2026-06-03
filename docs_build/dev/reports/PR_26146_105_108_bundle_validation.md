@@ -15,11 +15,11 @@
 
 ## Validation
 - PASS: changed-file syntax checks:
-  - `node --check tools/midi-studio-v2/js/controls/SongDetailsControl.js`
-  - `node --check tools/midi-studio-v2/js/controls/SongListControl.js`
-  - `node --check tools/midi-studio-v2/js/controls/ExportPanelControl.js`
-  - `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-  - `node --check tools/midi-studio-v2/js/bootstrap.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/SongDetailsControl.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/SongListControl.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
+  - `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+  - `node --check toolbox/midi-studio-v2/js/bootstrap.js`
   - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: targeted MIDI Studio Playwright validation:
   - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "validates PR105-108 song library classification usage assignment and manifest readiness" --project=playwright --workers=1 --reporter=list`

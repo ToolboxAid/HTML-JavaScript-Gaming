@@ -23,16 +23,16 @@
 - `games/Asteroids/game.manifest.json`
 - `tests/games/AsteroidsValidation.test.mjs`
 - `tests/tools/ObjectVectorStudioV2DeleteCleanup.test.mjs`
-- `tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- `tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
-- `tools/schemas/tools/object-vector-studio-v2.schema.json`
+- `toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- `toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
+- `toolbox/schemas/tools/object-vector-studio-v2.schema.json`
 
 ## Validation
-- PASS: `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- PASS: `node --check tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
+- PASS: `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- PASS: `node --check toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
 - PASS: `node --check tests/tools/ObjectVectorStudioV2DeleteCleanup.test.mjs`
 - PASS: `node --check tests/games/AsteroidsValidation.test.mjs`
-- PASS: JSON parse for `tools/schemas/tools/object-vector-studio-v2.schema.json` and `games/Asteroids/game.manifest.json`
+- PASS: JSON parse for `toolbox/schemas/tools/object-vector-studio-v2.schema.json` and `games/Asteroids/game.manifest.json`
 - PASS: `node -e "import('./tests/tools/ObjectVectorStudioV2DeleteCleanup.test.mjs').then(async (m) => { await m.run(); console.log('PASS ObjectVectorStudioV2DeleteCleanup'); })"`
 - PASS: targeted Asteroids manifest-load cleanup validation:
   - no `text2speech-V2` payload remains

@@ -19,8 +19,8 @@ Updated Text to Speech V2 and direct Workspace Manager/tool references for the c
 
 Preserved compatibility only for required direct Text to Speech V2 references:
 
-- `/tools/text2speach-V2/index.html` redirects to `/tools/text2speech-V2/index.html` while preserving query string and hash.
-- `/tools/schemas/tools/text2speach-V2.schema.json` remains as an alias file whose `$id` points to `tools/schemas/tools/text2speech-V2.schema.json`.
+- `/toolbox/text2speach-V2/index.html` redirects to `/toolbox/text2speech-V2/index.html` while preserving query string and hash.
+- `/toolbox/schemas/tools/text2speach-V2.schema.json` remains as an alias file whose `$id` points to `toolbox/schemas/tools/text2speech-V2.schema.json`.
 - `/samples/phase-19/1903/sample.1903.text2speach-V2.json` remains as an alias payload matching the canonical `sample.1903.text2speech-V2.json`.
 - `workspace.tools.text2speach-V2` session state migrates to `workspace.tools.text2speech-V2` with a status log entry.
 - `root.tools.text2speach-V2` workspace payloads migrate to `root.tools.text2speech-V2` during Workspace Manager context normalization and report the migration in status.
@@ -28,9 +28,9 @@ Preserved compatibility only for required direct Text to Speech V2 references:
 
 ## Validation
 
-- `node --check tools/text2speech-V2/js/TextToSpeechToolApp.js` passed.
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` passed.
-- `node --check tools/toolRegistry.js` passed.
+- `node --check toolbox/text2speech-V2/js/TextToSpeechToolApp.js` passed.
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` passed.
+- `node --check toolbox/toolRegistry.js` passed.
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs` passed.
 - `npm run test:workspace-v2` passed: 35 tests passed.
 - `git diff --check` passed with line-ending normalization warnings only.

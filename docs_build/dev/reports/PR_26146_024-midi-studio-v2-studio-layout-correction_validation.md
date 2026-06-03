@@ -32,13 +32,13 @@
 - samples: skipped because no sample JSON was modified and full samples smoke was explicitly out of scope.
 
 ## Validation Commands
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/ToolShellControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/ToolShellControl.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: HTML external-only guard for `tools/midi-studio-v2/index.html`; no inline `<script>`, `<style>`, or inline event handlers found.
-- PASS: `rg -n "track-list|Load Example|Use Example|imageDataUrl" tools/midi-studio-v2 tests/fixtures/midi-studio-v2 tests/playwright/tools/MidiStudioV2.spec.mjs` returned no matches.
+- PASS: HTML external-only guard for `toolbox/midi-studio-v2/index.html`; no inline `<script>`, `<style>`, or inline event handlers found.
+- PASS: `rg -n "track-list|Load Example|Use Example|imageDataUrl" toolbox/midi-studio-v2 tests/fixtures/midi-studio-v2 tests/playwright/tools/MidiStudioV2.spec.mjs` returned no matches.
 - PASS: `$env:PLAYWRIGHT_BROWSERS_PATH='0'; npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --grep "imports UAT manifest and plays|expands and restores" --timeout=90000 --reporter=list`
   - Result: 2 passed.
   - Proved fullscreen/expanded view keeps header, transport, and left Instruments column visible.
@@ -60,7 +60,7 @@
 - WARN: An exploratory broader MIDI Studio V2 subset timed out and was not used as the validation gate. The requested PR_024 targeted behaviors passed in the focused 2-test lane above.
 
 ## Manual UAT Steps
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. Click `Import JSON Manifest`.
 3. Choose `tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json`.
 4. Confirm `Camptown Races UAT Reel` populates the visible center spreadsheet cells.

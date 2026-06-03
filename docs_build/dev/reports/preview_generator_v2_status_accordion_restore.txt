@@ -2,9 +2,9 @@ PR_26126_046 Preview Generator V2 Status accordion restore
 
 Scope
 - Updated Preview Generator V2 Status control only.
-- Updated tools/preview-generator-v2/index.html.
-- Updated tools/preview-generator-v2/controls/StatusLogControl.js.
-- Updated tools/preview-generator-v2/previewGeneratorV2.css for Status accordion layout/hidden state.
+- Updated toolbox/preview-generator-v2/index.html.
+- Updated toolbox/preview-generator-v2/controls/StatusLogControl.js.
+- Updated toolbox/preview-generator-v2/previewGeneratorV2.css for Status accordion layout/hidden state.
 - Extended tests/playwright/PreviewGeneratorV2Baseline.spec.mjs to include Status accordion coverage.
 - No samples, schemas, or start_of_day files were modified.
 
@@ -23,8 +23,8 @@ Behavior preserved
 - Other controls were not modified.
 
 Validation
-- JavaScript syntax check passed for tools/preview-generator-v2/*.js.
-- JavaScript syntax check passed for tools/preview-generator-v2/controls/*.js.
+- JavaScript syntax check passed for toolbox/preview-generator-v2/*.js.
+- JavaScript syntax check passed for toolbox/preview-generator-v2/controls/*.js.
 - JavaScript syntax check passed for tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
 - npm run test:workspace-v2 passed.
 - Result: 3 passed.
@@ -41,7 +41,7 @@ Full samples smoke test
 - Reason: this PR is a targeted Preview Generator V2 Status control change and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
 
 Manual validation
-- Open tools/preview-generator-v2/index.html.
+- Open toolbox/preview-generator-v2/index.html.
 - Collapse Status and confirm the log textarea hides.
 - Expand Status and confirm the log textarea returns.
 - Confirm the icon rotates/updates with open/closed state.

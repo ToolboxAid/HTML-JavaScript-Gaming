@@ -3,15 +3,15 @@ Date: 2026-04-30
 
 Schema filename canonicalization
 - Renamed:
-  - tools/schemas/tools/3d-json-payload-normalizer.schema.json -> tools/schemas/tools/3d-json-payload.schema.json
-  - tools/schemas/tools/asset-pipeline-tool.schema.json -> tools/schemas/tools/asset-pipeline.schema.json
+  - toolbox/schemas/tools/3d-json-payload-normalizer.schema.json -> toolbox/schemas/tools/3d-json-payload.schema.json
+  - toolbox/schemas/tools/asset-pipeline-tool.schema.json -> toolbox/schemas/tools/asset-pipeline.schema.json
 
 Reference rewiring
 - Updated workspace schema refs:
-  - tools/schemas/workspace.manifest.schema.json
+  - toolbox/schemas/workspace.manifest.schema.json
 - Updated schema $id values:
-  - tools/schemas/tools/3d-json-payload.schema.json
-  - tools/schemas/tools/asset-pipeline.schema.json
+  - toolbox/schemas/tools/3d-json-payload.schema.json
+  - toolbox/schemas/tools/asset-pipeline.schema.json
 - Updated repo references in docs/validation artifacts/scripts where old filenames appeared.
 
 Verification

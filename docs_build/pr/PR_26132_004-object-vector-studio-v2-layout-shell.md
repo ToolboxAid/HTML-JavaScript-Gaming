@@ -35,11 +35,11 @@ Result:
 Additional checks:
 
 ```powershell
-node --check tools/object-vector-studio-v2/js/bootstrap.js
-node --check tools/object-vector-studio-v2/js/ToolStarterApp.js
-node --check tools/object-vector-studio-v2/js/controls/ActionNavControl.js
-node --check tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
-node --check tools/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs
+node --check toolbox/object-vector-studio-v2/js/bootstrap.js
+node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+node --check toolbox/object-vector-studio-v2/js/controls/ActionNavControl.js
+node --check toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+node --check toolbox/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 git diff --check
 ```
@@ -82,11 +82,11 @@ docs_build/dev/reports/playwright_v8_coverage_report.txt
 Changed runtime JavaScript coverage includes:
 
 ```text
-(86%) tools/object-vector-studio-v2/js/ToolStarterApp.js
-(91%) tools/object-vector-studio-v2/js/controls/ActionNavControl.js
-(92%) tools/object-vector-studio-v2/js/controls/ToolStarterShellControl.js
-(100%) tools/object-vector-studio-v2/js/bootstrap.js
-(100%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+(86%) toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+(91%) toolbox/object-vector-studio-v2/js/controls/ActionNavControl.js
+(92%) toolbox/object-vector-studio-v2/js/controls/ToolStarterShellControl.js
+(100%) toolbox/object-vector-studio-v2/js/bootstrap.js
+(100%) toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
 ```
 
 Guardrail:
@@ -103,7 +103,7 @@ Skipped. This PR is limited to Object Vector Studio V2 layout shell behavior and
 
 ## Manual Test Steps
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Confirm the header shows Object Vector Studio V2 and the standalone nav shows Import, Copy JSON, Export.
 3. Confirm left accordions are Object, Shape/Tools, Objects.
 4. Confirm right accordions are Palette, Object Details, JSON Details, Status Log.

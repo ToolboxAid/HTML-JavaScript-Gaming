@@ -4,7 +4,7 @@
 Harden Asset Manager V2 add/remove validation behavior while preserving valid persistence behavior and leaving import/export contracts unchanged.
 
 ## Scope
-- `tools/asset-manager-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
 - `tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs`
 - `docs_build/dev/reports/PR_11_316_report.md`
 - `docs_build/dev/codex_commands.md`

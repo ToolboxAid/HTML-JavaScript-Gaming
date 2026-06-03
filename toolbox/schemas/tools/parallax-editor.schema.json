@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "toolbox/schemas/tools/parallax-editor.schema.json",
+  "title": "parallax-editor Payload",
+  "type": "object",
+  "required": [],
+  "additionalProperties": false,
+  "properties": {
+    "parallaxDocument": {
+      "$ref": "#/$defs/jsonValue"
+    },
+    "tilemapDocumentPath": {
+      "$ref": "#/$defs/jsonValue"
+    },
+    "vectorAssetSvgPath": {
+      "$ref": "#/$defs/jsonValue"
+    }
+  },
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "propertyNames": {
+        "type": "string"
+      }
+    }
+  }
+}

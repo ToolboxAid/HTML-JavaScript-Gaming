@@ -16,9 +16,9 @@ PASS
 
 ## Commands Run
 
-- `node --check tools/midi-studio-v2/js/sectionColors.js`
-- `node --check tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
-- `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `node --check toolbox/midi-studio-v2/js/sectionColors.js`
+- `node --check toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
+- `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
 - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR069" --reporter=list`
 - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR068|PR069" --reporter=list`
@@ -34,6 +34,6 @@ PASS
 
 ## Notes
 
-- Section colors are centralized in `tools/midi-studio-v2/js/sectionColors.js` and shared by the canvas renderer and section shortcut controls.
+- Section colors are centralized in `toolbox/midi-studio-v2/js/sectionColors.js` and shared by the canvas renderer and section shortcut controls.
 - The canvas snapshot now reports section colors, selected section, and active loop bounds so tests can prove canvas state without brittle DOM-grid assumptions.
 - No new tabs were added and no section editing controls were duplicated.

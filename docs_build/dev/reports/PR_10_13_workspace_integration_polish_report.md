@@ -7,7 +7,7 @@
 
 ## Implemented
 1. Workspace-owned lifecycle with stable switching
-- Updated `tools/shared/toolHostRuntime.js` to keep mounted tool iframes cached by tool id.
+- Updated `toolbox/shared/toolHostRuntime.js` to keep mounted tool iframes cached by tool id.
 - Switching tools now re-activates an existing mounted frame when available instead of remounting/reloading.
 
 2. Prevent tool self-reset during navigation
@@ -30,9 +30,9 @@
 - `No flicker/unintended reinit`: PASS (no forced reload/destroy on tool switch)
 
 ## Files Changed
-- `tools/shared/toolHostRuntime.js`
+- `toolbox/shared/toolHostRuntime.js`
 - `docs_build/dev/reports/PR_10_13_workspace_integration_polish_report.md`
 
 ## Validation
-- `node --check tools/shared/toolHostRuntime.js` PASS
+- `node --check toolbox/shared/toolHostRuntime.js` PASS
 - `npm run test:workspace-manager:games` PASS

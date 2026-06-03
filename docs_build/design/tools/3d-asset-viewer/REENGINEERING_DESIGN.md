@@ -3,34 +3,34 @@
 Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-12
-Source folder: `tools/3D Asset Viewer`
+Source folder: `toolbox/3D Asset Viewer`
 Publish target: `tools.3d-asset-viewer`
 
 ## Tool Purpose
 3D Asset Viewer owns 3D asset inspection payload import, validation, report export, and publish to `tools.3d-asset-viewer`.
 
 ## Folder/Files Inspected
-- `tools/3D Asset Viewer/how_to_use.html`
-- `tools/3D Asset Viewer/index.html`
-- `tools/3D Asset Viewer/main.js`
-- `tools/3D Asset Viewer/README.md`
+- `toolbox/3D Asset Viewer/how_to_use.html`
+- `toolbox/3D Asset Viewer/index.html`
+- `toolbox/3D Asset Viewer/main.js`
+- `toolbox/3D Asset Viewer/README.md`
 
 ## Controls: Control -> Action -> JSON Effect
 | Control | Action | JSON effect |
 |---|---|---|
-| `tools/3D Asset Viewer/index.html`: `button[button]#inspect3dAssetButton` - Inspect Asset | Triggers the current 3D asset viewer payload UI action for `Inspect Asset`. | May update draft 3D asset viewer payload data; tools.3d-asset-viewer publish must wait for validation. |
-| `tools/3D Asset Viewer/index.html`: `textarea#asset3dInput` - asset3dInput | Edits the current 3D asset viewer payload through `asset3dInput`. | Updates draft 3D asset viewer payload data and requires validation before tools.3d-asset-viewer publish. |
+| `toolbox/3D Asset Viewer/index.html`: `button[button]#inspect3dAssetButton` - Inspect Asset | Triggers the current 3D asset viewer payload UI action for `Inspect Asset`. | May update draft 3D asset viewer payload data; tools.3d-asset-viewer publish must wait for validation. |
+| `toolbox/3D Asset Viewer/index.html`: `textarea#asset3dInput` - asset3dInput | Edits the current 3D asset viewer payload through `asset3dInput`. | Updates draft 3D asset viewer payload data and requires validation before tools.3d-asset-viewer publish. |
 
 ## Panels And Surfaces Found
-- `tools/3D Asset Viewer/how_to_use.html`: `.tools-platform-surface`
-- `tools/3D Asset Viewer/index.html`: `.app-shell`
-- `tools/3D Asset Viewer/index.html`: `.debug-tool-grid`
-- `tools/3D Asset Viewer/index.html`: `.debug-tool-panel`
-- `tools/3D Asset Viewer/index.html`: `.debug-tool-shell`
-- `tools/3D Asset Viewer/index.html`: `.panel`
+- `toolbox/3D Asset Viewer/how_to_use.html`: `.tools-platform-surface`
+- `toolbox/3D Asset Viewer/index.html`: `.app-shell`
+- `toolbox/3D Asset Viewer/index.html`: `.debug-tool-grid`
+- `toolbox/3D Asset Viewer/index.html`: `.debug-tool-panel`
+- `toolbox/3D Asset Viewer/index.html`: `.debug-tool-shell`
+- `toolbox/3D Asset Viewer/index.html`: `.panel`
 
 ## Current Component/Class/Function Inventory
-- `tools/3D Asset Viewer/main.js`: boot3dAssetViewer; buildPresetLoadedStatus; computeBounds; getApi; inspectAssetPayload; normalizeAssetPayload; normalizeSamplePresetPath; registerToolBootContract; sanitizeNumber; setStatus; tryLoadPresetFromQuery
+- `toolbox/3D Asset Viewer/main.js`: boot3dAssetViewer; buildPresetLoadedStatus; computeBounds; getApi; inspectAssetPayload; normalizeAssetPayload; normalizeSamplePresetPath; registerToolBootContract; sanitizeNumber; setStatus; tryLoadPresetFromQuery
 
 ## Target Controls
 Keep:
@@ -47,7 +47,7 @@ Add:
 - inspection diagnostics
 
 ## JSON Schema/Input Contract Currently Expected
-Tool receives validated payload and owns behavior for 3D asset viewer payload. Current contract baseline: `tools/schemas/tools/3d-asset-viewer.schema.json` (3d-asset-viewer Payload).
+Tool receives validated payload and owns behavior for 3D asset viewer payload. Current contract baseline: `toolbox/schemas/tools/3d-asset-viewer.schema.json` (3d-asset-viewer Payload).
 Required keys: `asset3d`.
 Optional keys: none identified for this contract.
 
@@ -79,12 +79,12 @@ tools.3d-asset-viewer = {
 ```
 
 ## Playwright Expectations
-- load `tools/3D Asset Viewer/index.html` without console errors
+- load `toolbox/3D Asset Viewer/index.html` without console errors
 - exercise viewer controls against a valid payload
 - reject invalid 3D asset viewer JSON
 
 ## Manual Test Expectations
-- Open `tools/3D Asset Viewer/index.html` and confirm the viewer/inspection controls render.
+- Open `toolbox/3D Asset Viewer/index.html` and confirm the viewer/inspection controls render.
 - Load a valid 3D asset payload, inspect it, validate, export, and publish.
 - Try malformed JSON and an invalid asset reference; each must block publish.
 

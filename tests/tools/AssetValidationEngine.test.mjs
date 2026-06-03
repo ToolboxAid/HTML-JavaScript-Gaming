@@ -4,7 +4,7 @@ import {
   hasBlockingAssetValidationFindings,
   summarizeAssetValidation,
   validateProjectAssetState
-} from "../../tools/shared/projectAssetValidation.js";
+} from "../../toolbox/shared/projectAssetValidation.js";
 
 export async function run() {
   const validRegistry = {

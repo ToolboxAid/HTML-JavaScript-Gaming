@@ -4,7 +4,7 @@
 Implement the Plugin Architecture defined in `PLAN_PR_PLUGIN_ARCHITECTURE` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared plugin participation planner in `tools/shared/pluginArchitecture.js`
+- Added shared plugin participation planner in `toolbox/shared/pluginArchitecture.js`
   - validates plugin manifest contracts
   - enforces namespaced asset ownership and conflict isolation
   - allows controlled packaging/runtime participation for accepted plugins
@@ -22,7 +22,7 @@ Implement the Plugin Architecture defined in `PLAN_PR_PLUGIN_ARCHITECTURE` witho
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/pluginArchitecture.js`
+  - `node --check toolbox/shared/pluginArchitecture.js`
   - `node --check tests/tools/PluginArchitectureSystem.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

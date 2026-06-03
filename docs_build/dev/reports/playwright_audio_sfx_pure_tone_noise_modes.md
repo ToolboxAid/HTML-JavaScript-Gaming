@@ -22,13 +22,13 @@ PR: `PR_26145_006-audio-sfx-pure-tone-and-noise-source-modes`
 
 ## Targeted Static Validation
 
-- `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`: PASS
-- `JSON.parse` for `tools/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
-- HTML static guard for `tools/audio-sfx-playground-v2/index.html`:
+- `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`: PASS
+- `JSON.parse` for `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
+- HTML static guard for `toolbox/audio-sfx-playground-v2/index.html`:
   - no inline event handlers: PASS
   - no `<style>` blocks: PASS
   - no inline `<script>` blocks: PASS
-- `git diff --check -- tools/audio-sfx-playground-v2 tools/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
+- `git diff --check -- toolbox/audio-sfx-playground-v2 toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
   - Git reported LF-to-CRLF working-copy warnings only.
 
 ## Targeted Node Validation
@@ -62,10 +62,10 @@ Ran a focused Playwright validation through a temporary local HTTP server using 
 
 ## V8 Coverage
 
-- `(100%) tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by focused pure tone/noise mode Playwright validation`
-- `(100%) tools/audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - covered by focused pure tone/noise mode Playwright validation`
-- `(100%) tools/audio-sfx-playground-v2/js/services/AudioSfxEngine.js - covered by focused pure tone/noise mode Playwright validation`
-- `(100%) tools/audio-sfx-playground-v2/js/services/ToolStateSerializer.js - covered by focused pure tone/noise mode Playwright validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by focused pure tone/noise mode Playwright validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - covered by focused pure tone/noise mode Playwright validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/services/AudioSfxEngine.js - covered by focused pure tone/noise mode Playwright validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/services/ToolStateSerializer.js - covered by focused pure tone/noise mode Playwright validation`
 
 Coverage is advisory per project instructions.
 

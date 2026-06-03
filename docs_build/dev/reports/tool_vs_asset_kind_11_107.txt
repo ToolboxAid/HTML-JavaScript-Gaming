@@ -10,7 +10,7 @@ Files Changed
 - docs_build/dev/reports/tool_vs_asset_kind_11_107.txt
 
 1) Repo scan: no asset kind equals a tool id
-- Tool IDs extracted from tools/toolRegistry.js: 18
+- Tool IDs extracted from toolbox/toolRegistry.js: 18
 - Broad JSON scan (excluding docs/non-JSONC noise):
   - kind fields scanned: 177
   - violations (kind == tool id): 0
@@ -26,7 +26,7 @@ Files Changed
 - tool-id used as asset kind violations: 0
 
 3) resolveAcceptedAssetKindsForTool validation
-- File: tools/shared/platformShell.js
+- File: toolbox/shared/platformShell.js
 - Mapping is toolId -> asset kinds only:
   - skin-editor -> [skin]
   - sprite-editor -> [sprite]

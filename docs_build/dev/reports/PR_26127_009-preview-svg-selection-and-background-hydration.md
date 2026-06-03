@@ -3,7 +3,7 @@
 ## Scope
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` and followed the single-purpose Workspace V2/tool lane.
 - Kept changes scoped to Preview Generator V2 runtime hydration/capture behavior and Workspace Manager V2 Playwright coverage.
-- Did not modify deprecated `tools/workspace-v2`.
+- Did not modify deprecated `toolbox/workspace-v2`.
 - Did not modify sample JSON.
 
 ## Preview Target Hydration
@@ -35,8 +35,8 @@
 - Status output logs the hydrated background asset path and palette color.
 
 ## Validation
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2App.js` passed.
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2Capture.js` passed.
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2App.js` passed.
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2Capture.js` passed.
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs` passed.
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list` passed: 8 passed.
 - `npm run test:workspace-v2` passed: 24 passed.

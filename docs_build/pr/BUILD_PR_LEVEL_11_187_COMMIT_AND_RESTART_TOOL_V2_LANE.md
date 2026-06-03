@@ -89,8 +89,8 @@ PR_11_188_PALETTE_V2_REVERSE_ENGINEER_AND_REBUILD
 Expected next PR:
 - inspect Palette Browser
 - create reverse engineering report
-- move `tools/Palette Browser/` to `tools/Palette Browser-v1/`
-- create clean `tools/Palette Browser/`
+- move `toolbox/Palette Browser/` to `toolbox/Palette Browser-v1/`
+- create clean `toolbox/Palette Browser/`
 - use session-backed data
 - use common shared CSS
 - no schema/sample/game changes

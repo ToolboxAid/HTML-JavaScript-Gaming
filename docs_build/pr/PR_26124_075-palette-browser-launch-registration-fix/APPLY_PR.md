@@ -23,7 +23,7 @@ Fixed palette-backed sample launch registration by updating sample metadata laun
   - no `Tool "palette-browser" is not registered in toolRegistry.` message,
   - the tool filter includes `palette-manager-v2`,
   - the tool filter does not include `palette-browser`,
-  - sample 0213 links to `/tools/palette-manager-v2/index.html` with its palette preset path.
+  - sample 0213 links to `/toolbox/palette-manager-v2/index.html` with its palette preset path.
 - PASS: `git diff --check`
 - FAIL: `npm run test:workspace-v2` is unavailable because `package.json` does not define a `test:workspace-v2` script.
 - SKIPPED: full samples smoke test, by instruction.

@@ -4,7 +4,7 @@
 Implement the Editor Experience Layer defined in `PLAN_PR_EDITOR_EXPERIENCE_LAYER` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared deterministic editor experience snapshot builder in `tools/shared/editorExperienceLayer.js`
+- Added shared deterministic editor experience snapshot builder in `toolbox/shared/editorExperienceLayer.js`
   - summarizes validation state, dependency graph, remediation actions, packaging state, and runtime state
   - emits stable sectioned report text for pipeline inspection
 - Added automated coverage in `tests/tools/EditorExperienceLayer.test.mjs`
@@ -21,11 +21,11 @@ Implement the Editor Experience Layer defined in `PLAN_PR_EDITOR_EXPERIENCE_LAYE
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/editorExperienceLayer.js`
+  - `node --check toolbox/shared/editorExperienceLayer.js`
   - `node --check tests/tools/EditorExperienceLayer.test.mjs`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Tilemap Studio/main.js`
-  - `node --check tools/Parallax Scene Studio/main.js`
+  - `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
+  - `node --check toolbox/Tilemap Studio/main.js`
+  - `node --check toolbox/Parallax Scene Studio/main.js`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`
 

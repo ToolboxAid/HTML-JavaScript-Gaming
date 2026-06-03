@@ -6,7 +6,7 @@ BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md
 # BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION
 
 ## Goal
-Implement the approved Sprite Editor project integration contract from `PLAN_PR_SPRITE_EDITOR_PROJECT_INTEGRATION` with small, surgical changes in `tools/Sprite Editor/` only.
+Implement the approved Sprite Editor project integration contract from `PLAN_PR_SPRITE_EDITOR_PROJECT_INTEGRATION` with small, surgical changes in `toolbox/Sprite Editor/` only.
 
 ## Approved contract implemented
 - Sprite Editor now consumes palette authority from engine `globalThis.palettesList` (loaded from `../../src/src/engine/paletteList.js`).
@@ -30,24 +30,24 @@ Implement the approved Sprite Editor project integration contract from `PLAN_PR_
 
 ## Scope boundaries honored
 In scope:
-- `tools/Sprite Editor/index.html`
-- `tools/Sprite Editor/spriteEditor.css`
-- `tools/Sprite Editor/README.md`
-- `tools/Sprite Editor/modules/constants.js`
-- `tools/Sprite Editor/modules/projectModel.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Sprite Editor/index.html`
+- `toolbox/Sprite Editor/spriteEditor.css`
+- `toolbox/Sprite Editor/README.md`
+- `toolbox/Sprite Editor/modules/constants.js`
+- `toolbox/Sprite Editor/modules/projectModel.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - docs_build/reports for this BUILD
 
 Out of scope:
 - engine rewrites
 - unrelated tools
-- pre-existing sprite editor implementations outside `tools/Sprite Editor/`
+- pre-existing sprite editor implementations outside `toolbox/Sprite Editor/`
 
 ## Validation summary
 - Syntax checks passed:
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Sprite Editor/modules/projectModel.js`
-  - `node --check tools/Sprite Editor/modules/constants.js`
+  - `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
+  - `node --check toolbox/Sprite Editor/modules/projectModel.js`
+  - `node --check toolbox/Sprite Editor/modules/constants.js`
 - Palette-gating and lock flows implemented per plan contract.
 - Save/load palette reference behavior implemented with unresolved-reference fallback to blocked mode.
 

@@ -12,7 +12,7 @@ Logging only. No behavior changes.
 ## Requirements
 
 ### 1. Trace all tile writes
-In `tools/Workspace Manager/main.js`:
+In `toolbox/Workspace Manager/main.js`:
 - Wrap every function that sets:
   - asset label
   - status label
@@ -29,7 +29,7 @@ console.log("[SVG_TILE_WRITE]", {
 });
 
 ### 2. Trace workspaceShell output
-In `tools/shared/workspaceShell.js`:
+In `toolbox/shared/workspaceShell.js`:
 - After normalized state is created:
 
 console.log("[WORKSPACE_SHELL_STATE]", state);

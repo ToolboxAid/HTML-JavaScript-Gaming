@@ -15,9 +15,9 @@ Implemented the Palette Manager V2 tag delete and User Palette Tag sort UI updat
 - Compact Source palette and Search source swatches controls now render as label/input rows.
 
 ## Validation
-- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
 - Targeted served-browser Palette Manager V2 validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

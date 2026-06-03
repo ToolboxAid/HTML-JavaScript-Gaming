@@ -37,8 +37,8 @@ PASS:
 - `node --check` on touched Collision Inspector V2 modules, shared loader, Asteroids runtime modules, Workspace Manager service, Asset Manager workspace bridge, and touched Playwright specs.
 - JSON parse check for:
   - `games/Asteroids/game.manifest.json`
-  - `tools/schemas/game.manifest.schema.json`
-  - `tools/schemas/workspace.manifest.schema.json`
+  - `toolbox/schemas/game.manifest.schema.json`
+  - `toolbox/schemas/workspace.manifest.schema.json`
 - `npx playwright test tests/playwright/tools/CollisionInspectorV2.spec.mjs --project=playwright --workers=1 --reporter=list`
   - 2 passed.
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "uses header lifecycle controls and launches tools from fixed Workspace Manager V2 tiles"`
@@ -49,13 +49,13 @@ PASS:
   - 1 passed. Used as targeted Asteroids launch smoke validation for the manifest dimension change.
 - `git diff --check`
   - Passed with line-ending warnings only.
-- `rg "Asteroids|loadAsteroids|ASTEROIDS" tools/collision-inspector-v2 -n`
+- `rg "Asteroids|loadAsteroids|ASTEROIDS" toolbox/collision-inspector-v2 -n`
   - No matches.
 
 FAIL, broader existing gate:
 
 - `npm test`
-  - Fails in `pretest` at `tools/dev/checkSharedExtractionGuard.mjs`.
+  - Fails in `pretest` at `toolbox/dev/checkSharedExtractionGuard.mjs`.
   - Reported `185 unexpected violation(s)`, `baseline_expected=609`, `baseline_resolved=6`, `total_violations=848`.
   - Remaining failures are broad repository guard drift also present before this PR_005 scope.
 

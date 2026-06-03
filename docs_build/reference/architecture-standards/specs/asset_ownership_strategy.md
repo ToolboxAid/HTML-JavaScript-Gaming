@@ -5,7 +5,7 @@
 - Assets stay with the owning surface:
   - deprecated reference games: `old_games/<gameId>/assets/...`
   - samples: `samples/<phase>/<sampleId>/assets/...`
-  - tool demos: `tools/.../assets/...`
+  - tool demos: `toolbox/.../assets/...`
 - Shared ownership is promotion-by-rule only.
 
 ## Promotion Criteria (Required)

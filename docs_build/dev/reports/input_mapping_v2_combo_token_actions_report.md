@@ -21,9 +21,9 @@ Task: PR_26140_109-polish-input-mapping-v2-combo-token-actions
 - Workspace V2 launch behavior was preserved.
 
 ## Validation
-- `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-- `node --check tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
-- `node --check tools/input-mapping-v2/js/services/InputMappingState.js`
+- `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `node --check toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- `node --check toolbox/input-mapping-v2/js/services/InputMappingState.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs -g "Input Mapping V2"`: 7 passed.
 - `npm run test:workspace-v2`: 66 passed.

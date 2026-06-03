@@ -8,17 +8,17 @@ Canonical new identity
 - Purpose: SVG-focused asset authoring studio
 
 Compatibility alias (centralized)
-- Location: tools/toolRegistry.js
+- Location: toolbox/toolRegistry.js
 - Mapping: vector-asset-studio -> svg-asset-studio
 - Consumers call resolveToolIdAlias() from the centralized registry alias map.
 - Verified usage points:
-  - tools/shared/toolHostManifest.js
-  - tools/Workspace Manager/main.js
+  - toolbox/shared/toolHostManifest.js
+  - toolbox/Workspace Manager/main.js
 
 Files renamed
-- tools/Vector Asset Studio/ -> tools/SVG Asset Studio/
+- toolbox/Vector Asset Studio/ -> toolbox/SVG Asset Studio/
 - docs/tools/vector-asset-studio/ -> docs/tools/svg-asset-studio/
-- tools/schemas/tools/vector-asset-studio.schema.json -> tools/schemas/tools/svg-asset-studio.schema.json
+- toolbox/schemas/tools/vector-asset-studio.schema.json -> toolbox/schemas/tools/svg-asset-studio.schema.json
 - samples/phase-09/0901/sample.0901.vector-asset-studio.json -> samples/phase-09/0901/sample.0901.svg-asset-studio.json
 - samples/phase-12/1204/sample.1204.vector-asset-studio.json -> samples/phase-12/1204/sample.1204.svg-asset-studio.json
 - samples/phase-12/1208/sample.1208.vector-asset-studio.json -> samples/phase-12/1208/sample.1208.svg-asset-studio.json
@@ -27,10 +27,10 @@ Files renamed
 - samples/phase-12/1217/sample-1217-vector-asset-studio.json -> samples/phase-12/1217/sample-1217-svg-asset-studio.json
 
 Files edited (high-impact)
-- tools/toolRegistry.js
-- tools/shared/toolHostManifest.js
-- tools/Workspace Manager/main.js
-- tools/schemas/workspace.manifest.schema.json
+- toolbox/toolRegistry.js
+- toolbox/shared/toolHostManifest.js
+- toolbox/Workspace Manager/main.js
+- toolbox/schemas/workspace.manifest.schema.json
 - samples/phase-19/1902/sample.1902.workspace-all-tools.json
 - samples/metadata/samples.index.metadata.json
 - games/metadata/games.index.metadata.json
@@ -43,10 +43,10 @@ Files edited (high-impact)
 - tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
 - tests/tools/ToolLocalSampleMigration.test.mjs
 - tests/tools/ToolBoundaryEnforcement.test.mjs
-- tools/SVG Asset Studio/index.html
-- tools/SVG Asset Studio/main.js
-- tools/SVG Asset Studio/how_to_use.html
-- tools/SVG Asset Studio/README.md
+- toolbox/SVG Asset Studio/index.html
+- toolbox/SVG Asset Studio/main.js
+- toolbox/SVG Asset Studio/how_to_use.html
+- toolbox/SVG Asset Studio/README.md
 
 Search evidence (repo-wide, excluding start_of_day/tmp/build artifacts)
 - "Vector Asset Studio": 336 hits
@@ -61,15 +61,15 @@ Search evidence (runtime-critical scope: tools, samples, games, tests, scripts, 
 - "svg-asset-studio": 186 hits
 
 Remaining old-name references and why allowed
-- tools/toolRegistry.js: centralized temporary compatibility alias required by this PR.
+- toolbox/toolRegistry.js: centralized temporary compatibility alias required by this PR.
 - scripts/PS/find-duplicate-methods/*.txt: historical/static analysis text artifacts containing old path strings; not runtime/tool identity sources.
 - Additional old-name hits outside runtime-critical scope are historical PR/report/docs references and are allowed for migration history.
 
 Validation commands/results
-- node --check tools/shared/platformShell.js -> PASS
-- node --check tools/toolRegistry.js -> PASS
-- node --check tools/shared/toolHostManifest.js -> PASS
-- node --check "tools/Workspace Manager/main.js" -> PASS
+- node --check toolbox/shared/platformShell.js -> PASS
+- node --check toolbox/toolRegistry.js -> PASS
+- node --check toolbox/shared/toolHostManifest.js -> PASS
+- node --check "toolbox/Workspace Manager/main.js" -> PASS
 - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools -> PASS (PASS=19 FAIL=0)
 
 Manual validation notes

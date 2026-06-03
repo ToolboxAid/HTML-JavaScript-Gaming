@@ -4,7 +4,7 @@
 Tighten the project schema set so tool/workspace/sample/game payloads cannot contain fields that are not explicitly defined, then validate every place the schemas are used.
 
 ## Scope
-- Review all schemas from `tools/schemas/**` and the attached schema set.
+- Review all schemas from `toolbox/schemas/**` and the attached schema set.
 - Tighten schemas to reject unknown fields using `additionalProperties: false` at every object level where the contract is known.
 - Replace loose `jsonValue` escape hatches with typed objects where the payload is owned by this repo.
 - Update nested workspace/tool validation so each `tools.<toolId>` block is validated against its tool schema.

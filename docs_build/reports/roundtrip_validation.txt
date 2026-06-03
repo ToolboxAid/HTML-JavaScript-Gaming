@@ -10,7 +10,7 @@ Roundtrip intent
 
 Integration checks
 1. Tool side links
-- tools/toolRegistry.js contains sampleEntryPoints linking to ../samples/phase-12/1208/index.html for:
+- toolbox/toolRegistry.js contains sampleEntryPoints linking to ../samples/phase-12/1208/index.html for:
   - Vector Map Editor
   - Vector Asset Studio
   - Tilemap Studio
@@ -18,10 +18,10 @@ Integration checks
 
 2. Sample side links
 - samples/phase-12/1208/index.html includes:
-  - /tools/Tilemap%20Studio/index.html
-  - /tools/Parallax%20Scene%20Studio/index.html
-  - /tools/Vector%20Asset%20Studio/index.html
-  - /tools/index.html
+  - /toolbox/Tilemap%20Studio/index.html
+  - /toolbox/Parallax%20Scene%20Studio/index.html
+  - /toolbox/Vector%20Asset%20Studio/index.html
+  - /toolbox/index.html
 
 3. Roundtrip outcome
 - Navigation flow exists for tool -> sample -> tool without runtime/network logic changes.

@@ -106,7 +106,7 @@ Do not run full sample suite.
 Run targeted checks only:
 
 ```powershell
-node --check "tools/Asset Browser/main.js"
+node --check "toolbox/Asset Browser/main.js"
 ```
 
 If Import Hub JS changes, run `node --check` on that file too.

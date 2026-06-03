@@ -116,7 +116,7 @@ New rules should extend existing authoritative sections whenever possible.
 Avoid introducing parallel governance systems or duplicate rule sets.
 
 Anti-drift governance:
-- avoid capability drift across `src/`, deprecated `old_games/`, deprecated `old_samples/`, and `tools/`
+- avoid capability drift across `src/`, deprecated `old_games/`, deprecated `old_samples/`, and `toolbox/`
 - avoid workflow drift across overlapping sections
 - avoid validation drift between engine, tool, and integration lanes
 - avoid UI/UX drift from Workspace V2 ecosystem contracts
@@ -315,7 +315,7 @@ Do not migrate pages during governance-only PRs unless the PR explicitly authori
 Allowed change scope is PR-specific.
 
 Unless a PR states otherwise, keep changes limited to:
-- `tools/preview-generator-v2/*`
+- `toolbox/preview-generator-v2/*`
 - `common/*`
 - `docs_build/dev/reports/*`
 
@@ -717,11 +717,11 @@ Boundary rules:
 Authoritative `src/` boundary rules:
 - `src/` is the authoritative reusable implementation surface
 - reusable logic should converge into `src/` over time
-- `old_games/`, `old_samples/`, and `tools/` are consumers or extensions of `src/`, not alternate engine layers
-- `old_games/`, `old_samples/`, and `tools/` must not become parallel runtime frameworks
+- `old_games/`, `old_samples/`, and `toolbox/` are consumers or extensions of `src/`, not alternate engine layers
+- `old_games/`, `old_samples/`, and `toolbox/` must not become parallel runtime frameworks
 
 Mandatory capability discovery rule:
-- before Codex writes new behavior into deprecated `old_games/`, deprecated `old_samples/`, or `tools/`, Codex must check whether equivalent or reusable capability already exists in `src/`
+- before Codex writes new behavior into deprecated `old_games/`, deprecated `old_samples/`, or `toolbox/`, Codex must check whether equivalent or reusable capability already exists in `src/`
 - Codex must reuse or extend existing `src/` capability when appropriate
 - if capability belongs in `src/` but does not exist, Codex must state that and either add or update `src/` when PR scope authorizes it, or document the required `src/` follow-up instead of creating a local workaround
 
@@ -1264,7 +1264,7 @@ Event wiring must live in external JavaScript classes or modules.
 - One control or section per class.
 - App/root class coordinates only and must not own DOM logic or business logic.
 - Controls do not reach into other controls directly.
-- No `tools/shared` dependency is allowed.
+- No `toolbox/shared` dependency is allowed.
 - Shared UI behavior must use reusable classes.
 - Do not duplicate shared UI behavior logic across controls or tools.
 
@@ -1396,10 +1396,10 @@ This is the single authoritative contract for first-class tool creation, templat
 First-class tools are Workspace V2 ecosystem members by default.
 
 Required tool location:
-- `tools/<tool-name>/`
+- `toolbox/<tool-name>/`
 
 Required template source:
-- `tools/_templates-v2`
+- `toolbox/_tool_template-v2`
 
 The copied template structure is the authoritative starting point.
 
@@ -1416,11 +1416,11 @@ Required preserved template structure:
 - accessibility structure
 
 Required Workspace Manager V2 integration:
-- `tools/workspace-manager-v2`
+- `toolbox/workspace-manager-v2`
 
 Required registration:
-- `tools/index.html`
-- `tools/workspace-manager-v2/index.html`
+- `toolbox/index.html`
+- `toolbox/workspace-manager-v2/index.html`
 
 Required workspace lifecycle participation:
 - dirty-state handling

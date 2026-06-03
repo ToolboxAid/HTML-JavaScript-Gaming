@@ -12,11 +12,11 @@ Complete Tilemap Studio V2 as a testable V2 re-engineered tool while enforcing H
 - No game changes.
 - No Workspace Manager v1 work.
 - No legacy tool patching.
-- No platformShell or tools/shared coupling.
+- No platformShell or toolbox/shared coupling.
 
 ## Required Architecture
-- `tools/tilemap-studio-v2/index.html` owns the static shell.
-- `tools/tilemap-studio-v2/index.js` owns behavior only.
+- `toolbox/tilemap-studio-v2/index.html` owns the static shell.
+- `toolbox/tilemap-studio-v2/index.js` owns behavior only.
 - Tool reads session-backed data only.
 - Tool does not fetch, guess, default, or fallback.
 - Tool name and visible title must end with `V2`.
@@ -46,7 +46,7 @@ Complete Tilemap Studio V2 as a testable V2 re-engineered tool while enforcing H
 - Valid session renders tilemap content.
 - Header renders from shared theme mount.
 - Browser console has no errors during load.
-- `node --check tools/tilemap-studio-v2/index.js` passes.
+- `node --check toolbox/tilemap-studio-v2/index.js` passes.
 
 ## Full Samples Smoke Test Decision
 Do not run full samples smoke by default. This PR is scoped to one V2 tool. Run targeted syntax and manual Tilemap Studio V2 checks only unless Codex changes shared loaders/frameworks.

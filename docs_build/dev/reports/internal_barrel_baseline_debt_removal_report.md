@@ -1,7 +1,7 @@
 # PR_26140_080 Internal Barrel Baseline Debt Removal Report
 
 ## Scope
-- Removed the 35 existing entries from `tools/dev/checkInternalBarrelGuard.baseline.json`.
+- Removed the 35 existing entries from `toolbox/dev/checkInternalBarrelGuard.baseline.json`.
 - Replaced active imports from remaining internal index barrels with direct canonical imports.
 - Moved `src/engine/components/index.js` implementation to `src/engine/components/Components.js`.
 - Removed these internal barrel/pass-through files:
@@ -11,7 +11,7 @@
   - `src/engine/debug/standard/threeD/legacySummarySurface.js`
   - `src/shared/state/contracts.js`
   - `src/shared/state/publicSelectors.js`
-  - `tools/shared/stringUtils.js`
+  - `toolbox/shared/stringUtils.js`
 - Updated shared tests that still imported from `src/shared/**/index.js`.
 - Updated `tests/runtime/Phase19OverlayExpansionFramework.test.mjs` stale shared index assertions and added the established Node browser-root import hook so the focused test runs under Node.
 - No sample/game entry `index.js` files were removed.

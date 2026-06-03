@@ -4,13 +4,13 @@
 Complete one final Palette Manager V2 exit pass by auditing the completed tool and fixing only concrete stale/dead artifacts found.
 
 ## Scope
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- Other `tools/palette-manager-v2/*` files only if the audit finds a concrete issue.
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- Other `toolbox/palette-manager-v2/*` files only if the audit finds a concrete issue.
 - Required PR workflow docs and review artifacts.
 
 ## Implementation
 1. Inspect Palette Manager V2 for:
-   - `tools/shared` references,
+   - `toolbox/shared` references,
    - stale/dead CSS override blocks,
    - duplicate controls or IDs,
    - unused required refs,
@@ -27,14 +27,14 @@ Complete one final Palette Manager V2 exit pass by auditing the completed tool a
 - Do not refactor structure.
 - Do not touch workspace/toolState behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not run the full samples smoke test.
 
 ## Validation
 - Syntax check changed files.
 - Run targeted duplicate-control/ref audit for Palette Manager V2.
-- Run targeted no-`tools/shared` dependency search for Palette Manager V2.
+- Run targeted no-`toolbox/shared` dependency search for Palette Manager V2.
 - Run targeted no-`details`/`summary` accordion-control search for Palette Manager V2 sections.
 - Run targeted Palette Manager V2 Playwright baseline test if present.
 - Run targeted Palette Manager V2 URL preset validation.

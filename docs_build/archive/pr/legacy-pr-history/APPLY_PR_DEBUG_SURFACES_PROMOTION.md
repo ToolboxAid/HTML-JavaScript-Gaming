@@ -32,4 +32,4 @@ Apply the approved extraction/relocation plan for debug surfaces with no feature
 - no unrelated files or systems changed
 
 ## Expected Outcome
-Debug surfaces are promoted out of `tools/dev` into shared `src/engine/debug` structure while engine-core remains minimal and local sample integrations stay local.
+Debug surfaces are promoted out of `toolbox/dev` into shared `src/engine/debug` structure while engine-core remains minimal and local sample integrations stay local.

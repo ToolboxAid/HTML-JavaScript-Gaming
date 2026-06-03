@@ -5,7 +5,7 @@ Validate user acceptance readiness for Tile Model Converter across launch, core 
 
 ## Scope
 - Tool: `tile-model-converter`
-- Entry point: `tools/Tile Model Converter/index.html`
+- Entry point: `toolbox/Tile Model Converter/index.html`
 
 ## Validation Scenarios
 

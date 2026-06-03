@@ -169,9 +169,9 @@ Vector Asset Studio cannot load sample 0901 because required palette configurati
 Run:
 
 ```powershell
-node --check "tools/Vector Map Editor/editor/VectorMapEditorApp.js"
-node --check "tools/Vector Asset Studio/main.js"
-node --check "tools/Sprite Editor/main.js"
+node --check "toolbox/Vector Map Editor/editor/VectorMapEditorApp.js"
+node --check "toolbox/Vector Asset Studio/main.js"
+node --check "toolbox/Sprite Editor/main.js"
 npm run test:launch-smoke -- --tools
 ```
 

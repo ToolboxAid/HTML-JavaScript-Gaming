@@ -7,18 +7,18 @@
 
 ## Implementation Summary
 - New shared context helper:
-  - `tools/shared/toolHostSharedContext.js`
+  - `toolbox/shared/toolHostSharedContext.js`
   - Writes/reads/removes per-mount host context records.
   - Supports resolving context from `hostContextId` in URL.
 - Host runtime updates:
-  - `tools/shared/toolHostRuntime.js`
+  - `toolbox/shared/toolHostRuntime.js`
   - Writes host context on mount and passes `hostContextId` in hosted tool URL.
   - Excludes object payloads from query-string expansion.
   - Cleans host context on unmount.
 - Tool Host UI updates:
-  - `tools/Tool Host/index.html`
+  - `toolbox/Tool Host/index.html`
   - Added optional state JSON textarea.
-  - `tools/Tool Host/main.js`
+  - `toolbox/Tool Host/main.js`
   - Parses optional JSON state and passes it with shared context during mount.
 
 ## Validation
@@ -32,9 +32,9 @@
   - Console/runtime errors: none.
 
 ## Files Changed
-- `tools/shared/toolHostSharedContext.js`
-- `tools/shared/toolHostRuntime.js`
-- `tools/Tool Host/index.html`
-- `tools/Tool Host/main.js`
+- `toolbox/shared/toolHostSharedContext.js`
+- `toolbox/shared/toolHostRuntime.js`
+- `toolbox/Tool Host/index.html`
+- `toolbox/Tool Host/main.js`
 - `docs_build/reports/launch_smoke_report.md`
 - `docs_build/reports/BUILD_PR_TOOL_HOST_STATE_HANDOFF_report.md`

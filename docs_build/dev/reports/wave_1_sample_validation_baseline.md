@@ -14,13 +14,13 @@ Date: 2026-06-02
 
 | Target | Valid Expectation |
 | --- | --- |
-| Text to Speech V2 | Payload validates against `tools/schemas/tools/text2speech-V2.schema.json`; Tool State owns saved speech queue payload. |
-| Asset Pipeline | Payload validates against `tools/schemas/tools/asset-pipeline.schema.json`; manifest references assets/project context explicitly. |
-| Sprite Editor | Payload validates against `tools/schemas/tools/sprite-editor.schema.json` and includes required `spriteProject` structure. |
-| Palette | Palette payload validates against `tools/schemas/tools/palette-browser.schema.json` or approved future palette ownership surface. |
-| Tile Map Editor | Payload validates against `tools/schemas/tools/tile-map-editor.schema.json`; tilemap data belongs to Tool State. |
-| Parallax Editor | Payload validates against `tools/schemas/tools/parallax-editor.schema.json`; image/layer asset references are file/path based. |
-| SVG Asset Studio | Payload validates against `tools/schemas/tools/svg-asset-studio.schema.json`; vector/asset ownership is explicit. |
+| Text to Speech V2 | Payload validates against `toolbox/schemas/tools/text2speech-V2.schema.json`; Tool State owns saved speech queue payload. |
+| Asset Pipeline | Payload validates against `toolbox/schemas/tools/asset-pipeline.schema.json`; manifest references assets/project context explicitly. |
+| Sprite Editor | Payload validates against `toolbox/schemas/tools/sprite-editor.schema.json` and includes required `spriteProject` structure. |
+| Palette | Palette payload validates against `toolbox/schemas/tools/palette-browser.schema.json` or approved future palette ownership surface. |
+| Tile Map Editor | Payload validates against `toolbox/schemas/tools/tile-map-editor.schema.json`; tilemap data belongs to Tool State. |
+| Parallax Editor | Payload validates against `toolbox/schemas/tools/parallax-editor.schema.json`; image/layer asset references are file/path based. |
+| SVG Asset Studio | Payload validates against `toolbox/schemas/tools/svg-asset-studio.schema.json`; vector/asset ownership is explicit. |
 | Workspace all-tools sample | Uses active authoritative manifest/tool/ProjectWorkspace surfaces; does not depend on missing workspace schema. |
 
 ## Invalid Payload Expectations

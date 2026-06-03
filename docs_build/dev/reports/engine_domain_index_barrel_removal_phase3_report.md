@@ -30,7 +30,7 @@
 - Interaction helpers -> `src/engine/interaction/InteractionSystem.js`
 
 ## Additional Import Validation Repair
-- While validating changed-file imports, `tests/final/EditorAutomationSecurityPipeline.test.mjs` surfaced stale imports from removed `tools/shared/editor/index.js` and `tools/shared/pipeline/index.js`.
+- While validating changed-file imports, `tests/final/EditorAutomationSecurityPipeline.test.mjs` surfaced stale imports from removed `toolbox/shared/editor/index.js` and `toolbox/shared/pipeline/index.js`.
 - Because that test was already touched for automation barrel removal, it was updated with direct canonical imports from the existing editor and pipeline files so the requested changed-file import validation and affected domain test can run cleanly.
 
 ## Validation

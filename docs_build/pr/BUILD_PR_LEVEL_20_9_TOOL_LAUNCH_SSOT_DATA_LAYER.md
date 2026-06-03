@@ -25,7 +25,7 @@ One PR purpose only:
 Samples must launch tools through explicit SSoT target paths:
 
 ```text
-tools/<tool>/index.html
+toolbox/<tool>/index.html
 ```
 
 Sample launch actions must remain:
@@ -39,7 +39,7 @@ Open <tool>
 Games must launch Workspace Manager through the SSoT target path:
 
 ```text
-tools/Workspace Manager/index.html
+toolbox/Workspace Manager/index.html
 ```
 
 Game launch actions must remain:

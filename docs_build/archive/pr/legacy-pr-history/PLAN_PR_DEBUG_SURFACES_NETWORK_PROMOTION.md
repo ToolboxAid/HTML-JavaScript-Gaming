@@ -58,7 +58,7 @@ src/engine/
         latencyDiagnosticsModel.js
         replicationDiagnosticsModel.js
 
-tools/
+toolbox/
   dev/
     server-dashboard/
       (project-owned docs/integration notes and optional local adapters)
@@ -74,7 +74,7 @@ games/
 | Minimal contracts/hooks | `src/engine/core/debug` | registration hooks, environment gating, narrow interfaces only |
 | Reusable network debug implementation | `src/engine/debug/network` | shared providers/panels/commands/dashboard foundation/diagnostics helpers |
 | Sample scenarios and synthetic feeds | project/sample folders | Sample A/B/C deterministic scenarios and local adapters |
-| Tool-local helper glue | `tools/dev` + project | temporary adapters, local stubs, project-specific sections |
+| Tool-local helper glue | `toolbox/dev` + project | temporary adapters, local stubs, project-specific sections |
 | Engine core UI behavior | not allowed | core must not own console/overlay/dashboard rendering policy |
 
 ## Migration Phases

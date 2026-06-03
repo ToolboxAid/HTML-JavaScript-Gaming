@@ -54,7 +54,7 @@ Engine runtime owns interpretation, execution, timing, rendering, input dispatch
 
 ## Current Evidence
 
-- `tools/schemas/game.manifest.schema.json` currently owns schema/version, game identity, launch, screen, music, and a `tools` map.
+- `toolbox/schemas/game.manifest.schema.json` currently owns schema/version, game identity, launch, screen, music, and a `tools` map.
 - `src/shared/contracts/gameManifestContract.js` defines Game Manifest as portable export/import format, not the database source of truth.
 - `src/shared/contracts/projectWorkspaceRuntimeContract.js` defines ProjectWorkspace as runtime-only and forbids persisted payload/storage fields.
 - `src/engine/core/Engine.js` owns runtime loop, scene updates, rendering, fullscreen layers, audio, and runtime monitoring.

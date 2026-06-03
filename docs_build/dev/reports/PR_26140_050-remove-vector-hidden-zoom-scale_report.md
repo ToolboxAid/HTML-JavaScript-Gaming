@@ -7,7 +7,7 @@
 - Left Collision Inspector V2 percent zoom behavior unchanged.
 
 ## Validation
-- PASS: node --check tools/object-vector-studio-v2/js/ToolStarterApp.js.
+- PASS: node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js.
 - PASS: node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs.
 - PASS: node --check tests/playwright/tools/CollisionInspectorV2.spec.mjs.
 - PASS: targeted ES module import validation for Object Vector Studio V2 and Collision Inspector V2 modules.
@@ -16,7 +16,7 @@
 - PASS: npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "shows Object Vector Studio V2 layout shell|creates Object Vector Studio V2 shapes with canvas drawing|edits Object Vector Studio V2 preview shapes|aligns Object Vector Studio V2 selection bounds|expands Object Vector Studio V2 asset authoring controls|drags selected Object Vector Studio V2 shapes|tracks Object Vector Studio V2 dirty state", 7 passed after serial rerun.
 - PASS: npm run test:workspace-v2, 58 passed.
 - PASS: git diff --check.
-- PASS: V8 coverage guardrail lists tools/object-vector-studio-v2/js/ToolStarterApp.js at 94% function coverage and no changed-runtime warnings.
+- PASS: V8 coverage guardrail lists toolbox/object-vector-studio-v2/js/ToolStarterApp.js at 94% function coverage and no changed-runtime warnings.
 - PASS: no games, samples, or start_of_day files changed.
 - SKIPPED: full samples smoke test, per request.
 

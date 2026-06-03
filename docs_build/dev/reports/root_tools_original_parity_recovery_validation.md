@@ -6,18 +6,18 @@ PR: PR_26152_051-root-tools-original-parity-recovery
 
 Restored only these already-migrated root Tools pages:
 
-- tools/index.html
-- tools/ai-assistant.html
-- tools/animation-studio.html
-- tools/asset-studio.html
-- tools/code-studio.html
-- tools/input-studio.html
-- tools/midi-studio.html
-- tools/object-vector-studio.html
-- tools/palette-manager.html
-- tools/particle-studio.html
-- tools/sound-studio.html
-- tools/storage-inspector.html
+- toolbox/index.html
+- toolbox/ai-assistant.html
+- toolbox/animation-studio.html
+- toolbox/asset-studio.html
+- toolbox/code-studio.html
+- toolbox/input-studio.html
+- toolbox/midi-studio.html
+- toolbox/object-vector-studio.html
+- toolbox/palette-manager.html
+- toolbox/particle-studio.html
+- toolbox/sound-studio.html
+- toolbox/storage-inspector.html
 
 No Admin, Account, Company, Games, Samples, root index, CSS, Theme V2 CSS, or additional tool pages were changed.
 
@@ -31,7 +31,7 @@ Result: PASS
 
 Each restored root page was compared against its matching historical `GameFoundryStudio/tools` source after only these root-path transforms:
 
-- Insert `<base href="../GameFoundryStudio/">` so root `/tools/*.html` pages can load the approved GameFoundryStudio assets and partials.
+- Insert `<base href="../GameFoundryStudio/">` so root `/toolbox/*.html` pages can load the approved GameFoundryStudio assets and partials.
 - Convert source `../assets/*` references to `assets/*` under the base path.
 - Convert the missing center image filename `assets/images/forge-bot.png` to existing `assets/images/forge-bot-single.png`; the old filename is absent from both the current and historical image tree.
 - Add `data-asset-root`, `data-tool-slug`, and `data-tool-icon-src` to each standalone page's `data-tool-display-mode` slot so external `tool-display-mode.js` loads badges and character images correctly from root pages.
@@ -44,7 +44,7 @@ Validated:
 
 - 12 restored root Tools pages match transformed historical source content.
 - 193 path and metadata references resolve, including CSS, JS, partials, center images, badge images, character images, generated tool tile images, generated badge object paths, and root migrated tool links.
-- `/tools/index.html` includes sorting and grouping controls, accordion list slot, and legacy accordion stack/tile layout marker.
+- `/toolbox/index.html` includes sorting and grouping controls, accordion list slot, and legacy accordion stack/tile layout marker.
 - Existing `GameFoundryStudio/assets/js/tools-page-accordions.js` contains the expected grouping, sorting, group label, badge, tile, and card-grid behavior markers.
 - All affected pages include header/footer partial slots.
 - No affected page contains inline `style` attributes, `<style>` blocks, inline script blocks, inline event handlers, or `imageDataUrl`.
@@ -58,13 +58,13 @@ A temporary local HTTP server was started inside the validation script and close
 
 Validated in browser:
 
-- `/tools/index.html` loads header and footer partials.
-- `/tools/index.html` renders 18 tool cards from the existing tool metadata.
+- `/toolbox/index.html` loads header and footer partials.
+- `/toolbox/index.html` renders 18 tool cards from the existing tool metadata.
 - Tool tile images load successfully.
 - Badge object paths are present for rendered cards.
 - Sorting/grouping controls exist.
 - Grouped mode renders 9 grouped accordions.
-- A migrated root tool link resolves to `/tools/ai-assistant.html`.
+- A migrated root tool link resolves to `/toolbox/ai-assistant.html`.
 - Each of the 11 standalone root tool pages loads header and footer partials.
 - Each standalone page loads display badge, display character, center ForgeBot image, left/right tool columns, vertical accordions, and horizontal accordion toggles.
 - No browser console errors were reported during the targeted affected-page pass.
@@ -84,11 +84,11 @@ Before report generation, `git diff --name-only` listed only the 12 affected roo
 ## Commands Run
 
 - Read: `docs_build/dev/PROJECT_INSTRUCTIONS.md`
-- Source discovery: `git log --all -- GameFoundryStudio/tools/*.html tools/*.html`
+- Source discovery: `git log --all -- GameFoundryStudio/tools/*.html toolbox/*.html`
 - Source read/restore: `git show 870cc75d97ac787664e2cb4d8b960194c0b82772:GameFoundryStudio/tools/<page>.html`
 - Static affected Tools validation with Node.
 - Targeted browser validation with an in-script local HTTP server and Playwright Chromium for the affected root Tools pages only.
-- Targeted whitespace validation: `git diff --check -- tools/index.html tools/ai-assistant.html tools/animation-studio.html tools/asset-studio.html tools/code-studio.html tools/input-studio.html tools/midi-studio.html tools/object-vector-studio.html tools/palette-manager.html tools/particle-studio.html tools/sound-studio.html tools/storage-inspector.html`
+- Targeted whitespace validation: `git diff --check -- toolbox/index.html toolbox/ai-assistant.html toolbox/animation-studio.html toolbox/asset-studio.html toolbox/code-studio.html toolbox/input-studio.html toolbox/midi-studio.html toolbox/object-vector-studio.html toolbox/palette-manager.html toolbox/particle-studio.html toolbox/sound-studio.html toolbox/storage-inspector.html`
 
 ## Tests Not Run
 
@@ -96,7 +96,7 @@ Repo-wide tests were not run, per BUILD instruction. `npm run test:workspace-v2`
 
 ## Manual Validation
 
-1. Open `/tools/index.html`.
+1. Open `/toolbox/index.html`.
 2. Confirm the approved legacy title, sorting controls, generated tool cards, images, badges, group labels, tile outlines, header, and footer render.
 3. Use `Grouped` and `Order A-Z` controls and confirm grouping/sorting behavior updates the rendered tool list.
 4. Open each restored root tool page listed in Scope.

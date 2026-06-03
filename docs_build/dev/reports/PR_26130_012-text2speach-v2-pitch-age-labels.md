@@ -62,10 +62,10 @@ Additional checks passed:
 
 ```text
 node --check src/engine/audio/TextToSpeechDefaults.js
-node --check tools/text2speach-V2/js/controls/SpeechOptionsControl.js
+node --check toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-node -e "JSON.parse(require('fs').readFileSync('tools/schemas/tools/text2speach-V2.schema.json','utf8')); console.log('schema json ok')"
-rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" tools/text2speach-V2/index.html
+node -e "JSON.parse(require('fs').readFileSync('toolbox/schemas/tools/text2speach-V2.schema.json','utf8')); console.log('schema json ok')"
+rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" toolbox/text2speach-V2/index.html
 git diff --check HEAD -- .
 ```
 
@@ -78,7 +78,7 @@ The workspace-v2 Playwright run also regenerated advisory V8 coverage reports:
 
 Changed runtime JavaScript coverage from the guardrail:
 
-- `(98%) tools/text2speach-V2/js/controls/SpeechOptionsControl.js - executed lines 478/478; executed functions 46/47`
+- `(98%) toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js - executed lines 478/478; executed functions 46/47`
 - `(100%) src/engine/audio/TextToSpeechDefaults.js - executed lines 162/162; executed functions 1/1`
 
 ## Full Samples Smoke Test
@@ -95,7 +95,7 @@ tmp/PR_26130_012-text2speach-v2-pitch-age-labels_delta.zip
 
 ## Manual Validation Steps
 
-1. Open `tools/text2speach-V2/index.html`.
+1. Open `toolbox/text2speach-V2/index.html`.
 2. Confirm the Pitch slider shows the centered helper scale `Male < Neutral > Female` directly below the slider.
 3. Select Voice Age `Child`, `Teen`, `Adult`, and `Elderly`; Rate and Pitch should update visibly when those sliders have not been manually edited.
 4. Manually change Rate and Pitch, then select another Voice Age; the manual Rate and Pitch values should remain.
@@ -107,10 +107,10 @@ Expected outcome: Pitch direction is visually explained, Voice Age simulation af
 
 - `src/engine/audio/TextToSpeechDefaults.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/schemas/tools/text2speach-V2.schema.json`
-- `tools/text2speach-V2/index.html`
-- `tools/text2speach-V2/js/controls/SpeechOptionsControl.js`
-- `tools/text2speach-V2/styles/text2speach-V2.css`
+- `toolbox/schemas/tools/text2speach-V2.schema.json`
+- `toolbox/text2speach-V2/index.html`
+- `toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js`
+- `toolbox/text2speach-V2/styles/text2speach-V2.css`
 - `docs_build/dev/reports/PR_26130_012-text2speach-v2-pitch-age-labels.md`
 - `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`

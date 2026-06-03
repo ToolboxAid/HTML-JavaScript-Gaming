@@ -37,7 +37,7 @@ This report must:
   - `src/`
   - `games/`
   - `samples/`
-  - `tools/`
+  - `toolbox/`
   - HTML stylesheet references
   - metadata/report-only references if found
 - identify whether current usage appears consistent, mixed, or transitional

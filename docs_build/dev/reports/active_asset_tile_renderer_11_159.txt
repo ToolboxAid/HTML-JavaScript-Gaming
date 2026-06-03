@@ -2,19 +2,19 @@
 Date: 2026-04-30
 
 Files searched (inspect-only set):
-- tools/Workspace Manager/main.js (searched)
-- tools/workspace-manager/main.js (no match)
-- tools/shared/platformShell.js (searched)
-- tools/shared/toolRegistry.js (no match)
-- tools/shared/toolLaunchState.js (no match)
-- tools/shared/toolCard*.js (no match)
-- tools/shared/*card*.js (no match)
-- tools/shared/*tile*.js (no match)
-- tools/index*.js (no match)
-- tools/index.html (inspected target context)
+- toolbox/Workspace Manager/main.js (searched)
+- toolbox/workspace-manager/main.js (no match)
+- toolbox/shared/platformShell.js (searched)
+- toolbox/shared/toolRegistry.js (no match)
+- toolbox/shared/toolLaunchState.js (no match)
+- toolbox/shared/toolCard*.js (no match)
+- toolbox/shared/*card*.js (no match)
+- toolbox/shared/*tile*.js (no match)
+- toolbox/index*.js (no match)
+- toolbox/index.html (inspected target context)
 
 Active renderer file/function:
-- File: tools/shared/platformShell.js
+- File: toolbox/shared/platformShell.js
 - Function: renderToolAssetBadge(toolId)
 - Render line source:
   `<span ...>${escapeHtml(`Asset: ${assetLabel}`)}</span>`
@@ -39,7 +39,7 @@ Exact new value source (patched):
 
 Why PR 11.158 missed it:
 - PR 11.158 patched Workspace Manager-side status plumbing.
-- The literal visible text `Asset: ...` is actually rendered in shared renderer `tools/shared/platformShell.js`.
+- The literal visible text `Asset: ...` is actually rendered in shared renderer `toolbox/shared/platformShell.js`.
 - Without patching this renderer fallback chain, it could still select `missingAssetLabel` (`none`) even when direct SVG manifest data existed.
 
 Expected visible text:
@@ -51,11 +51,11 @@ Diagnostic status:
 - Active renderer branch was proven statically and patched directly.
 
 Validation result:
-- node --check tools/shared/platformShell.js -> PASS
+- node --check toolbox/shared/platformShell.js -> PASS
 - Static trace confirms active renderer maps direct manifest SVG fields into asset label -> PASS
 - Sample 1902 static payload projection -> PASS
   - has svgText: true
   - sourceName: sample-0901-ship.svg
   - projected visible line: Asset: sample-0901-ship.svg
-- git diff --name-only -- tools/shared/platformShell.js docs_build/dev/reports/active_asset_tile_renderer_11_159.txt -> PASS
+- git diff --name-only -- toolbox/shared/platformShell.js docs_build/dev/reports/active_asset_tile_renderer_11_159.txt -> PASS
 - Note: repo has unrelated pre-existing dirty files outside this task scope.

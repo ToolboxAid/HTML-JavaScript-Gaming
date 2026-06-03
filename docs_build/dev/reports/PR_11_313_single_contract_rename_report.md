@@ -15,7 +15,7 @@ Enforce one repo-wide contract by renaming `legacy asset browser v2 id` to `asse
 - Tool runtime contract ID:
   - `asset-manager-v2`
 - Tool path:
-  - `tools/asset-manager-v2/`
+  - `toolbox/asset-manager-v2/`
 - Fixture path:
   - `tests/fixtures/v2-tools/asset-manager-v2.json`
 

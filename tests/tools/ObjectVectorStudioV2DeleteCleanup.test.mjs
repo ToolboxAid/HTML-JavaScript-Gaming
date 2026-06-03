@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import { ToolStarterApp } from "../../tools/object-vector-studio-v2/js/ToolStarterApp.js";
-import { ObjectVectorStudioV2SchemaService } from "../../tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js";
+import { ToolStarterApp } from "../../toolbox/object-vector-studio-v2/js/ToolStarterApp.js";
+import { ObjectVectorStudioV2SchemaService } from "../../toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js";
 
 function createJsonResponse(payload) {
   return {
@@ -57,7 +57,7 @@ function createPayload() {
 async function createSchemaService() {
   const service = new ObjectVectorStudioV2SchemaService({
     fetchRef: createLocalFetch(),
-    schemaUrl: new URL("../../tools/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url)
+    schemaUrl: new URL("../../toolbox/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url)
   });
   await service.loadSchema();
   return service;

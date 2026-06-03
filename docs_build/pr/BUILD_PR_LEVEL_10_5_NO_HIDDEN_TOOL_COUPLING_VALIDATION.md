@@ -14,7 +14,7 @@ Do not allow:
 ```js
 fetch('/assets/vectors/demo.json')
 fetch('/samples/...')
-fetch('/tools/.../samples/...')
+fetch('/toolbox/.../samples/...')
 ```
 
 Do not allow silent fallback data of any kind.
@@ -54,7 +54,7 @@ Scan all tools for:
 - `.json`
 - `/assets/`
 - `/samples/`
-- `/tools/shared/samples`
+- `/toolbox/shared/samples`
 - hardcoded game asset paths
 
 ## Required Test

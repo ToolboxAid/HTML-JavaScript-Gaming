@@ -4,23 +4,23 @@
 Batch-correct and verify the active V2 tool lane so `index.html` owns static shell/CSS/header mount/page layout/menu containers/module scripts, while `index.js` remains behavior-only.
 
 ## Active V2 Folders Found
-- `tools/palette-manager-v2/`
-- `tools/svg-asset-studio-v2/`
-- `tools/vector-map-editor-v2/`
+- `toolbox/palette-manager-v2/`
+- `toolbox/svg-asset-studio-v2/`
+- `toolbox/vector-map-editor-v2/`
 
 ## Listed V2 Folders Not Present
-- `tools/tilemap-studio-v2/` - NOT PRESENT - SKIPPED
-- `tools/asset-manager-v2/` - NOT PRESENT - SKIPPED
+- `toolbox/tilemap-studio-v2/` - NOT PRESENT - SKIPPED
+- `toolbox/asset-manager-v2/` - NOT PRESENT - SKIPPED
 
 No unrelated scaffolding was created for absent V2 tools.
 
 ## Files Verified For Batch Correction
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.html`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.html`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.html`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.html`
+- `toolbox/vector-map-editor-v2/index.js`
 
 The active V2 files were already in the corrected HTML-first shape at execution time; this pass verified and packaged that active lane.
 
@@ -58,19 +58,19 @@ Guard scan confirmed no active V2 `index.js` contains:
 Commands run:
 
 ```powershell
-node --check tools/palette-manager-v2/index.js
-node --check tools/svg-asset-studio-v2/index.js
-node --check tools/vector-map-editor-v2/index.js
+node --check toolbox/palette-manager-v2/index.js
+node --check toolbox/svg-asset-studio-v2/index.js
+node --check toolbox/vector-map-editor-v2/index.js
 ```
 
 Results:
-- `node --check tools/palette-manager-v2/index.js` passed.
-- `node --check tools/svg-asset-studio-v2/index.js` passed.
-- `node --check tools/vector-map-editor-v2/index.js` passed.
+- `node --check toolbox/palette-manager-v2/index.js` passed.
+- `node --check toolbox/svg-asset-studio-v2/index.js` passed.
+- `node --check toolbox/vector-map-editor-v2/index.js` passed.
 
 Skipped commands:
-- `node --check tools/tilemap-studio-v2/index.js` - NOT PRESENT - SKIPPED
-- `node --check tools/asset-manager-v2/index.js` - NOT PRESENT - SKIPPED
+- `node --check toolbox/tilemap-studio-v2/index.js` - NOT PRESENT - SKIPPED
+- `node --check toolbox/asset-manager-v2/index.js` - NOT PRESENT - SKIPPED
 
 ## Additional Guard Checks
 - HTML/JS compliance scan passed for the three active V2 folders.
@@ -84,9 +84,9 @@ No changes were made to:
 - Workspace Manager v1
 - legacy tools without `-v2`
 - `platformShell`
-- `tools/shared/*`
+- `toolbox/shared/*`
 - root `/index.html`
-- `/tools/index.html`
+- `/toolbox/index.html`
 
 ## Roadmap
 `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` was not updated. No exact execution-backed status marker change was required by this batch verification.

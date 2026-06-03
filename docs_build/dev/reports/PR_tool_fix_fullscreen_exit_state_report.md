@@ -4,7 +4,7 @@
 - PASS/FAIL: PASS
 
 ## Changed Files
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - tmp/pr_tool_fix_fullscreen_exit_state_validation.json
 - docs_build/dev/reports/PR_tool_fix_fullscreen_exit_state_report.md
 
@@ -24,7 +24,7 @@
 - Summary label now reflects non-fullscreen state after exit and retains tool-specific wording.
 
 ## Validation Commands/Results
-- `node --check tools/shared/platformShell.js` -> PASS
+- `node --check toolbox/shared/platformShell.js` -> PASS
 - Targeted browser validation script (Parallax Scene Studio) -> PASS
 - Evidence: `tmp/pr_tool_fix_fullscreen_exit_state_validation.json`
 

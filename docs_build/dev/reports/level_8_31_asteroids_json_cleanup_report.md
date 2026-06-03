@@ -32,7 +32,7 @@ Asteroids JSON inventory (`games/Asteroids/**/*.json`) contains 22 files (includ
   - every non-manifest Asteroids JSON file path is referenced by the manifest (`21/21` wired).
 - `assets/tilesets/ui.json` is wired through:
   - `assets.tileSets[].runtimePath`
-  - and is also referenced in `tools/shared/asteroidsPlatformDemo.js`.
+  - and is also referenced in `toolbox/shared/asteroidsPlatformDemo.js`.
 
 ## Duplicate HUD Data Audit
 Compared:
@@ -46,7 +46,7 @@ Findings:
 Deletion decision for `hud.json`:
 - **retained** (not safe to delete yet)
 - reasons:
-  - still referenced by `tools/shared/asteroidsPlatformDemo.js`
+  - still referenced by `toolbox/shared/asteroidsPlatformDemo.js`
   - still referenced by `games/Asteroids/game.manifest.json` legacy compatibility fields
   - still referenced by active docs/build records
 
@@ -87,7 +87,7 @@ Why deferred:
 
 ## Runtime/Script References Found
 Representative references that block safe deletion/moves:
-- `tools/shared/asteroidsPlatformDemo.js` -> `games/Asteroids/assets/palettes/hud.json`, `games/Asteroids/assets/tilesets/ui.json`
+- `toolbox/shared/asteroidsPlatformDemo.js` -> `games/Asteroids/assets/palettes/hud.json`, `games/Asteroids/assets/tilesets/ui.json`
 - `scripts/validate-asset-ownership-strategy.mjs` -> `games/Asteroids/assets/tools.manifest.json`
 - `tests/tools/GameAssetManifestDiscovery.test.mjs` -> `games/Asteroids/assets/tools.manifest.json`
 - runtime/tooling conventions loading `workspace.asset-catalog.json` via filename-based discovery (game skin loader/platform shell/tooling)

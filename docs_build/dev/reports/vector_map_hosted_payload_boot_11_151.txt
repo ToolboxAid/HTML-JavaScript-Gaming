@@ -2,7 +2,7 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Vector Map Editor/main.js
+- toolbox/Vector Map Editor/main.js
 - docs_build/dev/reports/vector_map_hosted_payload_boot_11_151.txt
 
 Old boot path found:
@@ -32,10 +32,10 @@ Objects verified:
   - obj-hazard-zone
 
 Validation commands/results:
-- node --check "tools/Vector Map Editor/main.js" -> PASS
+- node --check "toolbox/Vector Map Editor/main.js" -> PASS
 - rg path checks in main.js for hosted direct payload + objects path + no-map suppression -> PASS
 - node JSON check of Sample 1902 object ids -> PASS
-- git diff --name-only -- "tools/Vector Map Editor/main.js" "docs_build/dev/reports/vector_map_hosted_payload_boot_11_151.txt" -> PASS
+- git diff --name-only -- "toolbox/Vector Map Editor/main.js" "docs_build/dev/reports/vector_map_hosted_payload_boot_11_151.txt" -> PASS
 
 Strict scope confirmation:
 - Modified code only in Vector Map Editor main boot file plus this report.

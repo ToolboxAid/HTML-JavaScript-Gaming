@@ -4,7 +4,7 @@
 Align Palette Manager v2 with the root `/index.html` shared theme header mount while preserving session-backed Palette Manager v2 behavior.
 
 ## Changed Files
-- `tools/Palette Manager/main.js`
+- `toolbox/Palette Manager/main.js`
 - `docs_build/dev/reports/PR_11_188B_palette_manager_v2_header_alignment_report.md`
 - `docs_build/dev/commit_comment.txt`
 
@@ -19,7 +19,7 @@ No changes were made to:
 - `start_of_day/**`
 - Workspace Manager v1
 - `platformShell`
-- `tools/shared/**`
+- `toolbox/shared/**`
 - SVG Asset Studio v2
 - legacy Palette Browser files
 
@@ -48,7 +48,7 @@ Session behavior remains session-backed only. No fallback/default data was added
 Command:
 
 ```powershell
-node --check "tools/Palette Manager/main.js"
+node --check "toolbox/Palette Manager/main.js"
 ```
 
 Result: passed.
@@ -57,7 +57,7 @@ Result: passed.
 Command:
 
 ```powershell
-rg -n "page-intro|<h1>Palette Manager|platformShell|assetUsageIntegration|tools/shared|Workspace Manager|handoff|fallback|demo data|^import |^export " -- "tools/Palette Manager/main.js"
+rg -n "page-intro|<h1>Palette Manager|platformShell|assetUsageIntegration|tools/shared|Workspace Manager|handoff|fallback|demo data|^import |^export " -- "toolbox/Palette Manager/main.js"
 ```
 
 Result: passed. No matches.
@@ -66,7 +66,7 @@ Result: passed. No matches.
 Command:
 
 ```powershell
-rg -n "shared-theme-header|mount-shared-header|is-collapsible|data-menu-tool|data-menu-workspace|\[PALETTE_V2_ENTRY\]|\[SESSION_CONTEXT_READ\]|\[PALETTE_V2_CONTRACT_LOADED\]" -- "tools/Palette Manager/main.js"
+rg -n "shared-theme-header|mount-shared-header|is-collapsible|data-menu-tool|data-menu-workspace|\[PALETTE_V2_ENTRY\]|\[SESSION_CONTEXT_READ\]|\[PALETTE_V2_CONTRACT_LOADED\]" -- "toolbox/Palette Manager/main.js"
 ```
 
 Result: passed. Evidence found for:
@@ -80,7 +80,7 @@ Result: passed. Evidence found for:
 - `[PALETTE_V2_CONTRACT_LOADED]`
 
 ## Targeted Palette Manager v2 Launch Check
-A targeted Node VM harness executed `tools/Palette Manager/main.js` with minimal browser mocks.
+A targeted Node VM harness executed `toolbox/Palette Manager/main.js` with minimal browser mocks.
 
 ### Empty State
 Observed:

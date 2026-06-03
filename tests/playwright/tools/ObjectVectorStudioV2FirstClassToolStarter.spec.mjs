@@ -18,7 +18,7 @@ let toolUrl;
 async function startStaticServer() {
   server = createServer(async (request, response) => {
     try {
-      const requestPath = request.url === "/" ? "/tools/object-vector-studio-v2/index.html" : new URL(request.url, "http://127.0.0.1").pathname;
+      const requestPath = request.url === "/" ? "/toolbox/object-vector-studio-v2/index.html" : new URL(request.url, "http://127.0.0.1").pathname;
       const filePath = normalize(join(REPO_ROOT, decodeURIComponent(requestPath)));
       const relativePath = relative(REPO_ROOT, filePath);
       if (relativePath.startsWith("..")) {

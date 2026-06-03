@@ -4,7 +4,7 @@
 Apply one scoped Palette Manager V2 fix bundle covering right-column accordion sizing, user-added source locking, and 8-digit hex input support.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -18,7 +18,7 @@ Apply one scoped Palette Manager V2 fix bundle covering right-column accordion s
 ## Boundaries
 - Do not change workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not modify shared accordionV2.
 - Do not add dependencies.
 - Do not refactor outside the targeted local fix.

@@ -25,11 +25,11 @@ PASS
 - PASS: `node --check src/engine/audio/InstrumentGridParser.js`
 - PASS: `node --check src/engine/audio/PreviewInstrumentPacks.js`
 - PASS: `node --check src/engine/audio/PreviewSynthEngine.js`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: `rg --pcre2 -n "<style|on(click|change|input|submit)=|<script(?![^>]*src)" tools/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 }`
+- PASS: `rg --pcre2 -n "<style|on(click|change|input|submit)=|<script(?![^>]*src)" toolbox/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 }`
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave timeline editor is the default editable and playable Studio workflow|roadmap exists" --reporter=list --workers=1 --timeout=60000`
 - PASS: `git diff --check`
 

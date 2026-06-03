@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const htmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
-const jsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
+const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-id-usability-results.json");
 
 function readText(filePath) {
@@ -55,9 +55,9 @@ export function run() {
   const deleteTouchesHistory = deleteMethod.includes("readSessionHistory(") ||
     deleteMethod.includes("writeSessionHistory(");
 
-  if (!htmlExists) failures.push("Missing tools/workspace-v2/index.html.");
-  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!syntax.ok) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+  if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!syntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
   if (!hasSessionIdLabel) failures.push("Session Name label was not updated to Session ID label.");
   if (!hasHelperText) failures.push("Session ID helper text is missing.");
   if (!hasCopyButtonText) failures.push("Copy ID button is missing from Recent Sessions.");

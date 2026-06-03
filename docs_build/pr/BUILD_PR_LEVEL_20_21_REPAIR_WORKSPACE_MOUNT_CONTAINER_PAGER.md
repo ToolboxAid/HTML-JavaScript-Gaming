@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Repair Workspace Manager by treating `tools/Workspace Manager/index.html` as the tool-host shell and ensuring the selected tool/workspace surface is loaded into:
+Repair Workspace Manager by treating `toolbox/Workspace Manager/index.html` as the tool-host shell and ensuring the selected tool/workspace surface is loaded into:
 
 ```html
 <div data-tool-host-mount-container class="tool-host-workspace__mount"></div>
@@ -10,7 +10,7 @@ Repair Workspace Manager by treating `tools/Workspace Manager/index.html` as the
 
 ## User Diagnosis
 
-The current `tools/Workspace Manager/index.html` is:
+The current `toolbox/Workspace Manager/index.html` is:
 
 ```html
 <!DOCTYPE html>
@@ -53,7 +53,7 @@ One PR purpose only:
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=Breakout&mount=game
+toolbox/Workspace Manager/index.html?gameId=Breakout&mount=game
 ```
 
 Workspace Manager host shell must:
@@ -112,7 +112,7 @@ Codex must NOT:
 - use dropdown + Select Tool + Mount flow
 - change sample `Open <tool>` behavior
 - change game `Open with Workspace Manager` behavior
-- modify unrelated tools/games/samples
+- modify unrelated toolbox/games/samples
 - modify `start_of_day`
 - broad refactor Workspace Manager
 

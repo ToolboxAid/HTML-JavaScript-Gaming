@@ -4,7 +4,7 @@
 Complete pass two of the Workspace-hosted shell migration by making Workspace Manager tiles read `workspaceShell.js` normalized state instead of legacy platform-shell badge/handoff state.
 
 ## Context
-PR 11.169 pass one creates an independent contract-first `tools/shared/workspaceShell.js`.
+PR 11.169 pass one creates an independent contract-first `toolbox/shared/workspaceShell.js`.
 
 If SVG Asset Studio still shows:
 
@@ -47,8 +47,8 @@ Do not rewrite unrelated shell/fullscreen/nav code.
 
 ### 1. Inspect pass-one implementation
 Review:
-- `tools/shared/workspaceShell.js`
-- `tools/Workspace Manager/main.js`
+- `toolbox/shared/workspaceShell.js`
+- `toolbox/Workspace Manager/main.js`
 - SVG Asset Studio hosted entry/init file
 
 Confirm where normalized workspace state is exposed after PR 11.169.
@@ -64,7 +64,7 @@ Allowed pattern:
 Do not use global shared asset handoff.
 
 ### 3. Workspace Manager listens and updates tile
-In `tools/Workspace Manager/main.js`:
+In `toolbox/Workspace Manager/main.js`:
 - listen for the specific workspace shell state message
 - validate the message has:
   - `toolId`
@@ -116,10 +116,10 @@ Do not delete UNKNOWN in this PR.
 
 ## Validation
 Run:
-- `node --check tools/shared/workspaceShell.js`
-- `node --check tools/shared/platformShell.js`
-- `node --check "tools/Workspace Manager/main.js"`
-- `node --check "tools/SVG Asset Studio/main.js"`
+- `node --check toolbox/shared/workspaceShell.js`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
 
 Manual:
 - open sample 1902

@@ -7,7 +7,7 @@
 PASS: 14/14 tests passed.
 
 ## Targeted Coverage
-- Session Inspector V2 launches from `tools/session-inspector-v2/index.html`.
+- Session Inspector V2 launches from `toolbox/session-inspector-v2/index.html`.
 - `Return to Workspace` is present and returns to Workspace Manager V2 with launch context preserved.
 - The old loose action nav is absent.
 - The left column shows `Controls` before `Filters`.

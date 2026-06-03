@@ -2,13 +2,13 @@
 
 ## Scope
 - Reviewed `docs_build/dev/PROJECT_INSTRUCTIONS.md` before implementation.
-- Reviewed attached schema bundle `tools/schemas.zip` entries for `schemas/workspace.manifest.schema.json` and `schemas/tools/asset-manager-v2.schema.json` without extracting or modifying the ZIP.
+- Reviewed attached schema bundle `toolbox/schemas.zip` entries for `schemas/workspace.manifest.schema.json` and `schemas/tools/asset-manager-v2.schema.json` without extracting or modifying the ZIP.
 - Kept scope limited to Workspace Manager V2, Asset Manager V2, Preview Generator V2 launch hydration, manifests, schema, and dedicated Playwright coverage.
-- Did not modify deprecated `tools/workspace-v2`.
+- Did not modify deprecated `toolbox/workspace-v2`.
 - Did not modify sample JSON.
 
 ## Schema Alignment Notes
-- `tools/schemas/workspace.manifest.schema.json` already required only `palette-manager-v2` and `asset-manager-v2`; that SSoT requirement remains unchanged.
+- `toolbox/schemas/workspace.manifest.schema.json` already required only `palette-manager-v2` and `asset-manager-v2`; that SSoT requirement remains unchanged.
 - Removed `previewImagePath` from the Asset Manager V2 payload schema and from Asteroids manifest data.
 - Changed image role naming to `preview`; removed `bezel` and `preview-image` from active Asset Manager V2 image roles.
 - Moved stretch override allowance from `assets.image.bezel.*` to `assets.image.preview.*`.

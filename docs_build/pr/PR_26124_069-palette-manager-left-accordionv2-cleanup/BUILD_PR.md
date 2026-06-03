@@ -4,11 +4,11 @@
 Perform one scoped Palette Manager V2 cleanup by converting any remaining left-column legacy `details`/`summary` accordion markup to the existing `accordionV2` structure.
 
 ## Scope
-- `tools/palette-manager-v2/index.html` only if left-column legacy accordion markup exists.
+- `toolbox/palette-manager-v2/index.html` only if left-column legacy accordion markup exists.
 - PR workflow docs and required review artifacts.
 
 ## Implementation
-1. Inspect only `tools/palette-manager-v2/index.html` and immediate Palette Manager accordion references.
+1. Inspect only `toolbox/palette-manager-v2/index.html` and immediate Palette Manager accordion references.
 2. Search for `details`/`summary` markup inside `.palette-manager-v2__panel--left`.
 3. If found, convert only the left-column legacy accordion markup to the existing pattern used by working Palette Manager V2 sections:
    - `section.accordion-v2`
@@ -24,7 +24,7 @@ Perform one scoped Palette Manager V2 cleanup by converting any remaining left-c
 - Do not change layout beyond matching `accordionV2` structure.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not change pin styling or size.
 - Do not add dependencies.
 - Avoid broad refactor.

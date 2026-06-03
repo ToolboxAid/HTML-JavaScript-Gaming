@@ -5,7 +5,7 @@ Fix sample 1902 so it conforms to the actual Workspace schema instead of using a
 
 ## Problem
 Sample 1902 still opens with Palette as the only valid tool. The uploaded JSON does not match the Workspace schema shape:
-- it uses `$schema: ../../../tools/schemas/sample.tool-payload.schema.json`
+- it uses `$schema: ../../../toolbox/schemas/sample.tool-payload.schema.json`
 - it uses `tool: workspace-all-tools-integration`
 - it uses `activeWorkspaceTools`
 - it contains copied game/sample/tool payload sections

@@ -4,7 +4,7 @@
 Fix the actual active renderer that displays `Asset: none` for SVG Asset Studio after PR 11.158 patched the wrong handoff path.
 
 ## Evidence
-PR 11.158 changed `tools/Workspace Manager/main.js` and reported that it wrote a shared asset handoff, but the visible UI still shows:
+PR 11.158 changed `toolbox/Workspace Manager/main.js` and reported that it wrote a shared asset handoff, but the visible UI still shows:
 
 ```text
 Vector Assets
@@ -22,16 +22,16 @@ The active renderer is likely in a shared tool card/tile component or registry/s
 
 Codex may inspect these files:
 
-- tools/Workspace Manager/main.js
-- tools/workspace-manager/main.js
-- tools/shared/platformShell.js
-- tools/shared/toolRegistry.js
-- tools/shared/toolLaunchState.js
-- tools/shared/toolCard*.js
-- tools/shared/*card*.js
-- tools/shared/*tile*.js
-- tools/index*.js
-- tools/index.html
+- toolbox/Workspace Manager/main.js
+- toolbox/workspace-manager/main.js
+- toolbox/shared/platformShell.js
+- toolbox/shared/toolRegistry.js
+- toolbox/shared/toolLaunchState.js
+- toolbox/shared/toolCard*.js
+- toolbox/shared/*card*.js
+- toolbox/shared/*tile*.js
+- toolbox/index*.js
+- toolbox/index.html
 
 Codex may modify ONLY the one file that contains the active renderer for the visible `Asset: none` line, plus the report:
 
@@ -139,7 +139,7 @@ The report must then instruct the user to send that console output.
 
 ## Anti-Noop Rules
 
-This PR is invalid if it only changes `tools/Workspace Manager/main.js` in the same `primeSvgAssetStatusLabelFromWorkspaceDiagnostics` handoff branch used by PR 11.158.
+This PR is invalid if it only changes `toolbox/Workspace Manager/main.js` in the same `primeSvgAssetStatusLabelFromWorkspaceDiagnostics` handoff branch used by PR 11.158.
 
 Codex must either:
 1. Patch the actual shared/tile renderer source; OR

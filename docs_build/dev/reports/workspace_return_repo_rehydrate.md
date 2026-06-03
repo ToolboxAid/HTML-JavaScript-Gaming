@@ -20,8 +20,8 @@
 
 ## Validation
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs` passed.
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js` passed.
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` passed.
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js` passed.
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` passed.
 - Focused missing/invalid repo reference restore test passed.
 - Focused Asset/Palette/Preview return flow test passed.
 - `npm run test:workspace-v2` passed: 16 tests.

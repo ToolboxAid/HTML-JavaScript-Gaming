@@ -21,7 +21,7 @@ Introduce event-driven world behavior:
 ## Out of Scope
 - src/engine/
 - games/
-- tools/
+- toolbox/
 - runtime code changes
 
 ## System Definition

@@ -1,7 +1,7 @@
 # PR_26152_053 Tools Index Tile Image Size Validation
 
 ## Scope
-- Updated only `tools/index.html` as the affected implementation page.
+- Updated only `toolbox/index.html` as the affected implementation page.
 - Used existing Theme V2 CSS/classes for the Tools Index tile image pattern.
 - Did not add page-local CSS or tool-local CSS.
 - Did not change Theme V2 CSS or unrelated CSS.
@@ -13,7 +13,7 @@
 - Kept the existing renderer-owned `control-card`, `card-media`, `card-grid`, badge, description, link, and group color classes intact.
 
 ## Root Tools Index validation
-PASS - Opened only `/tools/index.html` with a targeted local server and Playwright Chromium.
+PASS - Opened only `/toolbox/index.html` with a targeted local server and Playwright Chromium.
 PASS - Page loaded Theme V2 CSS and did not load `assets/css/styles.css`.
 PASS - Generated 18 Tools Index cards.
 PASS - Tile preview images are larger/readable: minimum measured image size was 339px by 415px, compared with the previous measured 210px by 263px baseline.
@@ -30,9 +30,9 @@ PASS - No browser console errors and no failed requests were detected.
 
 ## Static validation
 PASS - `git diff --name-only -- "*.css"` returned no CSS files.
-PASS - `git diff --name-only` returned only `tools/index.html` before report artifacts were written.
-PASS - `git diff --check -- tools/index.html` completed without whitespace errors.
-PASS - `tools/index.html` contains no `<style>` blocks, inline script blocks, inline event handlers, inline `style` attributes, or `imageDataUrl` references.
+PASS - `git diff --name-only` returned only `toolbox/index.html` before report artifacts were written.
+PASS - `git diff --check -- toolbox/index.html` completed without whitespace errors.
+PASS - `toolbox/index.html` contains no `<style>` blocks, inline script blocks, inline event handlers, inline `style` attributes, or `imageDataUrl` references.
 
 ## Tests intentionally not run
 - No repo-wide tests were run.

@@ -2,8 +2,8 @@
 
 ## Files changed
 
-- `tools/shared/toolLoadDiagnostics.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/shared/toolLoadDiagnostics.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - `docs_build/dev/reports/level_10_6H_tool_load_expected_diagnostics_report.md`
 - `docs_build/dev/reports/launch_smoke_report.md` (test-generated output update)
 

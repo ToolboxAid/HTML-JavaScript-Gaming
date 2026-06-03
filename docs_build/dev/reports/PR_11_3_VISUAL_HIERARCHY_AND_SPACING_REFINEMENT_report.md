@@ -9,7 +9,7 @@ PASS
 - No behavior/data/schema changes.
 
 ## Files Changed
-- `tools/shared/platformShell.css`
+- `toolbox/shared/platformShell.css`
 - `docs_build/dev/reports/PR_11_3_VISUAL_HIERARCHY_AND_SPACING_REFINEMENT_report.md`
 
 ## Refinements Applied

@@ -19,10 +19,10 @@
 - PASS: `node --check src/engine/rendering/WorldScreenTransform.js`
 - PASS: `node --check src/engine/rendering/ObjectVectorRuntimeAssetService.js`
 - PASS: `node --check src/engine/collision/objectVector.js`
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2App.js`
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2Controls.js`
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
-- PASS: `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2App.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2Controls.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
+- PASS: `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
 - PASS: `node --check games/Asteroids/game/AsteroidsGameScene.js`
 - PASS: `node --check games/Asteroids/game/AsteroidsAttractAdapter.js`
 - PASS: `node --check games/Asteroids/entities/Ufo.js`
@@ -49,7 +49,7 @@
 - Skipped. This PR is limited to shared orientation/runtime alignment and targeted Collision Inspector V2, Object Vector Studio V2, and Asteroids orientation validation.
 
 ## Manual Test Notes
-- Open `tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`.
+- Open `toolbox/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`.
 - Select ship, bullet, asteroid, and UFO objects and rotate A/B; expected result is heading guides, origins, transformed points, and collision results updating consistently.
 - Launch `games/Asteroids/index.html`, fire bullets at several ship headings, and verify bullet render direction and collision behavior track the ship heading.
 - Open Object Vector Studio V2 and rotate/edit object geometry; expected result is unchanged editor zoom behavior with preview transforms matching runtime/collision orientation math.

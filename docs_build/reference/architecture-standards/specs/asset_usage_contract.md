@@ -1,7 +1,7 @@
 # Asset Usage Contract
 
 ## Purpose
-Define the shared asset and shared palette handoff contract for first-class tools under `tools/`.
+Define the shared asset and shared palette handoff contract for first-class tools under `toolbox/`.
 
 This contract keeps tools on shared references by default instead of creating hidden tool-private copies of assets or palettes.
 
@@ -16,7 +16,7 @@ This contract keeps tools on shared references by default instead of creating hi
 
 ## Out of Scope
 - `SpriteEditor_old_keep`
-- sample surfacing on `tools/index.html`
+- sample surfacing on `toolbox/index.html`
 - showcase or game runtime content
 - engine-core API restructuring
 
@@ -36,7 +36,7 @@ Shared tool launches use query parameters on the target tool page:
   - asset browser: `browse` or `import`
   - palette browser: `browse` or `manage`
 - `sourceToolId`
-  - the calling first-class tool id from `tools/toolRegistry.js`
+  - the calling first-class tool id from `toolbox/toolRegistry.js`
 
 Example:
 

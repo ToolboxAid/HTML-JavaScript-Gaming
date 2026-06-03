@@ -4,11 +4,11 @@
 Center the Palette Manager V2 JSON action buttons in the `menuSample` nav without changing button behavior or other layout sections.
 
 ## Scope
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not change Import JSON, Copy JSON, or Export JSON behavior.
 - Do not affect other Palette Manager layout sections.
 - Do not add dependencies.

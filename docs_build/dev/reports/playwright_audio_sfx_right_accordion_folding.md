@@ -4,7 +4,7 @@ PR: `PR_26144_008-fix-audio-sfx-right-accordion-folding`
 
 ## Scope
 
-- Updated only `tools/audio-sfx-playground-v2` plus required reports.
+- Updated only `toolbox/audio-sfx-playground-v2` plus required reports.
 - Preserved the shared/template accordion pattern.
 - Kept Wave Preview, Output Summary, and Status as accordion sections.
 - Changed the Status accordion header from a non-button wrapper to a real accordion header button.
@@ -27,13 +27,13 @@ PASS:
   - CSS contains the closed right-column flex release rule
   - CSS braces are balanced
 - Audio / SFX Playground V2 JavaScript syntax check:
-  - `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`
+  - `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`
 - Changed runtime module import check:
   - `AccordionSection.js`
 - Accordion behavior check:
   - `AccordionSection` collapses and expands a section, updates `is-open`, `hidden`, and `aria-expanded`
 - Whitespace validation:
-  - `git diff --check -- tools/audio-sfx-playground-v2`
+  - `git diff --check -- toolbox/audio-sfx-playground-v2`
 - JSON validation:
   - No JSON files changed in this PR.
 
@@ -64,7 +64,7 @@ Because Playwright is unavailable in this local environment, browser launch vali
 
 WARN: Runtime JavaScript changed, but Playwright V8 coverage could not be generated because the local Playwright command is unavailable.
 
-- `(WARN) tools/audio-sfx-playground-v2/js/controls/AccordionSection.js - Playwright unavailable`
+- `(WARN) toolbox/audio-sfx-playground-v2/js/controls/AccordionSection.js - Playwright unavailable`
 
 ## Full Samples Smoke Test
 

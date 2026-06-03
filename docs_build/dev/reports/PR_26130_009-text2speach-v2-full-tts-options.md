@@ -18,8 +18,8 @@ No `start_of_day` files were changed.
 - Expanded `TextToSpeechEngine` to use selected `SpeechSynthesis` voices and to support speak, pause, resume, stop, replace/append queue mode, repeat count, loop mode, and delay between repeats.
 - Added SpeechSynthesis `voiceschanged` handling so browsers that load voices after page startup repopulate the Voice dropdown and re-enable Speak when a real voice becomes available.
 - Rebuilt `text2speach-V2` UI controls around textarea text input, voice/language dropdowns, range sliders, queue mode, auto speak, repeat/delay, character preset, ssml-like preset, and direct/workspace action buttons.
-- Added `tools/schemas/tools/text2speach-V2.schema.json`; every queue item requires all defined speech options.
-- Registered the payload schema in `tools/schemas/workspace.manifest.schema.json`.
+- Added `toolbox/schemas/tools/text2speach-V2.schema.json`; every queue item requires all defined speech options.
+- Registered the payload schema in `toolbox/schemas/workspace.manifest.schema.json`.
 - Updated Workspace Manager V2 toolState hydration so selected-game text2speach-V2 launches receive schema-complete default queue data when the game manifest has no text2speach-V2 payload.
 - Updated save/log item details to report `text2speach-V2 queue=3`.
 
@@ -75,13 +75,13 @@ Additional checks:
 ```text
 node --check src/engine/audio/TextToSpeechDefaults.js
 node --check src/engine/audio/TextToSpeechEngine.js
-node --check tools/text2speach-V2/js/TextToSpeechToolApp.js
-node --check tools/text2speach-V2/js/bootstrap.js
-node --check tools/text2speach-V2/js/controls/SpeechOptionsControl.js
-node --check tools/text2speach-V2/js/controls/QueueControl.js
+node --check toolbox/text2speach-V2/js/TextToSpeechToolApp.js
+node --check toolbox/text2speach-V2/js/bootstrap.js
+node --check toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js
+node --check toolbox/text2speach-V2/js/controls/QueueControl.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-node -e "JSON.parse(require('node:fs').readFileSync('tools/schemas/tools/text2speach-V2.schema.json','utf8'));"
-node -e "JSON.parse(require('node:fs').readFileSync('tools/schemas/workspace.manifest.schema.json','utf8'));"
+node -e "JSON.parse(require('node:fs').readFileSync('toolbox/schemas/tools/text2speach-V2.schema.json','utf8'));"
+node -e "JSON.parse(require('node:fs').readFileSync('toolbox/schemas/workspace.manifest.schema.json','utf8'));"
 git diff --check
 ```
 
@@ -104,7 +104,7 @@ tmp/PR_26130_009-text2speach-v2-full-tts-options_delta.zip
 
 ## Manual Validation Steps
 
-1. Open `tools/text2speach-V2/index.html`.
+1. Open `toolbox/text2speach-V2/index.html`.
 2. Confirm the Speech Queue has named default sentences and the Speech Options section shows voice, language, volume, rate/speed, pitch, queue mode, auto speak, repeat count, delay, character preset, and ssml-like preset controls.
 3. Select a voice, edit the text, and use Speak, Pause, Resume, and Stop.
 4. Open Workspace Manager V2, pick a repo folder, select a game, launch `text2speach-V2`, and confirm Repo Destination is not shown and the workspace action buttons are available.
@@ -117,16 +117,16 @@ Expected outcome: all controls remain enabled according to voice/text availabili
 - `src/engine/audio/TextToSpeechDefaults.js`
 - `src/engine/audio/TextToSpeechEngine.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/schemas/tools/text2speach-V2.schema.json`
-- `tools/schemas/workspace.manifest.schema.json`
-- `tools/text2speach-V2/index.html`
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js`
-- `tools/text2speach-V2/js/bootstrap.js`
-- `tools/text2speach-V2/js/controls/ActionNavControl.js`
-- `tools/text2speach-V2/js/controls/QueueControl.js`
-- `tools/text2speach-V2/js/controls/SpeechOptionsControl.js`
-- `tools/text2speach-V2/styles/text2speach-V2.css`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/schemas/tools/text2speach-V2.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
+- `toolbox/text2speach-V2/index.html`
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js`
+- `toolbox/text2speach-V2/js/bootstrap.js`
+- `toolbox/text2speach-V2/js/controls/ActionNavControl.js`
+- `toolbox/text2speach-V2/js/controls/QueueControl.js`
+- `toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js`
+- `toolbox/text2speach-V2/styles/text2speach-V2.css`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `docs_build/dev/reports/PR_26130_009-text2speach-v2-full-tts-options.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Rollback the broken Workspace Manager header/banner attempts and restore the page to the pre-header layout, then add only the requested tool pager above the tools/editors section.
+Rollback the broken Workspace Manager header/banner attempts and restore the page to the pre-header layout, then add only the requested tool pager above the toolbox/editors section.
 
 ## User Direction
 
@@ -39,7 +39,7 @@ This corresponds to the state after `BUILD_PR_LEVEL_20_13_REMOVE_WORKSPACE_MANAG
 One PR purpose only:
 
 1. Restore Workspace Manager runtime/layout files to the pre-header/broken-banner state.
-2. Add one centered pager directly above the existing tools/editors section:
+2. Add one centered pager directly above the existing toolbox/editors section:
 
 ```text
 [PREV] <toolname> [NEXT]
@@ -53,14 +53,14 @@ Workspace Manager must load the way it did before the broken header/banner attem
 
 - normal Toolbox Aid shared page/header remains as existing site chrome
 - normal Workspace Manager content appears below site chrome
-- normal tools/editors section appears
+- normal toolbox/editors section appears
 - existing game context/status appears
 - no detached Workspace Manager top banner replaces/blocks content
 - no blank/partial page with only the site image
 
 ## Required New Pager
 
-Directly above the existing tools/editors section, centered, add:
+Directly above the existing toolbox/editors section, centered, add:
 
 ```text
 [PREV] <toolname> [NEXT]
@@ -73,7 +73,7 @@ On page load:
 - Prev changes to previous available tool
 - Next changes to next available tool
 - current tool name updates between buttons
-- the existing tools/editors section remains visible
+- the existing toolbox/editors section remains visible
 
 ## Explicit Rollback Instructions
 
@@ -81,8 +81,8 @@ Codex must inspect git history and restore only the Workspace Manager files affe
 
 Likely files:
 
-- `tools/Workspace Manager/main.js`
-- `tools/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/index.html`
 - any Workspace Manager CSS touched by 20_14 through 20_19
 
 Codex must not rollback unrelated files or unrelated successful recovery work.
@@ -107,7 +107,7 @@ Codex must NOT:
 - change samples behavior
 - change game `Open with Workspace Manager` behavior
 - restore `gameId || game`
-- change unrelated tools/games/samples
+- change unrelated toolbox/games/samples
 - modify `start_of_day`
 - rewrite roadmap text outside status markers
 - broad refactor Workspace Manager
@@ -143,7 +143,7 @@ Validation must include:
 - proof failed header/banner/control area is removed
 - proof normal Workspace Manager page content loads below site chrome
 - proof only requested `[PREV] <toolname> [NEXT]` pager was added
-- proof pager appears above existing tools/editors section
+- proof pager appears above existing toolbox/editors section
 - proof first available tool selected/mounted on load
 - proof Prev/Next changes selected/mounted tool
 - proof `gameId || game` fallback was not restored
@@ -154,7 +154,7 @@ Validation must include:
 
 - Workspace Manager page loads like pre-header state.
 - Broken header/banner experiments are gone.
-- Normal Workspace Manager tools/editors content is visible.
-- `[PREV] <toolname> [NEXT]` appears above tools/editors.
+- Normal Workspace Manager toolbox/editors content is visible.
+- `[PREV] <toolname> [NEXT]` appears above toolbox/editors.
 - First available tool is selected/mounted.
 - Prev/Next switches tools.

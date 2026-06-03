@@ -12,16 +12,16 @@ Build and apply the approved versioned-contracts implementation in one surgical 
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Implemented Build Scope
-- Added `tools/shared/contractVersioning.js` for:
+- Added `toolbox/shared/contractVersioning.js` for:
   - semver normalization
   - supported/deprecated version policy construction
   - deterministic version support evaluation
   - version metadata export helpers
-- Updated `tools/shared/renderPipelineContract.js` to:
+- Updated `toolbox/shared/renderPipelineContract.js` to:
   - evaluate `contractVersion` via shared policy
   - normalize accepted aliases to canonical semver
   - expose `getRenderContractVersionMetadata()`
-- Updated `tools/shared/devConsoleDebugOverlay.js` to:
+- Updated `toolbox/shared/devConsoleDebugOverlay.js` to:
   - evaluate diagnostics `contractVersion` via shared policy
   - expose `getDevDiagnosticsContractVersionMetadata()`
 - Updated targeted tests for metadata + compatibility behavior

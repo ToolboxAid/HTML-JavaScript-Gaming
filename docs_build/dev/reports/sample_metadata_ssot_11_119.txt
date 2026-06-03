@@ -19,7 +19,7 @@ Files searched
 - samples/shared/sampleDetailPageEnhancement.js
 - samples/metadata/samples.index.metadata.json
 - samples/phase-12/1208/index.html
-- tools/shared/toolLaunchSSoT.js
+- toolbox/shared/toolLaunchSSoT.js
 
 Files changed
 - samples/index.render.js

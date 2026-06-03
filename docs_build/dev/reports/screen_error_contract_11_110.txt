@@ -1,14 +1,14 @@
 PR 11.110 - Screen error contract
 
 Error contract implemented for schema validation failures:
-- Source formatter: tools/shared/schemaOnlyToolPresetValidation.js
+- Source formatter: toolbox/shared/schemaOnlyToolPresetValidation.js
 - Message format (single visible status line):
   Input validation failed. tool=<toolId> (<toolName>); source=<jsonPath>; schema=<schemaPath>; failed=<failedField>; summary=<validationSummary>
 
 Contract fields included when available:
 - tool id/name: always provided from loader call context
 - JSON source path: requestedPath/samplePresetPath from loader context
-- schema path/name: /tools/schemas/tools/<toolId>.schema.json
+- schema path/name: /toolbox/schemas/tools/<toolId>.schema.json
 - failed field/path: derived from first validator error pointer
 - validation summary: first validation errors joined in message
 

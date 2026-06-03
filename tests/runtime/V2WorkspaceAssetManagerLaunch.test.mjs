@@ -7,11 +7,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const assetHtmlPath = path.join(repoRoot, "tools", "asset-manager-v2", "index.html");
-const assetJsPath = path.join(repoRoot, "tools", "asset-manager-v2", "index.js");
-const toolsIndexPath = path.join(repoRoot, "tools", "index.html");
+const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
+const assetHtmlPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.html");
+const assetJsPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
+const toolsIndexPath = path.join(repoRoot, "toolbox", "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "pr_11_313_workspace_asset_manager_launch_results.json");
 
 function readText(filePath) {

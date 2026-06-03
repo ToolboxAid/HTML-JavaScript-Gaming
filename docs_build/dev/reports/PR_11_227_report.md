@@ -1,11 +1,11 @@
 # PR_11_227 Report - V2 Session Migration Hook (Version Gate)
 
 ## Files Changed
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `tests/runtime/V2SessionMigration.test.mjs`
 - `docs_build/dev/reports/PR_11_227_report.md`
 
@@ -31,13 +31,13 @@ Enforcement pattern in each tool:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2SessionMigration.test.mjs`  
+1. `node --check tests/runtime/V2SessionMigration.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2SessionMigration.test.mjs`  
+2. `node tests/runtime/V2SessionMigration.test.mjs`
 Result: **PASS** (writes `tmp/v2-session-migration-results.json`)
-3. `node --check tools/*-v2/index.js`  
-Result: **FAIL** on Windows/Node wildcard resolution (`MODULE_NOT_FOUND` for literal `tools\\*-v2\\index.js`)
-4. Equivalent explicit per-file `node --check` sweep for `tools/*-v2/index.js`  
+3. `node --check toolbox/*-v2/index.js`
+Result: **FAIL** on Windows/Node wildcard resolution (`MODULE_NOT_FOUND` for literal `toolbox\\*-v2\\index.js`)
+4. Equivalent explicit per-file `node --check` sweep for `toolbox/*-v2/index.js`
 Result: **PASS** for all detected V2 tool JS files
 
 Runtime test cases passed for all five V2 tools:

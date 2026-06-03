@@ -1,12 +1,12 @@
 BUILD_PR_ASSET_MARKETPLACE validation
 
 Files:
-- tools/shared/assetMarketplace.js
+- toolbox/shared/assetMarketplace.js
 - tests/tools/AssetMarketplace.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/assetMarketplace.js
+- node --check toolbox/shared/assetMarketplace.js
 - node --check tests/tools/AssetMarketplace.test.mjs
 - node ./scripts/run-node-tests.mjs
 

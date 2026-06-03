@@ -6,7 +6,7 @@
 - No other tool changes.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/pr/PR_11_325_WORKSPACE_V2_PALETTE_LAUNCH_CONTRACT_FIX/PLAN_PR.md`
 - `docs_build/pr/PR_11_325_WORKSPACE_V2_PALETTE_LAUNCH_CONTRACT_FIX/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_325_report.md`
@@ -19,7 +19,7 @@
   - After: PASS (`failures: []`).
 
 ## Validation Run
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs` -> PASS
 - `npm run test:workspace-v2` -> PASS (`1 passed`, `failed=0`)
 

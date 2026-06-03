@@ -8,10 +8,10 @@ Created:
 `docs_build/dev/reports/PR_26124_058-palette-manager-restore-point/`
 
 The restore point includes copies of the pre-hardening runtime files changed by this PR:
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
 
 ## Applied Changes
 - Converted left-column Selected Swatch, User Defined Swatch, and Tags accordions from `details`/`summary` to shared accordionV2 markup.
@@ -25,8 +25,8 @@ The restore point includes copies of the pre-hardening runtime files changed by 
 - Normalized tag add/remove/toggle status messages to lowercase stored tag values.
 
 ## Validation
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
 - Targeted served-browser Palette Manager V2 hardening validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

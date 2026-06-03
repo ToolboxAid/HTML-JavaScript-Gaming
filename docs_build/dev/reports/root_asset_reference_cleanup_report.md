@@ -43,7 +43,7 @@ Included active roots:
 - `learn/`
 - `legal/`
 - `marketplace/`
-- `tools/`
+- `toolbox/`
 - `assets/`
 - `scripts/`
 - `src/`
@@ -70,9 +70,9 @@ No active public/root page, active tool page, game page, or public doc reference
 
 Remaining `src/engine/theme/` references are intentional runtime/guard/test references, not stale public asset references:
 
-- `tools/shared/tooling/CapturePreviewRuntime.js` imports runtime theme helpers.
-- `tools/dev/checkStyleSystemGuard.mjs` references runtime theme CSS as its guard baseline.
-- `tools/dev/checkSharedExtractionGuard.baseline.json` records a runtime helper baseline.
+- `toolbox/shared/tooling/CapturePreviewRuntime.js` imports runtime theme helpers.
+- `toolbox/dev/checkStyleSystemGuard.mjs` references runtime theme CSS as its guard baseline.
+- `toolbox/dev/checkSharedExtractionGuard.baseline.json` records a runtime helper baseline.
 - `tests/theme.test.js` imports runtime theme helpers.
 - Workspace/tool smoke tests assert legacy/runtime shell references where those fixtures are still expected.
 - `assets/theme/v1/README.md` documents that Theme V1 Font Awesome is consumed by `src/engine/theme/main.css`.

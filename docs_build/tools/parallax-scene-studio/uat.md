@@ -5,7 +5,7 @@ Validate user acceptance readiness for Parallax Scene Studio across launch, core
 
 ## Scope
 - Tool: `parallax-editor`
-- Entry point: `tools/Parallax Scene Studio/index.html`
+- Entry point: `toolbox/Parallax Scene Studio/index.html`
 
 ## Validation Scenarios
 

@@ -16,12 +16,12 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/SongDetailsControl.js
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
-node --check tools/midi-studio-v2/js/MidiStudioV2App.js
-node --check tools/midi-studio-v2/js/bootstrap.js
+node --check toolbox/midi-studio-v2/js/controls/SongDetailsControl.js
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
+node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js
+node --check toolbox/midi-studio-v2/js/bootstrap.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-rg --pcre2 -n "<style\b|<script\b(?![^>]*\bsrc=)|\son[a-z]+\s=|style\s=" tools/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
+rg --pcre2 -n "<style\b|<script\b(?![^>]*\bsrc=)|\son[a-z]+\s=|style\s=" toolbox/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright -g "syncs PR060 song fields instrument selection and audition keyboard"
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright -g "canvas note editing flow supports hover click drag paint erase and playback|keeps JSON wording and Song Setup editing history placeholders honest|enforces SSoT export ownership and future control honesty|syncs PR060 song fields instrument selection and audition keyboard"
 git diff --check

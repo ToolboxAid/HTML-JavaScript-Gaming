@@ -15,21 +15,21 @@ Integrated tools:
 
 Out of scope:
 - `SpriteEditor_old_keep`
-- sample restoration on `tools/index.html`
+- sample restoration on `toolbox/index.html`
 - showcase/game content
 - unrelated structural refactors
 
 ## Files Added
-- `tools/shared/assetUsageIntegration.js`
+- `toolbox/shared/assetUsageIntegration.js`
 - `docs/reference/architecture-standards/specs/asset_usage_contract.md`
 
 ## Files Updated
-- `tools/shared/platformShell.js`
-- `tools/shared/platformShell.css`
-- `tools/Asset Browser/index.html`
-- `tools/Asset Browser/main.js`
-- `tools/Palette Browser/index.html`
-- `tools/Palette Browser/main.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/platformShell.css`
+- `toolbox/Asset Browser/index.html`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Palette Browser/index.html`
+- `toolbox/Palette Browser/main.js`
 - `scripts/validate-active-tools-surface.mjs`
 - `docs_build/dev/COMMIT_COMMENT.txt`
 - `docs_build/reports/change_summary.txt`
@@ -38,7 +38,7 @@ Out of scope:
 ## Implementation Summary
 
 ### Shared Shell Integration
-- Added a shared asset-usage integration module under `tools/shared/`.
+- Added a shared asset-usage integration module under `toolbox/shared/`.
 - The shared platform shell now renders normalized launch actions for every active tool page:
   - `Browse Assets`
   - `Import Assets`
@@ -66,14 +66,14 @@ Out of scope:
 ## Surface and Visibility Rules
 - `Sprite Editor` remains first-class and visible.
 - `SpriteEditor_old_keep` remains preserved and hidden from active surfacing.
-- `tools/index.html` remains tool-only.
+- `toolbox/index.html` remains tool-only.
 - No samples were reintroduced to the tools launcher.
 
 ## Validation
-- `node --check tools/shared/assetUsageIntegration.js`
-- `node --check tools/shared/platformShell.js`
-- `node --check tools/Asset Browser/main.js`
-- `node --check tools/Palette Browser/main.js`
+- `node --check toolbox/shared/assetUsageIntegration.js`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check toolbox/Asset Browser/main.js`
+- `node --check toolbox/Palette Browser/main.js`
 - `node scripts/validate-tool-registry.mjs`
 - `node scripts/validate-active-tools-surface.mjs`
 

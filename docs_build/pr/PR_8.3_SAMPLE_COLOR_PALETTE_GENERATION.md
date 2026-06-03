@@ -10,18 +10,18 @@ Generate schema-compliant sample palette documents from colors actually used by 
 - Generate palette documents only from colors found in the sample.
 - Add `$schema` references to generated palette documents.
 - Keep `workspace.manifest` as source of truth.
-- Keep shared schemas in `tools/schemas/`.
+- Keep shared schemas in `toolbox/schemas/`.
 
 ## Required Output Shape
 Generated palette files must conform to:
 
-`tools/schemas/palette.schema.json`
+`toolbox/schemas/palette.schema.json`
 
 Expected shared palette document shape:
 
 ```json
 {
-  "$schema": "../../../tools/schemas/palette.schema.json",
+  "$schema": "../../../toolbox/schemas/palette.schema.json",
   "schema": "palette",
   "version": "1.0.0",
   "name": "Sample 0101 Palette",
@@ -63,6 +63,6 @@ Expected shared palette document shape:
 
 ## Acceptance
 - Palette files exist only where sample color data exists or where the manifest requires them.
-- Generated palettes validate against `tools/schemas/palette.schema.json`.
+- Generated palettes validate against `toolbox/schemas/palette.schema.json`.
 - All generated palette files include `$schema`.
 - No references to nonexistent `samples/**/config.json` or `samples/**/*.palette.json` remain in PR docs.

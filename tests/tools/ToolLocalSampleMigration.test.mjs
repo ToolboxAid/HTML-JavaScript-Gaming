@@ -8,15 +8,15 @@ const REPO_ROOT = path.resolve(__dirname, "../..");
 const SAMPLES_METADATA_PATH = path.join(REPO_ROOT, "samples", "metadata", "samples.index.metadata.json");
 
 const MIGRATED_SAMPLES = Object.freeze([
-  { id: "1212", toolId: "world-vector-studio-v2", presetFileName: "sample-1212-vector-map-editor.json", toolPath: "/tools/world-vector-studio-v2/index.html" },
-  { id: "1213", toolId: "world-vector-studio-v2", presetFileName: "sample-1213-vector-map-editor.json", toolPath: "/tools/world-vector-studio-v2/index.html" },
-  { id: "1214", toolId: "world-vector-studio-v2", presetFileName: "sample-1214-vector-map-editor.json", toolPath: "/tools/world-vector-studio-v2/index.html" },
-  { id: "1215", toolId: "object-vector-studio-v2", presetFileName: "sample-1215-svg-asset-studio.json", toolPath: "/tools/object-vector-studio-v2/index.html" },
-  { id: "1216", toolId: "object-vector-studio-v2", presetFileName: "sample-1216-svg-asset-studio.json", toolPath: "/tools/object-vector-studio-v2/index.html" },
-  { id: "1217", toolId: "object-vector-studio-v2", presetFileName: "sample-1217-svg-asset-studio.json", toolPath: "/tools/object-vector-studio-v2/index.html" },
-  { id: "1218", toolId: "parallax-editor", toolPath: "/tools/Parallax%20Scene%20Studio/index.html" },
-  { id: "1219", toolId: "parallax-editor", toolPath: "/tools/Parallax%20Scene%20Studio/index.html" },
-  { id: "1220", toolId: "parallax-editor", toolPath: "/tools/Parallax%20Scene%20Studio/index.html" }
+  { id: "1212", toolId: "world-vector-studio-v2", presetFileName: "sample-1212-vector-map-editor.json", toolPath: "/toolbox/world-vector-studio-v2/index.html" },
+  { id: "1213", toolId: "world-vector-studio-v2", presetFileName: "sample-1213-vector-map-editor.json", toolPath: "/toolbox/world-vector-studio-v2/index.html" },
+  { id: "1214", toolId: "world-vector-studio-v2", presetFileName: "sample-1214-vector-map-editor.json", toolPath: "/toolbox/world-vector-studio-v2/index.html" },
+  { id: "1215", toolId: "object-vector-studio-v2", presetFileName: "sample-1215-svg-asset-studio.json", toolPath: "/toolbox/object-vector-studio-v2/index.html" },
+  { id: "1216", toolId: "object-vector-studio-v2", presetFileName: "sample-1216-svg-asset-studio.json", toolPath: "/toolbox/object-vector-studio-v2/index.html" },
+  { id: "1217", toolId: "object-vector-studio-v2", presetFileName: "sample-1217-svg-asset-studio.json", toolPath: "/toolbox/object-vector-studio-v2/index.html" },
+  { id: "1218", toolId: "parallax-editor", toolPath: "/toolbox/Parallax%20Scene%20Studio/index.html" },
+  { id: "1219", toolId: "parallax-editor", toolPath: "/toolbox/Parallax%20Scene%20Studio/index.html" },
+  { id: "1220", toolId: "parallax-editor", toolPath: "/toolbox/Parallax%20Scene%20Studio/index.html" }
 ]);
 
 function readText(filePath) {

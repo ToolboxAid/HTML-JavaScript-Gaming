@@ -11,27 +11,27 @@ Final audit for migrated public/root surfaces only:
   - `mission.html`
   - `roadmap.html`
   - `release-notes.html`
-- `tools/index.html`
+- `toolbox/index.html`
 - Migrated public root tool pages:
-  - `tools/ai-assistant.html`
-  - `tools/animation-studio.html`
-  - `tools/asset-studio.html`
-  - `tools/builder.html`
-  - `tools/code-studio.html`
-  - `tools/creator.html`
-  - `tools/game-builder.html`
-  - `tools/game-design-studio.html`
-  - `tools/input-studio.html`
-  - `tools/localization-studio/index.html`
-  - `tools/midi-studio.html`
-  - `tools/object-vector-studio.html`
-  - `tools/palette-manager.html`
-  - `tools/particle-studio.html`
-  - `tools/publisher.html`
-  - `tools/sound-studio.html`
-  - `tools/storage-inspector.html`
-  - `tools/world-vector-studio.html`
-  - `tools/groups/configuration-admin.html`
+  - `toolbox/ai-assistant.html`
+  - `toolbox/animation-studio.html`
+  - `toolbox/asset-studio.html`
+  - `toolbox/builder.html`
+  - `toolbox/code-studio.html`
+  - `toolbox/creator.html`
+  - `toolbox/game-builder.html`
+  - `toolbox/game-design-studio.html`
+  - `toolbox/input-studio.html`
+  - `toolbox/localization-studio/index.html`
+  - `toolbox/midi-studio.html`
+  - `toolbox/object-vector-studio.html`
+  - `toolbox/palette-manager.html`
+  - `toolbox/particle-studio.html`
+  - `toolbox/publisher.html`
+  - `toolbox/sound-studio.html`
+  - `toolbox/storage-inspector.html`
+  - `toolbox/world-vector-studio.html`
+  - `toolbox/groups/configuration-admin.html`
 
 No Admin, Account, Games, Samples, CSS, Theme V2 CSS, runtime behavior, or page migration changes were made.
 
@@ -50,7 +50,7 @@ Samples decision: SKIP because Samples are explicitly out of scope.
 
 Commands:
 - `node --check GameFoundryStudio/assets/js/gamefoundry-partials.js`
-- `node --check tools/tools-page-accordions.js`
+- `node --check toolbox/tools-page-accordions.js`
 - Inline Node static audit for stylesheet references on migrated public/root pages.
 - Inline Node static audit for inline `<script>`, `<style>`, inline `style=`, and inline event handlers.
 - Inline Playwright browser audit using a local static server for migrated public/root pages.
@@ -137,7 +137,7 @@ PASS:
 - No inline `style=` attributes.
 - No inline event handlers.
 - `GameFoundryStudio/assets/js/gamefoundry-partials.js` syntax passed.
-- `tools/tools-page-accordions.js` syntax passed.
+- `toolbox/tools-page-accordions.js` syntax passed.
 - No CSS files changed.
 
 ## V1 CSS Reference Findings
@@ -145,23 +145,23 @@ PASS:
 The audit found V1/legacy CSS references on migrated public root tool pages. These references load successfully and are not broken root-path references. Updating them would require styling/migration work rather than a root-path fix, so they were documented and skipped per PR scope.
 
 Skipped V1 CSS reference findings:
-- `tools/ai-assistant.html` -> `assets/css/styles.css`
-- `tools/animation-studio.html` -> `assets/css/styles.css`
-- `tools/asset-studio.html` -> `assets/css/styles.css`
-- `tools/code-studio.html` -> `assets/css/styles.css`
-- `tools/game-builder.html` -> `assets/css/styles.css`
-- `tools/game-design-studio.html` -> `assets/css/styles.css`
-- `tools/input-studio.html` -> `assets/css/styles.css`
-- `tools/localization-studio/index.html` -> `assets/css/styles.css`
-- `tools/localization-studio/index.html` -> `tools/localization-studio/css/localization-studio.css`
-- `tools/midi-studio.html` -> `assets/css/styles.css`
-- `tools/object-vector-studio.html` -> `assets/css/styles.css`
-- `tools/palette-manager.html` -> `assets/css/styles.css`
-- `tools/particle-studio.html` -> `assets/css/styles.css`
-- `tools/publisher.html` -> `assets/css/styles.css`
-- `tools/sound-studio.html` -> `assets/css/styles.css`
-- `tools/storage-inspector.html` -> `assets/css/styles.css`
-- `tools/world-vector-studio.html` -> `assets/css/styles.css`
+- `toolbox/ai-assistant.html` -> `assets/css/styles.css`
+- `toolbox/animation-studio.html` -> `assets/css/styles.css`
+- `toolbox/asset-studio.html` -> `assets/css/styles.css`
+- `toolbox/code-studio.html` -> `assets/css/styles.css`
+- `toolbox/game-builder.html` -> `assets/css/styles.css`
+- `toolbox/game-design-studio.html` -> `assets/css/styles.css`
+- `toolbox/input-studio.html` -> `assets/css/styles.css`
+- `toolbox/localization-studio/index.html` -> `assets/css/styles.css`
+- `toolbox/localization-studio/index.html` -> `toolbox/localization-studio/css/localization-studio.css`
+- `toolbox/midi-studio.html` -> `assets/css/styles.css`
+- `toolbox/object-vector-studio.html` -> `assets/css/styles.css`
+- `toolbox/palette-manager.html` -> `assets/css/styles.css`
+- `toolbox/particle-studio.html` -> `assets/css/styles.css`
+- `toolbox/publisher.html` -> `assets/css/styles.css`
+- `toolbox/sound-studio.html` -> `assets/css/styles.css`
+- `toolbox/storage-inspector.html` -> `assets/css/styles.css`
+- `toolbox/world-vector-studio.html` -> `assets/css/styles.css`
 
 Required action:
 - A later CSS/migration PR should decide whether these migrated root tool pages move from `assets/css/styles.css` to Theme V2-only styling.

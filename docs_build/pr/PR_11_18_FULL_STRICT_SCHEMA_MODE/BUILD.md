@@ -4,7 +4,7 @@
 
 ### 1. Enforce strict mode globally
 Scan all JSON schemas under:
-`tools/schemas/`
+`toolbox/schemas/`
 
 For every schema object with `"type": "object"`:
 - add `"additionalProperties": false` if missing

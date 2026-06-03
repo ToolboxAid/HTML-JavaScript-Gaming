@@ -4,27 +4,27 @@
 - PASS (required PR scope met)
 
 ## Schemas Changed
-- `tools/schemas/workspace.manifest.schema.json`
-- `tools/schemas/sample.tool-payload.schema.json`
-- `tools/schemas/tool.manifest.schema.json`
-- `tools/schemas/tools/3d-asset-viewer.schema.json`
-- `tools/schemas/tools/3d-camera-path-editor.schema.json`
-- `tools/schemas/tools/3d-json-payload.schema.json`
-- `tools/schemas/tools/asset-browser.schema.json`
-- `tools/schemas/tools/asset-pipeline.schema.json`
-- `tools/schemas/tools/palette-browser.schema.json`
-- `tools/schemas/tools/palette.schema.json`
-- `tools/schemas/tools/parallax-editor.schema.json`
-- `tools/schemas/tools/performance-profiler.schema.json`
-- `tools/schemas/tools/physics-sandbox.schema.json`
-- `tools/schemas/tools/replay-visualizer.schema.json`
-- `tools/schemas/tools/skin-editor.schema.json`
-- `tools/schemas/tools/sprite-editor.schema.json`
-- `tools/schemas/tools/state-inspector.schema.json`
-- `tools/schemas/tools/tile-map-editor.schema.json`
-- `tools/schemas/tools/tile-model-converter.schema.json`
-- `tools/schemas/tools/vector-asset-studio.schema.json`
-- `tools/schemas/tools/vector-map-editor.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
+- `toolbox/schemas/sample.tool-payload.schema.json`
+- `toolbox/schemas/tool.manifest.schema.json`
+- `toolbox/schemas/tools/3d-asset-viewer.schema.json`
+- `toolbox/schemas/tools/3d-camera-path-editor.schema.json`
+- `toolbox/schemas/tools/3d-json-payload.schema.json`
+- `toolbox/schemas/tools/asset-browser.schema.json`
+- `toolbox/schemas/tools/asset-pipeline.schema.json`
+- `toolbox/schemas/tools/palette-browser.schema.json`
+- `toolbox/schemas/tools/palette.schema.json`
+- `toolbox/schemas/tools/parallax-editor.schema.json`
+- `toolbox/schemas/tools/performance-profiler.schema.json`
+- `toolbox/schemas/tools/physics-sandbox.schema.json`
+- `toolbox/schemas/tools/replay-visualizer.schema.json`
+- `toolbox/schemas/tools/skin-editor.schema.json`
+- `toolbox/schemas/tools/sprite-editor.schema.json`
+- `toolbox/schemas/tools/state-inspector.schema.json`
+- `toolbox/schemas/tools/tile-map-editor.schema.json`
+- `toolbox/schemas/tools/tile-model-converter.schema.json`
+- `toolbox/schemas/tools/vector-asset-studio.schema.json`
+- `toolbox/schemas/tools/vector-map-editor.schema.json`
 
 ## Sample Updated (allowed scope)
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`

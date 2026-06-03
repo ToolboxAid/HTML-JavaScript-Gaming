@@ -4,7 +4,7 @@
 Fix Palette Manager V2 User Palette Tag descending sort so untagged swatches stay after tagged swatches.
 
 ## Scope
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
@@ -14,7 +14,7 @@ Fix Palette Manager V2 User Palette Tag descending sort so untagged swatches sta
 - Do not change Validation/Error Viewer behavior.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Avoid broad refactor.
 

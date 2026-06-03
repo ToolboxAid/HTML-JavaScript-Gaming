@@ -4,8 +4,8 @@
 Workspace V2 Session Library only.
 
 ## Files Changed
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibrarySaveGuard.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2SessionLibraryActions.test.mjs
@@ -49,7 +49,7 @@ Save is disabled when:
 - Library state updates now set current-state guidance text and avoid stale messages.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2SessionLibrarySaveGuard.test.mjs`
    - PASS

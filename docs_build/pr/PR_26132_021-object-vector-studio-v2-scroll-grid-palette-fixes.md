@@ -26,13 +26,13 @@ Playwright impacted: Yes.
 
 Commands run:
 
-- `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- `node --check tools/object-vector-studio-v2/js/bootstrap.js`
+- `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- `node --check toolbox/object-vector-studio-v2/js/bootstrap.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `node --check tools/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs`
+- `node --check toolbox/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "shows Object Vector Studio V2 layout shell"`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "expands Object Vector Studio V2 asset authoring"`
-- `npx playwright test --config tools/object-vector-studio-v2/playwright.config.mjs --reporter=list`
+- `npx playwright test --config toolbox/object-vector-studio-v2/playwright.config.mjs --reporter=list`
 - `npm run test:workspace-v2`
 
 Result:
@@ -70,7 +70,7 @@ Expected fail behavior:
 
 ## Manual Validation
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Load a valid Object Vector payload and runtime palette.
 3. Confirm the left column scrolls when content exceeds its height.
 4. Toggle Words/Icons and confirm z-order/group buttons switch with the shape buttons.

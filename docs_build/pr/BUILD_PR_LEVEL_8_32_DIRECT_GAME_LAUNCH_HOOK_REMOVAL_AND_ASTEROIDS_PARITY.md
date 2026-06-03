@@ -19,7 +19,7 @@ or the correct canonical direct launch path.
 Workspace Manager should only open from an explicit Workspace Manager action:
 
 ```text
-tools/Workspace Manager/index.html?gameId=<id>&mount=game
+toolbox/Workspace Manager/index.html?gameId=<id>&mount=game
 ```
 
 Not from normal preview click.

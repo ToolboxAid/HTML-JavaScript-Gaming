@@ -4,11 +4,11 @@
 Validate and clean up the completed V2 re-engineer lane after PR_11_195. The target V2 tools were audited for HTML-first shell ownership, behavior-only runtime modules, session-only data loading, explicit empty/error states, and no legacy/shared coupling.
 
 ## Target Tools
-- `tools/palette-manager-v2/` - Palette Manager V2
-- `tools/svg-asset-studio-v2/` - SVG Asset Studio V2
-- `tools/vector-map-editor-v2/` - Vector Map Editor V2
-- `tools/tilemap-studio-v2/` - Tilemap Studio V2
-- `tools/asset-manager-v2/` - Asset Browser V2
+- `toolbox/palette-manager-v2/` - Palette Manager V2
+- `toolbox/svg-asset-studio-v2/` - SVG Asset Studio V2
+- `toolbox/vector-map-editor-v2/` - Vector Map Editor V2
+- `toolbox/tilemap-studio-v2/` - Tilemap Studio V2
+- `toolbox/asset-manager-v2/` - Asset Browser V2
 
 ## Files Changed
 - `docs_build/dev/reports/pr_11_196_v2_runtime_validation_cleanup_report.md`
@@ -33,19 +33,19 @@ No target V2 implementation file required changes during this pass. The five tar
 Syntax checks:
 
 ```powershell
-node --check tools/palette-manager-v2/index.js
-node --check tools/svg-asset-studio-v2/index.js
-node --check tools/vector-map-editor-v2/index.js
-node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-manager-v2/index.js
+node --check toolbox/palette-manager-v2/index.js
+node --check toolbox/svg-asset-studio-v2/index.js
+node --check toolbox/vector-map-editor-v2/index.js
+node --check toolbox/tilemap-studio-v2/index.js
+node --check toolbox/asset-manager-v2/index.js
 ```
 
 Results:
-- `node --check tools/palette-manager-v2/index.js` passed.
-- `node --check tools/svg-asset-studio-v2/index.js` passed.
-- `node --check tools/vector-map-editor-v2/index.js` passed.
-- `node --check tools/tilemap-studio-v2/index.js` passed.
-- `node --check tools/asset-manager-v2/index.js` passed.
+- `node --check toolbox/palette-manager-v2/index.js` passed.
+- `node --check toolbox/svg-asset-studio-v2/index.js` passed.
+- `node --check toolbox/vector-map-editor-v2/index.js` passed.
+- `node --check toolbox/tilemap-studio-v2/index.js` passed.
+- `node --check toolbox/asset-manager-v2/index.js` passed.
 
 HTML and JS compliance checks verified each target V2 tool has:
 - document title ending in `V2`
@@ -64,7 +64,7 @@ Forbidden JS pattern check verified no target V2 `index.js` contains:
 - dynamic script creation/append patterns
 - `platformShell`
 - `assetUsageIntegration`
-- `tools/shared`
+- `toolbox/shared`
 - `../shared`
 - fallback/default/demo data markers
 
@@ -77,11 +77,11 @@ Scoped status check confirmed no changes under:
 - games
 - `start_of_day/**`
 - Workspace Manager v1
-- `tools/shared/**`
+- `toolbox/shared/**`
 - `platformShell`
 - `assetUsageIntegration`
 
-No schema, sample, game, Workspace Manager v1, platformShell, or tools/shared files were changed.
+No schema, sample, game, Workspace Manager v1, platformShell, or toolbox/shared files were changed.
 
 ## Full Samples Smoke Decision
 Full samples smoke test skipped.

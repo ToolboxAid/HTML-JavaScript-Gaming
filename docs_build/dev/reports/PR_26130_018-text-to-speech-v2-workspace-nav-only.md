@@ -14,10 +14,10 @@ Updated Text to Speech V2 workspace launch navigation only. Workspace launches n
 
 ## Files Changed
 
-- tools/text2speach-V2/index.html
-- tools/text2speach-V2/styles/text2speach-V2.css
-- tools/text2speach-V2/js/bootstrap.js
-- tools/text2speach-V2/js/controls/ActionNavControl.js
+- toolbox/text2speach-V2/index.html
+- toolbox/text2speach-V2/styles/text2speach-V2.css
+- toolbox/text2speach-V2/js/bootstrap.js
+- toolbox/text2speach-V2/js/controls/ActionNavControl.js
 - tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 
 ## Implementation Notes
@@ -51,8 +51,8 @@ Expected fail behavior:
 
 - `npm run test:workspace-v2` passed: 30 tests passed.
 - Initial `npm run test:workspace-v2` attempt timed out due the command timeout; rerun with a longer timeout passed.
-- `node --check tools/text2speach-V2/js/bootstrap.js` passed.
-- `node --check tools/text2speach-V2/js/controls/ActionNavControl.js` passed.
+- `node --check toolbox/text2speach-V2/js/bootstrap.js` passed.
+- `node --check toolbox/text2speach-V2/js/controls/ActionNavControl.js` passed.
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs` passed.
 - `git diff --check HEAD -- ...` passed with line-ending warnings only.
 
@@ -62,7 +62,7 @@ Skipped. Reason: this PR is limited to Text to Speech V2 workspace nav placement
 
 ## Manual Test Steps
 
-1. Open Text to Speech V2 directly from `tools/text2speach-V2/index.html`.
+1. Open Text to Speech V2 directly from `toolbox/text2speach-V2/index.html`.
 2. Confirm no below-header Workspace actions nav is visible.
 3. Open Workspace Manager V2, select a repo and Asteroids, then launch Text to Speech V2.
 4. Confirm a below-header Workspace actions nav appears with Return to Workspace.

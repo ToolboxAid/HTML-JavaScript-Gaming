@@ -12,7 +12,7 @@ Lock schemas as the single source of truth now that runtime and routing are clea
 
 ## ALLOWED FILES
 
-- tools/schemas/**/*.json
+- toolbox/schemas/**/*.json
 
 ## ALLOWED CHANGES
 

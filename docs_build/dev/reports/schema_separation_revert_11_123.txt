@@ -3,13 +3,13 @@ PR 11.123 - Schema Separation Restore / Revert Review
 PASS
 
 Workspace manifest result
-- tools/schemas/workspace.manifest.schema.json already uses $ref for Palette Browser:
+- toolbox/schemas/workspace.manifest.schema.json already uses $ref for Palette Browser:
   tools.palette-browser -> ./tools/palette-browser.schema.json
 - No swatch, palette symbol, palette hex, palette name, sourceId, locked, or html-js-gaming.palette child details are in the workspace palette-browser node.
 - No code revert was required in workspace.manifest.schema.json.
 
 Palette schema result
-- tools/schemas/tools/palette-browser.schema.json owns palette details.
+- toolbox/schemas/tools/palette-browser.schema.json owns palette details.
 - It validates direct palette JSON only.
 - It contains the swatch schema and swatch fields.
 - It does not accept { tool, version, payload } wrappers.

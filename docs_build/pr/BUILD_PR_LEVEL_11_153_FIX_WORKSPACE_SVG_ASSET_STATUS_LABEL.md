@@ -13,7 +13,7 @@ This means the card/status layer does not recognize the direct `vectorAssetDocum
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/workspace-manager/main.js
+- toolbox/workspace-manager/main.js
 - docs_build/dev/reports/workspace_svg_asset_status_label_11_153.txt
 
 ### ALLOWED CHANGES

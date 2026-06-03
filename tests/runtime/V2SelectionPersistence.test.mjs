@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-selection-persistence-results.json");
 
 function readText(filePath) {
@@ -90,7 +90,7 @@ export function run() {
   const hasClear = js.includes("clearPersistedSessionSelection()");
   const hasResetHook = js.includes("this.clearPersistedSessionSelection();");
 
-  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
+  if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
   if (!syntax.ok) failures.push("workspace-v2/index.js failed syntax check.");
   if (!hasStorageKey) failures.push("Missing v2-session-selection storage key.");
   if (!hasRead) failures.push("Missing readPersistedSessionSelection().");

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
 
-const TOOL_PATH = "/tools/palette-manager-v2/index.html";
+const TOOL_PATH = "/toolbox/palette-manager-v2/index.html";
 const ACCORDION_CONTENT_IDS = Object.freeze([
   { id: "userPaletteAccordionContent", label: "User Palette" },
   { id: "sourcePaletteAccordionContent", label: "Sample Palette Swatch" },

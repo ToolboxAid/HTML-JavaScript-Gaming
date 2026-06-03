@@ -59,7 +59,7 @@ Expected fail behavior:
 
 ## Manual Validation
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Load a valid Object Vector payload with a runtime palette.
 3. Confirm Shape/Tools shows visual icons, square buttons, and Words/Icons only changes those buttons.
 4. Add/edit object tags and confirm Tag Filter options come from loaded object tags.

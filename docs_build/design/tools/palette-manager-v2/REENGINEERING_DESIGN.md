@@ -2,7 +2,7 @@
 
 Task: PR_26124_026
 
-Source folder: `tools/palette-manager-v2`
+Source folder: `toolbox/palette-manager-v2`
 Runtime tool id: `palette-manager-v2`
 Global data key: `tools.palette-browser`
 Publish target: `tools.palette-browser`
@@ -11,11 +11,11 @@ Publish target: `tools.palette-browser`
 Palette Manager V2 owns global palette editing for `tools.palette-browser.swatches`. It has user-owned swatches plus browse-only source palettes (`crayola`, `w3c`, `javascript`) that can be pinned into the user palette.
 
 ## Folder/Files Inspected
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/main.js`
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- `tools/palette-manager-v2/README.md`
-- `tools/palette-manager-v2/how_to_use.html`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/main.js`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/README.md`
+- `toolbox/palette-manager-v2/how_to_use.html`
 
 ## Current Controls
 | Control | Action | JSON effect |
@@ -107,10 +107,10 @@ Tool receives validated payload and owns behavior. The global data key remains `
 Games and samples consume the global palette at `tools.palette-browser.swatches`. They do not consume a `tools.palette-manager-v2` key.
 
 ## Playwright Expectations
-No workspace-v2 Playwright gate remains for this tool. Future Playwright coverage should launch `tools/palette-manager-v2/index.html`, add a user swatch, pin and unpin a source swatch, reject invalid import JSON, and assert copied/exported JSON uses `tools.palette-browser`.
+No workspace-v2 Playwright gate remains for this tool. Future Playwright coverage should launch `toolbox/palette-manager-v2/index.html`, add a user swatch, pin and unpin a source swatch, reject invalid import JSON, and assert copied/exported JSON uses `tools.palette-browser`.
 
 ## Manual Test Expectations
-- Open `tools/palette-manager-v2/index.html` without console errors.
+- Open `toolbox/palette-manager-v2/index.html` without console errors.
 - Add a user swatch with `symbol`, `hex`, `name`, `source`; confirm it appears in preview JSON.
 - Browse `crayola`, `w3c`, and `javascript`; confirm red tack pins and green tack unpins.
 - Confirm unpin calls `isSwatchUsedByTool(swatch)` and blocks if the stub is changed to return true.

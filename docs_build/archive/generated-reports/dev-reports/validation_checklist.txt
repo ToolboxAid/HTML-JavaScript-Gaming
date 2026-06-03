@@ -9,5 +9,5 @@
 [x] Parallax Scene Studio starter payload is present
 [x] Sprite Editor remains first-class
 [x] SpriteEditor_old_keep remains hidden legacy
-[x] tools/index.html remains tool-only and sample-free
+[x] toolbox/index.html remains tool-only and sample-free
 [x] Validation report emitted at docs_build/dev/reports/starter_project_template_validation.txt

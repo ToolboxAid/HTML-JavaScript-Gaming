@@ -16,7 +16,7 @@ After:
 - Tiles remain inside the container and collapse to one column.
 
 Validation:
-- node --check tools/shared/platformShell.js
+- node --check toolbox/shared/platformShell.js
 - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools
 
 Manual:

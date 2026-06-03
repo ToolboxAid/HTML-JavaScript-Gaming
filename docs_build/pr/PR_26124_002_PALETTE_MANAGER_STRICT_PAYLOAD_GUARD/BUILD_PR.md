@@ -14,7 +14,7 @@
 - Prevents legacy invalid palette JSON from rendering.
 
 ## Validation
-- `node --check tools/palette-manager-v2/index.js` -> PASS
+- `node --check toolbox/palette-manager-v2/index.js` -> PASS
 - `npm run test:workspace-v2` -> PASS (`1 passed`, `failed=0`)
 
 ## Samples Smoke

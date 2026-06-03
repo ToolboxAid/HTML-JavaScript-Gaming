@@ -12,30 +12,30 @@ Implement the first production-ready vector geometry runtime aligned to `docs/re
 - expose the runtime through packaged asset loading for vector-native template/sample-game flows
 
 ## Modules Created
-- `tools/shared/vector/vectorGeometryMath.js`
-- `tools/shared/vector/vectorAssetContract.js`
-- `tools/shared/vector/vectorRenderPrep.js`
-- `tools/shared/vectorGeometryRuntime.js`
+- `toolbox/shared/vector/vectorGeometryMath.js`
+- `toolbox/shared/vector/vectorAssetContract.js`
+- `toolbox/shared/vector/vectorRenderPrep.js`
+- `toolbox/shared/vectorGeometryRuntime.js`
 - `tests/tools/VectorGeometryRuntime.test.mjs`
 
 ## Modules Changed
-- `tools/shared/vector/vectorAssetBridge.js`
-- `tools/shared/projectAssetValidation.js`
-- `tools/shared/runtimeAssetLoader.js`
-- `tools/shared/vectorNativeTemplate.js`
-- `tools/shared/vectorTemplateSampleGame.js`
-- `tools/shared/asteroidsPlatformDemo.js`
+- `toolbox/shared/vector/vectorAssetBridge.js`
+- `toolbox/shared/projectAssetValidation.js`
+- `toolbox/shared/runtimeAssetLoader.js`
+- `toolbox/shared/vectorNativeTemplate.js`
+- `toolbox/shared/vectorTemplateSampleGame.js`
+- `toolbox/shared/asteroidsPlatformDemo.js`
 - `tests/tools/VectorAssetSystem.test.mjs`
 - `tests/tools/VectorNativeTemplate.test.mjs`
 - `tests/tools/VectorTemplateSampleGame.test.mjs`
 - `tests/run-tests.mjs`
 
 ## Public And Runtime Boundaries
-- `tools/shared/vectorGeometryRuntime.js` is the public shared runtime facade for contract inspection and runtime preparation.
-- `tools/shared/vector/vectorAssetContract.js` owns vector contract normalization and validation boundaries.
-- `tools/shared/vector/vectorGeometryMath.js` owns pure geometry math and supported SVG path parsing.
-- `tools/shared/vector/vectorRenderPrep.js` owns render-prep and collision-oriented output shaping.
-- `tools/shared/runtimeAssetLoader.js` remains the packaged runtime entry and now upgrades vector assets into geometry-ready runtime output without modifying engine core APIs.
+- `toolbox/shared/vectorGeometryRuntime.js` is the public shared runtime facade for contract inspection and runtime preparation.
+- `toolbox/shared/vector/vectorAssetContract.js` owns vector contract normalization and validation boundaries.
+- `toolbox/shared/vector/vectorGeometryMath.js` owns pure geometry math and supported SVG path parsing.
+- `toolbox/shared/vector/vectorRenderPrep.js` owns render-prep and collision-oriented output shaping.
+- `toolbox/shared/runtimeAssetLoader.js` remains the packaged runtime entry and now upgrades vector assets into geometry-ready runtime output without modifying engine core APIs.
 
 ## Build Notes
 - `normalizeSvgToVectorAsset()` now emits contract-aligned vector assets while preserving the existing legacy geometry fields needed by current platform consumers.
@@ -44,16 +44,16 @@ Implement the first production-ready vector geometry runtime aligned to `docs/re
 - The packaged runtime bootstrap now surfaces vector assets as `runtimeKind: "vector-geometry"` entries with deterministic renderables, bounds, and collision primitives.
 
 ## Validation Performed
-- `node --check tools/shared/vector/vectorGeometryMath.js`
-- `node --check tools/shared/vector/vectorAssetContract.js`
-- `node --check tools/shared/vector/vectorRenderPrep.js`
-- `node --check tools/shared/vectorGeometryRuntime.js`
-- `node --check tools/shared/vector/vectorAssetBridge.js`
-- `node --check tools/shared/projectAssetValidation.js`
-- `node --check tools/shared/runtimeAssetLoader.js`
-- `node --check tools/shared/vectorNativeTemplate.js`
-- `node --check tools/shared/vectorTemplateSampleGame.js`
-- `node --check tools/shared/asteroidsPlatformDemo.js`
+- `node --check toolbox/shared/vector/vectorGeometryMath.js`
+- `node --check toolbox/shared/vector/vectorAssetContract.js`
+- `node --check toolbox/shared/vector/vectorRenderPrep.js`
+- `node --check toolbox/shared/vectorGeometryRuntime.js`
+- `node --check toolbox/shared/vector/vectorAssetBridge.js`
+- `node --check toolbox/shared/projectAssetValidation.js`
+- `node --check toolbox/shared/runtimeAssetLoader.js`
+- `node --check toolbox/shared/vectorNativeTemplate.js`
+- `node --check toolbox/shared/vectorTemplateSampleGame.js`
+- `node --check toolbox/shared/asteroidsPlatformDemo.js`
 - `node --input-type=module -e "import('./tests/tools/VectorGeometryRuntime.test.mjs').then((m) => m.run())"`
 - `node --input-type=module -e "import('./tests/tools/VectorAssetSystem.test.mjs').then((m) => m.run())"`
 - `node --input-type=module -e "import('./tests/tools/VectorNativeTemplate.test.mjs').then((m) => m.run())"`

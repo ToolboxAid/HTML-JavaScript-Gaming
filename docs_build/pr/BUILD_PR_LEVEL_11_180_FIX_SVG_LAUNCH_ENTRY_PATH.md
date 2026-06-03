@@ -29,7 +29,7 @@ Do not add fallback labels.
 ## Implementation Requirements
 
 ### 1. Log every Workspace Manager tool launch
-In `tools/Workspace Manager/main.js`, before launching/mounting any tool, log:
+In `toolbox/Workspace Manager/main.js`, before launching/mounting any tool, log:
 
 `[WORKSPACE_TOOL_LAUNCH]`
 
@@ -67,12 +67,12 @@ Ensure SVG iframe URL includes:
 ### 4. Fix launch path if wrong
 Ensure SVG launches the actual entry that loads:
 
-`tools/SVG Asset Studio/main.js`
+`toolbox/SVG Asset Studio/main.js`
 
 If Workspace Manager launches a different HTML/JS entry for SVG, wire the hosted guard there too or route to the correct entry.
 
 ### 5. Ensure SVG hosted guard condition matches actual params
-In `tools/SVG Asset Studio/main.js`, log at top before any branching:
+In `toolbox/SVG Asset Studio/main.js`, log at top before any branching:
 
 `[SVG_ENTRY_TOP]`
 
@@ -109,10 +109,10 @@ Expected UI:
 
 ## Validation
 Run:
-- `node --check "tools/Workspace Manager/main.js"`
-- `node --check "tools/SVG Asset Studio/main.js"`
-- `node --check tools/shared/workspaceShell.js`
-- `node --check tools/shared/platformShell.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
+- `node --check toolbox/shared/workspaceShell.js`
+- `node --check toolbox/shared/platformShell.js`
 
 Full samples smoke:
 - Skip.

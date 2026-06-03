@@ -12,7 +12,7 @@ Status: PASS
 
 ## Files Changed
 
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_044-midi-studio-v2-piano-key-right-alignment_validation.md`
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
@@ -31,9 +31,9 @@ PASS:
 
 ```powershell
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
-node -e "const fs=require('fs'); const p='tools/midi-studio-v2/index.html'; const html=fs.readFileSync(p,'utf8'); if(/<script(?![^>]*\ssrc=)[^>]*>/i.test(html)) throw new Error('Inline script block found'); if(/<style\b/i.test(html)) throw new Error('Inline style block found'); if(/\son[a-z]+\s*=/i.test(html)) throw new Error('Inline event handler found'); console.log('HTML external-only guard passed:', p);"
-node -e "const fs=require('fs'); for (const file of ['tools/midi-studio-v2/styles/midiStudioV2.css']) { const text=fs.readFileSync(file,'utf8'); let depth=0; for (const ch of text) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error(file+': unexpected }'); } if (depth!==0) throw new Error(file+': unbalanced braces'); console.log(file+': CSS brace check OK'); }"
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
+node -e "const fs=require('fs'); const p='toolbox/midi-studio-v2/index.html'; const html=fs.readFileSync(p,'utf8'); if(/<script(?![^>]*\ssrc=)[^>]*>/i.test(html)) throw new Error('Inline script block found'); if(/<style\b/i.test(html)) throw new Error('Inline style block found'); if(/\son[a-z]+\s*=/i.test(html)) throw new Error('Inline event handler found'); console.log('HTML external-only guard passed:', p);"
+node -e "const fs=require('fs'); for (const file of ['toolbox/midi-studio-v2/styles/midiStudioV2.css']) { const text=fs.readFileSync(file,'utf8'); let depth=0; for (const ch of text) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error(file+': unexpected }'); } if (depth!==0) throw new Error(file+': unbalanced braces'); console.log(file+': CSS brace check OK'); }"
 npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave timeline freezes compact headers and note labels while active cells stay textless|fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync|renders timing ruler, section navigation, and loop region visualization" --config=codex_playwright_system_chrome.config.cjs --reporter=list --workers=1 --timeout=60000
 git diff --check
 ```

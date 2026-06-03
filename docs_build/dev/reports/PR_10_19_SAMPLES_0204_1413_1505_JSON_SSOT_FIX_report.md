@@ -22,7 +22,7 @@ Implemented JSON source-of-truth alignment for samples `0204`, `1413`, and `1505
 - `samples/phase-15/1505/sample.1505.asset-browser.json`
 
 ### Shared Tool Handoff
-- `tools/Asset Browser/main.js`
+- `toolbox/Asset Browser/main.js`
 
 ## Source-of-Truth Migration
 
@@ -53,7 +53,7 @@ Implemented JSON source-of-truth alignment for samples `0204`, `1413`, and `1505
 4. `node --check samples/phase-14/1413/main.js`
 5. `node --check samples/phase-15/1505/AssetBrowserScene.js`
 6. `node --check samples/phase-15/1505/main.js`
-7. `node --check tools/Asset Browser/main.js`
+7. `node --check toolbox/Asset Browser/main.js`
 8. `npm run test:launch-smoke -- --tools`
 
 ### Results

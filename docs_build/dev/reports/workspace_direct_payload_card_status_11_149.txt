@@ -2,7 +2,7 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 - docs_build/dev/reports/workspace_direct_payload_card_status_11_149.txt
 
 Behavior updated:
@@ -27,13 +27,13 @@ Sample 1902 verification:
 - This confirms Sample 1902 direct entries map to card/status labels via Workspace Manager direct-payload extraction path.
 
 Validation commands/results:
-- node --check "tools/Workspace Manager/main.js" -> PASS
-- rg -n "runtime\.launch\(toolId, payloadJson, paletteJson\)" "tools/Workspace Manager/main.js" -> PASS (direct signature present)
+- node --check "toolbox/Workspace Manager/main.js" -> PASS
+- rg -n "runtime\.launch\(toolId, payloadJson, paletteJson\)" "toolbox/Workspace Manager/main.js" -> PASS (direct signature present)
 - node script (JSON parse + key coverage for Sample 1902 direct tool payload roots) -> PASS
 - git diff --name-only -> shows existing unrelated dirty files in repo plus this change; scoped changes for this task are only allowed targets.
 
 Strict scope confirmation:
-- Code changes were made only in tools/Workspace Manager/main.js.
+- Code changes were made only in toolbox/Workspace Manager/main.js.
 - Report created at docs_build/dev/reports/workspace_direct_payload_card_status_11_149.txt.
 - No schema/runtime-host/routing-outside-Workspace-Manager/sample file edits were made.
 

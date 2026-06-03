@@ -25,7 +25,7 @@ PR: `PR_26140_057-finish-workspace-manifest-removal`
 - Workspace Manager V2 temporary UAT loading now fetches `/tests/fixtures/workspace-v2/uat.manifest.json`.
 - Workspace Manager V2 UAT status text now reports the fixture path.
 - Workspace Manager V2 and Asset Manager V2 Playwright tests now read/expect the fixture path.
-- `tools/workspace-manager-v2/README.md` now documents the fixture path.
+- `toolbox/workspace-manager-v2/README.md` now documents the fixture path.
 - `scripts/PS/New-Game-from-Template.ps1` now generates game manifests from `games/_template/game.manifest.json`.
 
 ## Active Dependency Audit

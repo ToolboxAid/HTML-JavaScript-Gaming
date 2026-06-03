@@ -19,14 +19,14 @@ Per flow, the runtime test confirms:
 - source fixture loads successfully
 - source `hostContextId` is non-empty
 - constructed target URL format is:
-  - `tools/<target>-v2/index.html?hostContextId=<id>`
+  - `toolbox/<target>-v2/index.html?hostContextId=<id>`
 - `hostContextId` in target URL exactly matches source fixture `hostContextId`
 
 All flows: **PASS** for hostContextId preservation.
 
 ## Route + Syntax Validation
 Per flow, the runtime test also verifies:
-- target route exists: `tools/<target>-v2/index.html`
+- target route exists: `toolbox/<target>-v2/index.html`
 - target `index.js` passes `node --check`
 
 All flows: **PASS** for route and target syntax checks.
@@ -41,7 +41,7 @@ All flows: **PASS** for route and target syntax checks.
 ## Commands Run
 - `node --check tests/runtime/V2CrossToolFlow.test.mjs` -> **PASS**
 - `node tests/runtime/V2CrossToolFlow.test.mjs` -> **PASS**
-- `node --check tools/*-v2/index.js` -> **FAIL** in this PowerShell/Node wildcard context (`MODULE_NOT_FOUND` for literal `*-v2` path)
+- `node --check toolbox/*-v2/index.js` -> **FAIL** in this PowerShell/Node wildcard context (`MODULE_NOT_FOUND` for literal `*-v2` path)
 - Equivalent per-file V2 syntax checks -> **PASS** (all V2 `index.js`)
 
 ## Fallback Logic Confirmation

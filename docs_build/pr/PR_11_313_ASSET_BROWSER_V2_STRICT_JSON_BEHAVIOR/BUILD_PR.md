@@ -8,7 +8,7 @@
   - `tests/runtime/V2AssetBrowserStrictJson.test.mjs`
 
 ## Validation
-- `node --check tools/asset-manager-v2/index.js`
+- `node --check toolbox/asset-manager-v2/index.js`
 - `node --check tests/runtime/V2AssetBrowserStrictJson.test.mjs`
 - `node tests/runtime/V2AssetBrowserStrictJson.test.mjs`
 - `node tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1505-1505`

@@ -2,10 +2,10 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 - docs_build/dev/reports/literal_asset_none_renderer_11_158.txt
 
-Exact occurrences searched in tools/Workspace Manager/main.js:
+Exact occurrences searched in toolbox/Workspace Manager/main.js:
 - "Asset:" -> count=0
 - "none" -> count=2
   - line 1025 (diagnostic log text `(none)`)
@@ -52,10 +52,10 @@ Why prior PRs missed it:
 - This patch narrows that exact branch to the direct SVG tool entry and its direct vector asset document fields.
 
 Validation result:
-- `node --check "tools/Workspace Manager/main.js"` -> PASS
+- `node --check "toolbox/Workspace Manager/main.js"` -> PASS
 - Static trace confirms active branch maps `vectorAssetDocument.sourceName` / `Inline SVG` into shared asset display label.
 - Sample 1902 static payload check -> PASS
   - hasSvgText=true
   - sourceName=sample-0901-ship.svg
   - computed visibleAssetLine="Asset: sample-0901-ship.svg"
-- `git diff --name-only -- "tools/Workspace Manager/main.js" "docs_build/dev/reports/literal_asset_none_renderer_11_158.txt"` -> PASS
+- `git diff --name-only -- "toolbox/Workspace Manager/main.js" "docs_build/dev/reports/literal_asset_none_renderer_11_158.txt"` -> PASS

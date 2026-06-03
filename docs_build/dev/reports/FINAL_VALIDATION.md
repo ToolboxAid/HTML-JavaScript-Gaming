@@ -12,7 +12,7 @@ Validation checks:
 - no broken old-path references in active/runtime-facing docs scope
   - result: PASS
   - scope excludes this PR's cleanup reports that intentionally document legacy path mappings
-- docs structure guard (`node tools/dev/checkDocsStructureGuard.mjs`)
+- docs structure guard (`node toolbox/dev/checkDocsStructureGuard.mjs`)
   - result: PASS
 
 Repo cleanliness gate:

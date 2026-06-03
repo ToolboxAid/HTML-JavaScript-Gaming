@@ -3,35 +3,35 @@
 Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-13
-Source folder: `tools/3D Camera Path Editor`
+Source folder: `toolbox/3D Camera Path Editor`
 Publish target: `tools.3d-camera-path-editor`
 
 ## Tool Purpose
 3D Camera Path Editor owns camera path import, validation, waypoint editing, export, and publish to `tools.3d-camera-path-editor`.
 
 ## Folder/Files Inspected
-- `tools/3D Camera Path Editor/how_to_use.html`
-- `tools/3D Camera Path Editor/index.html`
-- `tools/3D Camera Path Editor/main.js`
-- `tools/3D Camera Path Editor/README.md`
+- `toolbox/3D Camera Path Editor/how_to_use.html`
+- `toolbox/3D Camera Path Editor/index.html`
+- `toolbox/3D Camera Path Editor/main.js`
+- `toolbox/3D Camera Path Editor/README.md`
 
 ## Controls: Control -> Action -> JSON Effect
 | Control | Action | JSON effect |
 |---|---|---|
-| `tools/3D Camera Path Editor/index.html`: `button[button]#addCameraPointButton` - Add Waypoint | Adds a new camera waypoint or path setting. | Appends schema-owned data to the draft 3D camera path payload; publish waits for validation. |
-| `tools/3D Camera Path Editor/index.html`: `button[button]#normalizeCameraPathButton` - Normalize Path | Processes the current 3D camera path payload. | Updates tool-owned derived data/report fields that must validate before tools.3d-camera-path-editor publish. |
-| `tools/3D Camera Path Editor/index.html`: `textarea#cameraPathInput` - cameraPathInput | Edits the active camera waypoint or path setting field. | Updates the draft 3D camera path payload field represented by `cameraPathInput` before validation. |
+| `toolbox/3D Camera Path Editor/index.html`: `button[button]#addCameraPointButton` - Add Waypoint | Adds a new camera waypoint or path setting. | Appends schema-owned data to the draft 3D camera path payload; publish waits for validation. |
+| `toolbox/3D Camera Path Editor/index.html`: `button[button]#normalizeCameraPathButton` - Normalize Path | Processes the current 3D camera path payload. | Updates tool-owned derived data/report fields that must validate before tools.3d-camera-path-editor publish. |
+| `toolbox/3D Camera Path Editor/index.html`: `textarea#cameraPathInput` - cameraPathInput | Edits the active camera waypoint or path setting field. | Updates the draft 3D camera path payload field represented by `cameraPathInput` before validation. |
 
 ## Panels And Surfaces Found
-- `tools/3D Camera Path Editor/how_to_use.html`: `.tools-platform-surface`
-- `tools/3D Camera Path Editor/index.html`: `.app-shell`
-- `tools/3D Camera Path Editor/index.html`: `.debug-tool-grid`
-- `tools/3D Camera Path Editor/index.html`: `.debug-tool-panel`
-- `tools/3D Camera Path Editor/index.html`: `.debug-tool-shell`
-- `tools/3D Camera Path Editor/index.html`: `.panel`
+- `toolbox/3D Camera Path Editor/how_to_use.html`: `.tools-platform-surface`
+- `toolbox/3D Camera Path Editor/index.html`: `.app-shell`
+- `toolbox/3D Camera Path Editor/index.html`: `.debug-tool-grid`
+- `toolbox/3D Camera Path Editor/index.html`: `.debug-tool-panel`
+- `toolbox/3D Camera Path Editor/index.html`: `.debug-tool-shell`
+- `toolbox/3D Camera Path Editor/index.html`: `.panel`
 
 ## Current Component/Class/Function Inventory
-- `tools/3D Camera Path Editor/main.js`: addWaypoint; boot3dCameraPathEditor; buildPresetLoadedStatus; getApi; normalizeCameraPath; normalizeCameraPathPayload; normalizeSamplePresetPath; parseInputPayload; registerToolBootContract; sanitizeNumber; setStatus; tryLoadPresetFromQuery
+- `toolbox/3D Camera Path Editor/main.js`: addWaypoint; boot3dCameraPathEditor; buildPresetLoadedStatus; getApi; normalizeCameraPath; normalizeCameraPathPayload; normalizeSamplePresetPath; parseInputPayload; registerToolBootContract; sanitizeNumber; setStatus; tryLoadPresetFromQuery
 
 ## Target Controls
 Keep:
@@ -48,7 +48,7 @@ Add:
 - waypoint/path diagnostics
 
 ## JSON Schema/Input Contract Currently Expected
-Tool receives validated payload and owns behavior for 3D camera path payload. Current contract baseline: `tools/schemas/tools/3d-camera-path-editor.schema.json` (3d-camera-path-editor Payload).
+Tool receives validated payload and owns behavior for 3D camera path payload. Current contract baseline: `toolbox/schemas/tools/3d-camera-path-editor.schema.json` (3d-camera-path-editor Payload).
 Required keys: `cameraPath`.
 Optional keys: none identified for this contract.
 
@@ -80,12 +80,12 @@ tools.3d-camera-path-editor = {
 ```
 
 ## Playwright Expectations
-- load `tools/3D Camera Path Editor/index.html` without console errors
+- load `toolbox/3D Camera Path Editor/index.html` without console errors
 - edit/play a valid path and confirm output JSON updates
 - reject invalid camera path JSON
 
 ## Manual Test Expectations
-- Open `tools/3D Camera Path Editor/index.html` and confirm waypoint/path controls render.
+- Open `toolbox/3D Camera Path Editor/index.html` and confirm waypoint/path controls render.
 - Add or edit a waypoint, validate, export, and re-import.
 - Try malformed JSON and an invalid waypoint; each must block publish.
 

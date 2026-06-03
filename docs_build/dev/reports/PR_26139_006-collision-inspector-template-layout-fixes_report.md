@@ -58,7 +58,7 @@ Skipped by request:
 
 ## Manual Validation
 
-1. Open `tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`.
+1. Open `toolbox/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`.
 2. Confirm the Tool Starter-style header/menu appears, the Game Manifest JSON picker is in the tool menu, and the canvas sits below Zoom.
 3. Confirm Collision Summary is its own scrollable accordion on the right.
 4. Launch Collision Inspector V2 from Workspace Manager V2 and confirm it auto-loads the workspace manifest and shows the workspace return menu.

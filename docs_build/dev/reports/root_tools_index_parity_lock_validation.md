@@ -3,7 +3,7 @@
 ## Scope
 
 Validated only:
-- `/tools/index.html`
+- `/toolbox/index.html`
 - `GameFoundryStudio/assets/js/tools-page-accordions.js`
 - Reports
 
@@ -18,14 +18,14 @@ Read:
 ## Static Inspection
 
 Inspected current root Tools index:
-- `tools/index.html`
+- `toolbox/index.html`
 
 Inspected supporting renderer:
 - `GameFoundryStudio/assets/js/tools-page-accordions.js`
 
 Findings:
-- `/tools/index.html` loads `assets/css/theme/v2/theme.css`.
-- `/tools/index.html` uses `[data-tools-accordion-list]` as the render target.
+- `/toolbox/index.html` loads `assets/css/theme/v2/theme.css`.
+- `/toolbox/index.html` uses `[data-tools-accordion-list]` as the render target.
 - `tools-page-accordions.js` renders Theme V2-oriented `.control-card` tiles inside `.card-grid`.
 - `tools-page-accordions.js` still defines tool images, badges, descriptions, grouping names, grouping colors, outlines, sorting, grouping, and links.
 
@@ -43,7 +43,7 @@ Result: Blocked. No root Tools index code changes were made.
 
 Command:
 ```powershell
-rg -n --pcre2 '<script(?![^>]*\bsrc=)|<style|\son[a-z]+\s*=' tools/index.html
+rg -n --pcre2 '<script(?![^>]*\bsrc=)|<style|\son[a-z]+\s*=' toolbox/index.html
 ```
 
 Result: Passed. No matches found.

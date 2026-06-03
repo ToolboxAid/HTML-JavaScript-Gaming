@@ -33,7 +33,7 @@ Preferred Object Vector assetLibrary entry shape is now:
 
 ## Schema And Validation
 
-- `tools/schemas/tools/object-vector-studio-v2.schema.json` no longer requires or permits `libraryAsset.objectId`.
+- `toolbox/schemas/tools/object-vector-studio-v2.schema.json` no longer requires or permits `libraryAsset.objectId`.
 - Object Vector Studio V2 validation now requires each library entry `id` to reference an existing object.
 - Object Vector runtime validation now follows the same library ID/object ID contract.
 - Playwright coverage includes explicit rejection for:

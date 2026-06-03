@@ -7,7 +7,7 @@
 - Updated `tests/tools/RuntimeSceneLoaderHotReload.test.mjs`:
   - now imports helper and exports `run()` that executes helper validation
 - Updated `tests/final/ToolchainEngineIntegrationValidation.test.mjs`:
-  - removed import from `../tools/RuntimeSceneLoaderHotReload.test.mjs`
+  - removed import from `../toolbox/RuntimeSceneLoaderHotReload.test.mjs`
   - now imports helper function from `../helpers/runtimeSceneLoaderHotReload.helpers.mjs`
 
 ## Result

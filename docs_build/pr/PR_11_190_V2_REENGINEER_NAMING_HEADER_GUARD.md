@@ -76,7 +76,7 @@ Codex must not:
 - create a new custom header
 - copy/paste old header markup from v1 tools
 - use `platformShell`
-- use `tools/shared/*`
+- use `toolbox/shared/*`
 - create a fallback header
 - silently hide missing header state
 
@@ -125,8 +125,8 @@ Run targeted validation only.
 Required checks:
 
 ```powershell
-node --check tools/palette-manager-v2/index.js
-node --check tools/svg-asset-studio-v2/index.js
+node --check toolbox/palette-manager-v2/index.js
+node --check toolbox/svg-asset-studio-v2/index.js
 ```
 
 If those exact files do not exist, Codex must locate the current V2 entry files by path/name and run `node --check` on the changed V2 entry files only.
@@ -137,7 +137,7 @@ Manual verification:
 - SVG Asset Studio V2 title/header shows `SVG Asset Studio V2`.
 - Both tools contain and mount through `<div id="shared-theme-header"></div>`.
 - No `platformShell` dependency is introduced.
-- No `tools/shared/*` dependency is introduced.
+- No `toolbox/shared/*` dependency is introduced.
 - Empty/error states are visible and actionable.
 - No fallback/default data is used.
 

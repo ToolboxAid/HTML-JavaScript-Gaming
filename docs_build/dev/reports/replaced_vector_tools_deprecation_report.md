@@ -1,8 +1,8 @@
 # PR_26140_082 Replaced Vector Tools Deprecation Report
 
 ## Summary
-- Removed the deprecated `tools/SVG Asset Studio` tool folder and ZIP package.
-- Removed the deprecated `tools/Vector Map Editor` tool folder and ZIP package.
+- Removed the deprecated `toolbox/SVG Asset Studio` tool folder and ZIP package.
+- Removed the deprecated `toolbox/Vector Map Editor` tool folder and ZIP package.
 - Migrated active SVG Asset Studio launch, registry, sample mapping, workspace, and docs references to Object Vector Studio V2.
 - Migrated active Vector Map Editor launch, registry, sample mapping, workspace, and docs references to World Vector Studio V2.
 - Added World Vector Studio V2 to the Workspace Manager V2 launch surface.
@@ -17,9 +17,9 @@
 - World Vector Studio V2 is described as the tool for placing assets, maps, layers, parallax, and scene/world layout.
 
 ## Workspace And Launch Wiring
-- `tools/toolRegistry.js` no longer registers `svg-asset-studio` or `vector-map-editor`.
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` now exposes World Vector Studio V2 as a workspace-launchable editor.
-- `tools/workspace-manager-v2/js/controls/ToolTilesControl.js` now describes World Vector Studio V2 with scene/world layout language.
+- `toolbox/toolRegistry.js` no longer registers `svg-asset-studio` or `vector-map-editor`.
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` now exposes World Vector Studio V2 as a workspace-launchable editor.
+- `toolbox/workspace-manager-v2/js/controls/ToolTilesControl.js` now describes World Vector Studio V2 with scene/world layout language.
 - `samples/samples.to.tools.json` maps the replaced tool categories to the V2 tools.
 - Active sample launch links now route to Object Vector Studio V2 or World Vector Studio V2 while preserving sample JSON content.
 

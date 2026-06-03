@@ -10,10 +10,10 @@
 
 ## Implementation Notes
 
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js` now shows a safe empty/actionable state when no JSON source is provided instead of creating default speech items.
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js` now shows a safe empty/actionable state when no JSON source is provided instead of creating default speech items.
 - URL-provided sample JSON is loaded through `samplePresetPath`, validated before render, and logged as the active preset source.
 - Workspace/session payload loading remains schema-validated and rejects invalid payloads before partial render.
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` only provides Text to Speech V2 session data when a real array payload exists.
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` only provides Text to Speech V2 session data when a real array payload exists.
 - `games/Asteroids/game.manifest.json`, `games/GravityWell/game.manifest.json`, and `games/pong/game.manifest.json` now store `tools.text2speach-V2` as a root array.
 - `samples/phase-19/1903/sample.1903.text2speach-V2.json` contains the prepopulated named speech items as the selected sample source.
 - `tests/runtime/SampleStandaloneToolDataFlow.test.mjs` now recognizes the Text to Speech V2 sample as a tool-specific root-array contract instead of requiring the older wrapper JSON contract.

@@ -1,7 +1,7 @@
 # PR 11.166 Hosted Badge Clear Order Report
 
 ## Result
-Implemented the targeted shared shell clear-order fix in `tools/shared/platformShell.js`.
+Implemented the targeted shared shell clear-order fix in `toolbox/shared/platformShell.js`.
 
 ## Root Cause
 Hosted Workspace Manager iframe launches forward launch context such as `samplePresetPath`, `hosted=1`, `hostToolId`, and `hostContextId`.
@@ -25,13 +25,13 @@ Hosted launch detection uses existing URL facts:
 Standalone launches still run the existing cleanup path.
 
 ## Files Changed
-- `tools/shared/platformShell.js`
+- `toolbox/shared/platformShell.js`
 - `docs_build/dev/reports/pr_11_166_hosted_badge_clear_order_report.md`
 
 ## Validation
-- `node --check tools/shared/platformShell.js`
-- `node --check "tools/Workspace Manager/main.js"`
-- `node --check "tools/SVG Asset Studio/main.js"`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
 
 ## Full Samples Smoke
 Skipped.

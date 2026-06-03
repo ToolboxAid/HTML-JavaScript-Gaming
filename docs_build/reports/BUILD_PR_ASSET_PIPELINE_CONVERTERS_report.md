@@ -10,7 +10,7 @@
 - Kept scope limited to shared pipeline/converter logic (no UI/theme/editor-state/render changes).
 
 ## Converter Layer
-- New shared module: `tools/shared/assetPipelineConverters.js`
+- New shared module: `toolbox/shared/assetPipelineConverters.js`
 - Introduced:
   - `createAssetPipelineConverterRegistry(...)`
   - `listAssetPipelineConverters(...)`
@@ -19,7 +19,7 @@
 - Converter behavior is metadata-safe and path/type normalization focused (minimal transforms only).
 
 ## Pipeline Integration
-- Updated `tools/shared/assetPipelineFoundation.js` to include `CONVERT` stage.
+- Updated `toolbox/shared/assetPipelineFoundation.js` to include `CONVERT` stage.
 - `registerAssetPipelineCandidate(...)` now performs:
   - normalize -> optional convert -> validate -> register
 - Added `convertNormalizedAssetPipelineCandidate(...)` and `validateNormalizedAssetPipelineCandidate(...)`.
@@ -41,8 +41,8 @@
 ## Exact Files Changed
 - `docs_build/pr/BUILD_PR_ASSET_PIPELINE_CONVERTERS.md`
 - `docs_build/reports/asset_pipeline_converters_targets.txt`
-- `tools/shared/assetPipelineConverters.js`
-- `tools/shared/assetPipelineFoundation.js`
+- `toolbox/shared/assetPipelineConverters.js`
+- `toolbox/shared/assetPipelineFoundation.js`
 - `docs_build/reports/launch_smoke_report.md`
 - `docs_build/reports/BUILD_PR_ASSET_PIPELINE_CONVERTERS_validation.txt`
 - `docs_build/reports/BUILD_PR_ASSET_PIPELINE_CONVERTERS_report.md`

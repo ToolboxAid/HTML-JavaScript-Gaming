@@ -12,7 +12,7 @@ Status: PASS
 
 ## Changed Files
 
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md`
 - `docs_build/dev/reports/PR_26146_033-midi-studio-v2-implementation-audit.md`
@@ -27,7 +27,7 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node -e "const fs=require('fs'); const p='tools/midi-studio-v2/styles/midiStudioV2.css'; const css=fs.readFileSync(p,'utf8'); if(/\/\*[^]*$/.test(css.replace(/\/\*[^]*?\*\//g,''))) throw new Error('Unclosed CSS comment'); let depth=0; for (const ch of css.replace(/\/\*[^]*?\*\//g,'')) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error('Unexpected }'); } if (depth!==0) throw new Error('Unbalanced CSS braces'); console.log('CSS syntax guard passed:', p);"
+node -e "const fs=require('fs'); const p='toolbox/midi-studio-v2/styles/midiStudioV2.css'; const css=fs.readFileSync(p,'utf8'); if(/\/\*[^]*$/.test(css.replace(/\/\*[^]*?\*\//g,''))) throw new Error('Unclosed CSS comment'); let depth=0; for (const ch of css.replace(/\/\*[^]*?\*\//g,'')) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error('Unexpected }'); } if (depth!==0) throw new Error('Unbalanced CSS braces'); console.log('CSS syntax guard passed:', p);"
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
 npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave grid density supports icon controls and simultaneous chord editing|fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync|roadmap and implementation audit exist with actual MIDI Studio V2 status markers|generates bass pad arpeggio and drum lanes from chord grid" --config=codex_playwright_system_chrome.config.cjs --reporter=list --workers=1 --timeout=60000
 git diff --check
@@ -76,7 +76,7 @@ No roadmap content was rewritten; only status markers changed.
 
 ## Manual Validation Notes
 
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. Import `tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json`.
 3. Verify the left Songs/Instruments column is 350px wide in normal layout.
 4. Verify Type and Instrument dropdowns remain usable, and Mute/Solo/Eye/Delete stay on one row without horizontal scroll.

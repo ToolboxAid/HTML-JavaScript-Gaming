@@ -12,7 +12,7 @@
 
 - `src/engine/runtime/gameImageConvention.js`
 - `src/engine/runtime/fullscreenBezel.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `tests/core/BackgroundImageAndFullscreenBezel.test.mjs`
 - `tests/playwright/tools/AsteroidsBackgroundAssetResolution.spec.mjs`
 - `docs_build/dev/reports/PR_26139_016-final-manifest-runtime-cleanup_report.md`
@@ -39,7 +39,7 @@
 
 - PASS: `node --check src/engine/runtime/gameImageConvention.js`
 - PASS: `node --check src/engine/runtime/fullscreenBezel.js`
-- PASS: `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- PASS: `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - PASS: `node --check tests/playwright/tools/AsteroidsBackgroundAssetResolution.spec.mjs`
 - PASS: `node --check tests/core/BackgroundImageAndFullscreenBezel.test.mjs`
 - PASS: `npm run build:manifest`

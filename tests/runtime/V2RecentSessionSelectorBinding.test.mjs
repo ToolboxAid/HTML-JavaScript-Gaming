@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-recent-session-selector-binding-results.json");
 
 function readText(filePath) {
@@ -200,7 +200,7 @@ export function run() {
   const hasResolverUse = workspaceJsText.includes("if (Array.isArray(this.recentSessionInventory))");
   const hasLibraryOptional = workspaceJsText.includes("const library = this.readSessionLibrary();");
 
-  if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
+  if (!workspaceJsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
   if (!syntaxValid) failures.push("workspace-v2/index.js failed syntax check.");
   if (!hasRecentInventoryField) failures.push("Missing recent session inventory cache field.");
   if (!hasRecentBuilder) failures.push("Missing recent session inventory builder.");

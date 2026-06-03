@@ -4,7 +4,7 @@ PR: `PR_26144_004-tighten-audio-sfx-control-layout`
 
 ## Scope
 
-- Updated only `tools/audio-sfx-playground-v2` plus required reports.
+- Updated only `toolbox/audio-sfx-playground-v2` plus required reports.
 - Added a scoped external stylesheet for Audio / SFX Playground V2 density overrides.
 - Kept template-v2 classes and styling patterns in place.
 - Marked Frequency, Duration, Attack, Release, Volume, and Sweep controls for compact range layout.
@@ -22,9 +22,9 @@ PASS:
   - linked stylesheets resolve
   - CSS braces are balanced
 - Audio / SFX Playground V2 JavaScript syntax check:
-  - `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`
+  - `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`
 - Whitespace validation:
-  - `git diff --check -- tools/audio-sfx-playground-v2/index.html tools/audio-sfx-playground-v2/styles/audioSfxLayoutDensity.css`
+  - `git diff --check -- toolbox/audio-sfx-playground-v2/index.html toolbox/audio-sfx-playground-v2/styles/audioSfxLayoutDensity.css`
 
 ## Playwright Impact
 

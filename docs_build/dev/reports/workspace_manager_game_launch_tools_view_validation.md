@@ -2,7 +2,7 @@
 
 ## Changed Files
 
-- `tools/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/main.js`
 - `docs_build/dev/reports/workspace_manager_game_launch_tools_view_validation.md`
 
 ## Proof `Open with Workspace Manager` Still Routes To Workspace Manager
@@ -10,13 +10,13 @@
 - Game card launch label remains exactly `Open with Workspace Manager` in `games/index.render.js:263`.
 - Games continue to launch via `launchWithExternalToolWorkspaceReset(workspaceHref)` in `games/index.render.js:419`.
 - `workspaceHref` is still produced by `resolveGameWorkspaceLaunchHref(..., { launchSource: "games", launchType: "game-to-workspace" })` in `games/index.render.js:150-152`.
-- `resolveGameWorkspaceLaunchHref` still resolves to Workspace Manager SSoT target path and appends `?gameId=<id>&mount=game` in `tools/shared/toolLaunchSSoT.js:95-118`.
-- Workspace Manager SSoT target path remains `/tools/Workspace%20Manager/index.html` in `tools/shared/toolLaunchSSoTData.js:63-70`.
+- `resolveGameWorkspaceLaunchHref` still resolves to Workspace Manager SSoT target path and appends `?gameId=<id>&mount=game` in `toolbox/shared/toolLaunchSSoT.js:95-118`.
+- Workspace Manager SSoT target path remains `/toolbox/Workspace%20Manager/index.html` in `toolbox/shared/toolLaunchSSoTData.js:63-70`.
 - Direct resolver check output:
 
 ```text
 {
-  href: '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game',
+  href: '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game',
   error: ''
 }
 ```
@@ -24,8 +24,8 @@
 ## Proof Explicit `gameId` Is Still Required
 
 - Game-launch mode still requires `gameId` and fails visibly when missing:
-  - `tools/Workspace Manager/main.js:573-576`
-  - `tools/Workspace Manager/main.js:626-630`
+  - `toolbox/Workspace Manager/main.js:573-576`
+  - `toolbox/Workspace Manager/main.js:626-630`
 - Visible error message remains:
 
 ```text
@@ -41,7 +41,7 @@ gameIdOrGame 0
 legacyGameParamRead 0
 ```
 
-- `tools/Workspace Manager/main.js` contains no `gameId || game` and no legacy `searchParams.get("game")` query read.
+- `toolbox/Workspace Manager/main.js` contains no `gameId || game` and no legacy `searchParams.get("game")` query read.
 
 ## Proof `toolIds[0]` First-Tool Selection Is Not Restored
 
@@ -51,7 +51,7 @@ Command output:
 toolIds0 0
 ```
 
-- `tools/Workspace Manager/main.js` contains no first-item `toolIds[0]` launch selection fallback.
+- `toolbox/Workspace Manager/main.js` contains no first-item `toolIds[0]` launch selection fallback.
 
 ## Proof External Launch Memory Clear Remains Intact
 
@@ -62,13 +62,13 @@ clearResult true
 localAfterClear [ [ 'keep.one', 'x' ] ]
 sessionAfterClear [ [ 'keep.two', 'y' ] ]
 launchResult true
-assignCalls [ '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
+assignCalls [ '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
 localAfterLaunch [ [ 'keep.one', 'x' ] ]
 sessionAfterLaunch [ [ 'keep.two', 'y' ] ]
 ```
 
-- Clearing still happens in `tools/shared/toolLaunchSSoT.js:121-136`.
-- External launch still clears first, then navigates via `window.location.assign(...)` in `tools/shared/toolLaunchSSoT.js:138-145`.
+- Clearing still happens in `toolbox/shared/toolLaunchSSoT.js:121-136`.
+- External launch still clears first, then navigates via `window.location.assign(...)` in `toolbox/shared/toolLaunchSSoT.js:138-145`.
 
 ## Proof Initial Game-Launched Workspace Manager View Shows Tools/Workspace Surface (Not Game Surface)
 
@@ -76,8 +76,8 @@ sessionAfterLaunch [ [ 'keep.two', 'y' ] ]
   - `await mountGameFrame(initialGameEntry)` branch from `init()` launch path.
   - `void mountGameFrame(gameEntry)` branch from game `popstate` path.
 - Current behavior with no explicit `tool` in game launch path:
-  - `popstate` now unmounts any mounted content and returns with visible tool-selection status in `tools/Workspace Manager/main.js:590-595`.
-  - `init()` now returns with visible tool-selection status in `tools/Workspace Manager/main.js:657-659`.
+  - `popstate` now unmounts any mounted content and returns with visible tool-selection status in `toolbox/Workspace Manager/main.js:590-595`.
+  - `init()` now returns with visible tool-selection status in `toolbox/Workspace Manager/main.js:657-659`.
 - No direct runtime calls remain to auto-mount hosted game content during initialization/navigation:
 
 ```text
@@ -97,9 +97,9 @@ voidMountGameFrame 0
 Commands run successfully:
 
 ```bash
-node --check tools/Workspace\ Manager/main.js
-node --check tools/shared/toolLaunchSSoT.js
-node --check tools/shared/toolLaunchSSoTData.js
+node --check toolbox/Workspace\ Manager/main.js
+node --check toolbox/shared/toolLaunchSSoT.js
+node --check toolbox/shared/toolLaunchSSoTData.js
 node --check games/index.render.js
 node --check samples/index.render.js
 ```

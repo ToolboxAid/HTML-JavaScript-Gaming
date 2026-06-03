@@ -622,7 +622,7 @@ export async function run() {
       const expectedAssetModel = metadataSets.expectedWorkspaceEntriesById[action.gameId] || null;
       const gameFailures = [];
       const decodedPath = decodeURIComponent(parsed.pathname || "");
-      if (decodedPath !== "/tools/Workspace Manager/index.html") {
+      if (decodedPath !== "/toolbox/Workspace Manager/index.html") {
         invalidActionDetails.push(`Game ${action.gameId} action path mismatch: ${parsed.pathname}`);
       }
 
@@ -766,7 +766,7 @@ export async function run() {
       || null;
     const gravityWellWorkspaceAction = actionEntries.find((entry) => String(entry.gameId || "").toLowerCase() === "gravitywell");
     if (gravityWellWorkspaceAction && gravityWellExpectation?.hasManifestPalette && gravityWellExpectation?.hasManifestVectors) {
-      const gravityVectorUrl = new URL("/tools/Workspace%20Manager/index.html", baseUrl);
+      const gravityVectorUrl = new URL("/toolbox/Workspace%20Manager/index.html", baseUrl);
       gravityVectorUrl.searchParams.set("gameId", "GravityWell");
       gravityVectorUrl.searchParams.set("mount", "game");
       gravityVectorUrl.searchParams.set("tool", "object-vector-studio-v2");

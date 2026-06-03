@@ -49,7 +49,7 @@ Example logical IDs:
 ```text
 games/Asteroids/platform/assets/vectors/
 shared/vector/
-tools/Vector Asset Studio/
+toolbox/Vector Asset Studio/
 ```
 
 ## Proposed Data Shape
@@ -118,10 +118,10 @@ Going forward, tool names should describe what the tools actually are, using nor
 Ignore the original legacy `SpriteEditor` label and naming pattern.
 
 ### Proposed tool rename map
-- `tools/Sprite Editor/` → `tools/Sprite Editor/`
-- `tools/Tilemap Studio/` → `tools/Tilemap Studio/`
-- `tools/Parallax Scene Studio/` → `tools/Parallax Scene Studio/`
-- `tools/SVG Editor/` → `tools/Vector Asset Studio/`
+- `toolbox/Sprite Editor/` → `toolbox/Sprite Editor/`
+- `toolbox/Tilemap Studio/` → `toolbox/Tilemap Studio/`
+- `toolbox/Parallax Scene Studio/` → `toolbox/Parallax Scene Studio/`
+- `toolbox/SVG Editor/` → `toolbox/Vector Asset Studio/`
 
 ### UI/Docs naming expectations
 - Use human-readable titles with normalized spacing
@@ -138,7 +138,7 @@ Ignore the original legacy `SpriteEditor` label and naming pattern.
 ## Likely Files
 - `docs_build/pr/BUILD_PR_VECTOR_ASSET_SYSTEM.md`
 - `shared/vector/*`
-- `tools/Vector Asset Studio/*`
+- `toolbox/Vector Asset Studio/*`
 - transitional tool path/reference docs
 - docs_build/dev reports
 - no engine core API files

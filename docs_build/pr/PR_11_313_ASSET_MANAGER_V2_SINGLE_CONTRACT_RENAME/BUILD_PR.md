@@ -4,7 +4,7 @@
 - Renamed the contract ID repo-wide:
   - `legacy asset browser v2 id` -> `asset-manager-v2`
 - Renamed tool path:
-  - `tools/legacy asset browser v2 id/` -> `tools/asset-manager-v2/`
+  - `toolbox/legacy asset browser v2 id/` -> `toolbox/asset-manager-v2/`
 - Renamed fixture path:
   - `tests/fixtures/v2-tools/legacy asset browser v2 id.json` -> `tests/fixtures/v2-tools/asset-manager-v2.json`
 - Updated Workspace V2 launcher/session wiring, tool links, runtime tests, and docs to the new contract ID.

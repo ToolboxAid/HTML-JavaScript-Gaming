@@ -6,11 +6,11 @@ PASS - MIDI Studio V2 accordions, instrument delete icon placement, canvas piano
 
 ## Commands
 
-- PASS - `node --check tools/midi-studio-v2/js/controls/AccordionSection.js`
-- PASS - `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS - `node --check tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
+- PASS - `node --check toolbox/midi-studio-v2/js/controls/AccordionSection.js`
+- PASS - `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS - `node --check toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
 - PASS - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS - `rg -n -P "<script(?![^>]*\\bsrc=)|<style\\b|\\son[a-zA-Z]+\\s*=" tools/midi-studio-v2/index.html` returned no inline script/style/event handlers.
+- PASS - `rg -n -P "<script(?![^>]*\\bsrc=)|<style\\b|\\son[a-zA-Z]+\\s*=" toolbox/midi-studio-v2/index.html` returned no inline script/style/event handlers.
 - PASS - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --grep "PR068" --reporter=list` passed 2 tests.
 - PASS - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --grep "opens and closes every MIDI Studio accordion" --reporter=list` passed 1 test.
 - PASS - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --grep "PR0(60|61|62|63|64|65|66|67|68)|opens and closes every MIDI Studio accordion" --reporter=list` passed 11 tests.

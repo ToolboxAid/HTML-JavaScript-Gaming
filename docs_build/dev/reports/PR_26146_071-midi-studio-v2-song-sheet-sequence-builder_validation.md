@@ -20,16 +20,16 @@ PASS - Project instructions read:
 
 PASS - Changed-file syntax checks:
 
-- `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
+- `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
 - `node --check src/engine/audio/SongSheetParser.js`
-- `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `node --check tools/midi-studio-v2/js/bootstrap.js`
-- `node --check tools/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
+- `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `node --check toolbox/midi-studio-v2/js/bootstrap.js`
+- `node --check toolbox/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
 - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 
 PASS - External JS/CSS only check:
 
-- `Select-String -Path tools/midi-studio-v2/index.html -Pattern '<script(?![^>]*\bsrc=)|<style|\son[a-z]+='`
+- `Select-String -Path toolbox/midi-studio-v2/index.html -Pattern '<script(?![^>]*\bsrc=)|<style|\son[a-z]+='`
 - Result: no inline script, style, or event handler matches.
 
 PASS - Targeted MIDI Studio V2 Playwright tests:

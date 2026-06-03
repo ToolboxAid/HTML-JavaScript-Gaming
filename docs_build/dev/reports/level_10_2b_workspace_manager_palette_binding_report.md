@@ -4,7 +4,7 @@
 - `BUILD_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX`
 
 ## Changed Files
-- `tools/shared/platformShell.js`
+- `toolbox/shared/platformShell.js`
 - `tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs`
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs_build/dev/reports/level_10_2b_workspace_manager_palette_binding_report.md`

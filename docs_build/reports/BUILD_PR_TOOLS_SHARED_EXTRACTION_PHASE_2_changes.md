@@ -4,9 +4,9 @@ Date: 2026-04-11
 
 ## Files Changed
 - docs_build/pr/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2.md
-- tools/shared/eventCommandUtils.js
-- tools/shared/uiSafeUtils.js
-- tools/shared/platformShell.js
+- toolbox/shared/eventCommandUtils.js
+- toolbox/shared/uiSafeUtils.js
+- toolbox/shared/platformShell.js
 - docs_build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2_validation.md
 - docs_build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2_changes.md
 - docs_build/reports/launch_smoke_report.md
@@ -22,7 +22,7 @@ Date: 2026-04-11
   - `readDataAttribute`
   - `asHtmlInput`
   - `setTextContent`
-- Normalized `tools/shared/platformShell.js` to use new shared helpers with equivalent behavior.
+- Normalized `toolbox/shared/platformShell.js` to use new shared helpers with equivalent behavior.
 
 ## Scope Compliance
 - No theme/style changes.

@@ -20,7 +20,7 @@
 - `node tests/runtime/V2ToolLaunch.test.mjs` -> FAIL (palette fixture contract mismatch in test expectations)
 - `node tests/runtime/V2ToolActionFlow.test.mjs` -> FAIL (brittle route-string token expectations)
 - `node tests/runtime/V2SessionValidation.test.mjs` -> FAIL (palette validation expectation mismatch)
-- `node --check tools/*-v2/index.js` (per-file) -> PASS
+- `node --check toolbox/*-v2/index.js` (per-file) -> PASS
 
 ## Output
 - Tool-by-tool PASS/FAIL audit with exact failure reasons and required fixes:

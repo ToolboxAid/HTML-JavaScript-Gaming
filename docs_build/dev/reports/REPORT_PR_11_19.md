@@ -2,7 +2,7 @@
 
 ## Summary
 This PR cleans up schema SSoT:
-- one palette schema at tools/schemas/tools/palette-browser.schema.json
+- one palette schema at toolbox/schemas/tools/palette-browser.schema.json
 - no broad sample wrapper schema for tool payloads
 - clearer payload naming instead of config
 - generic project/source identity instead of gameId where appropriate

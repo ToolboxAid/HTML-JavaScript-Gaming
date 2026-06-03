@@ -1,7 +1,7 @@
 # PLAN_PR_LEVEL_8_23_WORKSPACE_MANIFEST_GAMES_FIELD_ALIGNMENT
 
 ## Purpose
-Fix the remaining Level 8 schema conformance blocker: workspace manifest documents are missing the root `games` field required by `tools/schemas/workspace.schema.json`.
+Fix the remaining Level 8 schema conformance blocker: workspace manifest documents are missing the root `games` field required by `toolbox/schemas/workspace.schema.json`.
 
 ## Scope
 - Align workspace manifest documents with current workspace schema.

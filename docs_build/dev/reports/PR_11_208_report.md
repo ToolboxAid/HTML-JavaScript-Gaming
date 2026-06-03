@@ -2,11 +2,11 @@
 
 ## Files Changed
 - `tests/runtime/V2SessionPersistence.test.mjs`
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 
 ## Tools Validated
 - `asset-manager-v2`
@@ -22,19 +22,19 @@
 - `handleNavigationState()` re-reads `hostContextId` from URL and re-runs session read logic.
 
 ## Validation Commands Run
-1. `node --check tests/runtime/V2SessionPersistence.test.mjs`  
+1. `node --check tests/runtime/V2SessionPersistence.test.mjs`
    - Result: **PASS**
-2. `node tests/runtime/V2SessionPersistence.test.mjs`  
+2. `node tests/runtime/V2SessionPersistence.test.mjs`
    - Result: **PASS**
    - Output file: `tmp/v2-session-persistence-results.json`
-3. `node --check tools/*-v2/index.js`  
+3. `node --check toolbox/*-v2/index.js`
    - Result: **FAIL** in PowerShell (wildcard passed literally to Node, module not found)
 4. Per-tool equivalent syntax checks:
-   - `node --check tools/asset-manager-v2/index.js` — **PASS**
-   - `node --check tools/palette-manager-v2/index.js` — **PASS**
-   - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
-   - `node --check tools/tilemap-studio-v2/index.js` — **PASS**
-   - `node --check tools/vector-map-editor-v2/index.js` — **PASS**
+   - `node --check toolbox/asset-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/palette-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/svg-asset-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/tilemap-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/vector-map-editor-v2/index.js` — **PASS**
 
 ## Reload/Back Behavior Results (Pass/Fail Per Tool)
 - `asset-manager-v2`: initial/reload/back-forward state classification stable (**PASS**)

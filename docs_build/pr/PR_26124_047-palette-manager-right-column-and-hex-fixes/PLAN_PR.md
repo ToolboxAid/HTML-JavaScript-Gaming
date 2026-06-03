@@ -4,13 +4,13 @@
 Fix Palette Manager V2 right-column accordion height behavior, user-added swatch source handling, and 8-digit hex alpha support.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - Workflow docs_build/reports required by `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 
 ## Boundaries
 - Do not touch workspace/toolState/session logic.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not modify shared accordionV2.
 - Do not add dependencies.
 - Do not broadly refactor Palette Manager V2.

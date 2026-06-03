@@ -4,7 +4,7 @@
 Implement merge-state status reset polish for Workspace V2 without changing merge algorithms.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2MergeStateStatusReset.test.mjs
 - docs_build/dev/reports/PR_11_261_merge_state_status_reset_report.md
 
@@ -20,7 +20,7 @@ Implement merge-state status reset polish for Workspace V2 without changing merg
 4. Keep undo state independent of merge-preview reset.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2MergeStateStatusReset.test.mjs
 - node tests/runtime/V2MergeStateStatusReset.test.mjs
 

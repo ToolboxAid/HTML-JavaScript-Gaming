@@ -23,8 +23,8 @@
 - Runtime Object Vector rendering works with transforms that do not include shapeOrigin.
 
 ## Validation Results
-- PASS `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- PASS `node --check tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
+- PASS `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- PASS `node --check toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
 - PASS `node --check src/engine/rendering/ObjectVectorRuntimeAssetService.js`
 - PASS JSON parse for Object Vector schema, game manifest schema, and `games/Asteroids/game.manifest.json`
 - PASS `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --grep "Object Vector Studio V2" --workers=1 --reporter=list` (16 passed)

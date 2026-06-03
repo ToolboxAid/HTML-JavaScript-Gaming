@@ -1,7 +1,7 @@
 PR 11.30 Validation Report
 
 Changed files:
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/PR_11_30_validation.txt
 
 Render block/function name:
@@ -14,7 +14,7 @@ Shared Assets display rule:
 - No fake/default shared assets are created, and absence is not treated as an error.
 
 Validation results:
-- node --check tools/shared/platformShell.js -> PASS
+- node --check toolbox/shared/platformShell.js -> PASS
 - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools -> PASS
   - Summary: PASS=19 FAIL=0 TOTAL=19
 

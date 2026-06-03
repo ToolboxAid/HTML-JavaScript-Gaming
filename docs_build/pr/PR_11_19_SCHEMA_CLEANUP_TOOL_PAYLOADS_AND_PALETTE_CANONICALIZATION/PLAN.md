@@ -6,8 +6,8 @@ Clean up schema ownership so tools accept only valid tool JSON payloads, Palette
 ## Problems
 1. Palette schema duplication:
    - Correct canonical location/name should be:
-     `tools/schemas/tools/palette-browser.schema.json`
-   - Existing `tools/schemas/palette.schema*` files should be removed after their content is moved/merged.
+     `toolbox/schemas/tools/palette-browser.schema.json`
+   - Existing `toolbox/schemas/palette.schema*` files should be removed after their content is moved/merged.
    - Only one palette schema should remain: palette-browser.
 
 2. `sample.tool-payload.schema.json` is too broad:
@@ -26,7 +26,7 @@ Clean up schema ownership so tools accept only valid tool JSON payloads, Palette
    - Suggested: `projectId`, `sourceId`, or `workspaceId` depending on context.
 
 ## Scope
-- Schema files under `tools/schemas/`
+- Schema files under `toolbox/schemas/`
 - Tool payload validation
 - Workspace manifest schema references
 - Sample 1902 only if required to validate
@@ -34,8 +34,8 @@ Clean up schema ownership so tools accept only valid tool JSON payloads, Palette
 - Do not modify start_of_day folders
 
 ## Acceptance
-- Only one canonical palette schema exists: `tools/schemas/tools/palette-browser.schema.json`
-- `tools/schemas/palette.schema*` files are deleted/removed
+- Only one canonical palette schema exists: `toolbox/schemas/tools/palette-browser.schema.json`
+- `toolbox/schemas/palette.schema*` files are deleted/removed
 - `palette-browser.schema.json` contains the real strict palette payload schema
 - Tools validate against tool-specific schemas directly, not broad sample wrapper schema
 - `sample.tool-payload.schema.json` is removed, demoted, or narrowed so it cannot accept extra wrapper data

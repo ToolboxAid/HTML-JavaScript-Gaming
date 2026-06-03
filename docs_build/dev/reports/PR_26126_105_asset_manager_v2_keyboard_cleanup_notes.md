@@ -11,5 +11,5 @@
 - Accordion click behavior remains covered by the existing workspace-v2 Playwright tests.
 
 ## Verification
-- `rg` search for the listed key names and keyboard navigation terms returned no matches in `tools/asset-manager-v2` or `tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`.
+- `rg` search for the listed key names and keyboard navigation terms returned no matches in `toolbox/asset-manager-v2` or `tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`.
 - No sample JSON was modified.

@@ -39,7 +39,7 @@ Do not migrate all tools.
 
 ### 1. Ensure workspaceShell has a public init
 File:
-`tools/shared/workspaceShell.js`
+`toolbox/shared/workspaceShell.js`
 
 Export a clear initializer, for example:
 `initWorkspaceShell()`
@@ -72,7 +72,7 @@ Required log:
 
 ### 2. SVG hosted entry must call workspaceShell
 File:
-`tools/SVG Asset Studio/main.js`
+`toolbox/SVG Asset Studio/main.js`
 
 In hosted SVG mode:
 - log `[SVG_HOSTED_WORKSPACE_ENTRY]`
@@ -95,7 +95,7 @@ Required log before send:
 
 ### 4. Workspace Manager receives and writes tile
 File:
-`tools/Workspace Manager/main.js`
+`toolbox/Workspace Manager/main.js`
 
 Listen for message type:
 `tools:workspace-shell-state`
@@ -147,11 +147,11 @@ Expected no logs:
 
 ## Validation
 Run:
-- `node --check tools/shared/workspaceShell.js`
-- `node --check "tools/SVG Asset Studio/main.js"`
-- `node --check "tools/Workspace Manager/main.js"`
-- `node --check tools/shared/platformShell.js`
-- `node --check tools/shared/assetUsageIntegration.js`
+- `node --check toolbox/shared/workspaceShell.js`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
+- `node --check "toolbox/Workspace Manager/main.js"`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check toolbox/shared/assetUsageIntegration.js`
 
 Full samples smoke:
 - Skip.

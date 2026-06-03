@@ -1,13 +1,13 @@
 # PR_11_211 Report — V2 Session Producer (Workspace → Tools)
 
 ## Producer Behavior
-Added a new minimal V2 producer at `tools/workspace-v2/`:
+Added a new minimal V2 producer at `toolbox/workspace-v2/`:
 - UI allows selecting one of the five V2 tools.
 - Fixture load step reads `tests/fixtures/v2-tools/<tool>.json`.
 - Launch step:
   1. generates a new `hostContextId`
   2. writes `sessionStorage.setItem(hostContextId, JSON.stringify(payload))`
-  3. navigates to `tools/<tool>-v2/index.html?hostContextId=<id>` (tool-relative URL generated from workspace path)
+  3. navigates to `toolbox/<tool>-v2/index.html?hostContextId=<id>` (tool-relative URL generated from workspace path)
 
 ## Tools Launched
 - `asset-manager-v2`
@@ -33,17 +33,17 @@ Output generated:
 - failures: `0`
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionProducer.test.mjs`
 - `docs_build/dev/reports/PR_11_211_report.md`
 
 ## Validation Commands Run
-1. `node --check tests/runtime/V2SessionProducer.test.mjs`  
+1. `node --check tests/runtime/V2SessionProducer.test.mjs`
    - Result: **PASS**
-2. `node tests/runtime/V2SessionProducer.test.mjs`  
+2. `node tests/runtime/V2SessionProducer.test.mjs`
    - Result: **PASS**
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
    - Result: **PASS**
 
 ## Fallback Confirmation

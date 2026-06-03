@@ -4,7 +4,7 @@
 Implement one scoped Palette Manager V2 UI update: move JSON action buttons to `menuSample`, rename the JSON preview accordion, and hide tag delete controls while tags are in use.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -25,7 +25,7 @@ Implement one scoped Palette Manager V2 UI update: move JSON action buttons to `
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not modify shared accordionV2.
 - Do not add dependencies.
 - Do not broaden changes beyond Palette Manager V2 behavior and PR workflow docs.

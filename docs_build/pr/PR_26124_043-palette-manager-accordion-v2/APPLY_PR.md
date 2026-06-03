@@ -22,7 +22,7 @@ Applied the Palette Manager V2 center accordion rewrite using a local accordionV
 - Full samples smoke test was not run.
 
 ## Manual Apply Check
-1. Open `tools/palette-manager-v2/index.html`.
+1. Open `toolbox/palette-manager-v2/index.html`.
 2. Confirm the center column uses accordionV2 button headers.
 3. Confirm both center panels share height when open.
 4. Collapse each panel and confirm the other fills the center area.

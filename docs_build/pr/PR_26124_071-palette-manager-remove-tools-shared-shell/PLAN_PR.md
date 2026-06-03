@@ -1,16 +1,16 @@
 # PLAN_PR - PR_26124_071-palette-manager-remove-tools-shared-shell
 
 ## Goal
-Remove Palette Manager V2 dependency on `tools/shared/platformShell.css`, `tools/shared/platformShell.js`, and shared runtime layout behavior while preserving the current Palette Manager surface behavior.
+Remove Palette Manager V2 dependency on `toolbox/shared/platformShell.css`, `toolbox/shared/platformShell.js`, and shared runtime layout behavior while preserving the current Palette Manager surface behavior.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- `tools/palette-manager-v2/paletteManagerShell.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerShell.js`
 - PR workflow docs and required review artifacts.
 
 ## Boundaries
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
 - Do not change shared accordionV2 behavior.
@@ -39,7 +39,7 @@ Remove Palette Manager V2 dependency on `tools/shared/platformShell.css`, `tools
 
 ## Playwright
 - Targeted Palette Manager V2 served-browser validation will verify:
-  - no `tools/shared/platformShell.*` assets are loaded,
+  - no `toolbox/shared/platformShell.*` assets are loaded,
   - header/details summary renders,
   - Hide Header and Details collapse behavior remains,
   - Palette Manager app controls render,

@@ -26,7 +26,7 @@
 - 3d-camera-path-editor
 
 ## Tools Excluded With Reason
-- `sprite-editor-old-keep`: inactive legacy entry (`active=false`, `visibleInToolsList=false`) in `tools/toolRegistry.js`.
+- `sprite-editor-old-keep`: inactive legacy entry (`active=false`, `visibleInToolsList=false`) in `toolbox/toolRegistry.js`.
 
 ## JSON Payload Files Created
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
@@ -55,7 +55,7 @@
 
 ## Workspace Switching / Fullscreen Notes
 - Workspace launch target is sample-owned and explicit:
-  - `/tools/Workspace%20Manager/index.html?tool=vector-map-editor&sampleId=1902&samplePresetPath=/samples/phase-19/1902/sample.1902.workspace-all-tools.json`
+  - `/toolbox/Workspace%20Manager/index.html?tool=vector-map-editor&sampleId=1902&samplePresetPath=/samples/phase-19/1902/sample.1902.workspace-all-tools.json`
 - No Workspace shell/tool runtime implementation code was modified in this PR; existing PREV/NEXT and fullscreen behavior remains inherited.
 - Launch smoke passed for Workspace Manager and all tools after this change.
 

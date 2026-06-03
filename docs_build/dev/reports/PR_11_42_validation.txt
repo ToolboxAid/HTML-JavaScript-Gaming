@@ -3,25 +3,25 @@
 Status: PASS
 
 Files changed
-- tools/3D Asset Viewer/main.js
-- tools/3D Camera Path Editor/main.js
-- tools/3D JSON Payload Normalizer/main.js
+- toolbox/3D Asset Viewer/main.js
+- toolbox/3D Camera Path Editor/main.js
+- toolbox/3D JSON Payload Normalizer/main.js
 - docs_build/dev/reports/PR_11_42_validation.txt
 - docs_build/dev/reports/launch_smoke_report.md
 
 Removed buildDefaultPayload locations
-1) tools/3D Asset Viewer/main.js
+1) toolbox/3D Asset Viewer/main.js
 - Removed `buildDefaultPayload` function.
 - Removed boot-time default textarea fill (`refs.input.value = toPrettyJson(buildDefaultPayload())`).
 - Removed normalize fallback that returned `buildDefaultPayload()` when raw payload was missing.
 
-2) tools/3D Camera Path Editor/main.js
+2) toolbox/3D Camera Path Editor/main.js
 - Removed `buildDefaultPayload` function.
 - Removed boot-time default textarea fill (`refs.input.value = toPrettyJson(buildDefaultPayload())`).
 - Removed normalize fallback that returned `buildDefaultPayload()` when raw payload was missing.
 - Removed add-waypoint fallback (`parseInputPayload() || buildDefaultPayload()`).
 
-3) tools/3D JSON Payload Normalizer/main.js
+3) toolbox/3D JSON Payload Normalizer/main.js
 - Removed `buildDefaultPayload` function.
 - Removed boot-time default textarea fill (`refs.input.value = toPrettyJson(buildDefaultPayload())`).
 - Removed normalize fallback that returned `buildDefaultPayload()` when raw payload was missing.
@@ -48,16 +48,16 @@ New no-input behavior
 - Explicit preset/input flow remains unchanged when valid payload exists.
 
 Validation commands and results
-- rg -n "buildDefaultPayload" "tools/3D Asset Viewer/main.js" "tools/3D Camera Path Editor/main.js" "tools/3D JSON Payload Normalizer/main.js"
+- rg -n "buildDefaultPayload" "toolbox/3D Asset Viewer/main.js" "toolbox/3D Camera Path Editor/main.js" "toolbox/3D JSON Payload Normalizer/main.js"
   - Result: no matches (function fully removed from all 3 target files).
 
-- node --check "tools/3D Asset Viewer/main.js"
+- node --check "toolbox/3D Asset Viewer/main.js"
   - PASS
 
-- node --check "tools/3D Camera Path Editor/main.js"
+- node --check "toolbox/3D Camera Path Editor/main.js"
   - PASS
 
-- node --check "tools/3D JSON Payload Normalizer/main.js"
+- node --check "toolbox/3D JSON Payload Normalizer/main.js"
   - PASS
 
 - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --tools

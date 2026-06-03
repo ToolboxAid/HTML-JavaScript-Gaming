@@ -7,9 +7,9 @@
 - Kept selected file state through Type changes so Asset ID regenerates immediately; incompatible file/type combinations now remain visibly blocked by validation.
 
 ## Files Changed
-- `tools/asset-manager-v2/js/assetManagerMetadata.js`
-- `tools/asset-manager-v2/js/controls/AssetFormControl.js`
-- `tools/asset-manager-v2/js/services/AssetSchemaValidator.js`
+- `toolbox/asset-manager-v2/js/assetManagerMetadata.js`
+- `toolbox/asset-manager-v2/js/controls/AssetFormControl.js`
+- `toolbox/asset-manager-v2/js/services/AssetSchemaValidator.js`
 - `tests/playwright/tools/AssetManagerV2.spec.mjs`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
@@ -22,9 +22,9 @@
 - Workspace-launched Asset Manager uses the same role-based color ID contract.
 
 ## Validation Commands
-- PASS: `node --check tools/asset-manager-v2/js/assetManagerMetadata.js`
-- PASS: `node --check tools/asset-manager-v2/js/controls/AssetFormControl.js`
-- PASS: `node --check tools/asset-manager-v2/js/services/AssetSchemaValidator.js`
+- PASS: `node --check toolbox/asset-manager-v2/js/assetManagerMetadata.js`
+- PASS: `node --check toolbox/asset-manager-v2/js/controls/AssetFormControl.js`
+- PASS: `node --check toolbox/asset-manager-v2/js/services/AssetSchemaValidator.js`
 - PASS: `node --check tests/playwright/tools/AssetManagerV2.spec.mjs`
 - PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/AssetManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "launches Asset Manager V2 with temporary UAT context and schema-complete asset controls|launches Asset Manager V2 from Workspace Manager V2 with schema-valid context and workspace return nav"`

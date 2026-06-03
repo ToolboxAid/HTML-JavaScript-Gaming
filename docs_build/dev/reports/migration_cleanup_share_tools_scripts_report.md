@@ -29,9 +29,9 @@ Note: `index.html` already had an uncommitted dual-entry card order change befor
 
 Active tools surface:
 
-- `tools/index.html` loads `tools/tools-page-accordions.js`.
-- Active `tools/tools-page-accordions.js` does not contain an Arcade tile.
-- Active tools links in `tools/tools-page-accordions.js` resolve.
+- `toolbox/index.html` loads `toolbox/tools-page-accordions.js`.
+- Active `toolbox/tools-page-accordions.js` does not contain an Arcade tile.
+- Active tools links in `toolbox/tools-page-accordions.js` resolve.
 
 Removed:
 
@@ -45,15 +45,15 @@ Reason:
 
 Ambiguous or active items retained:
 
-- `tools/_templates-v2/`: retained because project instructions define it as the required first-class tool template source.
-- `tools/shared/`: retained because active tests, scripts, and Workspace V2 paths still import it; moving it would be a separate shared-dependency cleanup.
-- `tools/dev/`: retained because package guard scripts actively reference it.
-- `tools/schemas/`: retained because active tool/schema validation still references tool schemas.
-- `tools/toolRegistry.js` and `tools/renderToolsIndex.js`: retained because active tests and tool launch support import them.
+- `toolbox/_tool_template-v2/`: retained because project instructions define it as the required first-class tool template source.
+- `toolbox/shared/`: retained because active tests, scripts, and Workspace V2 paths still import it; moving it would be a separate shared-dependency cleanup.
+- `toolbox/dev/`: retained because package guard scripts actively reference it.
+- `toolbox/schemas/`: retained because active tool/schema validation still references tool schemas.
+- `toolbox/toolRegistry.js` and `toolbox/renderToolsIndex.js`: retained because active tests and tool launch support import them.
 
 ## Capture Runtime
 
-`tools/shared/tooling/CapturePreviewRuntime.js` no longer exists in the current checkout.
+`toolbox/shared/tooling/CapturePreviewRuntime.js` no longer exists in the current checkout.
 
 Checks:
 
@@ -115,7 +115,7 @@ Retained with reason:
 Executed:
 
 - `node --check tests/run-tests.mjs`
-- `node --check tools/tools-page-accordions.js`
+- `node --check toolbox/tools-page-accordions.js`
 - `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('PASS package.json parse')"`
 - `git diff --check`
 - Static `index.html` Staff Picks and image-path validation.
@@ -128,7 +128,7 @@ Results:
 
 - PASS: `package.json` parses.
 - PASS: `tests/run-tests.mjs` parses.
-- PASS: `tools/tools-page-accordions.js` parses.
+- PASS: `toolbox/tools-page-accordions.js` parses.
 - PASS: active tools accordion links resolve.
 - PASS: active Tools index has no Arcade tile.
 - PASS: removed deprecated script/test names have no active references in `package.json`, `scripts/`, or `tests/`.

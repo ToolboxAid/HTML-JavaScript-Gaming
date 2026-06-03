@@ -4,7 +4,7 @@
 Workspace V2 only (session library / diff / merge transition-state enforcement).
 
 ## Files Changed
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2DeterministicStateTransitions.test.mjs
 - tests/runtime/V2SessionStateModelConsolidation.test.mjs
 - docs_build/pr/PLAN_PR_11_265_WORKSPACE_V2_DETERMINISTIC_STATE_TRANSITION_ENFORCEMENT.md
@@ -42,7 +42,7 @@ Workspace V2 only (session library / diff / merge transition-state enforcement).
 - Preserved stabilized UI text behavior checks via targeted tests.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2DeterministicStateTransitions.test.mjs`
    - PASS

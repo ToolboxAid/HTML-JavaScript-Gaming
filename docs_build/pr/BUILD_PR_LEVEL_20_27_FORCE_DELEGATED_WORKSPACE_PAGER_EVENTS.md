@@ -81,7 +81,7 @@ Silent no-op is forbidden.
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
+toolbox/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
 ```
 
 On load:

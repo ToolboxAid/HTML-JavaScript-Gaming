@@ -19,7 +19,7 @@ Implement `/index.html` on the new shared style system and record the expanded r
 
 ## Must Not Do
 - do not inspect or preserve old project CSS/HTML as the styling baseline
-- do not migrate `/samples/index.html`, `/games/index.html`, or `/tools/index.html` in this PR
+- do not migrate `/samples/index.html`, `/games/index.html`, or `/toolbox/index.html` in this PR
 - do not add inline style or JS-generated styling
 - do not turn `main.css` into a dumping ground
 

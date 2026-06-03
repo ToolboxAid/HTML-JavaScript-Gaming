@@ -105,7 +105,7 @@ Update to explain:
 This needs explicit updates for:
 - `src/advanced/state/`
 - `docs_build/dev/reports/`
-- current purpose of `games/`, `tools/`, `samples/`
+- current purpose of `games/`, `toolbox/`, `samples/`
 - distinction between `src/engine/` and `src/advanced/`
 
 ### 4. `docs/reference/root/getting-started.md`
@@ -129,7 +129,7 @@ Update to include the current layered model:
 - `src/engine/` = stable foundational systems
 - `src/advanced/` = composable optional architecture layer
 - `games/` = primary consumers
-- `tools/` = optional consumers
+- `toolbox/` = optional consumers
 - `samples/` = demonstration only
 
 ### 7. `docs/reference/architecture-standards/architecture/engine-api-boundary.md`

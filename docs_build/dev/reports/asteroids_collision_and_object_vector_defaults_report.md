@@ -16,8 +16,8 @@ This change restores Asteroids collision behavior and moves Object Vector Studio
 
 ## Schema Defaults
 
-- Added defaults to `tools/schemas/game.manifest.schema.json` for Object Vector Studio V2 object, shape common fields, style, transform, point2d, and all supported geometry definitions.
-- Mirrored the same defaults in `tools/schemas/tools/object-vector-studio-v2.schema.json` for standalone Object Vector Studio V2 validation/loading.
+- Added defaults to `toolbox/schemas/game.manifest.schema.json` for Object Vector Studio V2 object, shape common fields, style, transform, point2d, and all supported geometry definitions.
+- Mirrored the same defaults in `toolbox/schemas/tools/object-vector-studio-v2.schema.json` for standalone Object Vector Studio V2 validation/loading.
 - Added whole-object defaults for polygon and triangle geometry; polygon defaults use five points, and triangle defaults use exactly three points.
 
 ## Tool Default Loading

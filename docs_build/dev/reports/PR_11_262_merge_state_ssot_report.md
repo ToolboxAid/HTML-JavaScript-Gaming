@@ -4,7 +4,7 @@
 Workspace V2 session merge state only.
 
 ## Files Changed
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
 - docs_build/pr/PLAN_PR_11_262_WORKSPACE_V2_MERGE_STATE_SINGLE_SOURCE_OF_TRUTH_ENFORCEMENT.md
 - docs_build/pr/BUILD_PR_11_262_WORKSPACE_V2_MERGE_STATE_SINGLE_SOURCE_OF_TRUTH_ENFORCEMENT.md
@@ -25,7 +25,7 @@ Workspace V2 session merge state only.
 - Existing stale merge text clearing from PR_11_261 remains active.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs`
    - PASS

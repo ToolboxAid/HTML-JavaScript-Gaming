@@ -11,9 +11,9 @@
 ## Validation
 
 - PASS: `node --check src/engine/audio/InstrumentGridParser.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - INITIAL BLOCKED: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs` was blocked by PowerShell execution policy for `npx.ps1`.
 - INITIAL BLOCKED: `cmd /c npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs` found Chromium missing at the default user cache path.
@@ -21,7 +21,7 @@
 - PASS: `cmd /c "set PLAYWRIGHT_BROWSERS_PATH=0&& npx.cmd playwright install chromium"`
 - PASS: `cmd /c "set PLAYWRIGHT_BROWSERS_PATH=0&& npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs"` passed 25 tests.
 - PASS: `git diff --check` completed with only existing line-ending normalization warnings.
-- PASS: `Select-String -Path tools/midi-studio-v2/index.html -Pattern '<script(?![^>]*src=)|<style|\son[a-z]+\s*='` returned no inline script/style/event handler matches.
+- PASS: `Select-String -Path toolbox/midi-studio-v2/index.html -Pattern '<script(?![^>]*src=)|<style|\son[a-z]+\s*='` returned no inline script/style/event handler matches.
 
 ## Playwright Coverage
 

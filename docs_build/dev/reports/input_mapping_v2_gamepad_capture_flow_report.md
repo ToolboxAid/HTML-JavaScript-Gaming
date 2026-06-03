@@ -48,9 +48,9 @@ Full samples smoke test was not run, per PR scope.
 6. Connect or enable a browser-visible gamepad, focus the page, and confirm Input Sources reports the connected controller; if unavailable, confirm the WARN explains browser focus/permission/API timing.
 
 ## Files Changed
-- `tools/input-mapping-v2/js/services/InputMappingState.js`
-- `tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/services/EngineInputSourceService.js`
-- `tools/input-mapping-v2/styles/inputMappingV2.css`
+- `toolbox/input-mapping-v2/js/services/InputMappingState.js`
+- `toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`

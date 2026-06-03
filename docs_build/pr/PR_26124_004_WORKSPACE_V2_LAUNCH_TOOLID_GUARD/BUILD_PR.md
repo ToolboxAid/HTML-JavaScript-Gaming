@@ -1,7 +1,7 @@
 # BUILD_PR — PR_26124_004
 
 ## Scope
-- Exactly one tool modified: `tools/workspace-v2/index.js`
+- Exactly one tool modified: `toolbox/workspace-v2/index.js`
 - No schema changes
 - No sample JSON changes
 - No other tool runtime changes
@@ -16,7 +16,7 @@
 - Prevents invalid cross-tool launch attempts while preserving payload contract strictness.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `npm run test:workspace-v2` -> PASS (`1 passed`, `failed=0`)
 
 ## Full Samples Smoke

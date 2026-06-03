@@ -28,7 +28,7 @@ Improved Palette Manager V2 harmony result labels without changing harmony calcu
 
 Passed:
 
-- `node --check tools/palette-manager-v2/modules/paletteHarmonyUtils.js; node --check tools/palette-manager-v2/controls/PaletteHarmonyControl.js; node --check tools/palette-manager-v2/modules/PaletteManagerApp.js; node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
+- `node --check toolbox/palette-manager-v2/modules/paletteHarmonyUtils.js; node --check toolbox/palette-manager-v2/controls/PaletteHarmonyControl.js; node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js; node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "generates Palette Manager V2 harmony schemes"`
 - `npm run test:workspace-v2` (59 passed)
 - `git diff --check` (passed; Git reported line-ending normalization warning for the modified Playwright spec only)

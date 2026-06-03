@@ -1,12 +1,12 @@
 BUILD_PR_HOT_RELOAD_SYSTEM validation
 
 Files:
-- tools/shared/hotReloadSystem.js
+- toolbox/shared/hotReloadSystem.js
 - tests/tools/HotReloadSystem.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/hotReloadSystem.js
+- node --check toolbox/shared/hotReloadSystem.js
 - node --check tests/tools/HotReloadSystem.test.mjs
 - node ./scripts/run-node-tests.mjs
 

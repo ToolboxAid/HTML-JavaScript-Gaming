@@ -2,10 +2,10 @@ PR_26126_043 Preview Generator V2 accordion abstraction
 
 Scope
 - Updated Preview Generator V2 structure only.
-- Added tools/preview-generator-v2/controls/AccordionSection.js.
+- Added toolbox/preview-generator-v2/controls/AccordionSection.js.
 - Removed the Preview Generator V2 runtime script dependency on src/engine/theme/accordionV2/accordionV2.js.
 - Continued to use src/engine/theme/accordionV2/accordionV2.css for existing styling.
-- No samples, schemas, tools/shared, or start_of_day files were modified.
+- No samples, schemas, toolbox/shared, or start_of_day files were modified.
 
 AccordionSection responsibilities
 - Owns expand/collapse event wiring for one accordion section.
@@ -25,13 +25,13 @@ Controls using AccordionSection
 - OutputSummaryControl owns Output Summary accordion behavior.
 
 Duplicate logic check
-- Accordion-specific click binding and open/closed state mutation are present only in AccordionSection.js under tools/preview-generator-v2.
+- Accordion-specific click binding and open/closed state mutation are present only in AccordionSection.js under toolbox/preview-generator-v2.
 - No Preview Generator V2 reference to accordionV2.js, mountAccordionV2, or setAccordionV2Open remains.
 - Non-accordion event handlers remain in their owning controls.
 
 Validation
-- JavaScript syntax check passed for tools/preview-generator-v2/*.js.
-- JavaScript syntax check passed for tools/preview-generator-v2/controls/*.js.
+- JavaScript syntax check passed for toolbox/preview-generator-v2/*.js.
+- JavaScript syntax check passed for toolbox/preview-generator-v2/controls/*.js.
 - JavaScript syntax check passed for tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
 - Direct Playwright accordion probe passed for:
   - repoDestinationContent
@@ -52,7 +52,7 @@ Full samples smoke test
 - Reason: this PR is Preview Generator V2 structure-only and does not modify sample JSON, sample loading, or shared sample framework behavior.
 
 Manual validation
-- Open tools/preview-generator-v2/index.html.
+- Open toolbox/preview-generator-v2/index.html.
 - Toggle each left-column accordion and Output Summary.
 - Confirm visual behavior, icon behavior, and content visibility match the previous tool behavior.
 - Confirm Generate Preview remains disabled until required fields are present.

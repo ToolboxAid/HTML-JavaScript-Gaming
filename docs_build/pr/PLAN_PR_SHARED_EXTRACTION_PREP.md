@@ -6,7 +6,7 @@ Prepare exact, surgical extraction of duplicated helpers into `src/shared/`.
 ## Scope
 - Identify duplicate helpers across:
   - samples/
-  - tools/
+  - toolbox/
   - src/
 - Classify into target buckets:
   - numbers/

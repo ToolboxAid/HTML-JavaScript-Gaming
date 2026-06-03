@@ -1,16 +1,16 @@
 ﻿# PR_26126_065 Tool Template Playwright E2E Depth
 
 Scope:
-- Updated tools/templates/first-class-tool-starter only.
+- Updated toolbox/templates/first-class-tool-starter only.
 - Added required review reports under docs_build/dev/reports.
-- Preserved runtime behavior outside tools/templates.
+- Preserved runtime behavior outside toolbox/templates.
 
 Template updates:
 - Updated index.html header markup to follow the Palette Manager V2 pattern: body.tools-platform-tool-page, collapsible header/details, #shared-theme-header, and a tool-local header host.
-- Added template-local Playwright config at tools/templates/first-class-tool-starter/playwright.config.mjs.
-- Added starter Playwright behavior coverage at tools/templates/first-class-tool-starter/tests/playwright/FirstClassToolStarter.spec.mjs.
+- Added template-local Playwright config at toolbox/templates/first-class-tool-starter/playwright.config.mjs.
+- Added starter Playwright behavior coverage at toolbox/templates/first-class-tool-starter/tests/playwright/FirstClassToolStarter.spec.mjs.
 - Updated README Playwright guidance to require meaningful behavior validation instead of page-load-only checks.
-- Updated README and contracts to explicitly document tools/shared/ as deprecated for first-class tools: no imports, no script references, no CSS references, no runtime dependency.
+- Updated README and contracts to explicitly document toolbox/shared/ as deprecated for first-class tools: no imports, no script references, no CSS references, no runtime dependency.
 - Kept existing external CSS and external JavaScript module structure; no inline handlers were added.
 
 Template Playwright coverage demonstrates:
@@ -24,13 +24,13 @@ Template Playwright coverage demonstrates:
 Validation:
 - Playwright impacted: No for active runtime.
 - No active runtime/workspace/toolState behavior changed; this PR changes starter template files only.
-- Ran template-local Playwright validation: npx playwright test --config tools/templates/first-class-tool-starter/playwright.config.mjs --reporter=list -> 5 passed.
+- Ran template-local Playwright validation: npx playwright test --config toolbox/templates/first-class-tool-starter/playwright.config.mjs --reporter=list -> 5 passed.
 - Syntax checked all first-class-tool-starter JavaScript and Playwright files with node --check.
 - Verified template HTML has no inline script blocks, style blocks, or inline event handlers.
-- Verified docs clearly state tools/shared/ deprecation.
-- Verified no tracked roadmap, sample, start_of_day, games, src, tools/shared, package, or package-lock files changed.
+- Verified docs clearly state toolbox/shared/ deprecation.
+- Verified no tracked roadmap, sample, start_of_day, games, src, toolbox/shared, package, or package-lock files changed.
 - Did not run npm run test:workspace-v2 because active workspace/tool runtime was not impacted.
 
 Manual test notes:
-- Run npx playwright test --config tools/templates/first-class-tool-starter/playwright.config.mjs --reporter=list and confirm all starter behavior tests pass.
-- Open tools/templates/first-class-tool-starter/index.html through an HTTP server and confirm header, accordions, Run state, status logging, and Clear still behave as shown by the starter tests.
+- Run npx playwright test --config toolbox/templates/first-class-tool-starter/playwright.config.mjs --reporter=list and confirm all starter behavior tests pass.
+- Open toolbox/templates/first-class-tool-starter/index.html through an HTTP server and confirm header, accordions, Run state, status logging, and Clear still behave as shown by the starter tests.

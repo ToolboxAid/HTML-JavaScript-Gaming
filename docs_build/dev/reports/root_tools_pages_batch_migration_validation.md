@@ -5,16 +5,16 @@
 Validated only the root Tools migration batch and supporting Tools index/route files.
 
 Migrated pages:
-- `/tools/animation-studio.html`
-- `/tools/asset-studio.html`
-- `/tools/code-studio.html`
-- `/tools/input-studio.html`
-- `/tools/midi-studio.html`
-- `/tools/object-vector-studio.html`
-- `/tools/palette-manager.html`
-- `/tools/particle-studio.html`
-- `/tools/sound-studio.html`
-- `/tools/storage-inspector.html`
+- `/toolbox/animation-studio.html`
+- `/toolbox/asset-studio.html`
+- `/toolbox/code-studio.html`
+- `/toolbox/input-studio.html`
+- `/toolbox/midi-studio.html`
+- `/toolbox/object-vector-studio.html`
+- `/toolbox/palette-manager.html`
+- `/toolbox/particle-studio.html`
+- `/toolbox/sound-studio.html`
+- `/toolbox/storage-inspector.html`
 
 ## Static Checks
 
@@ -30,8 +30,8 @@ Result: Passed.
 ## Inline Handler / Inline CSS / Inline Script Check
 
 Checked:
-- `tools/index.html`
-- `tools/ai-assistant.html`
+- `toolbox/index.html`
+- `toolbox/ai-assistant.html`
 - migrated root batch pages
 
 Pattern:
@@ -55,8 +55,8 @@ Result: Passed.
 
 ## Tools Index Checks
 
-Verified `/tools/index.html` supporting data still includes:
-- migrated tool links pointing to root `/tools/*.html` routes.
+Verified `/toolbox/index.html` supporting data still includes:
+- migrated tool links pointing to root `/toolbox/*.html` routes.
 - unmigrated tool links left on existing GameFoundryStudio routes.
 - sorting/grouping hooks.
 - tool image and badge rendering.

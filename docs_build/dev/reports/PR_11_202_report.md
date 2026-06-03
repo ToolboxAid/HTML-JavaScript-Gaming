@@ -1,18 +1,18 @@
 # PR_11_202 Report
 
 ## Tool List
-- `tools/asset-manager-v2`
-- `tools/palette-manager-v2`
-- `tools/svg-asset-studio-v2`
-- `tools/tilemap-studio-v2`
-- `tools/vector-map-editor-v2`
+- `toolbox/asset-manager-v2`
+- `toolbox/palette-manager-v2`
+- `toolbox/svg-asset-studio-v2`
+- `toolbox/tilemap-studio-v2`
+- `toolbox/vector-map-editor-v2`
 
 ## Files Changed
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `docs_build/dev/reports/PR_11_202_report.md`
 
 ## State Coverage Per Tool
@@ -99,13 +99,13 @@
 
 ## Validation Commands
 - Attempted wildcard command:
-  - `node --check tools/*-v2/index.js` -> **FAIL** in PowerShell path expansion for Node `--check` input.
+  - `node --check toolbox/*-v2/index.js` -> **FAIL** in PowerShell path expansion for Node `--check` input.
 - Executed per-tool checks:
-  - `node --check tools/asset-manager-v2/index.js` -> **PASS**
-  - `node --check tools/palette-manager-v2/index.js` -> **PASS**
-  - `node --check tools/svg-asset-studio-v2/index.js` -> **PASS**
-  - `node --check tools/tilemap-studio-v2/index.js` -> **PASS**
-  - `node --check tools/vector-map-editor-v2/index.js` -> **PASS**
+  - `node --check toolbox/asset-manager-v2/index.js` -> **PASS**
+  - `node --check toolbox/palette-manager-v2/index.js` -> **PASS**
+  - `node --check toolbox/svg-asset-studio-v2/index.js` -> **PASS**
+  - `node --check toolbox/tilemap-studio-v2/index.js` -> **PASS**
+  - `node --check toolbox/vector-map-editor-v2/index.js` -> **PASS**
 
 ## Message Visibility
 - EMPTY / INVALID / VALID messages are written to visible state nodes (`*EmptyState`, `*InvalidState`, `*ValidState` regions) in each V2 tool.

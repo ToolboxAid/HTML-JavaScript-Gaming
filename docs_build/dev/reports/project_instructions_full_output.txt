@@ -508,6 +508,6 @@ All CSS must be external.
 - One class per file.
 - One control or section per class.
 - App/root class is coordinator only and must not own DOM logic or business logic.
-- No `tools/shared` dependency is allowed.
+- No `toolbox/shared` dependency is allowed.
 - Shared UI behavior must use reusable classes.
 - Do not duplicate shared UI behavior logic across controls or tools.

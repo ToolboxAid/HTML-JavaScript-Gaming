@@ -9,5 +9,5 @@
   - `tools.palette-manager-v2.swatches`
   - `tools.asset-manager-v2.assets`
 - Workspace nav in Asset Manager V2 now shows only `Return to Workspace`.
-- `Return to Workspace` navigates back to `tools/workspace-manager-v2/index.html`.
+- `Return to Workspace` navigates back to `toolbox/workspace-manager-v2/index.html`.
 - Direct launch and `?workspace=prod` remain blocked by the launch guard overlay.

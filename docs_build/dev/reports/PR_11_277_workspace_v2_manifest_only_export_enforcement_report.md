@@ -4,9 +4,9 @@
 Workspace V2 export/import only, plus minimal workspace manifest schema support required for Workspace V2 portable session persistence.
 
 ## Files Changed
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
-- tools/schemas/workspace.manifest.schema.json
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
+- toolbox/schemas/workspace.manifest.schema.json
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/pr/PLAN_PR_11_277_WORKSPACE_V2_MANIFEST_ONLY_EXPORT_ENFORCEMENT.md
 - docs_build/pr/BUILD_PR_11_277_WORKSPACE_V2_MANIFEST_ONLY_EXPORT_ENFORCEMENT.md
@@ -21,7 +21,7 @@ Workspace V2 export/import only, plus minimal workspace manifest schema support 
 - Kept Save/Load/Diff/Merge logic paths unchanged and preserved the same active-session source (`readActiveSessionPayloadForLibraryActions`).
 
 ## Validation Commands Run
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
    - PASS

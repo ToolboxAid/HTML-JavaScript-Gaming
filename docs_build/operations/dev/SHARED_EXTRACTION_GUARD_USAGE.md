@@ -1,7 +1,7 @@
 # SHARED_EXTRACTION_GUARD_USAGE
 
 ## Run
-- `node tools/dev/checkSharedExtractionGuard.mjs`
+- `node toolbox/dev/checkSharedExtractionGuard.mjs`
 - `npm run check:shared-extraction-guard` (if present)
 - `./tools/dev/runSharedExtractionGuard.sh`
 

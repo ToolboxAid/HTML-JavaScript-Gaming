@@ -11,11 +11,11 @@ Normalize ONLY this helper:
 ## Exact Files Allowed
 
 ### New shared file
-1. `tools/dev/shared/stringifyValueUtils.js`
+1. `toolbox/dev/shared/stringifyValueUtils.js`
 
 ### Consumer files
 2. `src/src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js`
-3. `tools/dev/commandPacks/inspectorCommandPack.js`
+3. `toolbox/dev/commandPacks/inspectorCommandPack.js`
 
 Do not edit any other file.
 
@@ -29,7 +29,7 @@ Only the 2 listed consumer files are in scope.
 ## Exact Shared Helper Creation
 Create:
 
-`tools/dev/shared/stringifyValueUtils.js`
+`toolbox/dev/shared/stringifyValueUtils.js`
 
 Export exactly:
 
@@ -56,7 +56,7 @@ function stringifyValue(value)
 then:
 - remove the local `stringifyValue(value)` function definition
 - import `stringifyValue` from the correct relative path to:
-  - `tools/dev/shared/stringifyValueUtils.js`
+  - `toolbox/dev/shared/stringifyValueUtils.js`
 - if the file already imports from that module, add `stringifyValue` with the minimum safe edit
 - do not duplicate imports
 - do not touch unrelated helpers
@@ -67,7 +67,7 @@ If a listed file already imports and uses shared `stringifyValue`, leave it unch
 ## Relative Import Rule
 Use the correct relative path from each consumer file to:
 
-`tools/dev/shared/stringifyValueUtils.js`
+`toolbox/dev/shared/stringifyValueUtils.js`
 
 Do not use aliases.
 Do not change `.js` extension usage.
@@ -80,9 +80,9 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 3 listed files changed
-2. Confirm `tools/dev/shared/stringifyValueUtils.js` exists and exports `stringifyValue`
+2. Confirm `toolbox/dev/shared/stringifyValueUtils.js` exists and exports `stringifyValue`
 3. Confirm local `function stringifyValue(value)` definitions no longer exist in changed listed consumer files
-4. Confirm changed consumer files import `stringifyValue` from the correct relative path to `tools/dev/shared/stringifyValueUtils.js`
+4. Confirm changed consumer files import `stringifyValue` from the correct relative path to `toolbox/dev/shared/stringifyValueUtils.js`
 5. Confirm no unrelated files changed
 6. Confirm no behavior changes were made
 

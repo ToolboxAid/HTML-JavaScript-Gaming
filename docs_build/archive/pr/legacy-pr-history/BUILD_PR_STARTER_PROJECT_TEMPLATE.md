@@ -4,7 +4,7 @@
 - Add one starter project template folder under `templates/`
 - Add one shared project manifest that opens through the new shared project system
 - Reference existing shared vector, tilemap, parallax, sprite, and palette assets by id/path
-- Keep `tools/index.html` tool-only and sample-free
+- Keep `toolbox/index.html` tool-only and sample-free
 - Keep `Sprite Editor` first-class and `SpriteEditor_old_keep` hidden legacy
 
 ## Delivered files
@@ -41,4 +41,4 @@
 ## Notes
 - This slice adds one reusable starter project only
 - No gameplay systems were added
-- No samples were added back to `tools/index.html`
+- No samples were added back to `toolbox/index.html`

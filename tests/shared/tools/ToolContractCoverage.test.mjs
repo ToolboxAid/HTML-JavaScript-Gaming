@@ -60,7 +60,7 @@ import {
 } from "../../../src/shared/contracts/tools/toolContractsIndex.js";
 import {
   getVisibleActiveToolRegistry,
-} from "../../../tools/toolRegistry.js";
+} from "../../../toolbox/toolRegistry.js";
 
 const scenariosPath = fileURLToPath(
   new URL("../../fixtures/tools/tool-contract-scenarios.json", import.meta.url)

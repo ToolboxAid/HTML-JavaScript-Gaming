@@ -1,7 +1,7 @@
 # BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH
 
 ## Purpose
-Polish the `tools/` product surface with one shared shell layer and a registry-driven active tools landing experience for the approved first-class tool set only.
+Polish the `toolbox/` product surface with one shared shell layer and a registry-driven active tools landing experience for the approved first-class tool set only.
 
 ## Scope
 In scope:
@@ -24,29 +24,29 @@ Out of scope:
 - Parallax Editor
 
 ## Preserved Sprite Paths
-- `tools/Sprite Editor/` remains on disk but is intentionally excluded from the first-class active tools surface for this PR
-- `tools/SpriteEditor_old_keep/` remains preserved on disk as legacy content
+- `toolbox/Sprite Editor/` remains on disk but is intentionally excluded from the first-class active tools surface for this PR
+- `toolbox/SpriteEditor_old_keep/` remains preserved on disk as legacy content
 - no preserved sprite path is rendered in the active landing page or shared shell navigation
 
 ## Modules Created Or Changed
-- `tools/toolRegistry.js`
-- `tools/renderToolsIndex.js`
-- `tools/index.html`
-- `tools/shared/platformShell.css`
-- `tools/shared/platformShell.js`
-- `tools/Vector Asset Studio/index.html`
-- `tools/Tilemap Studio/index.html`
-- `tools/Parallax Scene Studio/index.html`
-- `tools/Vector Map Editor/index.html`
+- `toolbox/toolRegistry.js`
+- `toolbox/renderToolsIndex.js`
+- `toolbox/index.html`
+- `toolbox/shared/platformShell.css`
+- `toolbox/shared/platformShell.js`
+- `toolbox/Vector Asset Studio/index.html`
+- `toolbox/Tilemap Studio/index.html`
+- `toolbox/Parallax Scene Studio/index.html`
+- `toolbox/Vector Map Editor/index.html`
 - `scripts/validate-active-tools-surface.mjs`
 - `docs_build/pr/BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH.md`
 - `docs_build/operations/dev/commit_comment.txt`
 
 ## Public Surface Boundaries
-- `tools/toolRegistry.js` is the single source of truth for active-tool metadata
-- `tools/renderToolsIndex.js` renders the landing-page cards from the registry
-- `tools/shared/platformShell.js` renders shared header, nav, and status chrome from the registry
-- `tools/shared/platformShell.css` provides shared shell framing without replacing tool-specific workspace CSS
+- `toolbox/toolRegistry.js` is the single source of truth for active-tool metadata
+- `toolbox/renderToolsIndex.js` renders the landing-page cards from the registry
+- `toolbox/shared/platformShell.js` renders shared header, nav, and status chrome from the registry
+- `toolbox/shared/platformShell.css` provides shared shell framing without replacing tool-specific workspace CSS
 - existing tool workspaces remain mounted inside each tool's current editor shell
 
 ## Implementation Summary
@@ -58,14 +58,14 @@ Out of scope:
 - kept the underlying tool folders and editor workspaces intact
 
 ## Validation Performed
-- `node --check tools/toolRegistry.js`
-- `node --check tools/renderToolsIndex.js`
-- `node --check tools/shared/platformShell.js`
+- `node --check toolbox/toolRegistry.js`
+- `node --check toolbox/renderToolsIndex.js`
+- `node --check toolbox/shared/platformShell.js`
 - `node --check scripts/validate-active-tools-surface.mjs`
-- `node --check tools/Vector Asset Studio/main.js`
-- `node --check tools/Tilemap Studio/main.js`
-- `node --check tools/Parallax Scene Studio/main.js`
-- `node --check tools/Vector Map Editor/main.js`
+- `node --check toolbox/Vector Asset Studio/main.js`
+- `node --check toolbox/Tilemap Studio/main.js`
+- `node --check toolbox/Parallax Scene Studio/main.js`
+- `node --check toolbox/Vector Map Editor/main.js`
 - `node scripts/validate-active-tools-surface.mjs`
 
 ## Validation Summary

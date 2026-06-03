@@ -4,7 +4,7 @@
 Implemented `BUILD_PR_LEVEL_11_97_FIX_ASSET_BROWSER_SCHEMA_PROPERLY` with targeted schema + sample 1902 data updates only.
 
 ## Files Changed
-- `tools/schemas/tools/asset-browser.schema.json`
+- `toolbox/schemas/tools/asset-browser.schema.json`
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
 
 ## Contract Fixes Applied

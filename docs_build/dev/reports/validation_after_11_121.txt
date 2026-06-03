@@ -1,7 +1,7 @@
 PR 11.121 - Validation After Direct JSON Relationship Check
 
 Commands and results
-- node -e "JSON.parse(require('fs').readFileSync('tools/schemas/tools/palette-browser.schema.json','utf8')); console.log('palette schema JSON parse PASS')"
+- node -e "JSON.parse(require('fs').readFileSync('toolbox/schemas/tools/palette-browser.schema.json','utf8')); console.log('palette schema JSON parse PASS')"
   Result: PASS.
 - node tests/tools/ToolSchemaStrictModeValidation.test.mjs
   Result: PASS.
@@ -9,10 +9,10 @@ Commands and results
   Result: PASS; sample_json_schema_validation total=63 invalid=0.
 - Targeted SSoT relationship validation harness
   Result: PASS; total=31, WORKING=31, invalid=0.
-- node --check tools/shared/schemaOnlyToolPresetValidation.js
+- node --check toolbox/shared/schemaOnlyToolPresetValidation.js
   Result: PASS.
 - git diff --check
-  Result: PASS with line-ending warning only for tools/schemas/tools/palette-browser.schema.json; no whitespace errors.
+  Result: PASS with line-ending warning only for toolbox/schemas/tools/palette-browser.schema.json; no whitespace errors.
 - Metadata JSON parse
   Result: PASS for `samples/metadata/samples.index.metadata.json`.
 - Hub count harness
@@ -23,7 +23,7 @@ Commands and results
   Result: PASS; active hub relationship source remains `samples/metadata/samples.index.metadata.json` only. Remaining `roundtripToolPresets` references are tool loaders/detail pages consuming the SSoT.
 
 Changed files validated
-- tools/schemas/tools/palette-browser.schema.json: JSON parse PASS; strict schema test PASS.
+- toolbox/schemas/tools/palette-browser.schema.json: JSON parse PASS; strict schema test PASS.
 
 Final count
 - SSoT relationships checked: 31.

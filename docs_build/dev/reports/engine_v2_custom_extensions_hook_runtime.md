@@ -43,8 +43,8 @@
 
 - `src/engine/runtime/engineV2CustomExtensionsHookRuntime.js`
 - `tests/engine/EngineV2CustomExtensionsHookRuntime.test.mjs`
-- `tools/code-studio.html`
-- `tools/tools-page-accordions.js`
+- `toolbox/code-studio.html`
+- `toolbox/tools-page-accordions.js`
 - `GameFoundryStudio/assets/js/tools-page-accordions.js`
 - `GameFoundryStudio/assets/partials/header-nav.html`
 

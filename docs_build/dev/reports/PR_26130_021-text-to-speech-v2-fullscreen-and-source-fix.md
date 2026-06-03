@@ -11,12 +11,12 @@
 
 ## Implementation Notes
 
-- `tools/text2speach-V2/js/controls/TextToSpeechShellControl.js` owns the Text to Speech V2 fullscreen shell state, body classes, summary metadata, and fullscreen toggle behavior.
-- `tools/text2speach-V2/index.html` and `tools/text2speach-V2/styles/text2speach-V2.css` now use the common fullscreen layout classes with Text to Speech V2-specific sizing.
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js` rejects stale object payloads containing `queue`, runtime selection/status fields, duplicated option fields, or root `text` before schema validation/render.
+- `toolbox/text2speach-V2/js/controls/TextToSpeechShellControl.js` owns the Text to Speech V2 fullscreen shell state, body classes, summary metadata, and fullscreen toggle behavior.
+- `toolbox/text2speach-V2/index.html` and `toolbox/text2speach-V2/styles/text2speach-V2.css` now use the common fullscreen layout classes with Text to Speech V2-specific sizing.
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js` rejects stale object payloads containing `queue`, runtime selection/status fields, duplicated option fields, or root `text` before schema validation/render.
 - Text to Speech V2 Output Summary now renders only `queueControl.selectedQueue()`, so runtime status, selected item, and queued speech state are not shown as persisted payload.
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` rejects stale `workspace.tools.text2speach-V2` session data unless `session.data` is an array.
-- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js` logs the exact Text to Speech V2 launch source as `root.tools.text2speach-V2` array data before navigation.
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js` rejects stale `workspace.tools.text2speach-V2` session data unless `session.data` is an array.
+- `toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js` logs the exact Text to Speech V2 launch source as `root.tools.text2speach-V2` array data before navigation.
 - Current Workspace Manager V2 game manifests keep `game.workspace.tools.text2speach-V2` as root arrays of named speech items.
 
 ## Validation

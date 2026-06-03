@@ -11,7 +11,7 @@ import { createWorldScreenTransform } from "./WorldScreenTransform.js";
 import { isPlainObject } from "../../shared/object/objects.js";
 import { deepClone } from "../../shared/json/clone.js";
 
-const DEFAULT_SCHEMA_URL = new URL("../../../tools/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
+const DEFAULT_SCHEMA_URL = new URL("../../../toolbox/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
 const OBJECT_VECTOR_TOOL_ID = "object-vector-studio-v2";
 
 function isObjectIdentityId(value) {

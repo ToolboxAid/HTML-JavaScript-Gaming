@@ -21,13 +21,13 @@ Output artifact:
 - `tmp/v2-performance-results.json`
 
 ## Validation Commands Run
-1. `node --check tests/runtime/V2Performance.test.mjs`  
+1. `node --check tests/runtime/V2Performance.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2Performance.test.mjs`  
+2. `node tests/runtime/V2Performance.test.mjs`
 Result: **PASS**
-3. `node --check tools/*-v2/index.js`  
-Result: **FAIL** on Windows/Node wildcard resolution (`MODULE_NOT_FOUND` for literal `tools\\*-v2\\index.js`)
-4. Explicit equivalent per-file syntax sweep for `tools/*-v2/index.js`  
+3. `node --check toolbox/*-v2/index.js`
+Result: **FAIL** on Windows/Node wildcard resolution (`MODULE_NOT_FOUND` for literal `toolbox\\*-v2\\index.js`)
+4. Explicit equivalent per-file syntax sweep for `toolbox/*-v2/index.js`
 Result: **PASS** for all detected V2 tool JS files
 
 ## Timing Results Per Tool (ms)

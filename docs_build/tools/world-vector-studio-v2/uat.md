@@ -4,7 +4,7 @@ Validate that World Vector Studio V2 is the active world/layout vector surface.
 
 ## Scope
 - Tool: `world-vector-studio-v2`
-- Entry point: `tools/world-vector-studio-v2/index.html`
+- Entry point: `toolbox/world-vector-studio-v2/index.html`
 - Purpose: place assets, maps, layers, parallax, and scene/world layout.
 
 ## Expected

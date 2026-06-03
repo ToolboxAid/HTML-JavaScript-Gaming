@@ -5,7 +5,7 @@
 - Added `tools.asset-manager-v2.previewImagePath` as the explicit manifest preview image source of truth.
 - Added `preview-image` as an Asset Manager V2 image role.
 - Moved Preview Generator V2 to the Workspace Manager V2 Utilities grouping.
-- Kept deprecated `tools/workspace-v2` and sample JSON unchanged.
+- Kept deprecated `toolbox/workspace-v2` and sample JSON unchanged.
 
 ## Asset Manager V2 Notes
 - Image role options now include `preview-image`.
@@ -38,5 +38,5 @@
 
 ## Out Of Scope
 - Full samples smoke test skipped; this PR is Workspace/Asset/Preview V2 scoped.
-- No deprecated `tools/workspace-v2` changes.
+- No deprecated `toolbox/workspace-v2` changes.
 - No sample JSON changes.

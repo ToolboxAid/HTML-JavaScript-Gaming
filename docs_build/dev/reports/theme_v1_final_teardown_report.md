@@ -64,8 +64,8 @@ The remaining files are not confirmed public/static Theme V1 assets. They are ru
 
 Expected active/runtime references remain:
 
-- `tools/shared/tooling/CapturePreviewRuntime.js` imports `Theme.js` and `ThemeTokens.js`.
-- `tools/dev/checkStyleSystemGuard.mjs` references runtime CSS files as its guard baseline.
+- `toolbox/shared/tooling/CapturePreviewRuntime.js` imports `Theme.js` and `ThemeTokens.js`.
+- `toolbox/dev/checkStyleSystemGuard.mjs` references runtime CSS files as its guard baseline.
 - runtime/test files still reference `src/engine/theme` as an engine/runtime shell surface.
 
 No additional `src/engine/theme` files were deleted because the folder is not empty and remains runtime-owned.

@@ -29,7 +29,7 @@ Broader active import/export `as` search still reports intentional leftovers:
 
 Removed compatibility bridges not actively required:
 
-- `tools/collision-inspector-v2/js/constants.js`: `deepClone as clone`.
+- `toolbox/collision-inspector-v2/js/constants.js`: `deepClone as clone`.
 - `src/shared/utils/index.js`: `asArray as asObjectArray`.
 - `src/shared/state/index.js`: `getState as getPromotionState`.
 - `src/engine/scene/AttractModeController.js`: `AttractModeController as LegacyAttractModeController`.

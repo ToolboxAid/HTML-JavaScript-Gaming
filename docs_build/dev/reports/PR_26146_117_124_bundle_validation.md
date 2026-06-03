@@ -20,7 +20,7 @@ Status: WARN
 - SKIP: full samples smoke test was not run because this lane is scoped to MIDI Studio V2 tool completion and the BUILD explicitly says not to run full samples smoke.
 
 ## Manual Checks
-- Open `tools/midi-studio-v2/index.html`.
+- Open `toolbox/midi-studio-v2/index.html`.
 - Import `tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json`.
 - Verify Song Library save/update/load/duplicate status messages and unique generated IDs.
 - Verify MIDI Import shows local MIDI workflow text and red/unwired advanced conversion control.

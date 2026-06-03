@@ -1,7 +1,7 @@
 # PR 10.8 Asset Browser UAT Report
 
 ## Scope
-- Tool: `tools/Asset Browser`
+- Tool: `toolbox/Asset Browser`
 - Purpose: Apply only PR 10.8 UAT requirements for empty state, selection behavior, control readiness, and stability.
 - Out of scope: data layer/schema changes, unrelated refactors.
 
@@ -37,9 +37,9 @@
   - No workspace-triggered reload logic introduced.
 
 ## Files Changed
-- `tools/Asset Browser/main.js`
-- `tools/Asset Browser/index.html`
-- `tools/Asset Browser/assetBrowser.css`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Asset Browser/index.html`
+- `toolbox/Asset Browser/assetBrowser.css`
 
 ## Validation
 - `npm run test:launch-smoke:games` PASS (12/12)

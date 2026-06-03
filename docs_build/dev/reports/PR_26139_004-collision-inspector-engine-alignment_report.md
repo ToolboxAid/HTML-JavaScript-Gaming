@@ -18,7 +18,7 @@ Playwright impacted: Yes.
   - `CollisionInspectorV2ManifestLoader.js`
   - `CollisionInspectorV2Renderer.js`
 - Kept `bootstrap.js` as a thin element/class wiring entry point.
-- Added inspector schema support with `tools/schemas/tools/collision-inspector-v2.schema.json` and wired it through `workspace.manifest.schema.json`.
+- Added inspector schema support with `toolbox/schemas/tools/collision-inspector-v2.schema.json` and wired it through `workspace.manifest.schema.json`.
 - Moved Collision Inspector V2 into the Workspace Manager V2 `Viewers` group and tools index viewer category.
 - Added object-pair collision-mode auto-selection with manual override.
 - Moved Collision Mode under Object B, moved Reset into the Collision Pair accordion, removed Copy Report, and added zoom.
@@ -50,7 +50,7 @@ PASS:
 FAIL, broader existing gate:
 
 - `npm test`
-  - Fails in `pretest` at `tools/dev/checkSharedExtractionGuard.mjs`.
+  - Fails in `pretest` at `toolbox/dev/checkSharedExtractionGuard.mjs`.
   - Reported `185 unexpected violation(s)`, `baseline_expected=609`, `baseline_resolved=6`, `total_violations=848`.
   - The PR_003 Collision Inspector helper hits are removed; remaining failures are broad repository guard drift across existing game, sample, engine, and tool files.
 

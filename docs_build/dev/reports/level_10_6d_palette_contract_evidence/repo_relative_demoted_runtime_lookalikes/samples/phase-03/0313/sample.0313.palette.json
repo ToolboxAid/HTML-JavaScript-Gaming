@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../tools/schemas/palette.schema.json",
+  "$schema": "../../../toolbox/schemas/palette.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Sample 0313 Palette",

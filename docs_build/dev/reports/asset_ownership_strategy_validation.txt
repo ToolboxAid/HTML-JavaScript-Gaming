@@ -8,7 +8,7 @@ Checks:
 - Validated game ownership manifest: games/Asteroids/assets/tools.manifest.json
 - Validated template ownership manifest: games/_template/assets/tools.manifest.json
 - Validated sample ownership path: samples/phase-15/1505/AssetBrowserScene.js
-- Validated tool demo ownership path: tools/shared/samples/project-asset-registry-demo/project.assets.json
+- Validated tool demo ownership path: toolbox/shared/samples/project-asset-registry-demo/project.assets.json
 
 Issues:
 - none

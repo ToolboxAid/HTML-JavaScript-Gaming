@@ -4,7 +4,7 @@
 Any visible feature that is not fully implemented must be red/unwired and expose a tooltip/status explaining the incomplete state.
 
 Central implementation:
-- `tools/midi-studio-v2/js/controls/UnwiredControlState.js`
+- `toolbox/midi-studio-v2/js/controls/UnwiredControlState.js`
 - CSS marker: `.midi-studio-v2__unwired-control`
 - Data marker: `data-midi-studio-unwired`
 

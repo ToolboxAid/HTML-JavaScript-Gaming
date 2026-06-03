@@ -6,8 +6,8 @@ Highest evidence-backed applied PR: `PR_26146_032-midi-studio-v2-fast-note-editi
 
 Evidence:
 - `docs_build/dev/reports/PR_26146_032-midi-studio-v2-fast-note-editing-and-keyboard-flow_validation.md` exists and reports PASS.
-- `tools/midi-studio-v2/js/MidiStudioV2App.js` includes Space/Delete/Backspace/Arrow/Ctrl+D keyboard shortcut handling.
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js` includes pointer drag note painting, selected-cell highlighting, scroll-state preservation, duplicate/delete selection methods, and post-drag click suppression repair.
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js` includes Space/Delete/Backspace/Arrow/Ctrl+D keyboard shortcut handling.
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js` includes pointer drag note painting, selected-cell highlighting, scroll-state preservation, duplicate/delete selection methods, and post-drag click suppression repair.
 - `tests/playwright/tools/MidiStudioV2.spec.mjs` includes the fast octave note editing Playwright test.
 
 ## Implemented

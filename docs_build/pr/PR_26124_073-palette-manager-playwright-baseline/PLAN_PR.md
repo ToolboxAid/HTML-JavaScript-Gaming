@@ -11,7 +11,7 @@ Add targeted Playwright baseline coverage for Palette Manager V2 without changin
 - Update Palette Manager V2 tests only.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not change CSS layout or pin styling.
 - Do not add dependencies.
 - Do not run the full samples smoke test.
@@ -39,7 +39,7 @@ The new targeted Playwright test will verify:
 - Default gate: `npm run test:workspace-v2`
 
 ## Manual Validation
-1. Open `tools/palette-manager-v2/index.html`.
+1. Open `toolbox/palette-manager-v2/index.html`.
 2. Confirm the Palette Manager V2 page loads without visible errors.
 3. Confirm Import JSON, Copy JSON, and Export JSON are centered in `menuSample`.
 4. Collapse and reopen each Palette Manager accordion.

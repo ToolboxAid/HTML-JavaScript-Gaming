@@ -14,7 +14,7 @@ combo-key system, and canvas debug HUD so commands can be typed and executed dir
 - Add an interactive console UI layer above the existing runtime
 - Support text input, command submission, output history, and simple focus behavior
 - Reuse the current command execution pipeline
-- Keep implementation isolated to tools/dev and one sample integration target
+- Keep implementation isolated to toolbox/dev and one sample integration target
 - Preserve engine core boundaries and current debug controls
 
 ## Non-Goals
@@ -43,8 +43,8 @@ Already in place:
 
 ## Candidate Files
 Expected future implementation focus:
-- tools/dev/interactiveDevConsoleRenderer.js
-- tools/dev/devConsoleIntegration.js
+- toolbox/dev/interactiveDevConsoleRenderer.js
+- toolbox/dev/devConsoleIntegration.js
 - one sample entry file only
 - optional test file for input/history behavior
 

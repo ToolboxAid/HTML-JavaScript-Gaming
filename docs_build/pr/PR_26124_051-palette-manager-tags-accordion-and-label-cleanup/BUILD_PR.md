@@ -4,7 +4,7 @@
 Implement one scoped Palette Manager V2 cleanup: centralize tag actions in a left-column Tags accordion, remove duplicate selected heading text, compact field layout, and shorten user-facing labels.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -27,7 +27,7 @@ Implement one scoped Palette Manager V2 cleanup: centralize tag actions in a lef
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not modify shared accordionV2.
 - Do not broaden changes beyond Palette Manager V2 behavior and PR workflow docs.

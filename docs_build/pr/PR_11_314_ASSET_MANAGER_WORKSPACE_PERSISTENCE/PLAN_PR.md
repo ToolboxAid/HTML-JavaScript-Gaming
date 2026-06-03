@@ -4,8 +4,8 @@
 Persist valid Asset Manager V2 session payloads into the Workspace V2 manifest export path.
 
 ## Scope
-- `tools/asset-manager-v2/index.js`
-- `tools/workspace-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs`
 - `docs_build/dev/reports/PR_11_314_report.md`
 - `docs_build/dev/codex_commands.md`

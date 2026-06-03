@@ -26,7 +26,7 @@
 
 | Template | Location | Reference | Intent |
 |---|---|---|---|
-| Tool Template V2 | `retired Theme V2 tool template` | `tools/ai-assistant.html` | Three-region tool workspace: left setup, center work area, right inspector. |
+| Tool Template V2 | `retired Theme V2 tool template` | `toolbox/ai-assistant.html` | Three-region tool workspace: left setup, center work area, right inspector. |
 | Page Template V2 | `/_page_template_v2.html` | `GameFoundryStudio/marketplace/index.html` | Page title plus hero media/content section and repeated content blocks. |
 | Missing Image | `assets/theme/v2/images/image-missing.svg` | New shared placeholder | Shared template image fallback only. |
 

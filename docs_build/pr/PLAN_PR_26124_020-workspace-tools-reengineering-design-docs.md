@@ -18,9 +18,9 @@
 
 ## Execution Plan
 1. Read current source-of-truth inputs:
-   - Workspace V2 runtime (`tools/workspace-v2/index.html`, `tools/workspace-v2/index.js`)
-   - Active tool registry (`tools/toolRegistry.js`)
-   - Workspace schema contract (`tools/schemas/workspace.manifest.schema.json`)
+   - Workspace V2 runtime (`toolbox/workspace-v2/index.html`, `toolbox/workspace-v2/index.js`)
+   - Active tool registry (`toolbox/toolRegistry.js`)
+   - Workspace schema contract (`toolbox/schemas/workspace.manifest.schema.json`)
    - V2 tool fixtures (`tests/fixtures/v2-tools/*`)
    - Current Playwright coverage (`tests/playwright/workspace-v2.validation.spec.js`, `tests/playwright/tool-validation/workspace-v2.tool-validation.spec.js`)
 2. Build tool inventory (IDs, entry points, schema refs, key runtime surfaces).

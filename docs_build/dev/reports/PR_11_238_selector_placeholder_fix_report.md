@@ -1,7 +1,7 @@
 # PR_11_238 — Selector Placeholder Text Fix
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 
 ## Scope Confirmation
 - UI placeholder update only for Workspace V2 Diff/Merge selectors.
@@ -19,9 +19,9 @@
   - `option.disabled = true`
 
 ## Validation Commands Run
-- `node --check tools/workspace-v2/index.js`
-- `rg -n "No session selected|Select Session A|Select Session B|Session A and Session B selections are missing\." tools/workspace-v2/index.js`
-- `rg -n "textContent = \"Select Session [AB]\"" tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
+- `rg -n "No session selected|Select Session A|Select Session B|Session A and Session B selections are missing\." toolbox/workspace-v2/index.js`
+- `rg -n "textContent = \"Select Session [AB]\"" toolbox/workspace-v2/index.js`
 - `node tests/runtime/V2RecentSessionSelectorBinding.test.mjs`
 
 ## Validation Results

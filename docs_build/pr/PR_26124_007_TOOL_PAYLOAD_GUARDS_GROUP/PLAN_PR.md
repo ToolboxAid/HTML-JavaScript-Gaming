@@ -13,6 +13,6 @@ Fix the next small group of failing tools (2 tools) from the Workspace V2 comple
 - No runtime feature additions.
 
 ## Planned Validation
-- `node --check tools/asset-manager-v2/index.js`
-- `node --check tools/palette-manager-v2/index.js`
+- `node --check toolbox/asset-manager-v2/index.js`
+- `node --check toolbox/palette-manager-v2/index.js`
 - `npm run test:workspace-v2`

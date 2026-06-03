@@ -10,13 +10,13 @@ This PR adds centralized MIDI Studio V2 unwired/incomplete control visibility. K
 
 ## Files Changed
 
-- `tools/midi-studio-v2/js/controls/UnwiredControlState.js`
-- `tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
-- `tools/midi-studio-v2/js/controls/ActionNavControl.js`
-- `tools/midi-studio-v2/js/controls/PlaybackControl.js`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/bootstrap.js`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/js/controls/UnwiredControlState.js`
+- `toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
+- `toolbox/midi-studio-v2/js/controls/ActionNavControl.js`
+- `toolbox/midi-studio-v2/js/controls/PlaybackControl.js`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/bootstrap.js`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_055-midi-studio-v2-unwired-control-visibility_validation.md`
 - `docs_build/dev/reports/PR_26146_055-midi-studio-v2-unwired-control-audit.md`
@@ -25,12 +25,12 @@ This PR adds centralized MIDI Studio V2 unwired/incomplete control visibility. K
 
 ## Validation Commands
 
-- PASS: `node --check tools/midi-studio-v2/js/controls/UnwiredControlState.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/ActionNavControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/PlaybackControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/UnwiredControlState.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/ActionNavControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/PlaybackControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: HTML external-only check for inline `<script>` blocks.
 - PASS: HTML no-inline-style/no-inline-handler check for `<style| on[a-z]+=`.
@@ -53,7 +53,7 @@ The targeted MIDI Studio V2 tests prove:
 
 - `docs_build/dev/reports/playwright_v8_coverage_report.txt` was refreshed by the targeted Playwright run.
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt` was refreshed by the targeted Playwright run.
-- Coverage guardrail WARN: `tools/midi-studio-v2/js/MidiStudioV2App.js` reported advisory low function coverage at 46%. This is advisory only; the changed runtime file was collected and exercised.
+- Coverage guardrail WARN: `toolbox/midi-studio-v2/js/MidiStudioV2App.js` reported advisory low function coverage at 46%. This is advisory only; the changed runtime file was collected and exercised.
 
 ## Samples Decision
 

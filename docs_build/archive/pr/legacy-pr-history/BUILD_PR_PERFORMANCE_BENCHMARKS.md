@@ -12,7 +12,7 @@ Build and implement the approved performance-benchmarks slice with deterministic
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Implemented Build Scope
-- Added `tools/shared/performanceBenchmarks.js`:
+- Added `toolbox/shared/performanceBenchmarks.js`:
   - benchmark suite contract creation
   - default benchmark suite definition
   - threshold evaluation against profiler samples

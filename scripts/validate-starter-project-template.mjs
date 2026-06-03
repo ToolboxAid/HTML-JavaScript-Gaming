@@ -1,19 +1,19 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getToolById } from "../tools/toolRegistry.js";
+import { getToolById } from "../toolbox/toolRegistry.js";
 import {
   PROJECT_MANIFEST_SCHEMA,
   PROJECT_MANIFEST_VERSION,
   serializeProjectManifest,
   validateProjectManifest
-} from "../tools/shared/projectManifestContract.js";
+} from "../toolbox/shared/projectManifestContract.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
-const TEMPLATE_MANIFEST_PATH = "tools/templates-v2/starter-project-template/config/starter.project.json";
+const TEMPLATE_MANIFEST_PATH = "toolbox/templates-v2/starter-project-template/config/starter.project.json";
 const REPORT_PATH = "docs_build/dev/reports/starter_project_template_validation.txt";
 
 function assert(condition, message, issues) {
@@ -93,9 +93,9 @@ async function main() {
   assert(legacySprite?.active !== true && legacySprite?.visibleInToolsList !== true, "SpriteEditor_old_keep must remain hidden legacy.", issues);
   notes.push("sprite tool visibility rules remain intact");
 
-  const toolsIndex = await fs.readFile(path.join(repoRoot, "tools/index.html"), "utf8");
-  assert(!/samples\//i.test(toolsIndex), "tools/index.html must remain tool-only and sample-free.", issues);
-  notes.push("tools/index.html remains tool-only and sample-free");
+  const toolsIndex = await fs.readFile(path.join(repoRoot, "toolbox/index.html"), "utf8");
+  assert(!/samples\//i.test(toolsIndex), "toolbox/index.html must remain tool-only and sample-free.", issues);
+  notes.push("toolbox/index.html remains tool-only and sample-free");
 
   const reportLines = [
     "BUILD_PR_STARTER_PROJECT_TEMPLATE validation report",

@@ -4,14 +4,14 @@
 Perform a final focused Palette Manager V2 hardening pass before using it as the base pattern for future tool rebuilds.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not change behavior unless fixing a concrete stale/dead/duplicate artifact.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Avoid broad refactor.
 
@@ -28,7 +28,7 @@ Perform a final focused Palette Manager V2 hardening pass before using it as the
 10. Confirm pin size is not changed.
 
 ## Implementation Plan
-1. Inspect only `tools/palette-manager-v2`.
+1. Inspect only `toolbox/palette-manager-v2`.
 2. Fix only concrete stale/dead/duplicate artifacts found by the audit.
 3. Preserve all listed behaviors and layout contracts.
 4. Document any audit-only findings in the report.

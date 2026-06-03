@@ -4,8 +4,8 @@
 
 ### 1. Use uploaded schema set as source material
 Review the complete schema set from the repo equivalent of:
-- `tools/schemas/*.schema.json`
-- `tools/schemas/tools/*.schema.json`
+- `toolbox/schemas/*.schema.json`
+- `toolbox/schemas/tools/*.schema.json`
 
 The uploaded candidate set contained:
 - `workspace.schema.json`
@@ -17,7 +17,7 @@ The uploaded candidate set contained:
 
 ### 2. Correct workspace.manifest schema
 Update:
-`tools/schemas/workspace.manifest.schema.json`
+`toolbox/schemas/workspace.manifest.schema.json`
 
 Required model:
 ```json
@@ -32,7 +32,7 @@ Required model:
       "additionalProperties": false,
       "properties": {
         "palette": { "$ref": "..." },
-        "asset-browser": { "$ref": "tools/asset-browser.schema.json" }
+        "asset-browser": { "$ref": "toolbox/asset-browser.schema.json" }
       }
     }
   }

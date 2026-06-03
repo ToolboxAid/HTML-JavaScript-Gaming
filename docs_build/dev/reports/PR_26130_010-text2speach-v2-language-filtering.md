@@ -104,12 +104,12 @@ Additional checks passed:
 ```text
 node --check src/engine/audio/TextToSpeechDefaults.js
 node --check src/engine/audio/TextToSpeechEngine.js
-node --check tools/text2speach-V2/js/controls/SpeechOptionsControl.js
-node --check tools/text2speach-V2/js/TextToSpeechToolApp.js
-node --check tools/text2speach-V2/js/bootstrap.js
+node --check toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js
+node --check toolbox/text2speach-V2/js/TextToSpeechToolApp.js
+node --check toolbox/text2speach-V2/js/bootstrap.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-node -e "JSON.parse(require('node:fs').readFileSync('tools/schemas/tools/text2speach-V2.schema.json','utf8'));"
-rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" tools/text2speach-V2/index.html
+node -e "JSON.parse(require('node:fs').readFileSync('toolbox/schemas/tools/text2speach-V2.schema.json','utf8'));"
+rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" toolbox/text2speach-V2/index.html
 git diff --check HEAD -- .
 ```
 
@@ -132,7 +132,7 @@ tmp/PR_26130_010-text2speach-v2-age-before-character_delta.zip
 
 ## Manual Validation Steps
 
-1. Open `tools/text2speach-V2/index.html`.
+1. Open `toolbox/text2speach-V2/index.html`.
 2. Confirm Speech Options are stacked as Gender, Language, Voice, Voice Age, Character preset, SSML-like preset.
 3. Confirm Voice Age shows `Any` first, then the remaining values alphabetically.
 4. Confirm Gender shows `All` first, then the remaining values alphabetically.
@@ -159,11 +159,11 @@ Expected outcome: the setup flow reads top-down, Character is a persona/performa
 - `src/engine/audio/TextToSpeechDefaults.js`
 - `src/engine/audio/TextToSpeechEngine.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/schemas/tools/text2speach-V2.schema.json`
-- `tools/text2speach-V2/index.html`
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js`
-- `tools/text2speach-V2/js/bootstrap.js`
-- `tools/text2speach-V2/js/controls/SpeechOptionsControl.js`
+- `toolbox/schemas/tools/text2speach-V2.schema.json`
+- `toolbox/text2speach-V2/index.html`
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js`
+- `toolbox/text2speach-V2/js/bootstrap.js`
+- `toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js`
 - `docs_build/dev/reports/PR_26130_010-text2speach-v2-language-filtering.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`

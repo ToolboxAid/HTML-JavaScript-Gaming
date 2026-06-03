@@ -1,7 +1,7 @@
 # PR_26127_011-workspace-v2-cleanup-and-status-clear-fix
 
 ## Summary
-- Deleted deprecated `tools/workspace-v2` files and removed the empty directory from the working tree.
+- Deleted deprecated `toolbox/workspace-v2` files and removed the empty directory from the working tree.
 - Updated the Workspace V2 validation gate to run Workspace Manager V2 coverage only.
 - Removed legacy Workspace V2 coverage/report registration.
 - Removed the Workspace Manager V2 `Load Asteroids` menu control and action wiring.
@@ -11,8 +11,8 @@
 
 ## Validation
 - PASS: `npm run test:workspace-v2`
-- PASS: Confirmed `tools/workspace-v2` no longer exists.
-- PASS: Confirmed no Playwright/package/tool references launch or validate deprecated `tools/workspace-v2`.
+- PASS: Confirmed `toolbox/workspace-v2` no longer exists.
+- PASS: Confirmed no Playwright/package/tool references launch or validate deprecated `toolbox/workspace-v2`.
 - PASS: Confirmed sample JSON files were not modified.
 - SKIPPED: Full samples smoke test, per Workspace V2 cleanup scope.
 

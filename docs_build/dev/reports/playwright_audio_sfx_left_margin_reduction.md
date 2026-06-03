@@ -4,8 +4,8 @@ PR: `PR_26145_015-audio-sfx-left-description-margin-reduction`
 
 ## Targeted Static Validation
 
-- HTML external script/style guard for `tools/audio-sfx-playground-v2/index.html` - PASS
-- `git diff --check -- tools/audio-sfx-playground-v2/index.html tools/audio-sfx-playground-v2/styles/audioSfxLayoutDensity.css` - PASS, with existing LF/CRLF working-copy warning for CSS only
+- HTML external script/style guard for `toolbox/audio-sfx-playground-v2/index.html` - PASS
+- `git diff --check -- toolbox/audio-sfx-playground-v2/index.html toolbox/audio-sfx-playground-v2/styles/audioSfxLayoutDensity.css` - PASS, with existing LF/CRLF working-copy warning for CSS only
 
 ## Focused Playwright Validation
 
@@ -51,7 +51,7 @@ Skipped. This PR only impacts Audio / SFX Playground V2 left-column spacing/layo
 
 ## Manual Validation Steps
 
-1. Open `tools/audio-sfx-playground-v2/index.html` through the repo test server or Workspace V2 tile.
+1. Open `toolbox/audio-sfx-playground-v2/index.html` through the repo test server or Workspace V2 tile.
 2. Select a Sound Style with description/examples, such as `Atari-style`.
 3. Confirm the style description, examples, and helper text align near the left edge of the left panel.
 4. Confirm the text wraps naturally across the available left-column width.

@@ -13,7 +13,7 @@ Expand engine promotion from Phase 1G and consolidate promoted helpers into prop
 
 ## Scope
 - src/engine/
-- tools/SpriteEditor_old_keep/shared/
+- toolbox/SpriteEditor_old_keep/shared/
 - docs_build/pr
 - docs_build/dev
 
@@ -70,4 +70,4 @@ Expand engine promotion from Phase 1G and consolidate promoted helpers into prop
 
 ## Next Step
 Phase 2:
-- Engine reuse across tools/games
+- Engine reuse across toolbox/games

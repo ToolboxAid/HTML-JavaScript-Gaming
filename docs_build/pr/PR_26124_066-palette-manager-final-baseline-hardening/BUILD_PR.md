@@ -1,14 +1,14 @@
 # BUILD_PR - PR_26124_066-palette-manager-final-baseline-hardening
 
 ## Purpose
-Perform one scoped Palette Manager V2 final hardening pass by removing only concrete stale/dead/duplicate artifacts found in `tools/palette-manager-v2`.
+Perform one scoped Palette Manager V2 final hardening pass by removing only concrete stale/dead/duplicate artifacts found in `toolbox/palette-manager-v2`.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
-1. Inspect only files under `tools/palette-manager-v2`.
+1. Inspect only files under `toolbox/palette-manager-v2`.
 2. Verify the hardening checklist:
    - no old `details`/`summary` accordion markup remains,
    - no duplicate or dead CSS override blocks remain,
@@ -31,7 +31,7 @@ Perform one scoped Palette Manager V2 final hardening pass by removing only conc
 - Do not change Validation/Error Viewer behavior.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not broadly refactor Palette Manager V2.
 

@@ -8,6 +8,6 @@
 ## Rules
 - workspace.manifest = source of truth
 - tools define their own schema
-- shared schemas live only in tools/schemas/
+- shared schemas live only in toolbox/schemas/
 - samples consume schemas only
 - NO fallback logic allowed

@@ -15,11 +15,11 @@ Method
 - Static sample URLs containing `samplePresetPath` in `samples/**/*.html|js`
 
 2) Executed path checks per link:
-- tool route path exists (`/tools/.../index.html`)
+- tool route path exists (`/toolbox/.../index.html`)
 - preset JSON file exists and parses
 - schema validation:
   - if preset has root `$schema`: validate preset object against declared schema
-  - else if preset uses wrapper (`tool` + `payload`): validate `payload` against tool schema `tools/schemas/tools/<toolId>.schema.json`
+  - else if preset uses wrapper (`tool` + `payload`): validate `payload` against tool schema `toolbox/schemas/tools/<toolId>.schema.json`
 
 3) Render confirmation rule
 - Link considered render-ready when route exists + preset parses + schema validation passes.
@@ -31,8 +31,8 @@ Initial Sweep
 Failure 1 (obvious JSON fix)
 - Link source: metadata sample 1414 palette-browser preset
 - Preset: `/samples/phase-14/1414/sample.1414.palette.json`
-- Issue: `$schema` pointed to missing file `tools/schemas/palette.schema.json`
-- Fix applied: changed to `../../../tools/schemas/tools/palette-browser.schema.json`
+- Issue: `$schema` pointed to missing file `toolbox/schemas/palette.schema.json`
+- Fix applied: changed to `../../../toolbox/schemas/tools/palette-browser.schema.json`
 
 Failure 2 (not obvious JSON fix)
 - Link source: metadata sample 1902 workspace-manager preset relationship

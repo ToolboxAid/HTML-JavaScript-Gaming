@@ -4,10 +4,10 @@
 Implement one scoped Palette Manager V2 validation viewer update: add display-only clearing and consolidate duplicate user swatch validation messages.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/controls/PaletteValidationErrorControl.js`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -25,7 +25,7 @@ Implement one scoped Palette Manager V2 validation viewer update: add display-on
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not broadly refactor Palette Manager V2.
 

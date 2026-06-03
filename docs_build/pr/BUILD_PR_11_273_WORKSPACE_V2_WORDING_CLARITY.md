@@ -4,8 +4,8 @@
 Implement text-only wording clarity updates for Workspace V2 Session Library and Session Diff Viewer.
 
 ## Files
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibraryActions.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2DiffViewerMessaging.test.mjs
@@ -31,7 +31,7 @@ Implement text-only wording clarity updates for Workspace V2 Session Library and
 - No behavior-path changes to save/overwrite/load/diff execution.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionLibraryActions.test.mjs
 - node --check tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - node --check tests/runtime/V2DiffViewerMessaging.test.mjs

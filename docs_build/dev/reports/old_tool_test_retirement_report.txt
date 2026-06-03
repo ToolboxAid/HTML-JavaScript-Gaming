@@ -1,19 +1,19 @@
 PR_26154_001-root-ia-lowercase-old-test-retire
 
 Scope
-- Deprecated tools/old_* folders are retained on disk.
-- No tools/old_* runtime code was intentionally modified.
-- Active automated validation no longer treats tools/old_* folders as current/future-state tools.
+- Deprecated toolbox/old_* folders are retained on disk.
+- No toolbox/old_* runtime code was intentionally modified.
+- Active automated validation no longer treats toolbox/old_* folders as current/future-state tools.
 
 Old Tool Preservation
 - PASS old tool copy validation:
   old_tool_mappings=24
   files_checked=317
-- Each checked tools/old_* file matches the corresponding original tracked tool file from HEAD.
+- Each checked toolbox/old_* file matches the corresponding original tracked tool file from HEAD.
 - The current diff represents folder retirement/rename, not runtime rewrites inside the deprecated folders.
 
 Registry Retirement
-- tools/toolRegistry.js now marks all entries whose path/folder/entry point starts with old_ as:
+- toolbox/toolRegistry.js now marks all entries whose path/folder/entry point starts with old_ as:
   active: false
   legacy: true
   visibleInToolsList: false
@@ -28,22 +28,22 @@ Registry Retirement
 Active Validation Changes
 - scripts/run-targeted-test-lanes.mjs workspace-contract lane now runs:
   tests/playwright/tools/RootToolsFutureState.spec.mjs
-- The previous WorkspaceManagerV2.spec.mjs route set is not scheduled by npm run test:workspace-v2 because it exercises deprecated current-folder paths that were renamed under tools/old_*.
-- tools/dev/checkStyleSystemGuard.mjs now checks current/future tool surfaces:
-  tools/index.html
-  tools/_templates-v2/index.html
-  tools/localization-studio/index.html
-- The guard no longer checks tools/old_State Inspector, tools/old_Performance Profiler, tools/old_Replay Visualizer, or tools/old_Physics Sandbox as active pages.
+- The previous WorkspaceManagerV2.spec.mjs route set is not scheduled by npm run test:workspace-v2 because it exercises deprecated current-folder paths that were renamed under toolbox/old_*.
+- toolbox/dev/checkStyleSystemGuard.mjs now checks current/future tool surfaces:
+  toolbox/index.html
+  toolbox/_tool_template-v2/index.html
+  toolbox/localization-studio/index.html
+- The guard no longer checks toolbox/old_State Inspector, toolbox/old_Performance Profiler, toolbox/old_Replay Visualizer, or toolbox/old_Physics Sandbox as active pages.
 
 Current/Future-State Coverage
 - PASS npm run test:workspace-v2
   2 passed
 - The current/future-state Playwright lane validates:
-  root tools surface renders current tool page links without tools/old_* routes
-  Localization Studio resolves to ../tools/localization-studio/index.html
+  root tools surface renders current tool page links without toolbox/old_* routes
+  Localization Studio resolves to ../toolbox/localization-studio/index.html
   Tool Template V2 loads with base href="/"
   Theme V2 partials/header/footer load without failed requests
-  loaded references do not use GameFoundryStudio/ or tools/old_* paths
+  loaded references do not use GameFoundryStudio/ or toolbox/old_* paths
 
 Out Of Scope
 - No old_* directories were deleted.

@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-source-results.json");
 
@@ -223,28 +223,28 @@ function validateTool(toolId) {
     sessionStorageLike.setItem(hostContextId, JSON.stringify(sessionContext));
   }
 
-  const validUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId || "missing")}`;
+  const validUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId || "missing")}`;
   const validState = classifyByPrecedence(toolId, validUrl, sessionStorageLike);
 
-  const urlMissingState = classifyByPrecedence(toolId, `tools/${toolId}/index.html`, sessionStorageLike);
+  const urlMissingState = classifyByPrecedence(toolId, `toolbox/${toolId}/index.html`, sessionStorageLike);
 
-  const storageMissingUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(`${toolId}-not-in-storage`)}`;
+  const storageMissingUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(`${toolId}-not-in-storage`)}`;
   const storageMissingState = classifyByPrecedence(toolId, storageMissingUrl, sessionStorageLike);
 
   const invalidHostContextId = `${toolId}-invalid-json`;
   sessionStorageLike.setItem(invalidHostContextId, "{bad-json");
-  const invalidUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(invalidHostContextId)}`;
+  const invalidUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(invalidHostContextId)}`;
   const invalidState = classifyByPrecedence(toolId, invalidUrl, sessionStorageLike);
 
   const fallbackHintHostContextId = `${toolId}-fallback-hint`;
   sessionStorageLike.setItem(`toolboxaid.toolHost.context.${fallbackHintHostContextId}`, JSON.stringify(sessionContext || {}));
   sessionStorageLike.setItem("activeHostContextId", fallbackHintHostContextId);
-  const ignoreHintsState = classifyByPrecedence(toolId, `tools/${toolId}/index.html`, sessionStorageLike);
+  const ignoreHintsState = classifyByPrecedence(toolId, `toolbox/${toolId}/index.html`, sessionStorageLike);
 
   const conflictHostContextId = `${toolId}-conflict`;
   sessionStorageLike.setItem(conflictHostContextId, "{malformed-json");
   sessionStorageLike.setItem(`toolboxaid.toolHost.context.${conflictHostContextId}`, JSON.stringify(sessionContext || {}));
-  const conflictUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(conflictHostContextId)}`;
+  const conflictUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(conflictHostContextId)}`;
   const conflictState = classifyByPrecedence(toolId, conflictUrl, sessionStorageLike);
 
   const jsText = jsExists ? readText(jsPath) : "";

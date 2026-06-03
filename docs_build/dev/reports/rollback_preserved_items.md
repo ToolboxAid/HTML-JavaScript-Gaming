@@ -5,9 +5,9 @@
 - Preserved rename/move cleanup and cosmetic/layout-only UI consistency work outside the unstable direct-write path.
 - Preserved Workspace Manager V2 sessionStorage launch context for first-class tools.
 - Preserved Preview Generator V2 tools-mode repo picking as local Preview Generator behavior.
-- Preserved existing schema files exactly; no `tools/schemas/**` files were changed.
+- Preserved existing schema files exactly; no `toolbox/schemas/**` files were changed.
 - Preserved sample JSON exactly; no `games/**`, `samples/**`, or sample manifest JSON files were changed.
 - Preserved roadmap content exactly; no roadmap files were changed.
 
 ## Session Inspector Note
-- `tools/session-inspector/**` is present as actual tool/runtime files and was preserved unchanged in this rollback.
+- `toolbox/session-inspector/**` is present as actual tool/runtime files and was preserved unchanged in this rollback.

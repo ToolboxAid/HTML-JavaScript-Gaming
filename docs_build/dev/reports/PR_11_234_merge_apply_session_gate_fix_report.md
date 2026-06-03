@@ -1,7 +1,7 @@
 # PR_11_234 — Fix Merge Apply Session Gate After Preview
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2MergeApplySessionGateFix.test.mjs`
 
 ## Fix Summary
@@ -26,12 +26,12 @@
 - Audit record still written after successful apply: PASS
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2MergeApplySessionGateFix.test.mjs`
 - `node tests/runtime/V2MergeApplySessionGateFix.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2MergeApplySessionGateFix.test.mjs` → PASS
 - `node tests/runtime/V2MergeApplySessionGateFix.test.mjs` → PASS
 
@@ -48,4 +48,4 @@ Runtime artifact:
 - No game changes
 - No Workspace Manager v1 changes
 - No legacy tool fixes
-- No `platformShell` / `tools/shared/*` coupling
+- No `platformShell` / `toolbox/shared/*` coupling

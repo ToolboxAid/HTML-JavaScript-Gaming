@@ -1,12 +1,12 @@
 # PLAN_PR_11_279_WORKSPACE_SCHEMA_RESTORE_PLUS_MINIMAL_WORKSPACE_SESSION_BLOCK
 
 ## Purpose
-Restore `tools/schemas/workspace.schema.json` games entry shape to project-manifest usage and add one minimal optional `workspaceSession` resume block for Workspace V2 export/import.
+Restore `toolbox/schemas/workspace.schema.json` games entry shape to project-manifest usage and add one minimal optional `workspaceSession` resume block for Workspace V2 export/import.
 
 ## Scope
-- tools/schemas/workspace.schema.json
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/schemas/workspace.schema.json
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_279_workspace_schema_restore_and_minimal_workspace_session_block_report.md
 
@@ -20,16 +20,16 @@ Restore `tools/schemas/workspace.schema.json` games entry shape to project-manif
   - `activeSession`
   - `savedSessions`
 - Keep payloads in `workspaceSession.activeSession/savedSessions`, never in `games[]`.
-- Enforce Workspace V2 export/import validation against `tools/schemas/workspace.schema.json`.
+- Enforce Workspace V2 export/import validation against `toolbox/schemas/workspace.schema.json`.
 - Preserve same-tool diff guard behavior from PR_11_278.
 
 ## Out Of Scope
 - No tool schema changes.
-- No `tools/schemas/workspace.manifest.schema.json` changes.
+- No `toolbox/schemas/workspace.manifest.schema.json` changes.
 - No unrelated Workspace V2 features.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2SessionMerge.test.mjs`

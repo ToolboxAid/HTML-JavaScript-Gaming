@@ -3,10 +3,10 @@ PR 11.122 - Workspace Tool Payload Routing
 PASS
 
 Routing paths reviewed
-- sample -> tool: tools/Palette Browser/main.js fetches samplePresetPath directly and passes the loaded JSON through schema diagnostics before import.
-- workspace -> child tool: tools/shared/platformShell.js selectWorkspaceScopedToolPreset and fetch shim now return direct palette JSON for palette-browser from workspace manifests.
-- game/workspace palette handoff: tools/shared/platformShell.js readPaletteFromManifestPayload can read direct tools.palette-browser palette JSON and can also extract a palette payload from existing game manifest palette sections for shared palette handoff without changing the child schema.
-- Workspace Manager diagnostics/classification: tools/Workspace Manager/main.js now recognizes direct palette JSON under manifest.tools.palette-browser instead of requiring a tool field for that one direct-payload schema.
+- sample -> tool: toolbox/Palette Browser/main.js fetches samplePresetPath directly and passes the loaded JSON through schema diagnostics before import.
+- workspace -> child tool: toolbox/shared/platformShell.js selectWorkspaceScopedToolPreset and fetch shim now return direct palette JSON for palette-browser from workspace manifests.
+- game/workspace palette handoff: toolbox/shared/platformShell.js readPaletteFromManifestPayload can read direct tools.palette-browser palette JSON and can also extract a palette payload from existing game manifest palette sections for shared palette handoff without changing the child schema.
+- Workspace Manager diagnostics/classification: toolbox/Workspace Manager/main.js now recognizes direct palette JSON under manifest.tools.palette-browser instead of requiring a tool field for that one direct-payload schema.
 
 Workspace sample update
 - samples/phase-19/1902/sample.1902.workspace-all-tools.json changed tools.palette-browser from:

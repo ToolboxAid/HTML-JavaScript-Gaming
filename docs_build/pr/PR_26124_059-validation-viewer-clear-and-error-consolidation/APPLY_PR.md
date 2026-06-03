@@ -12,8 +12,8 @@ Added a display-only Clear action to Palette Manager V2 Validation/Error Viewer 
 - Preserved duplicate validation behavior for add, update, individual pin, and Pin All.
 
 ## Validation
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/PaletteValidationErrorControl.js`: PASS.
 - Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

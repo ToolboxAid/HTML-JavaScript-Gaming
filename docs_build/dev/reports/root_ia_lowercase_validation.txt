@@ -23,21 +23,21 @@ Option A IA
 Path Adjustments
 - assets/theme/v2/js/gamefoundry-partials.js
   - root segment detection updated from Account/Company/Community/Legal to account/company/community/legal.
-  - route map already resolves moved group pages through lowercase account/, community/, company/, legal/, docs/, tools/.
-- tools/tools-page-accordions.js
-  - Verified Localization Studio public card href resolves to ../tools/localization-studio/index.html.
-  - Preserved existing root relocation adjustments for Marketplace and Arcade links from tools/index.html context.
+  - route map already resolves moved group pages through lowercase account/, community/, company/, legal/, docs/, toolbox/.
+- toolbox/tools-page-accordions.js
+  - Verified Localization Studio public card href resolves to ../toolbox/localization-studio/index.html.
+  - Preserved existing root relocation adjustments for Marketplace and Arcade links from toolbox/index.html context.
 - Active root/public pages and shared partials were checked for uppercase Account/, Community/, Company/, Legal/, Docs/, and Build/ path references.
 
 Validation
 - PASS node --check:
   assets/theme/v2/js/gamefoundry-partials.js
-  tools/tools-page-accordions.js
-  tools/toolRegistry.js
-  tools/dev/checkStyleSystemGuard.mjs
+  toolbox/tools-page-accordions.js
+  toolbox/toolRegistry.js
+  toolbox/dev/checkStyleSystemGuard.mjs
   tests/playwright/tools/RootToolsFutureState.spec.mjs
   scripts/run-targeted-test-lanes.mjs
-- PASS node tools/dev/checkStyleSystemGuard.mjs
+- PASS node toolbox/dev/checkStyleSystemGuard.mjs
   pages_checked=6
   required_theme_files=11
 - PASS targeted lowercase root validation

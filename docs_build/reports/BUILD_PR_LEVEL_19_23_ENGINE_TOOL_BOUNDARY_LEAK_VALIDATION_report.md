@@ -11,14 +11,14 @@ Scope: Validation-only scan of `src/engine` for tool-specific references/depende
 ## Method
 Command run (targeted scan only):
 - Python scan over `src/engine` JS/TS files to detect:
-  - import/require references to `tools/`
+  - import/require references to `toolbox/`
   - local imports into `./editor`, `./tooling`, `./pipeline`
   - tool/editor/pipeline keyword evidence
   - inventory of tool-like folders under `src/engine`
 
 ## Findings
 - Files scanned in `src/engine`: **292**
-- Direct imports from `src/engine` to `tools/`: **0**
+- Direct imports from `src/engine` to `toolbox/`: **0**
 - Local imports to `./editor` / `./tooling` / `./pipeline`: **0**
 - Tool/editor/pipeline keyword hits: **13** (includes naming/comments and known debug naming)
 
@@ -51,7 +51,7 @@ Command run (targeted scan only):
 - Boundary rule "no engine dependency on tools package": **PASS**
 - Boundary rule "zero tool-specific logic inside engine layer": **FAIL**
 
-Reason: tool/editor/pipeline modules are present under `src/engine/*`, which violates strict tool-vs-engine separation even without explicit `tools/` import dependencies.
+Reason: tool/editor/pipeline modules are present under `src/engine/*`, which violates strict tool-vs-engine separation even without explicit `toolbox/` import dependencies.
 
 ## Bounded Caveat
 This PR performs validation only and intentionally makes no code changes.

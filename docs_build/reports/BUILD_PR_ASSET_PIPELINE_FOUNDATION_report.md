@@ -6,7 +6,7 @@
   - normalize
   - validate
   - register
-- Reused existing `tools/shared` asset/project helpers for ID/path normalization and registry upsert.
+- Reused existing `toolbox/shared` asset/project helpers for ID/path normalization and registry upsert.
 - Added only minimal adapters in active-tool ingest paths (Tilemap, Parallax, Sprite).
 - No UI/theme changes, no editor-state redesign, no render-pipeline changes, no converter suite work.
 
@@ -48,10 +48,10 @@
   - Result: PASS (no runtime/console regressions observed in smoke run).
 
 ## Exact Files Changed
-- `tools/shared/assetPipelineFoundation.js`
-- `tools/Tilemap Studio/main.js`
-- `tools/Parallax Scene Studio/main.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/shared/assetPipelineFoundation.js`
+- `toolbox/Tilemap Studio/main.js`
+- `toolbox/Parallax Scene Studio/main.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - `docs_build/reports/launch_smoke_report.md`
 - `docs_build/reports/BUILD_PR_ASSET_PIPELINE_FOUNDATION_report.md`
 

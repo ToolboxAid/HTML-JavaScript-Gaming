@@ -13,7 +13,7 @@
 - Kept local helpers where semantics differ, including path helpers with slash-collapse/fallback differences and geometry point helpers with invalid-point/rounding differences.
 
 ## Duplicate Scanner Results
-Source: `tools/shared/powerShell/find_dupes_called.ps1`, refreshed to `tmp/dupes_called.txt`.
+Source: `toolbox/shared/powerShell/find_dupes_called.ps1`, refreshed to `tmp/dupes_called.txt`.
 
 | Candidate | Before Phase 3 | After Phase 3 | Notes |
 | --- | ---: | ---: | --- |
@@ -29,10 +29,10 @@ Source: `tools/shared/powerShell/find_dupes_called.ps1`, refreshed to `tmp/dupes
 | `node_modules` paths | not found | not found | Scanner output stayed focused away from dependency tree. |
 
 ## Remaining Repo-Owned Candidates
-- `src/engine/runtime/fullscreenBezel.js` and `tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js` both contain `normalizePath`, but they do not have identical behavior.
-- `tools/shared/assetPipelineConverters.js` has a path normalizer built around `normalizeProjectRelativePath` and fallback behavior, so it was left local.
-- `tools/asset-manager-v2/js/assetPreviewHelpers.js` has `normalizeText` with lowercase semantics, so it was not merged into the trim-only helper.
-- `src/engine/collision/objectVector.js` and `tools/shared/vector/vectorAssetContract.js` keep separate `normalizePoint(s)` helpers because invalid point and precision behavior differ.
+- `src/engine/runtime/fullscreenBezel.js` and `toolbox/preview-generator-v2/PreviewGeneratorV2RepoAccess.js` both contain `normalizePath`, but they do not have identical behavior.
+- `toolbox/shared/assetPipelineConverters.js` has a path normalizer built around `normalizeProjectRelativePath` and fallback behavior, so it was left local.
+- `toolbox/asset-manager-v2/js/assetPreviewHelpers.js` has `normalizeText` with lowercase semantics, so it was not merged into the trim-only helper.
+- `src/engine/collision/objectVector.js` and `toolbox/shared/vector/vectorAssetContract.js` keep separate `normalizePoint(s)` helpers because invalid point and precision behavior differ.
 - Sample-phase helpers and old report snapshots are intentionally out of scope for this PR.
 
 ## Validation
@@ -46,7 +46,7 @@ Source: `tools/shared/powerShell/find_dupes_called.ps1`, refreshed to `tmp/dupes
 - PASS: `npx playwright test tests/playwright/tools/ObjectVectorStudioV2FirstClassToolStarter.spec.mjs --project=playwright --workers=1 --reporter=list` (4 passed)
 - PASS: `npx playwright test tests/playwright/tools/CollisionInspectorV2.spec.mjs --project=playwright --workers=1 --reporter=list` (4 passed)
 - PASS: `npx playwright test tests/playwright/tools/AsteroidsGameSceneCleanup.spec.mjs --project=playwright --workers=1 --reporter=list` (1 passed)
-- PASS: `tools/shared/powerShell/find_dupes_called.ps1` rerun and summarized above.
+- PASS: `toolbox/shared/powerShell/find_dupes_called.ps1` rerun and summarized above.
 - PASS: `git diff --check` (only existing CRLF normalization warnings reported; no whitespace errors).
 
 ## Playwright Impact

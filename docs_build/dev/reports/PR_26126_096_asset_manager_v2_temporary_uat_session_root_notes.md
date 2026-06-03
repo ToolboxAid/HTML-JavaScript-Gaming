@@ -15,4 +15,4 @@
 ## Validation
 - Playwright validates the temporary Status message for `games/Asteroids/`.
 - Playwright validates a `?palette=sample` image asset preview renders with `/games/Asteroids/assets/images/uat-preview.png`.
-- Playwright validates the UAT preview path excludes `/samples/` and `/tools/`.
+- Playwright validates the UAT preview path excludes `/samples/` and `/toolbox/`.

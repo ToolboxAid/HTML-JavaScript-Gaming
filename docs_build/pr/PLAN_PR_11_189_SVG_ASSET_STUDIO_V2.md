@@ -28,7 +28,7 @@ The tool must never:
 - guess data,
 - use fallback/default/demo data,
 - wire into Workspace Manager v1,
-- import `platformShell`, `assetUsageIntegration`, or anything under `tools/shared/*`.
+- import `platformShell`, `assetUsageIntegration`, or anything under `toolbox/shared/*`.
 
 ## UI Requirements
 - Header must match `/index.html`.

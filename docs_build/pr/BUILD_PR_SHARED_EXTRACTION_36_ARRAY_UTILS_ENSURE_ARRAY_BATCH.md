@@ -14,10 +14,10 @@ Normalize ONLY:
 1. src/shared/utils/arrayUtils.js
 
 ### Consumers (from dupes report)
-2. tools/dev/devConsoleIntegration.js
-3. tools/dev/inspectors/inspectorStore.js
-4. tools/shared/runtimeAssetLoader.js
-5. tools/shared/vectorGeometryRuntime.js
+2. toolbox/dev/devConsoleIntegration.js
+3. toolbox/dev/inspectors/inspectorStore.js
+4. toolbox/shared/runtimeAssetLoader.js
+5. toolbox/shared/vectorGeometryRuntime.js
 
 ## Rules
 - remove local ensureArray implementations

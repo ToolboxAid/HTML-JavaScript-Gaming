@@ -8,14 +8,14 @@
 - Preserved transform, snap, scale, and collision behavior; no geometry calculation JavaScript was changed.
 
 ## Changed Files
-- `tools/object-vector-studio-v2/index.html`
-- `tools/object-vector-studio-v2/styles/toolStarter.css`
+- `toolbox/object-vector-studio-v2/index.html`
+- `toolbox/object-vector-studio-v2/styles/toolStarter.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `docs_build/dev/reports/PR_26133_112-object-vector-shape-geometry-layout_report.md`
 
 ## Validation
 - PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- PASS: `git diff --check -- tools/object-vector-studio-v2/index.html tools/object-vector-studio-v2/styles/toolStarter.css tests/playwright/tools/WorkspaceManagerV2.spec.mjs docs_build/dev/reports/playwright_v8_coverage_report.txt docs_build/dev/reports/coverage_changed_js_guardrail.txt` (line-ending warnings only)
+- PASS: `git diff --check -- toolbox/object-vector-studio-v2/index.html toolbox/object-vector-studio-v2/styles/toolStarter.css tests/playwright/tools/WorkspaceManagerV2.spec.mjs docs_build/dev/reports/playwright_v8_coverage_report.txt docs_build/dev/reports/coverage_changed_js_guardrail.txt` (line-ending warnings only)
 - PASS: `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "compacts Object Vector Studio V2 geometry layouts and selected palette state"` (1 passed)
 - PASS: targeted Object Vector V2 layout validation asserted Shape Geometry uses the dedicated layout class, removes the old content max-height cap, flexes its accordion/content, and grows beyond the previous `260px` limit when neighboring right-panel sections are collapsed.
 - PASS: `npm run test:workspace-v2` (56 passed)
@@ -31,7 +31,7 @@
 - Reason: this is a targeted Object Vector V2 panel layout change covered by targeted Playwright and `npm run test:workspace-v2`; sample JSON launch validation remains out-of-scope.
 
 ## Manual Validation
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Import or create an object with a selected shape.
 3. Collapse neighboring right-panel sections such as Palette, Tools, Shapes, and Shape Transform.
 4. Expected: Shape Geometry expands vertically into the available right-panel space, its fields remain usable, and fullscreen frame/control behavior remains unchanged.

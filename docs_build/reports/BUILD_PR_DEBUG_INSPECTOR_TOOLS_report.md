@@ -20,7 +20,7 @@
   - Runs frame cadence sample and reports estimated FPS.
 
 ## Host Integration
-- Updated `tools/toolRegistry.js` with active tool entries:
+- Updated `toolbox/toolRegistry.js` with active tool entries:
   - `state-inspector`
   - `replay-visualizer`
   - `performance-profiler`
@@ -41,15 +41,15 @@
 ## Exact Files Changed
 - `docs_build/pr/BUILD_PR_DEBUG_INSPECTOR_TOOLS.md`
 - `docs_build/reports/debug_inspector_tools_targets.txt`
-- `tools/toolRegistry.js`
-- `tools/shared/debugInspectorData.js`
-- `tools/shared/debugInspectorTools.css`
-- `tools/State Inspector/index.html`
-- `tools/State Inspector/main.js`
-- `tools/Replay Visualizer/index.html`
-- `tools/Replay Visualizer/main.js`
-- `tools/Performance Profiler/index.html`
-- `tools/Performance Profiler/main.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/shared/debugInspectorData.js`
+- `toolbox/shared/debugInspectorTools.css`
+- `toolbox/State Inspector/index.html`
+- `toolbox/State Inspector/main.js`
+- `toolbox/Replay Visualizer/index.html`
+- `toolbox/Replay Visualizer/main.js`
+- `toolbox/Performance Profiler/index.html`
+- `toolbox/Performance Profiler/main.js`
 - `docs_build/reports/launch_smoke_report.md`
 - `docs_build/reports/BUILD_PR_DEBUG_INSPECTOR_TOOLS_validation.txt`
 - `docs_build/reports/BUILD_PR_DEBUG_INSPECTOR_TOOLS_report.md`

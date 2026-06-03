@@ -22,5 +22,5 @@ Validation:
 - npm run test:workspace-v2 passed.
 
 Manual test notes:
-- Review tools/templates-v2/docs/BATCH_GUARDRAIL_CONTRACT.md for the batch contract wording.
+- Review toolbox/templates-v2/docs/BATCH_GUARDRAIL_CONTRACT.md for the batch contract wording.
 - Review docs_build/dev/reports/coverage_changed_js_guardrail.txt to confirm missing changed runtime JS coverage is advisory WARN-only.

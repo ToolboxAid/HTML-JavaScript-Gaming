@@ -7,7 +7,7 @@
 - Labeled the new Workspace Manager V2 control `Tools`.
 - Kept Workspace Manager V2 tool tile launch behavior unchanged.
 - Made Workspace Context summary tiles a consistent fixed height.
-- Added a `Workflow` group to `tools/index.html` above `Editors`.
+- Added a `Workflow` group to `toolbox/index.html` above `Editors`.
 - Moved Workspace Manager V2 into the `Workflow` group while preserving `Editors`, `Utilities`, and `Viewers`.
 - Kept tile action labels as `How To Use`, `Read Me`, and `Samples (x)`.
 
@@ -15,7 +15,7 @@
 
 - `npm run test:workspace-v2` - PASS, 24 Playwright tests.
 - `git diff --check` - PASS with only Git line-ending warnings.
-- Scope check: no changes under `tools/workspace-v2` or `samples`.
+- Scope check: no changes under `toolbox/workspace-v2` or `samples`.
 - Full samples smoke test skipped by request; this PR is Workspace Manager V2 UI/nav scoped.
 
 ## Playwright Impacted
@@ -32,7 +32,7 @@ Validated behavior:
 - Workspace Manager V2 tool tile launches and Return to Workspace behavior remain valid.
 
 Expected pass behavior:
-- Workspace Manager V2 launches from tools/index.html under `Workflow`.
+- Workspace Manager V2 launches from toolbox/index.html under `Workflow`.
 - Workspace Manager V2 shows the `Tools` control above `Workspace Context`.
 - Workspace Context summary tiles align at the same height.
 
@@ -42,17 +42,17 @@ Expected fail behavior:
 
 ## Manual Validation Notes
 
-1. Open `/tools/index.html`.
+1. Open `/toolbox/index.html`.
 2. Confirm `Workflow` appears above `Editors`, followed by `Utilities` and `Viewers`.
 3. Confirm Workspace Manager V2 appears under `Workflow`.
 4. Confirm tool card actions read `How To Use`, `Read Me`, and `Samples (x)` where sample links exist.
-5. Open `/tools/workspace-manager-v2/index.html`.
+5. Open `/toolbox/workspace-manager-v2/index.html`.
 6. Confirm the center panel shows `Tools` above `Workspace Context`.
 7. Load Asteroids and confirm Workspace Context summary tiles have matching heights.
 8. Launch a tile, return to Workspace, and confirm the active context remains restored.
 
 Out of scope:
 - Full samples smoke test.
-- Deprecated `tools/workspace-v2`.
+- Deprecated `toolbox/workspace-v2`.
 - Sample JSON changes.
 

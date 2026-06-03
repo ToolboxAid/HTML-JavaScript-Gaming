@@ -4,8 +4,8 @@
 - PASS/FAIL: FAIL
 
 ## Files Changed
-- tools/shared/platformShell.js
-- tools/shared/platformShell.css
+- toolbox/shared/platformShell.js
+- toolbox/shared/platformShell.css
 - docs_build/dev/reports/PR_10_14_FULLSCREEN_HEADER_SUMMARY_LINE_FIX_report.md
 - tmp/PR_10_14_FULLSCREEN_HEADER_SUMMARY_LINE_FIX_validation.json
 
@@ -19,7 +19,7 @@
 - Diagnostics are preserved via `title` and `data-tools-platform-summary-diagnostic` attributes; no multi-line visible error block is rendered in the summary row.
 
 ## Validation Steps (Normal Mode)
-1. Run `node --check tools/shared/platformShell.js`.
+1. Run `node --check toolbox/shared/platformShell.js`.
 2. Open each target tool page in normal mode (Vector Map Editor, Vector Asset Studio, Sprite Editor, State Inspector).
 3. Confirm summary does not contain the old two-line (`header` + `intro`) visible structure and that fullscreen-only style treatment is not active in normal mode.
 

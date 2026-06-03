@@ -1,9 +1,9 @@
 PR_03_02_SHARED_STRINGS_EXTRACTION - string helper usage scan
 
-Focused helper scan (src/, samples/, tools/, games/, tests/):
+Focused helper scan (src/, samples/, toolbox/, games/, tests/):
 - normalizeString
   - Definition: src/shared/utils/stringUtils.js:9 (pre-change)
-  - Consumer(s): tools/shared/vectorTemplateSampleGame.js (multiple)
+  - Consumer(s): toolbox/shared/vectorTemplateSampleGame.js (multiple)
 - safeTrim
   - No pre-existing definition or usage in scan scope
 - toLowerSafe
@@ -26,4 +26,4 @@ Consolidation scope applied:
   - src/shared/utils/networkDebugUtils.js
 
 Out of scope:
-- Engine-level and tools/sample local sanitizeText duplicates are intentionally unchanged in this PR.
+- Engine-level and toolbox/sample local sanitizeText duplicates are intentionally unchanged in this PR.

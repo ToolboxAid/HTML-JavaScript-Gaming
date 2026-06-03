@@ -4,7 +4,7 @@
 - Workspace Manager V2 validates the loaded manifest before display, launch, and save/export.
 - Save/export revalidates the active manifest and blocks on exact schema failures.
 - Asset Manager V2 launch uses the loaded manifest from sessionStorage instead of a recreated context.
-- `tools/schemas/tools/asset-manager-v2.schema.json` now defines required payload metadata for workspace manifest payloads:
+- `toolbox/schemas/tools/asset-manager-v2.schema.json` now defines required payload metadata for workspace manifest payloads:
   - `schema`
   - `version`
   - `name`

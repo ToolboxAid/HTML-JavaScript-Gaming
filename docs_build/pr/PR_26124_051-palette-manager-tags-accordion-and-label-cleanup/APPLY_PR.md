@@ -18,12 +18,12 @@
 - Preserved tag import/export roundtrip, pin/unpin, sort, search, size, import/export, and accordion behavior.
 
 ## Files Changed
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- `tools/palette-manager-v2/README.md`
-- `tools/palette-manager-v2/how_to_use.html`
-- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/README.md`
+- `toolbox/palette-manager-v2/how_to_use.html`
+- `toolbox/palette-manager-v2/controls/PaletteEditorControl.js`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
 - PR workflow docs and report artifacts.
 
 ## Validation

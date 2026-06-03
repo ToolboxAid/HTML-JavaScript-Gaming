@@ -16,15 +16,15 @@
 
 ## Method
 
-- Reviewed current tab/accordion/control layout in `tools/midi-studio-v2/index.html`.
+- Reviewed current tab/accordion/control layout in `toolbox/midi-studio-v2/index.html`.
 - Reviewed immediate MIDI Studio V2 control owners and app handlers:
-  - `tools/midi-studio-v2/js/MidiStudioV2App.js`
-  - `tools/midi-studio-v2/js/controls/ActionNavControl.js`
-  - `tools/midi-studio-v2/js/controls/ExportPanelControl.js`
-  - `tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
-  - `tools/midi-studio-v2/js/controls/SongDetailsControl.js`
-  - `tools/midi-studio-v2/js/controls/SongSheetControl.js`
-  - `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+  - `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+  - `toolbox/midi-studio-v2/js/controls/ActionNavControl.js`
+  - `toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
+  - `toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
+  - `toolbox/midi-studio-v2/js/controls/SongDetailsControl.js`
+  - `toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+  - `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
 - Added Playwright UAT inventory coverage that visits each visible tab and classifies controls by owner, canonical field, and wired/unwired status.
 
 ## PASS

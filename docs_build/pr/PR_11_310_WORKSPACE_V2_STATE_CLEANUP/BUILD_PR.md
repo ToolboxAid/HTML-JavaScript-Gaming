@@ -13,4 +13,4 @@
 - Palette ownership logic left intact
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`

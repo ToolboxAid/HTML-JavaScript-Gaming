@@ -4,7 +4,7 @@
 Implement the game templates layer over the accepted Level 17 platform baseline without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared game template evaluator in `tools/shared/gameTemplates.js`
+- Added shared game template evaluator in `toolbox/shared/gameTemplates.js`
   - consumes gameplay system bindings
   - evaluates deterministic template compatibility rules
   - emits stable readable template reports
@@ -12,7 +12,7 @@ Implement the game templates layer over the accepted Level 17 platform baseline 
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/gameTemplates.js`
+  - `node --check toolbox/shared/gameTemplates.js`
   - `node --check tests/tools/GameTemplates.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

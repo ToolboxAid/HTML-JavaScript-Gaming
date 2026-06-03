@@ -189,10 +189,10 @@ Future MIDI Studio V2 implementation should follow the First-Class Tool Lifecycl
 
 Implementation notes for a future PR:
 
-- Create the tool under `tools/midi-studio-v2/`.
-- Start from `tools/_templates-v2`.
+- Create the tool under `toolbox/midi-studio-v2/`.
+- Start from `toolbox/_tool_template-v2`.
 - Preserve template headers, NAV, panels, accordions, status/logging, CSS wiring, JS bootstrapping, and accessibility structure.
-- Register through existing first-class tool patterns in `tools/index.html` and `tools/workspace-manager-v2/index.html`.
+- Register through existing first-class tool patterns in `toolbox/index.html` and `toolbox/workspace-manager-v2/index.html`.
 - Participate in Workspace Manager V2 launch/navigation patterns.
 - Support dirty-state handling and save/cancel lifecycle behavior.
 - Validate manifest and toolState payloads before render.

@@ -10,10 +10,10 @@ import {
 } from "../../src/shared/contracts/tools/toolContractsIndex.js";
 import {
   getActiveToolRegistry,
-} from "../../tools/toolRegistry.js";
+} from "../../toolbox/toolRegistry.js";
 import {
   WorkspaceManagerV2ContextService,
-} from "../../tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js";
+} from "../../toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js";
 import {
   validateProjectWorkspaceLaunchBoundary,
 } from "./ProjectWorkspaceLaunchBoundaryValidation.test.mjs";
@@ -83,7 +83,7 @@ export function workspaceLaunchableToolIds() {
   const service = new WorkspaceManagerV2ContextService({
     fetchRef: async () => ({ ok: false }),
     locationRef: {
-      href: "http://localhost/tools/workspace-manager-v2/index.html",
+      href: "http://localhost/toolbox/workspace-manager-v2/index.html",
       search: "",
     },
     sessionStorageRef,

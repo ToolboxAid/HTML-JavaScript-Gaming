@@ -1,12 +1,12 @@
 BUILD_PR_PUBLISHING_PIPELINE validation
 
 Files:
-- tools/shared/publishingPipeline.js
+- toolbox/shared/publishingPipeline.js
 - tests/tools/PublishingPipeline.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/publishingPipeline.js
+- node --check toolbox/shared/publishingPipeline.js
 - node --check tests/tools/PublishingPipeline.test.mjs
 - node ./scripts/run-node-tests.mjs
 

@@ -1,19 +1,19 @@
 # BUILD_PR - PR_26124_071-palette-manager-remove-tools-shared-shell
 
 ## Purpose
-Perform one scoped Palette Manager V2 shell extraction by removing direct `tools/shared` platform shell imports and replacing the required visible shell behavior with tool-local code and CSS.
+Perform one scoped Palette Manager V2 shell extraction by removing direct `toolbox/shared` platform shell imports and replacing the required visible shell behavior with tool-local code and CSS.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- `tools/palette-manager-v2/paletteManagerShell.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerShell.js`
 - PR workflow docs and required review artifacts.
 
 ## Implementation
 1. Remove these Palette Manager V2 dependencies:
    - `<link rel="stylesheet" href="../shared/platformShell.css" />`
    - `<script type="module" src="../shared/platformShell.js"></script>`
-2. Add a local shell script at `tools/palette-manager-v2/paletteManagerShell.js` with no imports from `tools/shared`.
+2. Add a local shell script at `toolbox/palette-manager-v2/paletteManagerShell.js` with no imports from `toolbox/shared`.
 3. The local shell script must:
    - add the surface classes/attributes Palette Manager CSS needs,
    - render a local Palette Manager header frame into the header host,
@@ -26,8 +26,8 @@ Perform one scoped Palette Manager V2 shell extraction by removing direct `tools
 6. Keep menuSample, accordionV2 behavior, scroll behavior, right-column spacing, pin styling, and palette behavior unchanged.
 
 ## Boundaries
-- Do not modify `tools/shared`.
-- Do not import from `tools/shared`.
+- Do not modify `toolbox/shared`.
+- Do not import from `toolbox/shared`.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
 - Do not change shared accordionV2 behavior.

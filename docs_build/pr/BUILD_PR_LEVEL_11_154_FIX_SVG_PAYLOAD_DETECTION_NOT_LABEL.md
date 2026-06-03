@@ -16,7 +16,7 @@ This is NOT just a label issue — detection logic is wrong.
 ## STRICT SCOPE
 
 ALLOWED FILES:
-- tools/workspace-manager/main.js
+- toolbox/workspace-manager/main.js
 
 ALLOWED CHANGES:
 - fix payload detection for svg-asset-studio ONLY

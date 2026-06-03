@@ -10,14 +10,14 @@
 ## Control Placement Matrix (Primary In-Scope Set)
 | Tool | Previous Inconsistency | Normalized Placement Rule | Evidence |
 | --- | --- | --- | --- |
-| Parallax Scene Studio | Toolbar groups had no shared semantic order contract. | Mapped groups to `primary`, `workflow`, `preview` control clusters. | `tools/Parallax Scene Studio/index.html` |
-| Sprite Editor | Toolbar groups were tool-local and partially ad hoc (`tools-group`). | Added shared control-cluster roles while preserving existing tool button grouping. | `tools/Sprite Editor/index.html` |
-| Tilemap Studio | Toolbar group order not tied to shared ordering contract. | Mapped groups to shared `primary/workflow/preview` placement rule. | `tools/Tilemap Studio/index.html` |
-| Vector Asset Studio | Toolbar groups existed without shared ordering semantics. | Added shared control-cluster roles to normalize group placement. | `tools/Vector Asset Studio/index.html` |
-| Vector Map Editor | Mixed toolbar controls lacked shared cluster semantics. | Mapped group rows to shared `primary/workflow/preview` clusters. | `tools/Vector Map Editor/index.html` |
-| Asset Browser | Action rows used local spacing/placement only. | Normalized action rows to shared control-row spacing convention. | `tools/Asset Browser/index.html` |
-| Palette Browser | Action rows used local spacing/placement only. | Normalized action rows to shared control-row spacing convention. | `tools/Palette Browser/index.html` |
-| Tool Host | Mount/navigation control rows used local spacing/placement only. | Normalized host controls with shared control-row placement and spacing. | `tools/Tool Host/index.html` |
+| Parallax Scene Studio | Toolbar groups had no shared semantic order contract. | Mapped groups to `primary`, `workflow`, `preview` control clusters. | `toolbox/Parallax Scene Studio/index.html` |
+| Sprite Editor | Toolbar groups were tool-local and partially ad hoc (`tools-group`). | Added shared control-cluster roles while preserving existing tool button grouping. | `toolbox/Sprite Editor/index.html` |
+| Tilemap Studio | Toolbar group order not tied to shared ordering contract. | Mapped groups to shared `primary/workflow/preview` placement rule. | `toolbox/Tilemap Studio/index.html` |
+| Vector Asset Studio | Toolbar groups existed without shared ordering semantics. | Added shared control-cluster roles to normalize group placement. | `toolbox/Vector Asset Studio/index.html` |
+| Vector Map Editor | Mixed toolbar controls lacked shared cluster semantics. | Mapped group rows to shared `primary/workflow/preview` clusters. | `toolbox/Vector Map Editor/index.html` |
+| Asset Browser | Action rows used local spacing/placement only. | Normalized action rows to shared control-row spacing convention. | `toolbox/Asset Browser/index.html` |
+| Palette Browser | Action rows used local spacing/placement only. | Normalized action rows to shared control-row spacing convention. | `toolbox/Palette Browser/index.html` |
+| Tool Host | Mount/navigation control rows used local spacing/placement only. | Normalized host controls with shared control-row placement and spacing. | `toolbox/Tool Host/index.html` |
 
 ## Notes
 - This PR keeps existing tool-specific capabilities intact and only normalizes shared placement semantics/spacing.

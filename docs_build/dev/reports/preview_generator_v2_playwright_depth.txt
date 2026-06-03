@@ -50,7 +50,7 @@ Full samples smoke test
 - Reason: this PR adds targeted Preview Generator V2 Playwright coverage and does not modify sample JSON or the shared sample runtime.
 
 Manual validation
-- Open tools/preview-generator-v2/index.html.
+- Open toolbox/preview-generator-v2/index.html.
 - Confirm Generate Preview is disabled until required fields are present.
 - Toggle left-column accordions and Output Summary.
 - Enter text into Paths or IDs and confirm it remains visible in the center panel.

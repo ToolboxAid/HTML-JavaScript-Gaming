@@ -7,7 +7,7 @@
 - Audited workspace manifest candidates:
   - `workspace.manifest.json`
   - `tmp/new-work-space-workspace.project.json`
-- Re-checked `tools/schemas/workspace.schema.json` for sample-only concepts.
+- Re-checked `toolbox/schemas/workspace.schema.json` for sample-only concepts.
 
 ## Governance/Tracking Audit
 Tracked status (`git ls-files`):
@@ -28,7 +28,7 @@ Governed-by-workspace-schema determination:
 No change applied to `tmp/new-work-space-workspace.project.json` (untracked/not-governed per BUILD step criteria).
 
 ## Workspace Schema Re-check
-File: `tools/schemas/workspace.schema.json`
+File: `toolbox/schemas/workspace.schema.json`
 
 Checks:
 - no `samples` -> PASS

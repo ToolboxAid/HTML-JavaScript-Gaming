@@ -10,27 +10,27 @@ Task: PR_26152_280-theme-v2-reference-rewire
 
 ## Rewired Files
 
-- `tools/_templates-v2/index.html`
-- `tools/ai-assistant.html`
-- `tools/animation-studio.html`
-- `tools/asset-studio.html`
-- `tools/builder.html`
-- `tools/code-studio.html`
-- `tools/creator.html`
-- `tools/game-builder.html`
-- `tools/game-design-studio.html`
-- `tools/groups/configuration-admin.html`
-- `tools/index.html`
-- `tools/input-studio.html`
-- `tools/localization-studio/index.html`
-- `tools/midi-studio.html`
-- `tools/object-vector-studio.html`
-- `tools/palette-manager.html`
-- `tools/particle-studio.html`
-- `tools/publisher.html`
-- `tools/sound-studio.html`
-- `tools/storage-inspector.html`
-- `tools/world-vector-studio.html`
+- `toolbox/_tool_template-v2/index.html`
+- `toolbox/ai-assistant.html`
+- `toolbox/animation-studio.html`
+- `toolbox/asset-studio.html`
+- `toolbox/builder.html`
+- `toolbox/code-studio.html`
+- `toolbox/creator.html`
+- `toolbox/game-builder.html`
+- `toolbox/game-design-studio.html`
+- `toolbox/groups/configuration-admin.html`
+- `toolbox/index.html`
+- `toolbox/input-studio.html`
+- `toolbox/localization-studio/index.html`
+- `toolbox/midi-studio.html`
+- `toolbox/object-vector-studio.html`
+- `toolbox/palette-manager.html`
+- `toolbox/particle-studio.html`
+- `toolbox/publisher.html`
+- `toolbox/sound-studio.html`
+- `toolbox/storage-inspector.html`
+- `toolbox/world-vector-studio.html`
 - `GameFoundryStudio/arcade/index.html`
 - `GameFoundryStudio/assets.html`
 - `GameFoundryStudio/cloud/index.html`
@@ -67,10 +67,10 @@ Task: PR_26152_280-theme-v2-reference-rewire
 - `GameFoundryStudio/tools.html`
 - `/_page_template_v2.html`
 - `retired Theme V2 tool template`
-- `tools/tools-page-accordions.js`
+- `toolbox/tools-page-accordions.js`
 
 ## Runtime Helper Adjustments
 
 - `assets/theme/v2/js/gamefoundry-partials.js`: resolves partial fetches and partial image rewrites from the Theme V2 asset script root.
 - `assets/theme/v2/js/tool-display-mode.js`: derives default image assets from the Theme V2 asset script root and allows a template placeholder character source.
-- `tools/tools-page-accordions.js`: active generated image and badge paths now point to `../assets/theme/v2/images/...`.
+- `toolbox/tools-page-accordions.js`: active generated image and badge paths now point to `../assets/theme/v2/images/...`.

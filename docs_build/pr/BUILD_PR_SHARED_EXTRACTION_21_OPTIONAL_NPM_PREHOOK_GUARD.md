@@ -26,11 +26,11 @@ If not:
 
 If "test" exists and "pretest" does NOT exist:
 add:
-"pretest": "node tools/dev/checkSharedExtractionGuard.mjs"
+"pretest": "node toolbox/dev/checkSharedExtractionGuard.mjs"
 
 If "start" exists and "prestart" does NOT exist:
 add:
-"prestart": "node tools/dev/checkSharedExtractionGuard.mjs"
+"prestart": "node toolbox/dev/checkSharedExtractionGuard.mjs"
 
 Rules:
 - do not override existing pretest/prestart

@@ -21,15 +21,15 @@ Playwright impacted: Yes.
 
 ## Files Changed
 
-- `tools/collision-inspector-v2/index.html`
-- `tools/collision-inspector-v2/js/bootstrap.js`
-- `tools/collision-inspector-v2/js/CollisionInspectorV2App.js`
-- `tools/collision-inspector-v2/styles/collisionInspectorV2.css`
-- `tools/collision-inspector-v2/README.md`
-- `tools/toolRegistry.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `tools/workspace-manager-v2/js/controls/ToolTilesControl.js`
+- `toolbox/collision-inspector-v2/index.html`
+- `toolbox/collision-inspector-v2/js/bootstrap.js`
+- `toolbox/collision-inspector-v2/js/CollisionInspectorV2App.js`
+- `toolbox/collision-inspector-v2/styles/collisionInspectorV2.css`
+- `toolbox/collision-inspector-v2/README.md`
+- `toolbox/toolRegistry.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `toolbox/workspace-manager-v2/js/controls/ToolTilesControl.js`
 - `tests/playwright/tools/CollisionInspectorV2.spec.mjs`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
@@ -37,9 +37,9 @@ Playwright impacted: Yes.
 
 PASS:
 
-- `node --check tools/collision-inspector-v2/js/CollisionInspectorV2App.js`
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
 - `npx playwright test tests/playwright/tools/CollisionInspectorV2.spec.mjs --project=playwright --workers=1 --reporter=list`
   - 2 passed.
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "uses header lifecycle controls and launches tools from fixed Workspace Manager V2 tiles"`
@@ -49,7 +49,7 @@ PASS:
 FAIL, broader existing gate:
 
 - `npm test`
-  - Fails in `pretest` at `tools/dev/checkSharedExtractionGuard.mjs`.
+  - Fails in `pretest` at `toolbox/dev/checkSharedExtractionGuard.mjs`.
   - Reported `189 unexpected violation(s)` across existing shared-extraction guard categories.
   - The failure spans existing game, sample, engine, and tool files; it also flags changed Collision Inspector V2 helper patterns as part of that broader guard.
 
@@ -75,7 +75,7 @@ Full samples smoke test:
 ## Manual Validation
 
 1. Start the repo server used by Playwright or any local static server for the repo.
-2. Open `/tools/collision-inspector-v2/index.html`.
+2. Open `/toolbox/collision-inspector-v2/index.html`.
 3. Click `Load Asteroids Manifest`.
 4. Confirm the summary reports Asteroids and 7 vector objects loaded.
 5. Select `object.asteroids.ship` as Object A and `object.asteroids.large-asteroid` as Object B.

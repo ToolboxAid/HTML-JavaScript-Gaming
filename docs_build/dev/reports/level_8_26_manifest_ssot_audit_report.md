@@ -13,7 +13,7 @@ Objective:
 - proposed SSoT target
 
 ## Workspace Schema Re-check
-File: `tools/schemas/workspace.schema.json`
+File: `toolbox/schemas/workspace.schema.json`
 - `samples` key present: no
 - `sampleId` key present: no
 - sample-only `phase` requirement present: no

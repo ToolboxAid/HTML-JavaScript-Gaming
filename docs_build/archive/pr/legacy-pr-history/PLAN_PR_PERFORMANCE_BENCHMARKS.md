@@ -12,7 +12,7 @@ Execute a small, deterministic performance-benchmarking slice that formalizes be
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## In Scope
-- Add shared benchmark-suite contract utilities under `tools/shared/`
+- Add shared benchmark-suite contract utilities under `toolbox/shared/`
 - Define threshold-based benchmark evaluation against profiler samples
 - Add focused automated tests for pass/fail/missing-stage behavior
 - Update maturity docs and roadmap bracket state for Track J

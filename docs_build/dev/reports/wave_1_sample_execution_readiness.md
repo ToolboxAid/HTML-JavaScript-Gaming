@@ -34,12 +34,12 @@ Recommended future execution order:
 
 ## Confirmed Schema Ownership
 
-- Manifest ownership: `tools/schemas/game.manifest.schema.json` and manifest contracts.
-- Tool payload ownership: `tools/schemas/tools/*.schema.json`.
-- Legacy/sample wrapper baseline: `tools/schemas/samples/sample.tool-payload.schema.json` when intentionally used.
+- Manifest ownership: `toolbox/schemas/game.manifest.schema.json` and manifest contracts.
+- Tool payload ownership: `toolbox/schemas/tools/*.schema.json`.
+- Legacy/sample wrapper baseline: `toolbox/schemas/samples/sample.tool-payload.schema.json` when intentionally used.
 - ProjectWorkspace ownership: `src/shared/contracts/projectWorkspaceRuntimeContract.js`.
 - Tool State ownership: `src/shared/contracts/toolStateContract.js`.
-- Missing and not authoritative: `tools/schemas/workspace.schema.json` and `tools/schemas/workspace.manifest.schema.json`.
+- Missing and not authoritative: `toolbox/schemas/workspace.schema.json` and `toolbox/schemas/workspace.manifest.schema.json`.
 
 ## Validation
 

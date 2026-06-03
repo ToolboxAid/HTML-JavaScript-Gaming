@@ -22,8 +22,8 @@ Inspected active launchable tool surfaces and launch hosts (focused file-backed 
 - `workspace-manager`
 - sample launch tiles (`samples/index.render.js`)
 - game launch tiles (`games/index.render.js`)
-- shared diagnostics (`tools/shared/toolLoadDiagnostics.js`)
-- shared shell accordion behavior (`tools/shared/platformShell.js`)
+- shared diagnostics (`toolbox/shared/toolLoadDiagnostics.js`)
+- shared shell accordion behavior (`toolbox/shared/platformShell.js`)
 
 ## 2. Missing required inputs found
 Yes.

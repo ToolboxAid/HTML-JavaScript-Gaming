@@ -4,37 +4,37 @@
 Implement the V2 HTML-first batch for Palette Manager V2, SVG Asset Studio V2, Vector Map Editor V2, Tilemap Studio V2, and Asset Browser V2.
 
 ## Files Changed
-- `tools/tilemap-studio-v2/index.html`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/asset-manager-v2/index.html`
-- `tools/asset-manager-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.html`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/asset-manager-v2/index.html`
+- `toolbox/asset-manager-v2/index.js`
 - `docs_build/dev/reports/PR_11_193C_validation.md`
 
 Existing active V2 tools verified without additional implementation edits in this pass:
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.html`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.html`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.html`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.html`
+- `toolbox/vector-map-editor-v2/index.js`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
 - `docs_build/pr/PR_11_193C_V2_HTML_FIRST_BATCH.md`
 
 ## Implementation Summary
-- Added `Tilemap Studio V2` as `tools/tilemap-studio-v2/`.
-- Added `Asset Browser V2` as `tools/asset-manager-v2/`.
+- Added `Tilemap Studio V2` as `toolbox/tilemap-studio-v2/`.
+- Added `Asset Browser V2` as `toolbox/asset-manager-v2/`.
 - Both new tools are HTML-first: `index.html` owns static shell, CSS links, shared header mount, layout, menus, state containers, and module scripts.
 - Both new tools keep `index.js` behavior-only: document title/tool id setup, session read, contract validation, event binding, dynamic rendering into existing DOM nodes, and empty/error states.
 - No legacy implementation files were copied into V2. Legacy files were used only to infer high-level contract names and user-facing data shape.
 
 ## V2 Header Compliance Result
 Passed for all five scoped V2 tools:
-- `tools/palette-manager-v2/index.html`
-- `tools/svg-asset-studio-v2/index.html`
-- `tools/vector-map-editor-v2/index.html`
-- `tools/tilemap-studio-v2/index.html`
-- `tools/asset-manager-v2/index.html`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/svg-asset-studio-v2/index.html`
+- `toolbox/vector-map-editor-v2/index.html`
+- `toolbox/tilemap-studio-v2/index.html`
+- `toolbox/asset-manager-v2/index.html`
 
 Each contains:
 - `<div id="shared-theme-header"></div>`
@@ -56,7 +56,7 @@ Forbidden markers checked and not found in scoped V2 `index.js` files:
 - inline `<style>` shell injection
 - `platformShell`
 - `assetUsageIntegration`
-- `tools/shared`
+- `toolbox/shared`
 - `../shared`
 - Workspace Manager coupling
 - handoff logic
@@ -80,19 +80,19 @@ Present in scoped V2 tools:
 Syntax checks:
 
 ```powershell
-node --check tools/palette-manager-v2/index.js
-node --check tools/svg-asset-studio-v2/index.js
-node --check tools/vector-map-editor-v2/index.js
-node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-manager-v2/index.js
+node --check toolbox/palette-manager-v2/index.js
+node --check toolbox/svg-asset-studio-v2/index.js
+node --check toolbox/vector-map-editor-v2/index.js
+node --check toolbox/tilemap-studio-v2/index.js
+node --check toolbox/asset-manager-v2/index.js
 ```
 
 Results:
-- `node --check tools/palette-manager-v2/index.js` passed.
-- `node --check tools/svg-asset-studio-v2/index.js` passed.
-- `node --check tools/vector-map-editor-v2/index.js` passed.
-- `node --check tools/tilemap-studio-v2/index.js` passed.
-- `node --check tools/asset-manager-v2/index.js` passed.
+- `node --check toolbox/palette-manager-v2/index.js` passed.
+- `node --check toolbox/svg-asset-studio-v2/index.js` passed.
+- `node --check toolbox/vector-map-editor-v2/index.js` passed.
+- `node --check toolbox/tilemap-studio-v2/index.js` passed.
+- `node --check toolbox/asset-manager-v2/index.js` passed.
 
 Targeted direct-entry/HTML validation:
 - Verified all five scoped `index.html` files have the required static shell/header/menu/script markers.
@@ -108,7 +108,7 @@ Scoped banned path status check found no changes under:
 - games
 - `start_of_day/**`
 - Workspace Manager v1
-- `tools/shared/**`
+- `toolbox/shared/**`
 - `platformShell`
 - `assetUsageIntegration`
 

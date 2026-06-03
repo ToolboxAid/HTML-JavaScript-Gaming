@@ -48,7 +48,7 @@ The moved `gamefoundry-partials.js` still resolves partials relative to its own 
 
 The moved `tools-page-accordions.js` generated image references were normalized to `/assets/theme/v2/images/...`.
 
-The active root tools index still loads `tools/tools-page-accordions.js`; that local helper was not moved because this PR only moves content from the former Theme V2 public asset source surface. The local helper already resolves images from `../assets/theme/v2/images/...`.
+The active root tools index still loads `toolbox/tools-page-accordions.js`; that local helper was not moved because this PR only moves content from the former Theme V2 public asset source surface. The local helper already resolves images from `../assets/theme/v2/images/...`.
 
 ## Source Teardown
 

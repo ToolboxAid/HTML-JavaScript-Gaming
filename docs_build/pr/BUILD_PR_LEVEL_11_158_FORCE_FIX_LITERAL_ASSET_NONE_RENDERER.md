@@ -17,7 +17,7 @@ This means prior changes did not patch the active renderer path.
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/workspace-manager/main.js
+- toolbox/workspace-manager/main.js
 - docs_build/dev/reports/literal_asset_none_renderer_11_158.txt
 
 ### ALLOWED CHANGES
@@ -40,7 +40,7 @@ Codex MUST NOT:
 
 ## Mandatory Search
 
-Codex MUST search `tools/workspace-manager/main.js` for every occurrence of:
+Codex MUST search `toolbox/workspace-manager/main.js` for every occurrence of:
 
 - `Asset:`
 - `none`
@@ -124,7 +124,7 @@ The report MUST include:
 Run targeted validation only.
 
 Required:
-- `node --check tools/workspace-manager/main.js`
+- `node --check toolbox/workspace-manager/main.js`
 - static search proves the SVG active branch cannot produce `Asset: none` when `vectorAssetDocument.svgText` exists, OR diagnostic remains to identify the source
 - `git diff --name-only` contains only ALLOWED FILES
 

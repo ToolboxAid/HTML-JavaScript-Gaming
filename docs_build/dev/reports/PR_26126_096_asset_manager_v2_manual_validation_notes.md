@@ -1,10 +1,10 @@
 # PR_26126_096 Asset Manager V2 Manual Validation Notes
 
 ## Commands
-- `node --check tools/asset-manager-v2/js/assetPreviewHelpers.js`
-- `node --check tools/asset-manager-v2/js/services/WorkspaceBridge.js`
-- `node --check tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js`
-- `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
+- `node --check toolbox/asset-manager-v2/js/assetPreviewHelpers.js`
+- `node --check toolbox/asset-manager-v2/js/services/WorkspaceBridge.js`
+- `node --check toolbox/asset-manager-v2/js/services/TemporaryUatSamplePalette.js`
+- `node --check toolbox/asset-manager-v2/js/AssetManagerV2App.js`
 - `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
 - `npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list -g "Asset Manager V2"`
 - `npm run test:workspace-v2`

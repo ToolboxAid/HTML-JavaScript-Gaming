@@ -2,7 +2,7 @@
 
 ## Launch
 
-- Open `tools/input-mapping-v2/index.html`.
+- Open `toolbox/input-mapping-v2/index.html`.
 - Confirm the tool header, Actions, Capture, Mappings, Mapping JSON, Devices, and Status panels appear.
 - Confirm workspace launch mode shows a Return to Workspace action.
 

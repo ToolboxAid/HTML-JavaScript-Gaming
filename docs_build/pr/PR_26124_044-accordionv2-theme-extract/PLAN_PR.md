@@ -6,9 +6,9 @@ Move the working Palette Manager accordionV2 implementation into a reusable them
 ## Scope
 - `src/engine/theme/accordionV2/accordionV2.css`
 - `src/engine/theme/accordionV2/accordionV2.js`
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - Workflow docs_build/reports required by `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 
 ## Boundaries
@@ -16,7 +16,7 @@ Move the working Palette Manager accordionV2 implementation into a reusable them
 - Do not change palette JSON logic.
 - Do not change source palette logic.
 - Do not touch workspace, toolState, session, games, or sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not introduce abstraction beyond accordionV2.
 
@@ -37,7 +37,7 @@ Move the working Palette Manager accordionV2 implementation into a reusable them
 - Full samples smoke test: skipped by instruction.
 
 ## Manual Validation
-1. Open `tools/palette-manager-v2/index.html`.
+1. Open `toolbox/palette-manager-v2/index.html`.
 2. Confirm User Palette and Add User Swatch use shared `.accordion-v2` markup.
 3. Confirm both open panels share center height.
 4. Collapse either panel and confirm the other fills available center height.

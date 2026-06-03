@@ -3,7 +3,7 @@
 ## Rule applied
 - Delete only empty folders that remained after `.keep` cleanup.
 - Do not delete non-empty folders.
-- Do not delete protected template keepers under games/, samples/, and tools/.
+- Do not delete protected template keepers under games/, samples/, and toolbox/.
 
 ## Folders removed
 1. src/advanced/integration
@@ -12,7 +12,7 @@
 ## Safety checks
 - Removed folders were empty at deletion time.
 - No non-empty directory deletions were performed.
-- No folder deletions occurred under games/, samples/, or tools/.
+- No folder deletions occurred under games/, samples/, or toolbox/.
 
 ## Totals
 - Empty folders removed: 2

@@ -2,23 +2,23 @@
 
 ## Files changed
 
-- `tools/shared/toolLoadDiagnostics.js`
-- `tools/3D Asset Viewer/main.js`
-- `tools/3D Camera Path Editor/main.js`
-- `tools/3D JSON Payload Normalizer/main.js`
-- `tools/Asset Browser/main.js`
-- `tools/Asset Pipeline Tool/main.js`
-- `tools/Palette Browser/main.js`
-- `tools/Parallax Scene Studio/main.js`
-- `tools/Performance Profiler/main.js`
-- `tools/Physics Sandbox/main.js`
-- `tools/Replay Visualizer/main.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
-- `tools/State Inspector/main.js`
-- `tools/Tilemap Studio/main.js`
-- `tools/Tile Model Converter/main.js`
-- `tools/Vector Asset Studio/main.js`
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
+- `toolbox/shared/toolLoadDiagnostics.js`
+- `toolbox/3D Asset Viewer/main.js`
+- `toolbox/3D Camera Path Editor/main.js`
+- `toolbox/3D JSON Payload Normalizer/main.js`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Asset Pipeline Tool/main.js`
+- `toolbox/Palette Browser/main.js`
+- `toolbox/Parallax Scene Studio/main.js`
+- `toolbox/Performance Profiler/main.js`
+- `toolbox/Physics Sandbox/main.js`
+- `toolbox/Replay Visualizer/main.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/State Inspector/main.js`
+- `toolbox/Tilemap Studio/main.js`
+- `toolbox/Tile Model Converter/main.js`
+- `toolbox/Vector Asset Studio/main.js`
+- `toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
 - `docs_build/dev/reports/level_10_6G_tool_input_fetch_load_diagnostics_report.md`
 
 ## Logging prefixes added

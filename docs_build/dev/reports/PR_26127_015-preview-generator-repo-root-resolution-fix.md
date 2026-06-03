@@ -27,6 +27,6 @@
 - Validated Preview Generator V2 launches from Workspace Manager V2 with display-only repoRoot, shows actionable status, keeps Generate Preview disabled, and does not call `/__workspace-manager-v2/repo-root`.
 
 ## Out Of Scope
-- Deprecated `tools/workspace-v2` was not modified.
+- Deprecated `toolbox/workspace-v2` was not modified.
 - Sample JSON was not modified.
 - Full samples smoke test was skipped because this PR is Preview Generator launch unblock scoped.

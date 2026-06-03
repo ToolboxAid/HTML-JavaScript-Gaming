@@ -4,12 +4,12 @@ Task: PR_26124_025-remove-v2-common-rebuild-surface
 
 ## Scope
 - Removed transitional V2/workspace tool folders identified from `docs/design/tools/TOOLS_REENGINEERING_INDEX.md`.
-- Removed `tools/common` after confirming no remaining imports or references to its files.
-- Kept `tools/shared`, `tools/schemas`, Palette Browser, and all non-V2 rebuildable tools.
+- Removed `toolbox/common` after confirming no remaining imports or references to its files.
+- Kept `toolbox/shared`, `toolbox/schemas`, Palette Browser, and all non-V2 rebuildable tools.
 
 ## Active Surface Updates
-- Removed V2 and Workspace Manager cards from `tools/index.html`.
-- Removed Workspace Manager rendering from `tools/renderToolsIndex.js`.
+- Removed V2 and Workspace Manager cards from `toolbox/index.html`.
+- Removed Workspace Manager rendering from `toolbox/renderToolsIndex.js`.
 - Removed the Workspace Manager game launch entry from the shared launch SSoT.
 - Updated the tools reengineering index and roadmap to reflect the palette-first rebuild surface.
 

@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const jsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-saved-session-delete-feedback-results.json");
 
 function readText(filePath) {
@@ -62,8 +62,8 @@ export function run() {
   const js = jsExists ? readText(jsPath) : "";
   const syntax = checkSyntax(jsPath);
 
-  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!syntax.ok) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!syntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
 
   const requiredMessages = [
     "Enter a saved session ID before deleting.",

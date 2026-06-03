@@ -18,34 +18,34 @@ Out of scope:
 - deletion of preserved sprite paths
 
 ## Active First-Class Tools
-- `tools/Vector Map Editor/`
-- `tools/Vector Asset Studio/`
-- `tools/Tilemap Studio/`
-- `tools/Parallax Scene Studio/`
+- `toolbox/Vector Map Editor/`
+- `toolbox/Vector Asset Studio/`
+- `toolbox/Tilemap Studio/`
+- `toolbox/Parallax Scene Studio/`
 
 ## Preserved But Excluded
-- actual preserved legacy path on disk: `tools/SpriteEditor_old_keep/`
-- preserved current sprite workspace on disk: `tools/Sprite Editor/`
+- actual preserved legacy path on disk: `toolbox/SpriteEditor_old_keep/`
+- preserved current sprite workspace on disk: `toolbox/Sprite Editor/`
 - neither preserved sprite path appears in the active platform showcase or shared navigation
 
 ## Modules Created Or Changed
-- `tools/toolRegistry.js`
-- `tools/renderToolsIndex.js`
-- `tools/index.html`
-- `tools/shared/platformShell.css`
-- `tools/shared/vectorGeometryRuntime.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/renderToolsIndex.js`
+- `toolbox/index.html`
+- `toolbox/shared/platformShell.css`
+- `toolbox/shared/vectorGeometryRuntime.js`
 - `tests/tools/VectorGeometryRuntime.test.mjs`
 - `docs_build/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md`
 - `docs_build/dev/COMMIT_COMMENT.txt`
 
 ## Showcase Surface Summary
-- the tools landing surface remains registry-driven through `tools/toolRegistry.js`
+- the tools landing surface remains registry-driven through `toolbox/toolRegistry.js`
 - active showcase cards now render richer public-facing metadata from the registry instead of hardcoded per-page content
 - each first-class tool card now exposes its canonical open action and registry-owned sample/help entry points where available
 - the landing page explicitly calls out the shared engine theme and deterministic geometry runtime proof without duplicating the active tool list outside the registry
 
 ## Geometry Runtime Finalization
-- `tools/shared/vectorGeometryRuntime.js` now exports `VECTOR_GEOMETRY_RUNTIME_POLICY`
+- `toolbox/shared/vectorGeometryRuntime.js` now exports `VECTOR_GEOMETRY_RUNTIME_POLICY`
 - the policy makes the deterministic runtime contract explicit:
   - fixed six-decimal rounding
   - epsilon `0.000001`
@@ -56,15 +56,15 @@ Out of scope:
 
 ## Shared Boundaries Preserved
 - `src/engine/ui/hubCommon.css` remains the engine theme source of truth
-- `tools/shared/platformShell.css` remains the shared tool-shell layer consuming engine theme tokens
-- `tools/toolRegistry.js` remains the single source of truth for active tool visibility and showcase metadata
+- `toolbox/shared/platformShell.css` remains the shared tool-shell layer consuming engine theme tokens
+- `toolbox/toolRegistry.js` remains the single source of truth for active tool visibility and showcase metadata
 - geometry runtime behavior remains shared infrastructure, not tool-specific logic
 
 ## Validation Performed
-- `node --check tools/toolRegistry.js`
-- `node --check tools/renderToolsIndex.js`
-- `node --check tools/shared/platformShell.js`
-- `node --check tools/shared/vectorGeometryRuntime.js`
+- `node --check toolbox/toolRegistry.js`
+- `node --check toolbox/renderToolsIndex.js`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check toolbox/shared/vectorGeometryRuntime.js`
 - `node --check scripts/validate-active-tools-surface.mjs`
 - `node --check tests/tools/VectorGeometryRuntime.test.mjs`
 - `node scripts/validate-active-tools-surface.mjs`
@@ -79,6 +79,6 @@ Out of scope:
 - vector-native template and sample-game flows continue to consume `runtimeKind: "vector-geometry"` assets under the shared runtime contract
 
 ## Follow-Up Recommendations
-- keep future showcase-card changes in `tools/toolRegistry.js` and `tools/renderToolsIndex.js`
-- keep future geometry runtime precision changes centralized in `tools/shared/vectorGeometryRuntime.js`
+- keep future showcase-card changes in `toolbox/toolRegistry.js` and `toolbox/renderToolsIndex.js`
+- keep future geometry runtime precision changes centralized in `toolbox/shared/vectorGeometryRuntime.js`
 - avoid adding tool-local geometry policy forks

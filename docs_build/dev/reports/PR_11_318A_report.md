@@ -19,7 +19,7 @@ Fix test runner coupling by removing test-to-test imports and moving shared Runt
 - Updated tool test to consume helper:
   - `tests/tools/RuntimeSceneLoaderHotReload.test.mjs` now calls helper `runRuntimeSceneLoaderHotReloadValidation()`
 - Updated final integration test to avoid importing `*.test.mjs` directly:
-  - removed direct `../tools/*.test.mjs` imports
+  - removed direct `../toolbox/*.test.mjs` imports
   - runs scoped stage tests via child `node --test` execution
   - keeps runtime scene loader stage via helper import
 

@@ -4,7 +4,7 @@
 
 ### 1. Canonicalize Palette schema
 Use:
-`tools/schemas/tools/palette-browser.schema.json`
+`toolbox/schemas/tools/palette-browser.schema.json`
 
 This is the only valid palette schema location/name.
 
@@ -13,9 +13,9 @@ Current uploaded palette-browser schema is too loose:
 - generic `config`
 - does not define swatches
 
-Replace/merge it with the correct palette content from existing `tools/schemas/palette.schema*`.
+Replace/merge it with the correct palette content from existing `toolbox/schemas/palette.schema*`.
 
-Delete/remove all `tools/schemas/palette.schema*` files after migration.
+Delete/remove all `toolbox/schemas/palette.schema*` files after migration.
 
 Expected strict palette-browser payload:
 - `tool`: const `palette-browser`
@@ -28,7 +28,7 @@ Expected strict palette-browser payload:
 
 ### 2. Remove broad sample wrapper validation from tool loading
 Review:
-`tools/schemas/sample.tool-payload.schema.json`
+`toolbox/schemas/sample.tool-payload.schema.json`
 
 Goal:
 - Tools should accept only tool JSON files.
@@ -68,7 +68,7 @@ Rules:
 
 ### 5. Workspace schema integration
 Update Workspace manifest `$ref` targets to use:
-- `tools/schemas/tools/palette-browser.schema.json`
+- `toolbox/schemas/tools/palette-browser.schema.json`
 - other tool schemas directly
 
 Ensure:

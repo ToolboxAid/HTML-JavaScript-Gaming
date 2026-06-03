@@ -7,8 +7,8 @@ Scope
 
 Direct-flow checks
 1) Schema contract enforcement remains centralized
-- tools/shared/toolLoadDiagnostics.js calls enforceToolPresetSchemaOnlyContract at load boundary.
-- tools/shared/schemaOnlyToolPresetValidation.js still emits explicit schema validation errors with:
+- toolbox/shared/toolLoadDiagnostics.js calls enforceToolPresetSchemaOnlyContract at load boundary.
+- toolbox/shared/schemaOnlyToolPresetValidation.js still emits explicit schema validation errors with:
   - tool id/name
   - source path
   - schema path
@@ -16,13 +16,13 @@ Direct-flow checks
   - summary
 
 Evidence (search)
-- tools/shared/toolLoadDiagnostics.js: import enforceToolPresetSchemaOnlyContract
-- tools/shared/toolLoadDiagnostics.js: logToolLoadLoaded -> await enforceToolPresetSchemaOnlyContract(...)
-- tools/shared/schemaOnlyToolPresetValidation.js: error format string begins with:
+- toolbox/shared/toolLoadDiagnostics.js: import enforceToolPresetSchemaOnlyContract
+- toolbox/shared/toolLoadDiagnostics.js: logToolLoadLoaded -> await enforceToolPresetSchemaOnlyContract(...)
+- toolbox/shared/schemaOnlyToolPresetValidation.js: error format string begins with:
   Input validation failed. tool=...; source=...; schema=...; failed=...; summary=...
 
 2) Compatibility fallback paths reduced
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
   - readWorkspaceScopedToolDocument no longer reads root fallback document keys.
   - readPaletteFromManifestPayload now reads only tools["palette-browser"].payload for palette handoff.
 

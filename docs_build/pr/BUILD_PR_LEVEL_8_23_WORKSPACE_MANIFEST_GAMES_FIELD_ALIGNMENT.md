@@ -11,10 +11,10 @@ Both:
 - include `documentKind`, `schema`, and `version`
 - are missing root `games`
 
-Current `tools/schemas/workspace.schema.json` requires `games`.
+Current `toolbox/schemas/workspace.schema.json` requires `games`.
 
 ## Required Fix
-For every workspace manifest governed by `tools/schemas/workspace.schema.json`:
+For every workspace manifest governed by `toolbox/schemas/workspace.schema.json`:
 
 1. Ensure root field exists:
 ```json

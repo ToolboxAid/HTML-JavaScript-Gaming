@@ -37,7 +37,7 @@ Coverage added/updated:
 - PASS: Playwright V8 coverage generated at `docs_build/dev/reports/playwright_v8_coverage_report.txt`; changed runtime JS coverage guardrail reports no warnings.
 
 ## Manual Validation
-1. Open `tools/input-mapping-v2/index.html`.
+1. Open `toolbox/input-mapping-v2/index.html`.
 2. Confirm Capture shows keyboard, mouse, pointer drag gesture buttons, detected gamepad buttons when available, an `<hr>`, and `Refresh Gamepads` at the bottom.
 3. Click `Capture Keyboard`, click it again, and confirm capture cancels and highlight clears.
 4. Create a mapping tile, click `Mouse Primary Drag Rectangle`, and confirm the tile shows `Mouse` / `Primary Drag Rectangle`.

@@ -6,16 +6,16 @@
 ## Palette Schema Canonicalization
 
 ### Palette schema files found (pre-change)
-- `tools/schemas/palette.schema.json`
-- `tools/schemas/tools/palette.schema.json`
-- `tools/schemas/tools/palette-browser.schema.json`
+- `toolbox/schemas/palette.schema.json`
+- `toolbox/schemas/tools/palette.schema.json`
+- `toolbox/schemas/tools/palette-browser.schema.json`
 
 ### Palette schema files deleted
-- `tools/schemas/palette.schema.json`
-- `tools/schemas/tools/palette.schema.json`
+- `toolbox/schemas/palette.schema.json`
+- `toolbox/schemas/tools/palette.schema.json`
 
 ### Final canonical palette schema path
-- `tools/schemas/tools/palette-browser.schema.json`
+- `toolbox/schemas/tools/palette-browser.schema.json`
 
 ### Canonical palette schema contract
 - strict root with `additionalProperties: false`
@@ -29,7 +29,7 @@
 
 ### `sample.tool-payload.schema.json` handling
 - Kept file path but demoted/narrowed its role to **sample wrapper only**.
-- Added explicit description that runtime tool payloads must validate against `tools/schemas/tools/*.schema.json`.
+- Added explicit description that runtime tool payloads must validate against `toolbox/schemas/tools/*.schema.json`.
 - Added strict guard (`not` requiring `tool` + `payload`) so it cannot be used as tool payload schema.
 - Kept strict mode (`additionalProperties: false`) while allowing sample wrapper document keys via `patternProperties` + strict JSON value defs.
 
@@ -39,7 +39,7 @@
 
 ### generic `gameId` replacement choice
 - Chosen generic field: `projectId`
-- Replaced generic schema-level usage in `tools/schemas/tools/skin-editor.schema.json` (root field now `projectId`).
+- Replaced generic schema-level usage in `toolbox/schemas/tools/skin-editor.schema.json` (root field now `projectId`).
 - Updated sample 1902 generic payload usage:
   - `tools.skin-editor.projectId`
   - `tools.asset-pipeline-tool.payload.pipelinePayload.projectId`
@@ -47,31 +47,31 @@
 
 ## Workspace `$ref` Integration
 - Updated workspace manifest palette ref:
-  - `tools/schemas/workspace.manifest.schema.json`
+  - `toolbox/schemas/workspace.manifest.schema.json`
   - `tools.properties.palette -> $ref: ./tools/palette-browser.schema.json`
 - `tools.additionalProperties` remains `false`.
 - tool refs remain explicit by tool id.
 
 ## Schemas Updated
-- `tools/schemas/workspace.manifest.schema.json`
-- `tools/schemas/sample.tool-payload.schema.json`
-- `tools/schemas/tools/3d-asset-viewer.schema.json`
-- `tools/schemas/tools/3d-camera-path-editor.schema.json`
-- `tools/schemas/tools/3d-json-payload.schema.json`
-- `tools/schemas/tools/asset-browser.schema.json`
-- `tools/schemas/tools/asset-pipeline.schema.json`
-- `tools/schemas/tools/palette-browser.schema.json`
-- `tools/schemas/tools/parallax-editor.schema.json`
-- `tools/schemas/tools/performance-profiler.schema.json`
-- `tools/schemas/tools/physics-sandbox.schema.json`
-- `tools/schemas/tools/replay-visualizer.schema.json`
-- `tools/schemas/tools/skin-editor.schema.json`
-- `tools/schemas/tools/sprite-editor.schema.json`
-- `tools/schemas/tools/state-inspector.schema.json`
-- `tools/schemas/tools/tile-map-editor.schema.json`
-- `tools/schemas/tools/tile-model-converter.schema.json`
-- `tools/schemas/tools/vector-asset-studio.schema.json`
-- `tools/schemas/tools/vector-map-editor.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
+- `toolbox/schemas/sample.tool-payload.schema.json`
+- `toolbox/schemas/tools/3d-asset-viewer.schema.json`
+- `toolbox/schemas/tools/3d-camera-path-editor.schema.json`
+- `toolbox/schemas/tools/3d-json-payload.schema.json`
+- `toolbox/schemas/tools/asset-browser.schema.json`
+- `toolbox/schemas/tools/asset-pipeline.schema.json`
+- `toolbox/schemas/tools/palette-browser.schema.json`
+- `toolbox/schemas/tools/parallax-editor.schema.json`
+- `toolbox/schemas/tools/performance-profiler.schema.json`
+- `toolbox/schemas/tools/physics-sandbox.schema.json`
+- `toolbox/schemas/tools/replay-visualizer.schema.json`
+- `toolbox/schemas/tools/skin-editor.schema.json`
+- `toolbox/schemas/tools/sprite-editor.schema.json`
+- `toolbox/schemas/tools/state-inspector.schema.json`
+- `toolbox/schemas/tools/tile-map-editor.schema.json`
+- `toolbox/schemas/tools/tile-model-converter.schema.json`
+- `toolbox/schemas/tools/vector-asset-studio.schema.json`
+- `toolbox/schemas/tools/vector-map-editor.schema.json`
 
 ## Sample 1902 Validation/Rebuild
 - Updated only:
@@ -90,7 +90,7 @@
 ## Validation Commands and Results
 - `node --check tests/tools/ToolSchemaStrictModeValidation.test.mjs` -> PASS
 - `node --check tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs` -> PASS
-- strict object audit across `tools/schemas/**/*.json` -> PASS (`issues: 0`)
+- strict object audit across `toolbox/schemas/**/*.json` -> PASS (`issues: 0`)
 - `node -e "import { run } from './tests/tools/ToolSchemaStrictModeValidation.test.mjs'; await run();"` -> PASS
 - `npm run test:launch-smoke -- --tools` -> PASS (`PASS=287 FAIL=0 TOTAL=287`, includes sample `1902` PASS)
 

@@ -1,12 +1,12 @@
 BUILD_PR_PLATFORM_VALIDATION_SUITE validation
 
 Files:
-- tools/shared/platformValidationSuite.js
+- toolbox/shared/platformValidationSuite.js
 - tests/tools/PlatformValidationSuite.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/platformValidationSuite.js
+- node --check toolbox/shared/platformValidationSuite.js
 - node --check tests/tools/PlatformValidationSuite.test.mjs
 - node ./scripts/run-node-tests.mjs
 

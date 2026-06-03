@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildCloudRuntime, summarizeCloudRuntime } from "../../tools/shared/cloudRuntime.js";
+import { buildCloudRuntime, summarizeCloudRuntime } from "../../toolbox/shared/cloudRuntime.js";
 
 export async function run() {
   const result = buildCloudRuntime({

@@ -16,10 +16,10 @@ Bundle type: execution-ready BUILD docs (non-destructive templates policy lane)
 ## Template Inventory Findings (Evidence Summary)
 - `templates/` currently contains 17 files (starter-project-template + vector-native-arcade trees).
 - Active code/test/docs consumers were found for `templates/` path references.
-- Direct module import/require/export references to `templates/` were not found in `tools/`, `src/`, `games/`, `samples/`, `tests/`.
+- Direct module import/require/export references to `templates/` were not found in `toolbox/`, `src/`, `games/`, `samples/`, `tests/`.
 - Runtime coupling remains path-string based, centered on:
-  - `tools/shared/vectorNativeTemplate.js`
-  - `tools/shared/vectorTemplateSampleGame.js`
+  - `toolbox/shared/vectorNativeTemplate.js`
+  - `toolbox/shared/vectorTemplateSampleGame.js`
   - `tests/tools/VectorNativeTemplate.test.mjs`
   - `games/vector-arcade-sample/README.md`
 
@@ -48,7 +48,7 @@ Bundle type: execution-ready BUILD docs (non-destructive templates policy lane)
 ## Validation Results (Command-Backed)
 1. Search all `templates/` references and list consumer files:
    - `rg -n "templates/" tools src games samples tests --glob "!**/node_modules/**"`
-   - Consumers found: `tools/shared/vectorNativeTemplate.js`, `tools/shared/vectorTemplateSampleGame.js`, `tests/tools/VectorNativeTemplate.test.mjs`, `games/vector-arcade-sample/README.md`.
+   - Consumers found: `toolbox/shared/vectorNativeTemplate.js`, `toolbox/shared/vectorTemplateSampleGame.js`, `tests/tools/VectorNativeTemplate.test.mjs`, `games/vector-arcade-sample/README.md`.
 
 2. Confirm no move/rename/delete under `templates/`:
    - `git diff --name-status -- templates`

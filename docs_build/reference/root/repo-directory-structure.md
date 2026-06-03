@@ -3,7 +3,7 @@
 ## Runtime and Product Layers
 - `src/engine/`: stable foundational runtime systems
 - `src/advanced/`: composable advanced architecture layer
-- `tools/`: editor and pipeline tooling
+- `toolbox/`: editor and pipeline tooling
 - `samples/`: demonstration consumers
 - `old_games/`: deprecated playable reference games
 - `tests/`: automated validation

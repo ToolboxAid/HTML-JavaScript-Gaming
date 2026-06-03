@@ -21,7 +21,7 @@ Object IDs are now the single source of truth for Asteroids Object Vector runtim
 
 ## Schema Changes
 
-- Added `game.gameData.objectVectorRuntime.objectIds` to `tools/schemas/game.manifest.schema.json`.
+- Added `game.gameData.objectVectorRuntime.objectIds` to `toolbox/schemas/game.manifest.schema.json`.
 - The schema constrains runtime object references with the `^object\.` identity pattern so asset IDs and vector IDs are rejected when this contract is used.
 - Updated `games/Asteroids/game.manifest.json` to declare ship, asteroid, and UFO runtime object IDs in `game.gameData.objectVectorRuntime.objectIds`.
 

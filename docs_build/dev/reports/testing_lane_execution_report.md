@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-03T17:55:20.082Z
+Generated: 2026-06-03T21:46:14.505Z
 Dry run: No
 
 ## Summary
@@ -9,19 +9,19 @@ PASS: 1
 WARN: 0
 FAIL: 0
 SKIP: 5
-Total lane elapsed time: 0ms
-Actual browser launches: 0
+Total lane elapsed time: 10.64s
+Actual browser launches: 1
 
 ## Full Samples Smoke
 
 Status: SKIP
-Reason: Targeted samples lane may run, but full samples smoke remains skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+Reason: Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
 
 ## Preflight
 
-Status: SKIP
-Reason: No selected lane requires Playwright test-location preflight.
-Command: not run
+Status: PASS
+Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
+Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
 Details: none
 
 ## Dependency Gate
@@ -32,7 +32,7 @@ Reason: No deterministic dependency failures before runtime.
 ## Runtime Scheduling
 
 Status: PASS
-Scheduled lane order: samples
+Scheduled lane order: workspace-contract
 Reused runtime sessions: 0
 Reused lane snapshots: 0
 Reused warm-start lanes: 0
@@ -44,8 +44,8 @@ Prevented redundant lane execution: 5
 
 ## Validation Cache
 
-Cached validations reused: 16
-Validation computations: 9
+Cached validations reused: 18
+Validation computations: 10
 
 ## Failure Fingerprints
 
@@ -61,26 +61,26 @@ Prevented broad lane escalation: 0
 ## Discovery Scope
 
 Status: PASS
-Target files: none
-Required shared helpers: none
+Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
+Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
 Required fixtures: none
-Targeted file/helper reads: 0
+Targeted file/helper reads: 5
 Cached discovery reuse: Yes
 Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
 
 ## Targeted File Manifests
 
 Status: PASS
-Generated manifests: samples:PASS
+Generated manifests: workspace-contract:PASS
 Prevented discovery expansion: Yes
-Prevented redundant scans: 0
-Persistent manifest events: samples:GENERATED
+Prevented redundant scans: 4
+Persistent manifest events: workspace-contract:INVALIDATED
 
 ## Warm-Start Reuse
 
 Status: PASS
-Warm-start events: samples:SKIP
-Dependency hydration events: samples:SKIP
+Warm-start events: workspace-contract:INVALIDATED
+Dependency hydration events: workspace-contract:INVALIDATED
 Prevented redundant initialization: 0
 Prevented helper resolution passes: 0
 Prevented fixture ownership traversal: 0
@@ -88,9 +88,9 @@ Prevented fixture ownership traversal: 0
 ## Lane Snapshots
 
 Status: PASS
-Snapshot events: samples:SKIP
+Snapshot events: workspace-contract:INVALIDATED
 Reused snapshots: 0
-Invalidated snapshots: 0
+Invalidated snapshots: 1
 Prevented graph rebuilds: 0
 Prevented redundant dependency traversal: 0
 Prevented fixture/helper graph assembly: 0
@@ -105,23 +105,24 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+| workspace-contract | PASS | 10.64s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | First-class tool runtime behavior | tool-specific mocked repo/file picker inputs; explicit manifest/toolState launch contexts |
 | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated old_games reference coverage |  |
 | integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Workspace, tool, game index, and manifest handoff behavior | repo game manifests; manifest preview asset roles; repo-served browser pages |
 | engine-src | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | src/ engine and shared runtime capability behavior | explicit node unit fixtures; fresh in-memory localStorage/sessionStorage mocks per file |
-| samples | PASS | 0ms | 0 | old_samples are deprecated playable references and are excluded from active automated validation. | Deprecated old_samples reference coverage |  |
+| samples | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated old_samples reference coverage |  |
 
 ## Slowest Tests
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| none | 0ms | No Playwright test-duration lines were emitted for this run. |
+| workspace-contract | 2.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes |
+| workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:60:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Commands
 
 ### workspace-contract
-- SKIP
+- PASS 10.64s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### tool-runtime
 - SKIP

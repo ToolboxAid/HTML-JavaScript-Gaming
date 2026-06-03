@@ -3,8 +3,8 @@ Date: 2026-04-30
 
 Files searched
 - tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
-- tools/shared/toolLoadDiagnostics.js
-- tools/shared/schemaOnlyToolPresetValidation.js
+- toolbox/shared/toolLoadDiagnostics.js
+- toolbox/shared/schemaOnlyToolPresetValidation.js
 - samples/metadata/samples.index.metadata.json
 - samples/phase-02/0204/*
 - samples/phase-14/1413/*
@@ -12,8 +12,8 @@ Files searched
 
 Issue A: Test-only tool schema relocation
 Search scope + pattern
-- Scope: tools/* and tests/*
-- Pattern: tools/(palette-editor|vector-asset-studio|vector-map-editor)/tool.schema.json + tests/fixtures path
+- Scope: toolbox/* and tests/*
+- Pattern: toolbox/(palette-editor|vector-asset-studio|vector-map-editor)/tool.schema.json + tests/fixtures path
 Matches found
 - Runtime paths: absent
 - Fixture paths: present in `tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs`
@@ -21,9 +21,9 @@ Fix applied
 - None in this PR (already fixed in previous pass).
 Validation
 - Runtime files missing:
-  - tools/palette-editor/tool.schema.json
-  - tools/vector-asset-studio/tool.schema.json
-  - tools/vector-map-editor/tool.schema.json
+  - toolbox/palette-editor/tool.schema.json
+  - toolbox/vector-asset-studio/tool.schema.json
+  - toolbox/vector-map-editor/tool.schema.json
 - Fixture files exist:
   - tests/fixtures/tool-schemas/palette-editor/tool.schema.json
   - tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
@@ -32,7 +32,7 @@ Validation
 
 Issue B: Schema-only runtime validation still enforced
 Search scope + pattern
-- Scope: tools/shared/toolLoadDiagnostics.js, tools/shared/schemaOnlyToolPresetValidation.js
+- Scope: toolbox/shared/toolLoadDiagnostics.js, toolbox/shared/schemaOnlyToolPresetValidation.js
 - Pattern: enforceToolPresetSchemaOnlyContract|Input validation failed
 Matches found
 - `toolLoadDiagnostics.js` imports and calls `enforceToolPresetSchemaOnlyContract` (loaded boundary)

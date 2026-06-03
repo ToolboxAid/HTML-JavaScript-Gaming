@@ -5,7 +5,7 @@ Validate user acceptance readiness for Asset Browser / Import Hub across launch,
 
 ## Scope
 - Tool: `asset-browser`
-- Entry point: `tools/Asset Browser/index.html`
+- Entry point: `toolbox/Asset Browser/index.html`
 
 ## Validation Scenarios
 

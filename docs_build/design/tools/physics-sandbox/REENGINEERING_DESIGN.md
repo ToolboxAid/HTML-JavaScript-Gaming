@@ -3,38 +3,38 @@
 Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-14
-Source folder: `tools/Physics Sandbox`
+Source folder: `toolbox/Physics Sandbox`
 Publish target: `tools.physics-sandbox`
 
 ## Tool Purpose
 Physics Sandbox owns physics body/config import, validation, simulation preview, export, and publish to `tools.physics-sandbox`.
 
 ## Folder/Files Inspected
-- `tools/Physics Sandbox/how_to_use.html`
-- `tools/Physics Sandbox/index.html`
-- `tools/Physics Sandbox/main.js`
-- `tools/Physics Sandbox/README.md`
+- `toolbox/Physics Sandbox/how_to_use.html`
+- `toolbox/Physics Sandbox/index.html`
+- `toolbox/Physics Sandbox/main.js`
+- `toolbox/Physics Sandbox/README.md`
 
 ## Controls: Control -> Action -> JSON Effect
 | Control | Action | JSON effect |
 |---|---|---|
-| `tools/Physics Sandbox/index.html`: `button[button]#runPhysicsStepButton` - Run Step | Processes the current physics sandbox payload. | Updates tool-owned derived data/report fields that must validate before tools.physics-sandbox publish. |
-| `tools/Physics Sandbox/index.html`: `textarea#physicsBodyInput` - {"x":0,"y":0,"velocityX":100,"velocityY":0,"accelerationX":-10,"dragX":12} | Edits the current physics sandbox payload through `physicsBodyInput`. | Updates draft physics sandbox payload data and requires validation before tools.physics-sandbox publish. |
+| `toolbox/Physics Sandbox/index.html`: `button[button]#runPhysicsStepButton` - Run Step | Processes the current physics sandbox payload. | Updates tool-owned derived data/report fields that must validate before tools.physics-sandbox publish. |
+| `toolbox/Physics Sandbox/index.html`: `textarea#physicsBodyInput` - {"x":0,"y":0,"velocityX":100,"velocityY":0,"accelerationX":-10,"dragX":12} | Edits the current physics sandbox payload through `physicsBodyInput`. | Updates draft physics sandbox payload data and requires validation before tools.physics-sandbox publish. |
 
 ## Panels And Surfaces Found
-- `tools/Physics Sandbox/how_to_use.html`: `.tools-platform-surface`
-- `tools/Physics Sandbox/index.html`: `.app-shell`
-- `tools/Physics Sandbox/index.html`: `.debug-tool-panel`
-- `tools/Physics Sandbox/index.html`: `.panel`
-- `tools/Physics Sandbox/index.html`: `.tool-shell`
-- `tools/Physics Sandbox/index.html`: `.tool-shell-container`
-- `tools/Physics Sandbox/index.html`: `.tool-shell-page`
-- `tools/Physics Sandbox/index.html`: `.tool-shell__center`
-- `tools/Physics Sandbox/index.html`: `.tool-shell__left`
-- `tools/Physics Sandbox/index.html`: `.tool-shell__right`
+- `toolbox/Physics Sandbox/how_to_use.html`: `.tools-platform-surface`
+- `toolbox/Physics Sandbox/index.html`: `.app-shell`
+- `toolbox/Physics Sandbox/index.html`: `.debug-tool-panel`
+- `toolbox/Physics Sandbox/index.html`: `.panel`
+- `toolbox/Physics Sandbox/index.html`: `.tool-shell`
+- `toolbox/Physics Sandbox/index.html`: `.tool-shell-container`
+- `toolbox/Physics Sandbox/index.html`: `.tool-shell-page`
+- `toolbox/Physics Sandbox/index.html`: `.tool-shell__center`
+- `toolbox/Physics Sandbox/index.html`: `.tool-shell__left`
+- `toolbox/Physics Sandbox/index.html`: `.tool-shell__right`
 
 ## Current Component/Class/Function Inventory
-- `tools/Physics Sandbox/main.js`: bootPhysicsSandbox; buildPresetLoadedStatus; getApi; normalizeSamplePresetPath; parseBody; registerToolBootContract; runStep; setStatus; tryLoadPresetFromQuery
+- `toolbox/Physics Sandbox/main.js`: bootPhysicsSandbox; buildPresetLoadedStatus; getApi; normalizeSamplePresetPath; parseBody; registerToolBootContract; runStep; setStatus; tryLoadPresetFromQuery
 
 ## Target Controls
 Keep:
@@ -51,7 +51,7 @@ Add:
 - body/config diagnostics
 
 ## JSON Schema/Input Contract Currently Expected
-Tool receives validated payload and owns behavior for physics sandbox payload. Current contract baseline: `tools/schemas/tools/physics-sandbox.schema.json` (physics-sandbox Payload).
+Tool receives validated payload and owns behavior for physics sandbox payload. Current contract baseline: `toolbox/schemas/tools/physics-sandbox.schema.json` (physics-sandbox Payload).
 Required keys: `physicsBody`.
 Optional keys: none identified for this contract.
 
@@ -83,12 +83,12 @@ tools.physics-sandbox = {
 ```
 
 ## Playwright Expectations
-- load `tools/Physics Sandbox/index.html` without console errors
+- load `toolbox/Physics Sandbox/index.html` without console errors
 - step/play a valid simulation and confirm output/report updates
 - reject invalid physics payload JSON
 
 ## Manual Test Expectations
-- Open `tools/Physics Sandbox/index.html` and confirm body/config/simulation controls render.
+- Open `toolbox/Physics Sandbox/index.html` and confirm body/config/simulation controls render.
 - Edit a physics body/config, run a preview, validate, export, and publish.
 - Try malformed JSON and invalid body data; each must block publish.
 

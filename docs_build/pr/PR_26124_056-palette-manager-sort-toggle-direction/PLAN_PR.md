@@ -4,13 +4,13 @@
 Add independent ascending/descending toggle behavior to Palette Manager V2 User Palette and Sample/Source Palette sort controls.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Preserve existing sorting logic where possible.
 - Preserve pin/unpin, search, size, import/export behavior, lowercase tag normalization, and duplicate user-defined guards.

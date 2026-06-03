@@ -5,7 +5,7 @@ Validate user acceptance readiness for State Inspector across launch, core workf
 
 ## Scope
 - Tool: `state-inspector`
-- Entry point: `tools/State Inspector/index.html`
+- Entry point: `toolbox/State Inspector/index.html`
 
 ## Validation Scenarios
 

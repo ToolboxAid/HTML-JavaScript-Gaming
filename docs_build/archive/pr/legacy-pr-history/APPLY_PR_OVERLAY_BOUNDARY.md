@@ -18,7 +18,7 @@ Apply only the approved boundary contract at sample integration touchpoints whil
 
 ## Guardrails
 1. No engine core changes.
-2. No expansion to unrelated tools/samples.
+2. No expansion to unrelated toolbox/samples.
 3. No private cross-calls between console and overlay.
 4. Preserve Dev Console as command/input owner.
 5. Preserve Debug Overlay as passive telemetry/HUD owner.

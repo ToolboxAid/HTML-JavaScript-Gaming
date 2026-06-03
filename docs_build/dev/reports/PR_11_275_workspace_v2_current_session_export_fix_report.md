@@ -4,7 +4,7 @@
 Workspace V2 export controls only.
 
 ## Files Changed
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/pr/PLAN_PR_11_275_WORKSPACE_V2_CURRENT_SESSION_EXPORT_FIX.md
 - docs_build/pr/BUILD_PR_11_275_WORKSPACE_V2_CURRENT_SESSION_EXPORT_FIX.md
@@ -22,7 +22,7 @@ Workspace V2 export controls only.
 - Export preserves payload exactly (serialized active payload only).
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
    - PASS

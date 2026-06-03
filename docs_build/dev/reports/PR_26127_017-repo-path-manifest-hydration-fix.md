@@ -3,7 +3,7 @@
 ## Summary
 - Added forward-slash absolute `repoPath` values to Workspace Manager V2 UAT, Asteroids, Pong, and Gravity Well manifests.
 - Kept `repoRoot` as the display-only repo label.
-- Preserved optional `repoPath` support in `tools/schemas/workspace.manifest.schema.json`.
+- Preserved optional `repoPath` support in `toolbox/schemas/workspace.manifest.schema.json`.
 - Preview Generator V2 continues to use `repoPath` as the workspace launch direct-write root.
 - Preview Generator V2 keeps `Pick Repo Folder` hidden when launched from Workspace Manager V2.
 
@@ -28,6 +28,6 @@
 - Validated Asteroids direct write to generated preview target and Asteroids/Pong/Gravity Well launch hydration enabling Generate Preview.
 
 ## Out Of Scope
-- Deprecated `tools/workspace-v2` was not modified.
+- Deprecated `toolbox/workspace-v2` was not modified.
 - Sample JSON was not modified.
 - Full samples smoke test was skipped because this PR is repoPath hydration scoped.

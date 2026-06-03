@@ -25,6 +25,6 @@
 - Full samples smoke test was skipped because this BUILD requested targeted Workspace Manager V2 validation and explicitly said to skip full samples smoke.
 
 ## Validation
-- PASS: `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- PASS: `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - PASS: `npm run test:workspace-v2` - 12 passed

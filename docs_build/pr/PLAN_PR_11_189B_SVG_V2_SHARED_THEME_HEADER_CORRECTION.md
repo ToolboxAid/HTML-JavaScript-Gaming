@@ -16,7 +16,7 @@ Correct the SVG Asset Studio v2 lane so the v2 tool uses the same shared theme h
 - No Workspace Manager v1 work.
 - No legacy tool patching.
 - No platformShell usage.
-- No `tools/shared/*` usage.
+- No `toolbox/shared/*` usage.
 
 ## Naming clarification
 - `Palette Browser-v1`: existing legacy palette viewing tool. Do not modify it in this PR.

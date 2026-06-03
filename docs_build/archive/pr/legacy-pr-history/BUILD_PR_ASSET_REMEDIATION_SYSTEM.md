@@ -4,7 +4,7 @@
 Implement the assistive remediation system defined in `PLAN_PR_ASSET_REMEDIATION_SYSTEM` on top of the existing validation engine without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared remediation engine in `tools/shared/projectAssetRemediation.js`
+- Added shared remediation engine in `toolbox/shared/projectAssetRemediation.js`
   - deterministic validation-finding to remediation-action mapping
   - stable remediation result contract:
     - `remediation.status`
@@ -26,19 +26,19 @@ Implement the assistive remediation system defined in `PLAN_PR_ASSET_REMEDIATION
   - graph refresh remediation generation
   - unavailable remediation state for valid projects
 - Integrated assistive remediation consumption into all three registry-aware editors:
-  - `tools/Sprite Editor/`
+  - `toolbox/Sprite Editor/`
     - remediation summary text
     - `Inspect Issues`
     - `Jump to Problem`
     - `Apply Suggested Fix`
     - confirmable palette relink, graph refresh, and owned-registry refresh flows
-  - `tools/Tilemap Studio/`
+  - `toolbox/Tilemap Studio/`
     - remediation summary text
     - `Inspect Issues`
     - `Jump to Problem`
     - `Apply Suggested Fix`
     - confirmable tileset relink, graph refresh, and owned-registry refresh flows
-  - `tools/Parallax Scene Studio/`
+  - `toolbox/Parallax Scene Studio/`
     - remediation summary text
     - `Inspect Issues`
     - `Jump to Problem`
@@ -62,11 +62,11 @@ Implement the assistive remediation system defined in `PLAN_PR_ASSET_REMEDIATION
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/projectAssetRemediation.js`
+  - `node --check toolbox/shared/projectAssetRemediation.js`
   - `node --check tests/tools/AssetRemediationSystem.test.mjs`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Tilemap Studio/main.js`
-  - `node --check tools/Parallax Scene Studio/main.js`
+  - `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
+  - `node --check toolbox/Tilemap Studio/main.js`
+  - `node --check toolbox/Parallax Scene Studio/main.js`
 - Targeted remediation test passed:
   - `node` inline runner for `tests/tools/AssetRemediationSystem.test.mjs`
 - Full Node test suite passed:

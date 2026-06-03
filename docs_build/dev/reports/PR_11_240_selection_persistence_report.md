@@ -1,7 +1,7 @@
 # PR_11_240 — Persist Session Selection And Restore On Load
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SelectionPersistence.test.mjs`
 
 ## Implementation Summary
@@ -32,13 +32,13 @@
 - Existing selection validation rules preserved.
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2SelectionPersistence.test.mjs`
 - `node tests/runtime/V2SelectionPersistence.test.mjs`
 - `node tests/runtime/V2DiffMergeButtonState.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2SelectionPersistence.test.mjs` → PASS
 - `node tests/runtime/V2SelectionPersistence.test.mjs` → PASS
 - `node tests/runtime/V2DiffMergeButtonState.test.mjs` → PASS

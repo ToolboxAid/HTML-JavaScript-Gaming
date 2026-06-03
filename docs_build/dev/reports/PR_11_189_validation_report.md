@@ -4,7 +4,7 @@
 Implemented one isolated SVG Asset Studio v2 entry as a session-backed Tool v2 replacement.
 
 ## Changed Files
-- `tools/SVG Asset Studio v2/main.js`
+- `toolbox/SVG Asset Studio v2/main.js`
 - `docs_build/dev/reports/PR_11_189_validation_report.md`
 
 Existing PR source docs were present in the worktree and included in the ZIP:
@@ -18,11 +18,11 @@ No changes were made to:
 - games
 - `start_of_day/**`
 - Workspace Manager v1
-- legacy `tools/SVG Asset Studio/**`
-- `tools/shared/**`
+- legacy `toolbox/SVG Asset Studio/**`
+- `toolbox/shared/**`
 
 ## Implementation Evidence
-`tools/SVG Asset Studio v2/main.js` is a single-file, single-class implementation.
+`toolbox/SVG Asset Studio v2/main.js` is a single-file, single-class implementation.
 
 It emits required logs:
 - `[SVG_V2_ENTRY]`
@@ -47,7 +47,7 @@ payloadJson.vectorAssetDocument.sourceName
 ## Syntax Check
 Command:
 ```powershell
-node --check "tools/SVG Asset Studio v2/main.js"
+node --check "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result: passed.
@@ -55,7 +55,7 @@ Result: passed.
 ## Banned Import / Reference Check
 Command:
 ```powershell
-rg -n "platformShell|assetUsageIntegration|tools/shared|Workspace Manager|tool alias|handoff|fallback|demo data|^import |^export " "tools/SVG Asset Studio v2/main.js"
+rg -n "platformShell|assetUsageIntegration|tools/shared|Workspace Manager|tool alias|handoff|fallback|demo data|^import |^export " "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result: passed. No matches.
@@ -63,7 +63,7 @@ Result: passed. No matches.
 ## Single-Class Check
 Command:
 ```powershell
-rg -n "^class " "tools/SVG Asset Studio v2/main.js"
+rg -n "^class " "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result:

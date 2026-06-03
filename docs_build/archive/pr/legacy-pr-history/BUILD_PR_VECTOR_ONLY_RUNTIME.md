@@ -23,18 +23,18 @@ Implement the vector-only runtime hardening defined in PLAN_PR_VECTOR_ONLY_RUNTI
 - no engine core APIs are changed
 
 ## Likely Files
-- `tools/shared/asteroidsPlatformDemo.js`
-- `tools/shared/projectAssetValidation.js`
-- `tools/shared/projectPackaging.js`
+- `toolbox/shared/asteroidsPlatformDemo.js`
+- `toolbox/shared/projectAssetValidation.js`
+- `toolbox/shared/projectPackaging.js`
 - `tests/games/AsteroidsPlatformDemo.test.mjs`
 - Asteroids demo vector asset/config references as needed
 - docs_build/dev reports
 - no engine core API files
 
 ## Implemented Files
-- `tools/shared/asteroidsPlatformDemo.js`
-- `tools/shared/projectAssetValidation.js`
-- `tools/shared/projectPackaging.js`
+- `toolbox/shared/asteroidsPlatformDemo.js`
+- `toolbox/shared/projectAssetValidation.js`
+- `toolbox/shared/projectPackaging.js`
 - `tests/games/AsteroidsPlatformDemo.test.mjs`
 - `docs_build/dev/reports/vector_only_runtime_validation.txt`
 
@@ -53,7 +53,7 @@ Implement the vector-only runtime hardening defined in PLAN_PR_VECTOR_ONLY_RUNTI
 - debug/profiler/publishing remain ready
 
 ## Verification
-- `node --check tools/shared/asteroidsPlatformDemo.js`
+- `node --check toolbox/shared/asteroidsPlatformDemo.js`
 - `node --check tests/games/AsteroidsPlatformDemo.test.mjs`
 - `node ./scripts/run-node-tests.mjs`
 - Result: `107/107` explicit `run()` tests passed.

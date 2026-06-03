@@ -4,7 +4,7 @@
 Implement the Gameplay System Layer defined in `PLAN_PR_GAMEPLAY_SYSTEM_LAYER` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared gameplay system layer in `tools/shared/gameplaySystemLayer.js`
+- Added shared gameplay system layer in `toolbox/shared/gameplaySystemLayer.js`
   - derives deterministic gameplay bindings from packaged/runtime content
   - defines gameplay content roles and startup bindings
   - emits readable binding and system reports
@@ -19,7 +19,7 @@ Implement the Gameplay System Layer defined in `PLAN_PR_GAMEPLAY_SYSTEM_LAYER` w
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/gameplaySystemLayer.js`
+  - `node --check toolbox/shared/gameplaySystemLayer.js`
   - `node --check tests/tools/GameplaySystemLayer.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

@@ -5,7 +5,7 @@ Validate user acceptance readiness for Tilemap Studio across launch, core workfl
 
 ## Scope
 - Tool: `tile-map-editor`
-- Entry point: `tools/Tilemap Studio/index.html`
+- Entry point: `toolbox/Tilemap Studio/index.html`
 
 ## Validation Scenarios
 

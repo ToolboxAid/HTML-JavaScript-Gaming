@@ -28,15 +28,15 @@
 - No sample JSON files were modified.
 
 ## Validation
-- PASS: `node tools/dev/checkSharedExtractionGuard.mjs --update-baseline`.
-- PASS: `node tools/dev/checkSharedExtractionGuard.mjs`.
+- PASS: `node toolbox/dev/checkSharedExtractionGuard.mjs --update-baseline`.
+- PASS: `node toolbox/dev/checkSharedExtractionGuard.mjs`.
 - PASS: root shared file check confirmed only `src/shared/index.js` remains at root.
 - PASS: no active imports from `shared/utils` or relocated root shared files.
 - PASS: no `../` export-from chains in `src/shared`.
 - PASS: no `Utils`/`utils` naming in `src/shared/**/*.js`.
 - PASS: changed-file syntax validation for 135 JavaScript files.
 - PASS: changed-file import target validation for 135 JavaScript files.
-- PASS: `node tools/dev/checkSharedExtractionGuard.selftest.mjs`.
+- PASS: `node toolbox/dev/checkSharedExtractionGuard.selftest.mjs`.
 - PASS: `node tests/shared/SharedFoundationCombinedPass.test.mjs`.
 - PASS: `node tests/shared/SharedNumberStringIdCloseout.test.mjs`.
 - PASS: `npm run test:workspace-v2` (59 passed).

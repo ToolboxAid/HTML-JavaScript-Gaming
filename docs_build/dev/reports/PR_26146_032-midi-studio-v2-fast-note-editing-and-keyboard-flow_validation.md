@@ -13,7 +13,7 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
 npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave timeline editor is the default editable and playable Studio workflow|octave grid density supports icon controls and simultaneous chord editing|fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync" --reporter=list --workers=1 --timeout=60000
 npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave timeline editor is the default editable and playable Studio workflow|octave grid density supports icon controls and simultaneous chord editing|fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync" --config=codex_playwright_system_chrome.config.cjs --reporter=list --workers=1 --timeout=60000
@@ -57,7 +57,7 @@ The targeted MIDI Studio V2 Playwright run validates:
 
 ## Manual Validation Notes
 
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. Import `tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json`.
 3. Select Lead, click notes in the octave grid, and verify notes toggle immediately with a visible selected-cell highlight.
 4. Drag horizontally from a note cell and verify notes paint across adjacent timeline cells while scroll position remains stable.

@@ -4,7 +4,7 @@
 
 Requested source: uploaded `Tabs.txt`.
 
-Resolution: `Tabs.txt` was not present in the repository, Downloads, or temp upload locations. This map uses the current `tools/midi-studio-v2/index.html` DOM inventory after PR053 edits.
+Resolution: `Tabs.txt` was not present in the repository, Downloads, or temp upload locations. This map uses the current `toolbox/midi-studio-v2/index.html` DOM inventory after PR053 edits.
 
 ## Tab Order
 

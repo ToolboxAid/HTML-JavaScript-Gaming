@@ -14,9 +14,9 @@ Implemented the Palette Manager V2 `menuSample` JSON action menu and tag delete 
 - Preserved tag button click behavior for toggling tags on/off for the selected swatch.
 
 ## Validation
-- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/PaletteImportExportControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/PaletteImportExportControl.js`: PASS.
 - Targeted served-browser Palette Manager V2 validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

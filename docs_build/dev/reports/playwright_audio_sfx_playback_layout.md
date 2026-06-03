@@ -5,13 +5,13 @@ Date: 2026-05-25
 ## Targeted validation
 
 - `node --check` passed for changed Audio / SFX JavaScript files:
-  - `tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js`
-  - `tools/audio-sfx-playground-v2/js/bootstrap.js`
-  - `tools/audio-sfx-playground-v2/js/controls/ActionNavControl.js`
-  - `tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
-  - `tools/audio-sfx-playground-v2/js/services/AudioSfxEngine.js`
-- HTML guard passed for `tools/audio-sfx-playground-v2/index.html`: no inline `<script>`, `<style>`, or inline event handlers.
-- CSS static brace validation passed for `tools/audio-sfx-playground-v2/styles/audioSfxLayoutDensity.css`.
+  - `toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js`
+  - `toolbox/audio-sfx-playground-v2/js/bootstrap.js`
+  - `toolbox/audio-sfx-playground-v2/js/controls/ActionNavControl.js`
+  - `toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
+  - `toolbox/audio-sfx-playground-v2/js/services/AudioSfxEngine.js`
+- HTML guard passed for `toolbox/audio-sfx-playground-v2/index.html`: no inline `<script>`, `<style>`, or inline event handlers.
+- CSS static brace validation passed for `toolbox/audio-sfx-playground-v2/styles/audioSfxLayoutDensity.css`.
 - Existing Audio / SFX schema JSON parse passed.
 - Serializer validation confirmed `playbackMode: "loop"` still round-trips.
 
@@ -42,7 +42,7 @@ Notes:
 
 ## Focused Playwright validation
 
-Ran focused Playwright scripts against `tools/audio-sfx-playground-v2/index.html` with Chromium and a stub Web Audio API.
+Ran focused Playwright scripts against `toolbox/audio-sfx-playground-v2/index.html` with Chromium and a stub Web Audio API.
 
 Validated:
 

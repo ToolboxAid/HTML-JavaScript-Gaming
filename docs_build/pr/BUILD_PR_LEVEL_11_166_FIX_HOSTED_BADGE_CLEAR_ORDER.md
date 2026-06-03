@@ -11,7 +11,7 @@ Flow:
 2. Workspace Manager derives the label from `sourceName` or inline SVG.
 3. Workspace Manager writes shared asset handoff.
 4. ToolHostRuntime launches SVG Asset Studio with `hosted=1` and `hostContextId`.
-5. SVG Asset Studio iframe initializes `tools/shared/platformShell.js`.
+5. SVG Asset Studio iframe initializes `toolbox/shared/platformShell.js`.
 6. `platformShell.js` calls `clearSharedBindingsForNewLaunch(...)`.
 7. That clears `toolboxaid.shared.assetHandoff`.
 8. Badge renders from `readSharedAssetHandoff()` and shows `Asset: none`.
@@ -20,7 +20,7 @@ Flow:
 One PR purpose only: stop hosted tool shell initialization from clearing Workspace Manager handoff before hosted badge render.
 
 ## Codex Implementation Requirements
-1. Update `tools/shared/platformShell.js` only unless a directly related validation doc/report is needed.
+1. Update `toolbox/shared/platformShell.js` only unless a directly related validation doc/report is needed.
 2. Hosted Workspace Manager iframe launches must not clear shared asset/palette handoffs written by the parent Workspace Manager.
 3. Detect hosted launches using existing URL facts:
    - `hosted=1`

@@ -4,7 +4,7 @@
 Enforce one authoritative data source for Workspace V2 last-merge and undo availability state.
 
 ## Scope
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
 - PR docs/report only
 
@@ -20,6 +20,6 @@ Enforce one authoritative data source for Workspace V2 last-merge and undo avail
 - No unrelated files
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
 - node tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs

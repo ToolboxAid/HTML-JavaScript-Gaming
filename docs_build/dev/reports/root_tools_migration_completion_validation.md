@@ -4,10 +4,10 @@
 
 - Root Tools migration/parity completion lane.
 - Targeted surfaces validated:
-  - `tools/index.html`
-  - visible root Tools Index destinations under `tools/**`
+  - `toolbox/index.html`
+  - visible root Tools Index destinations under `toolbox/**`
   - approved source pages under `GameFoundryStudio/tools/**`
-  - required root Tools support script `tools/tools-page-accordions.js`
+  - required root Tools support script `toolbox/tools-page-accordions.js`
 - No Tools implementation files required edits; the current root Tools state already satisfied the requested parity and load checks.
 - No CSS files were added or changed.
 - No Admin, Account, Company, Games, Samples, or root index files were changed.
@@ -26,16 +26,16 @@ Lanes skipped:
 Samples decision: SKIP because root Tools migration validation does not touch Samples and the PR explicitly excludes full samples smoke testing.
 
 Commands:
-- `node --check tools/tools-page-accordions.js`
-- Inline Node static parity validation comparing approved `GameFoundryStudio/tools/**` HTML text content against root `tools/**` counterparts.
+- `node --check toolbox/tools-page-accordions.js`
+- Inline Node static parity validation comparing approved `GameFoundryStudio/tools/**` HTML text content against root `toolbox/**` counterparts.
 - Inline Node static validation for root Tools HTML inline restrictions.
-- Inline Playwright browser validation using a local static server for `/tools/index.html` and visible Tools Index destinations.
+- Inline Playwright browser validation using a local static server for `/toolbox/index.html` and visible Tools Index destinations.
 - `git diff --name-only -- "*.css"` and `git status --short -- "*.css"`
 
 ## Tools Index Results
 
 PASS:
-- `/tools/index.html` rendered 18 visible tool cards.
+- `/toolbox/index.html` rendered 18 visible tool cards.
 - Images loaded for all cards.
 - Badge/icon assets loaded for all cards.
 - Descriptions loaded for all cards.

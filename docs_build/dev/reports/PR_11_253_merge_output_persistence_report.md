@@ -4,8 +4,8 @@
 Added post-merge output handling so successful merge results can be explicitly named and saved into Session Library, without auto-saving or overwriting source sessions.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2MergeOutputPersistence.test.mjs`
 
 ## Implementation Details
@@ -45,13 +45,13 @@ Added post-merge output handling so successful merge results can be explicitly n
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2MergeOutputPersistence.test.mjs
 node tests/runtime/V2MergeOutputPersistence.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2MergeOutputPersistence.test.mjs` -> PASS
 - `node tests/runtime/V2MergeOutputPersistence.test.mjs` -> PASS
   - output: `tmp/v2-merge-output-persistence-results.json`

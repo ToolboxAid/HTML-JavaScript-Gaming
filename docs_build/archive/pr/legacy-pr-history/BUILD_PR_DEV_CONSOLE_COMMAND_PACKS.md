@@ -19,7 +19,7 @@ Define a namespaced command-pack model for the existing dev console so command r
 - Define built-in help behavior for pack and command discovery
 - Define output contract for command execution results
 - Define validation conventions and error surface
-- Keep future implementation scope limited to `tools/dev` and optional tests
+- Keep future implementation scope limited to `toolbox/dev` and optional tests
 
 ## Out Of Scope
 - No engine core changes
@@ -29,12 +29,12 @@ Define a namespaced command-pack model for the existing dev console so command r
 
 ## Implementation Boundaries (Future Apply Scope)
 - Allowed implementation folders:
-  - `tools/dev/`
+  - `toolbox/dev/`
   - optional `tests/tools/`
 - Not allowed:
   - `src/engine/`
   - runtime core rewrites
-  - unrelated tools/samples/games
+  - unrelated toolbox/samples/games
 
 ## Command Registry Shape
 Use a registry composed of command packs.
@@ -108,15 +108,15 @@ Validation behavior:
 - `validation.*`
 
 ## Future Candidate Files (Implementation Phase)
-- `tools/dev/commandPacks/sceneCommandPack.js`
-- `tools/dev/commandPacks/renderCommandPack.js`
-- `tools/dev/commandPacks/entityCommandPack.js`
-- `tools/dev/commandPacks/debugCommandPack.js`
-- `tools/dev/commandPacks/inputCommandPack.js`
-- `tools/dev/commandPacks/hotReloadCommandPack.js`
-- `tools/dev/commandPacks/validationCommandPack.js`
-- `tools/dev/devConsoleCommandRegistry.js`
-- `tools/dev/devConsoleIntegration.js`
+- `toolbox/dev/commandPacks/sceneCommandPack.js`
+- `toolbox/dev/commandPacks/renderCommandPack.js`
+- `toolbox/dev/commandPacks/entityCommandPack.js`
+- `toolbox/dev/commandPacks/debugCommandPack.js`
+- `toolbox/dev/commandPacks/inputCommandPack.js`
+- `toolbox/dev/commandPacks/hotReloadCommandPack.js`
+- `toolbox/dev/commandPacks/validationCommandPack.js`
+- `toolbox/dev/devConsoleCommandRegistry.js`
+- `toolbox/dev/devConsoleIntegration.js`
 - Optional tests under `tests/tools/`
 
 ## Acceptance Criteria
@@ -125,7 +125,7 @@ Validation behavior:
 - Help behavior documented for global/pack/command modes
 - Output contract documented and standardized
 - Validation conventions documented with explicit error codes
-- Future scope constrained to `tools/dev` and optional tests
+- Future scope constrained to `toolbox/dev` and optional tests
 - No engine-core change requirements introduced
 
 ## Manual Validation Checklist
@@ -133,7 +133,7 @@ Validation behavior:
 - Confirm help behavior covers global, pack, and command views
 - Confirm output contract supports both human and structured tooling usage
 - Confirm validation conventions avoid silent failures
-- Confirm no implementation scope leaks outside `tools/dev` and optional tests
+- Confirm no implementation scope leaks outside `toolbox/dev` and optional tests
 
 ## Packaging
 Expected BUILD delta ZIP:

@@ -3,7 +3,7 @@
 ## Implementation
 - Updated Workspace V2 tools launcher button text to start in explicit no-session mode:
   - `Open Asset Manager V2 (no session)`
-- Extended `computeWorkspaceSessionUiStateModel()` in `tools/workspace-v2/index.js` with:
+- Extended `computeWorkspaceSessionUiStateModel()` in `toolbox/workspace-v2/index.js` with:
   - `assetManagerLaunchReady`
   - `assetManagerLaunchLabel`
 - Updated `renderWorkspaceSessionUiStateModel(model)` to:
@@ -14,5 +14,5 @@
 - Preserved existing session-based launch path in `openAssetManagerFromWorkspace()` and did not alter producer/recent-session flows.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs`

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../tools/schemas/tools/palette-browser.schema.json",
+  "$schema": "../../../toolbox/schemas/tools/palette-browser.schema.json",
   "tool": "palette-browser",
   "version": "1",
   "config": {

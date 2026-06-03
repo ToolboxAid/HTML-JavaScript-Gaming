@@ -1,7 +1,7 @@
 # PR 10.12 Vector Map Editor UAT Report
 
 ## Scope
-- Tool: `tools/Vector Map Editor`
+- Tool: `toolbox/Vector Map Editor`
 - PR purpose: enforce UAT UX behavior only (selection, control gating, stability).
 - Constraints honored: no data-layer/schema changes, no feature expansion.
 
@@ -28,10 +28,10 @@
 - Workspace stability preserved (no reset/reload behavior introduced): PASS
 
 ## Files Changed
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
+- `toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
 - `docs_build/dev/reports/PR_10_12_vector_map_editor_uat_report.md`
 
 ## Validation
-- `node --check tools/Vector Map Editor/editor/VectorMapEditorApp.js` PASS
+- `node --check toolbox/Vector Map Editor/editor/VectorMapEditorApp.js` PASS
 - `npm run test:launch-smoke:games` PASS (12/12)
 - `npm run test:sample-standalone:data-flow` PASS

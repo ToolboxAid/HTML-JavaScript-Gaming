@@ -4,7 +4,7 @@
 
 ### 1. Update Workspace manifest schema
 Update:
-`tools/schemas/workspace.manifest.schema.json`
+`toolbox/schemas/workspace.manifest.schema.json`
 
 Required model:
 - top-level `tools` remains required

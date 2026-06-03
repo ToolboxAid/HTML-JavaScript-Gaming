@@ -30,7 +30,7 @@ No sample changes
 No game changes
 No Workspace Manager v1 wiring
 No legacy tool patching
-No tools/shared usage for new v2 code
+No toolbox/shared usage for new v2 code
 No fallback/default data
 ```
 

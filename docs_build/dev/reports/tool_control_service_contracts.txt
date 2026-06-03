@@ -1,12 +1,12 @@
 ﻿# PR_26126_064 Tool Control Service Contracts
 
 Scope:
-- Added reusable first-class tool contracts under tools/templates.
+- Added reusable first-class tool contracts under toolbox/templates.
 - Updated the first-class tool starter README to reference the contracts.
 - No live tool runtime, sample, schema, roadmap, or start_of_day files were modified.
 
 Contract document added:
-- tools/templates/first-class-tool-starter/docs/CONTROL_SERVICE_CONTRACTS.md
+- toolbox/templates/first-class-tool-starter/docs/CONTROL_SERVICE_CONTRACTS.md
 
 Contracts defined:
 - Control contract: one control or section per class, owns DOM references, owns event binding, exposes clear methods such as init/mount, bindEvents, getValue, setValue, validate, and does not reach into sibling controls directly.
@@ -16,7 +16,7 @@ Contracts defined:
 - Batch Processor contract: processes real discovered inputs only, logs per item, summarizes written/failed/skipped/warnings, and continues item processing unless the failure is global.
 
 README update:
-- tools/templates/first-class-tool-starter/README.md now lists docs/CONTROL_SERVICE_CONTRACTS.md in the folder structure and required files.
+- toolbox/templates/first-class-tool-starter/README.md now lists docs/CONTROL_SERVICE_CONTRACTS.md in the folder structure and required files.
 - README now has a Required Contracts section and summarizes the contract categories.
 
 Validation:
@@ -24,9 +24,9 @@ Validation:
 - No Playwright impact. This PR is docs/template-contract only and changes no active runtime behavior.
 - Confirmed the contract document contains the required contract sections and logger levels.
 - Confirmed the template README references the contract document.
-- Confirmed no roadmap, sample, schema, start_of_day, tools/shared, package, src, or games files changed.
+- Confirmed no roadmap, sample, schema, start_of_day, toolbox/shared, package, src, or games files changed.
 - npm run test:workspace-v2 was not run because this is documentation-only for the starter contract.
 
 Manual test notes:
-- Read tools/templates/first-class-tool-starter/docs/CONTROL_SERVICE_CONTRACTS.md and confirm the control/service/app/logger/batch boundaries are clear.
-- Read tools/templates/first-class-tool-starter/README.md and confirm it directs new tool authors to the contracts before creating a tool.
+- Read toolbox/templates/first-class-tool-starter/docs/CONTROL_SERVICE_CONTRACTS.md and confirm the control/service/app/logger/batch boundaries are clear.
+- Read toolbox/templates/first-class-tool-starter/README.md and confirm it directs new tool authors to the contracts before creating a tool.

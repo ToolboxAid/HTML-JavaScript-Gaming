@@ -5,7 +5,7 @@ Validate user acceptance readiness for Palette Browser / Manager across launch, 
 
 ## Scope
 - Tool: `palette-browser`
-- Entry point: `tools/Palette Browser/index.html`
+- Entry point: `toolbox/Palette Browser/index.html`
 
 ## Validation Scenarios
 

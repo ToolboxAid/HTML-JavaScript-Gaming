@@ -37,7 +37,7 @@ Per BUILD constraints, wording was left intact and no forced rewrite was perform
 - `docs_build/archive/tools/SpriteEditor_old_keep/`: exists; live references in registry/spec/report docs; remains keep-only legacy candidate for later policy PR.
 - `legacy class-retention policy marker`: path does not exist; docs-only planning references present.
 - `docs_build/archive/` archived notes area: exists and actively referenced in documentation structure/policy docs.
-- Legacy import path scan (`/engine/`, `../engine/`, `./engine/` in tools/src/games/samples): no direct matches.
+- Legacy import path scan (`/engine/`, `../engine/`, `./engine/` in toolbox/src/games/samples): no direct matches.
 - Legacy-retirement candidates are present and tracked in roadmap + cleanup planning docs.
 
 ## Non-Destructive Assertions

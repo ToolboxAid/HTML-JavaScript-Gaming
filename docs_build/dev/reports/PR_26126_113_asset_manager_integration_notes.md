@@ -17,7 +17,7 @@
 - The temporary `?workspace=UAT` path is unchanged and remains isolated for UAT-only testing.
 
 ## Scope
-- Deprecated `tools/workspace-v2/` was not modified.
+- Deprecated `toolbox/workspace-v2/` was not modified.
 - Sample JSON was not modified.
 - No samples/tools workspace roots were added.
 

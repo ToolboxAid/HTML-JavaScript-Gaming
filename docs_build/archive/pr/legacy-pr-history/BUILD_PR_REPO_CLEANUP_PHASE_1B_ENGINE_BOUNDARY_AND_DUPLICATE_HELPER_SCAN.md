@@ -1,7 +1,7 @@
 # BUILD_PR: REPO_CLEANUP_PHASE_1B_ENGINE_BOUNDARY_AND_DUPLICATE_HELPER_SCAN
 
 ## Execution Summary
-- Docs-first scan completed across `src/shared/utils/**`, `src/engine/ui/**`, `games/**`, `tools/**`, and `samples/**`.
+- Docs-first scan completed across `src/shared/utils/**`, `src/engine/ui/**`, `games/**`, `toolbox/**`, and `samples/**`.
 - This phase made no runtime/helper consolidation changes.
 - Classification produced candidate groups for immediate low-risk cleanup and deferred manual review.
 
@@ -10,8 +10,8 @@
 |---|---|---|---|---|---|---|---|
 | `games/Asteroids/utils/math.js` | wraps random/wrap helpers for Asteroids | `src/shared/utils/math.js` (`randomRange`, `wrap`) | no (wrapper can stay local) | yes | `src/shared/utils/math.js` | low | Keep only game-specific surface (`TAU`) or import engine helpers directly in consumers in a follow-up micro-PR. |
 | `games/*/game/*` local `function clamp(...)` cluster | scalar clamp utility repeated in multiple game modules | `src/shared/utils/math.js` (`clamp`) | no | yes | `src/shared/utils/math.js` | medium | Migrate in small batches (one game at a time) to reduce behavior/regression risk. |
-| `tools/Vector Map Editor/editor/VectorMapFullscreenController.js` | fullscreen toggle + state sync | `src/engine/runtime/FullscreenService.js` | no | yes | `src/engine/runtime/FullscreenService.js` | low | Replace tool-local controller with engine runtime service adapter. |
-| `tools/Vector Map Editor/editor/VectorMapSerializer.js` + `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js` | blob download orchestration | `src/engine/runtime/BrowserDownloadService.js` | no | yes | `src/engine/runtime/BrowserDownloadService.js` | low | Route downloads through `BrowserDownloadService` and keep only payload-building logic local. |
+| `toolbox/Vector Map Editor/editor/VectorMapFullscreenController.js` | fullscreen toggle + state sync | `src/engine/runtime/FullscreenService.js` | no | yes | `src/engine/runtime/FullscreenService.js` | low | Replace tool-local controller with engine runtime service adapter. |
+| `toolbox/Vector Map Editor/editor/VectorMapSerializer.js` + `toolbox/Vector Map Editor/editor/VectorMapRuntimeExporter.js` | blob download orchestration | `src/engine/runtime/BrowserDownloadService.js` | no | yes | `src/engine/runtime/BrowserDownloadService.js` | low | Route downloads through `BrowserDownloadService` and keep only payload-building logic local. |
 | `samples/_shared/platformerHelpers.js` (`overlap`) | AABB overlap predicate | `src/engine/collision/aabb.js` (`isColliding`) | no | yes | `src/engine/collision/index.js` | low | Import/alias `isColliding` in shared sample helper instead of redefining overlap math. |
 
 ## Findings: Should be promoted to engine
@@ -33,13 +33,13 @@
 |---|---|---|---|---|---|---|---|
 | `games/PacmanLite/game/PacmanLiteInputController.js` + `games/PacmanFullAI/game/PacmanFullAIInputController.js` | queued direction input parsing | each other (nearly identical) | no | no | per-game folders | low | Consolidate game-local shared controller first; decide engine promotion later if a third consumer appears. |
 | `games/Bouncing-ball/game/BouncingBallInputController.js` + `games/PaddleIntercept/game/PaddleInterceptInputController.js` | start/pause/reset button mapping | each other | no | partial | per-game folders | low | Consolidate into shared mini-helper under `games/_shared/` (if that folder is approved) before engine consideration. |
-| `tools/Vector Map Editor/editor/VectorMapSerializer.js` + `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js` | repeated DOM download ceremony | each other and `BrowserDownloadService` | no | yes | `tools/Vector Map Editor/editor/` for payload logic, `src/engine/runtime/` for download transport | low | Do tool-local dedupe and engine service adoption in one contained tool PR. |
+| `toolbox/Vector Map Editor/editor/VectorMapSerializer.js` + `toolbox/Vector Map Editor/editor/VectorMapRuntimeExporter.js` | repeated DOM download ceremony | each other and `BrowserDownloadService` | no | yes | `toolbox/Vector Map Editor/editor/` for payload logic, `src/engine/runtime/` for download transport | low | Do tool-local dedupe and engine service adoption in one contained tool PR. |
 
 ## Findings: Manual review required
 | path | responsibility | duplicate of | should be in engine | already in engine | canonical location | risk | recommendation |
 |---|---|---|---|---|---|---|---|
 | `games/SpaceInvaders/game/WaveController.js` naming | helper name implies simulation controller but currently HUD/banner presenter | `games/SpaceDuel/game/WaveController.js` (name only) | no | no | likely rename to `WaveHudPresenter`/`WaveStatusPresenter` | low | Rename in a doc-safe or tiny code-safe follow-up with import-site checks. |
-| `tools/SpriteEditor_old_keep/main.js` local `clamp` | overlaps engine clamp but file is a large patch/stabilization entrypoint | `src/shared/utils/math.js` (`clamp`) | uncertain | yes | evaluate per SpriteEditor stability plan | medium | Defer until SpriteEditor stabilization work is complete; avoid mixing concerns. |
+| `toolbox/SpriteEditor_old_keep/main.js` local `clamp` | overlaps engine clamp but file is a large patch/stabilization entrypoint | `src/shared/utils/math.js` (`clamp`) | uncertain | yes | evaluate per SpriteEditor stability plan | medium | Defer until SpriteEditor stabilization work is complete; avoid mixing concerns. |
 | `samples/sample003-mouse-input/MouseInputScene.js`, `samples/sample004-gamepad-input/GamepadScene.js` class-local clamp methods | duplicates engine clamp, but potentially intentional pedagogy | `src/shared/utils/math.js` (`clamp`) | uncertain | yes | sample-specific decision | low | Keep as-is unless sample docs explicitly prefer engine helper usage. |
 | Target path expectation: `src/engine/math/**` | scan target includes path that does not exist in repo (math lives under `src/shared/utils/math.js`) | N/A | N/A | N/A | `src/shared/utils/math.js` | low | Update future scan templates/docs to avoid path drift. |
 
@@ -83,9 +83,9 @@
 - `games/PacmanFullAI/game/PacmanFullAIInputController.js`
 
 ### VectorMapEditor overlap with engine runtime services
-- `tools/Vector Map Editor/editor/VectorMapFullscreenController.js`
-- `tools/Vector Map Editor/editor/VectorMapSerializer.js`
-- `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js`
+- `toolbox/Vector Map Editor/editor/VectorMapFullscreenController.js`
+- `toolbox/Vector Map Editor/editor/VectorMapSerializer.js`
+- `toolbox/Vector Map Editor/editor/VectorMapRuntimeExporter.js`
 
 ### Sample overlap helper duplicates
 - `samples/_shared/platformerHelpers.js` (`overlap`, `clamp`)
@@ -104,7 +104,7 @@
 
 ## Recommended Follow-Up BUILD_PRs
 1. `BUILD_PR: REPO_CLEANUP_PHASE_1C_LOW_RISK_ENGINE_HELPER_ADOPTION`
-   - Adopt `FullscreenService` and `BrowserDownloadService` in `tools/Vector Map Editor`.
+   - Adopt `FullscreenService` and `BrowserDownloadService` in `toolbox/Vector Map Editor`.
    - Replace obvious local `clamp` duplicates in one low-risk game slice.
 2. `BUILD_PR: REPO_CLEANUP_PHASE_1D_INPUT_CONTROLLER_SHARED_HELPERS`
    - Add internal engine input helper(s) for digital-axis and button mapping.

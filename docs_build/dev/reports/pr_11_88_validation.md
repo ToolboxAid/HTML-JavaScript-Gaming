@@ -24,7 +24,7 @@ Command (runtime/source scope):
 
 Result:
 - Only manifest-declared assets found in `games/Asteroids/game.manifest.json`.
-- No guessed/fallback chrome path construction added in `src/`, `games/`, or `tools/` runtime code.
+- No guessed/fallback chrome path construction added in `src/`, `games/`, or `toolbox/` runtime code.
 
 Broader scan including tests:
 - `rg -n "assets/images/bezel\\.png|assets/images/background\\.png" src games tools tests -g "*.js" -g "*.mjs" -g "*.json" -g "*.html"`

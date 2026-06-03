@@ -14,8 +14,8 @@ Date: 2026-06-02
 ## Inventory Sources
 
 - `samples/`
-- `tools/schemas/game.manifest.schema.json`
-- `tools/schemas/tools/*.schema.json`
+- `toolbox/schemas/game.manifest.schema.json`
+- `toolbox/schemas/tools/*.schema.json`
 - `docs_build/dev/reports/projectworkspace_migration_closeout.md`
 
 ## Sample Inventory
@@ -36,7 +36,7 @@ Date: 2026-06-02
 | Legacy tool wrapper JSON | 33 | PENDING | Files shaped as `tool` / `version` / `payload` must be rebuilt into approved manifest, Tool State, and ProjectWorkspace handoff boundaries. |
 | Standalone palette JSON | 20 | PENDING | Palette data must align with approved palette ownership and explicit project/tool context. |
 | Legacy tilemap documents | 6 | PENDING | `toolbox.tilemap/1` documents must be mapped into current Tile Map Editor payload boundaries. |
-| Workspace manifest sample | 1 | PENDING | `sample.1902.workspace-all-tools.json` references a workspace manifest schema surface that is not currently present under `tools/schemas/`. |
+| Workspace manifest sample | 1 | PENDING | `sample.1902.workspace-all-tools.json` references a workspace manifest schema surface that is not currently present under `toolbox/schemas/`. |
 | Payload root array | 1 | PENDING | Text to Speech V2 payload is schema-shaped but still needs explicit manifest/ProjectWorkspace handoff planning. |
 | Metadata/link JSON | 2 | SKIP | Metadata/index support files are not sample payload rebuild targets in this lane. |
 
@@ -62,7 +62,7 @@ Date: 2026-06-02
 - Some samples use retired or renamed tool IDs such as `svg-asset-studio`, `vector-map-editor`, `tile-model-converter`, and `asset-browser`.
 - Palette samples are standalone data documents rather than project-owned sample handoff records.
 - Tilemap samples mix wrapper JSON and `toolbox.tilemap/1` documents.
-- `sample.1902.workspace-all-tools.json` references `tools/schemas/workspace.manifest.schema.json`, but no matching workspace schema file is present in the current schema directory.
+- `sample.1902.workspace-all-tools.json` references `toolbox/schemas/workspace.manifest.schema.json`, but no matching workspace schema file is present in the current schema directory.
 - Rebuilt samples must avoid hidden `localStorage`, `sessionStorage`, fallback, or runtime state assumptions.
 - Rebuilt image references must use file/path fields such as image names or paths, never persisted `imageDataUrl`.
 

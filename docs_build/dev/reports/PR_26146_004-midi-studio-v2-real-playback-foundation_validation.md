@@ -23,9 +23,9 @@
 ## Validation
 
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/services/MidiPlaybackService.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/PlaybackControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/services/MidiPlaybackService.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/PlaybackControl.js`
 - PASS: `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --workers=1 --reporter=line`
 - PASS: `npx.cmd playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=line -g "registers Workspace Manager V2 from the tools index"`
 - PASS: `git diff --check`

@@ -5,8 +5,8 @@ Status: PASS
 ## Scope
 
 - Corrected the user-facing header Toolbox submenu structure.
-- Kept internal `tools/` paths, toolState names, tool registry names, and technical contract names unchanged.
-- Did not modify `tools/tools-page-accordions.js`.
+- Kept internal `toolbox/` paths, toolState names, tool registry names, and technical contract names unchanged.
+- Did not modify `toolbox/tools-page-accordions.js`.
 - Did not rebuild tools or touch samples.
 
 ## Header Menu Structure
@@ -36,7 +36,7 @@ Status: PASS
 
 ## Lanes Skipped
 
-- tools index data: SKIP because header data is not sourced from `tools/tools-page-accordions.js`.
+- tools index data: SKIP because header data is not sourced from `toolbox/tools-page-accordions.js`.
 - tool rebuild: SKIP / explicitly out of scope.
 - samples: SKIP / explicitly out of scope.
 - engine/runtime: SKIP / no engine runtime behavior changed.
@@ -58,7 +58,7 @@ Status: PASS
 - Confirm the menu shows Objects with Vector, Sprite, Animated Sprite, UI.
 - Confirm the menu shows Worlds with Vector, Tilemap, Isometric, Hybrid.
 - Confirm Audio, Input, AI, Colors, and Assets appear as top-level Toolbox entries.
-- Confirm no `tools/` path or technical toolState naming changed.
+- Confirm no `toolbox/` path or technical toolState naming changed.
 
 ## Blocker Scope
 

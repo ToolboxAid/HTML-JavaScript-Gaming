@@ -4,7 +4,7 @@
 Correct Workspace V2 export so it outputs the full Workspace session container instead of a single active-tool payload object.
 
 ## Scope
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs/report only
 
@@ -27,6 +27,6 @@ Correct Workspace V2 export so it outputs the full Workspace session container i
 - No session library/diff/merge behavior-path changes beyond export-source consistency.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2CurrentSessionExport.test.mjs
 - node tests/runtime/V2CurrentSessionExport.test.mjs

@@ -17,11 +17,11 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
-node --check tools/midi-studio-v2/js/MidiStudioV2App.js
-node --check tools/midi-studio-v2/js/bootstrap.js
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
+node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js
+node --check toolbox/midi-studio-v2/js/bootstrap.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-rg --pcre2 -n '<style\b|<script\b(?![^>]*\bsrc=)|\son[a-z]+\s=|style\s=' tools/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
+rg --pcre2 -n '<style\b|<script\b(?![^>]*\bsrc=)|\son[a-z]+\s=|style\s=' toolbox/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright -g 'canvas octave timeline edits canonical data|canvas note editing flow|enforces SSoT export ownership|keeps Export tab usable|keeps JSON wording|syncs PR060|builds PR061'
 git diff --check
 ```

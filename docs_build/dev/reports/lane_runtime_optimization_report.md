@@ -1,6 +1,6 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-06-03T17:55:20.029Z
+Generated: 2026-06-03T21:46:03.811Z
 Status: PASS
 
 ## Runtime Cost Summary
@@ -13,12 +13,12 @@ Prevented graph rebuilds: 0
 Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
 Prevented redundant lane execution: 5
-Baseline Playwright/browser launches: 0
-Scheduled Playwright/browser launches: 0
+Baseline Playwright/browser launches: 1
+Scheduled Playwright/browser launches: 1
 
 ## Scheduled Lane Order
 
-1. samples
+1. workspace-contract
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| samples | SKIP | SKIP | SKIP | 0 | 0 | none | old_samples are deprecated playable references and are excluded from active automated validation. |
+| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
 
 ## Runtime Savings Observations
 

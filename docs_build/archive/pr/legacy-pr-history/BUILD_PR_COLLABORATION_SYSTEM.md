@@ -4,7 +4,7 @@
 Implement the Collaboration System defined in `PLAN_PR_COLLABORATION_SYSTEM` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared collaboration system in `tools/shared/collaborationSystem.js`
+- Added shared collaboration system in `toolbox/shared/collaborationSystem.js`
   - detects deterministic asset-ref conflicts between shared snapshots
   - integrates versioning checks into collaboration readiness
   - emits approvals-required state and audit trail reporting
@@ -19,7 +19,7 @@ Implement the Collaboration System defined in `PLAN_PR_COLLABORATION_SYSTEM` wit
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/collaborationSystem.js`
+  - `node --check toolbox/shared/collaborationSystem.js`
   - `node --check tests/tools/CollaborationSystem.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

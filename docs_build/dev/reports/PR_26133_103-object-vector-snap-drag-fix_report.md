@@ -33,7 +33,7 @@ Expected fail behavior:
 - A regression would leave polygon point values offset from the snap point, or a scaled line endpoint rendered away from the snapped target.
 
 ## Validation
-- PASS: `node --check tools\object-vector-studio-v2\js\ToolStarterApp.js`
+- PASS: `node --check toolbox\object-vector-studio-v2\js\ToolStarterApp.js`
 - PASS: `node --check tests\playwright\tools\WorkspaceManagerV2.spec.mjs`
 - PASS: targeted Object Vector V2 snap/drag validation:
   - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "edits Object Vector Studio V2 preview shapes with mouse actions and tile delete controls|maps Object Vector Studio V2 preview coordinates directly to visible grid lines"`
@@ -43,7 +43,7 @@ Expected fail behavior:
   - Result: 1 passed.
 - PASS: `npm run test:workspace-v2`
   - Result: 56 passed.
-- PASS: `git diff --check -- tools/object-vector-studio-v2/js/ToolStarterApp.js tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
+- PASS: `git diff --check -- toolbox/object-vector-studio-v2/js/ToolStarterApp.js tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
   - Only CRLF warning for the existing WorkspaceManagerV2 Playwright test file.
 
 ## Manual Validation Steps
@@ -59,6 +59,6 @@ Skipped per PR_26133_103 instructions; this change is scoped to Object Vector St
 
 ## PR103 Delta Stat vs PR102 ZIP Baseline
 ```
-tools/object-vector-studio-v2/js/ToolStarterApp.js: +54 -20
+toolbox/object-vector-studio-v2/js/ToolStarterApp.js: +54 -20
 tests/playwright/tools/WorkspaceManagerV2.spec.mjs: +73 -16
 ```

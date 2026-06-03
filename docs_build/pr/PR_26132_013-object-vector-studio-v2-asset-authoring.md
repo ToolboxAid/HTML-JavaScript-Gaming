@@ -20,8 +20,8 @@ Expands Object Vector Studio V2 asset authoring only. The work stays inside the 
 
 Commands run:
 
-- `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- `node --check tools/object-vector-studio-v2/js/bootstrap.js`
+- `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- `node --check toolbox/object-vector-studio-v2/js/bootstrap.js`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=line -g "Object Vector Studio V2"`
 - `npm run test:workspace-v2`
 

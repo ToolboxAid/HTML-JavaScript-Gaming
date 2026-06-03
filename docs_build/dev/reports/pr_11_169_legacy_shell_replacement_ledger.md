@@ -1,7 +1,7 @@
 # PR 11.169 Legacy Shell Replacement Ledger
 
 ## Result
-Added `tools/shared/workspaceShell.js` as the contract-first hosted Workspace shell state reader.
+Added `toolbox/shared/workspaceShell.js` as the contract-first hosted Workspace shell state reader.
 
 The hosted Workspace shell is parallel to `platformShell.js`:
 
@@ -46,7 +46,7 @@ Asset label:
 - `none` when hosted data is missing or not loaded
 
 ## Platform Shell Wiring
-`tools/SVG Asset Studio/index.html` now selects the shell script at page load:
+`toolbox/SVG Asset Studio/index.html` now selects the shell script at page load:
 
 For hosted SVG Asset Studio:
 
@@ -59,16 +59,16 @@ For hosted SVG Asset Studio:
 Standalone and non-hosted flows keep the existing shared handoff behavior.
 
 ## Files Changed
-- `tools/shared/workspaceShell.js`
-- `tools/shared/platformShell.js`
-- `tools/SVG Asset Studio/index.html`
+- `toolbox/shared/workspaceShell.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/SVG Asset Studio/index.html`
 - `docs_build/dev/reports/pr_11_169_legacy_shell_replacement_ledger.md`
 
 ## Validation
-- `node --check tools/shared/workspaceShell.js` - PASS
-- `node --check tools/shared/platformShell.js` - PASS
-- `node --check "tools/Workspace Manager/main.js"` - PASS
-- `node --check "tools/SVG Asset Studio/main.js"` - PASS
+- `node --check toolbox/shared/workspaceShell.js` - PASS
+- `node --check toolbox/shared/platformShell.js` - PASS
+- `node --check "toolbox/Workspace Manager/main.js"` - PASS
+- `node --check "toolbox/SVG Asset Studio/main.js"` - PASS
 
 ## Manual UAT
 Required browser check:

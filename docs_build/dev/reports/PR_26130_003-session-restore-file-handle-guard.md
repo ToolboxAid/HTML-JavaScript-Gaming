@@ -10,9 +10,9 @@
 
 ## Validation
 
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `node --check tools/workspace-manager-v2/js/controls/ToolTilesControl.js`
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/controls/ToolTilesControl.js`
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `git diff --check`
 - `npm run test:workspace-v2` passed: 22 passed.
@@ -39,9 +39,9 @@ Expected fail behavior: tests fail if restored sessionStorage context becomes sa
 
 ## Playwright V8 Coverage
 
-- `(88%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 598/598; executed functions 36/41`
-- `(93%) tools/workspace-manager-v2/js/controls/ToolTilesControl.js - changed JS file with browser V8 coverage`
-- `(93%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - changed JS file with browser V8 coverage`
+- `(88%) toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 598/598; executed functions 36/41`
+- `(93%) toolbox/workspace-manager-v2/js/controls/ToolTilesControl.js - changed JS file with browser V8 coverage`
+- `(93%) toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - changed JS file with browser V8 coverage`
 
 `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` is a changed test file and is not collected as browser runtime coverage.
 
@@ -58,9 +58,9 @@ Expected fail behavior: tests fail if restored sessionStorage context becomes sa
 
 ## Changed Files
 
-- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `tools/workspace-manager-v2/js/controls/ToolTilesControl.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `toolbox/workspace-manager-v2/js/controls/ToolTilesControl.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

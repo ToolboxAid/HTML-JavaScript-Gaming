@@ -1,7 +1,7 @@
 ﻿PR: PR_08_03_TOOL_LIVE_PREVIEW_SYNC
 
 Live Sync Channel
-- Added shared bridge utility at tools/shared/livePreviewSyncChannel.js.
+- Added shared bridge utility at toolbox/shared/livePreviewSyncChannel.js.
 - Channel name: world-game-tool-live-preview-sync.
 - Transport order:
   1. BroadcastChannel when available.
@@ -10,12 +10,12 @@ Live Sync Channel
 - Loop prevention: per-source filtering and payload signature de-duplication.
 
 Tool Publishers
-- tools/Tilemap Studio/main.js publishes tileMapDocument snapshots on:
+- toolbox/Tilemap Studio/main.js publishes tileMapDocument snapshots on:
   - init
   - new project
   - load project
   - document update
-- tools/Parallax Scene Studio/main.js publishes parallaxDocument snapshots on:
+- toolbox/Parallax Scene Studio/main.js publishes parallaxDocument snapshots on:
   - init
   - load sample
   - new project

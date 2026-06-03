@@ -7,7 +7,7 @@ Primary target cluster:
 4. project registration/handoff
 
 Do first:
-- reuse existing tools/shared asset/project helpers
+- reuse existing toolbox/shared asset/project helpers
 - normalize IDs/paths/types
 - introduce only minimal adapters per touched tool
 

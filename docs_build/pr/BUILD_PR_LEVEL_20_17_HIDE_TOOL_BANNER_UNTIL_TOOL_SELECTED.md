@@ -38,7 +38,7 @@ Select a tool to mount.
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=SolarSystem&mount=game
+toolbox/Workspace Manager/index.html?gameId=SolarSystem&mount=game
 ```
 
 Initial visible content must be the Workspace Manager shell/status surface, similar to:
@@ -81,7 +81,7 @@ When launched from games:
 ```text
 games/index.html
   -> Open with Workspace Manager
-  -> tools/Workspace Manager/index.html?gameId=<id>&mount=game
+  -> toolbox/Workspace Manager/index.html?gameId=<id>&mount=game
 ```
 
 Workspace Manager must:
@@ -118,8 +118,8 @@ Allowed:
 
 Likely files:
 
-- `tools/Workspace Manager/main.js`
-- `tools/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/index.html`
 - Workspace Manager CSS only if required
 
 ## Forbidden Changes
@@ -137,7 +137,7 @@ Codex must NOT:
 - hide the whole Workspace Manager page
 - create a second SSoT
 - broad refactor Workspace Manager
-- modify unrelated tools/games/samples
+- modify unrelated toolbox/games/samples
 - modify `start_of_day`
 - rewrite roadmap text outside status markers
 

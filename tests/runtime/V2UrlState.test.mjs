@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const resultsPath = path.join(repoRoot, "tmp", "v2-url-state-results.json");
 
 const REQUIRED_V2_TOOLS = [
@@ -44,8 +44,8 @@ function validateTool(toolId) {
   const jsExists = fs.existsSync(jsPath);
   const jsText = jsExists ? readText(jsPath) : "";
 
-  const baseUrlPath = `tools/${toolId}/index.html?hostContextId=test-id`;
-  const deepLinkUrlPath = `tools/${toolId}/index.html?hostContextId=test-id&view=test-view&selection=test-selection&zoom=2&panel=inspector`;
+  const baseUrlPath = `toolbox/${toolId}/index.html?hostContextId=test-id`;
+  const deepLinkUrlPath = `toolbox/${toolId}/index.html?hostContextId=test-id&view=test-view&selection=test-selection&zoom=2&panel=inspector`;
   const parsedBaseUrl = new URL(baseUrlPath, "http://localhost/");
   const parsedDeepLinkUrl = new URL(deepLinkUrlPath, "http://localhost/");
 

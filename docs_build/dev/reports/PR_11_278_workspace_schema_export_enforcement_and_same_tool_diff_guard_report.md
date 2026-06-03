@@ -4,9 +4,9 @@
 Workspace V2 export/import validation and Session Diff Viewer same-tool guard only.
 
 ## Files Changed
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
-- tools/schemas/workspace.schema.json
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
+- toolbox/schemas/workspace.schema.json
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/pr/PLAN_PR_11_278_WORKSPACE_V2_WORKSPACE_SCHEMA_EXPORT_ENFORCEMENT_AND_SAME_TOOL_DIFF_GUARD.md
 - docs_build/pr/BUILD_PR_11_278_WORKSPACE_V2_WORKSPACE_SCHEMA_EXPORT_ENFORCEMENT_AND_SAME_TOOL_DIFF_GUARD.md
@@ -26,7 +26,7 @@ Workspace V2 export/import validation and Session Diff Viewer same-tool guard on
     `Diff requires sessions from the same tool.`
 
 ## Validation Commands Run
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
    - PASS
@@ -38,7 +38,7 @@ Workspace V2 export/import validation and Session Diff Viewer same-tool guard on
    - Results: `tmp/v2-session-merge-results.json`
 
 ## Behavior Evidence
-- Export root shape now follows `tools/schemas/workspace.schema.json` and no longer includes `workspaceV2Session/toolSessions/savedSessions` wrappers.
+- Export root shape now follows `toolbox/schemas/workspace.schema.json` and no longer includes `workspaceV2Session/toolSessions/savedSessions` wrappers.
 - Import rejects non-workspace.schema payloads with actionable error text referencing schema contract.
 - Cross-tool diff is blocked before compute and uses required message text.
 - Same-tool diff flow remains enabled.

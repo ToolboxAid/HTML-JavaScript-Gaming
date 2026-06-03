@@ -52,7 +52,7 @@ This PR intentionally overrides that rule only for the Workspace Manager UI requ
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
+toolbox/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
 ```
 
 Workspace Manager must show the normal existing page shell and the normal Editors section.
@@ -123,7 +123,7 @@ Codex must NOT:
 - restore `gameId || game`
 - create a second SSoT
 - broadly refactor Workspace Manager
-- modify unrelated tools/games/samples
+- modify unrelated toolbox/games/samples
 - modify `start_of_day`
 - rewrite roadmap text outside status markers
 

@@ -9,8 +9,8 @@ APPLY_PR_OVERLAY_OPERATOR_COMMANDS.md
 Apply the implemented overlay operator command pack without expanding beyond this PR purpose.
 
 ## Apply Scope
-- `tools/dev/commandPacks/overlayCommandPack.js`
-- `tools/dev/devConsoleIntegration.js`
+- `toolbox/dev/commandPacks/overlayCommandPack.js`
+- `toolbox/dev/devConsoleIntegration.js`
 - docs and reports for this PR
 
 ## Guardrails

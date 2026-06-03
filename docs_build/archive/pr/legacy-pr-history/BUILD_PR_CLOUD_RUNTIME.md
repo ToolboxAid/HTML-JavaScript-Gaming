@@ -4,7 +4,7 @@
 Implement the cloud runtime layer over the accepted Level 17 platform baseline without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared cloud runtime planner in `tools/shared/cloudRuntime.js`
+- Added shared cloud runtime planner in `toolbox/shared/cloudRuntime.js`
   - derives deterministic cloud deployment targets from strict packaged input
   - composes with multi-target export planning
   - emits stable readable deployment reports
@@ -12,7 +12,7 @@ Implement the cloud runtime layer over the accepted Level 17 platform baseline w
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/cloudRuntime.js`
+  - `node --check toolbox/shared/cloudRuntime.js`
   - `node --check tests/tools/CloudRuntime.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

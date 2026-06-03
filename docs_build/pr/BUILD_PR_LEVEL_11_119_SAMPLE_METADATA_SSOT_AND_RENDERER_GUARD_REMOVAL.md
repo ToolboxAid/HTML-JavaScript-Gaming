@@ -12,7 +12,7 @@ A bad link is still visible in rendered sample tile HTML:
   <h4>Tool Roundtrip Links</h4>
   <p>Use these to validate tool to sample and sample back to tool workflows.</p>
   <ul>
-    <li><a data-tool-launch-href="/tools/3D%20Camera%20Path%20Editor/index.html?sampleId=0201&amp;sampleTitle=Camera+Follow" href="/tools/3D%20Camera%20Path%20Editor/index.html?sampleId=0201&amp;sampleTitle=Camera+Follow">Open 3D Camera Path Editor</a></li>
+    <li><a data-tool-launch-href="/toolbox/3D%20Camera%20Path%20Editor/index.html?sampleId=0201&amp;sampleTitle=Camera+Follow" href="/toolbox/3D%20Camera%20Path%20Editor/index.html?sampleId=0201&amp;sampleTitle=Camera+Follow">Open 3D Camera Path Editor</a></li>
   </ul>
 </section>
 ```

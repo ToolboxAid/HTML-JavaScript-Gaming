@@ -86,7 +86,7 @@ Example:
 
 ```json
 {
-  "$schema": "../../../tools/schemas/palette.schema.json",
+  "$schema": "../../../toolbox/schemas/palette.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Sample 0207 Palette",
@@ -99,7 +99,7 @@ Example:
 
 ## Schema Update
 
-Update `tools/schemas/palette.schema.json` to allow optional top-level metadata:
+Update `toolbox/schemas/palette.schema.json` to allow optional top-level metadata:
 
 ```json
 "sourceId": {

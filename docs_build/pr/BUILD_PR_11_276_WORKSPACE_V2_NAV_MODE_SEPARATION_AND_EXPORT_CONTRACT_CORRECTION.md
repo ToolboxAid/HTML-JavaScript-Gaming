@@ -4,8 +4,8 @@
 Continue/fix PR_11_276 by enforcing strict Workspace V2 navigation mode separation and workspace-session-only import/export controls.
 
 ## Files
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_276_workspace_v2_nav_mode_and_export_contract_report.md
 
@@ -29,6 +29,6 @@ Continue/fix PR_11_276 by enforcing strict Workspace V2 navigation mode separati
 - No navTools/navWorkspace overlap on any page.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2CurrentSessionExport.test.mjs
 - node tests/runtime/V2CurrentSessionExport.test.mjs

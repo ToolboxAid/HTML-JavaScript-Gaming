@@ -19,7 +19,7 @@ Included:
 - remove import/export anti-patterns of the form `import x ...; export x`
 - replace those patterns with direct exports or locally valid equivalent cleanup
 - remove unnecessary `.keep` files
-- delete empty folders except protected template keepers under `games/`, `samples/`, and `tools/`
+- delete empty folders except protected template keepers under `games/`, `samples/`, and `toolbox/`
 - validate folder ownership against current repo structure rules
 - enforce clean repo structure within the scope of hygiene cleanup
 - update affected references only where needed by the cleanup
@@ -71,7 +71,7 @@ For each changed file, record:
 ### 2) `.keep` cleanup
 Remove unnecessary `.keep` files.
 Protected exception:
-- template-preservation keepers under `games/`, `samples/`, and `tools/` may remain if needed
+- template-preservation keepers under `games/`, `samples/`, and `toolbox/` may remain if needed
 
 For each removed or retained `.keep`, record:
 - path
@@ -81,7 +81,7 @@ For each removed or retained `.keep`, record:
 ### 3) Empty folder cleanup
 Delete empty folders that remain after `.keep` cleanup.
 Do not delete:
-- template folders intentionally preserved under `games/`, `samples/`, or `tools/`
+- template folders intentionally preserved under `games/`, `samples/`, or `toolbox/`
 - any folder proven necessary for workflow preservation with explicit report note
 
 ### 4) Folder ownership validation

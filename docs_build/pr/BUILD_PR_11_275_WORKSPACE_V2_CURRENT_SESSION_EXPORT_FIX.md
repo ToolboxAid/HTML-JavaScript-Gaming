@@ -4,7 +4,7 @@
 Implement Workspace V2 current-session JSON export download behavior with explicit actionable status text.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_275_workspace_v2_current_session_export_fix_report.md
 
@@ -31,6 +31,6 @@ Implement Workspace V2 current-session JSON export download behavior with explic
 - No session behavior changes outside export controls.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2CurrentSessionExport.test.mjs
 - node tests/runtime/V2CurrentSessionExport.test.mjs

@@ -2,8 +2,8 @@
 
 ## Files changed
 
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
-- `tools/shared/toolLoadDiagnostics.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/shared/toolLoadDiagnostics.js`
 - `docs_build/dev/reports/level_10_6J_expected_results.md`
 - `docs_build/dev/reports/launch_smoke_report.md` (test-generated refresh)
 

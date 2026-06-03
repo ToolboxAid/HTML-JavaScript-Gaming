@@ -263,9 +263,9 @@ test.describe("Collision Inspector V2", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`, { waitUntil: "networkidle" });
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='collision-inspector-v2']")).toBeVisible();
-      await expect(page.locator("link[href='../_templates-v2/styles/toolStarter.css']")).toHaveCount(1);
+      await expect(page.locator("link[href='../_tool_template-v2/styles/toolStarter.css']")).toHaveCount(1);
       await expect(page.locator(".tool-starter__header[data-tool-starter-header]")).toBeVisible();
       await expect(page.locator("nav.tool-starter__menu.tool-starter__tool__menu")).toBeVisible();
       await expect(page.locator("nav.tool-starter__menu.tool-starter__workspace__menu")).toBeHidden();
@@ -692,7 +692,7 @@ test.describe("Collision Inspector V2", () => {
           })
         });
       });
-      await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?manifestPath=/missing-screen-manifest.json`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/collision-inspector-v2/index.html?manifestPath=/missing-screen-manifest.json`, { waitUntil: "networkidle" });
 
       await expect(page.locator("#manifestSummary")).toContainText("root.screen.width");
       await expect(page.locator("#manifestSummary")).toContainText("root.screen.height");
@@ -719,7 +719,7 @@ test.describe("Collision Inspector V2", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await expect(page.locator("#statusLog")).toHaveValue(/Object Vector Studio V2 editor zoom is viewport-only; runtime\/world scale remains 1:1/);
       const initialZoom = await page.evaluate(() => window.__objectVectorStudioV2App.viewport.zoom);
       const sharedScale = await page.evaluate(async () => {
@@ -839,7 +839,7 @@ test.describe("Collision Inspector V2", () => {
         sessionStorage.setItem("workspace-manager-v2-collision-test", JSON.stringify(context));
         sessionStorage.setItem("workspace-manager-v2-return-history-context-id", "different-context");
       }, workspaceContext);
-      await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=workspace-manager-v2-collision-test`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/collision-inspector-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=workspace-manager-v2-collision-test`, { waitUntil: "networkidle" });
 
       await expect(page.locator("nav.tool-starter__workspace__menu[data-launch-mode-nav='workspace']")).toBeVisible();
       await expect(page.locator("nav.tool-starter__tool__menu[data-launch-mode-nav='tool']")).toBeHidden();

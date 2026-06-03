@@ -1,7 +1,7 @@
 # BUILD_PR — LEVEL 09_09 — ASSET PIPELINE TOOLING
 
 ## Objective
-Finish the next dependency-ordered asset/tooling lane by introducing a shared asset pipeline surface under `tools/shared` that converts validated tool-authored data into clean runtime-facing asset outputs.
+Finish the next dependency-ordered asset/tooling lane by introducing a shared asset pipeline surface under `toolbox/shared` that converts validated tool-authored data into clean runtime-facing asset outputs.
 
 This PR follows and depends on:
 - 09_04 asset structure simplification
@@ -33,7 +33,7 @@ The shared pipeline validates and transforms data.
 Games consume clean runtime assets.
 
 ## In Scope
-- define a shared asset pipeline surface under `tools/shared`
+- define a shared asset pipeline surface under `toolbox/shared`
 - centralize pipeline stages for tool-authored asset processing
 - use the 09_08 data contracts as the validation gate
 - normalize authoring data before runtime emission
@@ -51,12 +51,12 @@ Games consume clean runtime assets.
 
 ## Architectural Target
 Preferred shared structure:
-- `tools/shared/pipeline/`
-- `tools/shared/pipeline/loaders/`
-- `tools/shared/pipeline/normalizers/`
-- `tools/shared/pipeline/emitters/`
-- `tools/shared/pipeline/contracts/` (only if needed as a pipeline-facing layer)
-- `tools/shared/pipeline/validation/` (only if needed by the pipeline surface)
+- `toolbox/shared/pipeline/`
+- `toolbox/shared/pipeline/loaders/`
+- `toolbox/shared/pipeline/normalizers/`
+- `toolbox/shared/pipeline/emitters/`
+- `toolbox/shared/pipeline/contracts/` (only if needed as a pipeline-facing layer)
+- `toolbox/shared/pipeline/validation/` (only if needed by the pipeline surface)
 
 Exact names may vary, but the pipeline must remain clearly separated from:
 - tool UI code
@@ -126,7 +126,7 @@ At minimum:
 - existing launch-contract / asset integration checks are not regressed
 
 ## Acceptance Criteria
-- a shared asset pipeline surface exists under `tools/shared`
+- a shared asset pipeline surface exists under `toolbox/shared`
 - tool-authored data flows through shared contract validation before emit
 - runtime vs tool-data separation is preserved
 - active tool domains use consistent pipeline behavior

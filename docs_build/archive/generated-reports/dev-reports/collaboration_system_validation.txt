@@ -1,12 +1,12 @@
 BUILD_PR_COLLABORATION_SYSTEM validation
 
 Files:
-- tools/shared/collaborationSystem.js
+- toolbox/shared/collaborationSystem.js
 - tests/tools/CollaborationSystem.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/collaborationSystem.js
+- node --check toolbox/shared/collaborationSystem.js
 - node --check tests/tools/CollaborationSystem.test.mjs
 - node ./scripts/run-node-tests.mjs
 

@@ -19,8 +19,8 @@ Playwright impacted: Yes.
 
 Commands run:
 
-- `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- `node --check tools/object-vector-studio-v2/js/bootstrap.js`
+- `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- `node --check toolbox/object-vector-studio-v2/js/bootstrap.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "shows Object Vector Studio V2 layout shell"`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "uses header lifecycle controls"`
@@ -54,7 +54,7 @@ Expected fail behavior:
 
 ## Manual Validation
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Load a valid Object Vector payload with enough objects to scroll the Objects accordion.
 3. Scroll the Objects accordion downward, then select a visible object or shape.
 4. Confirm the scroll position remains stable after the selected state updates.

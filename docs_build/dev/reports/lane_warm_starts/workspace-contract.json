@@ -1,14 +1,14 @@
 {
   "commandsHash": "39e16c9d480a1e51",
-  "dependencyGraphHash": "d8b1f03418e7f315",
+  "dependencyGraphHash": "fe45c4449b8fe7ef",
   "dependencyHydration": {
-    "dependencyHydrationHash": "7b3ad8c569077d12",
+    "dependencyHydrationHash": "91de9ed55532c21c",
     "fixtureHashes": {},
     "fixtures": [],
     "helperHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-      "tests/helpers/playwrightV8CoverageReporter.mjs": "1ef2f045668d2d37",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "ef65c689300eab98",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
     },
     "helpers": [
@@ -20,7 +20,7 @@
     "importHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-      "tests/helpers/playwrightV8CoverageReporter.mjs": "1ef2f045668d2d37",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "ef65c689300eab98",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
     },
     "imports": [
@@ -30,16 +30,16 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "dependencyHydrationHash": "7b3ad8c569077d12",
-  "inputHash": "34bdb7c363909b7d",
+  "dependencyHydrationHash": "91de9ed55532c21c",
+  "inputHash": "880286186dd78a72",
   "lane": "workspace-contract",
   "laneConfigHash": "3d8db02cddc33911",
   "laneDefinitionHash": "537c8dc9fb34a8b2",
-  "manifestHash": "7d47aea504dbbefc",
+  "manifestHash": "04a55533c3bed587",
   "ownership": "tools",
-  "warmStartHash": "a0aca9657f76159c",
+  "warmStartHash": "9ef1fccb313005cb",
   "version": 1,
-  "generatedAt": "2026-06-03T17:54:08.259Z",
+  "generatedAt": "2026-06-03T21:46:02.916Z",
   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
   "sourceManifest": "generated"
 }

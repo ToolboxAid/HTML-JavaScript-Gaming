@@ -30,11 +30,11 @@ Baseline: `PR_26146_072-080` local architecture state.
 
 Latest targeted MIDI Studio run covered changed runtime JS files:
 
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`: 68%
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`: 72%
-- `tools/midi-studio-v2/js/controls/SongSheetControl.js`: 87%
-- `tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`: 93%
-- `tools/midi-studio-v2/js/bootstrap.js`: 100%
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`: 68%
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`: 72%
+- `toolbox/midi-studio-v2/js/controls/SongSheetControl.js`: 87%
+- `toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`: 93%
+- `toolbox/midi-studio-v2/js/bootstrap.js`: 100%
 
 ## Residual Risk
 

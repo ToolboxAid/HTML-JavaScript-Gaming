@@ -4,7 +4,7 @@
 Workspace V2 Session Library only.
 
 ## Files Changed
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2SessionLibraryActions.test.mjs
@@ -29,7 +29,7 @@ Workspace V2 Session Library only.
   - overwrite is now available on saved-session cards
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2SessionLibraryCardOverwrite.test.mjs`
    - PASS

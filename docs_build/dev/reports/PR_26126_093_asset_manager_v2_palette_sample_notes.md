@@ -1,7 +1,7 @@
 # PR_26126_093 Asset Manager V2 Palette Sample Notes
 
 ## Temporary UAT Loader
-- Added `tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js`.
+- Added `toolbox/asset-manager-v2/js/services/TemporaryUatSamplePalette.js`.
 - The loader is explicitly marked temporary UAT-only and isolated for later removal.
 - It is activated only by `?palette=sample`.
 - Normal Workspace V2 palette loading remains separate.

@@ -12,8 +12,8 @@ Task: PR_26140_088-polish-input-mapping-v2-layout-and-manifest
 
 ## Manifest and Schema Registration
 - Added `tools.input-mapping-v2` to `games/Asteroids/game.manifest.json` as a manifest-owned V2 tool payload with empty inputs.
-- Added the minimal `tools/schemas/tools/input-mapping-v2.schema.json` payload schema because the game manifest schema rejects unknown tool payload keys.
-- Updated `tools/schemas/game.manifest.schema.json` to allow `tools.input-mapping-v2`.
+- Added the minimal `toolbox/schemas/tools/input-mapping-v2.schema.json` payload schema because the game manifest schema rejects unknown tool payload keys.
+- Updated `toolbox/schemas/game.manifest.schema.json` to allow `tools.input-mapping-v2`.
 - Updated Workspace Manager V2 payload schema registration so Input Mapping V2 validates through the same manifest/toolState path as other active V2 tools.
 
 ## Playwright Impact
@@ -30,7 +30,7 @@ Validated behavior:
 
 ## Validation
 - PASS: targeted `node --check` syntax/import validation for changed Input Mapping V2 and Workspace Manager files.
-- PASS: JSON parse validation for `games/Asteroids/game.manifest.json`, `tools/schemas/game.manifest.schema.json`, and `tools/schemas/tools/input-mapping-v2.schema.json`.
+- PASS: JSON parse validation for `games/Asteroids/game.manifest.json`, `toolbox/schemas/game.manifest.schema.json`, and `toolbox/schemas/tools/input-mapping-v2.schema.json`.
 - PASS: HTML inline script/style/event-handler scan for Input Mapping V2 HTML files returned no matches.
 - PASS: focused Playwright validation for Input Mapping V2 and Workspace Manager tile launch paths.
 - PASS: `npm run test:workspace-v2` with 60 passing tests.

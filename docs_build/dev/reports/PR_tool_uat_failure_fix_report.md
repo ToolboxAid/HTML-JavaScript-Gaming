@@ -11,18 +11,18 @@ Fix only previously failed interactive UAT items for:
 No State Inspector behavior changes were made.
 
 ## Changed Files
-- tools/Vector Map Editor/editor/VectorMapEditorApp.js
-- tools/Vector Asset Studio/main.js
-- tools/Sprite Editor/modules/spriteEditorApp.js
+- toolbox/Vector Map Editor/editor/VectorMapEditorApp.js
+- toolbox/Vector Asset Studio/main.js
+- toolbox/Sprite Editor/modules/spriteEditorApp.js
 
 ## Validation Commands
-1. `node --check tools/Vector Map Editor/editor/VectorMapEditorApp.js`
+1. `node --check toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
 - PASS
 
-2. `node --check tools/Vector Asset Studio/main.js`
+2. `node --check toolbox/Vector Asset Studio/main.js`
 - PASS
 
-3. `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
+3. `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - PASS
 
 4. `npm run test:launch-smoke -- --tools`

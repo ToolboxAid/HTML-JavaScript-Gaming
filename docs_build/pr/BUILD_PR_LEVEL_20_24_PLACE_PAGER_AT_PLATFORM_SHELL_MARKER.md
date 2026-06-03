@@ -12,7 +12,7 @@ Place the Workspace Manager pager EXACTLY at the developer-provided marker:
 inside:
 
 ```
-tools/shared/platformShell.js (around line 876)
+toolbox/shared/platformShell.js (around line 876)
 ```
 
 ## Critical Correction

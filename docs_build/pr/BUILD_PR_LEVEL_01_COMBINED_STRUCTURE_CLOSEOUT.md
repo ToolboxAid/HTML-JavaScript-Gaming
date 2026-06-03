@@ -14,8 +14,8 @@ Reduce PR count by combining the remaining section-1 work into one closeout-orie
 - `games/` exists and is the game ownership root.
 - `games/_template/` exists and remains the canonical game template root.
 - `samples/` exists and includes phase-grouped folders (including `phase-01` and `phase-13`).
-- `tools/` exists and remains the tool ownership root.
-- `tools/shared/` exists and remains the shared tool surface.
+- `toolbox/` exists and remains the tool ownership root.
+- `toolbox/shared/` exists and remains the shared tool surface.
 
 ## Section-1 Items Closed In This PR
 - `target structure defined at high level` -> `[x]`
@@ -23,7 +23,7 @@ Reduce PR count by combining the remaining section-1 work into one closeout-orie
 - `src/shared` target established -> `[x]`
 - `games/` target established -> `[x]`
 - `games/_template/` target established -> `[x]`
-- `tools/shared` target established -> `[x]`
+- `toolbox/shared` target established -> `[x]`
 - `phase-based samples grouping target established` -> `[x]`
 - `dependency direction rules defined` -> `[x]`
 - `shared asset promotion rules defined` -> `[x]`

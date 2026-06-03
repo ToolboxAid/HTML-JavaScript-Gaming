@@ -31,9 +31,9 @@ No Playwright impact. This PR is documentation/template guidance only.
 
 ## Manual Validation
 
-1. Open `tools/object-vector-studio-v2/README.md` and `tools/object-vector-studio-v2/how_to_use.html`.
+1. Open `toolbox/object-vector-studio-v2/README.md` and `toolbox/object-vector-studio-v2/how_to_use.html`.
 2. Confirm Object Vector Studio V2 is documented as "Build the thing" and covers reusable gameplay entities, ships, enemies, pickups, actors, weapons, UI vector assets, SVG/vector authoring, primitives/shapes/path editing, and animation-ready structures.
-3. Open `tools/world-vector-studio-v2/README.md` and `tools/world-vector-studio-v2/how_to_use.html`.
+3. Open `toolbox/world-vector-studio-v2/README.md` and `toolbox/world-vector-studio-v2/how_to_use.html`.
 4. Confirm World Vector Studio V2 is documented as "Build the place" and covers terrain, maps, tile/world geometry, layered scenes, parallax, environment composition, collision/world regions, level layout, spawn placement, and camera zones.
 5. Confirm migration direction and examples are present.
 6. Open `docs_build/pr/templates/BUILD_PR_ULTRA_COMPACT.md` and confirm commit comment output uses a copy-friendly textarea/button pattern.

@@ -8,8 +8,8 @@ Remove the exact Workspace Manager launch blockers found by the Phase 20 recover
 
 One PR purpose only:
 
-- remove default first-item tool selection in `tools/Workspace Manager/main.js`
-- remove legacy query fallback `gameId || game` in `tools/Workspace Manager/main.js`
+- remove default first-item tool selection in `toolbox/Workspace Manager/main.js`
+- remove legacy query fallback `gameId || game` in `toolbox/Workspace Manager/main.js`
 - restore the missing `docs_build/dev/specs/TOOL_LAUNCH_SSOT.md` path if absent
 - preserve current UAT labels and routes
 
@@ -17,9 +17,9 @@ One PR purpose only:
 
 From `BUILD_PR_LEVEL_20_12_UAT_VALIDATE_AND_LOCK_RECOVERY_GATE`:
 
-- File: `tools/Workspace Manager/main.js`
+- File: `toolbox/Workspace Manager/main.js`
 - Failing UAT path:
-  - `games/index.html -> Open with Workspace Manager -> tools/Workspace Manager/index.html?gameId=<id>&mount=game`
+  - `games/index.html -> Open with Workspace Manager -> toolbox/Workspace Manager/index.html?gameId=<id>&mount=game`
 - Blocking residues:
   - default first-item selection via `toolIds[0]`
     - lines around `270`, `463`, `475`
@@ -36,7 +36,7 @@ From `BUILD_PR_LEVEL_20_12_UAT_VALIDATE_AND_LOCK_RECOVERY_GATE`:
 When launched from games:
 
 ```text
-tools/Workspace Manager/index.html?gameId=<id>&mount=game
+toolbox/Workspace Manager/index.html?gameId=<id>&mount=game
 ```
 
 Workspace Manager must:
@@ -62,7 +62,7 @@ If no explicit tool is selected in valid context:
 
 Allowed:
 
-- targeted edits to `tools/Workspace Manager/main.js`
+- targeted edits to `toolbox/Workspace Manager/main.js`
 - restore/create `docs_build/dev/specs/TOOL_LAUNCH_SSOT.md` if missing
 - create validation report
 - update recovery roadmap status markers only if this blocker is resolved

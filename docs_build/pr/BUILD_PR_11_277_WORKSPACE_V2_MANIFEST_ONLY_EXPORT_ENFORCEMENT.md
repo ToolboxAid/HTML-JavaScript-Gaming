@@ -4,9 +4,9 @@
 Implement manifest-only export/import enforcement for Workspace V2 with schema-gated validation and no custom wrapper.
 
 ## Files
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
-- tools/schemas/workspace.manifest.schema.json
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
+- toolbox/schemas/workspace.manifest.schema.json
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_277_workspace_v2_manifest_only_export_enforcement_report.md
 
@@ -33,6 +33,6 @@ Implement manifest-only export/import enforcement for Workspace V2 with schema-g
 - Save/Load/Diff/Merge remain operational under same session source.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2CurrentSessionExport.test.mjs`

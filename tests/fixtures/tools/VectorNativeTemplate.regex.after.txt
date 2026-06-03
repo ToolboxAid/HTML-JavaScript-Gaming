@@ -1,1 +1,1 @@
-/Template path: tools\/templates\/vector-native-arcade\//
+/Template path: toolbox\/templates\/vector-native-arcade\//

@@ -4,20 +4,20 @@
 - Restored `bezel` as its own Asset Manager V2 image role and kept `preview` as a separate image role.
 - Added image background stretch handling with default `uniformEdgeStretchPx: 0`.
 - Kept bezel stretch handling with default `uniformEdgeStretchPx: 10`.
-- Kept deprecated `tools/workspace-v2` and sample JSON untouched.
+- Kept deprecated `toolbox/workspace-v2` and sample JSON untouched.
 
 ## Implementation Notes
-- `tools/asset-manager-v2/js/assetManagerMetadata.js`
+- `toolbox/asset-manager-v2/js/assetManagerMetadata.js`
   - Image roles now include `sprite`, `background`, `bezel`, `preview`, and `ui`.
   - Filename role suggestion now resolves `bezel` before `preview`, so bezel files are not collapsed into preview.
-- `tools/asset-manager-v2/js/controls/AssetFormControl.js`
+- `toolbox/asset-manager-v2/js/controls/AssetFormControl.js`
   - Stretch Override is shown only for image `background` and image `bezel`.
   - Background stretch defaults to `0`; bezel stretch defaults to `10`.
   - Color role `background` does not receive image stretch behavior.
-- `tools/asset-manager-v2/js/services/AssetSchemaValidator.js`
+- `toolbox/asset-manager-v2/js/services/AssetSchemaValidator.js`
   - Generated entries add `stretchOverride` only for image `background` and image `bezel`.
   - Schema validation rejects `stretchOverride` outside `assets.image.background.*` and `assets.image.bezel.*`.
-- `tools/schemas/tools/asset-manager-v2.schema.json`
+- `toolbox/schemas/tools/asset-manager-v2.schema.json`
   - Added `bezel` to image role declarations.
   - Allows stretch only on background and bezel image asset IDs.
 - `games/Asteroids/game.manifest.json`
@@ -26,10 +26,10 @@
   - Adds `stretchOverride.uniformEdgeStretchPx: 0` to the background image asset.
 
 ## Validation
-- PASS: `node --check tools/asset-manager-v2/js/assetManagerMetadata.js`
-- PASS: `node --check tools/asset-manager-v2/js/controls/AssetFormControl.js`
-- PASS: `node --check tools/asset-manager-v2/js/services/AssetSchemaValidator.js`
-- PASS: JSON parse for `tools/schemas/tools/asset-manager-v2.schema.json` and `games/Asteroids/game.manifest.json`
+- PASS: `node --check toolbox/asset-manager-v2/js/assetManagerMetadata.js`
+- PASS: `node --check toolbox/asset-manager-v2/js/controls/AssetFormControl.js`
+- PASS: `node --check toolbox/asset-manager-v2/js/services/AssetSchemaValidator.js`
+- PASS: JSON parse for `toolbox/schemas/tools/asset-manager-v2.schema.json` and `games/Asteroids/game.manifest.json`
 - PASS: Asset Manager V2 payload validation for `games/Asteroids/game.manifest.json`
 - PASS: Workspace Manager V2 manifest validation for `games/Asteroids/game.manifest.json`
 - PASS: Workspace Manager V2 manifest validation for `games/_template/workspace-manager-v2-UAT.manifest.json`

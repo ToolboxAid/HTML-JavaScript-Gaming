@@ -72,10 +72,10 @@ Implement on the already migrated tool set:
 
 ## Validation Targets
 Use the existing migrated shell tools as the validation set:
-- tools/State Inspector/index.html
-- tools/Performance Profiler/index.html
-- tools/Replay Visualizer/index.html
-- tools/Physics Sandbox/index.html
+- toolbox/State Inspector/index.html
+- toolbox/Performance Profiler/index.html
+- toolbox/Replay Visualizer/index.html
+- toolbox/Physics Sandbox/index.html
 
 ## Acceptance
 - STYLE_10 interaction behavior is execution-backed on migrated tools

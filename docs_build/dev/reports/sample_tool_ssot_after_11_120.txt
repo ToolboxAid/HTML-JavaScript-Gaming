@@ -5,13 +5,13 @@ Active SSoT
 
 Runtime readers
 - samples/index.render.js reads samples/metadata/samples.index.metadata.json for sample tile links.
-- tools/renderToolsIndex.js reads samples/metadata/samples.index.metadata.json for Samples (x) counts.
+- toolbox/renderToolsIndex.js reads samples/metadata/samples.index.metadata.json for Samples (x) counts.
 - samples/shared/sampleDetailPageEnhancement.js reads samples/metadata/samples.index.metadata.json for sample detail metadata.
 
 No second active hub source
 - No samples2tools runtime file is imported by samples/index.render.js.
-- No generated link-map report is imported by samples/index.render.js or tools/renderToolsIndex.js.
-- tools/renderToolsIndex.js no longer falls back to toolsUsed/raw toolHints counts.
+- No generated link-map report is imported by samples/index.render.js or toolbox/renderToolsIndex.js.
+- toolbox/renderToolsIndex.js no longer falls back to toolsUsed/raw toolHints counts.
 - samples/index.render.js no longer uses a hardcoded sample.1902 workspace preset constant.
 - samples/index.render.js no longer injects a fallback skin-editor filter option.
 

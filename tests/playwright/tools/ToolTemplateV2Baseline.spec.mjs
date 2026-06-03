@@ -21,7 +21,7 @@ test.afterAll(async () => {
 async function openToolTemplate(page, query = "") {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/_templates-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/_tool_template-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -177,7 +177,7 @@ test("launches Tool Template V2 with runtime-valid controls", async ({ page }) =
     const sharedReferences = await page.evaluate(() => [
       ...document.querySelectorAll("script[src],link[href]")
     ].map((element) => element.getAttribute("src") || element.getAttribute("href"))
-      .filter((value) => value && value.includes("tools/shared")));
+      .filter((value) => value && value.includes("toolbox/shared")));
     expect(sharedReferences).toEqual([]);
 
     const summary = page.locator("[data-tool-starter-summary]");

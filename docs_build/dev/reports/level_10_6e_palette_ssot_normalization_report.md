@@ -14,10 +14,10 @@
 - Test boundary assumptions found before changes:
   - `tests/runtime/SampleStandaloneToolDataFlow.test.mjs` used tool-file lookup for targeted cases and expected palette only at `config.palette`.
 - Generator audit:
-  - Searched `scripts/`, `tests/`, `tools/`, `samples/` (excluding docs) for emitted/reference coupling to `sample.0313.palette-browser.json`.
+  - Searched `scripts/`, `tests/`, `toolbox/`, `samples/` (excluding docs) for emitted/reference coupling to `sample.0313.palette-browser.json`.
   - No active generator emitting this file was found.
 - Post-change reference scan:
-  - No remaining matches in `tests/`, `scripts/`, `tools/`, or `samples/` for `sample.0313.palette-browser.json`.
+  - No remaining matches in `tests/`, `scripts/`, `toolbox/`, or `samples/` for `sample.0313.palette-browser.json`.
   - Remaining mentions are documentation/history only.
 
 ## implementation

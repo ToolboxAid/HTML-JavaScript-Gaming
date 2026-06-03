@@ -32,7 +32,7 @@ Codex must replace this file during execution.
 ## Files To Discard (By Reset)
 - Broad post-baseline feature/content churn not required for narrow UAT recovery, including:
   - mass `samples/phase-*` additions/deletions unrelated to launch recovery
-  - broad `tools/*` UI/layout rewrites not required for launch routing fix
+  - broad `toolbox/*` UI/layout rewrites not required for launch routing fix
   - large generated/iterative reports not part of baseline recovery objective
   - cross-lane renames (for example 3D map editor rename path) unless explicitly re-approved
 
@@ -40,9 +40,9 @@ Codex must replace this file during execution.
 - Core launch/routing surfaces:
   - `games/index.render.js`
   - `samples/index.render.js`
-  - `tools/Workspace Manager/main.js`
-  - `tools/shared/platformShell.js`
-  - `tools/shared/toolLaunchSSoT.js`
+  - `toolbox/Workspace Manager/main.js`
+  - `toolbox/shared/platformShell.js`
+  - `toolbox/shared/toolLaunchSSoT.js`
 - Metadata contracts:
   - `games/metadata/games.index.metadata.json`
   - `samples/metadata/samples.index.metadata.json`

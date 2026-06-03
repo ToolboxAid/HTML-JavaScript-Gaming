@@ -4,8 +4,8 @@
 Add Workspace V2 Session Library new-session save guard rules and clarify load/save UX messaging.
 
 ## Scope
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibrarySaveGuard.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2SessionLibraryActions.test.mjs
@@ -28,7 +28,7 @@ Add Workspace V2 Session Library new-session save guard rules and clarify load/s
 - No merge/diff behavior changes beyond state recompute wiring
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionLibrarySaveGuard.test.mjs
 - node --check tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - node --check tests/runtime/V2SessionLibraryActions.test.mjs

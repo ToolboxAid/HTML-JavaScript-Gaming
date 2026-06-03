@@ -9,7 +9,7 @@ PASS
 - Visual-only changes; no behavior/data/schema modifications.
 
 ## Files Changed
-- `tools/shared/platformShell.css`
+- `toolbox/shared/platformShell.css`
 - `docs_build/dev/reports/PR_11_4_FINAL_UI_POLISH_AND_CONSISTENCY_PASS_report.md`
 
 ## Final Consistency Refinements

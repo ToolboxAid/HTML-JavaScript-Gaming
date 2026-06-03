@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const htmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
-const jsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
+const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-merge-output-persistence-results.json");
 
 function checkSyntax(filePath) {
@@ -66,9 +66,9 @@ export function run() {
   const jsSyntax = checkSyntax(jsPath);
   const testSyntax = checkSyntax(path.join(repoRoot, "tests", "runtime", "V2MergeOutputPersistence.test.mjs"));
 
-  if (!htmlExists) failures.push("Missing tools/workspace-v2/index.html.");
-  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!jsSyntax.ok) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+  if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
   if (!testSyntax.ok) failures.push("tests/runtime/V2MergeOutputPersistence.test.mjs failed syntax check.");
 
   const requiredHtml = [

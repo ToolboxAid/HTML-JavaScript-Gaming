@@ -4,7 +4,7 @@
 Workspace V2 Session Merge UI state only.
 
 ## Files Changed
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
 
 ## Implementation Summary
@@ -23,7 +23,7 @@ Workspace V2 Session Merge UI state only.
   - Undo removes merged session, clears `lastMergedHostContextId`, and disables Undo
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - Result: PASS
 2. `node --check tests/runtime/V2UndoEnableStateActualAvailability.test.mjs`
    - Result: PASS

@@ -9,7 +9,7 @@ Do not edit schemas, samples, games, Workspace Manager v1, legacy tools, or shar
 Banned imports/references:
 - `platformShell`
 - `assetUsageIntegration`
-- `tools/shared/`
+- `toolbox/shared/`
 - Workspace Manager v1 wiring
 - tool aliases
 - fallback/default/demo data logic

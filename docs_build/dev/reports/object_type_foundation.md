@@ -42,7 +42,7 @@ Object type declarations should live under a future manifest-owned object sectio
 }
 ```
 
-This shape is a planning baseline only. It is not implemented in `tools/schemas/game.manifest.schema.json` yet.
+This shape is a planning baseline only. It is not implemented in `toolbox/schemas/game.manifest.schema.json` yet.
 
 ## Ownership Rules
 
@@ -53,7 +53,7 @@ This shape is a planning baseline only. It is not implemented in `tools/schemas/
 
 ## Current Evidence
 
-- `tools/schemas/game.manifest.schema.json` currently defines object-vector geometry under `tools.object-vector-studio-v2`, but not gameplay object type declarations.
+- `toolbox/schemas/game.manifest.schema.json` currently defines object-vector geometry under `tools.object-vector-studio-v2`, but not gameplay object type declarations.
 - `src/engine/components/Components.js` has reusable component names such as `transform`, `velocity`, `collider`, `solid`, `lifetime`, and `tag`.
 - `games/Asteroids/game/asteroidsObjectGeometryManifest.js` maps required geometry ids, showing a game-specific bridge from manifest geometry to runtime use.
 

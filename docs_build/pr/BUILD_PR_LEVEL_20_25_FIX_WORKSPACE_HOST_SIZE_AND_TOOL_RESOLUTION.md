@@ -9,7 +9,7 @@ Fix the current Workspace Manager host view so it fills the browser viewport and
 URL example:
 
 ```text
-tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game&tool=palette-browser
+toolbox/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game&tool=palette-browser
 ```
 
 Observed:
@@ -126,7 +126,7 @@ Codex must NOT:
 - leave mount area tiny
 - leave mount area blank
 - silently swallow tool resolution errors
-- modify unrelated tools/games/samples
+- modify unrelated toolbox/games/samples
 - modify `start_of_day`
 - broad refactor Workspace Manager
 

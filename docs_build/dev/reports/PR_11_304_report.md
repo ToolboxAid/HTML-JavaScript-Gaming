@@ -1,10 +1,10 @@
 # PR_11_304 Report - Workspace V2 Import/Export Continuation (Single Active Palette Ownership)
 
 ## Purpose
-Continue/fix PR_11_304 in `tools/workspace-v2/index.js` to enforce manifest-only export with single active palette ownership at `workspace.tools.palettes`.
+Continue/fix PR_11_304 in `toolbox/workspace-v2/index.js` to enforce manifest-only export with single active palette ownership at `workspace.tools.palettes`.
 
 ## Scope
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/dev/reports/PR_11_304_report.md`
 - No schema file changes
 
@@ -50,12 +50,12 @@ Continue/fix PR_11_304 in `tools/workspace-v2/index.js` to enforce manifest-only
 - Exactly one active exported palette at `workspace.tools.palettes`: enforced
 
 ## Validation Commands Run
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
 2. `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
 3. `node tests/runtime/V2CurrentSessionExport.test.mjs`
 4. Inline targeted executable check script:
    - writes `tmp/pr_11_304_palette_ownership_checks.json`
-   - validates presence of single-active-palette export and guard strings in `tools/workspace-v2/index.js`
+   - validates presence of single-active-palette export and guard strings in `toolbox/workspace-v2/index.js`
 
 ## Validation Results
 - Command 1: PASS

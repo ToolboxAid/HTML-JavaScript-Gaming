@@ -2,6 +2,6 @@
         # Apply the roadmap update from this ZIP, then run:
         git diff -- docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 
-        Select-String -Path docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md -Pattern "templates/` folder evaluated for keep vs move vs future-delete","Future: relocate `templates/vector-native-arcade` to `tools/templates/`"
+        Select-String -Path docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md -Pattern "templates/` folder evaluated for keep vs move vs future-delete","Future: relocate `templates/vector-native-arcade` to `toolbox/templates/`"
 
         git status --short -- docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md docs_build/pr/ROADMAP_UPDATE_TEMPLATES_EVALUATED_AND_DEFERRED_RELOCATION.md docs_build/dev/commit_comment.txt

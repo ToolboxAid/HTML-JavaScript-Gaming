@@ -23,8 +23,8 @@
   - Console/runtime errors: none
 
 ## Files Changed
-- `tools/shared/toolHostRuntime.js`
-- `tools/Tool Host/index.html`
-- `tools/Tool Host/main.js`
+- `toolbox/shared/toolHostRuntime.js`
+- `toolbox/Tool Host/index.html`
+- `toolbox/Tool Host/main.js`
 - `docs_build/reports/launch_smoke_report.md`
 - `docs_build/reports/BUILD_PR_TOOL_HOST_MULTI_SWITCH_report.md`

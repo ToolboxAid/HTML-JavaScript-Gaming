@@ -36,7 +36,7 @@
 - Removed obsolete `meaning-*` layout/style rules from `gamefoundrystudio.css` after group pages moved to the shared tool pattern.
 - Preserved Tool Display Mode placement immediately before the center `tool-center-panel`.
 - Preserved horizontal side-column accordion hooks and vertical accordion hooks.
-- Preserved `tools/index.html` as the catalog page with all tool tiles and its existing Tool Display Mode slot.
+- Preserved `toolbox/index.html` as the catalog page with all tool tiles and its existing Tool Display Mode slot.
 
 ## Validation
 

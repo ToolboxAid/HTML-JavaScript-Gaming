@@ -4,11 +4,11 @@
 Removed the legacy platformShell asset/palette badge row for Workspace-hosted tool iframes.
 
 ## Files changed
-- `tools/shared/platformShell.js`
+- `toolbox/shared/platformShell.js`
 - `docs_build/dev/reports/pr_11_176_validation.md`
 
 ## Hosted badge row removal
-`tools/shared/platformShell.js` now detects hosted Workspace mode with URL params:
+`toolbox/shared/platformShell.js` now detects hosted Workspace mode with URL params:
 - `hosted=1`
 - non-empty `hostToolId`
 - non-empty `hostContextId`
@@ -30,9 +30,9 @@ Standalone and direct-open tools do not match the hosted Workspace detection gat
 - Workspace Manager was not rewritten.
 
 ## Validation
-- PASS: `node --check tools/shared/platformShell.js`
-- PASS: `node --check "tools/Workspace Manager/main.js"`
-- PASS: `node --check "tools/SVG Asset Studio/main.js"`
+- PASS: `node --check toolbox/shared/platformShell.js`
+- PASS: `node --check "toolbox/Workspace Manager/main.js"`
+- PASS: `node --check "toolbox/SVG Asset Studio/main.js"`
 
 ## Manual UAT
 Not run in this terminal session. Required browser UAT remains:

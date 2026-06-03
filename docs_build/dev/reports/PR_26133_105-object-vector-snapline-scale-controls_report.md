@@ -25,7 +25,7 @@
 - Object scale remains a transient preview value unless geometry is rewritten through Resize.
 
 ## Validation Results
-- PASS `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
+- PASS `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
 - PASS `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --grep "expands Object Vector Studio V2 asset authoring controls" --workers=1 --reporter=list`
 - PASS `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --grep "Object Vector Studio V2" --workers=1 --reporter=list` (16 passed)
 - PASS `npm run test:workspace-v2` (56 passed)

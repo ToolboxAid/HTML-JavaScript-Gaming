@@ -4,7 +4,7 @@
 Enforce strict schema validation as the only acceptance path for workspace and tool JSON usage in Workspace V2.
 
 ## Scope
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - imports
 - session loads
 - tool entry/session activation path

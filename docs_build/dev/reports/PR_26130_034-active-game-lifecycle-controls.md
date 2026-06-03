@@ -36,9 +36,9 @@ Expected fail behavior: Playwright fails if controls remain editable after open,
 
 ## Validation
 
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js` - PASS.
-- `node --check tools/workspace-manager-v2/js/controls/GameSelectorControl.js` - PASS.
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2App.js` - PASS.
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js` - PASS.
+- `node --check toolbox/workspace-manager-v2/js/controls/GameSelectorControl.js` - PASS.
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2App.js` - PASS.
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs` - PASS.
 - `npm run test:workspace-v2` - PASS, 20 passed.
 

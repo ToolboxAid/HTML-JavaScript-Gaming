@@ -10,7 +10,7 @@ Add one targeted Palette Manager V2 Playwright baseline test that protects curre
 ## Implementation
 1. Add a Node-run Playwright test under `tests/tools`.
 2. Use the existing repo static server helper.
-3. Load `tools/palette-manager-v2/index.html`.
+3. Load `toolbox/palette-manager-v2/index.html`.
 4. Assert no page errors or console errors occur during the baseline interactions.
 5. Assert `menuSample` and JSON action buttons exist and are actionable.
 6. Toggle each requested accordion closed and open using existing `accordion-v2` headers.
@@ -22,7 +22,7 @@ Add one targeted Palette Manager V2 Playwright baseline test that protects curre
 - Do not change Palette Manager V2 runtime behavior unless a tiny selector hook is required.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not change CSS layout or pin styling.
 - Do not add dependencies.
 - Do not run the full samples smoke test.

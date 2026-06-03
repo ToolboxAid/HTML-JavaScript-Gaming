@@ -1,7 +1,7 @@
 # PR_26126_112 Theme Parity Notes
 
 ## Workspace Manager V2 Theme Fix
-- `tools/workspace-manager-v2/styles/workspaceManagerV2.css` now maps its local surface variables to the shared First-Class Tool V2 theme tokens:
+- `toolbox/workspace-manager-v2/styles/workspaceManagerV2.css` now maps its local surface variables to the shared First-Class Tool V2 theme tokens:
   - `--bg-gradient`
   - `--panel`
   - `--surface-inline`
@@ -11,7 +11,7 @@
   - `--muted`
   - `--accent`
 - Local green/teal hardcoded colors were removed from Workspace Manager V2 CSS.
-- The local CSS retains native browser button system colors, matching the existing `tools/templates-v2` pattern.
+- The local CSS retains native browser button system colors, matching the existing `toolbox/templates-v2` pattern.
 - Workspace Manager V2 app shell, frame, panel, accordion, input, and status surfaces now resolve through the same token source used by Tool Template V2, Palette Manager V2, Preview Generator V2, and Asset Manager V2.
 
 ## First-Class Tool V2 Contract Check

@@ -27,7 +27,7 @@ Reviewed `games/Asteroids/game.manifest.json` Object Vector Studio V2 payload:
 - `object.asteroids.ufo.large`
 - `object.asteroids.ufo.small`
 
-Schema check passed against `tools/schemas/tools/object-vector-studio-v2.schema.json` with 6 objects and no validation errors.
+Schema check passed against `toolbox/schemas/tools/object-vector-studio-v2.schema.json` with 6 objects and no validation errors.
 
 ## Validation
 
@@ -38,7 +38,7 @@ Commands run:
 - `node --check games/shared/workspaceGameAssetCatalog.js`
 - `node --check games/Asteroids/systems/AsteroidsAudio.js`
 - `node --check src/engine/audio/GaplessLoopPlayer.js`
-- `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
+- `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "resolves asset-manager-v2 audio catalog paths"`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "shows Object Vector Studio V2 layout shell and schema-only palette gate"`
 - `npm run test:workspace-v2`

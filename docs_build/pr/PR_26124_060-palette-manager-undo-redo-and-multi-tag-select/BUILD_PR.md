@@ -4,13 +4,13 @@
 Implement one scoped Palette Manager V2 update: local undo/redo history for user palette mutations plus User Palette multi-select and batch tag application.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/modules/SwatchRow.js`
-- `tools/palette-manager-v2/modules/PaletteHistoryStack.js`
-- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-- `tools/palette-manager-v2/controls/UserPaletteControl.js`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/modules/SwatchRow.js`
+- `toolbox/palette-manager-v2/modules/PaletteHistoryStack.js`
+- `toolbox/palette-manager-v2/controls/PaletteEditorControl.js`
+- `toolbox/palette-manager-v2/controls/UserPaletteControl.js`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Source History Search Result
@@ -20,7 +20,7 @@ Result: no reusable undo/history/command stack class suitable for Palette Manage
 
 ## Implementation
 1. Add `Undo` and `Redo` buttons to the existing `menuSample` button group.
-2. Add a local `PaletteHistoryStack` module under `tools/palette-manager-v2/modules/`.
+2. Add a local `PaletteHistoryStack` module under `toolbox/palette-manager-v2/modules/`.
 3. Snapshot and restore:
    - user swatches
    - selected user swatch index
@@ -44,7 +44,7 @@ Result: no reusable undo/history/command stack class suitable for Palette Manage
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not broadly refactor Palette Manager V2.
 

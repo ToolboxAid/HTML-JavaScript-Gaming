@@ -1,8 +1,8 @@
 # PR_11_229 Report - V2 Session History (Recent Sessions)
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionHistory.test.mjs`
 - `docs_build/dev/reports/PR_11_229_report.md`
 
@@ -27,7 +27,7 @@ Reopen behavior:
 - reopening:
   - writes entry payload back to `sessionStorage[hostContextId]`
   - preserves original `hostContextId`
-  - navigates to `tools/<tool>-v2/index.html?hostContextId=<id>&fromTool=workspace-v2`
+  - navigates to `toolbox/<tool>-v2/index.html?hostContextId=<id>&fromTool=workspace-v2`
 
 Malformed entry handling:
 - invalid/non-array JSON in storage is safely ignored
@@ -36,11 +36,11 @@ Malformed entry handling:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2SessionHistory.test.mjs`  
+1. `node --check tests/runtime/V2SessionHistory.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2SessionHistory.test.mjs`  
+2. `node tests/runtime/V2SessionHistory.test.mjs`
 Result: **PASS** (writes `tmp/v2-session-history-results.json`)
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
 Result: **PASS**
 
 Runtime test assertions covered:

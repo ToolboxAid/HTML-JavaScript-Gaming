@@ -4,7 +4,7 @@
 Remove conflicting and legacy Workspace V2 state paths so import/export/session activation each use one active flow.
 
 ## Scope
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - Remove dead import/export code paths
 - Remove diagnostics panel UI + logic
 - Consolidate session activation path

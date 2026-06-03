@@ -30,10 +30,10 @@ Allowed files:
 - `games/index.render.js`
 - `games/index.css`
 - `games/metadata/games.index.metadata.json`
-- `tools/toolRegistry.js`
-- `tools/Workspace Manager/index.html`
-- `tools/Workspace Manager/main.js`
-- `tools/Workspace Manager/toolHost.css`
+- `toolbox/toolRegistry.js`
+- `toolbox/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/toolHost.css`
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs_build/dev/reports/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY_uat_report.md`
 
@@ -46,7 +46,7 @@ Run through a local web server:
 1. Open `/games/index.html`.
 2. Find a playable or in-progress game tile with a valid game href.
 3. Click the tile title or Workspace Manager link.
-4. Confirm the browser opens `/tools/Workspace%20Manager/index.html?game=<gameId>` or equivalent encoded URL.
+4. Confirm the browser opens `/toolbox/Workspace%20Manager/index.html?game=<gameId>` or equivalent encoded URL.
 5. Confirm Workspace Manager loads without new console errors.
 6. Confirm preview image/game launch behavior still opens the game page where applicable.
 7. Confirm no anti-patterns were introduced in changed code.

@@ -6,8 +6,8 @@ Scope:
 - No CSS, HTML, JavaScript, samples, schemas, or roadmap files were modified.
 
 Launch modes validated:
-- Default tool mode: `tools/templates-v2/index.html`
-- Workspace mode: `tools/templates-v2/index.html?launch=workspace`
+- Default tool mode: `toolbox/templates-v2/index.html`
+- Workspace mode: `toolbox/templates-v2/index.html?launch=workspace`
 
 NAV variants validated:
 - Tool NAV: `.tool-starter__tool__menu`
@@ -44,7 +44,7 @@ Audit findings:
 - CANDIDATE FOR common/: shared launch-mode NAV container, shared NAV visibility rule, and shared NAV button/focus pattern.
 
 Validation:
-- npx playwright test --config tools/templates-v2/playwright.config.mjs passed, 10 tests.
+- npx playwright test --config toolbox/templates-v2/playwright.config.mjs passed, 10 tests.
 - Computed-style launch-mode validation passed for default tool mode and workspace mode.
 - No CSS changes were applied.
 - No runtime files were changed.
@@ -52,5 +52,5 @@ Validation:
 - No Playwright impact. This PR is audit/report only.
 
 Manual test notes:
-- Open tools/templates-v2/index.html and confirm only the tool NAV is visible.
-- Open tools/templates-v2/index.html?launch=workspace and confirm only the workspace NAV is visible.
+- Open toolbox/templates-v2/index.html and confirm only the tool NAV is visible.
+- Open toolbox/templates-v2/index.html?launch=workspace and confirm only the workspace NAV is visible.

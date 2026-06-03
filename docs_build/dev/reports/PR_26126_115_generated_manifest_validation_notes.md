@@ -3,7 +3,7 @@
 ## Validation
 - A direct Node validation instantiated `WorkspaceManagerV2ContextService`.
 - It loaded `games/Asteroids/game.manifest.json`.
-- It loaded `tools/schemas/workspace.manifest.schema.json`.
+- It loaded `toolbox/schemas/workspace.manifest.schema.json`.
 - It generated the Workspace Manager V2 manifest and validated it before launch/use.
 
 ## Result

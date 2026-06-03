@@ -2,7 +2,7 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Vector Map Editor/main.js
+- toolbox/Vector Map Editor/main.js
 - docs_build/dev/reports/vector_map_workspace_object_render_11_150.txt
 
 Exact input path used:
@@ -19,10 +19,10 @@ Objects verified (Sample 1902 manifest content):
 - obj-hazard-zone
 
 Validation commands/results:
-- node --check "tools/Vector Map Editor/main.js" -> PASS
-- rg -n "payloadJson\?\.vectorMapDocument|vectorMapDocument\.objects|readToolHostSharedContextFromLocation|applyHostedWorkspacePayload" "tools/Vector Map Editor/main.js" -> PASS
+- node --check "toolbox/Vector Map Editor/main.js" -> PASS
+- rg -n "payloadJson\?\.vectorMapDocument|vectorMapDocument\.objects|readToolHostSharedContextFromLocation|applyHostedWorkspacePayload" "toolbox/Vector Map Editor/main.js" -> PASS
 - node JSON check for sample ids in samples/phase-19/1902/sample.1902.workspace-all-tools.json -> PASS (both object ids present)
-- git diff --name-only -- "tools/Vector Map Editor/main.js" "docs_build/dev/reports/vector_map_workspace_object_render_11_150.txt" -> PASS
+- git diff --name-only -- "toolbox/Vector Map Editor/main.js" "docs_build/dev/reports/vector_map_workspace_object_render_11_150.txt" -> PASS
 
 Strict scope confirmation:
 - Modified code only in Vector Map Editor main file and this report.

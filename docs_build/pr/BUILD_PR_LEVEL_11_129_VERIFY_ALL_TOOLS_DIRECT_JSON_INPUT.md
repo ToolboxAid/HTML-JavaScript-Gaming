@@ -6,7 +6,7 @@ Verify ALL tools follow the rule: tool input = direct JSON only (no wrapper, no 
 ## STRICT SCOPE
 
 ALLOWED FILES:
-- tools/** (read + minimal fix if violation)
+- toolbox/** (read + minimal fix if violation)
 - routing files (only if needed to remove transform)
 
 NO OTHER FILES

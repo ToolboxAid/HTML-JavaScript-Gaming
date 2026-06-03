@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolPath = path.join(repoRoot, "tools", "asset-manager-v2", "index.js");
+const toolPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "pr_11_316_asset_manager_add_remove_results.json");
 
 function checkSyntax(filePath) {
@@ -85,7 +85,7 @@ function createHarness() {
 
   const window = {
     location: {
-      href: "https://example.test/tools/asset-manager-v2/index.html?hostContextId=ctx-1"
+      href: "https://example.test/toolbox/asset-manager-v2/index.html?hostContextId=ctx-1"
     },
     addEventListener() {},
     sessionStorage: {

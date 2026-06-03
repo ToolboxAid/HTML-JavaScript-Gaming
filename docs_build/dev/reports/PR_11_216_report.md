@@ -1,11 +1,11 @@
 # PR_11_216 Report — V2 Import/Export (Session JSON)
 
 ## Import Behavior
-- Added import UI to `tools/workspace-v2/index.html`:
+- Added import UI to `toolbox/workspace-v2/index.html`:
   - `textarea` for JSON input
   - file input for `.json`
   - `Import Session JSON` action
-- `tools/workspace-v2/index.js` import flow:
+- `toolbox/workspace-v2/index.js` import flow:
   1. reads JSON from textarea
   2. parses JSON (`JSON.parse`)
   3. validates payload is an object (non-array)
@@ -23,11 +23,11 @@
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2ImportExport.test.mjs`  
+1. `node --check tests/runtime/V2ImportExport.test.mjs`
    - Result: **PASS**
-2. `node tests/runtime/V2ImportExport.test.mjs`  
+2. `node tests/runtime/V2ImportExport.test.mjs`
    - Result: **PASS**
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
    - Result: **PASS**
 
 Runtime output:
@@ -40,8 +40,8 @@ Runtime output:
   - no syntax errors
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2ImportExport.test.mjs`
 - `docs_build/dev/reports/PR_11_216_report.md`
 

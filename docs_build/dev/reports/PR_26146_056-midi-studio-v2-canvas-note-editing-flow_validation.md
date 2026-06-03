@@ -22,9 +22,9 @@ Result: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
-node --check tools/midi-studio-v2/js/MidiStudioV2App.js
+node --check toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
+node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "canvas octave timeline edits canonical data|canvas note editing flow|canvas note editing warns" --reporter=line
 git diff --check

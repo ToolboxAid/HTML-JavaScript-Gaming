@@ -10,16 +10,16 @@ This PR restores Song Setup as the editable song metadata surface while preservi
 
 ## Tabs Inventory Note
 
-The requested uploaded `Tabs.txt` inventory was not present in the repository, Downloads, or temp upload locations during execution. The current `tools/midi-studio-v2/index.html` DOM inventory was used as the concrete fallback, and the resulting tab/bucket map is documented in `docs_build/dev/reports/PR_26146_053-midi-studio-v2-tab-bucket-map.md`.
+The requested uploaded `Tabs.txt` inventory was not present in the repository, Downloads, or temp upload locations during execution. The current `toolbox/midi-studio-v2/index.html` DOM inventory was used as the concrete fallback, and the resulting tab/bucket map is documented in `docs_build/dev/reports/PR_26146_053-midi-studio-v2-tab-bucket-map.md`.
 
 ## Files Changed
 
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/bootstrap.js`
-- `tools/midi-studio-v2/js/controls/SongDetailsControl.js`
-- `tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/bootstrap.js`
+- `toolbox/midi-studio-v2/js/controls/SongDetailsControl.js`
+- `toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_053-midi-studio-v2-song-setup-buckets-restore_validation.md`
 - `docs_build/dev/reports/PR_26146_053-midi-studio-v2-tab-bucket-map.md`

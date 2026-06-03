@@ -4,10 +4,10 @@
 Create a pre-hardening rollback snapshot of Palette Manager V2 and apply one scoped hardening pass so Palette Manager V2 becomes the clean base pattern for future tools.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
 - `docs_build/dev/reports/PR_26124_058-palette-manager-restore-point/*`
 - PR workflow docs and required review artifacts only.
 
@@ -16,10 +16,10 @@ Before changing runtime files, create:
 `docs_build/dev/reports/PR_26124_058-palette-manager-restore-point/`
 
 Include copies of the current runtime files that will be edited:
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
 
 Include a `README.md` explaining that this is the pre-hardening rollback snapshot.
 
@@ -38,7 +38,7 @@ Include a `README.md` explaining that this is the pre-hardening rollback snapsho
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not create `start_of_day` files.
 - Do not broadly refactor Palette Manager V2.

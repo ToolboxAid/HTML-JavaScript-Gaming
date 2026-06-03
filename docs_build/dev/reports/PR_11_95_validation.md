@@ -16,7 +16,7 @@ Implemented flat `tools["asset-browser"].assets` contract as the single manifest
 - `src/engine/runtime/fullscreenBezel.js`
 - `tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs`
 - `tests/core/BackgroundImageAndFullscreenBezel.test.mjs`
-- `tools/shared/asteroidsPlatformDemo.js`
+- `toolbox/shared/asteroidsPlatformDemo.js`
 - `docs_build/dev/reports/PR_11_95_validation.md`
 
 ## Implementation Summary
@@ -66,7 +66,7 @@ Note: PowerShell `Select-String` in this environment does not support `-Recurse`
 - `node --check src/engine/runtime/gameImageConvention.js` PASS
 - `node --check src/engine/runtime/fullscreenBezel.js` PASS
 - `node --check tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs` PASS
-- `node --check tools/shared/asteroidsPlatformDemo.js` PASS
+- `node --check toolbox/shared/asteroidsPlatformDemo.js` PASS
 - `node --check tests/core/BackgroundImageAndFullscreenBezel.test.mjs` PASS
 
 ### Targeted runtime checks

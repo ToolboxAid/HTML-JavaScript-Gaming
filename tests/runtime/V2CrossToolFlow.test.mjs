@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-cross-tool-results.json");
 
@@ -42,7 +42,7 @@ function checkJsSyntax(jsPath) {
 }
 
 function buildTargetUrl(targetTool, hostContextId) {
-  return `tools/${targetTool}/index.html?hostContextId=${encodeURIComponent(hostContextId)}`;
+  return `toolbox/${targetTool}/index.html?hostContextId=${encodeURIComponent(hostContextId)}`;
 }
 
 function validateFlow(flow) {
@@ -86,7 +86,7 @@ function validateFlow(flow) {
   const targetJsPath = path.join(toolsRoot, flow.targetTool, "index.js");
   const targetRouteExists = fs.existsSync(targetHtmlPath);
   if (!targetRouteExists) {
-    failures.push(`Missing target route: tools/${flow.targetTool}/index.html`);
+    failures.push(`Missing target route: toolbox/${flow.targetTool}/index.html`);
   }
   const hostContextIdPreserved = sourceHostContextId
     ? launchUrl.includes(`hostContextId=${encodeURIComponent(sourceHostContextId)}`)
@@ -97,7 +97,7 @@ function validateFlow(flow) {
 
   const { syntaxValid, syntaxError } = checkJsSyntax(targetJsPath);
   if (!syntaxValid) {
-    failures.push(`Target index.js failed syntax check: tools/${flow.targetTool}/index.js`);
+    failures.push(`Target index.js failed syntax check: toolbox/${flow.targetTool}/index.js`);
   }
 
   return {

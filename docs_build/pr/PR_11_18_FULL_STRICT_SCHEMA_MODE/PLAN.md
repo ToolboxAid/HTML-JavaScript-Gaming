@@ -15,7 +15,7 @@ For this stabilization phase:
 - Later, after all tools are working, selected internals may be relaxed intentionally.
 
 ## Scope
-- All schemas under `tools/schemas/`
+- All schemas under `toolbox/schemas/`
 - Workspace schema
 - Workspace manifest schema
 - All tool schemas
@@ -24,7 +24,7 @@ For this stabilization phase:
 - Do not modify start_of_day folders
 
 ## Acceptance
-- Every object schema in `tools/schemas/**/*.json` has `additionalProperties: false`
+- Every object schema in `toolbox/schemas/**/*.json` has `additionalProperties: false`
 - No schema uses `additionalProperties: true`
 - No object schema omits `additionalProperties`
 - Workspace manifest references tool schemas via `$ref`

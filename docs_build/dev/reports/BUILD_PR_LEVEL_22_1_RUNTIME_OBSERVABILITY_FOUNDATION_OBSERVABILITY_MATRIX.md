@@ -4,7 +4,7 @@
 | --- | --- | --- | --- |
 | Engine runtime (`src/engine/core/Engine.js`) | Yes (`trackRuntimeError` + monitoring bridge events) | `engine.log.v1` (`error`/`warn`) | Frame timings (`frameMs/updateMs/renderMs`) + `load/start/interval/manual` monitoring samples |
 | Runtime monitoring module (`src/engine/runtime/RuntimeMonitoringHooks.js`) | Yes (`window.error`, `window.unhandledrejection`, manual emit) | `engine.log.v1` (`error` + `info` + `debug`) | `runtime.monitoring.v1` samples (`start/load/interval/manual`) |
-| Tools platform shell (`tools/shared/platformShell.js`) | Yes (shared monitoring hook; latest payload retained) | `engine.log.v1` via `tools.platform` channel | Tool entry load timing + periodic monitoring samples |
+| Tools platform shell (`toolbox/shared/platformShell.js`) | Yes (shared monitoring hook; latest payload retained) | `engine.log.v1` via `tools.platform` channel | Tool entry load timing + periodic monitoring samples |
 | Tool: Vector Map Editor (vector-map-editor) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
 | Tool: Vector Asset Studio (vector-asset-studio) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
 | Tool: Tilemap Studio (tile-map-editor) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
@@ -23,5 +23,5 @@
 | Tool: 3D Camera Path Editor (3d-camera-path-editor) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
 
 ## Notes
-- Tool-level monitoring is standardized through shared `tools/shared/platformShell.js` integration.
+- Tool-level monitoring is standardized through shared `toolbox/shared/platformShell.js` integration.
 - No dashboard/UI expansion was introduced in this PR.

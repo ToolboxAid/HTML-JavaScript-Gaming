@@ -22,7 +22,7 @@ Fix the current `npm test --ignore-scripts` blocker in `tests/games/AsteroidsVal
    `Missing #game canvas element`
 2. The fix is test-only
 3. Existing passing Asteroids tests remain passing
-4. If VectorNativeTemplate still expects `templates/vector-native-arcade/`, update it to `tools/templates/vector-native-arcade/`
+4. If VectorNativeTemplate still expects `templates/vector-native-arcade/`, update it to `toolbox/templates/vector-native-arcade/`
 
 ## Notes for implementation
 The current failure stack is:

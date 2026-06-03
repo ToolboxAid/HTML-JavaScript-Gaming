@@ -43,10 +43,10 @@ Expected fail behavior:
 - Tests fail if separator comma spans reappear outside tokens, if bracketed token text regresses, or if non-selected capture devices remain enabled after selecting a device-specific gesture.
 
 ## Validation
-- PASS: `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-- PASS: `node --check tools/input-mapping-v2/js/controls/CaptureControl.js`
-- PASS: `node --check tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
-- PASS: `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`
+- PASS: `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- PASS: `node --check toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- PASS: `node --check toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- PASS: `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
 - PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs -g "Input Mapping V2"` (6 passed)
 - PASS: `npm run test:workspace-v2` (65 passed)
@@ -55,16 +55,16 @@ Expected fail behavior:
 - Generated: `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 
 ## Manual Validation
-1. Open `tools/input-mapping-v2/index.html`.
+1. Open `toolbox/input-mapping-v2/index.html`.
 2. Select `Keyboard > Hold`, capture `H`, and confirm the tile shows `[Keyboard, KeyH, Hold]` as one token.
 3. Select `Mouse > Click`, confirm Capture Keyboard and game controller buttons are disabled/grayed out, then capture left click and confirm `[Mouse, Left Button, Click]`.
 4. With a browser-exposed game controller, select `Game Controller > Button`, confirm Keyboard/Mouse capture are disabled and the controller capture button is enabled.
 5. Hover captured tokens and confirm detailed metadata remains available.
 
 ## Files Changed
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
-- `tools/input-mapping-v2/js/services/EngineInputSourceService.js`
-- `tools/input-mapping-v2/styles/inputMappingV2.css`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- `toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`

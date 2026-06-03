@@ -43,6 +43,6 @@ Implemented Breakout-only debug showcase polish with no engine-core modification
 ## Validation Performed
 - `node --check games/Breakout/main.js`
 - `node --check games/Breakout/game/BreakoutScene.js`
-- `node --check tools/dev/devConsoleIntegration.js`
+- `node --check toolbox/dev/devConsoleIntegration.js`
 - `node tests/games/BreakoutValidation.test.mjs`
 - `rg` checks for showcase label, debug badge, and helper text presence.

@@ -12,9 +12,9 @@ Implemented the Palette Manager V2 tag normalization and duplicate guard cleanup
 - Palette Manager V2 usage docs describe lowercase tags, duplicate guards, and selected-tag removal.
 
 ## Validation
-- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-- `node --check tools/palette-manager-v2/modules/paletteUtils.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/paletteUtils.js`: PASS.
 - `git diff --check`: PASS.
 - `git diff --cached --check`: PASS.
 - Targeted served-browser Palette Manager V2 validation: PASS.

@@ -15,8 +15,8 @@ Classification values:
 2. Traced indirect load paths through sample metadata and tool launch wiring:
    - `samples/shared/sampleDetailPageEnhancement.js` (`roundtripToolPresets` -> `samplePresetPath` query)
    - tool loaders that fetch `samplePresetPath` and update visible UI status:
-     - `tools/Palette Browser/main.js`
-     - `tools/Tile Model Converter/main.js`
+     - `toolbox/Palette Browser/main.js`
+     - `toolbox/Tile Model Converter/main.js`
 3. Traced tile-map document references from tile-model-converter preset JSON (`config.candidate.path`).
 4. Did not run full sample suite; classification is structural/path-based.
 
@@ -24,9 +24,9 @@ Classification values:
 - Sample page -> tool launch wiring:
   - `samples/shared/sampleDetailPageEnhancement.js` builds `Open <tool>` links with `samplePresetPath` from `roundtripToolPresets.presetPath` and fetches status text for those preset paths.
 - Palette Browser indirect load and visible UI effect:
-  - `tools/Palette Browser/main.js` reads `samplePresetPath`, fetches JSON, imports palette payload, and sets visible status text (`Loaded preset...`) plus swatch/preview UI state.
+  - `toolbox/Palette Browser/main.js` reads `samplePresetPath`, fetches JSON, imports palette payload, and sets visible status text (`Loaded preset...`) plus swatch/preview UI state.
 - Tile Model Converter indirect load and visible UI effect:
-  - `tools/Tile Model Converter/main.js` reads `samplePresetPath`, fetches preset JSON, hydrates converter input text area, and sets visible status text (`Loaded preset...`).
+  - `toolbox/Tile Model Converter/main.js` reads `samplePresetPath`, fetches preset JSON, hydrates converter input text area, and sets visible status text (`Loaded preset...`).
 - Tile-map doc path chaining:
   - `sample.*.tile-model-converter.json` stores `config.candidate.path` pointing to `sample-*-tile-map-editor-document.json`.
 

@@ -12,7 +12,7 @@ SVG Asset Studio
 Asset: none
 ```
 
-The latest delta changed `tools/shared/platformShell.js`, which means the active visible badge path is in the shared shell, not Workspace Manager.
+The latest delta changed `toolbox/shared/platformShell.js`, which means the active visible badge path is in the shared shell, not Workspace Manager.
 
 ## Likely Cause
 `platformShell.js` reads a shared asset handoff, then checks compatibility through asset-kind logic before displaying the label.
@@ -34,7 +34,7 @@ then `compatibleAsset` becomes null and the badge falls back to `none`.
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/shared_shell_svg_asset_badge_11_160.txt
 
 ### ALLOWED CHANGES
@@ -57,7 +57,7 @@ Codex MUST NOT:
 
 ## Required Investigation
 
-In `tools/shared/platformShell.js`, inspect:
+In `toolbox/shared/platformShell.js`, inspect:
 
 - `renderToolAssetBadge`
 - `readSharedAssetHandoff`
@@ -144,7 +144,7 @@ Do not create aliases or remap payloads.
 Run targeted validation only.
 
 Required:
-- `node --check tools/shared/platformShell.js`
+- `node --check toolbox/shared/platformShell.js`
 - static check that SVG badge label can be derived from `asset.kind` / `asset.type` / `asset.assetType`
 - static check that label can be derived from `displayName` / `sourceName` / `name` / `label` / `path`
 - no sample/schema/workspace/svg-tool files changed

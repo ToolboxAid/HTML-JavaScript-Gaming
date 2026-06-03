@@ -1,15 +1,15 @@
 ﻿# PR 11.180 Validation
 
 ## Scope
-Added launch and entry trace logging to prove/fix the hosted SVG launch path into `tools/SVG Asset Studio/main.js` and the hosted workspace shell branch.
+Added launch and entry trace logging to prove/fix the hosted SVG launch path into `toolbox/SVG Asset Studio/main.js` and the hosted workspace shell branch.
 
 ## Files changed
-- `tools/Workspace Manager/main.js`
-- `tools/SVG Asset Studio/main.js`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/SVG Asset Studio/main.js`
 - `docs_build/dev/reports/pr_11_180_validation.md`
 
 ## Workspace Manager launch logs
-`tools/Workspace Manager/main.js` now logs `[WORKSPACE_TOOL_LAUNCH]` after `runtime.launch(...)` for every mounted tool using the actual returned iframe URL/source URL.
+`toolbox/Workspace Manager/main.js` now logs `[WORKSPACE_TOOL_LAUNCH]` after `runtime.launch(...)` for every mounted tool using the actual returned iframe URL/source URL.
 
 The launch log includes:
 - requested tool id
@@ -29,7 +29,7 @@ For `svg-asset-studio`, Workspace Manager also logs `[SVG_LAUNCH_REQUEST]` with:
 - SVG text length
 
 ## SVG entry log
-`tools/SVG Asset Studio/main.js` now logs `[SVG_ENTRY_TOP]` at module top before hosted branch detection.
+`toolbox/SVG Asset Studio/main.js` now logs `[SVG_ENTRY_TOP]` at module top before hosted branch detection.
 
 The entry log includes:
 - `location.href`
@@ -51,10 +51,10 @@ When the guard matches, SVG still logs `[SVG_HOSTED_WORKSPACE_ENTRY]` and calls 
 - No sample JSON was changed.
 
 ## Validation
-- PASS: `node --check "tools/Workspace Manager/main.js"`
-- PASS: `node --check "tools/SVG Asset Studio/main.js"`
-- PASS: `node --check tools/shared/workspaceShell.js`
-- PASS: `node --check tools/shared/platformShell.js`
+- PASS: `node --check "toolbox/Workspace Manager/main.js"`
+- PASS: `node --check "toolbox/SVG Asset Studio/main.js"`
+- PASS: `node --check toolbox/shared/workspaceShell.js`
+- PASS: `node --check toolbox/shared/platformShell.js`
 
 ## Manual UAT
 Not run in this terminal session. Required browser UAT remains:

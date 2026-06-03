@@ -4,7 +4,7 @@
 - `BUILD_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX`
 
 ## Root Cause
-- `tools/Vector Asset Studio/main.js` did not consume shared handoff state on boot.
+- `toolbox/Vector Asset Studio/main.js` did not consume shared handoff state on boot.
 - Workspace Manager hydrated shared palette/asset handoff asynchronously from game manifest, but Vector Asset Studio initialized before/without binding that handoff into local selection state.
 - Result for Gravity Well Vector Asset Studio initial state:
   - `Palette Selected: false`
@@ -15,16 +15,16 @@
 - Shared palette source: `game.manifest.json -> tools["palette-browser"].palette -> shared palette handoff`
 - Shared vector source: `game.manifest.json -> tools["vector-asset-studio"].vectors -> shared asset handoff`
 - Workspace Manager launch path verified:
-  - `tools/Workspace Manager/index.html?gameId=GravityWell&mount=game&tool=vector-asset-studio`
+  - `toolbox/Workspace Manager/index.html?gameId=GravityWell&mount=game&tool=vector-asset-studio`
 
 ## Changes Applied
-- `tools/shared/platformShell.js`
+- `toolbox/shared/platformShell.js`
   - Added vector style metadata to manifest-derived shared asset handoff payload:
     - `metadata.vectorStyle.stroke`
     - `metadata.vectorStyle.fill`
     - `metadata.vectorStyle.strokeSymbol`
     - `metadata.vectorStyle.fillSymbol`
-- `tools/Vector Asset Studio/main.js`
+- `toolbox/Vector Asset Studio/main.js`
   - Added shared handoff consumption:
     - reads shared palette + shared asset handoff
     - registers shared palette into tool palette groups/options

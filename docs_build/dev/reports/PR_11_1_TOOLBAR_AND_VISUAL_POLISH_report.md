@@ -10,11 +10,11 @@ PASS
   - Tilemap Studio
   - Vector Asset Studio
   - Vector Map Editor
-- Implemented via shared shell styling in `tools/shared/platformShell.css` using `data-tool-id` scoped selectors.
+- Implemented via shared shell styling in `toolbox/shared/platformShell.css` using `data-tool-id` scoped selectors.
 - No tool runtime behavior logic changed.
 
 ## Files Changed
-- `tools/shared/platformShell.css`
+- `toolbox/shared/platformShell.css`
 - `docs_build/dev/reports/PR_11_1_TOOLBAR_AND_VISUAL_POLISH_report.md`
 
 ## What Was Standardized
@@ -42,4 +42,4 @@ Result:
 - FAIL `0`
 
 Additional verification:
-- Shared shell JS (`tools/shared/platformShell.js`) was not modified in this PR, preserving fullscreen summary label and exit-state behavior paths.
+- Shared shell JS (`toolbox/shared/platformShell.js`) was not modified in this PR, preserving fullscreen summary label and exit-state behavior paths.

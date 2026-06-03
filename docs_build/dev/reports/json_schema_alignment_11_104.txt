@@ -24,7 +24,7 @@ Schema/reference alignment updates applied
   - palette-editor references removed/normalized where found.
 
 Post-fix alias checks
-- command: rg -n "tools\.palette(?!-browser)" src tools samples tests scripts docs --pcre2
+- command: rg -n "toolbox\.palette(?!-browser)" src tools samples tests scripts docs --pcre2
 - result: no matches
 - command: rg -n "\bpalette-editor\b" src tools samples tests scripts docs
 - result: no matches

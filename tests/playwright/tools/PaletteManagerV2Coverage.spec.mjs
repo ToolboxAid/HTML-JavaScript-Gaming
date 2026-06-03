@@ -21,7 +21,7 @@ test.afterAll(async () => {
 async function openPaletteManager(page) {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/palette-manager-v2/index.html`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/palette-manager-v2/index.html`, { waitUntil: "networkidle" });
   return server;
 }
 

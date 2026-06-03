@@ -12,8 +12,8 @@ Scope: Phase-1 vertical slice parity validation (Sample 1208 <-> Parallax Scene 
 - [PASS] preset payload has tilemapDocumentPath :: payload.tilemapDocumentPath
 - [PASS] preset parallax schema is toolbox.parallax/1 :: toolbox.parallax/1
 - [PASS] sample scene consumes parallaxDocument from sample preset :: ToolFormattedTilesParallaxScene loads preset parallax data
-- [PASS] tool launch contract reads samplePresetPath query :: tools/Parallax Scene Studio/main.js
-- [PASS] tool fetches preset from samplePresetPath :: tools/Parallax Scene Studio/main.js
+- [PASS] tool launch contract reads samplePresetPath query :: toolbox/Parallax Scene Studio/main.js
+- [PASS] tool fetches preset from samplePresetPath :: toolbox/Parallax Scene Studio/main.js
 - [PASS] tool status shows loaded sample message :: buildPresetLoadedStatus()
 
 Checks: 13

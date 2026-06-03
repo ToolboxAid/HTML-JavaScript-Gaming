@@ -1,25 +1,25 @@
 (function () {
     const routeMap = {
         home: "index.html",
-        tools: "tools/index.html",
-        "ai-assistant": "tools/ai-assistant/index.html",
-        "animation-studio": "tools/animation/index.html",
-        "asset-studio": "tools/assets/index.html",
-        "code-studio": "tools/code/index.html",
-        "game-builder": "tools/game-builder/index.html",
-        "game-design-studio": "tools/game-design/index.html",
-        "input-studio": "tools/input/index.html",
-        "localization-studio": "tools/localization/index.html",
-        "midi-studio": "tools/midi/index.html",
-        "object-vector-studio": "tools/object-vector/index.html",
-        "palette-manager": "tools/palette/index.html",
-        "particle-studio": "tools/particles/index.html",
-        publisher: "tools/publish/index.html",
-        "sound-studio": "tools/sound/index.html",
-        "storage-inspector": "tools/storage/index.html",
-        "world-vector-studio": "tools/world-vector/index.html",
-        "configuration-admin": "tools/configuration-admin/index.html",
-        cloud: "tools/cloud/index.html",
+        toolbox: "toolbox/index.html",
+        "ai-assistant": "toolbox/ai-assistant/index.html",
+        "animation-studio": "toolbox/animation/index.html",
+        "asset-studio": "toolbox/assets/index.html",
+        "code-studio": "toolbox/code/index.html",
+        "game-builder": "toolbox/game-builder/index.html",
+        "game-design-studio": "toolbox/game-design/index.html",
+        "input-studio": "toolbox/input/index.html",
+        "localization-studio": "toolbox/localization/index.html",
+        "midi-studio": "toolbox/midi/index.html",
+        "object-vector-studio": "toolbox/object-vector/index.html",
+        "palette-manager": "toolbox/palette/index.html",
+        "particle-studio": "toolbox/particles/index.html",
+        publisher: "toolbox/publish/index.html",
+        "sound-studio": "toolbox/sound/index.html",
+        "storage-inspector": "toolbox/storage/index.html",
+        "world-vector-studio": "toolbox/world-vector/index.html",
+        "configuration-admin": "toolbox/configuration-admin/index.html",
+        cloud: "toolbox/cloud/index.html",
         games: "games/index.html",
         arcade: "games/arcade/index.html",
         "game-action": "games/action/index.html",
@@ -31,7 +31,7 @@
         marketplace: "marketplace/index.html",
         learn: "learn/index.html",
         community: "community/index.html",
-        translations: "tools/localization/index.html",
+        translations: "toolbox/localization/index.html",
         docs: "docs/index.html",
         about: "company/about.html",
         faq: "docs/faq.html",
@@ -78,7 +78,7 @@
 
     const rootSegments = new Set([
         "account", "company", "community", "legal",
-        "admin", "docs", "games", "learn", "marketplace", "tools"
+        "admin", "docs", "games", "learn", "marketplace", "toolbox"
     ]);
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
@@ -125,11 +125,11 @@
         const pagePath = currentPagePath() || "index.html";
         root.querySelectorAll("[data-nav-link]").forEach(function (link) {
             const route = routeMap[link.dataset.route] || "";
-            const isToolChild = pagePath.indexOf("tools/") === 0 && link.dataset.route === "tools";
+            const isToolboxChild = pagePath.indexOf("toolbox/") === 0 && link.dataset.route === "toolbox";
             const isGameChild = pagePath.indexOf("games/") === 0 && link.dataset.route === "games";
             const isAccountChild = pagePath.indexOf("account/") === 0 && link.dataset.route === "account";
             const isAdminChild = pagePath.indexOf("admin/") === 0 && link.dataset.route === "admin";
-            if (route === pagePath || isToolChild || isGameChild || isAccountChild || isAdminChild) {
+            if (route === pagePath || isToolboxChild || isGameChild || isAccountChild || isAdminChild) {
                 link.classList.add("active");
             }
         });

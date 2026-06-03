@@ -23,8 +23,8 @@ Repo Cleanup Phase 1G - Engine Promotion From Strong Candidates
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
 - `src/shared/utils/fuzzyMatchScore.js`
-- `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
-- `tools/SpriteEditor_old_keep/shared/fuzzyMatchScore.js` (removed)
+- `toolbox/SpriteEditor_old_keep/shared/scoreCommandItem.js`
+- `toolbox/SpriteEditor_old_keep/shared/fuzzyMatchScore.js` (removed)
 - `docs_build/pr/PLAN_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md`
 - `docs_build/pr/BUILD_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md`
 - `docs_build/dev/CODEX_COMMANDS.md`
@@ -35,7 +35,7 @@ Repo Cleanup Phase 1G - Engine Promotion From Strong Candidates
 ## Helper Ownership Before/After
 | helper | before owner | after owner | placement justification | behavior change |
 |---|---|---|---|---|
-| `fuzzyMatchScore(text, query)` | `tools/SpriteEditor_old_keep/shared/fuzzyMatchScore.js` | `src/shared/utils/fuzzyMatchScore.js` | Pure text scoring utility with zero UI/state coupling; best fit in engine utilities | none |
+| `fuzzyMatchScore(text, query)` | `toolbox/SpriteEditor_old_keep/shared/fuzzyMatchScore.js` | `src/shared/utils/fuzzyMatchScore.js` | Pure text scoring utility with zero UI/state coupling; best fit in engine utilities | none |
 
 ## Engine Placement Justification
 - The helper is deterministic and stateless.
@@ -43,14 +43,14 @@ Repo Cleanup Phase 1G - Engine Promotion From Strong Candidates
 - `src/shared/utils/` is the appropriate reusable utility domain.
 
 ## Import Update
-- Updated `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js` to import from:
+- Updated `toolbox/SpriteEditor_old_keep/shared/scoreCommandItem.js` to import from:
   - `../../../src/src/shared/utils/fuzzyMatchScore.js`
 
 ## Validation
 - `node -c src/shared/utils/fuzzyMatchScore.js`
-- `node -c tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
-- `node -c tools/SpriteEditor_old_keep/shared/normalizeCommandText.js`
-- `node -c tools/SpriteEditor_old_keep/modules/appCommands.js`
+- `node -c toolbox/SpriteEditor_old_keep/shared/scoreCommandItem.js`
+- `node -c toolbox/SpriteEditor_old_keep/shared/normalizeCommandText.js`
+- `node -c toolbox/SpriteEditor_old_keep/modules/appCommands.js`
 
 ## Acceptance Check
 - Behavior unchanged: pass.

@@ -10,7 +10,7 @@ This PR consolidates MIDI Studio V2 accordions/data into the six existing tabs w
 
 ## Files Changed
 
-- `tools/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/index.html`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_054-midi-studio-v2-existing-tab-bucket-consolidation_validation.md`
 - `docs_build/dev/reports/PR_26146_054-midi-studio-v2-tab-bucket-map.md`

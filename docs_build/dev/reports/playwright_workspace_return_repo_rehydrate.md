@@ -11,8 +11,8 @@
 
 ## Commands
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "blocks Workspace Manager V2 return restore"`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "exports manifests and launches tools from fixed Workspace Manager V2 tiles"`
 - `npm run test:workspace-v2`

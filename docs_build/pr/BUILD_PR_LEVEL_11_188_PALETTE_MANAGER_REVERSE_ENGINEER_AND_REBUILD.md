@@ -1,7 +1,7 @@
 # BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD
 
 ## Purpose
-Reverse engineer the legacy Palette Browser / Manager behavior, preserve the legacy implementation as `tools/Palette Browser-v1/`, and rebuild the first clean Tool v2 screen as **Palette Manager**.
+Reverse engineer the legacy Palette Browser / Manager behavior, preserve the legacy implementation as `toolbox/Palette Browser-v1/`, and rebuild the first clean Tool v2 screen as **Palette Manager**.
 
 This PR is the Palette-first Tool v2 migration entry point. It must not patch Workspace Manager v1, legacy tools, samples, games, or schemas.
 
@@ -19,9 +19,9 @@ This BUILD continues from PR 11.187 and the PR 11.188 restart lane:
 ## Hard Scope
 Modify only files required for this PR:
 
-- `tools/Palette Browser/**`
-- `tools/Palette Browser-v1/**`
-- `tools/common/**`
+- `toolbox/Palette Browser/**`
+- `toolbox/Palette Browser-v1/**`
+- `toolbox/common/**`
 - `docs_build/pr/**`
 - `docs_build/dev/**`
 - `docs_build/dev/reports/**`
@@ -35,7 +35,7 @@ Do not modify:
 - old Workspace Manager
 - Workspace Manager v1 wiring
 - legacy tools other than moving Palette Browser to `Palette Browser-v1`
-- `tools/shared/**`
+- `toolbox/shared/**`
 - `start_of_day/**`
 
 ## Visible Naming Rule
@@ -68,14 +68,14 @@ Palette Manager v2
 Legacy folder rename rule remains:
 
 ```text
-tools/Palette Browser/
--> tools/Palette Browser-v1/
+toolbox/Palette Browser/
+-> toolbox/Palette Browser-v1/
 ```
 
 The replacement clean tool folder remains:
 
 ```text
-tools/Palette Browser/
+toolbox/Palette Browser/
 ```
 
 because this PR is intentionally preserving repo route continuity while changing the visible product name to Palette Manager.
@@ -92,7 +92,7 @@ Do not:
 - auto-open Palette Manager from Workspace URL
 - bridge through legacy handoff code
 - use tool aliases
-- use `tools/shared/`
+- use `toolbox/shared/`
 - patch Workspace Manager v1 to support Palette Manager
 
 Workspace opens clean. The user manually selects Palette Manager from the clean Tool v2 flow once Tool v2 workspace selection exists. For this PR, Palette Manager must be directly testable through explicit session data only, without adding Workspace Manager v1 integration.
@@ -112,29 +112,29 @@ The rebuilt Palette Manager must include:
 - no old shared shell header
 - no legacy fullscreen header behavior
 
-The accordion must be owned by the new Tool v2 layout foundation under `tools/common/`, not by `tools/shared/`.
+The accordion must be owned by the new Tool v2 layout foundation under `toolbox/common/`, not by `toolbox/shared/`.
 
 ## Shared Foundation Rule
-Treat `tools/shared/` as deprecated for new Tool v2 work.
+Treat `toolbox/shared/` as deprecated for new Tool v2 work.
 
 Create new shared foundation under:
 
 ```text
-tools/common/
+toolbox/common/
 ```
 
 Required files:
 
 ```text
-tools/common/toolLayout.css
-tools/common/sessionContext.js
-tools/common/toolContract.js
+toolbox/common/toolLayout.css
+toolbox/common/sessionContext.js
+toolbox/common/toolContract.js
 ```
 
 Do not import from:
 
-- `tools/shared/platformShell.js`
-- `tools/shared/assetUsageIntegration.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/assetUsageIntegration.js`
 - old shared handoff modules
 - tool alias registries
 
@@ -211,9 +211,9 @@ The report must document:
 Create clean Palette Manager files in the preserved route folder:
 
 ```text
-tools/Palette Browser/index.html
-tools/Palette Browser/main.js
-tools/Palette Browser/styles.css
+toolbox/Palette Browser/index.html
+toolbox/Palette Browser/main.js
+toolbox/Palette Browser/styles.css
 ```
 
 The rebuilt tool must:
@@ -225,9 +225,9 @@ The rebuilt tool must:
 - show swatch count
 - show explicit empty state when no palette session data exists
 - show explicit error state when session data is malformed
-- use `tools/common/toolLayout.css`
-- use `tools/common/sessionContext.js`
-- use `tools/common/toolContract.js`
+- use `toolbox/common/toolLayout.css`
+- use `toolbox/common/sessionContext.js`
+- use `toolbox/common/toolContract.js`
 - use the header pattern from `/index.html`
 - include an accordion that can hide/show the header/details region
 - avoid `platformShell`
@@ -299,9 +299,9 @@ Run targeted validation only.
 Required:
 
 ```powershell
-node --check "tools/common/sessionContext.js"
-node --check "tools/common/toolContract.js"
-node --check "tools/Palette Browser/main.js"
+node --check "toolbox/common/sessionContext.js"
+node --check "toolbox/common/toolContract.js"
+node --check "toolbox/Palette Browser/main.js"
 ```
 
 Also run the smallest available targeted tool test if one exists for Palette or tool launch validation.
@@ -309,16 +309,16 @@ Also run the smallest available targeted tool test if one exists for Palette or 
 Do not run the full samples smoke test unless Codex can prove this PR modified shared sample loader/framework behavior. This PR should not modify that behavior.
 
 ## Acceptance Criteria
-- Legacy implementation is preserved under `tools/Palette Browser-v1/`.
+- Legacy implementation is preserved under `toolbox/Palette Browser-v1/`.
 - Rebuilt visible tool name is `Palette Manager` everywhere visible in this PR.
-- Rebuilt tool folder exists at `tools/Palette Browser/`.
+- Rebuilt tool folder exists at `toolbox/Palette Browser/`.
 - Rebuilt tool reads only session-backed `paletteJson`.
 - Empty state is explicit and actionable.
 - Malformed state is explicit and actionable.
 - Header follows the repo root `/index.html` pattern.
 - Header/details accordion can hide/show that region.
-- `tools/common/` is used for new Tool v2 foundation.
-- `tools/shared/` is not used by new Tool v2 files.
+- `toolbox/common/` is used for new Tool v2 foundation.
+- `toolbox/shared/` is not used by new Tool v2 files.
 - Workspace Manager v1 is not modified or wired to Palette Manager.
 - No schema, sample, or game files are changed.
 - No fallback/default palette data exists.

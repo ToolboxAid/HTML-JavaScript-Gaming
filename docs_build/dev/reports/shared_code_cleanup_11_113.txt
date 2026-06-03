@@ -2,27 +2,27 @@
 Date: 2026-04-30
 
 Scope searched
-- tools/shared/platformShell.js
-- tools/shared/toolLoadDiagnostics.js
-- tools/shared/schemaOnlyToolPresetValidation.js
-- tools/3D Asset Viewer/main.js
-- tools/3D Camera Path Editor/main.js
-- tools/3D JSON Payload/main.js
-- tools/Asset Pipeline/main.js
-- tools/Palette Browser/main.js
-- tools/Performance Profiler/main.js
-- tools/Physics Sandbox/main.js
-- tools/Replay Visualizer/main.js
-- tools/State Inspector/main.js
-- tools/Tile Model Converter/main.js
-- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+- toolbox/shared/platformShell.js
+- toolbox/shared/toolLoadDiagnostics.js
+- toolbox/shared/schemaOnlyToolPresetValidation.js
+- toolbox/3D Asset Viewer/main.js
+- toolbox/3D Camera Path Editor/main.js
+- toolbox/3D JSON Payload/main.js
+- toolbox/Asset Pipeline/main.js
+- toolbox/Palette Browser/main.js
+- toolbox/Performance Profiler/main.js
+- toolbox/Physics Sandbox/main.js
+- toolbox/Replay Visualizer/main.js
+- toolbox/State Inspector/main.js
+- toolbox/Tile Model Converter/main.js
+- toolbox/Vector Map Editor/editor/VectorMapEditorApp.js
 
 Search patterns and results
 1) Pattern: infer\w*
 - Matches found in:
-  - tools/shared/toolLoadDiagnostics.js (expected diagnostics classification helpers)
-  - tools/shared/platformShell.js (asset display label helper)
-  - tools/Asset Pipeline/main.js (domain/source-tool derivation from known kind)
+  - toolbox/shared/toolLoadDiagnostics.js (expected diagnostics classification helpers)
+  - toolbox/shared/platformShell.js (asset display label helper)
+  - toolbox/Asset Pipeline/main.js (domain/source-tool derivation from known kind)
 - Change in this PR: none.
 - Reason skipped: these are active behavioral helpers (diagnostics/display/domain mapping), not stale preset payload extractors removed in 11.111.
 
@@ -76,7 +76,7 @@ Skipped items
 
 Validation command(s) used
 - rg pattern scans listed above
-- helper removal verification scan across tools/src/samples/games/tests/scripts
+- helper removal verification scan across toolbox/src/samples/games/tests/scripts
 
 Validation result
 - PASS for evidence gathering and previously removed helper absence checks.

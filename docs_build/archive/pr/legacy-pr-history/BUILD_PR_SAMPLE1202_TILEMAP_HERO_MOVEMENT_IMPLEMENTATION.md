@@ -69,7 +69,7 @@ Secondary only if required:
 
 ## Disallowed Diff Area
 - `src/engine/**`
-- `tools/**`
+- `toolbox/**`
 - `games/**`
 - `tests/**`
 - `samples/Phase 12 - Sample Games/sample1201-tilemap-viewer/**`

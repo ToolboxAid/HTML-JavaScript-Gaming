@@ -12,9 +12,9 @@ Open required-tool items after the prior combined pass:
 ## Implemented Changes
 
 ### New first-class tools
-- `tools/3D JSON Payload Normalizer/`
-- `tools/3D Asset Viewer/`
-- `tools/3D Camera Path Editor/`
+- `toolbox/3D JSON Payload Normalizer/`
+- `toolbox/3D Asset Viewer/`
+- `toolbox/3D Camera Path Editor/`
 
 Each tool includes:
 - `index.html` with shared shell contract (`data-tool-id`, `platformShell.js`)
@@ -22,7 +22,7 @@ Each tool includes:
 - minimal deterministic baseline behavior (normalize/inspect/edit flows)
 
 ### Registry + validation updates
-- Added all three tools to `tools/toolRegistry.js`
+- Added all three tools to `toolbox/toolRegistry.js`
 - Extended launch-contract validation:
   - `tests/tools/ToolEntryLaunchContract.test.mjs`
 - Extended boundary enforcement validation:

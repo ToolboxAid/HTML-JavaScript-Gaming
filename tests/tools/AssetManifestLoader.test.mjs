@@ -3,7 +3,7 @@ import {
   discoverRuntimeAssets,
   getAssetManifestRelativePath,
   loadAssetManifest
-} from "../../tools/shared/pipeline/assetManifestLoader.js";
+} from "../../toolbox/shared/pipeline/assetManifestLoader.js";
 
 function normalizePath(value) {
   return String(value || "").replace(/\\/g, "/");

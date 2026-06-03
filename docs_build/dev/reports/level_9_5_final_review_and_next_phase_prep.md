@@ -42,18 +42,18 @@
 - Primary legacy lookup hotspots:
   - `games/shared/gameSkinLoader.js:358`
   - `games/shared/workspaceGameAssetCatalog.js:3`
-  - `tools/Workspace Manager/main.js:9`
-  - `tools/Asset Browser/main.js:23`
-  - `tools/Asset Pipeline Tool/main.js:291`, `:293`, `:302`, `:307`, `:308`
-  - `tools/Skin Editor/main.js:274`, `:277`
-  - `tools/shared/platformShell.js:302`, `:304`, `:307`, `:309`, `:314`, `:315`
-  - `tools/shared/pipeline/assetManifestLoader.js:36`
-  - `tools/shared/pipeline/assetPipelineTooling.js:219`
-  - `tools/shared/pipeline/gameAssetManifestCoordinator.js:96`
+  - `toolbox/Workspace Manager/main.js:9`
+  - `toolbox/Asset Browser/main.js:23`
+  - `toolbox/Asset Pipeline Tool/main.js:291`, `:293`, `:302`, `:307`, `:308`
+  - `toolbox/Skin Editor/main.js:274`, `:277`
+  - `toolbox/shared/platformShell.js:302`, `:304`, `:307`, `:309`, `:314`, `:315`
+  - `toolbox/shared/pipeline/assetManifestLoader.js:36`
+  - `toolbox/shared/pipeline/assetPipelineTooling.js:219`
+  - `toolbox/shared/pipeline/gameAssetManifestCoordinator.js:96`
 - Additional hardcoded game JSON literals still present in runtime/shared helpers:
-  - `tools/shared/asteroidsPlatformDemo.js`
-  - `tools/shared/vectorAssetSystem.js`
-  - `tools/shared/vectorTemplateSampleGame.js`
+  - `toolbox/shared/asteroidsPlatformDemo.js`
+  - `toolbox/shared/vectorAssetSystem.js`
+  - `toolbox/shared/vectorTemplateSampleGame.js`
 - Status: `BLOCKED` for "no legacy JSON dependencies".
 
 ## Final Verdict

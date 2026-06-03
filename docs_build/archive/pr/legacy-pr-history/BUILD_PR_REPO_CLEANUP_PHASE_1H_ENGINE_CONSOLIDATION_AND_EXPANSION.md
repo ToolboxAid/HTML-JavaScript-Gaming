@@ -13,7 +13,7 @@ Repo Cleanup Phase 1H - Engine Consolidation and Controlled Expansion
 
 ## Scope Confirmation
 - Controlled engine consolidation delta
-- Promote up to 2 helpers from `tools/SpriteEditor_old_keep/shared/` to `src/engine/`
+- Promote up to 2 helpers from `toolbox/SpriteEditor_old_keep/shared/` to `src/engine/`
 - Maintain behavior and architecture boundaries
 
 ## Do-Not-Touch Confirmation
@@ -23,9 +23,9 @@ Repo Cleanup Phase 1H - Engine Consolidation and Controlled Expansion
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
 - `src/shared/utils/normalizeCommandText.js`
-- `tools/SpriteEditor_old_keep/modules/appCommands.js`
-- `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
-- `tools/SpriteEditor_old_keep/shared/normalizeCommandText.js` (removed)
+- `toolbox/SpriteEditor_old_keep/modules/appCommands.js`
+- `toolbox/SpriteEditor_old_keep/shared/scoreCommandItem.js`
+- `toolbox/SpriteEditor_old_keep/shared/normalizeCommandText.js` (removed)
 - `docs_build/pr/PLAN_PR_REPO_CLEANUP_PHASE_1H_ENGINE_CONSOLIDATION_AND_EXPANSION.md`
 - `docs_build/pr/BUILD_PR_REPO_CLEANUP_PHASE_1H_ENGINE_CONSOLIDATION_AND_EXPANSION.md`
 - `docs_build/dev/CODEX_COMMANDS.md`
@@ -36,7 +36,7 @@ Repo Cleanup Phase 1H - Engine Consolidation and Controlled Expansion
 ## Promoted Helpers (This Phase)
 | helper | before owner | after owner | engine domain | behavior change |
 |---|---|---|---|---|
-| `normalizeCommandText(input)` | `tools/SpriteEditor_old_keep/shared/normalizeCommandText.js` | `src/shared/utils/normalizeCommandText.js` | `src/engine/utils` (generic text normalization) | none |
+| `normalizeCommandText(input)` | `toolbox/SpriteEditor_old_keep/shared/normalizeCommandText.js` | `src/shared/utils/normalizeCommandText.js` | `src/engine/utils` (generic text normalization) | none |
 
 ## Consolidation Notes
 - Existing Phase 1G promotion remains in place:
@@ -45,25 +45,25 @@ Repo Cleanup Phase 1H - Engine Consolidation and Controlled Expansion
 - Sprite Editor module import updated to consume engine utility directly where used.
 
 ## Duplicate Removal List
-- Removed `tools/SpriteEditor_old_keep/shared/normalizeCommandText.js` after engine promotion.
+- Removed `toolbox/SpriteEditor_old_keep/shared/normalizeCommandText.js` after engine promotion.
 
 ## Updated Helper Inventory Snapshot
 | helper | owner after Phase 1H |
 |---|---|
 | `fuzzyMatchScore` | `src/shared/utils/fuzzyMatchScore.js` |
 | `normalizeCommandText` | `src/shared/utils/normalizeCommandText.js` |
-| `scoreCommandItem` | `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js` |
+| `scoreCommandItem` | `toolbox/SpriteEditor_old_keep/shared/scoreCommandItem.js` |
 
 ## Import Updates
-- `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
+- `toolbox/SpriteEditor_old_keep/shared/scoreCommandItem.js`
   - `normalizeCommandText` import -> `../../../src/src/shared/utils/normalizeCommandText.js`
-- `tools/SpriteEditor_old_keep/modules/appCommands.js`
+- `toolbox/SpriteEditor_old_keep/modules/appCommands.js`
   - `normalizeCommandText` import -> `../../../src/src/shared/utils/normalizeCommandText.js`
 
 ## Validation
 - `node -c src/shared/utils/normalizeCommandText.js`
-- `node -c tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
-- `node -c tools/SpriteEditor_old_keep/modules/appCommands.js`
+- `node -c toolbox/SpriteEditor_old_keep/shared/scoreCommandItem.js`
+- `node -c toolbox/SpriteEditor_old_keep/modules/appCommands.js`
 
 ## Acceptance Check
 - Behavior unchanged: pass.

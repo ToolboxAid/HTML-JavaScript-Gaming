@@ -14,7 +14,7 @@ Take ownership at entry point BEFORE platformShell loads.
 ## Implementation
 
 File:
-tools/SVG Asset Studio/main.js
+toolbox/SVG Asset Studio/main.js
 
 ### Add at TOP of file (before any shell init)
 

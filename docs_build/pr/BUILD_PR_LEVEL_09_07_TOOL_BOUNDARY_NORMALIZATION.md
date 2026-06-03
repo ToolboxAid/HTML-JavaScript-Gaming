@@ -1,7 +1,7 @@
 # BUILD_PR — LEVEL 09_07 — TOOL BOUNDARY NORMALIZATION
 
 ## Objective
-Normalize boundaries across active tools so `tools/shared` becomes the only approved shared surface for reusable tool logic, while each tool remains responsible only for its own UI and orchestration.
+Normalize boundaries across active tools so `toolbox/shared` becomes the only approved shared surface for reusable tool logic, while each tool remains responsible only for its own UI and orchestration.
 
 ## Why This PR Exists
 The prior lane completed:
@@ -21,8 +21,8 @@ Without this pass, active tools risk continuing to:
 
 ## In Scope
 - inventory reusable exact-clusters inside active tools
-- extract only proven multi-tool logic into `tools/shared`
-- replace cross-tool imports with `tools/shared` imports
+- extract only proven multi-tool logic into `toolbox/shared`
+- replace cross-tool imports with `toolbox/shared` imports
 - document and enforce the rule that tools do not import other tools
 - normalize shared helper placement for tool-only utilities
 - add or update focused validation that guards tool-boundary rules
@@ -51,12 +51,12 @@ Secondary tool shells to keep aligned if touched:
 
 ## Boundary Rules To Enforce
 1. A tool must not import code from another tool folder.
-2. Reusable tool logic must live under `tools/shared`.
+2. Reusable tool logic must live under `toolbox/shared`.
 3. Tool entry files should orchestrate only:
    - boot
    - UI wiring
    - tool-local composition
-4. Shared logic extracted into `tools/shared` must be:
+4. Shared logic extracted into `toolbox/shared` must be:
    - tool-agnostic
    - minimal
    - contractable
@@ -80,11 +80,11 @@ Do not promote:
 
 ## Expected Implementation Shape
 Preferred shared homes:
-- `tools/shared/io/...`
-- `tools/shared/state/...`
-- `tools/shared/utils/...`
-- `tools/shared/contracts/...` (only if needed by proven reuse)
-- `tools/shared/validation/...` (only if needed by focused checks)
+- `toolbox/shared/io/...`
+- `toolbox/shared/state/...`
+- `toolbox/shared/utils/...`
+- `toolbox/shared/contracts/...` (only if needed by proven reuse)
+- `toolbox/shared/validation/...` (only if needed by focused checks)
 
 ## Required Deliverables
 Codex should produce a small surgical delta containing:
@@ -97,7 +97,7 @@ Codex should produce a small surgical delta containing:
 At minimum validate:
 - touched tool entry files parse successfully
 - no active tool imports another tool directly
-- extracted helpers resolve from `tools/shared`
+- extracted helpers resolve from `toolbox/shared`
 - prior launch-contract behavior still passes
 - asset/palette hook expectations are not regressed
 
@@ -109,7 +109,7 @@ Use the repo's existing validation style and keep it lightweight. Prefer focused
 
 ## Acceptance Criteria
 - active tools do not import one another
-- reusable exact-cluster helpers are centralized under `tools/shared`
+- reusable exact-cluster helpers are centralized under `toolbox/shared`
 - no engine/runtime code is touched
 - no asset layout changes occur
 - tests/checks covering boundary rules pass

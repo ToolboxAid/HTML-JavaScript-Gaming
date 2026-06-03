@@ -9,7 +9,7 @@ BUILD_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION.md
 Implement the approved Tile Map Editor asset registry adoption slice from `PLAN_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION` using the shared registry helpers already established by Sprite Editor.
 
 ## Implemented scope
-- Extended `tools/shared/projectAssetRegistry.js` so `tilemaps` is a first-class additive registry section.
+- Extended `toolbox/shared/projectAssetRegistry.js` so `tilemaps` is a first-class additive registry section.
 - Kept shared registry behavior non-destructive:
   - preserves existing known groups
   - preserves unknown top-level safe fields
@@ -30,8 +30,8 @@ Implement the approved Tile Map Editor asset registry adoption slice from `PLAN_
 
 ## Validation summary
 - Syntax checks passed:
-  - `node --check tools/shared/projectAssetRegistry.js`
-  - `node --check tools/Tilemap Studio/main.js`
+  - `node --check toolbox/shared/projectAssetRegistry.js`
+  - `node --check toolbox/Tilemap Studio/main.js`
 - Validation checklist updated and all items marked pass in `docs_build/reports/validation_checklist.txt`.
 
 ## Packaging

@@ -13,7 +13,7 @@ No implementation may contradict this file.
 All samples that launch a tool MUST launch the tool directly through:
 
 ```text
-tools/<tool>/index.html
+toolbox/<tool>/index.html
 ```
 
 Sample launch actions MUST be labeled:
@@ -29,7 +29,7 @@ Samples MUST NOT launch tools through duplicated wrapper pages, fallback pages, 
 All games that launch tool/workspace functionality MUST launch through:
 
 ```text
-tools/Workspace Manager/index.html
+toolbox/Workspace Manager/index.html
 ```
 
 Game launch actions MUST be labeled:
@@ -45,7 +45,7 @@ Games MUST NOT directly launch individual tools unless a future PR explicitly ch
 Every tool MUST have an explicit launch target:
 
 ```text
-tools/<tool>/index.html
+toolbox/<tool>/index.html
 ```
 
 Each tool launch path MUST be defined once in the launch SSoT.
@@ -55,7 +55,7 @@ Each tool launch path MUST be defined once in the launch SSoT.
 Workspace Manager MUST launch from:
 
 ```text
-tools/Workspace Manager/index.html
+toolbox/Workspace Manager/index.html
 ```
 
 Workspace Manager is the required game-side entry point for tool/workspace flows.
@@ -115,7 +115,7 @@ Primary UAT flow:
 ```text
 old_games/index.html
   -> Open with Workspace Manager
-  -> tools/Workspace Manager/index.html?gameId=<id>&mount=game
+  -> toolbox/Workspace Manager/index.html?gameId=<id>&mount=game
   -> external memory is cleared
   -> workspace loads explicit game/workspace context
   -> no fallback/default behavior is used
@@ -126,7 +126,7 @@ Secondary UAT flow:
 ```text
 samples/index.html
   -> Open <tool>
-  -> tools/<tool>/index.html
+  -> toolbox/<tool>/index.html
   -> external memory is cleared
   -> tool loads explicit sample/tool context
 ```

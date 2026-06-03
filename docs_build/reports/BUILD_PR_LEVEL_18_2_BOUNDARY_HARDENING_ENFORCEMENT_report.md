@@ -11,7 +11,7 @@ Scope: Enforce boundary direction across `src/engine`, `src/shared`, `games`, `t
 
 ## Pre-Fix Findings
 Command:
-- `node tools/dev/checkBoundaryHardeningGuard.mjs`
+- `node toolbox/dev/checkBoundaryHardeningGuard.mjs`
 
 Result:
 - scanned files: 712
@@ -19,21 +19,21 @@ Result:
 
 Violations:
 1. `games/breakout/main.js:18`
-   - specifier: `../../tools/dev/devConsoleIntegration.js`
+   - specifier: `../../toolbox/dev/devConsoleIntegration.js`
    - reason: games layer must not depend on tools layer
 2. `games/Asteroids/index.js:9`
-   - specifier: `../../tools/dev/devConsoleIntegration.js`
+   - specifier: `../../toolbox/dev/devConsoleIntegration.js`
    - reason: games layer must not depend on tools layer
 
 ## Implementation Applied
-- Added `tools/dev/checkBoundaryHardeningGuard.mjs` to codify dependency-direction enforcement.
+- Added `toolbox/dev/checkBoundaryHardeningGuard.mjs` to codify dependency-direction enforcement.
 - Added `src/shared/utils/createNoopDevConsoleIntegration.js` as boundary-safe default integration.
 - Updated `games/breakout/main.js` to remove direct tools import and default to shared no-op integration.
 - Updated `games/Asteroids/index.js` to remove direct tools import and default to shared no-op integration.
 
 ## Post-Fix Validation
 Command:
-- `node tools/dev/checkBoundaryHardeningGuard.mjs`
+- `node toolbox/dev/checkBoundaryHardeningGuard.mjs`
 
 Result:
 - scanned files: 713

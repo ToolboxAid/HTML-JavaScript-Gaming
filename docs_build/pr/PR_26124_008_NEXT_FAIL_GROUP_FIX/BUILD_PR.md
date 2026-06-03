@@ -6,13 +6,13 @@
 - `palette-manager-v2`
 
 ## Runtime Changes Applied (only extracted FAIL tools)
-1. `tools/asset-manager-v2/index.js`
+1. `toolbox/asset-manager-v2/index.js`
    - Added pre-render guard:
      - reject `paletteJson` for Asset Manager sessions.
-2. `tools/palette-manager-v2/index.js`
+2. `toolbox/palette-manager-v2/index.js`
    - Added pre-render guard:
      - reject `payloadJson.assetCatalog` for Palette Manager sessions.
-3. `tools/workspace-v2/index.js`
+3. `toolbox/workspace-v2/index.js`
    - Existing scoped launch guard retained and used:
      - launch blocked when active session `toolId` does not match selected tool.
 

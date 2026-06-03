@@ -4,7 +4,7 @@
 Enforce deterministic Workspace V2 merge-state transitions with explicit action-gated state changes.
 
 ## Scope
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2DeterministicStateTransitions.test.mjs
 - PR docs/report only
 
@@ -26,7 +26,7 @@ Enforce deterministic Workspace V2 merge-state transitions with explicit action-
 - No Workspace Manager v1 changes
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2DeterministicStateTransitions.test.mjs
 - node tests/runtime/V2DeterministicStateTransitions.test.mjs
 - node tests/runtime/V2SessionStateModelConsolidation.test.mjs

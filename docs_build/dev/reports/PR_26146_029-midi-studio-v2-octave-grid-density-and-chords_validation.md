@@ -14,14 +14,14 @@ Status: PASS
 ## Changed Files
 
 - `src/engine/audio/InstrumentGridParser.js`
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_029-midi-studio-v2-octave-grid-density-and-chords_validation.md`
 
 ## Validation
 
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
 - PASS: `node --check src/engine/audio/InstrumentGridParser.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave timeline editor is the default editable and playable Studio workflow|octave grid density supports icon controls and simultaneous chord editing" --reporter=list --workers=1 --timeout=60000`

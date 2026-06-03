@@ -3,42 +3,42 @@
 Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-17
-Source folder: `tools/Performance Profiler`
+Source folder: `toolbox/Performance Profiler`
 Publish target: `tools.performance-profiler`
 
 ## Tool Purpose
 Performance Profiler owns profile settings import, validation, measurement/report export, and publish to `tools.performance-profiler`.
 
 ## Folder/Files Inspected
-- `tools/Performance Profiler/how_to_use.html`
-- `tools/Performance Profiler/index.html`
-- `tools/Performance Profiler/main.js`
-- `tools/Performance Profiler/README.md`
+- `toolbox/Performance Profiler/how_to_use.html`
+- `toolbox/Performance Profiler/index.html`
+- `toolbox/Performance Profiler/main.js`
+- `toolbox/Performance Profiler/README.md`
 
 ## Controls: Control -> Action -> JSON Effect
 | Control | Action | JSON effect |
 |---|---|---|
-| `tools/Performance Profiler/index.html`: `input[number]#workloadIterationsInput` - 300 | Edits the active profile setting or measurement field. | Updates the draft performance profiler payload field represented by `workloadIterationsInput` before validation. |
-| `tools/Performance Profiler/index.html`: `input[number]#workSizeInput` - 3000 | Edits the active profile setting or measurement field. | Updates the draft performance profiler payload field represented by `workSizeInput` before validation. |
-| `tools/Performance Profiler/index.html`: `input[number]#frameSamplesInput` - 120 | Edits the active profile setting or measurement field. | Updates the draft performance profiler payload field represented by `frameSamplesInput` before validation. |
-| `tools/Performance Profiler/index.html`: `button[button]#runWorkloadButton` - Run Workload Profile | Processes the current performance profiler payload. | Updates tool-owned derived data/report fields that must validate before tools.performance-profiler publish. |
-| `tools/Performance Profiler/index.html`: `button[button]#runFrameSampleButton` - Run Frame Sample | Processes the current performance profiler payload. | Updates tool-owned derived data/report fields that must validate before tools.performance-profiler publish. |
-| `tools/Performance Profiler/index.html`: `button[button]#stopProfilerButton` - Stop | Controls preview/playback for the current performance profiler payload. | No tools.performance-profiler JSON change unless a schema-owned playback setting is explicitly edited. |
+| `toolbox/Performance Profiler/index.html`: `input[number]#workloadIterationsInput` - 300 | Edits the active profile setting or measurement field. | Updates the draft performance profiler payload field represented by `workloadIterationsInput` before validation. |
+| `toolbox/Performance Profiler/index.html`: `input[number]#workSizeInput` - 3000 | Edits the active profile setting or measurement field. | Updates the draft performance profiler payload field represented by `workSizeInput` before validation. |
+| `toolbox/Performance Profiler/index.html`: `input[number]#frameSamplesInput` - 120 | Edits the active profile setting or measurement field. | Updates the draft performance profiler payload field represented by `frameSamplesInput` before validation. |
+| `toolbox/Performance Profiler/index.html`: `button[button]#runWorkloadButton` - Run Workload Profile | Processes the current performance profiler payload. | Updates tool-owned derived data/report fields that must validate before tools.performance-profiler publish. |
+| `toolbox/Performance Profiler/index.html`: `button[button]#runFrameSampleButton` - Run Frame Sample | Processes the current performance profiler payload. | Updates tool-owned derived data/report fields that must validate before tools.performance-profiler publish. |
+| `toolbox/Performance Profiler/index.html`: `button[button]#stopProfilerButton` - Stop | Controls preview/playback for the current performance profiler payload. | No tools.performance-profiler JSON change unless a schema-owned playback setting is explicitly edited. |
 
 ## Panels And Surfaces Found
-- `tools/Performance Profiler/how_to_use.html`: `.tools-platform-surface`
-- `tools/Performance Profiler/index.html`: `.app-shell`
-- `tools/Performance Profiler/index.html`: `.debug-tool-panel`
-- `tools/Performance Profiler/index.html`: `.panel`
-- `tools/Performance Profiler/index.html`: `.tool-shell`
-- `tools/Performance Profiler/index.html`: `.tool-shell-container`
-- `tools/Performance Profiler/index.html`: `.tool-shell-page`
-- `tools/Performance Profiler/index.html`: `.tool-shell__center`
-- `tools/Performance Profiler/index.html`: `.tool-shell__left`
-- `tools/Performance Profiler/index.html`: `.tool-shell__right`
+- `toolbox/Performance Profiler/how_to_use.html`: `.tools-platform-surface`
+- `toolbox/Performance Profiler/index.html`: `.app-shell`
+- `toolbox/Performance Profiler/index.html`: `.debug-tool-panel`
+- `toolbox/Performance Profiler/index.html`: `.panel`
+- `toolbox/Performance Profiler/index.html`: `.tool-shell`
+- `toolbox/Performance Profiler/index.html`: `.tool-shell-container`
+- `toolbox/Performance Profiler/index.html`: `.tool-shell-page`
+- `toolbox/Performance Profiler/index.html`: `.tool-shell__center`
+- `toolbox/Performance Profiler/index.html`: `.tool-shell__left`
+- `toolbox/Performance Profiler/index.html`: `.tool-shell__right`
 
 ## Current Component/Class/Function Inventory
-- `tools/Performance Profiler/main.js`: applyProjectState; bindEvents; bootPerformanceProfiler; buildPresetLoadedStatus; captureProjectState; getApi; normalizeSamplePresetPath; readPositiveInt; registerToolBootContract; runFrameSample; runWorkloadProfile; setStatus; stopFrameSampling; tick; tryLoadPresetFromQuery; updateControlState; writeOutput
+- `toolbox/Performance Profiler/main.js`: applyProjectState; bindEvents; bootPerformanceProfiler; buildPresetLoadedStatus; captureProjectState; getApi; normalizeSamplePresetPath; readPositiveInt; registerToolBootContract; runFrameSample; runWorkloadProfile; setStatus; stopFrameSampling; tick; tryLoadPresetFromQuery; updateControlState; writeOutput
 
 ## Target Controls
 Keep:
@@ -55,7 +55,7 @@ Add:
 - setting/report diagnostics
 
 ## JSON Schema/Input Contract Currently Expected
-Tool receives validated payload and owns behavior for performance profiler payload. Current contract baseline: `tools/schemas/tools/performance-profiler.schema.json` (performance-profiler Payload).
+Tool receives validated payload and owns behavior for performance profiler payload. Current contract baseline: `toolbox/schemas/tools/performance-profiler.schema.json` (performance-profiler Payload).
 Required keys: `profileSettings`.
 Optional keys: none identified for this contract.
 
@@ -87,12 +87,12 @@ tools.performance-profiler = {
 ```
 
 ## Playwright Expectations
-- load `tools/Performance Profiler/index.html` without console errors
+- load `toolbox/Performance Profiler/index.html` without console errors
 - run a profile with valid settings
 - reject invalid profiler settings JSON
 
 ## Manual Test Expectations
-- Open `tools/Performance Profiler/index.html` and confirm settings/run/report controls render.
+- Open `toolbox/Performance Profiler/index.html` and confirm settings/run/report controls render.
 - Run a profile with valid settings, validate, export, and publish.
 - Try malformed JSON and out-of-bounds settings; each must block publish.
 

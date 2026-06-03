@@ -4,7 +4,7 @@
 Add Palette Manager V2 undo/redo history for user palette mutations, add User Palette multi-select checkboxes, and support batch tag application from the Tags accordion.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - Existing `src/` undo/history class consumption only if a suitable class exists.
 - PR workflow docs and required review artifacts only.
 
@@ -15,7 +15,7 @@ Add Palette Manager V2 undo/redo history for user palette mutations, add User Pa
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Preserve accordionV2 behavior.
 - Preserve import/export, sort, search, size, pin/unpin, and Pin All behavior.

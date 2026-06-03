@@ -6,11 +6,11 @@ Playwright impacted: Yes.
 
 ## Targeted Static Validation
 
-PASS - `node --check tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js`
+PASS - `node --check toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js`
 
-PASS - `node --check tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
+PASS - `node --check toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
 
-PASS - `git diff --check -- tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
+PASS - `git diff --check -- toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
 
 ## Focused Playwright
 

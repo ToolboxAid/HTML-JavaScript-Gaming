@@ -17,8 +17,8 @@ Plan, build, and apply a command pack system in one execution.
 
 ## Implementation
 Codex must:
-1. Create tools/dev/devConsoleCommandRegistry.js
-2. Create tools/dev/commandPacks/*
+1. Create toolbox/dev/devConsoleCommandRegistry.js
+2. Create toolbox/dev/commandPacks/*
 3. Update devConsoleIntegration.js to use registry
 4. Remove flat command logic
 5. Ensure help works:

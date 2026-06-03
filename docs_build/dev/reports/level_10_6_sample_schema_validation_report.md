@@ -30,9 +30,9 @@
   - File: `samples/metadata/samples.index.metadata.json`
   - Rewrites applied: `53`
 - Fixed standalone sample preset extraction for config-wrapped payload contracts:
-  - `tools/Asset Browser/main.js`
-  - `tools/Asset Pipeline Tool/main.js`
-  - `tools/Palette Browser/main.js`
+  - `toolbox/Asset Browser/main.js`
+  - `toolbox/Asset Pipeline Tool/main.js`
+  - `toolbox/Palette Browser/main.js`
 - Added explicit palette payloads for targeted palette-browser samples:
   - `samples/phase-02/0213/sample.0213.palette-browser.json`
   - `samples/phase-03/0308/sample.0308.palette-browser.json`

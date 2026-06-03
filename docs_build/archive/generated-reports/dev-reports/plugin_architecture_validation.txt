@@ -1,12 +1,12 @@
 BUILD_PR_PLUGIN_ARCHITECTURE validation
 
 Files:
-- tools/shared/pluginArchitecture.js
+- toolbox/shared/pluginArchitecture.js
 - tests/tools/PluginArchitectureSystem.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/pluginArchitecture.js
+- node --check toolbox/shared/pluginArchitecture.js
 - node --check tests/tools/PluginArchitectureSystem.test.mjs
 - node ./scripts/run-node-tests.mjs
 

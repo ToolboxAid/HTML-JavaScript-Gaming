@@ -8,21 +8,21 @@ async function openWorkspaceManagerV2(page, query = "") {
   const server = await startRepoServer();
   await installMockRepoPicker(page);
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/workspace-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openAssetManagerV2(page, query = "") {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/asset-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/asset-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openPreviewGeneratorV2(page, query = "") {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/preview-generator-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -30,7 +30,7 @@ async function openTextToSpeechTool(page, query = "", speechOptions = {}) {
   const server = await startRepoServer();
   await installMockSpeechSynthesis(page, speechOptions);
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/text2speech-V2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/text2speech-V2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -86,21 +86,21 @@ const OBJECT_VECTOR_ENABLED_GAME_IDS = new Set([
 async function openToolsIndex(page) {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openStorageInspectorV2(page, query = "") {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/storage-inspector-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/storage-inspector-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openInputMappingV2(page, query = "") {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/input-mapping-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/input-mapping-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -1282,8 +1282,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const server = await openToolsIndex(page);
 
     try {
-      await expect(page.locator("[data-nav-link][data-route='tools']")).toContainText("Toolbox");
-      await expect(page.locator(".footer [data-route='tools']")).toHaveText("Toolbox");
+      await expect(page.locator("[data-nav-link][data-route='toolbox']")).toContainText("Toolbox");
+      await expect(page.locator(".footer [data-route='toolbox']")).toHaveText("Toolbox");
       await expect(page.locator(".page-title")).toContainText("The Toolbox");
       const headerToolboxMenu = await page.locator("[data-toolbox-menu]").evaluate((menu) => ({
         accordions: Array.from(menu.querySelectorAll("[data-toolbox-menu-accordion]"))
@@ -1389,37 +1389,37 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     try {
       const card = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Workspace Manager V2" }) });
       await expect(card).toBeVisible();
-      await expect(card.locator("a", { hasText: "Workspace Manager V2" })).toHaveAttribute("href", "/tools/workspace-manager-v2/index.html");
+      await expect(card.locator("a", { hasText: "Workspace Manager V2" })).toHaveAttribute("href", "/toolbox/workspace-manager-v2/index.html");
       await expect(card).toContainText("First-Class Tool V2 workspace surface");
       await expect(card).toContainText("Workspace");
       const textToSpeechToolCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Text to Speech V2" }) });
       await expect(textToSpeechToolCard).toBeVisible();
-      await expect(textToSpeechToolCard.locator("a", { hasText: "Text to Speech V2" })).toHaveAttribute("href", "/tools/text2speech-V2/index.html");
+      await expect(textToSpeechToolCard.locator("a", { hasText: "Text to Speech V2" })).toHaveAttribute("href", "/toolbox/text2speech-V2/index.html");
       await expect(textToSpeechToolCard).toContainText("First-Class Tool V2 for browser speech synthesis");
       const worldVectorStudioCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "World Vector Studio V2" }) });
       await expect(worldVectorStudioCard).toBeVisible();
-      await expect(worldVectorStudioCard.locator("a", { hasText: "World Vector Studio V2" })).toHaveAttribute("href", "/tools/world-vector-studio-v2/index.html");
+      await expect(worldVectorStudioCard.locator("a", { hasText: "World Vector Studio V2" })).toHaveAttribute("href", "/toolbox/world-vector-studio-v2/index.html");
       await expect(worldVectorStudioCard).toContainText("Place assets, maps, layers, parallax, and scene/world layout");
       const objectVectorStudioCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Object Vector Studio V2" }) });
       await expect(objectVectorStudioCard).toBeVisible();
-      await expect(objectVectorStudioCard.locator("a", { hasText: "Object Vector Studio V2" })).toHaveAttribute("href", "/tools/object-vector-studio-v2/index.html");
+      await expect(objectVectorStudioCard.locator("a", { hasText: "Object Vector Studio V2" })).toHaveAttribute("href", "/toolbox/object-vector-studio-v2/index.html");
       await expect(objectVectorStudioCard).toContainText("Build vector assets");
       const inputMappingCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Input Mapping V2" }) });
       await expect(inputMappingCard).toBeVisible();
-      await expect(inputMappingCard.locator("a", { hasText: "Input Mapping V2" })).toHaveAttribute("href", "/tools/input-mapping-v2/index.html");
+      await expect(inputMappingCard.locator("a", { hasText: "Input Mapping V2" })).toHaveAttribute("href", "/toolbox/input-mapping-v2/index.html");
       await expect(inputMappingCard).toContainText("keyboard and gamepad inputs");
       const audioSfxCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Audio / SFX Playground V2" }) });
       await expect(audioSfxCard).toBeVisible();
-      await expect(audioSfxCard.locator("a", { hasText: "Audio / SFX Playground V2" })).toHaveAttribute("href", "/tools/audio-sfx-playground-v2/index.html");
+      await expect(audioSfxCard.locator("a", { hasText: "Audio / SFX Playground V2" })).toHaveAttribute("href", "/toolbox/audio-sfx-playground-v2/index.html");
       await expect(audioSfxCard).toContainText("oscillator and noise-based game sound effects");
       const midiStudioCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "MIDI Studio V2" }) });
       await expect(midiStudioCard).toBeVisible();
-      await expect(midiStudioCard.locator("a", { hasText: "MIDI Studio V2" })).toHaveAttribute("href", "/tools/midi-studio-v2/index.html");
+      await expect(midiStudioCard.locator("a", { hasText: "MIDI Studio V2" })).toHaveAttribute("href", "/toolbox/midi-studio-v2/index.html");
       await expect(midiStudioCard).toContainText("multi-song MIDI metadata");
       const toolsIndexState = await page.evaluate(async () => {
-        const registryModule = await import("/tools/toolRegistry.js");
-        const launchModule = await import("/tools/shared/toolLaunchSSoTData.js");
-        const assetUsageModule = await import("/tools/shared/assetUsageIntegration.js");
+        const registryModule = await import("/toolbox/toolRegistry.js");
+        const launchModule = await import("/toolbox/shared/toolLaunchSSoTData.js");
+        const assetUsageModule = await import("/toolbox/shared/assetUsageIntegration.js");
         const firstClassToolsSection = Array.from(document.querySelectorAll("section"))
           .find((section) => section.querySelector(":scope > h2")?.textContent?.trim() === "First-Class Tools");
         const workflowGrid = firstClassToolsSection?.querySelector("[data-active-tools-workflow-grid]");
@@ -1464,10 +1464,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             vectorMapEditor: registryModule.getToolById("vector-map-editor")
           },
           removedToolPathStatuses: await Promise.all([
-            fetch("/tools/Asset%20Browser/index.html", { cache: "no-store" }).then((response) => response.status),
-            fetch("/tools/SVG%20Asset%20Studio/index.html", { cache: "no-store" }).then((response) => response.status),
-            fetch("/tools/Tile%20Model%20Converter/index.html", { cache: "no-store" }).then((response) => response.status),
-            fetch("/tools/Vector%20Map%20Editor/index.html", { cache: "no-store" }).then((response) => response.status)
+            fetch("/toolbox/Asset%20Browser/index.html", { cache: "no-store" }).then((response) => response.status),
+            fetch("/toolbox/SVG%20Asset%20Studio/index.html", { cache: "no-store" }).then((response) => response.status),
+            fetch("/toolbox/Tile%20Model%20Converter/index.html", { cache: "no-store" }).then((response) => response.status),
+            fetch("/toolbox/Vector%20Map%20Editor/index.html", { cache: "no-store" }).then((response) => response.status)
           ]),
           sampleLabels: Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card__action") || [])
             .map((action) => action.textContent.trim())
@@ -1498,11 +1498,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.allCards).toEqual(expect.arrayContaining(["World Vector Studio V2", "Object Vector Studio V2", "Collision Inspector V2", "Input Mapping V2", "Audio / SFX Playground V2", "MIDI Studio V2"]));
       expect(toolsIndexState.registryIds).toEqual(expect.arrayContaining(["world-vector-studio-v2", "object-vector-studio-v2", "collision-inspector-v2", "input-mapping-v2", "audio-sfx-playground-v2", "midi-studio-v2"]));
       expect(toolsIndexState.launchIds).toEqual(expect.arrayContaining(["tool.world-vector-studio-v2", "tool.object-vector-studio-v2", "tool.collision-inspector-v2", "tool.input-mapping-v2", "tool.audio-sfx-playground-v2", "tool.midi-studio-v2"]));
-      expect(toolsIndexState.studioLaunchDefinitions.world.launchDefinition.targetPath).toBe("/tools/world-vector-studio-v2/index.html");
-      expect(toolsIndexState.studioLaunchDefinitions.object.launchDefinition.targetPath).toBe("/tools/object-vector-studio-v2/index.html");
-      expect(toolsIndexState.studioLaunchDefinitions.inputMapping.launchDefinition.targetPath).toBe("/tools/input-mapping-v2/index.html");
-      expect(toolsIndexState.studioLaunchDefinitions.audioSfx.launchDefinition.targetPath).toBe("/tools/audio-sfx-playground-v2/index.html");
-      expect(toolsIndexState.studioLaunchDefinitions.midiStudio.launchDefinition.targetPath).toBe("/tools/midi-studio-v2/index.html");
+      expect(toolsIndexState.studioLaunchDefinitions.world.launchDefinition.targetPath).toBe("/toolbox/world-vector-studio-v2/index.html");
+      expect(toolsIndexState.studioLaunchDefinitions.object.launchDefinition.targetPath).toBe("/toolbox/object-vector-studio-v2/index.html");
+      expect(toolsIndexState.studioLaunchDefinitions.inputMapping.launchDefinition.targetPath).toBe("/toolbox/input-mapping-v2/index.html");
+      expect(toolsIndexState.studioLaunchDefinitions.audioSfx.launchDefinition.targetPath).toBe("/toolbox/audio-sfx-playground-v2/index.html");
+      expect(toolsIndexState.studioLaunchDefinitions.midiStudio.launchDefinition.targetPath).toBe("/toolbox/midi-studio-v2/index.html");
       expect(toolsIndexState.allCards).not.toContain("Asset Browser / Import Hub");
       expect(toolsIndexState.allCards).not.toContain("Tile Model Converter");
       expect(toolsIndexState.registryIds).not.toContain("asset-browser");
@@ -1652,9 +1652,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       readFile("src/engine/input/InputCaptureService.js", "utf8"),
       readFile("src/engine/input/InputCaptureSession.js", "utf8"),
       readFile("src/engine/input/InputService.js", "utf8"),
-      readFile("tools/input-mapping-v2/js/services/EngineInputSourceService.js", "utf8"),
-      readFile("tools/input-mapping-v2/js/ToolStarterApp.js", "utf8"),
-      readFile("tools/input-mapping-v2/js/controls/PreviewPanelControl.js", "utf8")
+      readFile("toolbox/input-mapping-v2/js/services/EngineInputSourceService.js", "utf8"),
+      readFile("toolbox/input-mapping-v2/js/ToolStarterApp.js", "utf8"),
+      readFile("toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js", "utf8")
     ]);
 
     expect(inputServiceSource).toContain("import InputComboState");
@@ -3271,7 +3271,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#toolImportButton")).toBeDisabled();
       await expect(page.locator("#toolImportButton")).toHaveAttribute("title", /Import disabled: Input Mapping V2 imports through Workspace Manager game\.manifest launch data/);
       await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
-      await page.goto(`${server.baseUrl}/tools/input-mapping-v2/index.html?launch=workspace`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/input-mapping-v2/index.html?launch=workspace`, { waitUntil: "networkidle" });
       await expect(page.locator(".tool-starter__tool__menu")).toBeHidden();
       await expect(page.locator(".tool-starter__workspace__menu")).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="workspace"] button:not([hidden])')).toHaveText(["Import", "Copy JSON", "JSON"]);
@@ -3299,7 +3299,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#workspaceCopyManifestButton").click();
       expect(JSON.parse(await page.evaluate(() => window.__inputMappingV2WorkspaceClipboard))).toEqual(workspaceExportPayload);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Mapping JSON copied\./);
-      await page.goto(`${server.baseUrl}/tools/input-mapping-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/input-mapping-v2/index.html`, { waitUntil: "networkidle" });
       await expect(page.locator("body[data-tool-id='input-mapping-v2']")).toBeVisible();
       const fullscreenLayout = await page.locator(".input-mapping-v2.tool-starter.app-shell").evaluate((shell) => {
         const left = shell.querySelector(".tool-starter__panel--left").getBoundingClientRect();
@@ -3974,7 +3974,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return manifest.tools?.["input-mapping-v2"];
       });
       expect(asteroidsManifestInputMapping).toMatchObject({
-        $schema: "tools/schemas/tools/input-mapping-v2.schema.json",
+        $schema: "toolbox/schemas/tools/input-mapping-v2.schema.json",
         engineInputModel: "src/engine/input/InputMap",
         toolId: "input-mapping-v2",
         version: 1
@@ -4057,7 +4057,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           path: "object-vector-studio-v2"
         }
       ]) {
-        await page.goto(`${server.baseUrl}/tools/${tool.path}/index.html`, { waitUntil: "networkidle" });
+        await page.goto(`${server.baseUrl}/toolbox/${tool.path}/index.html`, { waitUntil: "networkidle" });
         await expect(page.locator(`body.tools-platform-tool-page[data-tool-id="${tool.id}"]`)).toBeVisible();
         await expect(page.locator("[data-tool-starter-header]")).toContainText(tool.name);
         await expect(page.locator("[data-tool-starter-header]")).toContainText(tool.description);
@@ -4094,13 +4094,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='object-vector-studio-v2']")).toBeVisible();
       await expect(page.locator("[data-tool-starter-header]")).toContainText("Object Vector Studio V2");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector Studio V2 schema contract loaded from \/tools\/schemas\/tools\/object-vector-studio-v2\.schema\.json\./);
       const objectVectorSchemaDefaults = await page.evaluate(async () => {
         const toolSchema = window.__objectVectorStudioV2App.schemaService.schema;
-        const gameSchema = await fetch("/tools/schemas/game.manifest.schema.json", { cache: "no-store" }).then((response) => response.json());
+        const gameSchema = await fetch("/toolbox/schemas/game.manifest.schema.json", { cache: "no-store" }).then((response) => response.json());
         return {
           gameHasLocalObjectStateDefinition: Object.prototype.hasOwnProperty.call(gameSchema.$defs, "objectVectorStudioState"),
           gameGeometryDefaultsRemoved: [
@@ -4158,7 +4158,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         gameObjectOriginRef: "#/$defs/point2d",
         gameObjectDefaultTags: [],
         gameShapeCommonDefaultTool: "polygon",
-        gameStateSchemaRef: "tools/object-vector-studio-v2.schema.json#/$defs/objectState",
+        gameStateSchemaRef: "toolbox/object-vector-studio-v2.schema.json#/$defs/objectState",
         gameStateThrustMentionRemoved: true,
         gameStyleDefaultPointStyles: { end: "square", point: "square", start: "square" },
         gameTransformDefaultHasShapeOrigin: false,
@@ -4257,7 +4257,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { disabled: true, label: "Star Polygon", pressed: "false", title: "Future shape: Star Polygon is not creatable yet" },
         { disabled: true, label: "Trapezoid/Trapezium", pressed: "false", title: "Future shape: Trapezoid/Trapezium is not creatable yet" }
       ]);
-      const futureNotes = await readFile("tools/object-vector-studio-v2/possible.future.adds.txt", "utf8");
+      const futureNotes = await readFile("toolbox/object-vector-studio-v2/possible.future.adds.txt", "utf8");
       expect(futureNotes).toContain("Object Vector Studio V2 should stay focused on reusable atomic vector objects.");
       expect(futureNotes).toContain("Future World Vector or Scene layers should instance Object Vector objects");
       expect(futureNotes).toContain("Keep Object Vector and World Vector separate");
@@ -4271,7 +4271,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".object-vector-studio-v2__shape-icon--arc")).toBeVisible();
       const iconStyleState = await page.evaluate(async () => {
         const fontResponse = await fetch("/src/assets/fonts/0xProtoNerdFont/0xProtoNerdFontMono-Regular.ttf", { cache: "no-store" });
-        const toolCss = await (await fetch("/tools/object-vector-studio-v2/styles/toolStarter.css", { cache: "no-store" })).text();
+        const toolCss = await (await fetch("/toolbox/object-vector-studio-v2/styles/toolStarter.css", { cache: "no-store" })).text();
         const icon = (selector) => {
           const element = document.querySelector(selector);
           const before = getComputedStyle(element, "::before");
@@ -6142,7 +6142,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.keyboard.press("V");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Tools mode selected from keyboard: select\./);
 
-      const zoomSource = await readFile("tools/object-vector-studio-v2/js/ToolStarterApp.js", "utf8");
+      const zoomSource = await readFile("toolbox/object-vector-studio-v2/js/ToolStarterApp.js", "utf8");
       expect(zoomSource).toContain("const DEFAULT_VIEWPORT = Object.freeze({ height: 2200, width: 3200, x: 0, y: 0, zoom: 1.0 });");
       expect(zoomSource).not.toContain("VIEWPORT_ZOOM_VIEWBOX_SCALE");
       expect(zoomSource).not.toContain("viewBoxZoom");
@@ -6482,12 +6482,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           version: 1
         }));
       });
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=object-vector-v2-missing-palette&workspaceMode=uat`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=object-vector-v2-missing-palette&workspaceMode=uat`, { waitUntil: "networkidle" });
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Render blocked: runtime palette is required separately from Object Vector Studio V2 JSON\./);
       await page.evaluate(() => {
         sessionStorage.removeItem("workspace.tools.object-vector-studio-v2");
       });
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=object-vector-v2-shell&workspaceMode=uat`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=object-vector-v2-shell&workspaceMode=uat`, { waitUntil: "networkidle" });
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
       await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Return to Workspace"]);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace toolState loading blocked: workspace\.tools\.object-vector-studio-v2 is missing/);
@@ -6518,7 +6518,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "square-tool-palette",
@@ -6618,7 +6618,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "drawing-flow-palette",
@@ -7204,7 +7204,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "asteroids-ship-grid",
@@ -7666,7 +7666,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await workspaceV2CoverageReporter.start(page);
     try {
       await page.setViewportSize({ width: 1366, height: 1000 });
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "geometry-layout-palette",
@@ -7885,7 +7885,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await workspaceV2CoverageReporter.start(page);
     try {
       await page.setViewportSize({ width: 1366, height: 1000 });
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "mouse-edit-palette",
@@ -8157,7 +8157,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await workspaceV2CoverageReporter.start(page);
     try {
       await page.setViewportSize({ width: 1366, height: 1000 });
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "transform-bounds-palette",
@@ -8332,7 +8332,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await workspaceV2CoverageReporter.start(page);
     try {
       await page.setViewportSize({ width: 1366, height: 1000 });
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "resize-geometry-palette",
@@ -8416,7 +8416,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "authoring-palette",
@@ -8710,7 +8710,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "animation-palette",
@@ -9025,7 +9025,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "group-cleanup-palette",
@@ -9350,7 +9350,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "drag-selection-palette",
@@ -9660,7 +9660,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "library-palette",
@@ -9940,7 +9940,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     await workspaceV2CoverageReporter.start(page);
     try {
-      await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
       const result = await page.evaluate(async () => {
         const manifestAssets = await import("/games/shared/gameManifestAssets.js");
         await manifestAssets.preloadGameManifestAssets("SyntheticAudio", { manifestPath: "/synthetic-audio-game.manifest.json" });
@@ -10567,7 +10567,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const themeContract = await page.evaluate(async () => {
         const stylesheetPaths = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
           .map((link) => new URL(link.href).pathname);
-        const css = await fetch("/tools/workspace-manager-v2/styles/workspaceManagerV2.css", { cache: "no-store" }).then((response) => response.text());
+        const css = await fetch("/toolbox/workspace-manager-v2/styles/workspaceManagerV2.css", { cache: "no-store" }).then((response) => response.text());
         const probeStyle = (property, value) => {
           const probe = document.createElement("div");
           probe.style[property] = value;
@@ -10619,7 +10619,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "/src/engine/theme/main.css",
         "/src/engine/ui/hubCommon.css",
         "/src/engine/theme/accordionV2/accordionV2.css",
-        "/tools/workspace-manager-v2/styles/workspaceManagerV2.css"
+        "/toolbox/workspace-manager-v2/styles/workspaceManagerV2.css"
       ]);
       expect(themeContract.cssHasHardcodedColors).toBe(false);
       expect(themeContract.cssUsesThemeTokens).toBe(true);
@@ -10759,7 +10759,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     try {
       await workspaceV2CoverageReporter.start(page);
-      await page.goto(`${server.baseUrl}/tools/palette-manager-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/palette-manager-v2/index.html`, { waitUntil: "networkidle" });
       await expect(page.locator(".palette-manager-v2.app-shell")).toBeVisible();
       await expect(page.locator("#harmonyColorList")).toContainText("Select a user or source swatch.");
       await expect(page.locator("#addSelectedHarmonyButton")).toBeDisabled();
@@ -10931,12 +10931,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
-      const legacyResponse = await page.goto(`${server.baseUrl}/tools/text2speach-V2/index.html`, { waitUntil: "networkidle" });
+      const legacyResponse = await page.goto(`${server.baseUrl}/toolbox/text2speach-V2/index.html`, { waitUntil: "networkidle" });
       expect(legacyResponse?.status()).toBe(404);
       await expect(page).not.toHaveURL(/tools\/text2speech-V2\/index\.html/);
       const legacyStatuses = await page.evaluate(async () => ({
         sample: await fetch("/samples/phase-19/1903/sample.1903.text2speach-V2.json", { cache: "no-store" }).then((response) => response.status),
-        schema: await fetch("/tools/schemas/tools/text2speach-V2.schema.json", { cache: "no-store" }).then((response) => response.status)
+        schema: await fetch("/toolbox/schemas/tools/text2speach-V2.schema.json", { cache: "no-store" }).then((response) => response.status)
       }));
       expect(legacyStatuses).toEqual({ sample: 404, schema: 404 });
       expect(pageErrors).toEqual([]);
@@ -11041,7 +11041,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2StopButton")).toBeEnabled();
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(new RegExp(`OK Loaded ${TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length} schema-complete Text to Speech V2 queue items\\.`));
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(new RegExp(`OK Loaded Text to Speech V2 payload source: ${TEXT_TO_SPEECH_SAMPLE_PRESET_PATH.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\.`));
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(new RegExp(`OK Text to Speech V2 schema validation result: tools\\/schemas\\/tools\\/text2speech-V2\\.schema\\.json valid; queue=${TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length}\\.`));
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(new RegExp(`OK Text to Speech V2 schema validation result: toolbox\\/schemas\\/tools\\/text2speech-V2\\.schema\\.json valid; queue=${TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length}\\.`));
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Loaded 4 matching SpeechSynthesis voices for Text to Speech V2 \(22 voices; 18 languages; gender=Any; age=Any; language=en-US\)\./);
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Text to Speech V2 ready\. SpeechSynthesis is available\./);
       await expect(page.locator("#text2speech-V2QueueSelect")).toHaveCount(0);
@@ -11179,9 +11179,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("Narrator welcome");
       const schemaRequiredFields = await page.evaluate(async () => {
         const [schema, assetSchema, paletteSchema] = await Promise.all([
-          fetch("/tools/schemas/tools/text2speech-V2.schema.json", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/tools/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/tools/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json())
+          fetch("/toolbox/schemas/tools/text2speech-V2.schema.json", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/toolbox/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/toolbox/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json())
         ]);
         return {
           assetManagerSchemaType: assetSchema.type,
@@ -11246,7 +11246,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(await page.evaluate(() => window["__text2speech-V2App"].validatePayload([], "empty Text to Speech V2 root array"))).toEqual({ ok: true });
       const validationSourceCleanup = await page.evaluate(async () => {
-        const source = await fetch("/tools/text2speech-V2/js/TextToSpeechToolApp.js", { cache: "no-store" }).then((response) => response.text());
+        const source = await fetch("/toolbox/text2speech-V2/js/TextToSpeechToolApp.js", { cache: "no-store" }).then((response) => response.text());
         return {
           hasStaleObjectPayloadFields: source.includes("STALE_OBJECT_PAYLOAD_FIELDS"),
           hasStaleObjectPayloadMessage: source.includes("staleObjectPayloadMessage"),
@@ -11635,7 +11635,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(1);
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("Imported root array line");
       await expect(page.locator("#text2speech-V2SpeechText")).toHaveValue("Imported root array text.");
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Imported 1 Text to Speech V2 item from text-to-speech-root-array\.json; schema validation result: tools\/schemas\/tools\/text2speech-V2\.schema\.json valid\./);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Imported 1 Text to Speech V2 item from text-to-speech-root-array\.json; schema validation result: toolbox\/schemas\/tools\/text2speech-V2\.schema\.json valid\./);
       expect(JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent())).toEqual(importedPayload);
 
       const oldWrappedPayload = {
@@ -11650,7 +11650,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         mimeType: "application/json",
         name: "old-wrapped-text-to-speech.json"
       });
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Import JSON blocked: Text to Speech V2 payload from old-wrapped-text-to-speech\.json failed tools\/schemas\/tools\/text2speech-V2\.schema\.json validation: root: expected array/);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Import JSON blocked: Text to Speech V2 payload from old-wrapped-text-to-speech\.json failed toolbox\/schemas\/tools\/text2speech-V2\.schema\.json validation: root: expected array/);
       await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(1);
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("Imported root array line");
       expect(JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent())).toEqual(importedPayload);
@@ -11661,7 +11661,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         mimeType: "application/json",
         name: "queue-mode-text-to-speech.json"
       });
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Import JSON blocked: Text to Speech V2 payload from queue-mode-text-to-speech\.json failed tools\/schemas\/tools\/text2speech-V2\.schema\.json validation: root\[0\]\.queueMode is not allowed/);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Import JSON blocked: Text to Speech V2 payload from queue-mode-text-to-speech\.json failed toolbox\/schemas\/tools\/text2speech-V2\.schema\.json validation: root\[0\]\.queueMode is not allowed/);
       await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(1);
       expect(JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent())).toEqual(importedPayload);
 
@@ -11797,7 +11797,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     try {
       const invalidPayload = {
-        $schema: "tools/schemas/tools/text2speech-V2.schema.json",
+        $schema: "toolbox/schemas/tools/text2speech-V2.schema.json",
         schema: "html-js-gaming.text2speech-V2",
         version: 1,
         name: "Invalid Text to Speech V2 queue",
@@ -11829,7 +11829,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           schema: {
             source: "workspace-manager-v2",
             toolId: "text2speech-V2",
-            schemaRef: "tools/schemas/tools/text2speech-V2.schema.json"
+            schemaRef: "toolbox/schemas/tools/text2speech-V2.schema.json"
           },
           workspace: {
             source: "workspace-manager-v2",
@@ -11859,7 +11859,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2SpeechText")).toHaveValue("");
       await expect(page.locator("#text2speech-V2SpeakButton")).toBeDisabled();
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Text to Speech V2 payload from \/games\/Asteroids\/game\.manifest\.json failed tools\/schemas\/tools\/text2speech-V2\.schema\.json validation: root: expected array/);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Text to Speech V2 payload from \/games\/Asteroids\/game\.manifest\.json failed toolbox\/schemas\/tools\/text2speech-V2\.schema\.json validation: root: expected array/);
       expect(JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent())).toEqual([]);
       await expect(page.locator("#text2speech-V2SpeechSummary")).not.toContainText("This payload must not render.");
       await page.locator("#returnToWorkspaceButton").click();
@@ -11885,7 +11885,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expectWorkspaceReturnRehydrated(page);
       const schemaContract = await page.evaluate(async () => {
-        const schema = await fetch("/tools/schemas/tools/text2speech-V2.schema.json", { cache: "no-store" }).then((response) => response.json());
+        const schema = await fetch("/toolbox/schemas/tools/text2speech-V2.schema.json", { cache: "no-store" }).then((response) => response.json());
         return {
           hasAutoSpeak: Object.hasOwn(schema.$defs.speechQueueItem.properties, "autoSpeak"),
           hasDelayBetweenRepeats: Object.hasOwn(schema.$defs.speechQueueItem.properties, "delayBetweenRepeats"),
@@ -12101,7 +12101,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(tileText).not.toContain("wraps");
 
       const themeState = await page.evaluate(async () => {
-        const css = await fetch("/tools/storage-inspector-v2/styles/storageInspectorV2.css", { cache: "no-store" }).then((response) => response.text());
+        const css = await fetch("/toolbox/storage-inspector-v2/styles/storageInspectorV2.css", { cache: "no-store" }).then((response) => response.text());
         const stylesheetPaths = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
           .map((link) => new URL(link.href).pathname);
         const bodyStyle = getComputedStyle(document.body);
@@ -12151,8 +12151,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "/src/engine/theme/main.css",
         "/src/engine/ui/hubCommon.css",
         "/src/engine/theme/accordionV2/accordionV2.css",
-        "/tools/common/toolShellCommon.css",
-        "/tools/storage-inspector-v2/styles/storageInspectorV2.css"
+        "/toolbox/common/toolShellCommon.css",
+        "/toolbox/storage-inspector-v2/styles/storageInspectorV2.css"
       ]);
       expect(themeState.cssHasHardcodedColors).toBe(false);
       expect(themeState.cssUsesThemeTokens).toBe(true);
@@ -12333,7 +12333,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=storage-inspector-v2-test-context&workspace=uat/);
-      await page.goto(`${server.baseUrl}/tools/storage-inspector-v2/index.html`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/storage-inspector-v2/index.html`, { waitUntil: "networkidle" });
       await expect(page.locator(".storage-inspector-v2__workspace-menu")).toBeHidden();
       await expect(page.locator("#returnToWorkspaceButton")).toBeHidden();
       await expect(page.locator("#returnToWorkspaceButton")).toHaveCount(1);
@@ -12395,7 +12395,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           source: "workspace-manager-v2",
           toolId: "asset-manager-v2",
           schemaRole: "workspace-tool-payload",
-          schemaRef: "tools/schemas/tools/asset-manager-v2.schema.json"
+          schemaRef: "toolbox/schemas/tools/asset-manager-v2.schema.json"
         },
         workspace: {
           source: "workspace-manager-v2",
@@ -12677,7 +12677,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Discovered 3 schema-valid game manifests\./);
       const asteroidsGameManifestShape = await page.evaluate(async () => {
         const manifest = await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json());
-        const { WorkspaceManagerV2ContextService } = await import("/tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
+        const { WorkspaceManagerV2ContextService } = await import("/toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
         const service = new WorkspaceManagerV2ContextService();
         const invalidRuntimeWorkspaceManifest = structuredClone(manifest);
         invalidRuntimeWorkspaceManifest.game.gameData = { workspace: {} };
@@ -12805,8 +12805,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Discovered 11 schema-valid game manifests from HTML-JavaScript-Gaming\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Discovered 11 schema-valid game manifests\./);
-      await expect(page.locator("#statusLog")).not.toHaveValue(/unresolved schema reference tools\/asset-manager-v2\.schema\.json/);
-      await expect(page.locator("#statusLog")).not.toHaveValue(/unresolved schema reference tools\/palette-manager-v2\.schema\.json/);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/unresolved schema reference toolbox\/asset-manager-v2\.schema\.json/);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/unresolved schema reference toolbox\/palette-manager-v2\.schema\.json/);
       await expect(page.locator("#statusLog")).not.toHaveValue(/SKIP games\/Asteroids\/game\.manifest\.json/);
       await expect(page.locator("#statusLog")).not.toHaveValue(/SKIP games\/AITargetDummy\/game\.manifest\.json/);
 
@@ -13150,13 +13150,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         source: "workspace-manager-v2",
         toolId: "asset-manager-v2",
         schemaRole: "workspace-tool-payload",
-        schemaRef: "tools/schemas/tools/asset-manager-v2.schema.json"
+        schemaRef: "toolbox/schemas/tools/asset-manager-v2.schema.json"
       });
       expect(selectedGameHydration.schemaByTool["collision-inspector-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "collision-inspector-v2",
         schemaRole: "workspace-tool-payload",
-        schemaRef: "tools/schemas/tools/collision-inspector-v2.schema.json"
+        schemaRef: "toolbox/schemas/tools/collision-inspector-v2.schema.json"
       });
       expect(selectedGameHydration.schemaByTool["preview-generator-v2"]).toMatchObject({
         source: "workspace-manager-v2",
@@ -13167,19 +13167,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         source: "workspace-manager-v2",
         toolId: "audio-sfx-playground-v2",
         schemaRole: "workspace-tool-payload",
-        schemaRef: "tools/schemas/tools/audio-sfx-playground-v2.schema.json#/$defs/audioSfxPayload"
+        schemaRef: "toolbox/schemas/tools/audio-sfx-playground-v2.schema.json#/$defs/audioSfxPayload"
       });
       expect(selectedGameHydration.schemaByTool["input-mapping-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "input-mapping-v2",
         schemaRole: "workspace-tool-payload",
-        schemaRef: "tools/schemas/tools/input-mapping-v2.schema.json"
+        schemaRef: "toolbox/schemas/tools/input-mapping-v2.schema.json"
       });
       expect(selectedGameHydration.schemaByTool["midi-studio-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "midi-studio-v2",
         schemaRole: "workspace-tool-payload",
-        schemaRef: "tools/schemas/tools/midi-studio-v2.schema.json#/$defs/toolPreferences"
+        schemaRef: "toolbox/schemas/tools/midi-studio-v2.schema.json#/$defs/toolPreferences"
       });
       expect(selectedGameHydration.schemaByTool["preview-generator-v2"].schemaRef).toBeUndefined();
       expect(selectedGameHydration.workspaceByTool["asset-manager-v2"]).toMatchObject({
@@ -13509,13 +13509,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__workspace__menu button")).toHaveText(["Return to Workspace"]);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from toolbox\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
       const assetStatusHeaderOrder = await page.locator(".asset-manager-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
       expect(assetStatusHeaderOrder).toEqual(["Status", "+", "Clear"]);
 
       const workspacePreviewContext = await page.evaluate(async () => {
-        const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
+        const { WorkspaceBridge } = await import("/toolbox/asset-manager-v2/js/services/WorkspaceBridge.js");
         return new WorkspaceBridge({ windowRef: window }).readWorkspacePreviewContext();
       });
       expect(workspacePreviewContext).toEqual({
@@ -13614,10 +13614,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
       const schemaValidation = await page.evaluate(async () => {
         const [paletteSchema, assetSchema, inputMappingSchema, objectVectorSchema] = await Promise.all([
-          fetch("/tools/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/tools/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/tools/schemas/tools/input-mapping-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/tools/schemas/tools/object-vector-studio-v2.schema.json", { cache: "no-store" }).then((response) => response.json())
+          fetch("/toolbox/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/toolbox/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/toolbox/schemas/tools/input-mapping-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/toolbox/schemas/tools/object-vector-studio-v2.schema.json", { cache: "no-store" }).then((response) => response.json())
         ]);
         const url = new URL(window.location.href);
         const manifest = JSON.parse(sessionStorage.getItem(url.searchParams.get("hostContextId")));
@@ -13812,7 +13812,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await assetTile.click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from toolbox\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 11 palette colors from active palette context/);
       await page.locator("#assetKindColor").check();
       const sessionPurpleSwatch = page.locator('#assetColorSwatchList button[aria-label*="Workspace Session Purple"]');
@@ -14177,7 +14177,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2SpeakButton")).toBeDisabled();
       expect(JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent())).toEqual([]);
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Text to Speech V2 schema validation result: tools\/schemas\/tools\/text2speech-V2\.schema\.json valid; queue=0\./);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Text to Speech V2 schema validation result: toolbox\/schemas\/tools\/text2speech-V2\.schema\.json valid; queue=0\./);
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Loaded 0 schema-complete Text to Speech V2 queue items\./);
       await expect(page.locator("#text2speech-V2StatusLog")).not.toHaveValue(/queue selection failed|schema requires at least one named speech item/);
       expect(pageErrors).toEqual([]);
@@ -14201,7 +14201,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectWorkspaceReturnRehydrated(page);
       await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from toolbox\.asset-manager-v2\.assets/);
       await page.locator('[data-delete-asset-id="assets.image.preview.preview"]').click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted assets\.image\.preview\.preview\./);
       const editedAssetSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.asset-manager-v2")));
@@ -14747,7 +14747,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         symbol: "&"
       });
 
-      await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html?hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/workspace-manager-v2/index.html?hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
       await expectWorkspaceRestoreRequiresRepoRebind(page, { dirty: true });
       const restoredState = await page.evaluate(() => ({
         activeGameManifestPath: window.__workspaceManagerV2App.activeGame.manifestPath,
@@ -15016,8 +15016,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue("{}");
       await expectWorkspaceToolsDisabled(page);
       await expect(page.locator("#activeGameSummary")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO workspace\.repo\.reference was not found in sessionStorage\. Pick Repo Folder to reselect repo before launching tools\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace restore failed: workspace\.repo\.reference was not found in sessionStorage\. Pick Repo Folder to reselect repo before launching tools\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO workspace\.repo\.reference was not found in sessionStorage\. Pick Repo Folder to reselect repo before launching toolbox\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace restore failed: workspace\.repo\.reference was not found in sessionStorage\. Pick Repo Folder to reselect repo before launching toolbox\./);
       expect(await readWorkspaceSessionHydration(page)).toMatchObject({
         repoReference: null,
         toolKeys: []
@@ -15027,7 +15027,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         window.sessionStorage.setItem(contextId, JSON.stringify(workspaceManifest));
         window.sessionStorage.setItem("workspace.repo.reference", "not-json");
       }, { contextId: hostContextId, workspaceManifest: manifest });
-      await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html?hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
+      await page.goto(`${server.baseUrl}/toolbox/workspace-manager-v2/index.html?hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
       await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
       await expect(page.locator("#activeGameSelect")).toBeDisabled();
       await expectWorkspaceToolsDisabled(page);
@@ -15056,7 +15056,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       window.sessionStorage.setItem(contextId, JSON.stringify(manifest));
     }, { contextId: hostContextId, manifest: displayRootManifest });
     await workspaceV2CoverageReporter.start(page);
-    await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/preview-generator-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
 
     try {
       await expect(page.locator("#repoDestinationSection")).toBeHidden();
@@ -15125,7 +15125,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       }));
     }, { contextId: hostContextId, workspaceManifest: manifest });
     await workspaceV2CoverageReporter.start(page);
-    await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/preview-generator-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
 
     try {
       await expect(page.locator("#repoDestinationSection")).toBeHidden();
@@ -15225,7 +15225,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     try {
       const schemaValidation = await page.evaluate(async () => {
-        const { WorkspaceManagerV2ContextService } = await import("/tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
+        const { WorkspaceManagerV2ContextService } = await import("/toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
         const service = new WorkspaceManagerV2ContextService();
         const manifests = {
           GravityWell: await fetch("/games/GravityWell/game.manifest.json", { cache: "no-store" }).then((response) => response.json()),
@@ -15441,7 +15441,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
     await installMockRepoPicker(page);
     await workspaceV2CoverageReporter.start(page);
-    await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/workspace-manager-v2/index.html`, { waitUntil: "networkidle" });
 
     try {
       await selectMockRepo(page);
@@ -15474,7 +15474,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#cancelWorkspaceButton")).toBeDisabled();
       await page.locator("#seedUatManifestButton").click();
       const uatManifestValidation = await page.evaluate(async (manifest) => {
-        const { WorkspaceManagerV2ContextService } = await import("/tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
+        const { WorkspaceManagerV2ContextService } = await import("/toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
         return new WorkspaceManagerV2ContextService().validateGameManifest(manifest);
       }, uatManifest);
       expect(uatManifestValidation).toEqual({ ok: true });
@@ -15517,7 +15517,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).not.toHaveURL(/workspace=uat/i);
       await expect(page.locator("#assetLaunchGuard")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated assets from toolbox\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 3 palette colors from active palette context/);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html.*hostContextId=workspace-manager-v2-/);

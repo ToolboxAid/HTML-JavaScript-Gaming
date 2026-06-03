@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Updated `tools/audio-sfx-playground-v2` only.
+- Updated `toolbox/audio-sfx-playground-v2` only.
 - Added short Sound Style descriptions displayed near the Sound Style control.
 - Added Recommended Zone indicators to slider tracks using per-style recommended zones inside each active slider clamp range.
 - Preserved Sound Style min/max clamps, waveform availability, slider focus behavior, and single-line slider rows.
@@ -12,22 +12,22 @@
 
 PASS:
 
-- `Get-ChildItem -Recurse -File tools/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }`
+- `Get-ChildItem -Recurse -File toolbox/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }`
 - HTML/CSS/JS static guard:
-  - no `<style>` blocks in `tools/audio-sfx-playground-v2/index.html`
+  - no `<style>` blocks in `toolbox/audio-sfx-playground-v2/index.html`
   - no inline `<script>` blocks
   - no inline event handlers
   - `#styleDescription` is present and wired through `bootstrap.js`
   - `STYLE_DESCRIPTIONS` and `RECOMMENDED_ZONE_SPAN` exist in `SfxControlPanel.js`
   - recommended zone CSS variables and range-track rules exist in `audioSfxLayoutDensity.css`
-- `git diff --check -- tools/audio-sfx-playground-v2`
+- `git diff --check -- toolbox/audio-sfx-playground-v2`
   - PASS with Git LF/CRLF warnings only for `index.html` and `audioSfxLayoutDensity.css`.
 
 ## Focused Playwright Validation
 
 PASS using a local repo HTTP server and Chromium:
 
-- Audio / SFX Playground V2 launched at `/tools/audio-sfx-playground-v2/index.html`.
+- Audio / SFX Playground V2 launched at `/toolbox/audio-sfx-playground-v2/index.html`.
 - No console errors and no page errors.
 - Style descriptions update correctly:
   - Custom: `Full-range design mode for building a sound without a style preset.`
@@ -54,8 +54,8 @@ PASS using a local repo HTTP server and Chromium:
 
 V8 coverage entries captured:
 
-- `tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
-- `tools/audio-sfx-playground-v2/js/bootstrap.js`
+- `toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
+- `toolbox/audio-sfx-playground-v2/js/bootstrap.js`
 
 ## Workspace V2 Validation
 

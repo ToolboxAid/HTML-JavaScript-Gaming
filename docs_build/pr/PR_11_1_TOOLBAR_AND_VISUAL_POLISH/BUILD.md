@@ -4,8 +4,8 @@
 
 ### 1. Inspect shared tool shell styling
 Focus on shared workspace/tool shell files, expected around:
-- tools/shared/platformShell.js
-- tools/shared/platformShell.css
+- toolbox/shared/platformShell.js
+- toolbox/shared/platformShell.css
 - shared tool CSS used by Asset Browser, Sprite Editor, Tilemap Studio, Vector Asset Studio, Vector Map Editor
 
 ### 2. Normalize toolbar/header visual language

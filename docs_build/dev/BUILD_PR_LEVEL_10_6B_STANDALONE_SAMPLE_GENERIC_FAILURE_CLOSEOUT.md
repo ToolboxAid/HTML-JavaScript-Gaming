@@ -15,7 +15,7 @@ Focus only on failures where a sample launches but the tool does not receive or 
 Codex may edit only files needed for standalone sample contract stability, typically:
 
 - affected `samples/phase-*/*` sample files
-- affected `tools/*` tool entrypoints or adapters
+- affected `toolbox/*` tool entrypoints or adapters
 - affected manifest/contract files already used by these samples
 - the standalone data-flow test only if it currently reports a false generic failure without weakening coverage
 - docs_build/dev reports for the new result

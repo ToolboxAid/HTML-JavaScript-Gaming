@@ -16,7 +16,7 @@ This is a docs-first cleanup + roadmap package that:
 
 ## Why This PR Now
 Recent lanes materially changed tool and validation maturity:
-- tools/shared normalization work advanced
+- toolbox/shared normalization work advanced
 - tool host foundation / switching / handoff / project integration advanced
 - asset pipeline foundation / converters / validation-output advanced
 - debug inspector tools entered active lane

@@ -3,7 +3,7 @@
 ## Decision
 Stop using the legacy platform shell path as the primary owner for Workspace-hosted tool data.
 
-Create a new `tools/shared/workspaceShell.js` for Workspace Manager-hosted tools.
+Create a new `toolbox/shared/workspaceShell.js` for Workspace Manager-hosted tools.
 
 ## Independence Rule
 `workspaceShell.js` and `platformShell.js` are parallel shells.

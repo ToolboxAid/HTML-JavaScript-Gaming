@@ -277,7 +277,7 @@ export class PlaywrightV8CoverageReporter {
     }
     return filePath.startsWith("src/")
       || filePath.startsWith("games/Asteroids/")
-      || filePath.startsWith("tools/")
+      || filePath.startsWith("toolbox/")
       || filePath.startsWith("common/");
   }
 
@@ -325,13 +325,13 @@ export class PlaywrightV8CoverageReporter {
 
   formatToolEntryPoints(coverageByPath) {
     const toolEntryPoints = [
-      { name: "Preview Generator V2", prefix: "tools/preview-generator-v2/" },
-      { name: "Asset Manager V2", prefix: "tools/asset-manager-v2/" },
-      { name: "Collision Inspector V2", prefix: "tools/collision-inspector-v2/" },
-      { name: "Palette Manager V2", prefix: "tools/palette-manager-v2/" },
-      { name: "Tool Template V2", prefix: "tools/templates-v2/" },
-      { name: "Workspace Manager V2", prefix: "tools/workspace-manager-v2/" },
-      { name: "Workspace Manager", prefix: "tools/workspace-manager/" }
+      { name: "Preview Generator V2", prefix: "toolbox/preview-generator-v2/" },
+      { name: "Asset Manager V2", prefix: "toolbox/asset-manager-v2/" },
+      { name: "Collision Inspector V2", prefix: "toolbox/collision-inspector-v2/" },
+      { name: "Palette Manager V2", prefix: "toolbox/palette-manager-v2/" },
+      { name: "Tool Template V2", prefix: "toolbox/templates-v2/" },
+      { name: "Workspace Manager V2", prefix: "toolbox/workspace-manager-v2/" },
+      { name: "Workspace Manager", prefix: "toolbox/workspace-manager/" }
     ];
     return toolEntryPoints.map(({ name, prefix }) => {
       const records = [...coverageByPath.values()].filter((record) => record.repoPath.startsWith(prefix));

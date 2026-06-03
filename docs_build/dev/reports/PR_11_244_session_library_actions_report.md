@@ -4,8 +4,8 @@
 Implemented explicit, non-silent Session Library action feedback for `Save Session`, `Overwrite Session`, `Load Session`, and `Delete Saved Session` in Workspace V2.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionLibraryActions.test.mjs`
 
 ## Implementation Details
@@ -49,7 +49,7 @@ Implemented explicit, non-silent Session Library action feedback for `Save Sessi
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2SessionLibraryActions.test.mjs
 node --check tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
 node tests/runtime/V2SessionLibraryActions.test.mjs
@@ -57,7 +57,7 @@ node tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2SessionLibraryActions.test.mjs` -> PASS
 - `node --check tests/runtime/V2SavedSessionDeleteFeedback.test.mjs` -> PASS
 - `node tests/runtime/V2SessionLibraryActions.test.mjs` -> PASS

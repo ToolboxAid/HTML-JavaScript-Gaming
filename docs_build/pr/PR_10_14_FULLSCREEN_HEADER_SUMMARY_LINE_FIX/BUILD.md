@@ -4,9 +4,9 @@
 
 ### 1. Locate fullscreen header path
 Inspect only the shared platform/header files involved in fullscreen tool rendering, expected around:
-- tools/shared/platformShell.js
-- tools/shared/platformShell.css
-- tools/toolRegistry.js only for read/validation, not broad edits
+- toolbox/shared/platformShell.js
+- toolbox/shared/platformShell.css
+- toolbox/toolRegistry.js only for read/validation, not broad edits
 
 ### 2. Restrict visual behavior to fullscreen
 Ensure any `[data-tools-platform-summary]`, `[data-tools-platform-summary-active]`, or `[data-tools-platform-summary-error]` styling/activation that was intended for fullscreen does not alter normal-screen header presentation.

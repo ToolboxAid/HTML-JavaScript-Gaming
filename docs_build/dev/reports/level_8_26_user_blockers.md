@@ -50,19 +50,19 @@ Captured blocker questions from `BUILD_PR_LEVEL_8_26_MANIFEST_SSOt_AND_UNUSED_JS
 - Decision: Confirmed. Tool payload and palette data remain separate concerns.
 
 ## Deletion / Cleanup Questions
-13. Can delete `tools/codex/sample_maaping_example.json`?
+13. Can delete `toolbox/codex/sample_maaping_example.json`?
 - Decision: Path not found in repo. No deletion performed.
 
-14. Can delete `tools/dev/checkPhase24*` and `tools/dev/checkSharedExt*.json`?
+14. Can delete `toolbox/dev/checkPhase24*` and `toolbox/dev/checkSharedExt*.json`?
 - Decision: No. Baseline JSON files are referenced by guard scripts/reports.
 
-15. Can delete `tools/samples/*`?
-- Decision: No files found under `tools/samples` in current repo.
+15. Can delete `toolbox/samples/*`?
+- Decision: No files found under `toolbox/samples` in current repo.
 
-16. Can delete `tools/shared/samples/*`?
+16. Can delete `toolbox/shared/samples/*`?
 - Decision: No. Referenced by validation script/docs; not proven unused.
 
-17. Audit rest of `tools/` JSON and delete unused only.
+17. Audit rest of `toolbox/` JSON and delete unused only.
 - Decision: Completed audit. No safe deletion candidate proven unused under required reference checks.
 
 18. Remove all sample dropdown/select support in tools.

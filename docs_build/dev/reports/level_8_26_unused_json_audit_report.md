@@ -1,34 +1,34 @@
 # Level 8.26 Unused JSON Audit Report
 
 ## Scope
-Audited deletion candidates and broader `tools/**/*.json` usage with repository text/reference checks (imports, scripts, docs, tests, samples, games, tool metadata references).
+Audited deletion candidates and broader `toolbox/**/*.json` usage with repository text/reference checks (imports, scripts, docs, tests, samples, games, tool metadata references).
 
 ## Candidate Audit Results
 
 ### Explicit Candidate Paths
-- `tools/codex/sample_maaping_example.json`
+- `toolbox/codex/sample_maaping_example.json`
   - Result: file not present in current repo (no deletion action).
 
-- `tools/dev/checkPhase24*`
-  - `tools/dev/checkPhase24CloseoutExecutionGuard.baseline.json`: referenced by guard script/report content.
-  - `tools/dev/checkPhase24CloseoutExecutionGuard.mjs`: referenced by npm script and report content.
+- `toolbox/dev/checkPhase24*`
+  - `toolbox/dev/checkPhase24CloseoutExecutionGuard.baseline.json`: referenced by guard script/report content.
+  - `toolbox/dev/checkPhase24CloseoutExecutionGuard.mjs`: referenced by npm script and report content.
   - Decision: keep.
 
-- `tools/dev/checkSharedExt*.json`
-  - `tools/dev/checkSharedExtractionGuard.baseline.json`: referenced by guard script/docs.
+- `toolbox/dev/checkSharedExt*.json`
+  - `toolbox/dev/checkSharedExtractionGuard.baseline.json`: referenced by guard script/docs.
   - Decision: keep.
 
-- `tools/samples/*`
+- `toolbox/samples/*`
   - Result: no JSON files found.
 
-- `tools/shared/samples/*`
-  - JSON files under `tools/shared/samples/project-asset-registry-demo` are referenced by:
+- `toolbox/shared/samples/*`
+  - JSON files under `toolbox/shared/samples/project-asset-registry-demo` are referenced by:
     - `scripts/validate-asset-ownership-strategy.mjs`
     - docs_build/reports history and validation docs.
   - Decision: keep.
 
-### Other Unused JSON Under `tools/`
-- Audit result: no additional JSON file in `tools/` was proven unreferenced under required search scope.
+### Other Unused JSON Under `toolbox/`
+- Audit result: no additional JSON file in `toolbox/` was proven unreferenced under required search scope.
 - Deletion action in this PR: none.
 
 ## Palette Opaque Alpha Normalization
@@ -38,7 +38,7 @@ Rule applied:
 
 Files updated:
 - `games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json` (4 values)
-- `tools/templates/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json` (4 values)
+- `toolbox/templates/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json` (4 values)
 
 Total updated values: 8
 

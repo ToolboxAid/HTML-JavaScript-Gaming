@@ -5,8 +5,8 @@ Status: PASS
 ## Scope
 
 - Updated `GameFoundryStudio/assets/partials/header-nav.html` so the Toolbox submenu groups render as native accordion sections.
-- Kept internal `tools/` paths unchanged.
-- Did not modify `tools/tools-page-accordions.js`.
+- Kept internal `toolbox/` paths unchanged.
+- Did not modify `toolbox/tools-page-accordions.js`.
 - Did not rebuild tools or touch samples.
 - Added no inline script, inline style, or inline event handlers.
 
@@ -37,7 +37,7 @@ Status: PASS
 
 ## Lanes Skipped
 
-- tools index data: SKIP because header data is not sourced from `tools/tools-page-accordions.js`.
+- tools index data: SKIP because header data is not sourced from `toolbox/tools-page-accordions.js`.
 - tool rebuild: SKIP / explicitly out of scope.
 - samples: SKIP / explicitly out of scope.
 - engine/runtime: SKIP / no engine runtime behavior changed.

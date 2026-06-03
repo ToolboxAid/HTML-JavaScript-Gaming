@@ -10,11 +10,11 @@
 - WARN: `npm run test:workspace-v2` completed with unrelated Workspace Manager/Input Mapping failures outside MIDI Studio V2.
 
 ## Validation Commands
-- PASS: `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
 - PASS: `node --check src/engine/audio/PreviewSynthEngine.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR072-075" --reporter=list`
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR061|PR069|PR070|PR071|PR072-075" --reporter=list`

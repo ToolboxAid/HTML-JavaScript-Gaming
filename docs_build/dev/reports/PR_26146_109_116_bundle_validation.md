@@ -6,17 +6,17 @@
 - Sample JSON was not modified. Full samples smoke was not run.
 
 ## Changed Runtime Files
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/js/controls/ExportPanelControl.js`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 
 ## Validation
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/ExportPanelControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "PR105-108|PR109-116"`
 - WARN: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs` timed out after 904 seconds before a final result.

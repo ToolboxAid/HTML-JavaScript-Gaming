@@ -2,13 +2,13 @@ PR_26126_119 manifest import-export notes
 
 Scope:
 - Add Workspace Manager V2 menu actions for Import Manifest and Export Manifest.
-- Validate imported and exported manifests against tools/schemas/workspace.manifest.schema.json.
+- Validate imported and exported manifests against toolbox/schemas/workspace.manifest.schema.json.
 - Route import/export success and failure through Workspace Manager V2 Status.
 
 Implementation notes:
 - Import Manifest uses a hidden file input controlled from the Workspace Manager V2 menu.
 - Imported JSON is parsed, validated through WorkspaceManagerV2ContextService.buildContextFromManifest, persisted to session context, and rendered as the active workspace.
-- Export Manifest refreshes the active manifest from session state before export, validates against tools/schemas/workspace.manifest.schema.json, then downloads the validated manifest JSON.
+- Export Manifest refreshes the active manifest from session state before export, validates against toolbox/schemas/workspace.manifest.schema.json, then downloads the validated manifest JSON.
 - Export is blocked when schema validation fails; the exact validation failure is logged to Status.
 
 Validation:

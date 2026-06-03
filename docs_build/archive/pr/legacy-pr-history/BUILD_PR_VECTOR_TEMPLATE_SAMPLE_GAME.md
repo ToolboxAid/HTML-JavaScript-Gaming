@@ -51,7 +51,7 @@ games/vector-arcade-sample/
 - `games/vector-arcade-sample/runtime/bootstrap.runtime.json`
 - `games/vector-arcade-sample/docs/STARTER_GUIDE.md`
 - `games/vector-arcade-sample/docs/ROLLBACK_NOTES.md`
-- `tools/shared/vectorTemplateSampleGame.js`
+- `toolbox/shared/vectorTemplateSampleGame.js`
 - `tests/tools/VectorTemplateSampleGame.test.mjs`
 - `tests/run-tests.mjs`
 
@@ -62,7 +62,7 @@ games/vector-arcade-sample/
 - Added a sample-local runtime entry at `games/vector-arcade-sample/main.js#bootVectorArcadeSample` without changing engine core APIs.
 
 ## Verification
-- `node --check tools/shared/vectorTemplateSampleGame.js`
+- `node --check toolbox/shared/vectorTemplateSampleGame.js`
 - `node --check games/vector-arcade-sample/main.js`
 - `node --check tests/tools/VectorTemplateSampleGame.test.mjs`
 - `node ./scripts/run-node-tests.mjs`

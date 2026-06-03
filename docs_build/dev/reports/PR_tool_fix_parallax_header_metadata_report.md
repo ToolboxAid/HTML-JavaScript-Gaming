@@ -4,8 +4,8 @@
 - PASS/FAIL: PASS
 
 ## Changed Files
-- tools/toolRegistry.js
-- tools/shared/platformShell.js
+- toolbox/toolRegistry.js
+- toolbox/shared/platformShell.js
 - tmp/pr_tool_fix_parallax_header_metadata_validation.json
 - docs_build/dev/reports/PR_tool_fix_parallax_header_metadata_report.md
 
@@ -19,8 +19,8 @@
 - Observed: Hide Parallax Scene Studio Details
 
 ## Validation Commands and Results
-- `node --check tools/shared/platformShell.js` -> PASS
-- `node --check tools/toolRegistry.js` -> PASS
+- `node --check toolbox/shared/platformShell.js` -> PASS
+- `node --check toolbox/toolRegistry.js` -> PASS
 - Browser validation (Parallax Scene Studio: normal mode, fullscreen, exit fullscreen) -> PASS
 - Visible text scan for `Header and Intro`, `Hide Header and Details`, `Show Header and Details` -> PASS (no hits)
 - Evidence file: tmp/pr_tool_fix_parallax_header_metadata_validation.json

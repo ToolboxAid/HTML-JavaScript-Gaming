@@ -4,8 +4,8 @@
 Workspace V2 Session Merge UI only.
 
 ## Files Changed
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2MergeResultSummary.test.mjs
 
 ## Implementation Summary
@@ -21,7 +21,7 @@ Workspace V2 Session Merge UI only.
 - Kept raw merge JSON preview output visible in `#workspaceV2MergeOutput`.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - Result: PASS
 2. `node --check tests/runtime/V2MergeResultSummary.test.mjs`
    - Result: PASS

@@ -4,8 +4,8 @@
 Persist valid Asset Manager V2 session payloads into Workspace V2 manifest export, while blocking invalid payload writes.
 
 ## Files Changed
-- `tools/asset-manager-v2/index.js`
-- `tools/workspace-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs`
 - `docs_build/pr/PR_11_314_ASSET_MANAGER_WORKSPACE_PERSISTENCE/PLAN_PR.md`
 - `docs_build/pr/PR_11_314_ASSET_MANAGER_WORKSPACE_PERSISTENCE/BUILD_PR.md`
@@ -22,8 +22,8 @@ Persist valid Asset Manager V2 session payloads into Workspace V2 manifest expor
 - Ensured invalid payloads still block writes and are not exported through active-session restore.
 
 ## Validation Commands
-- `node --check tools/asset-manager-v2/index.js` -> **PASS**
-- `node --check tools/workspace-v2/index.js` -> **PASS**
+- `node --check toolbox/asset-manager-v2/index.js` -> **PASS**
+- `node --check toolbox/workspace-v2/index.js` -> **PASS**
 - `node --check tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs` -> **PASS**
 - `node tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs` -> **PASS**
 - Legacy contract-id content search -> **PASS** (zero matches)

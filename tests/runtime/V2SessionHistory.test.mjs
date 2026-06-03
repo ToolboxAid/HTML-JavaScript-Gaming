@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
+const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-history-results.json");
 
 const HISTORY_KEY = "v2-session-history";
@@ -193,10 +193,10 @@ export function run() {
     history,
     "host-5",
     sessionStorageLike,
-    "https://example.test/tools/workspace-v2/index.html"
+    "https://example.test/toolbox/workspace-v2/index.html"
   );
   if (!reopenResult.ok) failures.push("Expected reopen result ok=true.");
-  if (!reopenResult.url.includes("/tools/tilemap-studio-v2/index.html")) failures.push(`Expected reopen URL to target tilemap-studio-v2, got ${reopenResult.url}.`);
+  if (!reopenResult.url.includes("/toolbox/tilemap-studio-v2/index.html")) failures.push(`Expected reopen URL to target tilemap-studio-v2, got ${reopenResult.url}.`);
   if (!reopenResult.url.includes("hostContextId=host-5")) failures.push("Expected reopen URL to preserve hostContextId.");
 
   const storedReopenSession = sessionStorageLike.getItem("host-5");

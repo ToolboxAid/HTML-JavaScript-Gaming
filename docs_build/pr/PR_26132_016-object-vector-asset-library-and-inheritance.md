@@ -21,9 +21,9 @@ Playwright impacted: Yes.
 Commands run:
 
 - `node --check src/engine/rendering/ObjectVectorRuntimeAssetService.js`
-- `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- `node --check tools/object-vector-studio-v2/js/bootstrap.js`
-- `node --check tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
+- `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- `node --check toolbox/object-vector-studio-v2/js/bootstrap.js`
+- `node --check toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
 - `node --check games/Asteroids/index.js`
 - `node --check games/Asteroids/game/AsteroidsGameScene.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
@@ -61,7 +61,7 @@ Expected fail behavior:
 
 ## Manual Validation
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Import an Object Vector Studio V2 payload with `assetLibrary.assets` and at least one derived object using `baseObjectId`.
 3. Confirm the asset library browser, usage report, dependency graph, inherited-field indicators, Runtime Preview, and Duplicate As Local.
 4. Open Asteroids and start gameplay.

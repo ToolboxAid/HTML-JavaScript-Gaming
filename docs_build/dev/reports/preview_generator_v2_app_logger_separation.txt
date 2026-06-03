@@ -1,8 +1,8 @@
 PR_26126_042 Preview Generator V2 app/logger separation
 
 Scope
-- Updated tools/preview-generator-v2/PreviewGeneratorV2App.js only.
-- No samples, schemas, tools/shared, or start_of_day files were modified.
+- Updated toolbox/preview-generator-v2/PreviewGeneratorV2App.js only.
+- No samples, schemas, toolbox/shared, or start_of_day files were modified.
 - Re-validated for the repeated PR_26126_042 request without adding behavior changes.
 
 Structure changes
@@ -14,7 +14,7 @@ Structure changes
 - Runtime capture mode is delegated to PreviewGeneratorV2Capture.initializeRuntimeCaptureMode.
 
 Logger boundary
-- All direct status/log textarea writes remain in tools/preview-generator-v2/PreviewGeneratorV2Logger.js.
+- All direct status/log textarea writes remain in toolbox/preview-generator-v2/PreviewGeneratorV2Logger.js.
 - Search confirmed direct statusEl.textContent and logEl.textContent writes are not present outside PreviewGeneratorV2Logger.js.
 - PreviewGeneratorV2App continues to request status output through logger.log, logger.clear, and logger.clearStatus only.
 
@@ -24,12 +24,12 @@ Control boundary review
 - No cross-control DOM reach was added.
 
 Validation
-- JavaScript syntax check passed for tools/preview-generator-v2/*.js.
-- JavaScript syntax check passed for tools/preview-generator-v2/controls/*.js.
+- JavaScript syntax check passed for toolbox/preview-generator-v2/*.js.
+- JavaScript syntax check passed for toolbox/preview-generator-v2/controls/*.js.
 - JavaScript syntax check passed for tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
 - Direct status/log write search passed: only PreviewGeneratorV2Logger.js writes status/log text.
 - App DOM query/manipulation search passed: PreviewGeneratorV2App.js has no direct querySelector/getElementById/addEventListener/textContent DOM manipulation.
-- No tools/shared or platformShell references were found under tools/preview-generator-v2.
+- No toolbox/shared or platformShell references were found under toolbox/preview-generator-v2.
 - No samples, schemas, or start_of_day changes were found.
 - npm run test:workspace-v2 passed.
 
@@ -42,7 +42,7 @@ Full samples smoke test
 - Reason: this PR is a Preview Generator V2 structure-only change and does not modify sample loading, sample JSON, or shared sample framework behavior.
 
 Manual validation
-- Open tools/preview-generator-v2/index.html.
+- Open toolbox/preview-generator-v2/index.html.
 - Confirm accordions still expand/collapse.
 - Confirm Status Clear still clears the log display.
 - Pick a repo folder, enter a valid target path, and confirm Generate Preview state and logging behave as before.

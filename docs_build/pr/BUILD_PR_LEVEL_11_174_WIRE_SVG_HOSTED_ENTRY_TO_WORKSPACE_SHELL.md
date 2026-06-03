@@ -13,7 +13,7 @@ The trace bundle and console logs prove:
 
 Therefore the missing piece is:
 
-`tools/SVG Asset Studio/main.js`
+`toolbox/SVG Asset Studio/main.js`
 
 Workspace shell was created, but SVG never enters it.
 
@@ -44,7 +44,7 @@ Not allowed:
 ## Implementation Requirements
 
 ### 1. SVG hosted mode detection
-In `tools/SVG Asset Studio/main.js`, detect hosted Workspace mode using URL params:
+In `toolbox/SVG Asset Studio/main.js`, detect hosted Workspace mode using URL params:
 
 - `hosted=1`
 - `hostToolId=svg-asset-studio`
@@ -54,14 +54,14 @@ In `tools/SVG Asset Studio/main.js`, detect hosted Workspace mode using URL para
 When hosted SVG mode is true:
 
 - log `[SVG_HOSTED_WORKSPACE_ENTRY]`
-- initialize `tools/shared/workspaceShell.js`
+- initialize `toolbox/shared/workspaceShell.js`
 - pass or allow `workspaceShell.js` to read `window.location`
 - do not initialize platformShell badge rendering for this hosted SVG instance
 
 If the SVG tool still needs non-badge shell UI, keep it local to SVG or explicitly disable platformShell badge rendering. Do not route badge state through platformShell.
 
 ### 3. workspaceShell SVG contract
-Ensure `tools/shared/workspaceShell.js` supports the SVG contract:
+Ensure `toolbox/shared/workspaceShell.js` supports the SVG contract:
 
 Payload:
 - `payloadJson.vectorAssetDocument`
@@ -144,10 +144,10 @@ Not allowed:
 
 ## Validation
 Run:
-- `node --check "tools/SVG Asset Studio/main.js"`
-- `node --check tools/shared/workspaceShell.js`
-- `node --check tools/shared/platformShell.js`
-- `node --check "tools/Workspace Manager/main.js"`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
+- `node --check toolbox/shared/workspaceShell.js`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
 
 Full samples smoke:
 - Skip.

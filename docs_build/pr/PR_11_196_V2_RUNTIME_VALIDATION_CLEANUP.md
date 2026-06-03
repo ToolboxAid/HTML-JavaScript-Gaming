@@ -16,7 +16,7 @@ Target V2 tools:
 - Asset Browser V2
 
 ## Required outcomes
-- Each V2 tool has a thin `tools/<tool>-v2/index.html` shell.
+- Each V2 tool has a thin `toolbox/<tool>-v2/index.html` shell.
 - Each V2 tool uses `<div id="shared-theme-header"></div>`.
 - Each V2 tool loads the shared theme/header through HTML, not JS injection.
 - Each V2 tool keeps runtime behavior in `index.js`.
@@ -35,7 +35,7 @@ Target V2 tools:
 - No game changes.
 - No Workspace Manager v1 work.
 - No `platformShell` use.
-- No `tools/shared/*` use.
+- No `toolbox/shared/*` use.
 - No repo-wide refactor.
 - No helper classes.
 - No abstraction layers.

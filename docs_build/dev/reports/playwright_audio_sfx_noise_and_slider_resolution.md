@@ -25,7 +25,7 @@ PASS: JavaScript syntax validation
 Command:
 
 ```powershell
-Get-ChildItem -Recurse -File tools/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }
+Get-ChildItem -Recurse -File toolbox/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }
 ```
 
 PASS: HTML/CSS static validation
@@ -37,7 +37,7 @@ PASS: Schema JSON parse validation
 Command:
 
 ```powershell
-Get-Content -Raw tools/schemas/tools/audio-sfx-playground-v2.schema.json | ConvertFrom-Json | Out-Null
+Get-Content -Raw toolbox/schemas/tools/audio-sfx-playground-v2.schema.json | ConvertFrom-Json | Out-Null
 ```
 
 PASS: Diff whitespace validation
@@ -45,7 +45,7 @@ PASS: Diff whitespace validation
 Command:
 
 ```powershell
-git diff --check -- tools/audio-sfx-playground-v2 tools/schemas
+git diff --check -- toolbox/audio-sfx-playground-v2 toolbox/schemas
 ```
 
 PASS: Targeted Node behavior validation
@@ -121,12 +121,12 @@ Expected Playwright fail behavior:
 
 Playwright V8 coverage was not collected during the focused inline browser validation.
 
-WARN: `tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - changed runtime JavaScript; coverage unavailable.
-WARN: `tools/audio-sfx-playground-v2/js/bootstrap.js` - changed runtime JavaScript; coverage unavailable.
-WARN: `tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js` - changed runtime JavaScript; coverage unavailable.
-WARN: `tools/audio-sfx-playground-v2/js/controls/SfxPreviewControl.js` - changed runtime JavaScript; coverage unavailable.
-WARN: `tools/audio-sfx-playground-v2/js/services/AudioSfxEngine.js` - changed runtime JavaScript; coverage unavailable.
-WARN: `tools/audio-sfx-playground-v2/js/services/ToolStateSerializer.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/bootstrap.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/controls/SfxPreviewControl.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/services/AudioSfxEngine.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/services/ToolStateSerializer.js` - changed runtime JavaScript; coverage unavailable.
 
 ## Full Samples Smoke Test
 

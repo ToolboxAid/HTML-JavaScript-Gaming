@@ -4,7 +4,7 @@
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before implementation.
 - Updated Workspace Manager V2 Workspace JSON to use a readonly textarea with a `[copy]` action in the accordion header.
 - Copy now writes the current textarea value to the clipboard, falls back to selection copy when available, and logs clear success/failure to Status.
-- Aligned `games/GravityWell/game.manifest.json` and `games/pong/game.manifest.json` to `tools/schemas/workspace.manifest.schema.json`.
+- Aligned `games/GravityWell/game.manifest.json` and `games/pong/game.manifest.json` to `toolbox/schemas/workspace.manifest.schema.json`.
 - Updated Preview Generator V2 workspace launch hydration so repo selection comes from the workspace manifest repo root and Generate enables without manually clicking Pick Repo Folder when the launch context is valid.
 - Kept Workspace Manager V2 launch target source constrained to Games during workspace launch.
 
@@ -29,8 +29,8 @@
 
 ## Validation
 - `npm run test:workspace-v2` passed: 25/25 Playwright tests.
-- `games/GravityWell/game.manifest.json` validated against `tools/schemas/workspace.manifest.schema.json`: valid.
-- `games/pong/game.manifest.json` validated against `tools/schemas/workspace.manifest.schema.json`: valid.
+- `games/GravityWell/game.manifest.json` validated against `toolbox/schemas/workspace.manifest.schema.json`: valid.
+- `games/pong/game.manifest.json` validated against `toolbox/schemas/workspace.manifest.schema.json`: valid.
 - Syntax checks passed for changed Workspace Manager V2, Preview Generator V2, and Playwright helper JavaScript.
 
 ## Manual Validation

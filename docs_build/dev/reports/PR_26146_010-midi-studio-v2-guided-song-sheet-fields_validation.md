@@ -17,12 +17,12 @@
 - Full samples smoke: SKIP per BUILD instruction.
 
 ## Validation Commands
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: `Select-String -Path tools/midi-studio-v2/index.html -Pattern '<script(?![^>]*src=)|<style|\son[a-z]+\s*='`
+- PASS: `Select-String -Path toolbox/midi-studio-v2/index.html -Pattern '<script(?![^>]*src=)|<style|\son[a-z]+\s*='`
 - PASS: `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --workers=1 --reporter=line`
 - PASS: `git diff --check`
 

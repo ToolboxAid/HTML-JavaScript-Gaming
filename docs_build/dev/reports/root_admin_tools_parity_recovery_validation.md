@@ -5,7 +5,7 @@
 Validated only:
 - Root Admin pages already migrated.
 - Root Tools pages already migrated.
-- `/tools/index.html`.
+- `/toolbox/index.html`.
 - Existing supporting JS path references.
 
 No additional pages were migrated.
@@ -44,18 +44,18 @@ Checked:
 - `admin/roles.html`
 - `admin/moderation.html`
 - `admin/analytics.html`
-- `tools/index.html`
-- `tools/ai-assistant.html`
-- `tools/animation-studio.html`
-- `tools/asset-studio.html`
-- `tools/code-studio.html`
-- `tools/input-studio.html`
-- `tools/midi-studio.html`
-- `tools/object-vector-studio.html`
-- `tools/palette-manager.html`
-- `tools/particle-studio.html`
-- `tools/sound-studio.html`
-- `tools/storage-inspector.html`
+- `toolbox/index.html`
+- `toolbox/ai-assistant.html`
+- `toolbox/animation-studio.html`
+- `toolbox/asset-studio.html`
+- `toolbox/code-studio.html`
+- `toolbox/input-studio.html`
+- `toolbox/midi-studio.html`
+- `toolbox/object-vector-studio.html`
+- `toolbox/palette-manager.html`
+- `toolbox/particle-studio.html`
+- `toolbox/sound-studio.html`
+- `toolbox/storage-inspector.html`
 
 Pattern:
 ```powershell

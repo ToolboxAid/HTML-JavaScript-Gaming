@@ -5,5 +5,5 @@ Centralize:
 Shared:
 src/shared/utils/idUtils.js
 Consumers:
-tools/dev/*
-tools/shared/*
+toolbox/dev/*
+toolbox/shared/*

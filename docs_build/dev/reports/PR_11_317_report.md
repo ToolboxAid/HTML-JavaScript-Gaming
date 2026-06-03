@@ -4,8 +4,8 @@
 Clarify Workspace V2 Asset Manager launcher behavior so standalone/no-session state is explicitly labeled and session-based launch is unambiguous.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/pr/PR_11_317_WORKSPACE_TOOL_LAUNCHER_SESSION_CLARITY/PLAN_PR.md`
 - `docs_build/pr/PR_11_317_WORKSPACE_TOOL_LAUNCHER_SESSION_CLARITY/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_317_report.md`
@@ -22,7 +22,7 @@ Clarify Workspace V2 Asset Manager launcher behavior so standalone/no-session st
 - Kept existing `openAssetManagerFromWorkspace()` launch flow unchanged for valid active session routing.
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js` -> **PASS**
+- `node --check toolbox/workspace-v2/index.js` -> **PASS**
 - `node tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs` -> **PASS**
 
 ## Full Samples Smoke Decision

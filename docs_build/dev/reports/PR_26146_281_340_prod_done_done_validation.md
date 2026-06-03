@@ -16,9 +16,9 @@ Implementation Changes:
 
 Validation Commands:
 - PASS changed-file syntax checks:
-  - `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-  - `node --check tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
-  - `node --check tools/midi-studio-v2/js/controls/ExportPanelControl.js`
+  - `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
   - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS targeted MIDI Studio Playwright validation:
   - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR161-200 release candidate|PR281-340" --reporter=line`

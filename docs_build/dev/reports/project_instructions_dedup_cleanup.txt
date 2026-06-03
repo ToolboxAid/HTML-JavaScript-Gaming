@@ -20,7 +20,7 @@ Validation:
 - Confirmed duplicate section headings were removed.
 - Confirmed only docs_build/dev/PROJECT_INSTRUCTIONS.md has tracked content changes.
 - Confirmed no roadmap, code, samples, schema, or start_of_day tracked files were modified.
-- Noted unrelated pre-existing/unowned untracked file outside scope: tools/templates.zip. It was not modified or packaged for this PR.
+- Noted unrelated pre-existing/unowned untracked file outside scope: toolbox/templates.zip. It was not modified or packaged for this PR.
 
 Manual test notes:
 - Read docs_build/dev/PROJECT_INSTRUCTIONS.md and confirm the current authoritative sections are easy to locate.

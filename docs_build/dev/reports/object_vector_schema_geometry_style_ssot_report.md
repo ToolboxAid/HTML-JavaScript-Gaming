@@ -41,7 +41,7 @@ PASS - Object Vector Studio V2 schema, editor, Asteroids manifest data, and runt
 ## Validation
 
 - PASS - `npm run test:workspace-v2` (49 passed, 0 failed).
-- PASS - `games/Asteroids/game.manifest.json` validated against `tools/schemas/game.manifest.schema.json`.
+- PASS - `games/Asteroids/game.manifest.json` validated against `toolbox/schemas/game.manifest.schema.json`.
 - PASS - embedded Asteroids Object Vector payload validated through `ObjectVectorStudioV2SchemaService`.
 - PASS - changed JS syntax checks for Object Vector editor/runtime files and Workspace Manager V2 Playwright spec.
 

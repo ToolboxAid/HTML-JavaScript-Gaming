@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const resultsPath = path.join(repoRoot, "tmp", "v2-back-nav-results.json");
 
 const FLOWS = [
@@ -59,7 +59,7 @@ function generateHostContextId(flow) {
 }
 
 function buildToolUrl(toolId, hostContextId, fromToolId) {
-  const url = new URL(`tools/${toolId}/index.html`, "http://localhost/");
+  const url = new URL(`toolbox/${toolId}/index.html`, "http://localhost/");
   url.searchParams.set("hostContextId", hostContextId);
   if (fromToolId) {
     url.searchParams.set("fromTool", fromToolId);
@@ -120,8 +120,8 @@ function validateFlow(flow) {
   if (thirdBackUrl.searchParams.get("hostContextId") !== hostContextId) failures.push("Third tool back URL did not preserve hostContextId.");
   if (secondBackUrl.searchParams.get("hostContextId") !== hostContextId) failures.push("Second tool back URL did not preserve hostContextId.");
 
-  if (!thirdBackUrl.pathname.endsWith(`/tools/${flow.thirdActionQueryFrom}/index.html`)) failures.push("Third tool back URL target is incorrect.");
-  if (!secondBackUrl.pathname.endsWith(`/tools/${flow.secondActionQueryFrom}/index.html`)) failures.push("Second tool back URL target is incorrect.");
+  if (!thirdBackUrl.pathname.endsWith(`/toolbox/${flow.thirdActionQueryFrom}/index.html`)) failures.push("Third tool back URL target is incorrect.");
+  if (!secondBackUrl.pathname.endsWith(`/toolbox/${flow.secondActionQueryFrom}/index.html`)) failures.push("Second tool back URL target is incorrect.");
 
   if (!secondSyntaxValid) failures.push("Second tool JS failed syntax check.");
   if (!thirdSyntaxValid) failures.push("Third tool JS failed syntax check.");

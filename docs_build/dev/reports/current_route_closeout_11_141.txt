@@ -4,12 +4,12 @@ Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
 Mode: STRICT SCOPE
 
 Allowed Files
-- tools/shared/toolHostRuntime.js
+- toolbox/shared/toolHostRuntime.js
 - docs_build/dev/reports/current_route_closeout_11_141.txt
 
 Files Changed (this task)
 - docs_build/dev/reports/current_route_closeout_11_141.txt (updated)
-- tools/shared/toolHostRuntime.js (no additional edits required)
+- toolbox/shared/toolHostRuntime.js (no additional edits required)
 
 Final validateInput Behavior
 - validateInput(payloadJson, paletteJson = null) performs only:
@@ -23,7 +23,7 @@ Final validateInput Behavior
 
 Validation Commands and Results
 1) Command:
-   node --check tools/shared/toolHostRuntime.js
+   node --check toolbox/shared/toolHostRuntime.js
    Result: PASS (exit code 0)
 
 2) Command:
@@ -34,7 +34,7 @@ Validation Commands and Results
    Note: these are pre-existing out-of-scope changes and were not modified by this task.
 
 3) Command:
-   git diff --name-only -- tools/shared/toolHostRuntime.js docs_build/dev/reports/current_route_closeout_11_141.txt
+   git diff --name-only -- toolbox/shared/toolHostRuntime.js docs_build/dev/reports/current_route_closeout_11_141.txt
    Result: (no tracked diff entries)
    Note: report file is untracked/new until committed.
 

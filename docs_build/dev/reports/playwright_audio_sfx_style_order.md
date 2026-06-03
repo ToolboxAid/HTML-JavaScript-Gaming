@@ -4,20 +4,20 @@ PR: `PR_26145_005-audio-sfx-style-order-and-divider`
 
 ## Scope
 
-- Updated `tools/audio-sfx-playground-v2` Sound Style ordering.
+- Updated `toolbox/audio-sfx-playground-v2` Sound Style ordering.
 - Added a disabled visual divider entry after `Pure Tone`.
 - Added style profile application without persisting the selected style name into exported toolState JSON.
 - Left schema files, `start_of_day`, and unrelated tools untouched.
 
 ## Targeted Static Validation
 
-- `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`: PASS
+- `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`: PASS
 - HTML/CSS static guard for changed tool files:
   - no inline event handlers: PASS
   - no `<style>` blocks: PASS
   - no inline `<script>` blocks: PASS
   - no empty changed HTML/CSS/JS files: PASS
-- `git diff --check -- tools/audio-sfx-playground-v2`: PASS
+- `git diff --check -- toolbox/audio-sfx-playground-v2`: PASS
   - Git reported LF-to-CRLF working-copy warnings only.
 
 ## Targeted Style Validation
@@ -43,7 +43,7 @@ Validated with an ESM Node harness against the changed tool files:
 
 ## Playwright Impacted Validation
 
-Ran a focused Playwright check against `tools/audio-sfx-playground-v2/index.html` through a temporary local HTTP server using local browser binaries from `.ms-playwright`.
+Ran a focused Playwright check against `toolbox/audio-sfx-playground-v2/index.html` through a temporary local HTTP server using local browser binaries from `.ms-playwright`.
 
 - Tool launches successfully: PASS
 - No console errors on launch or style selection: PASS

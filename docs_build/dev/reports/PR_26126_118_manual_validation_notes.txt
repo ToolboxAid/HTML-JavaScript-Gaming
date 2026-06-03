@@ -9,7 +9,7 @@ Result:
 
 Manual review checklist:
 - Confirmed games/Asteroids/game.manifest.json remains valid JSON after adding tools.vector-map-editor.
-- Confirmed deprecated tools/workspace-v2 was not modified.
+- Confirmed deprecated toolbox/workspace-v2 was not modified.
 - Confirmed sample JSON files were not modified.
 - Confirmed no mp4 or mkv files were modified or added.
 - Confirmed Asset Manager V2 direct ?workspace=prod remains blocked by launch guard coverage.

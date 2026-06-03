@@ -15,7 +15,7 @@ docs_build/operations/dev/SHARED_EXTRACTION_GUARD_USAGE.md
 
 Include:
 - how to run:
-  - node tools/dev/checkSharedExtractionGuard.mjs
+  - node toolbox/dev/checkSharedExtractionGuard.mjs
   - npm run check:shared-extraction-guard (if present)
   - ./tools/dev/runSharedExtractionGuard.sh
 - what it checks:

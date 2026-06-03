@@ -21,7 +21,7 @@ Introduce lifecycle control for world entities:
 ## Out of Scope
 - src/engine/
 - games/
-- tools/
+- toolbox/
 - runtime code changes
 
 ## System Definition

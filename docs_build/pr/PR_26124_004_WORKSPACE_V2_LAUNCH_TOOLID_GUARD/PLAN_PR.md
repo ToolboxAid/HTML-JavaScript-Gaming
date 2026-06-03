@@ -17,5 +17,5 @@ Fix the next failing Workspace V2 tool lane item with a minimal single-tool chan
 2. Keep all existing payload validation and launch behavior intact.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `npm run test:workspace-v2`

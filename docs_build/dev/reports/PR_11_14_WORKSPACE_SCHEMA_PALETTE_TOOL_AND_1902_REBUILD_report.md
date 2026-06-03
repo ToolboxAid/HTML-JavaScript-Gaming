@@ -4,7 +4,7 @@
 - PASS
 
 ## Scope Applied
-- Updated `tools/schemas/workspace.manifest.schema.json`.
+- Updated `toolbox/schemas/workspace.manifest.schema.json`.
 - Rebuilt only `samples/phase-19/1902/sample.1902.workspace-all-tools.json`.
 - Did not modify any other sample folder.
 
@@ -71,6 +71,6 @@
 - No fallback/default/hidden data was added.
 
 ## Files Changed for This PR
-- `tools/schemas/workspace.manifest.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
 - `docs_build/dev/reports/PR_11_14_WORKSPACE_SCHEMA_PALETTE_TOOL_AND_1902_REBUILD_report.md`

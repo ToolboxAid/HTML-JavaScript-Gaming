@@ -41,8 +41,8 @@ Static and syntax validation:
 
 Targeted UI validation:
 - Passed GameFoundryStudio-scoped Playwright validation on a local static server.
-- Verified Localization Studio tile appears on `tools/index.html`.
-- Verified the tile launches `tools/localization-studio/index.html`.
+- Verified Localization Studio tile appears on `toolbox/index.html`.
+- Verified the tile launches `toolbox/localization-studio/index.html`.
 - Verified tile artwork renders at 210x260 with no embedded text dependency.
 - Verified `Community / Media` grouping appears and contains Localization Studio.
 - Verified Community -> Translations routes to the Localization Studio placeholder page.
@@ -66,7 +66,7 @@ Targeted UI validation:
 
 Additional grouped/header validation:
 - Passed targeted grouped/header validation.
-- Verified header submenu route for Localization Studio resolves from `tools/index.html`.
+- Verified header submenu route for Localization Studio resolves from `toolbox/index.html`.
 - Verified grouped tools view includes the `Community / Media` accordion.
 - Verified the `Community / Media` accordion includes Localization Studio.
 - Verified header submenu launch reaches the nested Localization Studio page.

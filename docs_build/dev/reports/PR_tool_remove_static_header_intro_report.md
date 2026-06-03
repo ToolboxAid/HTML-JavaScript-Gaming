@@ -8,50 +8,50 @@
 - Fullscreen summary text previously depended on CSS pseudo-content and an engine-side text-equality hook, so the shell was not the true source of truth.
 
 ## Changed Files
-- tools/3D Asset Viewer/index.html
-- tools/3D Camera Path Editor/index.html
-- tools/3D JSON Payload Normalizer/index.html
-- tools/Asset Browser/index.html
-- tools/Asset Pipeline Tool/index.html
-- tools/Palette Browser/index.html
-- tools/Parallax Scene Studio/index.html
-- tools/Performance Profiler/index.html
-- tools/Physics Sandbox/index.html
-- tools/Replay Visualizer/index.html
-- tools/Skin Editor/index.html
-- tools/Sprite Editor/index.html
-- tools/State Inspector/index.html
-- tools/Tile Model Converter/index.html
-- tools/Tilemap Studio/index.html
-- tools/Vector Asset Studio/index.html
-- tools/Vector Map Editor/index.html
-- tools/shared/platformShell.js
-- tools/shared/platformShell.css
+- toolbox/3D Asset Viewer/index.html
+- toolbox/3D Camera Path Editor/index.html
+- toolbox/3D JSON Payload Normalizer/index.html
+- toolbox/Asset Browser/index.html
+- toolbox/Asset Pipeline Tool/index.html
+- toolbox/Palette Browser/index.html
+- toolbox/Parallax Scene Studio/index.html
+- toolbox/Performance Profiler/index.html
+- toolbox/Physics Sandbox/index.html
+- toolbox/Replay Visualizer/index.html
+- toolbox/Skin Editor/index.html
+- toolbox/Sprite Editor/index.html
+- toolbox/State Inspector/index.html
+- toolbox/Tile Model Converter/index.html
+- toolbox/Tilemap Studio/index.html
+- toolbox/Vector Asset Studio/index.html
+- toolbox/Vector Map Editor/index.html
+- toolbox/shared/platformShell.js
+- toolbox/shared/platformShell.css
 - docs_build/dev/reports/PR_tool_remove_static_header_intro_report.md
 - tmp/pr_tool_remove_static_header_intro_validation.json
 
 ## Updated index.html Files
-- tools/3D Asset Viewer/index.html
-- tools/3D Camera Path Editor/index.html
-- tools/3D JSON Payload Normalizer/index.html
-- tools/Asset Browser/index.html
-- tools/Asset Pipeline Tool/index.html
-- tools/Palette Browser/index.html
-- tools/Parallax Scene Studio/index.html
-- tools/Performance Profiler/index.html
-- tools/Physics Sandbox/index.html
-- tools/Replay Visualizer/index.html
-- tools/Skin Editor/index.html
-- tools/Sprite Editor/index.html
-- tools/State Inspector/index.html
-- tools/Tile Model Converter/index.html
-- tools/Tilemap Studio/index.html
-- tools/Vector Asset Studio/index.html
-- tools/Vector Map Editor/index.html
+- toolbox/3D Asset Viewer/index.html
+- toolbox/3D Camera Path Editor/index.html
+- toolbox/3D JSON Payload Normalizer/index.html
+- toolbox/Asset Browser/index.html
+- toolbox/Asset Pipeline Tool/index.html
+- toolbox/Palette Browser/index.html
+- toolbox/Parallax Scene Studio/index.html
+- toolbox/Performance Profiler/index.html
+- toolbox/Physics Sandbox/index.html
+- toolbox/Replay Visualizer/index.html
+- toolbox/Skin Editor/index.html
+- toolbox/Sprite Editor/index.html
+- toolbox/State Inspector/index.html
+- toolbox/Tile Model Converter/index.html
+- toolbox/Tilemap Studio/index.html
+- toolbox/Vector Asset Studio/index.html
+- toolbox/Vector Map Editor/index.html
 
 ## Fullscreen DOM Path Fixed
-- Fixed path: tool page `<details class="is-collapsible">` summary element (`.is-collapsible__summary[data-tools-platform-summary]`) is now shell-rendered from `tools/shared/platformShell.js` using real DOM text nodes.
-- Fullscreen/collapse behavior is now bound in `tools/shared/platformShell.js` (no static summary-text dependency).
+- Fixed path: tool page `<details class="is-collapsible">` summary element (`.is-collapsible__summary[data-tools-platform-summary]`) is now shell-rendered from `toolbox/shared/platformShell.js` using real DOM text nodes.
+- Fullscreen/collapse behavior is now bound in `toolbox/shared/platformShell.js` (no static summary-text dependency).
 
 ## Visible Header/Intro By Tool
 ### Vector Map Editor
@@ -93,8 +93,8 @@
 - Any visible/static "Header and Intro" remains: NO
 
 ## Validation Performed
-- node --check tools/shared/platformShell.js
-- node --check tools/toolRegistry.js
+- node --check toolbox/shared/platformShell.js
+- node --check toolbox/toolRegistry.js
 - npm run test:launch-smoke -- --tools
 - Targeted browser validation script for Vector Map Editor, Vector Asset Studio, Sprite Editor, State Inspector, and Asset Browser
 - Evidence JSON: tmp/pr_tool_remove_static_header_intro_validation.json

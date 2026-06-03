@@ -22,7 +22,7 @@ Applied the Palette Manager hidden-header wide layout override.
 - Full samples smoke test was not run.
 
 ## Manual Apply Check
-1. Open `tools/palette-manager-v2/index.html`.
+1. Open `toolbox/palette-manager-v2/index.html`.
 2. Confirm normal layout is unchanged.
 3. Click `Hide Header and Details`.
 4. Confirm left/right panels anchor to the viewport sides.

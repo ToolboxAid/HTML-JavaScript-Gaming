@@ -23,7 +23,7 @@ Create and finalize Level 19 bootstrap planning structure docs only. No code/run
 
 ## Non-Goals
 - no `src/` changes
-- no `samples/`, `games/`, or `tools/` implementation changes
+- no `samples/`, `games/`, or `toolbox/` implementation changes
 - no test logic changes
 - no roadmap checkbox status updates
 

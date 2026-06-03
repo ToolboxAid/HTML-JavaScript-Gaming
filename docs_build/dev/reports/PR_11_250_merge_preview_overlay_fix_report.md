@@ -4,8 +4,8 @@
 Updated Workspace V2 Session Merge UI state feedback and preview output containment so preview results remain inside the merge panel and Confirm/Apply readiness is explicit and testable.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2MergePreviewOverlayFix.test.mjs`
 
 ## Changes Implemented
@@ -32,13 +32,13 @@ Updated Workspace V2 Session Merge UI state feedback and preview output containm
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2MergePreviewOverlayFix.test.mjs
 node tests/runtime/V2MergePreviewOverlayFix.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2MergePreviewOverlayFix.test.mjs` -> PASS
 - `node tests/runtime/V2MergePreviewOverlayFix.test.mjs` -> PASS
   - output: `tmp/v2-merge-preview-overlay-fix-results.json`

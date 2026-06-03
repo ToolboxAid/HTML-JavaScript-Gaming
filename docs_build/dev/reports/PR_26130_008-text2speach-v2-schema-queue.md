@@ -12,7 +12,7 @@ Changed only the text2speach-V2 naming pass and the existing Workspace Manager V
 
 No `start_of_day` files were modified.
 
-No `tools/shared` dependency was added.
+No `toolbox/shared` dependency was added.
 
 No inline script/style/event handlers were added.
 
@@ -26,7 +26,7 @@ Updated tool-facing naming in:
 - Tools index utility grouping.
 - Workspace Manager V2 launchable tool id/name/path.
 - Workspace Manager V2 tile details.
-- Tool folder and stylesheet path: `tools/text2speach-V2/`.
+- Tool folder and stylesheet path: `toolbox/text2speach-V2/`.
 - HTML title, `data-tool-id`, header label, CSS classes, DOM ids, and status log id.
 - Browser status logs: `text2speach-V2 ready` / `text2speach-V2 unavailable`.
 - Playwright helper names, route URLs, selectors, expected labels, status logs, and sessionStorage toolState key assertions.
@@ -37,13 +37,13 @@ Schema/session metadata now carries `toolId: "text2speach-V2"` for Workspace Man
 ## Validation
 
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `node --check tools/text2speach-V2/js/bootstrap.js`
-- `node --check tools/text2speach-V2/js/TextToSpeechToolApp.js`
+- `node --check toolbox/text2speach-V2/js/bootstrap.js`
+- `node --check toolbox/text2speach-V2/js/TextToSpeechToolApp.js`
 - `node --check src/engine/audio/TextToSpeechDefaults.js`
 - `node --check src/engine/audio/TextToSpeechEngine.js`
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `npm run test:workspace-v2`: 25 passed
-- Inline/dependency guard grep: no matches for inline scripts/styles/event handlers, `tools/shared`, `imageDataUrl`, or `start_of_day` in touched implementation/test paths
+- Inline/dependency guard grep: no matches for inline scripts/styles/event handlers, `toolbox/shared`, `imageDataUrl`, or `start_of_day` in touched implementation/test paths
 - `git diff --check`: passed
 
 Full samples smoke test was skipped because this PR is scoped to text2speach-V2 naming, Workspace Manager V2 launch coverage, and existing speech queue behavior, not broad sample runtime behavior.
@@ -54,7 +54,7 @@ Playwright impacted: Yes.
 
 Validated behavior:
 
-- Direct `text2speach-V2` launch uses `/tools/text2speach-V2/index.html`.
+- Direct `text2speach-V2` launch uses `/toolbox/text2speach-V2/index.html`.
 - The first-class tool surface exposes `data-tool-id="text2speach-V2"` and heading text `text2speach-V2`.
 - Sample text uses the exact `text2speach-V2` name.
 - Enum-populated language, rate, pitch, and volume controls remain available.
@@ -70,13 +70,13 @@ Expected fail behavior: tests fail if the registry, tools index, Workspace Manag
 
 ## Manual Test
 
-1. Open `/tools/text2speach-V2/index.html`.
+1. Open `/toolbox/text2speach-V2/index.html`.
 2. Confirm the header shows `text2speach-V2`.
 3. Confirm the default sample text mentions `text2speach-V2`.
 4. Click `Speak`.
 5. Expected: status logs `OK Speak queued...` and the output summary shows `speak-queued`.
 6. Open Workspace Manager V2, pick the repo folder, open Asteroids, and launch `text2speach-V2`.
-7. Expected: the tool opens under `/tools/text2speach-V2/index.html?launch=workspace...`, workspace nav is visible, and returning to Workspace Manager keeps tools enabled.
+7. Expected: the tool opens under `/toolbox/text2speach-V2/index.html?launch=workspace...`, workspace nav is visible, and returning to Workspace Manager keeps tools enabled.
 
 Out of scope: full samples smoke validation and sample JSON alignment.
 
@@ -89,23 +89,23 @@ Out of scope: full samples smoke validation and sample JSON alignment.
 - `src/engine/audio/TextToSpeechEngine.js`
 - `src/engine/audio/index.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/preview-generator-v2/PreviewGeneratorV2App.js`
-- `tools/preview-generator-v2/PreviewGeneratorV2Ui.js`
-- `tools/preview-generator-v2/controls/RepoDestinationControl.js`
-- `tools/preview-generator-v2/index.html`
-- `tools/preview-generator-v2/previewGeneratorV2.css`
-- `tools/renderToolsIndex.js`
-- `tools/text2speach-V2/README.md`
-- `tools/text2speach-V2/how_to_use.html`
-- `tools/text2speach-V2/index.html`
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js`
-- `tools/text2speach-V2/js/bootstrap.js`
-- `tools/text2speach-V2/js/controls/ActionNavControl.js`
-- `tools/text2speach-V2/js/controls/OutputSummaryControl.js`
-- `tools/text2speach-V2/js/controls/SpeechOptionsControl.js`
-- `tools/text2speach-V2/js/controls/StatusLogControl.js`
-- `tools/text2speach-V2/js/controls/TextInputControl.js`
-- `tools/text2speach-V2/styles/text2speach-V2.css`
-- `tools/toolRegistry.js`
-- `tools/workspace-manager-v2/js/controls/ToolTilesControl.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
+- `toolbox/preview-generator-v2/PreviewGeneratorV2Ui.js`
+- `toolbox/preview-generator-v2/controls/RepoDestinationControl.js`
+- `toolbox/preview-generator-v2/index.html`
+- `toolbox/preview-generator-v2/previewGeneratorV2.css`
+- `toolbox/renderToolsIndex.js`
+- `toolbox/text2speach-V2/README.md`
+- `toolbox/text2speach-V2/how_to_use.html`
+- `toolbox/text2speach-V2/index.html`
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js`
+- `toolbox/text2speach-V2/js/bootstrap.js`
+- `toolbox/text2speach-V2/js/controls/ActionNavControl.js`
+- `toolbox/text2speach-V2/js/controls/OutputSummaryControl.js`
+- `toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js`
+- `toolbox/text2speach-V2/js/controls/StatusLogControl.js`
+- `toolbox/text2speach-V2/js/controls/TextInputControl.js`
+- `toolbox/text2speach-V2/styles/text2speach-V2.css`
+- `toolbox/toolRegistry.js`
+- `toolbox/workspace-manager-v2/js/controls/ToolTilesControl.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`

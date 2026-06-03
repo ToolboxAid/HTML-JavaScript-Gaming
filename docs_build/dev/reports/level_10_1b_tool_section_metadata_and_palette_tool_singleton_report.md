@@ -18,7 +18,7 @@
 
 ## Read-Path Adjustment
 - Updated old Asteroids manifest fragment references in:
-  - `tools/shared/asteroidsPlatformDemo.js`
+  - `toolbox/shared/asteroidsPlatformDemo.js`
 - Old reference:
   - `games/Asteroids/game.manifest.json#palette`
 - New reference:

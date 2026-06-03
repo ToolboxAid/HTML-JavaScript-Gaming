@@ -120,7 +120,7 @@ const laneDefinitions = Object.freeze({
     fixturePaths: [],
     ownership: "tools",
     requiresPreflight: true,
-    reason: "Workspace V2 command now validates the future-state tools surface without exercising deprecated tools/old_* routes."
+    reason: "Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes."
   },
   "tool-runtime": {
     affectedSurface: "First-class tool runtime behavior",
@@ -253,7 +253,7 @@ const representativeRoutingCases = Object.freeze([
   },
   {
     caseName: "tool change",
-    changedFiles: ["tools/audio-sfx-playground-v2/index.js"],
+    changedFiles: ["toolbox/audio-sfx-playground-v2/index.js"],
     expectedLanes: ["tool-runtime"],
     reason: "Tool-owned runtime/UI changes route to the affected tool-runtime lane only."
   },
@@ -647,7 +647,7 @@ function routeLanesForChangedFiles(changedFiles) {
       routed.add("integration");
     } else if (normalized.startsWith("tests/playwright/games/") || normalized.startsWith("games/") || normalized.startsWith("old_games/")) {
       continue;
-    } else if (normalized.startsWith("tests/playwright/tools/") || normalized.startsWith("tools/")) {
+    } else if (normalized.startsWith("tests/playwright/tools/") || normalized.startsWith("toolbox/")) {
       routed.add("tool-runtime");
     } else if (normalized.startsWith("src/")
       || normalized.startsWith("tests/core/")
@@ -4363,7 +4363,7 @@ function makeZeroBrowserPreflightReport({
     "| Check | Status | Details |",
     "| --- | --- | --- |",
     `| lane ownership | ${structureAudit.status} | ${reportLine(structureAudit.reason)} |`,
-    `| directory placement | ${structureAudit.status} | tools/games/integration/engine ownership checked. |`,
+    `| directory placement | ${structureAudit.status} | toolbox/games/integration/engine ownership checked. |`,
     `| invalid file naming | ${structureAudit.status} | Game-specific filenames are blocked from generic reusable lanes. |`,
     `| duplicate registrations | ${laneRegistration.findings.some((entry) => entry.includes("Duplicate")) ? "FAIL" : "PASS"} | ${laneRegistration.findings.filter((entry) => entry.includes("Duplicate")).join("; ") || "No duplicate lane registrations."} |`,
     `| invalid imports | ${structureAudit.status} | Relative imports checked by Playwright structure audit. |`,

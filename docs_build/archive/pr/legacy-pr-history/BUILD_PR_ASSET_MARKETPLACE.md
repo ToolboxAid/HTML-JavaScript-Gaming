@@ -4,7 +4,7 @@
 Implement the asset marketplace layer over the accepted Level 17 platform baseline without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared marketplace planner in `tools/shared/assetMarketplace.js`
+- Added shared marketplace planner in `toolbox/shared/assetMarketplace.js`
   - normalizes marketplace listings deterministically
   - evaluates listing compatibility through project versioning rules
   - emits stable readable listing and review reports
@@ -12,7 +12,7 @@ Implement the asset marketplace layer over the accepted Level 17 platform baseli
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/assetMarketplace.js`
+  - `node --check toolbox/shared/assetMarketplace.js`
   - `node --check tests/tools/AssetMarketplace.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

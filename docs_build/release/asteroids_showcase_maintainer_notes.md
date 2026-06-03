@@ -8,7 +8,7 @@ asteroids_showcase_maintainer_notes.md
 ## Integration Boundary
 - Keep integration at game/sample composition level.
 - Do not move Asteroids-specific debug behavior into engine core.
-- Reuse public debug APIs from `tools/dev/devConsoleIntegration.js`.
+- Reuse public debug APIs from `toolbox/dev/devConsoleIntegration.js`.
 
 ## Asteroids-Specific Debug Module
 - `old_games/Asteroids/debug/asteroidsShowcaseDebug.js`

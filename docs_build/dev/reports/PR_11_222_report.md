@@ -1,8 +1,8 @@
 # PR_11_222 Report - V2 Error Viewer (Workspace V2)
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2ErrorViewer.test.mjs`
 - `docs_build/dev/reports/PR_11_222_report.md`
 
@@ -49,11 +49,11 @@ Example entries displayed by viewer:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2ErrorViewer.test.mjs`  
+1. `node --check tests/runtime/V2ErrorViewer.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2ErrorViewer.test.mjs`  
+2. `node tests/runtime/V2ErrorViewer.test.mjs`
 Result: **PASS** (writes `tmp/v2-error-viewer-results.json`)
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
 Result: **PASS**
 
 Runtime test coverage:
@@ -74,5 +74,5 @@ Runtime test coverage:
 - No games changed.
 - No Workspace Manager v1 changes.
 - No platformShell changes.
-- No `tools/shared/*` changes.
+- No `toolbox/shared/*` changes.
 - V2 tool logging format was not modified.

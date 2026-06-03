@@ -1,11 +1,11 @@
 # PR_26126_105 Manual Validation Notes
 
 ## Commands
-- `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
-- `node --check tools/asset-manager-v2/js/bootstrap.js`
-- `node --check tools/asset-manager-v2/js/controls/AccordionSection.js`
+- `node --check toolbox/asset-manager-v2/js/AssetManagerV2App.js`
+- `node --check toolbox/asset-manager-v2/js/bootstrap.js`
+- `node --check toolbox/asset-manager-v2/js/controls/AccordionSection.js`
 - `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
-- `rg -n "KeyD|KeyA|KeyS|KeyW|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|PageUp|PageDown|Home|End|Enter|keyboard|WASD|wasd|keydown|data-asset-tile-id" tools\asset-manager-v2 tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
+- `rg -n "KeyD|KeyA|KeyS|KeyW|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|PageUp|PageDown|Home|End|Enter|keyboard|WASD|wasd|keydown|data-asset-tile-id" toolbox\asset-manager-v2 tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
 - `npm run test:workspace-v2`
 - `git diff --check`
 

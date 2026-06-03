@@ -9,7 +9,7 @@ Update the Asset Browser schema so it matches the current flat manifest contract
 - Asset ids must use a predictable namespaced form such as `image.sample1902.preview`, `image.asteroids.bezel`, `font.asteroids.vector-battle`, or `audio.asteroids.fire`.
 
 ## Scope
-- Update `tools/schemas/tools/asset-browser.schema.json`.
+- Update `toolbox/schemas/tools/asset-browser.schema.json`.
 - Add an `assets` property under the asset-browser payload/model where this repo expects Asset Browser payload validation.
 - Validate each asset entry requires `path`, `kind`, and `source`.
 - Allow optional per-asset fields such as `stretchOverride` for bezel assets.
@@ -64,7 +64,7 @@ audio.asteroids.fire
 ```
 
 ## Implementation notes for Codex
-1. Open `tools/schemas/tools/asset-browser.schema.json`.
+1. Open `toolbox/schemas/tools/asset-browser.schema.json`.
 2. Add an `assets` property in the correct schema location used by asset-browser payload validation.
 3. Define `$defs.assetMap` and `$defs.assetEntry` rather than leaving `assets` as unconstrained `jsonValue`.
 4. Keep compatibility fields currently present unless they are explicitly obsolete.

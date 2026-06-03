@@ -5,8 +5,8 @@ Scope:
 - Existing Tool Template V2 runtime behavior, launch-mode NAV behavior, Status Clear placement, and Status Clear behavior were preserved.
 
 Palette Manager V2 patterns reviewed:
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - Structural/style patterns used:
   - `.palette-manager-v2__field`
   - `.palette-manager-v2__field--compact`
@@ -18,7 +18,7 @@ Palette Manager V2 patterns reviewed:
   - Palette Manager text/log surface rules such as `.palette-manager-v2__json-preview`
 
 Changes:
-- Updated `tools/templates-v2/styles/toolStarter.css` to match Palette Manager V2 visual control patterns:
+- Updated `toolbox/templates-v2/styles/toolStarter.css` to match Palette Manager V2 visual control patterns:
   - label/control fields use the compact 74px label column and 8px gap
   - inputs/selects/textareas use Palette Manager surface border, 10px radius, surface-inline background, and text color
   - buttons use Palette Manager-style 10px radius, compact native button padding, disabled opacity/filter, and focus outline
@@ -42,8 +42,8 @@ Validation:
 - `git diff --check` passed.
 
 Manual test notes:
-- Open `tools/templates-v2/index.html`.
+- Open `toolbox/templates-v2/index.html`.
 - Confirm default tool-mode NAV is visible and workspace NAV remains hidden.
-- Open `tools/templates-v2/index.html?launch=workspace`.
+- Open `toolbox/templates-v2/index.html?launch=workspace`.
 - Confirm workspace-mode NAV is visible and tool NAV remains hidden.
 - Confirm template labels, inputs, textarea, buttons, field spacing, panel spacing, and accordion controls visually match Palette Manager V2 patterns.

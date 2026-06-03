@@ -6,20 +6,20 @@ Purpose
 - Fix issues where safe; otherwise provide evidence-backed no-fix or blocker outcomes.
 
 Files searched
-- tools/shared/platformShell.js
-- tools/shared/toolLoadDiagnostics.js
-- tools/shared/schemaOnlyToolPresetValidation.js
-- tools/3D Asset Viewer/main.js
-- tools/3D Camera Path Editor/main.js
-- tools/3D JSON Payload/main.js
-- tools/Asset Pipeline/main.js
-- tools/Palette Browser/main.js
-- tools/Performance Profiler/main.js
-- tools/Physics Sandbox/main.js
-- tools/Replay Visualizer/main.js
-- tools/State Inspector/main.js
-- tools/Tile Model Converter/main.js
-- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+- toolbox/shared/platformShell.js
+- toolbox/shared/toolLoadDiagnostics.js
+- toolbox/shared/schemaOnlyToolPresetValidation.js
+- toolbox/3D Asset Viewer/main.js
+- toolbox/3D Camera Path Editor/main.js
+- toolbox/3D JSON Payload/main.js
+- toolbox/Asset Pipeline/main.js
+- toolbox/Palette Browser/main.js
+- toolbox/Performance Profiler/main.js
+- toolbox/Physics Sandbox/main.js
+- toolbox/Replay Visualizer/main.js
+- toolbox/State Inspector/main.js
+- toolbox/Tile Model Converter/main.js
+- toolbox/Vector Map Editor/editor/VectorMapEditorApp.js
 - tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
 - samples/metadata/samples.index.metadata.json
 - samples/phase-02/0204/*
@@ -33,11 +33,11 @@ Repair loop outcomes by requested item
 
 2) Schema-only validation
 - Result: PROVED NO NEW FIX NEEDED.
-- Evidence: `tools/shared/toolLoadDiagnostics.js` still calls `enforceToolPresetSchemaOnlyContract` and `tools/shared/schemaOnlyToolPresetValidation.js` emits visible `Input validation failed...` messages.
+- Evidence: `toolbox/shared/toolLoadDiagnostics.js` still calls `enforceToolPresetSchemaOnlyContract` and `toolbox/shared/schemaOnlyToolPresetValidation.js` emits visible `Input validation failed...` messages.
 
 3) Test schema relocation
 - Result: PROVED NO NEW FIX NEEDED (already repaired in prior PR).
-- Runtime `tools/*/tool.schema.json` paths are absent.
+- Runtime `toolbox/*/tool.schema.json` paths are absent.
 - Fixture paths under `tests/fixtures/tool-schemas/*/tool.schema.json` are present.
 
 4) Remove/report infer/normalize/tryLoadPreset/buildPreset/replace/legacy/alias/fallback paths

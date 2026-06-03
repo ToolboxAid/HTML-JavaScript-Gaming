@@ -588,14 +588,14 @@ function readMetadataRoundtripRows() {
 }
 
 async function loadToolRegistryMap() {
-  const modulePath = pathToFileURL(path.join(repoRoot, "tools", "toolRegistry.js")).href;
+  const modulePath = pathToFileURL(path.join(repoRoot, "toolbox", "toolRegistry.js")).href;
   const registryModule = await import(modulePath);
   const registry = Array.isArray(registryModule?.TOOL_REGISTRY) ? registryModule.TOOL_REGISTRY : [];
   return new Map(registry.map((tool) => [tool.id, tool]));
 }
 
 function buildStandaloneToolUrl(baseUrl, toolEntryPoint, sampleRow) {
-  const hrefPath = `/tools/${encodeURI(toolEntryPoint)}`;
+  const hrefPath = `/toolbox/${encodeURI(toolEntryPoint)}`;
   const url = new URL(hrefPath, `${baseUrl}/`);
   url.searchParams.set("sampleId", sampleRow.sampleId);
   url.searchParams.set("sampleTitle", sampleRow.sampleTitle || `Sample ${sampleRow.sampleId}`);

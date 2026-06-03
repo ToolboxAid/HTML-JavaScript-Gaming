@@ -33,7 +33,7 @@ Expected implementation touch points should stay as small and surgical as possib
 Likely targets:
 - `src/engine/debug/` overlay registry module
 - `src/engine/debug/` overlay host / panel consumption module
-- `tools/dev/devConsoleIntegration.js` only if public registry commands already belong there and can remain isolated
+- `toolbox/dev/devConsoleIntegration.js` only if public registry commands already belong there and can remain isolated
 - `samples/.../MultiSystemDemoScene.js` for sample registration and validation wiring
 - docs under `docs_build/pr/` and `docs_build/dev/reports/`
 

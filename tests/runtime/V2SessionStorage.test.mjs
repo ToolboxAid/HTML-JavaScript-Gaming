@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-storage-results.json");
 
@@ -225,15 +225,15 @@ function validateTool(toolId) {
     sessionStorageLike.setItem(hostContextId, JSON.stringify(sessionContext));
   }
 
-  const validUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId || "missing")}`;
+  const validUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId || "missing")}`;
   const validState = classifyFromStorage(toolId, validUrl, sessionStorageLike);
 
-  const missingUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(`${toolId}-missing`)}`;
+  const missingUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(`${toolId}-missing`)}`;
   const missingState = classifyFromStorage(toolId, missingUrl, sessionStorageLike);
 
   const invalidHostContextId = `${toolId}-invalid`;
   sessionStorageLike.setItem(invalidHostContextId, "{invalid-json");
-  const invalidUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(invalidHostContextId)}`;
+  const invalidUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(invalidHostContextId)}`;
   const invalidState = classifyFromStorage(toolId, invalidUrl, sessionStorageLike);
 
   const jsText = jsExists ? readText(jsPath) : "";

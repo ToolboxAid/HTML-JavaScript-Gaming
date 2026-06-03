@@ -6,7 +6,7 @@
 - No palette normalization or fallback data added.
 
 ## Files Changed
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - `samples/metadata/samples.index.metadata.json`
 
 ## Implementation Summary

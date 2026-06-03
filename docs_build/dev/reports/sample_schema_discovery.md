@@ -15,15 +15,15 @@ Date: 2026-06-02
 
 | Surface | Count | Status | Notes |
 | --- | ---: | --- | --- |
-| `tools/schemas/game.manifest.schema.json` | 1 | PRESENT | Active game manifest schema and current manifest ownership surface. |
-| `tools/schemas/tools/*.schema.json` | 22 | PRESENT | Active per-tool payload schema surface. |
-| `tools/schemas/samples/sample.tool-payload.schema.json` | 1 | PRESENT | Active legacy/sample tool payload wrapper schema surface. |
-| `tools/schemas/workspace.schema.json` | 0 | MISSING | Not an active schema surface. Do not assume it exists. |
-| `tools/schemas/workspace.manifest.schema.json` | 0 | MISSING | Referenced historically and by one sample, but not present as an active schema file. |
+| `toolbox/schemas/game.manifest.schema.json` | 1 | PRESENT | Active game manifest schema and current manifest ownership surface. |
+| `toolbox/schemas/tools/*.schema.json` | 22 | PRESENT | Active per-tool payload schema surface. |
+| `toolbox/schemas/samples/sample.tool-payload.schema.json` | 1 | PRESENT | Active legacy/sample tool payload wrapper schema surface. |
+| `toolbox/schemas/workspace.schema.json` | 0 | MISSING | Not an active schema surface. Do not assume it exists. |
+| `toolbox/schemas/workspace.manifest.schema.json` | 0 | MISSING | Referenced historically and by one sample, but not present as an active schema file. |
 
 ## Game Manifest Schema Usage
 
-`tools/schemas/game.manifest.schema.json` is the active schema for game manifest ownership. Its `tools` map currently defines these governed tool payload keys:
+`toolbox/schemas/game.manifest.schema.json` is the active schema for game manifest ownership. Its `tools` map currently defines these governed tool payload keys:
 
 - `asset-manager-v2`
 - `audio-sfx-playground-v2`
@@ -35,12 +35,12 @@ Date: 2026-06-02
 
 Current active code references include:
 
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `tools/_templates-v2/starter-project-template/config/starter.game.manifest.json`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/_tool_template-v2/starter-project-template/config/starter.game.manifest.json`
 
 ## Tool Schema Usage
 
-Active tool schema files discovered under `tools/schemas/tools/`:
+Active tool schema files discovered under `toolbox/schemas/tools/`:
 
 - `3d-asset-viewer.schema.json`
 - `3d-camera-path-editor.schema.json`
@@ -72,27 +72,27 @@ Static sample JSON inventory found 63 sample JSON files:
 | Sample `$schema` Reference | Count | Status |
 | --- | ---: | --- |
 | No `$schema` | 35 | PENDING rebuild or explicit wrapper mapping. |
-| `../../../tools/schemas/tools/palette-browser.schema.json` | 17 | PRESENT. |
-| `../../../tools/schemas/samples/sample.tool-payload.schema.json` | 6 | PRESENT. |
-| `../../../tools/schemas/palette.schema.json` | 3 | MISSING active schema. |
-| `../../../tools/schemas/workspace.manifest.schema.json` | 1 | MISSING active schema. |
-| `../../tools/schemas/samples/sample.tool-payload.schema.json` | 1 | PRESENT. |
+| `../../../toolbox/schemas/tools/palette-browser.schema.json` | 17 | PRESENT. |
+| `../../../toolbox/schemas/samples/sample.tool-payload.schema.json` | 6 | PRESENT. |
+| `../../../toolbox/schemas/palette.schema.json` | 3 | MISSING active schema. |
+| `../../../toolbox/schemas/workspace.manifest.schema.json` | 1 | MISSING active schema. |
+| `../../toolbox/schemas/samples/sample.tool-payload.schema.json` | 1 | PRESENT. |
 
 ## Missing Assumed Schemas
 
 | Assumed Schema | Exists | Action |
 | --- | --- | --- |
-| `tools/schemas/workspace.schema.json` | No | Eliminate as a planning assumption. |
-| `tools/schemas/workspace.manifest.schema.json` | No | Do not use as authoritative until a future PR explicitly recreates or replaces it. |
-| `tools/schemas/tools/tile-model-converter.schema.json` | No | Map or retire legacy sample references before rebuild. |
-| `tools/schemas/tools/asset-browser.schema.json` | No | Map or retire legacy sample references before rebuild. |
+| `toolbox/schemas/workspace.schema.json` | No | Eliminate as a planning assumption. |
+| `toolbox/schemas/workspace.manifest.schema.json` | No | Do not use as authoritative until a future PR explicitly recreates or replaces it. |
+| `toolbox/schemas/tools/tile-model-converter.schema.json` | No | Map or retire legacy sample references before rebuild. |
+| `toolbox/schemas/tools/asset-browser.schema.json` | No | Map or retire legacy sample references before rebuild. |
 
 ## Validation
 
 Static schema discovery only:
 
 ```powershell
-rg --files tools/schemas
+rg --files toolbox/schemas
 rg -n "workspace\.schema|workspace\.manifest|game\.manifest\.schema|tools/schemas" samples tools docs_build/dev/reports
 node -e "<static schema/sample inventory>"
 ```

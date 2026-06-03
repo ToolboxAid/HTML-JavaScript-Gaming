@@ -1,15 +1,15 @@
 # BUILD_PR_TOOL_REGISTRY_VALIDATOR_AND_SPRITE_FIRST_CLASS
 
 ## Purpose
-Restore `Sprite Editor` as a first-class active tool in the registry-driven `tools/` surface, keep `SpriteEditor_old_keep` preserved but hidden, and add a filesystem-aware registry validator plus report output so tool-surface drift fails fast.
+Restore `Sprite Editor` as a first-class active tool in the registry-driven `toolbox/` surface, keep `SpriteEditor_old_keep` preserved but hidden, and add a filesystem-aware registry validator plus report output so tool-surface drift fails fast.
 
 ## Scope
 In scope:
-- `tools/toolRegistry.js` as the single source of truth for active and legacy tool metadata
+- `toolbox/toolRegistry.js` as the single source of truth for active and legacy tool metadata
 - first-class active-surface rendering through `entry.active === true`
 - `Sprite Editor` restored to the active first-class set
 - legacy `SpriteEditor_old_keep` preserved but excluded from active rendering
-- validator script that compares registry entries to `tools/` directories
+- validator script that compares registry entries to `toolbox/` directories
 - validation report output under `docs_build/dev/reports/`
 
 Out of scope:
@@ -28,10 +28,10 @@ Out of scope:
 - SpriteEditor_old_keep
 
 ## Modules Created Or Changed
-- `tools/toolRegistry.js`
-- `tools/renderToolsIndex.js`
-- `tools/shared/platformShell.js`
-- `tools/index.html`
+- `toolbox/toolRegistry.js`
+- `toolbox/renderToolsIndex.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/index.html`
 - `scripts/validate-active-tools-surface.mjs`
 - `scripts/validate-tool-registry.mjs`
 - `docs_build/pr/BUILD_PR_TOOL_REGISTRY_VALIDATOR_AND_SPRITE_FIRST_CLASS.md`
@@ -55,7 +55,7 @@ Each tool entry now carries explicit registry-facing fields:
 - restored `Sprite Editor` as `active: true`, `legacy: false`, and visible on the first-class tools surface
 - kept `SpriteEditor_old_keep` as `active: false`, `legacy: true`, and excluded from active rendering
 - updated active rendering paths so the landing page and shared shell use registry entries filtered by `entry.active === true`
-- added `scripts/validate-tool-registry.mjs` to compare registry entries to actual `tools/` directories and emit a report
+- added `scripts/validate-tool-registry.mjs` to compare registry entries to actual `toolbox/` directories and emit a report
 - expanded the active-surface validator so it expects the five approved active tools and confirms legacy sprite exclusion
 
 ## Validator Coverage
@@ -74,9 +74,9 @@ Each tool entry now carries explicit registry-facing fields:
 - stale deprecated sprite-rename references remain in the checked surface files
 
 ## Validation Performed
-- `node --check tools/toolRegistry.js`
-- `node --check tools/renderToolsIndex.js`
-- `node --check tools/shared/platformShell.js`
+- `node --check toolbox/toolRegistry.js`
+- `node --check toolbox/renderToolsIndex.js`
+- `node --check toolbox/shared/platformShell.js`
 - `node --check scripts/validate-active-tools-surface.mjs`
 - `node --check scripts/validate-tool-registry.mjs`
 - `node scripts/validate-tool-registry.mjs`
@@ -90,5 +90,5 @@ Each tool entry now carries explicit registry-facing fields:
 - active tool folders, entrypoints, and showcase/help links resolve cleanly
 
 ## Notes
-- the actual preserved legacy folder on disk is `tools/SpriteEditor_old_keep/`
+- the actual preserved legacy folder on disk is `toolbox/SpriteEditor_old_keep/`
 - active tool display names now align to the expected first-class list for this PR

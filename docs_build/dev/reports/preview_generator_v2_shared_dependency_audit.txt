@@ -1,39 +1,39 @@
 # Preview Generator V2 Shared Dependency Audit - PR_26126_036
 
 Scope:
-- tools/preview-generator-v2
+- toolbox/preview-generator-v2
 - tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 
 Method:
-- Searched for tools/shared references, shared path imports, platformShell references, CSS links, script references, and module imports.
+- Searched for toolbox/shared references, shared path imports, platformShell references, CSS links, script references, and module imports.
 - Reviewed Preview Generator V2 shell behavior after PR_26126_035 file split.
 
-tools/shared result:
-- PASS: No tools/shared import was found.
-- PASS: No tools/shared script reference was found.
-- PASS: No tools/shared CSS reference was found.
+toolbox/shared result:
+- PASS: No toolbox/shared import was found.
+- PASS: No toolbox/shared script reference was found.
+- PASS: No toolbox/shared CSS reference was found.
 - PASS: No platformShell.css or platformShell.js reference was found.
-- PASS: No runtime dependency on tools/shared behavior was found.
+- PASS: No runtime dependency on toolbox/shared behavior was found.
 
 Search result:
-- Command: rg -n "tools/shared|../shared|../../tools/shared|platformShell|shared/" tools/preview-generator-v2 tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+- Command: rg -n "toolbox/shared|../shared|../../toolbox/shared|platformShell|shared/" toolbox/preview-generator-v2 tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 - Result: no matches.
 
 Non-tools/shared dependencies observed:
-- tools/preview-generator-v2/index.html:8 links ../../src/engine/theme/main.css.
-- tools/preview-generator-v2/index.html:9 links ../../src/engine/ui/hubCommon.css.
-- tools/preview-generator-v2/index.html:10 links ../../src/engine/theme/accordionV2/accordionV2.css.
-- tools/preview-generator-v2/index.html:11 links ../palette-manager-v2/paletteManagerV2.css.
-- tools/preview-generator-v2/index.html:12 links ./previewGeneratorV2.css.
-- tools/preview-generator-v2/index.html:13 loads html2canvas from cdn.jsdelivr.net.
-- tools/preview-generator-v2/index.html:230 loads ./previewGeneratorV2.bootstrap.js.
-- tools/preview-generator-v2/index.html:231 loads ../../src/engine/theme/accordionV2/accordionV2.js.
-- tools/preview-generator-v2/index.html:232 loads ../../src/engine/theme/mount-shared-header.js.
+- toolbox/preview-generator-v2/index.html:8 links ../../src/engine/theme/main.css.
+- toolbox/preview-generator-v2/index.html:9 links ../../src/engine/ui/hubCommon.css.
+- toolbox/preview-generator-v2/index.html:10 links ../../src/engine/theme/accordionV2/accordionV2.css.
+- toolbox/preview-generator-v2/index.html:11 links ../palette-manager-v2/paletteManagerV2.css.
+- toolbox/preview-generator-v2/index.html:12 links ./previewGeneratorV2.css.
+- toolbox/preview-generator-v2/index.html:13 loads html2canvas from cdn.jsdelivr.net.
+- toolbox/preview-generator-v2/index.html:230 loads ./previewGeneratorV2.bootstrap.js.
+- toolbox/preview-generator-v2/index.html:231 loads ../../src/engine/theme/accordionV2/accordionV2.js.
+- toolbox/preview-generator-v2/index.html:232 loads ../../src/engine/theme/mount-shared-header.js.
 
 Runtime note:
-- The element id shared-theme-header is mounted by src/engine/theme/mount-shared-header.js, not by tools/shared.
+- The element id shared-theme-header is mounted by src/engine/theme/mount-shared-header.js, not by toolbox/shared.
 - PreviewGeneratorV2ShellControl owns the local Hide Header and Details behavior for this tool.
-- The tool still uses Palette Manager V2 CSS as an explicit visual base dependency; that is outside tools/shared and was not changed in this PR.
+- The tool still uses Palette Manager V2 CSS as an explicit visual base dependency; that is outside toolbox/shared and was not changed in this PR.
 
 Implementation changes from this audit:
 - No tool runtime behavior was changed.

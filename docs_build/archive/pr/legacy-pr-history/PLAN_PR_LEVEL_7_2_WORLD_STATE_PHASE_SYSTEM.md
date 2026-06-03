@@ -21,7 +21,7 @@ Introduce world-level progression control:
 ## Out of Scope
 - src/engine/
 - games/
-- tools/
+- toolbox/
 - runtime code changes
 
 ## System Definition

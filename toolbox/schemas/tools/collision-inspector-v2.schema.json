@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "toolbox/schemas/tools/collision-inspector-v2.schema.json",
+  "title": "Collision Inspector V2 Payload",
+  "description": "Workspace payload metadata for Collision Inspector V2. Object geometry is not persisted here; it resolves from Object Vector Studio V2 manifest objects only.",
+  "type": "object",
+  "required": ["version", "toolId", "name"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "toolId": {
+      "const": "collision-inspector-v2"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

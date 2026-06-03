@@ -83,4 +83,4 @@ Repo-wide tests were not run, per BUILD instruction. Playwright impacted: No; th
 2. Confirm the header and footer partials load.
 3. Confirm legacy source content is visible on each page, including Branding mascot/color sections, Controls control lab, Themes planning content, Design System CSS ownership content, and Grouping Colors table/accordion/grouping sections.
 4. Confirm Admin side navigation links route to root `/admin/*.html` pages.
-5. Confirm Controls `View Controls` scrolls/routes to `/admin/controls.html#controls` and `Back to Tools` routes to root `/tools/index.html`.
+5. Confirm Controls `View Controls` scrolls/routes to `/admin/controls.html#controls` and `Back to Tools` routes to root `/toolbox/index.html`.

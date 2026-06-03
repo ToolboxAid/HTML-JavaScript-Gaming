@@ -19,7 +19,7 @@ Current manifests are strongest for launch, assets, palette, input mapping, musi
 
 | Surface | Status | Evidence |
 | --- | --- | --- |
-| Launch and screen | READY | `tools/schemas/game.manifest.schema.json` defines `launch` and optional `screen`. |
+| Launch and screen | READY | `toolbox/schemas/game.manifest.schema.json` defines `launch` and optional `screen`. |
 | Assets and palette | READY | Game manifests use `tools.asset-manager-v2` and `tools.palette-manager-v2`. |
 | Input mappings | READY | Game manifests use `tools.input-mapping-v2`. |
 | Object geometry | PARTIAL | Object-vector data exists in manifests; gameplay type semantics are still game-specific. |
@@ -64,7 +64,7 @@ Current manifests are strongest for launch, assets, palette, input mapping, musi
 
 ## ProjectWorkspace Boundary
 
-ProjectWorkspace remains coordination-only. It may pass explicit manifest and Tool State references into tools/runtime validation, but it must not persist gameplay objects, rules, active entity state, score state, health state, timers, or hidden defaults.
+ProjectWorkspace remains coordination-only. It may pass explicit manifest and Tool State references into toolbox/runtime validation, but it must not persist gameplay objects, rules, active entity state, score state, health state, timers, or hidden defaults.
 
 ## Validation
 

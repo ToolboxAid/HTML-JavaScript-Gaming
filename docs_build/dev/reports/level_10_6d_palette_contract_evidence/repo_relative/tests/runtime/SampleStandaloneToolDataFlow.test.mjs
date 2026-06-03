@@ -516,7 +516,7 @@ async function loadToolRegistryMap() {
 }
 
 function buildStandaloneToolUrl(baseUrl, toolEntryPoint, sampleRow) {
-  const hrefPath = `/tools/${encodeURI(toolEntryPoint)}`;
+  const hrefPath = `/toolbox/${encodeURI(toolEntryPoint)}`;
   const url = new URL(hrefPath, `${baseUrl}/`);
   url.searchParams.set("sampleId", sampleRow.sampleId);
   url.searchParams.set("sampleTitle", sampleRow.sampleTitle || `Sample ${sampleRow.sampleId}`);

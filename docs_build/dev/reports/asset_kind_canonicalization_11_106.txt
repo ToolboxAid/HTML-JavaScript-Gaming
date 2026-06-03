@@ -7,7 +7,7 @@ Scope
 - Normalize tool-facing asset kinds through canonical runtime normalization.
 
 Files Changed
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/asset_kind_canonicalization_11_106.txt
 
 1) resolveAcceptedAssetKindsForTool updated to canonical-only mapping
@@ -37,7 +37,7 @@ Final mapping:
   skin, sprite, tilemap, parallax, vector, vector-map, model, camera-path, asset
 
 Validation
-A. Mapping audit (tools/shared/platformShell.js)
+A. Mapping audit (toolbox/shared/platformShell.js)
 - tool_count=11
 - duplicate_kind_entries=0
 - unknown_kind_entries=0
@@ -48,7 +48,7 @@ B. Tool-facing asset kind audit (samples/games manifests + game asset catalogs)
 - normalized_noncanonical_entries=0
 
 C. Syntax/Schema checks
-- node --check tools/shared/platformShell.js -> PASS
+- node --check toolbox/shared/platformShell.js -> PASS
 - powershell -ExecutionPolicy Bypass -File .\scripts\PS\validate-tool-schemas.ps1 -> PASS
   - tool_payload_schema_validation: total=17 invalid=0
 - node scripts/validate-json-contracts.mjs -> PASS (script completed)

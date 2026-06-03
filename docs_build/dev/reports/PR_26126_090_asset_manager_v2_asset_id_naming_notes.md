@@ -20,7 +20,7 @@ Date: 2026-05-06
 
 ## Schema And Validation
 
-- `tools/schemas/tools/asset-browser.schema.json` now accepts the `assets.<type>.<role>.<filenamePart>` key structure.
+- `toolbox/schemas/tools/asset-browser.schema.json` now accepts the `assets.<type>.<role>.<filenamePart>` key structure.
 - Asset Manager V2 schema validation enforces that the ID type segment matches `kind`.
 - Asset Manager V2 schema validation enforces that the ID role segment matches `role`.
 - Bezel entries use `assets.image.bezel.<filenamePart>`.

@@ -11,7 +11,7 @@ When missing, initialize a single active palette baseline equivalent to:
 (with no extra palette entries and no legacy locations)
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 
 ## Non-Goals
 - No schema file edits

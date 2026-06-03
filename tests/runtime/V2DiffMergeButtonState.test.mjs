@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
+const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "v2-diff-merge-button-state-results.json");
 
 function readText(filePath) {
@@ -59,8 +59,8 @@ export function run() {
   const hasUpdaterCalls = js.includes("this.updateMergeSelectionFeedbackAndState();") && js.includes("this.updateDiffSelectionFeedbackAndState();");
   const hasBlockedMessages = js.includes("Diff blocked. Session A and Session B selections are missing.") && js.includes("Merge preview blocked. Session A and Session B selections are missing.");
 
-  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!htmlExists) failures.push("Missing tools/workspace-v2/index.html.");
+  if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
   if (!syntaxValid) failures.push("workspace-v2/index.js failed syntax check.");
   if (!hasSelectionStateNodes) failures.push("Missing inline selection state nodes.");
   if (!hasSameSelectionInline) failures.push("Missing inline same-selection state text.");

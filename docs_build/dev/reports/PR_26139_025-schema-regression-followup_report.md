@@ -30,7 +30,7 @@
 ## Coverage
 - Playwright impacted: Yes.
 - V8 coverage report includes changed runtime JS:
-  `(93%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1778/1778; executed functions 156/168`
+  `(93%) toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1778/1778; executed functions 156/168`
 
 ## Full Samples
 - Full samples smoke test was skipped.

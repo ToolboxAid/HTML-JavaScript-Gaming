@@ -77,7 +77,7 @@ When launching sample `0219` into `sprite-editor`, console logs must show:
 ## Files Codex Should Inspect First
 - `samples/phase-02/0219/`
 - the sample manifest for 0219
-- `tools/sprite-editor/`
+- `toolbox/sprite-editor/`
 - existing tool-load diagnostics utility
 - existing sample/tool launch resolver
 - any schema or manifest helper already used by other tools

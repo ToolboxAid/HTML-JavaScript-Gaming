@@ -1,9 +1,9 @@
 # PR_26126_108 Manual Validation Notes
 
 ## Commands
-- `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
-- `rg -n "ASSET_MANAGER_TOOL_ID|currentToolState\\(|exportAssets\\(|exportToolState\\(|copyAssetsJson\\(" tools\asset-manager-v2 tests\playwright\AssetManagerV2.spec.mjs tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
-- `rg -n "KeyA|KeyS|KeyD|KeyW|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|Home|End|PageUp|PageDown|Enter|keydown|keyup|data-asset-tile-id" tools\asset-manager-v2 tests\playwright\AssetManagerV2.spec.mjs`
+- `node --check toolbox/asset-manager-v2/js/AssetManagerV2App.js`
+- `rg -n "ASSET_MANAGER_TOOL_ID|currentToolState\\(|exportAssets\\(|exportToolState\\(|copyAssetsJson\\(" toolbox\asset-manager-v2 tests\playwright\AssetManagerV2.spec.mjs tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
+- `rg -n "KeyA|KeyS|KeyD|KeyW|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|Home|End|PageUp|PageDown|Enter|keydown|keyup|data-asset-tile-id" toolbox\asset-manager-v2 tests\playwright\AssetManagerV2.spec.mjs`
 - `rg -n "Asset Manager V2|asset-manager-v2|openAssetManagerV2|openWorkspaceV2|workspace=UAT|workspace=uat|AssetManagerV2" tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
 - `git diff -- package.json tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
 - `git diff --check`

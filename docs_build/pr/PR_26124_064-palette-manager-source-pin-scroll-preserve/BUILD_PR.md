@@ -4,7 +4,7 @@
 Implement one scoped Palette Manager V2 source grid scroll preservation fix for individual source swatch pin/unpin.
 
 ## Scope
-- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+- `toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -21,7 +21,7 @@ Implement one scoped Palette Manager V2 source grid scroll preservation fix for 
 - Do not change Validation/Error Viewer behavior.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not broadly refactor Palette Manager V2.
 

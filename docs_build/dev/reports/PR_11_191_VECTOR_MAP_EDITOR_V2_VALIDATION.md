@@ -4,7 +4,7 @@
 Re-engineer Vector Map Editor V2 only as an isolated Tool V2 lane entry.
 
 ## Changed Files
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `docs_build/dev/reports/PR_11_191_VECTOR_MAP_EDITOR_V2_VALIDATION.md`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
@@ -28,7 +28,7 @@ Existing PR source doc was present in the worktree and included in the ZIP:
 - [x] Header uses `<div id="shared-theme-header"></div>`.
 - [x] No platformShell dependency.
 - [x] No assetUsageIntegration dependency.
-- [x] No `tools/shared/*` dependency.
+- [x] No `toolbox/shared/*` dependency.
 - [x] No fallback/default data.
 - [x] No schema changes.
 - [x] No sample changes.
@@ -39,7 +39,7 @@ Existing PR source doc was present in the worktree and included in the ZIP:
 Command:
 
 ```powershell
-node --check tools/vector-map-editor-v2/index.js
+node --check toolbox/vector-map-editor-v2/index.js
 ```
 
 Result: passed.
@@ -48,7 +48,7 @@ Result: passed.
 Command:
 
 ```powershell
-rg -n "platformShell|assetUsageIntegration|tools/shared|Workspace Manager|handoff|fallback|default|demo data|^import |^export " -- tools/vector-map-editor-v2/index.js
+rg -n "platformShell|assetUsageIntegration|tools/shared|Workspace Manager|handoff|fallback|default|demo data|^import |^export " -- toolbox/vector-map-editor-v2/index.js
 ```
 
 Result: passed. No matches.
@@ -56,7 +56,7 @@ Result: passed. No matches.
 Command:
 
 ```powershell
-rg -n "Vector Map Editor(?! V2)|shared-theme-header|VECTOR_MAP_V2_ENTRY|SESSION_CONTEXT_READ|VECTOR_MAP_V2_CONTRACT_LOADED" --pcre2 -- tools/vector-map-editor-v2/index.js
+rg -n "Vector Map Editor(?! V2)|shared-theme-header|VECTOR_MAP_V2_ENTRY|SESSION_CONTEXT_READ|VECTOR_MAP_V2_CONTRACT_LOADED" --pcre2 -- toolbox/vector-map-editor-v2/index.js
 ```
 
 Result: passed. Evidence found for the required header/log markers and no unsuffixed visible tool name.
@@ -71,7 +71,7 @@ No changes were made to:
 - Workspace Manager v1
 - `platformShell`
 - `assetUsageIntegration`
-- `tools/shared/**`
+- `toolbox/shared/**`
 - legacy Vector Map Editor
 
 ## Full Samples Smoke Decision

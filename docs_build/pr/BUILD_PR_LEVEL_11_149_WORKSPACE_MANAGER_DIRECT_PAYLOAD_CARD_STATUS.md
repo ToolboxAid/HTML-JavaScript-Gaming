@@ -17,7 +17,7 @@ This means Workspace Manager parsing accepts the manifest, but the UI/presence/s
 
 ### ALLOWED FILES
 
-- tools/workspace-manager/main.js
+- toolbox/workspace-manager/main.js
 - docs_build/dev/reports/workspace_direct_payload_card_status_11_149.txt
 
 ### ALLOWED CHANGES

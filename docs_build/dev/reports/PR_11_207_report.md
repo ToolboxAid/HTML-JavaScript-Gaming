@@ -2,11 +2,11 @@
 
 ## Files Changed
 - `tests/runtime/V2UrlState.test.mjs`
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `docs_build/dev/reports/PR_11_207_report.md`
 
 ## Tools Validated
@@ -36,7 +36,7 @@ Optional params are non-blocking and are included in the session readout when pr
 - `tests/runtime/V2UrlState.test.mjs`
 
 The runtime test verifies per tool:
-1. base deep link: `tools/<tool>-v2/index.html?hostContextId=test-id`
+1. base deep link: `toolbox/<tool>-v2/index.html?hostContextId=test-id`
 2. optional-state deep link: `...&view=test-view&selection=test-selection&zoom=2&panel=inspector`
 3. `hostContextId` detected in both URLs
 4. optional params parse correctly
@@ -50,7 +50,7 @@ Output artifact:
 - `node tests/runtime/V2UrlState.test.mjs` -> **PASS**
   - `toolCount: 5`
   - `failures: 0`
-- `node --check tools/*-v2/index.js` -> **FAIL** in this PowerShell/Node wildcard context (`MODULE_NOT_FOUND` for literal `*-v2` path)
+- `node --check toolbox/*-v2/index.js` -> **FAIL** in this PowerShell/Node wildcard context (`MODULE_NOT_FOUND` for literal `*-v2` path)
 - equivalent per-file V2 checks -> **PASS** for all five tools
 
 ## Failures and Fixes

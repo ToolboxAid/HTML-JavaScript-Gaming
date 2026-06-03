@@ -14,9 +14,9 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/FutureControlsControl.js; node --check tools/midi-studio-v2/js/bootstrap.js; node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js; node --check tools/midi-studio-v2/js/MidiStudioV2App.js; node --check tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js; node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-rg -n -P '<script(?![^>]*\bsrc=)' tools/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
-rg -n '<style| on[a-z]+=' tools/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
+node --check toolbox/midi-studio-v2/js/controls/FutureControlsControl.js; node --check toolbox/midi-studio-v2/js/bootstrap.js; node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js; node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js; node --check toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js; node --check tests/playwright/tools/MidiStudioV2.spec.mjs
+rg -n -P '<script(?![^>]*\bsrc=)' toolbox/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
+rg -n '<style| on[a-z]+=' toolbox/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "enforces SSoT export ownership|canvas note editing flow supports hover click drag paint erase and playback|canvas octave timeline edits canonical data"
 git diff --check
 ```
@@ -49,4 +49,4 @@ The targeted test slice proves:
 - `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 
-Coverage is advisory only. The guardrail reports a low function-coverage warning for `tools/midi-studio-v2/js/MidiStudioV2App.js`; all changed runtime JS loaded in the targeted browser run.
+Coverage is advisory only. The guardrail reports a low function-coverage warning for `toolbox/midi-studio-v2/js/MidiStudioV2App.js`; all changed runtime JS loaded in the targeted browser run.

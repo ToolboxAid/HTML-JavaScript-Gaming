@@ -5,9 +5,9 @@ Date: 2026-06-02
 
 ## Discovery Sources
 
-- Root Tools Index page: `tools/index.html`
-- Root Tools Index card data: `tools/tools-page-accordions.js`
-- Active first-class tool registry: `tools/toolRegistry.js`
+- Root Tools Index page: `toolbox/index.html`
+- Root Tools Index card data: `toolbox/tools-page-accordions.js`
+- Active first-class tool registry: `toolbox/toolRegistry.js`
 - Shared tool behavior and output vocabulary: `src/shared/contracts/tools/toolContract.js`
 - Per-tool declarations: `src/shared/contracts/tools/*Contract.js`
 - Contract index: `src/shared/contracts/tools/toolContractsIndex.js`

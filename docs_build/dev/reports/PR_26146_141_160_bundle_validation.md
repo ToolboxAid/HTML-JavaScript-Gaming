@@ -8,7 +8,7 @@ No new tabs, no new architecture, no sample JSON changes, and no full samples sm
 
 ## Files changed
 
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 
 ## Runtime fix
@@ -19,7 +19,7 @@ PASS: Fixed a UAT blocker where JSON Details could stay on the local MIDI import
 
 PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 
-PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
+PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
 
 PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR141-160" --reporter=line`
 

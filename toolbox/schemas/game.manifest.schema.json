@@ -1,0 +1,678 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "toolbox/schemas/game.manifest.schema.json",
+  "title": "Game Manifest",
+  "description": "Schema for old_games/**/game.manifest.json as the single source of truth for deprecated playable reference games. Game manifests are game-only runtime/editor data documents; Workspace Manager V2 uses this manifest plus manifest/toolState contract checks.",
+  "type": "object",
+  "required": ["schema", "version", "game", "launch", "tools"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema": {
+      "type": "string",
+      "const": "html-js-gaming.game-manifest"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "game": {
+      "type": "object",
+      "required": ["id", "name", "folder"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "folder": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^/\\\\]+$"
+        }
+      }
+    },
+    "screen": {
+      "$ref": "#/$defs/screenDimensions"
+    },
+    "launch": {
+      "$ref": "#/$defs/gameLaunch"
+    },
+    "music": {
+      "$ref": "toolbox/midi-studio-v2.schema.json#/$defs/musicPayload"
+    },
+    "tools": {
+      "$ref": "#/$defs/gameTools"
+    }
+  },
+  "$defs": {
+    "gameLaunch": {
+      "type": "object",
+      "required": ["directPath"],
+      "additionalProperties": false,
+      "properties": {
+        "directPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceManagerPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceManagerOptional": {
+          "type": "boolean"
+        }
+      }
+    },
+    "screenDimensions": {
+      "type": "object",
+      "required": ["width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "gameTools": {
+      "type": "object",
+      "description": "Game-owned tool data keyed by canonical tool id. Workspace Manager may synthesize a standalone workspace context from this map, but game manifests do not embed workspace data under root.game.",
+      "required": ["asset-manager-v2"],
+      "additionalProperties": false,
+      "properties": {
+        "audio-sfx-playground-v2": {
+          "$ref": "toolbox/audio-sfx-playground-v2.schema.json#/$defs/audioSfxPayload"
+        },
+        "asset-manager-v2": {
+          "$ref": "toolbox/asset-manager-v2.schema.json"
+        },
+        "palette-manager-v2": {
+          "$ref": "toolbox/palette-manager-v2.schema.json"
+        },
+        "input-mapping-v2": {
+          "$ref": "toolbox/input-mapping-v2.schema.json"
+        },
+        "midi-studio-v2": {
+          "$ref": "toolbox/midi-studio-v2.schema.json#/$defs/toolPreferences"
+        },
+        "object-vector-studio-v2": {
+          "$ref": "#/$defs/objectVectorStudioV2Payload"
+        },
+        "text2speech-V2": {
+          "$ref": "toolbox/text2speech-V2.schema.json"
+        }
+      }
+    },
+    "objectIdentityId": {
+      "type": "string",
+      "description": "Runtime Object Vector identity. Runtime game references must use object IDs, not asset IDs or vector editor IDs.",
+      "pattern": "^object\\.[a-z0-9-]+\\.[a-z0-9][a-z0-9-]*$"
+    },
+    "objectVectorStudioV2Payload": {
+      "type": "object",
+      "description": "Object Vector Studio V2 durable object geometry. Object IDs are runtime identity; shape rows use tool plus sorted local order for editor/runtime behavior.",
+      "required": ["version", "toolId", "name", "objects"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "toolId": {
+          "const": "object-vector-studio-v2"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/objectVectorStudioObject"
+          }
+        }
+      }
+    },
+    "objectVectorStudioObject": {
+      "type": "object",
+      "required": ["id", "name", "tags", "shapes"],
+      "additionalProperties": false,
+      "default": {
+        "id": "object.game.object",
+        "name": "Object",
+        "objectOrigin": { "x": 0, "y": 0 },
+        "tags": [],
+        "shapes": []
+      },
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/objectIdentityId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "$ref": "#/$defs/objectVectorStudioTags"
+        },
+        "objectOrigin": {
+          "$ref": "#/$defs/point2d"
+        },
+        "baseObjectId": {
+          "$ref": "#/$defs/objectIdentityId"
+        },
+        "shapes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/objectVectorStudioShape"
+          }
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "toolbox/object-vector-studio-v2.schema.json#/$defs/objectState"
+          }
+        }
+      }
+    },
+    "objectVectorStudioTags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "point2d": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      }
+    },
+    "objectVectorStudioShape": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/objectVectorStudioRectangleShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioSquareShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioCircleShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioEllipseShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioLineShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioTriangleShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioPolygonShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioPolylineShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioArcShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioTextShape"
+        }
+      ]
+    },
+    "objectVectorStudioShapeCommon": {
+      "type": "object",
+      "required": ["tool", "order", "visible", "locked", "geometry", "style", "transform"],
+      "additionalProperties": false,
+      "default": {
+        "tool": "polygon",
+        "order": 0,
+        "visible": true,
+        "locked": false,
+        "geometry": {},
+        "style": {
+          "fill": "#ffffff",
+          "stroke": "#ffffff",
+          "strokeWidth": 3,
+          "pointStyle": "square",
+          "startPointStyle": "square",
+          "endPointStyle": "square",
+          "fillOpacity": 1,
+          "strokeOpacity": 1
+        },
+        "transform": {
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scaleX": 1,
+          "scaleY": 1
+        }
+      },
+      "properties": {
+        "tool": {
+          "type": "string",
+          "enum": ["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "polyline", "arc", "text"]
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "style": {
+          "$ref": "#/$defs/objectVectorStudioStyle"
+        },
+        "transform": {
+          "$ref": "#/$defs/objectVectorStudioTransform"
+        }
+      }
+    },
+    "objectVectorStudioRectangleShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "rectangle" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioRectangleGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioSquareShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "square" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioRectangleGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioCircleShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "circle" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioCircleGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioEllipseShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "ellipse" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioEllipseGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioLineShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "line" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioLineGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioTriangleShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "triangle" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioTriangleGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioPolygonShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "polygon" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioPolygonGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioPolylineShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "polyline" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioPolylineGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioArcShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "arc" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioArcGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioTextShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "text" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioTextGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioStyle": {
+      "type": "object",
+      "required": ["fill", "stroke", "strokeWidth", "fillOpacity", "strokeOpacity"],
+      "additionalProperties": false,
+      "default": {
+        "fill": "#ffffff",
+        "stroke": "#ffffff",
+        "strokeWidth": 3,
+        "roundingRadius": 4,
+        "pointStyle": "square",
+        "startPointStyle": "square",
+        "endPointStyle": "square",
+        "fillOpacity": 1,
+        "strokeOpacity": 1
+      },
+      "properties": {
+        "fill": {
+          "type": "string"
+        },
+        "stroke": {
+          "type": "string"
+        },
+        "strokeWidth": {
+          "type": "number",
+          "minimum": 0
+        },
+        "strokeLinecap": {
+          "type": "string",
+          "enum": ["round", "square"]
+        },
+        "roundingRadius": {
+          "type": "number",
+          "minimum": 0
+        },
+        "pointStyle": {
+          "type": "string",
+          "enum": ["round", "square"]
+        },
+        "startPointStyle": {
+          "type": "string",
+          "enum": ["round", "square"]
+        },
+        "endPointStyle": {
+          "type": "string",
+          "enum": ["round", "square"]
+        },
+        "pointRounding": {
+          "type": "array",
+          "items": {
+            "type": "boolean"
+          }
+        },
+        "fillOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "strokeOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "objectVectorStudioTransform": {
+      "type": "object",
+      "required": ["x", "y", "rotation", "scaleX", "scaleY"],
+      "additionalProperties": false,
+      "default": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "rotation": {
+          "type": "number"
+        },
+        "scaleX": {
+          "type": "number"
+        },
+        "scaleY": {
+          "type": "number"
+        }
+      }
+    },
+    "objectVectorStudioPoint2d": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "default": { "x": 0, "y": 0 },
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      }
+    },
+    "objectVectorStudioRectangleGeometry": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "objectVectorStudioCircleGeometry": {
+      "type": "object",
+      "required": ["cx", "cy", "r"],
+      "additionalProperties": false,
+      "properties": {
+        "cx": { "type": "number" },
+        "cy": { "type": "number" },
+        "r": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "objectVectorStudioEllipseGeometry": {
+      "type": "object",
+      "required": ["cx", "cy", "rx", "ry"],
+      "additionalProperties": false,
+      "properties": {
+        "cx": { "type": "number" },
+        "cy": { "type": "number" },
+        "rx": { "type": "number", "exclusiveMinimum": 0 },
+        "ry": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "objectVectorStudioLineGeometry": {
+      "type": "object",
+      "required": ["point1", "point2"],
+      "additionalProperties": false,
+      "properties": {
+        "point1": { "$ref": "#/$defs/objectVectorStudioPoint2d" },
+        "point2": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
+      }
+    },
+    "objectVectorStudioPolygonGeometry": {
+      "type": "object",
+      "required": ["points"],
+      "additionalProperties": false,
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 4,
+          "items": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
+        }
+      }
+    },
+    "objectVectorStudioPolylineGeometry": {
+      "type": "object",
+      "required": ["points"],
+      "additionalProperties": false,
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
+        }
+      }
+    },
+    "objectVectorStudioTriangleGeometry": {
+      "type": "object",
+      "required": ["points"],
+      "additionalProperties": false,
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
+        }
+      }
+    },
+    "objectVectorStudioArcGeometry": {
+      "type": "object",
+      "required": ["cx", "cy", "r", "startAngle", "endAngle"],
+      "additionalProperties": false,
+      "properties": {
+        "cx": { "type": "number" },
+        "cy": { "type": "number" },
+        "r": { "type": "number", "exclusiveMinimum": 0 },
+        "startAngle": { "type": "number" },
+        "endAngle": { "type": "number" }
+      }
+    },
+    "objectVectorStudioTextGeometry": {
+      "type": "object",
+      "required": ["x", "y", "fontSize", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "fontSize": { "type": "number", "exclusiveMinimum": 0 },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "objectVectorStudioFrame": {
+      "type": "object",
+      "required": ["id", "order", "durationFrames", "shapeOverrides"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "durationFrames": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "shapeOverrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/objectVectorStudioShapeOverride"
+          }
+        }
+      }
+    },
+    "objectVectorStudioShapeOverride": {
+      "type": "object",
+      "required": ["shapeIndex"],
+      "additionalProperties": false,
+      "properties": {
+        "shapeIndex": {
+          "description": "Zero-based local sorted shape row index for the target shape.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "transform": {
+          "$ref": "#/$defs/objectVectorStudioTransform"
+        }
+      }
+    }
+  }
+}

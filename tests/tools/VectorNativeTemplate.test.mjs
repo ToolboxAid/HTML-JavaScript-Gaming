@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { buildVectorNativeTemplate, createVectorNativeTemplateDefinition, summarizeVectorNativeTemplate } from "../../tools/shared/vectorNativeTemplate.js";
+import { buildVectorNativeTemplate, createVectorNativeTemplateDefinition, summarizeVectorNativeTemplate } from "../../toolbox/shared/vectorNativeTemplate.js";
 
 export async function run() {
   const definition = createVectorNativeTemplateDefinition();
-  assert.equal(definition.templatePath, "tools/_templates-v2/vector-native-arcade/");
+  assert.equal(definition.templatePath, "toolbox/_tool_template-v2/vector-native-arcade/");
   assert.equal(definition.registry.sprites.length, 0);
   assert.equal(definition.registry.vectors.length, 5);
 
@@ -26,7 +26,7 @@ export async function run() {
     first.template.packageResult.manifest.package.assets.some((asset) => asset.id.startsWith("sprite.")),
     false
   );
-  assert.match(first.template.reportText, /Template path: tools\/templates\/vector-native-arcade\//);
+  assert.match(first.template.reportText, /Template path: toolbox\/templates\/vector-native-arcade\//);
   assert.match(first.template.reportText, /VECTOR_NATIVE_TEMPLATE_CONTRACT/);
   assert.deepEqual(first, second);
   assert.equal(summarizeVectorNativeTemplate(first), "Vector native template ready with 10 packaged assets.");

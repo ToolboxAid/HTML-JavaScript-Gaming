@@ -1,7 +1,7 @@
 # PR_11_235 — Merge Selector Population From Workspace V2 Session History
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2MergeSelectorPopulation.test.mjs`
 
 ## Implementation Summary
@@ -25,12 +25,12 @@
   - audit trail
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2MergeSelectorPopulation.test.mjs`
 - `node tests/runtime/V2MergeSelectorPopulation.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2MergeSelectorPopulation.test.mjs` → PASS
 - `node tests/runtime/V2MergeSelectorPopulation.test.mjs` → PASS
 
@@ -57,4 +57,4 @@ Runtime artifact:
 - No game changes
 - No Workspace Manager v1 changes
 - No legacy tool fixes
-- No `platformShell` / `tools/shared/*` changes
+- No `platformShell` / `toolbox/shared/*` changes

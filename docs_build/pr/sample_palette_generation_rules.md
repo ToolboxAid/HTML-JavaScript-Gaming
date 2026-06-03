@@ -21,7 +21,7 @@ inside the sample folder.
 Every generated palette document must include:
 
 ```json
-"$schema": "../../../tools/schemas/palette.schema.json"
+"$schema": "../../../toolbox/schemas/palette.schema.json"
 ```
 
 Adjust relative path depth if needed for the actual sample folder.

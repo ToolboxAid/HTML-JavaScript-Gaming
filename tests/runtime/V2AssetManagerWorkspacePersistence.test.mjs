@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const assetManagerPath = path.join(repoRoot, "tools", "asset-manager-v2", "index.js");
-const workspacePath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const assetManagerPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
+const workspacePath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "pr_11_314_asset_manager_workspace_persistence_results.json");
 
 function readText(filePath) {

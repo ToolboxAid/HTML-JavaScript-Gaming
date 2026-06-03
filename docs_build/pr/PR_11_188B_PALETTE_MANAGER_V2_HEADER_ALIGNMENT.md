@@ -17,7 +17,7 @@ Correct Palette Manager v2 so it uses the same shared theme header mount as `/in
 - No game changes.
 - No Workspace Manager v1 work.
 - No platformShell.
-- No tools/shared/*.
+- No toolbox/shared/*.
 - No assetUsageIntegration.
 - No fallback/default data.
 - No helper classes.

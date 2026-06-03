@@ -25,4 +25,4 @@ README.md
 - `src/advanced/`: composable advanced architecture layer
 - `samples/`: usage demonstrations
 - `old_games/`: deprecated playable reference games
-- `tools/`: editor and pipeline tooling
+- `toolbox/`: editor and pipeline tooling

@@ -1,8 +1,8 @@
 # PR_11_223 Report - V2 Diagnostics Panel (Session + URL + Storage)
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2Diagnostics.test.mjs`
 - `docs_build/dev/reports/PR_11_223_report.md`
 
@@ -58,11 +58,11 @@ Malformed storage snapshot excerpt:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2Diagnostics.test.mjs`  
+1. `node --check tests/runtime/V2Diagnostics.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2Diagnostics.test.mjs`  
+2. `node tests/runtime/V2Diagnostics.test.mjs`
 Result: **PASS** (writes `tmp/v2-diagnostics-results.json`)
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
 Result: **PASS**
 
 Runtime test coverage:

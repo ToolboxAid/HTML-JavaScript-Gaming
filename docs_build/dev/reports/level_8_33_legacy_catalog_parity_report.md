@@ -35,19 +35,19 @@
 - dependency evidence (runtime/tooling convention by filename):
   - `games/shared/workspaceGameAssetCatalog.js`
   - `games/shared/gameSkinLoader.js`
-  - `tools/Workspace Manager/main.js`
-  - `tools/Asset Browser/main.js`
-  - `tools/Asset Pipeline Tool/main.js`
-  - `tools/Skin Editor/main.js`
-  - `tools/shared/platformShell.js`
+  - `toolbox/Workspace Manager/main.js`
+  - `toolbox/Asset Browser/main.js`
+  - `toolbox/Asset Pipeline Tool/main.js`
+  - `toolbox/Skin Editor/main.js`
+  - `toolbox/shared/platformShell.js`
   - `scripts/sync-tool-hints-from-workspace-manager.mjs`
 
 ### `tools.manifest.json` files
 - `games/Asteroids/assets/tools.manifest.json` retained:
   - runtime/tooling/test/script references remain, including:
-    - `tools/shared/pipeline/assetManifestLoader.js`
-    - `tools/shared/pipeline/gameAssetManifestCoordinator.js`
-    - `tools/shared/pipeline/assetPipelineTooling.js`
+    - `toolbox/shared/pipeline/assetManifestLoader.js`
+    - `toolbox/shared/pipeline/gameAssetManifestCoordinator.js`
+    - `toolbox/shared/pipeline/assetPipelineTooling.js`
     - `scripts/validate-asset-ownership-strategy.mjs`
     - `tests/tools/GameAssetManifestDiscovery.test.mjs`
     - `tests/tools/AssetPipelineTooling.test.mjs`

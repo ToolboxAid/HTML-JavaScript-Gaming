@@ -46,11 +46,11 @@ It must not inline palette payload structure:
 
 If palette details are present in workspace manifest:
 - remove them
-- restore `$ref` to `tools/palette-browser.schema.json`
+- restore `$ref` to `toolbox/palette-browser.schema.json`
 
 ### 2. Palette Browser schema owns palette details
 
-`tools/schemas/tools/palette-browser.schema.json` must own:
+`toolbox/schemas/tools/palette-browser.schema.json` must own:
 - `schema: "html-js-gaming.palette"`
 - `version`
 - `id` optional
@@ -116,7 +116,7 @@ Codex must:
 
 Codex must review all tool schemas under:
 
-- `tools/schemas/tools/*.schema.json`
+- `toolbox/schemas/tools/*.schema.json`
 
 For each tool:
 - schema accepts only direct tool payload JSON

@@ -17,14 +17,14 @@
 - Kept PR_26133_101 zoom/layout behavior intact, including `MAX_ZOOM = 1.0`.
 
 ## Targeted Validation
-- PASS: `node --check tools\object-vector-studio-v2\js\ToolStarterApp.js`
+- PASS: `node --check toolbox\object-vector-studio-v2\js\ToolStarterApp.js`
 - PASS: `node --check tests\playwright\tools\WorkspaceManagerV2.spec.mjs`
 - PASS: targeted Object Vector V2 Playwright validation:
   - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "shows Object Vector Studio V2 layout shell|expands Object Vector Studio V2 asset authoring controls"`
   - Result: 2 passed.
 - PASS: `npm run test:workspace-v2`
   - Result: 56 passed.
-- PASS: `git diff --check -- tools/object-vector-studio-v2/js/ToolStarterApp.js tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
+- PASS: `git diff --check -- toolbox/object-vector-studio-v2/js/ToolStarterApp.js tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
   - Only CRLF warning for the existing Playwright test file.
 
 ## Scale / Zoom Notes
@@ -41,7 +41,7 @@
 ## Diff Stat
 ```
 tests/playwright/tools/WorkspaceManagerV2.spec.mjs |  3 +
- tools/object-vector-studio-v2/js/ToolStarterApp.js | 79 ++++++++--------------
+ toolbox/object-vector-studio-v2/js/ToolStarterApp.js | 79 ++++++++--------------
  2 files changed, 31 insertions(+), 51 deletions(-)
 ```
 

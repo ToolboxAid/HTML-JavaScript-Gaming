@@ -1,12 +1,12 @@
 # PR_11_225 Report - V2 Session Size Guard (URL + Storage Limits)
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/workspace-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `tests/runtime/V2SessionSize.test.mjs`
 - `docs_build/dev/reports/PR_11_225_report.md`
 
@@ -32,7 +32,7 @@
     - `Session size exceeds allowed limit...`
 
 ### V2 Tool Readers
-- Added read-side size validation in all target `tools/*-v2/index.js` files:
+- Added read-side size validation in all target `toolbox/*-v2/index.js` files:
   - checks raw session string length before `JSON.parse`
   - oversize payload routes to `renderError(...)` with:
     - `Session size exceeds allowed limit...`
@@ -49,11 +49,11 @@ Output:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2SessionSize.test.mjs`  
+1. `node --check tests/runtime/V2SessionSize.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2SessionSize.test.mjs`  
+2. `node tests/runtime/V2SessionSize.test.mjs`
 Result: **PASS**
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
 Result: **PASS**
 
 Additional runtime assertions passed:

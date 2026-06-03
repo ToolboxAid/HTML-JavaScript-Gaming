@@ -6,7 +6,7 @@
 - Color assets use `kind: "hex"` and IDs shaped as `assets.color.<role>.<filenamePart>`.
 
 ## Schema Behavior
-- `tools/schemas/tools/asset-browser.schema.json` now accepts `assets.color.*.*` keys.
+- `toolbox/schemas/tools/asset-browser.schema.json` now accepts `assets.color.*.*` keys.
 - Color entries require `path`, `type`, `kind`, `role`, `source`, and `color`.
 - Color entries use `path: "palette://workspace/<palette-color-name-slug>"`.
 - Color metadata is strict and allows only `hex`, `name`, `symbol`, `source`, and `tags`.

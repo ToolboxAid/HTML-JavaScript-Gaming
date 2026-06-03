@@ -8,7 +8,7 @@
   - `scripts/PS/validate-game-manifests.ps1`
   - `scripts/PS/validate-all-json-contracts.ps1`
   - `scripts/validate-json-contracts.mjs`
-- Updated workspace runtime validator coverage in `tools/Workspace Manager/main.js` for strict constructs (`anyOf`, `allOf`, `not`, `propertyNames`, typed `additionalProperties`).
+- Updated workspace runtime validator coverage in `toolbox/Workspace Manager/main.js` for strict constructs (`anyOf`, `allOf`, `not`, `propertyNames`, typed `additionalProperties`).
 - Enforced flat asset-browser schema contract updates and removed duplicate workspace palette alias key.
 
 ## Required Reports Generated
@@ -27,7 +27,7 @@
 5. `node tests/tools/ToolSchemaStrictModeValidation.test.mjs`
 6. `node tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools`
 7. `node --check scripts/validate-json-contracts.mjs`
-8. `node --check "tools/Workspace Manager/main.js"`
+8. `node --check "toolbox/Workspace Manager/main.js"`
 9. `node --check tests/tools/ToolSchemaStrictModeValidation.test.mjs`
 10. `node -e "...Asteroids manifest asset checks..."`
 11. `rg -n "assets/images/bezel\\.png|assets/images/background\\.png|bezel1\\.png" src tools games samples`

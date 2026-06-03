@@ -1,7 +1,7 @@
 # Restart Notes — PR 11.120
 
 Current mismatch:
-- tools/index.html says 34 sample/tool relationships.
+- toolbox/index.html says 34 sample/tool relationships.
 - samples/index.html shows 22 Open Tool links.
 
 Goal:

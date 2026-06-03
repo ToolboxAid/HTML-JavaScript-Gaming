@@ -1,11 +1,11 @@
 # PR_26126_092 Asset Manager V2 Manual Validation Notes
 
 ## Commands
-- `node --check tools/asset-manager-v2/js/controls/AssetFormControl.js`
-- `node --check tools/asset-manager-v2/js/services/AssetSchemaValidator.js`
-- `node --check tools/asset-manager-v2/js/controls/AssetManagerShellControl.js`
+- `node --check toolbox/asset-manager-v2/js/controls/AssetFormControl.js`
+- `node --check toolbox/asset-manager-v2/js/services/AssetSchemaValidator.js`
+- `node --check toolbox/asset-manager-v2/js/controls/AssetManagerShellControl.js`
 - `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
-- `node -e "JSON.parse(require('fs').readFileSync('tools/schemas/tools/asset-browser.schema.json','utf8')); console.log('schema json ok')"`
+- `node -e "JSON.parse(require('fs').readFileSync('toolbox/schemas/tools/asset-browser.schema.json','utf8')); console.log('schema json ok')"`
 - `npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list -g "Asset Manager V2"`
 - `npm run test:workspace-v2`
 

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildGameplaySystemLayer, summarizeGameplaySystemLayer } from "../../tools/shared/gameplaySystemLayer.js";
+import { buildGameplaySystemLayer, summarizeGameplaySystemLayer } from "../../toolbox/shared/gameplaySystemLayer.js";
 
 export async function run() {
   const result = buildGameplaySystemLayer({

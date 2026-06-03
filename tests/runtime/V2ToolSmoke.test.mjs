@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-tool-smoke-results.json");
 const REQUIRED_V2_TOOLS = [
@@ -253,7 +253,7 @@ function validateV2Tool(toolDirName) {
 
 export function run() {
   const v2Tools = collectV2ToolDirectories();
-  assert.ok(v2Tools.length > 0, "No V2 tool directories were found under tools/*-v2.");
+  assert.ok(v2Tools.length > 0, "No V2 tool directories were found under toolbox/*-v2.");
   assert.deepEqual(v2Tools, REQUIRED_V2_TOOLS, `Unexpected V2 tool directory set. Expected ${REQUIRED_V2_TOOLS.join(", ")} but found ${v2Tools.join(", ")}.`);
 
   const rows = v2Tools.map(validateV2Tool);

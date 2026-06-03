@@ -30,7 +30,7 @@ Command pattern used:
 - `^\s*export .* from .*templates/`
 
 Result:
-- No direct JS import/require/export module references to `templates/` in `tools/`, `src/`, `games/`, `samples/`, `tests/`.
+- No direct JS import/require/export module references to `templates/` in `toolbox/`, `src/`, `games/`, `samples/`, `tests/`.
 
 Assessment:
 - Consumer coupling is path-string based, not module-import based.
@@ -39,8 +39,8 @@ Assessment:
 
 | Consumer File | Evidence Shape | Consumer Type | Classification | Notes |
 | --- | --- | --- | --- | --- |
-| `tools/shared/vectorNativeTemplate.js` | Hard-coded `templates/vector-native-arcade/...` paths for asset/config/runtime/docs references | runtime | canonical | Primary active template contract surface; high coupling to exact folder structure. |
-| `tools/shared/vectorTemplateSampleGame.js` | String replace from `templates/vector-native-arcade/` -> `games/vector-arcade-sample/` | runtime | transitional | Explicit migration bridge assumption on exact prefix. |
+| `toolbox/shared/vectorNativeTemplate.js` | Hard-coded `templates/vector-native-arcade/...` paths for asset/config/runtime/docs references | runtime | canonical | Primary active template contract surface; high coupling to exact folder structure. |
+| `toolbox/shared/vectorTemplateSampleGame.js` | String replace from `templates/vector-native-arcade/` -> `games/vector-arcade-sample/` | runtime | transitional | Explicit migration bridge assumption on exact prefix. |
 | `tests/tools/VectorNativeTemplate.test.mjs` | Assertions against `templatePath === "templates/vector-native-arcade/"` and report text | test-only | canonical | Tests lock the current template root and report formatting. |
 | `games/vector-arcade-sample/README.md` | Documentation string references source template path | docs-only (game doc) | transitional | Human-facing provenance reference to template origin. |
 

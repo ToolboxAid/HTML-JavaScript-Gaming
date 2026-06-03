@@ -13,14 +13,14 @@ Task: `PR_26154_018-theme-v2-wiring-and-fontawesome-audit`
 
 | File | Change |
 | --- | --- |
-| `tools/tools-page-accordions.js` | Removed the Arcade card from the active Tools index accordion data. |
+| `toolbox/tools-page-accordions.js` | Removed the Arcade card from the active Tools index accordion data. |
 | `src/engine/ui/toolboxaid-header.html` | Deleted; no active runtime/page/tool references remained. |
 
 ## Theme V2 Wiring Summary
 
 - Wired Theme V2 files found by exact references, CSS import chains, partial-loader conventions, and tool-display image conventions: 97.
 - Unwired Theme V2 files found: 52.
-- `assets/theme/v2/js/tools-page-accordions.js` is not loaded by active `tools/index.html`; the active page loads `tools/tools-page-accordions.js`.
+- `assets/theme/v2/js/tools-page-accordions.js` is not loaded by active `toolbox/index.html`; the active page loads `toolbox/tools-page-accordions.js`.
 - `assets/theme/v2/partials/header-nav.html` and `assets/theme/v2/partials/footer.html` remain wired by `assets/theme/v2/js/gamefoundry-partials.js`.
 
 ## Unwired Theme V2 Content

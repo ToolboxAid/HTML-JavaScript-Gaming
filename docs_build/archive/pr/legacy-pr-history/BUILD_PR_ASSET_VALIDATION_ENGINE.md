@@ -4,7 +4,7 @@
 Implement the enforced project-level asset validation engine defined in `PLAN_PR_ASSET_VALIDATION_ENGINE` without expanding scope or changing engine core APIs.
 
 ## Implemented Scope
-- Added shared validation engine in `tools/shared/projectAssetValidation.js`
+- Added shared validation engine in `toolbox/shared/projectAssetValidation.js`
   - deterministic stable result structure:
     - `validation.status`
     - ordered `validation.findings[]`
@@ -24,13 +24,13 @@ Implement the enforced project-level asset validation engine defined in `PLAN_PR
   - repeated validation remains deterministic
   - legacy-style documents without required registry refs remain loadable
 - Integrated enforced validation into guarded editor operations only:
-  - `tools/Sprite Editor/modules/spriteEditorApp.js`
+  - `toolbox/Sprite Editor/modules/spriteEditorApp.js`
     - blocks guarded PNG/sprite-sheet export and save flows when blocking findings exist
     - surfaces validation summaries on load/save
-  - `tools/Tilemap Studio/main.js`
+  - `toolbox/Tilemap Studio/main.js`
     - blocks guarded project save, registry save, and runtime export when blocking findings exist
     - surfaces validation summaries on load/save
-  - `tools/Parallax Scene Studio/main.js`
+  - `toolbox/Parallax Scene Studio/main.js`
     - blocks guarded project save, registry save, and patch export when blocking findings exist
     - surfaces validation summaries on load/save
 - Preserved legacy remediation behavior
@@ -50,10 +50,10 @@ Implement the enforced project-level asset validation engine defined in `PLAN_PR
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/projectAssetValidation.js`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Tilemap Studio/main.js`
-  - `node --check tools/Parallax Scene Studio/main.js`
+  - `node --check toolbox/shared/projectAssetValidation.js`
+  - `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
+  - `node --check toolbox/Tilemap Studio/main.js`
+  - `node --check toolbox/Parallax Scene Studio/main.js`
   - `node --check tests/tools/AssetValidationEngine.test.mjs`
 - Targeted validation-engine test passed:
   - `node` inline runner for `tests/tools/AssetValidationEngine.test.mjs`

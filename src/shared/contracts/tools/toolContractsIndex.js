@@ -186,15 +186,15 @@ export const TOOL_CONTRACT_LIST = Object.freeze([
 
 export const TOOL_INDEX_ROOT_CARD_COVERAGE = Object.freeze([
   createRootCardCoverage("Assets", "asset-studio", "contracted", ""),
-  createRootCardCoverage("Object Vector", "object-vector-studio-v2", "mapped", "Root card links tools/object-vector/index.html; first-class contract is object-vector-studio-v2."),
-  createRootCardCoverage("World Vector", "world-vector-studio-v2", "mapped", "Root card links tools/world-vector/index.html; first-class contract is world-vector-studio-v2."),
-  createRootCardCoverage("Palette Manager", "palette-manager-v2", "mapped", "Root card links tools/palette/index.html; first-class contract is palette-manager-v2."),
+  createRootCardCoverage("Object Vector", "object-vector-studio-v2", "mapped", "Root card links toolbox/object-vector/index.html; first-class contract is object-vector-studio-v2."),
+  createRootCardCoverage("World Vector", "world-vector-studio-v2", "mapped", "Root card links toolbox/world-vector/index.html; first-class contract is world-vector-studio-v2."),
+  createRootCardCoverage("Palette Manager", "palette-manager-v2", "mapped", "Root card links toolbox/palette/index.html; first-class contract is palette-manager-v2."),
   createRootCardCoverage("Game Builder", "game-builder", "contracted", ""),
   createRootCardCoverage("Game Design", "game-design-studio", "contracted", ""),
   createRootCardCoverage("Publish", "publish-studio", "contracted", ""),
   createRootCardCoverage("Animation", "animation-studio", "contracted", ""),
   createRootCardCoverage("Particles", "particle-studio", "contracted", ""),
-  createRootCardCoverage("MIDI", "midi-studio-v2", "mapped", "Root card links tools/midi/index.html; first-class contract is midi-studio-v2."),
+  createRootCardCoverage("MIDI", "midi-studio-v2", "mapped", "Root card links toolbox/midi/index.html; first-class contract is midi-studio-v2."),
   createRootCardCoverage("Sound", "sound-studio", "contracted", ""),
   createRootCardCoverage("AI Assistant", "ai-assistant", "contracted", ""),
   createRootCardCoverage("Custom Extensions", "code-studio", "contracted", ""),
@@ -202,7 +202,7 @@ export const TOOL_INDEX_ROOT_CARD_COVERAGE = Object.freeze([
   createRootCardCoverage("Marketplace", "", "skipped", "Tools Index card targets marketplace/index.html, which is a marketplace page rather than a first-class tool contract."),
   createRootCardCoverage("Localization", "localization-studio", "contracted", ""),
   createRootCardCoverage("Arcade", "", "skipped", "Tools Index card targets games/arcade/index.html, which is a play surface rather than a first-class tool contract."),
-  createRootCardCoverage("Storage Inspector", "storage-inspector-v2", "mapped", "Root card links tools/storage/index.html; first-class contract is storage-inspector-v2."),
+  createRootCardCoverage("Storage Inspector", "storage-inspector-v2", "mapped", "Root card links toolbox/storage/index.html; first-class contract is storage-inspector-v2."),
 ]);
 
 export function getToolContractById(toolId) {

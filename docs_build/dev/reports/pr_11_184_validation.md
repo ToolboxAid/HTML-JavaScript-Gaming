@@ -1,10 +1,10 @@
 ﻿# PR 11.184 Validation
 
 ## Scope
-Removed cross-tool aliasing from `tools/toolRegistry.js`.
+Removed cross-tool aliasing from `toolbox/toolRegistry.js`.
 
 ## Files changed
-- `tools/toolRegistry.js`
+- `toolbox/toolRegistry.js`
 - `docs_build/dev/reports/pr_11_184_validation.md`
 
 ## Alias removed
@@ -32,8 +32,8 @@ This confirms:
 Workspace Manager click dispatch must continue to use clicked `data-tool-id` values directly. No fallback alias was added.
 
 ## Validation
-- PASS: `node --check tools/toolRegistry.js`
-- PASS: `node --check "tools/Workspace Manager/main.js"`
+- PASS: `node --check toolbox/toolRegistry.js`
+- PASS: `node --check "toolbox/Workspace Manager/main.js"`
 - PASS: exact-id module behavior check with `node --input-type=module`
 
 ## Manual UAT

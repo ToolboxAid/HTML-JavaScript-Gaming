@@ -4,7 +4,7 @@
 Reset stale merge-state UI in Workspace V2 so preview/apply text does not persist across state-invalidating actions.
 
 ## Scope
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2MergeStateStatusReset.test.mjs
 - docs only for this PR
 
@@ -23,6 +23,6 @@ Reset stale merge-state UI in Workspace V2 so preview/apply text does not persis
 - No broad refactors
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2MergeStateStatusReset.test.mjs
 - node tests/runtime/V2MergeStateStatusReset.test.mjs

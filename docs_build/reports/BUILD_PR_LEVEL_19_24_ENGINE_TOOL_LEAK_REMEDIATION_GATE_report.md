@@ -10,10 +10,10 @@ Violation confirmed in 19_23:
 - tool-specific surfaces existed under `src/engine/editor`, `src/engine/tooling`, and `src/engine/pipeline`.
 
 ## 2. Remediation Applied
-### Relocation (engine -> tools/shared)
-- moved `src/engine/editor/*` -> `tools/shared/editor/*`
-- moved `src/engine/tooling/*` -> `tools/shared/tooling/*`
-- moved `src/engine/pipeline/*` -> `tools/shared/pipeline/*`
+### Relocation (engine -> toolbox/shared)
+- moved `src/engine/editor/*` -> `toolbox/shared/editor/*`
+- moved `src/engine/tooling/*` -> `toolbox/shared/tooling/*`
+- moved `src/engine/pipeline/*` -> `toolbox/shared/pipeline/*`
 - removed now-empty legacy directories:
   - `src/engine/editor`
   - `src/engine/tooling`
@@ -28,13 +28,13 @@ Updated imports from engine tool-layer barrels to tool-layer barrels in:
 - `samples/phase-15/1501` through `samples/phase-15/1506`
 
 ### Minimal internal path fix after relocation
-- `tools/shared/tooling/CapturePreviewRuntime.js`
+- `toolbox/shared/tooling/CapturePreviewRuntime.js`
   - updated engine imports to `../../../src/engine/...` paths.
 
 ## 3. Re-Validation Executed
 ### Boundary validation command
 - Python scan over `src/engine` for:
-  - imports to `tools/`
+  - imports to `toolbox/`
   - imports to legacy engine tool-layer paths (`editor/tooling/pipeline`)
   - existence of legacy directories
 

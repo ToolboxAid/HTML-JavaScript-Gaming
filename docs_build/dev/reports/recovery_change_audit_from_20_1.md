@@ -61,7 +61,7 @@ Status totals:
 docs_build/dev/reports/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY_uat_report.md:44: new blank line at EOF.
 docs_build/dev/reports/tool_launch_ssot_external_memory_reset_validation.md:69: new blank line at EOF.
 samples/phase-12/1208/data/toolFormattedTileMap.js:4116: new blank line at EOF.
-tools/shared/toolLaunchSSoT.js:140: new blank line at EOF.
+toolbox/shared/toolLaunchSSoT.js:140: new blank line at EOF.
 ```
 
 ### 8) `git ls-files --others --exclude-standard`
@@ -90,20 +90,20 @@ docs_build/pr/BUILD_PR_LEVEL_20_5_RECOVERY_AUDIT_FROM_20_1_BASELINE.md
 ### Direct files requested
 - `games/index.html`: present and modified vs baseline (`M`)
 - `samples/index.html`: present and modified vs baseline (`M`)
-- `tools/Workspace Manager/index.html`: present, no baseline diff (`unchanged`)
+- `toolbox/Workspace Manager/index.html`: present, no baseline diff (`unchanged`)
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`: present, no baseline diff (`unchanged`)
 
-### `tools/*/index.html` inspection
-- Enumerated 19 tool index files under `tools/`
+### `toolbox/*/index.html` inspection
+- Enumerated 19 tool index files under `toolbox/`
 - Baseline deltas for tool index files:
-  - `R078 tools/3D Map Editor/index.html -> tools/3D JSON Payload Normalizer/index.html`
-  - `M tools/Asset Pipeline Tool/index.html`
-  - `M tools/Palette Browser/index.html`
-  - `M tools/Parallax Scene Studio/index.html`
-  - `A tools/Skin Editor/index.html`
-  - `M tools/Sprite Editor/index.html`
-  - `M tools/Tilemap Studio/index.html`
-  - `M tools/Vector Map Editor/index.html`
+  - `R078 toolbox/3D Map Editor/index.html -> toolbox/3D JSON Payload Normalizer/index.html`
+  - `M toolbox/Asset Pipeline Tool/index.html`
+  - `M toolbox/Palette Browser/index.html`
+  - `M toolbox/Parallax Scene Studio/index.html`
+  - `A toolbox/Skin Editor/index.html`
+  - `M toolbox/Sprite Editor/index.html`
+  - `M toolbox/Tilemap Studio/index.html`
+  - `M toolbox/Vector Map Editor/index.html`
 
 ## UAT Path Delta Snapshot
 ```text
@@ -111,7 +111,7 @@ games/index.html                |  32 +--
 games/index.render.js           | 214 +++++++++++++++++--
 samples/index.html              |  33 ++-
 samples/index.render.js         | 224 ++++++++++++++++++-
-tools/Workspace Manager/main.js | 460 +++++++++++++++++++++++++++++++++++-----
+toolbox/Workspace Manager/main.js | 460 +++++++++++++++++++++++++++++++++++-----
 5 files changed, 843 insertions(+), 120 deletions(-)
 ```
 

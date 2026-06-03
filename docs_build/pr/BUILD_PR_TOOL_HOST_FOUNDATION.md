@@ -41,13 +41,13 @@ The previous lane normalized tool boot contracts. The next safest step is to add
 5. preserve direct standalone tool launch pages
 
 ## Active Tool Targets
-- tools/Asset Browser
-- tools/Palette Browser
-- tools/Parallax Scene Studio
-- tools/Sprite Editor
-- tools/Tilemap Studio
-- tools/Vector Asset Studio
-- tools/Vector Map Editor
+- toolbox/Asset Browser
+- toolbox/Palette Browser
+- toolbox/Parallax Scene Studio
+- toolbox/Sprite Editor
+- toolbox/Tilemap Studio
+- toolbox/Vector Asset Studio
+- toolbox/Vector Map Editor
 
 ## Validation
 - npm run test:launch-smoke -- --tools

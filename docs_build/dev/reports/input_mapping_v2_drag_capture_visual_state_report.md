@@ -30,8 +30,8 @@ Expected pass behavior: focused Input Mapping V2 tests and full `npm run test:wo
 Expected fail behavior: attempting to map Drag or Drag Release without the required live mouse sequence creates no mapping and leaves an actionable capture/status message.
 
 ## Validation
-PASS `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-PASS `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`
+PASS `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+PASS `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
 PASS `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 PASS `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs -g "Input Mapping V2"` - 9 passed.
 PASS `npm run test:workspace-v2` - 68 passed.

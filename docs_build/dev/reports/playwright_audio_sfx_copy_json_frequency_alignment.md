@@ -30,7 +30,7 @@ PASS: JavaScript syntax validation
 Command:
 
 ```powershell
-Get-ChildItem -Recurse -File tools/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }
+Get-ChildItem -Recurse -File toolbox/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }
 ```
 
 PASS: HTML/CSS static validation
@@ -42,7 +42,7 @@ PASS: Frequency helper duplication scan
 Command:
 
 ```powershell
-rg "class .*Frequency|Frequency[A-Za-z]*|centsTo|frequencyTo|Math\.pow\(2" tools/audio-sfx-playground-v2 src/engine/audio -g "*.js" -g "*.mjs"
+rg "class .*Frequency|Frequency[A-Za-z]*|centsTo|frequencyTo|Math\.pow\(2" toolbox/audio-sfx-playground-v2 src/engine/audio -g "*.js" -g "*.mjs"
 ```
 
 The scan found the existing `FrequencyPlayer` and `MidiPlayer` note conversion only. No duplicate Audio / SFX frequency helper/model was introduced.
@@ -65,7 +65,7 @@ Validated with a temporary local HTTP server and Chromium:
 
 - Audio / SFX Playground V2 launched without console errors.
 - Copy JSON copied valid JSON.
-- Copied JSON referenced `tools/schemas/tools/audio-sfx-playground-v2.schema.json`.
+- Copied JSON referenced `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`.
 - Copied JSON included the current editor name.
 - Copied JSON included the current frequency value.
 - Copied JSON included the current cents sweep value.
@@ -77,7 +77,7 @@ PASS: Diff whitespace validation
 Command:
 
 ```powershell
-git diff --check -- tools/audio-sfx-playground-v2 tools/schemas
+git diff --check -- toolbox/audio-sfx-playground-v2 toolbox/schemas
 ```
 
 ## Workspace V2 Validation
@@ -123,7 +123,7 @@ Expected Playwright fail behavior:
 
 Playwright V8 coverage was not collected during the focused inline browser validation.
 
-WARN: `tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - changed runtime JavaScript; coverage unavailable.
 
 ## Full Samples Smoke Test
 

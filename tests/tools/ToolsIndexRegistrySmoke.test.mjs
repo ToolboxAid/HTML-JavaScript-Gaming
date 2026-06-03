@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getVisibleActiveToolRegistry } from "../../tools/toolRegistry.js";
+import { getVisibleActiveToolRegistry } from "../../toolbox/toolRegistry.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../..", import.meta.url));
 

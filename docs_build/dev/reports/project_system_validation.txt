@@ -3,12 +3,12 @@ BUILD_PR_PROJECT_SYSTEM validation report
 STATUS: FAIL
 
 Checks:
-- found tools/shared/projectManifestContract.js
-- found tools/shared/projectSystem.js
-- found tools/shared/projectSystemAdapters.js
+- found toolbox/shared/projectManifestContract.js
+- found toolbox/shared/projectSystem.js
+- found toolbox/shared/projectSystemAdapters.js
 - Sprite Editor remains first-class and visible
 - SpriteEditor_old_keep remains hidden legacy
-- tools/index.html remains tool-only
+- toolbox/index.html remains tool-only
 
 Issues:
 - Missing required shared project-system file: docs/specs/project_manifest_contract.md
@@ -19,5 +19,5 @@ Issues:
 - Shared shell is missing project action label: Save Project As
 - Shared shell is missing project action label: Close Project
 - Shared shell is not wired to createProjectSystemController.
-- Missing project adapter bootstrap in tools/Tilemap Studio/main.js: window.tileMapStudioApp = app;
-- Missing project adapter bootstrap in tools/Parallax Scene Studio/main.js: window.parallaxSceneStudioApp = app;
+- Missing project adapter bootstrap in toolbox/Tilemap Studio/main.js: window.tileMapStudioApp = app;
+- Missing project adapter bootstrap in toolbox/Parallax Scene Studio/main.js: window.parallaxSceneStudioApp = app;

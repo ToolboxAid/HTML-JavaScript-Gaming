@@ -5,7 +5,7 @@ Status: PASS
 ## Scope
 
 - Changed user-facing Tools labels to Toolbox in the root GameFoundryStudio navigation and footer.
-- Added Toolbox group structure on the root Tools index without renaming internal `tools/` paths, toolState names, registry names, or technical contract names.
+- Added Toolbox group structure on the root Tools index without renaming internal `toolbox/` paths, toolState names, registry names, or technical contract names.
 - Preserved existing tool links and root public Tools index behavior.
 
 ## Toolbox IA
@@ -43,7 +43,7 @@ Status: PASS
 
 ## Manual Validation
 
-- Open `tools/index.html`.
+- Open `toolbox/index.html`.
 - Confirm the top navigation and footer show Toolbox as the user-facing label.
 - Switch the Tools index grouping control to grouped mode.
 - Confirm top-level groups match Objects, Worlds, Audio, Input, AI, Colors, and Assets.

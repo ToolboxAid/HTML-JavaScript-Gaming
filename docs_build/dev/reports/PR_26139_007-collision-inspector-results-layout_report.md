@@ -45,7 +45,7 @@ Skipped:
 
 ## Manual Validation
 
-1. Open `tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`.
+1. Open `toolbox/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`.
 2. Confirm Live Result, Collision Summary, and Collision Logs share the right output column evenly.
 3. Confirm Live Result and Collision Summary scroll vertically when content exceeds the pane.
 4. Collapse and expand Collision Logs; expected result is a working accordion and preserved Clear control.

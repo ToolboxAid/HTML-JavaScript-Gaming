@@ -3,8 +3,8 @@
 ## Purpose
 Apply the V2 re-engineer naming and shared-header guard to the current V2 tool lane entries only:
 
-- `tools/Palette Manager v2/main.js`
-- `tools/SVG Asset Studio v2/main.js`
+- `toolbox/Palette Manager v2/main.js`
+- `toolbox/SVG Asset Studio v2/main.js`
 
 ## Evidence Tags
 
@@ -20,7 +20,7 @@ Visible V2 tool names now end with `V2`:
 Targeted naming scan:
 
 ```powershell
-rg -n "Palette Manager(?! V2)|SVG Asset Studio(?! V2)|Palette Browser V2|Palette Browser|SVG Asset Studio v2|Tool v2" --pcre2 -- "tools/Palette Manager v2/main.js" "tools/SVG Asset Studio v2/main.js"
+rg -n "Palette Manager(?! V2)|SVG Asset Studio(?! V2)|Palette Browser V2|Palette Browser|SVG Asset Studio v2|Tool v2" --pcre2 -- "toolbox/Palette Manager v2/main.js" "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result: passed. No matches.
@@ -41,7 +41,7 @@ Both V2 tools mount the existing root header behavior:
 Evidence scan:
 
 ```powershell
-rg -n "shared-theme-header|mount-shared-header|Palette Manager V2|SVG Asset Studio V2" -- "tools/Palette Manager v2/main.js" "tools/SVG Asset Studio v2/main.js"
+rg -n "shared-theme-header|mount-shared-header|Palette Manager V2|SVG Asset Studio V2" -- "toolbox/Palette Manager v2/main.js" "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result: passed. Evidence found in both files.
@@ -50,7 +50,7 @@ Result: passed. Evidence found in both files.
 No `platformShell` reference was introduced.
 
 [NO_TOOLS_SHARED]
-No `tools/shared` import/reference was introduced.
+No `toolbox/shared` import/reference was introduced.
 
 [NO_FALLBACK_DATA]
 No fallback/default/demo data was added. Both tools still require session-backed context and render explicit empty/error states when session data is missing or invalid.
@@ -59,9 +59,9 @@ No fallback/default/demo data was added. Both tools still require session-backed
 Targeted syntax checks only were run, as requested.
 
 ## Changed Files
-- `tools/Palette Browser/` removed as the wrong intermediate V2 palette lane.
-- `tools/Palette Manager v2/main.js`
-- `tools/SVG Asset Studio v2/main.js`
+- `toolbox/Palette Browser/` removed as the wrong intermediate V2 palette lane.
+- `toolbox/Palette Manager v2/main.js`
+- `toolbox/SVG Asset Studio v2/main.js`
 - `docs_build/dev/reports/PR_11_190_validation.md`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
@@ -71,20 +71,20 @@ Existing PR source doc was present in the worktree and included in the ZIP:
 Commands:
 
 ```powershell
-node --check "tools/Palette Manager v2/main.js"
-node --check "tools/SVG Asset Studio v2/main.js"
+node --check "toolbox/Palette Manager v2/main.js"
+node --check "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Results:
 
-- `node --check "tools/Palette Manager v2/main.js"` passed.
-- `node --check "tools/SVG Asset Studio v2/main.js"` passed.
+- `node --check "toolbox/Palette Manager v2/main.js"` passed.
+- `node --check "toolbox/SVG Asset Studio v2/main.js"` passed.
 
 ## Banned Reference Check
 Command:
 
 ```powershell
-rg -n "platformShell|assetUsageIntegration|tools/shared|Workspace Manager|handoff|fallback|demo data|^import |^export " -- "tools/Palette Manager v2/main.js" "tools/SVG Asset Studio v2/main.js"
+rg -n "platformShell|assetUsageIntegration|tools/shared|Workspace Manager|handoff|fallback|demo data|^import |^export " -- "toolbox/Palette Manager v2/main.js" "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Result: passed. No matches.
@@ -98,7 +98,7 @@ No changes were made to:
 - `start_of_day/**`
 - Workspace Manager v1
 - `platformShell`
-- `tools/shared/**`
+- `toolbox/shared/**`
 - legacy tools
 
 ## Full Samples Smoke Decision

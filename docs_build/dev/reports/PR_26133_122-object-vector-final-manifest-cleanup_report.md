@@ -17,10 +17,10 @@
 - `games/Asteroids/game/asteroidObjectGeometry.js`
 - `games/Asteroids/index.js`
 - `games/Asteroids/entities/Bullet.js`
-- `tools/schemas/game.manifest.schema.json`
-- `tools/schemas/tools/object-vector-studio-v2.schema.json`
-- `tools/schemas/tools/vector-map-editor.schema.json`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/schemas/game.manifest.schema.json`
+- `toolbox/schemas/tools/object-vector-studio-v2.schema.json`
+- `toolbox/schemas/tools/vector-map-editor.schema.json`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - Targeted Asteroids/Object Vector/Workspace Manager tests under `tests/`
 
 ## Validation
@@ -43,6 +43,6 @@
 - Full regression and full samples smoke test were not run; this change is limited to Asteroids/Object Vector manifest cleanup and Workspace Manager discovery verification.
 
 ## Manual Validation
-1. Open `tools/workspace-manager-v2/index.html`, pick the repo folder, and confirm the Active Game dropdown includes `Asteroids`.
+1. Open `toolbox/workspace-manager-v2/index.html`, pick the repo folder, and confirm the Active Game dropdown includes `Asteroids`.
 2. Select `Asteroids` and confirm the generated workspace context includes `tools["object-vector-studio-v2"].objects` and does not include `tools["object-vector-studio-v2"].vectorMaps`.
 3. Open `games/Asteroids/index.html` and confirm the game launches with ship, asteroid, UFO, and bullet Object Vector geometry rendering.

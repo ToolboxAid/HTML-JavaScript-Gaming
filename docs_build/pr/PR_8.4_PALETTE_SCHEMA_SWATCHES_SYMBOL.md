@@ -9,7 +9,7 @@ Align palette schema with actual usage:
 ## Changes
 
 ### Schema Updates
-`tools/schemas/palette.schema.json`
+`toolbox/schemas/palette.schema.json`
 
 - Rename:
   - `entries` → `swatches`

@@ -52,5 +52,5 @@ Registry Paths
 Issues
 - none
 Notes
-- Legacy/inactive entry sprite-editor-old-keep points to missing folder tools/SpriteEditor_old_keep (allowed).
-- Legacy/inactive entry sprite-editor-old-keep points to missing entry file tools/SpriteEditor_old_keep/index.html (allowed).
+- Legacy/inactive entry sprite-editor-old-keep points to missing folder toolbox/SpriteEditor_old_keep (allowed).
+- Legacy/inactive entry sprite-editor-old-keep points to missing entry file toolbox/SpriteEditor_old_keep/index.html (allowed).

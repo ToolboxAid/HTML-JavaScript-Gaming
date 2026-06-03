@@ -4,15 +4,15 @@
 Load a Palette Manager V2 sample preset when the tool opens with a `samplePresetPath` URL parameter.
 
 ## Scope
-- `tools/palette-manager-v2/main.js`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/modules/PaletteValidationService.js`
+- `toolbox/palette-manager-v2/main.js`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/modules/PaletteValidationService.js`
 - Required PR workflow docs and review artifacts.
 
 ## Boundaries
 - Do not modify workspace/toolState behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add fallback/default data.
 - Do not add dependencies.
 - Do not run the full samples smoke test.
@@ -34,7 +34,7 @@ Load a Palette Manager V2 sample preset when the tool opens with a `samplePreset
 - Default requested gate: `npm run test:workspace-v2`
 
 ## Manual Validation
-1. Open `/tools/palette-manager-v2/index.html?sampleId=0219&sampleTitle=Sprite%20Atlas%20Image%20Rendering&samplePresetPath=/samples/phase-02/0219/sample.0219.palette.json`.
+1. Open `/toolbox/palette-manager-v2/index.html?sampleId=0219&sampleTitle=Sprite%20Atlas%20Image%20Rendering&samplePresetPath=/samples/phase-02/0219/sample.0219.palette.json`.
 2. Confirm User Palette contains the sample palette swatches.
 3. Confirm Palette JSON contains `tools.palette-browser.swatches`.
 4. Confirm status indicates the sample preset loaded.

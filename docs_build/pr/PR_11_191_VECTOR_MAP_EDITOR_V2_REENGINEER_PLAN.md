@@ -17,7 +17,7 @@ Re-engineer Vector Map Editor V2 as the next tool in the V2 lane. This is not a 
 - No Workspace Manager v1 work.
 - No platformShell usage.
 - No assetUsageIntegration usage.
-- No `tools/shared/*` dependency.
+- No `toolbox/shared/*` dependency.
 - No legacy helper copy/paste.
 
 ## Required Architecture

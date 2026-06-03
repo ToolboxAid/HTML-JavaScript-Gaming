@@ -4,7 +4,7 @@
 Renamed the saved Session Library row action from `Use in Library` to `Use in Diff/Merge` while keeping Recent Sessions row action unchanged as `Use in Library`.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionLibraryActionLabel.test.mjs`
 
 ## Changes Implemented
@@ -24,13 +24,13 @@ Renamed the saved Session Library row action from `Use in Library` to `Use in Di
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2SessionLibraryActionLabel.test.mjs
 node tests/runtime/V2SessionLibraryActionLabel.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2SessionLibraryActionLabel.test.mjs` -> PASS
 - `node tests/runtime/V2SessionLibraryActionLabel.test.mjs` -> PASS
   - output: `tmp/v2-session-library-action-label-results.json`

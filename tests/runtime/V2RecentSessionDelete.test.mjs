@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const htmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
-const jsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
+const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-recent-session-delete-results.json");
 
 function readText(filePath) {
@@ -52,9 +52,9 @@ export function run() {
   const hasRecentDeleteActiveClear = js.includes("if (this.currentHostContextId === sessionId)") && js.includes("this.currentHostContextId = \"\";");
   const hasLibraryScopeMessage = js.includes("Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions.");
 
-  if (!htmlExists) failures.push("Missing tools/workspace-v2/index.html.");
-  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!syntax.ok) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+  if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!syntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
   if (!hasDeleteSavedLabel) failures.push("Delete Saved Session label is missing.");
   if (!hasRecentDeleteButton) failures.push("Recent Session row Delete button is missing.");
   if (!hasRecentDeleteMethod) failures.push("deleteRecentSessionEntry(hostContextId) is missing.");

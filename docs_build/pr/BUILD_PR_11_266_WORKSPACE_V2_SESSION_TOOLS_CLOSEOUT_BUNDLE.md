@@ -4,7 +4,7 @@
 Bundle final Workspace V2 session-library/diff/merge/delete/refresh UX correctness fixes without broad refactors.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
 - docs_build/dev/reports/PR_11_266_session_tools_closeout_bundle_report.md
 
@@ -23,7 +23,7 @@ Bundle final Workspace V2 session-library/diff/merge/delete/refresh UX correctne
 - No fallback/default data behavior introduced.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
 - node tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
 - node tests/runtime/V2DeterministicStateTransitions.test.mjs

@@ -4,7 +4,7 @@
 Complete Asset Browser V2 strict JSON behavior so it renders only validated `payloadJson.assetCatalog`, shows explicit valid-empty state, and rejects invalid/legacy payload shapes visibly.
 
 ## Scope
-- `tools/asset-manager-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
 - `tests/runtime/V2AssetBrowserStrictJson.test.mjs`
 - `docs_build/dev/reports/PR_11_313_report.md`
 - `docs_build/dev/codex_commands.md`

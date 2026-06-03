@@ -4,7 +4,7 @@
 Perform one rollback-only PR by removing the uncommitted PR_26124_072 shared-removal attempt and ensuring Palette Manager V2 matches the last committed working state.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - Required PR workflow docs and review artifacts.
 
 ## Implementation
@@ -15,7 +15,7 @@ Perform one rollback-only PR by removing the uncommitted PR_26124_072 shared-rem
 5. Document the rollback result and validation.
 
 ## Boundaries
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
 - Do not refactor CSS.
@@ -26,6 +26,6 @@ Perform one rollback-only PR by removing the uncommitted PR_26124_072 shared-rem
 ## Validation
 - Confirm `git status --short` shows only intended rollback workflow changes after cleanup.
 - Syntax check restored Palette Manager V2 JavaScript files.
-- Confirm no tracked `tools/palette-manager-v2` diff remains against `HEAD`.
+- Confirm no tracked `toolbox/palette-manager-v2` diff remains against `HEAD`.
 - Run `npm run test:workspace-v2`.
 - Skip the full samples smoke test.

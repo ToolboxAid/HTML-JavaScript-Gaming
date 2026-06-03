@@ -41,12 +41,12 @@ Expected fail behavior:
 - PASS: Playwright V8 coverage report generated at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
 
 Coverage highlights for changed runtime JS:
-- `(86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `(91%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `(93%) tools/workspace-manager-v2/js/controls/GameSelectorControl.js`
-- `(93%) tools/workspace-manager-v2/js/controls/ToolTilesControl.js`
-- `(100%) tools/workspace-manager-v2/js/bootstrap.js`
-- `(32%) tools/shared/assetUsageIntegration.js`
+- `(86%) toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `(91%) toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `(93%) toolbox/workspace-manager-v2/js/controls/GameSelectorControl.js`
+- `(93%) toolbox/workspace-manager-v2/js/controls/ToolTilesControl.js`
+- `(100%) toolbox/workspace-manager-v2/js/bootstrap.js`
+- `(32%) toolbox/shared/assetUsageIntegration.js`
 
 ## Full Samples Smoke Test
 Skipped. This PR is limited to Workspace Manager V2 status/tile presentation, shared palette action labels, and Text to Speech V2 scroll CSS; the required targeted Workspace V2 Playwright suite was run instead.

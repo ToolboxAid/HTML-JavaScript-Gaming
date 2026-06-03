@@ -5,7 +5,7 @@ Validate user acceptance readiness for Physics Sandbox across launch, core workf
 
 ## Scope
 - Tool: `physics-sandbox`
-- Entry point: `tools/Physics Sandbox/index.html`
+- Entry point: `toolbox/Physics Sandbox/index.html`
 
 ## Validation Scenarios
 

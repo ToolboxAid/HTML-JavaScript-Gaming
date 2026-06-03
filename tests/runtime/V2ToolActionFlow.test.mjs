@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const resultsPath = path.join(repoRoot, "tmp", "v2-tool-action-results.json");
 
 const FLOWS = [
@@ -115,7 +115,7 @@ function validateFlow(flow) {
     sessionStorageLike.setItem(hostContextId, JSON.stringify(sourceSessionContext));
   }
 
-  const actionUrl = new URL(`tools/${flow.targetToolId}/index.html`, "http://localhost/");
+  const actionUrl = new URL(`toolbox/${flow.targetToolId}/index.html`, "http://localhost/");
   actionUrl.searchParams.set("hostContextId", hostContextId);
   const builtUrl = actionUrl.pathname.slice(1) + actionUrl.search;
   const parsedHostContextId = actionUrl.searchParams.get("hostContextId");
@@ -134,7 +134,7 @@ function validateFlow(flow) {
   if (!sourceHtmlText.includes(`id="${flow.buttonId}"`)) failures.push("Required launch action control is missing in source tool HTML.");
   if (!sourceJsText.includes(flow.targetUrlSnippet)) failures.push("Source tool JS does not construct the required target route.");
   if (!sourceJsText.includes('searchParams.set("hostContextId", this.urlState.hostContextId);')) failures.push("Source tool JS does not preserve hostContextId in action URL.");
-  if (!builtUrl.startsWith(`tools/${flow.targetToolId}/index.html?hostContextId=`)) failures.push("Built action URL does not target required V2 route.");
+  if (!builtUrl.startsWith(`toolbox/${flow.targetToolId}/index.html?hostContextId=`)) failures.push("Built action URL does not target required V2 route.");
   if (parsedHostContextId !== hostContextId) failures.push("Action URL hostContextId was not preserved.");
   if (!storedValue) failures.push("Session storage entry for hostContextId is missing in simulated action flow.");
   if (storedValue !== expectedStoredValue) failures.push("Session payload was mutated during simulated action flow.");

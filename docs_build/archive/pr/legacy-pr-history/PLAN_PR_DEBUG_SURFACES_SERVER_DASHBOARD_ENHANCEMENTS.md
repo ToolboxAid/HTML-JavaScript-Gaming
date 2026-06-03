@@ -12,7 +12,7 @@ Define the next docs-first expansion of the server dashboard after the foundatio
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Scope
-Extend server dashboard capabilities under `tools/dev/server-dashboard` with richer read-only views and explicit refresh/access rules.
+Extend server dashboard capabilities under `toolbox/dev/server-dashboard` with richer read-only views and explicit refresh/access rules.
 
 ## In Scope
 - player statistics view

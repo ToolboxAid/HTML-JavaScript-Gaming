@@ -52,9 +52,9 @@ Codex must revisit and repair/report all prior lane items:
 
 ### Test Schema Relocation
 Move or prove already moved:
-- `tools/palette-editor/tool.schema.json`
-- `tools/vector-asset-studio/tool.schema.json`
-- `tools/vector-map-editor/tool.schema.json`
+- `toolbox/palette-editor/tool.schema.json`
+- `toolbox/vector-asset-studio/tool.schema.json`
+- `toolbox/vector-map-editor/tool.schema.json`
 
 Destination:
 - `tests/fixtures/tool-schemas/<tool-id>/tool.schema.json`

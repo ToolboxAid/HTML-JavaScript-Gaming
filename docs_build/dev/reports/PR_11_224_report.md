@@ -1,8 +1,8 @@
 # PR_11_224 Report - V2 Reset / Clear State Controls (Deterministic)
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2ResetState.test.mjs`
 - `docs_build/dev/reports/PR_11_224_report.md`
 
@@ -27,11 +27,11 @@ Determinism and safety:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2ResetState.test.mjs`  
+1. `node --check tests/runtime/V2ResetState.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2ResetState.test.mjs`  
+2. `node tests/runtime/V2ResetState.test.mjs`
 Result: **PASS** (writes `tmp/v2-reset-state-results.json`)
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
 Result: **PASS**
 
 Runtime simulation result excerpt:

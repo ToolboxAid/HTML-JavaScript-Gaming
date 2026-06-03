@@ -4,7 +4,7 @@
 Implement one scoped Palette Manager V2 sort fix: User Palette Tag descending sort keeps untagged swatches after tagged swatches.
 
 ## Scope
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -23,7 +23,7 @@ Implement one scoped Palette Manager V2 sort fix: User Palette Tag descending so
 - Do not change Validation/Error Viewer behavior.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not broadly refactor Palette Manager V2.
 

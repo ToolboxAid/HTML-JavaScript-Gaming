@@ -17,8 +17,8 @@ Status: PASS
 
 ## Changed Files
 
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_035-midi-studio-v2-octave-grid-freeze-and-highlight_validation.md`
 - `docs_build/dev/reports/codex_review.diff`
@@ -31,9 +31,9 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-node -e "const fs=require('fs'); const p='tools/midi-studio-v2/styles/midiStudioV2.css'; const css=fs.readFileSync(p,'utf8'); if(/\/\*[^]*$/.test(css.replace(/\/\*[^]*?\*\//g,''))) throw new Error('Unclosed CSS comment'); let depth=0; for (const ch of css.replace(/\/\*[^]*?\*\//g,'')) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error('Unexpected }'); } if (depth!==0) throw new Error('Unbalanced CSS braces'); console.log('CSS syntax guard passed:', p);"
+node -e "const fs=require('fs'); const p='toolbox/midi-studio-v2/styles/midiStudioV2.css'; const css=fs.readFileSync(p,'utf8'); if(/\/\*[^]*$/.test(css.replace(/\/\*[^]*?\*\//g,''))) throw new Error('Unclosed CSS comment'); let depth=0; for (const ch of css.replace(/\/\*[^]*?\*\//g,'')) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error('Unexpected }'); } if (depth!==0) throw new Error('Unbalanced CSS braces'); console.log('CSS syntax guard passed:', p);"
 npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave timeline freezes compact headers and note labels while active cells stay textless|fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync|octave grid density supports icon controls and simultaneous chord editing|exports through Type dropdown and Save without claiming files were written" --config=codex_playwright_system_chrome.config.cjs --reporter=list --workers=1 --timeout=60000
 git diff --check
 ```
@@ -76,7 +76,7 @@ The targeted MIDI Studio V2 Playwright run validates:
 
 ## Manual Validation Notes
 
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. Import `tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json`.
 3. Vertically scroll the octave note grid and confirm the two-row Octave/Bar/Beat header stays pinned at the top.
 4. Horizontally scroll the grid and confirm the header columns and body note columns remain aligned.

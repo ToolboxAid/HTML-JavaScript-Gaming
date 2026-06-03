@@ -23,7 +23,7 @@ From `git diff --name-only HEAD` (tracked changes):
 - `docs_build/pr/BUILD_PR_LEVEL_11_160_FIX_SHARED_SHELL_SVG_ASSET_BADGE_COMPATIBILITY.md`
 - `docs_build/pr/BUILD_PR_LEVEL_11_161_WIRE_SVG_PAYLOAD_TO_SHARED_ASSET_BADGE.md`
 - `docs_build/pr/PR_11_162.md`
-- `tools/shared/platformShell.js`
+- `toolbox/shared/platformShell.js`
 
 Additional untracked files from `git status --short`:
 - `docs_build/dev/reports/pr_11_163_delivery_manifest.md`
@@ -31,7 +31,7 @@ Additional untracked files from `git status --short`:
 
 ## Exact Renderer Emitting Visible `Asset: none`
 Primary owner path is shared shell (not SVG tool UI, not Workspace Manager tile component):
-- File: `tools/shared/platformShell.js`
+- File: `toolbox/shared/platformShell.js`
 - Function: `renderToolAssetBadge(toolId)`
 - Template emission:
   - Non-asset tools branch: ``Asset: ${nonAssetLabel}`` (line region ~1449)
@@ -44,7 +44,7 @@ Conclusion: the displayed `Asset: none` text is emitted by shared shell tool-row
 ## Input Contract Read By That Renderer
 `renderToolAssetBadge(toolId)` reads these contracts, in order:
 1. Shared asset handoff from storage:
-- API: `readSharedAssetHandoff()` from `tools/shared/assetUsageIntegration.js`
+- API: `readSharedAssetHandoff()` from `toolbox/shared/assetUsageIntegration.js`
 - Storage key: `toolboxaid.shared.assetHandoff`
 - Normalized required fields: `assetId`, `sourcePath`
 - Normalized optional fields used by badge logic: `assetType`, `displayName`, `selectedAt`
@@ -59,7 +59,7 @@ Conclusion: the displayed `Asset: none` text is emitted by shared shell tool-row
 - direct manifest preset read: `rawPreset.tools["svg-asset-studio"].vectorAssetDocument.sourceName` (or `svgText`)
 
 ## Ownership Finding (Who Actually Owns The Badge)
-- Badge/tile text owner: `tools/shared/platformShell.js` shared shell renderer.
+- Badge/tile text owner: `toolbox/shared/platformShell.js` shared shell renderer.
 - Workspace Manager role: writes shared handoff (`writeSharedAssetHandoff`) when launching/mounting payloads.
 - SVG Asset Studio role: consumes payload and renders editor/status internally; it does not render the shared shell `Asset:` tile text.
 
@@ -79,15 +79,15 @@ Recommended smallest next PR (fix, not rollback):
 3. Do not alter schemas/samples/SVG tool behavior.
 
 Why this is smallest:
-- Single-file, owner-correct wiring in `tools/shared/platformShell.js`.
+- Single-file, owner-correct wiring in `toolbox/shared/platformShell.js`.
 - No contract shape changes.
 - Aligns row renderer input with the same per-tool manifest object already present in workspace state.
 
 ## Smallest Rollback Alternative (If Fix Is Deferred)
-If immediate fix is deferred, rollback only the SVG-specific badge derivation additions in `tools/shared/platformShell.js` introduced across PR 11.160-11.162 attempts, while keeping baseline shared handoff behavior intact. Do not perform a broad reset.
+If immediate fix is deferred, rollback only the SVG-specific badge derivation additions in `toolbox/shared/platformShell.js` introduced across PR 11.160-11.162 attempts, while keeping baseline shared handoff behavior intact. Do not perform a broad reset.
 
 ## Targeted Validation For Next PR
-- `node --check tools/shared/platformShell.js`
+- `node --check toolbox/shared/platformShell.js`
 - launch Sample 1902 -> Workspace Manager path
 - verify `renderToolAssetBadge("svg-asset-studio")` displays `Asset: sample-0901-ship.svg`
 - no full samples smoke

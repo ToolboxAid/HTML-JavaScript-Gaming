@@ -7,7 +7,7 @@ Scope: enforce Workspace-originated game runtime context for launchable games.
 - [PASS] Guard validates hostMode=game and matching gameId :: games/shared/workspaceGameLaunchGuard.js
 - [PASS] Guard exposes workspace context to game runtime :: games/shared/workspaceGameLaunchGuard.js
 - [PASS] Games Hub launch href is workspace-only (no row.href fallback) :: games/index.render.js
-- [PASS] Workspace manager writes game host context state :: tools/Workspace Manager/main.js
+- [PASS] Workspace manager writes game host context state :: toolbox/Workspace Manager/main.js
 - [PASS] All launchable game pages include guard module :: launchable=11, issues=0
 
 Checks: 7

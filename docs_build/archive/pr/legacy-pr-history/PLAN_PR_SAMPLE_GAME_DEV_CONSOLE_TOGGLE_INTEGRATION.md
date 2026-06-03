@@ -11,7 +11,7 @@ Integrate the existing dev console and debug overlay runtime into one sample gam
 while keeping engine core contracts clean and avoiding engine pollution.
 
 ## Scope
-- Wire the existing `tools/shared/devConsoleDebugOverlay.js` runtime into a single sample/dev entry
+- Wire the existing `toolbox/shared/devConsoleDebugOverlay.js` runtime into a single sample/dev entry
 - Add a toggle key for console visibility
 - Add a toggle key for overlay visibility
 - Route collected diagnostics into the runtime once per frame
@@ -26,7 +26,7 @@ while keeping engine core contracts clean and avoiding engine pollution.
 - No global debug behavior forced into production samples
 
 ## Required Constraints
-- Reuse the already-built runtime from `tools/shared/devConsoleDebugOverlay.js`
+- Reuse the already-built runtime from `toolbox/shared/devConsoleDebugOverlay.js`
 - Do not duplicate console logic in the sample
 - Do not spread debug-specific conditionals across unrelated engine systems
 - Keep the feature disabled by default unless explicitly toggled
@@ -37,7 +37,7 @@ while keeping engine core contracts clean and avoiding engine pollution.
 Use one representative sample game or dev sample entry that already exercises scene loading and rendering.
 
 ## Integration Design
-1. Import runtime from `tools/shared/devConsoleDebugOverlay.js`
+1. Import runtime from `toolbox/shared/devConsoleDebugOverlay.js`
 2. Create one runtime instance during sample init
 3. Register keyboard toggle(s):
    - backquote / tilde for console surface

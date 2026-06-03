@@ -4,7 +4,7 @@
 Implemented pass two of the Workspace-hosted shell migration for SVG Asset Studio.
 
 ## Hosted State Notification
-`tools/shared/workspaceShell.js` now posts normalized hosted shell state to the parent Workspace Manager:
+`toolbox/shared/workspaceShell.js` now posts normalized hosted shell state to the parent Workspace Manager:
 
 - message type: `tools:workspace-shell-state`
 - payload: normalized workspace shell state
@@ -24,7 +24,7 @@ The posted state includes the existing normalized fields:
 - `errors`
 
 ## Workspace Manager Wiring
-`tools/Workspace Manager/main.js` now listens for `tools:workspace-shell-state` messages.
+`toolbox/Workspace Manager/main.js` now listens for `tools:workspace-shell-state` messages.
 
 Message acceptance requires:
 
@@ -56,15 +56,15 @@ The mounted iframe also receives dataset markers for focused inspection:
 - Legacy platform shell behavior remains for standalone/direct-open flows.
 
 ## Files Changed
-- `tools/shared/workspaceShell.js`
-- `tools/Workspace Manager/main.js`
+- `toolbox/shared/workspaceShell.js`
+- `toolbox/Workspace Manager/main.js`
 - `docs_build/dev/reports/pr_11_170_workspace_tile_state_ledger.md`
 
 ## Validation
-- `node --check tools/shared/workspaceShell.js` - PASS
-- `node --check tools/shared/platformShell.js` - PASS
-- `node --check "tools/Workspace Manager/main.js"` - PASS
-- `node --check "tools/SVG Asset Studio/main.js"` - PASS
+- `node --check toolbox/shared/workspaceShell.js` - PASS
+- `node --check toolbox/shared/platformShell.js` - PASS
+- `node --check "toolbox/Workspace Manager/main.js"` - PASS
+- `node --check "toolbox/SVG Asset Studio/main.js"` - PASS
 
 ## Manual UAT
 Required browser check:

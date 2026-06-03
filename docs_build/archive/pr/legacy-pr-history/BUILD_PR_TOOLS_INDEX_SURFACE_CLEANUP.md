@@ -1,11 +1,11 @@
 # BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP
 
 ## Purpose
-Clean up `tools/index.html` so it acts as a user-facing launcher for true first-class tools only.
+Clean up `toolbox/index.html` so it acts as a user-facing launcher for true first-class tools only.
 
 ## Scope
 In scope:
-- remove non-launchable planning and platform/internal sections from `tools/index.html`
+- remove non-launchable planning and platform/internal sections from `toolbox/index.html`
 - keep the landing page aligned with the registry-driven first-class tool set
 - keep `Sprite Editor` first-class and visible
 - keep preserved legacy sprite tooling hidden
@@ -25,17 +25,17 @@ Out of scope:
 - Sprite Editor
 
 ## Preserved But Hidden
-- `tools/SpriteEditor_old_keep/`
+- `toolbox/SpriteEditor_old_keep/`
 
 ## Implementation Summary
 - removed the `Planned Next` section from the tools landing page because it did not represent active launchable tools
-- removed the `Advanced Systems & Extensions` section from the tools landing page because those entries are platform/dev placeholders rather than actual tools under `tools/`
+- removed the `Advanced Systems & Extensions` section from the tools landing page because those entries are platform/dev placeholders rather than actual tools under `toolbox/`
 - kept the landing page focused on the registry-driven first-class tool launcher only
 - preserved the engine theme and shared shell usage
 - kept registry and renderer behavior aligned with the active tool list
 
 ## Files Changed
-- `tools/index.html`
+- `toolbox/index.html`
 - `docs_build/pr/BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP.md`
 - `docs_build/dev/COMMIT_COMMENT.txt`
 

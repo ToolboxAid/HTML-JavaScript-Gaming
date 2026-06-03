@@ -29,10 +29,10 @@ Codex may inspect only these files unless an import directly proves another file
 - `games/index.render.js`
 - `games/index.css`
 - `games/metadata/games.index.metadata.json`
-- `tools/toolRegistry.js`
-- `tools/Workspace Manager/index.html`
-- `tools/Workspace Manager/main.js`
-- `tools/Workspace Manager/toolHost.css`
+- `toolbox/toolRegistry.js`
+- `toolbox/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/toolHost.css`
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 ## Acceptance

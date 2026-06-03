@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-entry-flow-results.json");
 
@@ -61,11 +61,11 @@ function validateEntrySurface() {
   const workspaceJs = workspaceJsExists ? readText(workspaceJsPath) : "";
   const { syntaxValid: workspaceSyntaxValid, syntaxError: workspaceSyntaxError } = checkJsSyntax(workspaceJsPath);
 
-  if (!indexExists) failures.push("tools/index.html is missing.");
-  if (!workspaceExists) failures.push("tools/workspace-v2/index.html is missing.");
-  if (!workspaceJsExists) failures.push("tools/workspace-v2/index.js is missing.");
-  if (!indexHtml.includes("Open Workspace V2")) failures.push("tools/index.html does not expose 'Open Workspace V2' entry action.");
-  if (!indexHtml.includes("./workspace-v2/index.html")) failures.push("tools/index.html does not link to workspace-v2 route.");
+  if (!indexExists) failures.push("toolbox/index.html is missing.");
+  if (!workspaceExists) failures.push("toolbox/workspace-v2/index.html is missing.");
+  if (!workspaceJsExists) failures.push("toolbox/workspace-v2/index.js is missing.");
+  if (!indexHtml.includes("Open Workspace V2")) failures.push("toolbox/index.html does not expose 'Open Workspace V2' entry action.");
+  if (!indexHtml.includes("./workspace-v2/index.html")) failures.push("toolbox/index.html does not link to workspace-v2 route.");
   if (!workspaceHtml.includes("Workspace V2 Session Producer")) failures.push("workspace-v2 landing title is missing.");
   if (!workspaceJs.includes("sessionStorage.setItem(hostContextId, JSON.stringify(payload));")) failures.push("workspace-v2 does not create session storage entry.");
   if (!workspaceJs.includes('toolUrl.searchParams.set("hostContextId", hostContextId);')) failures.push("workspace-v2 launch URL does not include hostContextId.");
@@ -114,7 +114,7 @@ function validateWorkspaceToToolRoute(toolId) {
   }
 
   const hostContextId = generateHostContextId(toolId);
-  const launchUrl = new URL(`tools/${toolId}/index.html`, "http://localhost/");
+  const launchUrl = new URL(`toolbox/${toolId}/index.html`, "http://localhost/");
   launchUrl.searchParams.set("hostContextId", hostContextId);
   launchUrl.searchParams.set("fromTool", "workspace-v2");
   const parsedHostContextId = launchUrl.searchParams.get("hostContextId");
@@ -123,7 +123,7 @@ function validateWorkspaceToToolRoute(toolId) {
   const { syntaxValid, syntaxError } = checkJsSyntax(toolJsPath);
 
   if (!toolRouteExists) failures.push("Tool route is broken (missing index.html or index.js).");
-  if (!launchHref.startsWith(`tools/${toolId}/index.html?hostContextId=`)) failures.push("Launch route format is invalid.");
+  if (!launchHref.startsWith(`toolbox/${toolId}/index.html?hostContextId=`)) failures.push("Launch route format is invalid.");
   if (parsedHostContextId !== hostContextId) failures.push("hostContextId was not preserved in launch URL.");
   if (!syntaxValid) failures.push("Tool index.js failed syntax check.");
 

@@ -4,7 +4,7 @@
 Guarantee Workspace V2 manifest always has a single valid `tools.palette-browser` baseline during initialization and full reset.
 
 ## Scope
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - Workspace V2 initialization/full reset/export baseline only
 - No schema changes
 

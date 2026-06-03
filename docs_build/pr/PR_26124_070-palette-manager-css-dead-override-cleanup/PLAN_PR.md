@@ -4,7 +4,7 @@
 Remove confirmed duplicate, dead, or unreachable override blocks from Palette Manager V2 CSS without changing visual behavior.
 
 ## Scope
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts.
 
 ## Boundaries
@@ -16,10 +16,10 @@ Remove confirmed duplicate, dead, or unreachable override blocks from Palette Ma
 - Keep the most recent/active rule when duplicates exist.
 - Keep the append-only `.palette-manager-v2__pin-button--tile` override at the bottom exactly in place.
 - Do not change layout, spacing, sizing, pin styling, or pin size.
-- Do not touch workspace/toolState/session behavior, sample JSON, `tools/shared`, schemas, or dependencies.
+- Do not touch workspace/toolState/session behavior, sample JSON, `toolbox/shared`, schemas, or dependencies.
 
 ## Implementation Plan
-1. Inspect `tools/palette-manager-v2/paletteManagerV2.css`.
+1. Inspect `toolbox/palette-manager-v2/paletteManagerV2.css`.
 2. Compare Palette Manager accordion overrides against shared `src/engine/theme/accordionV2/accordionV2.css`.
 3. Remove only CSS blocks confirmed to be inactive duplicates or obsolete patch remnants:
    - closed-state import accordion declarations already covered by shared accordionV2,

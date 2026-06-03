@@ -3,39 +3,39 @@
 Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-15
-Source folder: `tools/State Inspector`
+Source folder: `toolbox/State Inspector`
 Publish target: `tools.state-inspector`
 
 ## Tool Purpose
 State Inspector owns state snapshot import, validation, inspection/report export, and publish to `tools.state-inspector`.
 
 ## Folder/Files Inspected
-- `tools/State Inspector/how_to_use.html`
-- `tools/State Inspector/index.html`
-- `tools/State Inspector/main.js`
-- `tools/State Inspector/README.md`
+- `toolbox/State Inspector/how_to_use.html`
+- `toolbox/State Inspector/index.html`
+- `toolbox/State Inspector/main.js`
+- `toolbox/State Inspector/README.md`
 
 ## Controls: Control -> Action -> JSON Effect
 | Control | Action | JSON effect |
 |---|---|---|
-| `tools/State Inspector/index.html`: `button[button]#refreshSnapshotButton` - Refresh Snapshot | Triggers the current state snapshot payload UI action for `Refresh Snapshot`. | May update draft state snapshot payload data; tools.state-inspector publish must wait for validation. |
-| `tools/State Inspector/index.html`: `button[button]#loadJsonButton` - Inspect Pasted JSON | Starts state snapshot payload import/load. | Reads incoming JSON into the tool-owned state snapshot payload only after validation succeeds. |
-| `tools/State Inspector/index.html`: `textarea#stateJsonInput` - {"example":"state"} | Edits or loads state snapshot payload text. | Parses into the tool-owned state snapshot payload; malformed or schema-invalid content must not publish. |
+| `toolbox/State Inspector/index.html`: `button[button]#refreshSnapshotButton` - Refresh Snapshot | Triggers the current state snapshot payload UI action for `Refresh Snapshot`. | May update draft state snapshot payload data; tools.state-inspector publish must wait for validation. |
+| `toolbox/State Inspector/index.html`: `button[button]#loadJsonButton` - Inspect Pasted JSON | Starts state snapshot payload import/load. | Reads incoming JSON into the tool-owned state snapshot payload only after validation succeeds. |
+| `toolbox/State Inspector/index.html`: `textarea#stateJsonInput` - {"example":"state"} | Edits or loads state snapshot payload text. | Parses into the tool-owned state snapshot payload; malformed or schema-invalid content must not publish. |
 
 ## Panels And Surfaces Found
-- `tools/State Inspector/how_to_use.html`: `.tools-platform-surface`
-- `tools/State Inspector/index.html`: `.app-shell`
-- `tools/State Inspector/index.html`: `.debug-tool-panel`
-- `tools/State Inspector/index.html`: `.panel`
-- `tools/State Inspector/index.html`: `.tool-shell`
-- `tools/State Inspector/index.html`: `.tool-shell-container`
-- `tools/State Inspector/index.html`: `.tool-shell-page`
-- `tools/State Inspector/index.html`: `.tool-shell__center`
-- `tools/State Inspector/index.html`: `.tool-shell__left`
-- `tools/State Inspector/index.html`: `.tool-shell__right`
+- `toolbox/State Inspector/how_to_use.html`: `.tools-platform-surface`
+- `toolbox/State Inspector/index.html`: `.app-shell`
+- `toolbox/State Inspector/index.html`: `.debug-tool-panel`
+- `toolbox/State Inspector/index.html`: `.panel`
+- `toolbox/State Inspector/index.html`: `.tool-shell`
+- `toolbox/State Inspector/index.html`: `.tool-shell-container`
+- `toolbox/State Inspector/index.html`: `.tool-shell-page`
+- `toolbox/State Inspector/index.html`: `.tool-shell__center`
+- `toolbox/State Inspector/index.html`: `.tool-shell__left`
+- `toolbox/State Inspector/index.html`: `.tool-shell__right`
 
 ## Current Component/Class/Function Inventory
-- `tools/State Inspector/main.js`: applyProjectState; bindEvents; bootStateInspector; buildLiveSnapshot; buildPresetLoadedStatus; captureProjectState; clearRoutedPayloadQueryParam; emitManualJsonDiagnostic; getApi; inspectInputJson; isEmptySnapshotPayload; isManualJsonInputEmpty; normalizeSamplePresetPath; readBootRegistryKeys; readProjectManifest; readRoutedInspectionPayload; readStorageEntries; refreshSnapshot; registerToolBootContract; renderSnapshot; setStatus; tryLoadPresetFromQuery; updateInspectJsonActionState
+- `toolbox/State Inspector/main.js`: applyProjectState; bindEvents; bootStateInspector; buildLiveSnapshot; buildPresetLoadedStatus; captureProjectState; clearRoutedPayloadQueryParam; emitManualJsonDiagnostic; getApi; inspectInputJson; isEmptySnapshotPayload; isManualJsonInputEmpty; normalizeSamplePresetPath; readBootRegistryKeys; readProjectManifest; readRoutedInspectionPayload; readStorageEntries; refreshSnapshot; registerToolBootContract; renderSnapshot; setStatus; tryLoadPresetFromQuery; updateInspectJsonActionState
 
 ## Target Controls
 Keep:
@@ -52,7 +52,7 @@ Add:
 - state path diagnostics
 
 ## JSON Schema/Input Contract Currently Expected
-Tool receives validated payload and owns behavior for state snapshot payload. Current contract baseline: `tools/schemas/tools/state-inspector.schema.json` (state-inspector Payload).
+Tool receives validated payload and owns behavior for state snapshot payload. Current contract baseline: `toolbox/schemas/tools/state-inspector.schema.json` (state-inspector Payload).
 Required keys: `snapshot`.
 Optional keys: none identified for this contract.
 
@@ -84,12 +84,12 @@ tools.state-inspector = {
 ```
 
 ## Playwright Expectations
-- load `tools/State Inspector/index.html` without console errors
+- load `toolbox/State Inspector/index.html` without console errors
 - inspect/filter a valid snapshot
 - reject invalid state snapshot JSON
 
 ## Manual Test Expectations
-- Open `tools/State Inspector/index.html` and confirm snapshot/inspection controls render.
+- Open `toolbox/State Inspector/index.html` and confirm snapshot/inspection controls render.
 - Load a valid snapshot, inspect/filter it, validate, export, and publish.
 - Try malformed JSON and invalid snapshot data; each must block publish.
 

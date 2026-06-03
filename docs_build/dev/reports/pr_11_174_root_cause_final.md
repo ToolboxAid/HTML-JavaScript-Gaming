@@ -10,7 +10,7 @@ The active path remains:
 - SVG badge renders `Asset: none`
 
 ## Fix
-Wire `tools/SVG Asset Studio/main.js` hosted mode directly to `tools/shared/workspaceShell.js`.
+Wire `toolbox/SVG Asset Studio/main.js` hosted mode directly to `toolbox/shared/workspaceShell.js`.
 
 ## Why this should end the loop
 Previous PRs tried to:

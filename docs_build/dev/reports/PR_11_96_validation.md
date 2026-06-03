@@ -4,11 +4,11 @@
 Implemented targeted PR 11.96 contract updates to keep `tools["asset-browser"].assets` as the flat source of truth for asset kinds.
 
 ## Files Changed
-- `tools/Asset Browser/main.js`
-- `tools/shared/platformShell.js`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/shared/platformShell.js`
 - `src/engine/runtime/gameImageConvention.js`
 - `games/shared/workspaceGameAssetCatalog.js`
-- `tools/schemas/tools/asset-browser.schema.json`
+- `toolbox/schemas/tools/asset-browser.schema.json`
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
 
 ## Contract Changes Applied
@@ -21,7 +21,7 @@ Implemented targeted PR 11.96 contract updates to keep `tools["asset-browser"].a
 - Updated workspace game asset catalog manifest parsing to consume `tools["asset-browser"].assets` only.
 - Updated workspace shell embedded status summary for Asset Browser to count flat `assets` entries.
 - Updated sample 1902 Asset Browser tool payload from `payload.assetCatalog.entries` to flat root `assets` map.
-- Updated `tools/schemas/tools/asset-browser.schema.json`:
+- Updated `toolbox/schemas/tools/asset-browser.schema.json`:
   - added required root `assets`
   - removed `payload.assetCatalog`
   - enforced strict `assetEntry` shape (`path`, `kind`, optional `source`, optional `stretchOverride.uniformEdgeStretchPx`).
@@ -34,8 +34,8 @@ Implemented targeted PR 11.96 contract updates to keep `tools["asset-browser"].a
   - stretch override on `image.asteroids.bezel.stretchOverride.uniformEdgeStretchPx`
 
 ## Targeted Validation Commands
-- `node --check "tools/Asset Browser/main.js"`
-- `node --check tools/shared/platformShell.js`
+- `node --check "toolbox/Asset Browser/main.js"`
+- `node --check toolbox/shared/platformShell.js`
 - `node --check src/engine/runtime/gameImageConvention.js`
 - `node --check games/shared/workspaceGameAssetCatalog.js`
 - `node -e "import('./tests/tools/ToolSchemaStrictModeValidation.test.mjs').then(async (m)=>{await m.run(); console.log('ToolSchemaStrictModeValidation: PASS');})"`

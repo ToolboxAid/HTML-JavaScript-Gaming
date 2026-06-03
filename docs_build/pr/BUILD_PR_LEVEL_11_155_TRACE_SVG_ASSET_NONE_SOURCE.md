@@ -15,7 +15,7 @@ Therefore the prior PRs likely changed the wrong branch or the UI is not using t
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/workspace-manager/main.js
+- toolbox/workspace-manager/main.js
 - docs_build/dev/reports/svg_asset_none_trace_11_155.txt
 
 ### ALLOWED CHANGES
@@ -37,7 +37,7 @@ Codex MUST NOT:
 
 ## Required Investigation
 
-Codex must search in `tools/workspace-manager/main.js` for:
+Codex must search in `toolbox/workspace-manager/main.js` for:
 
 - `Asset: none`
 - `none`
@@ -95,7 +95,7 @@ The report must include:
 Run targeted validation only.
 
 Required:
-- `tools/workspace-manager/main.js` syntax passes.
+- `toolbox/workspace-manager/main.js` syntax passes.
 - Static trace confirms active rendered SVG row/card reads direct:
   `tools["svg-asset-studio"].vectorAssetDocument`
 - Sample 1902 SVG card label expected:

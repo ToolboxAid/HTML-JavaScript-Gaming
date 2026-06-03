@@ -21,7 +21,7 @@ test.afterAll(async () => {
 async function openToolsIndex(page) {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -43,10 +43,10 @@ test("renders Asset Manager V2 as a first-class tool in the tools index", async 
       has: page.locator("h3 a", { hasText: "Collision Inspector V2" })
     });
     await expect(assetManagerLink).toBeVisible();
-    await expect(assetManagerLink).toHaveAttribute("href", "/tools/asset-manager-v2/index.html");
+    await expect(assetManagerLink).toHaveAttribute("href", "/toolbox/asset-manager-v2/index.html");
     await expect(assetManagerCard).toContainText("Schema Validated");
     await expect(collisionInspectorLink).toBeVisible();
-    await expect(collisionInspectorLink).toHaveAttribute("href", "/tools/collision-inspector-v2/index.html");
+    await expect(collisionInspectorLink).toHaveAttribute("href", "/toolbox/collision-inspector-v2/index.html");
     await expect(collisionInspectorCard).toContainText("Manifest Driven");
     await expect(collisionInspectorCard).toContainText("Engine-aligned collision visualization");
     const plannedToolNames = await page.locator("[data-planned-tools-grid] h3").allTextContents();

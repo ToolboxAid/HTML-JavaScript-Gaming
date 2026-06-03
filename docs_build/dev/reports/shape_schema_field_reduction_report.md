@@ -14,8 +14,8 @@ Date: 2026-05-14
 
 ## Schema Updates
 
-- Updated `tools/schemas/tools/object-vector-studio-v2.schema.json` so shape variants discriminate by `tool`.
-- Updated `tools/schemas/game.manifest.schema.json` to embed the same reduced Object Vector Studio V2 shape contract.
+- Updated `toolbox/schemas/tools/object-vector-studio-v2.schema.json` so shape variants discriminate by `tool`.
+- Updated `toolbox/schemas/game.manifest.schema.json` to embed the same reduced Object Vector Studio V2 shape contract.
 - Updated schema guards in `ObjectVectorStudioV2SchemaService` and `ObjectVectorRuntimeAssetService` so deprecated shape fields fail validation if reintroduced.
 - Added duplicate local shape-order validation because sorted local order now carries editor row identity.
 
@@ -35,8 +35,8 @@ Date: 2026-05-14
 ## Validation
 
 - PASS - `npm run test:workspace-v2` completed with 49 passed, 0 failed.
-- PASS - `games/Asteroids/game.manifest.json` validates against `tools/schemas/game.manifest.schema.json`.
-- PASS - Embedded Object Vector Studio V2 payload validates against `tools/schemas/tools/object-vector-studio-v2.schema.json`.
+- PASS - `games/Asteroids/game.manifest.json` validates against `toolbox/schemas/game.manifest.schema.json`.
+- PASS - Embedded Object Vector Studio V2 payload validates against `toolbox/schemas/tools/object-vector-studio-v2.schema.json`.
 - PASS - `ObjectVectorRuntimeAssetService` loads the reduced Asteroids payload.
 - PASS - `node tests/games/AsteroidsAssetReferenceAdoption.test.mjs`.
 - PASS - `node tests/games/AsteroidsPlatformDemo.test.mjs`.

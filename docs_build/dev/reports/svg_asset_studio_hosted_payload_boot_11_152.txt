@@ -2,7 +2,7 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/SVG Asset Studio/main.js
+- toolbox/SVG Asset Studio/main.js
 - docs_build/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt
 
 Old boot path found:
@@ -33,10 +33,10 @@ sourceName/svgText verified:
   - `vectorAssetDocument.editorOptions` object
 
 Validation commands/results:
-- node --check "tools/SVG Asset Studio/main.js" -> PASS
+- node --check "toolbox/SVG Asset Studio/main.js" -> PASS
 - rg hosted direct payload path checks in main.js -> PASS
 - node JSON verification against samples/phase-19/1902/sample.1902.workspace-all-tools.json -> PASS
-- git diff --name-only -- "tools/SVG Asset Studio/main.js" "docs_build/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt" -> PASS
+- git diff --name-only -- "toolbox/SVG Asset Studio/main.js" "docs_build/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt" -> PASS
 
 Strict scope confirmation:
 - Code changes were made only in SVG Asset Studio main file and this report.

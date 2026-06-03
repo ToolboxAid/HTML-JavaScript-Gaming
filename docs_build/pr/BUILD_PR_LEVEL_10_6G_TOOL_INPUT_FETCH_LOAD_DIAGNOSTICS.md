@@ -48,10 +48,10 @@ Use one structured object per log call. Do not stringify large payloads. Summari
 ## Files to inspect first
 Codex must inspect and identify the actual active loader files before editing. Likely candidates include, but are not limited to:
 
-- `tools/**/spriteEditorApp.js`
-- `tools/**/*.js`
+- `toolbox/**/spriteEditorApp.js`
+- `toolbox/**/*.js`
 - `samples/**/*.html`
-- shared sample/tool launch helpers under `src/**` or `tools/**`
+- shared sample/tool launch helpers under `src/**` or `toolbox/**`
 
 Do not repo-wide refactor. Locate the common tool/sample load path and add the smallest diagnostic hook possible. If there is no common hook, add equivalent minimal logging to each active tool loader touched by sample standalone data-flow tests.
 

@@ -4,8 +4,8 @@
 Enforce Palette Manager as default Workspace V2 tool and initialize producer session state during load.
 
 ## Files
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
 - docs_build/dev/reports/PR_11_267_workspace_default_tool_producer_init_fix_report.md
 
@@ -27,7 +27,7 @@ Enforce Palette Manager as default Workspace V2 tool and initialize producer ses
 - No schema/cross-tool side effects.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
 - node tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
 - node tests/runtime/V2SessionLibraryActions.test.mjs

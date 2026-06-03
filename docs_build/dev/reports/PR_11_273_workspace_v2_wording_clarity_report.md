@@ -4,8 +4,8 @@
 Workspace V2 only: Session Library + Session Diff Viewer + status messaging.
 
 ## Files Changed
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibraryActions.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2DiffViewerMessaging.test.mjs
@@ -29,7 +29,7 @@ Workspace V2 only: Session Library + Session Diff Viewer + status messaging.
 - Removed vague phrase `Saved session updated.` from Workspace V2 session messaging.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2SessionLibraryActions.test.mjs`
    - PASS

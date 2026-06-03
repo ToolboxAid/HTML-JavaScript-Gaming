@@ -4,7 +4,7 @@
 Implement the strict runtime asset loader defined in `PLAN_PR_RUNTIME_ASSET_LOADER` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared strict packaged runtime loader in `tools/shared/runtimeAssetLoader.js`
+- Added shared strict packaged runtime loader in `toolbox/shared/runtimeAssetLoader.js`
   - validates the packaged manifest contract before runtime load begins
   - treats the package manifest as the runtime authority for asset enumeration
   - executes deterministic sequential loading using packaged asset order
@@ -29,7 +29,7 @@ Implement the strict runtime asset loader defined in `PLAN_PR_RUNTIME_ASSET_LOAD
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/runtimeAssetLoader.js`
+  - `node --check toolbox/shared/runtimeAssetLoader.js`
   - `node --check tests/tools/RuntimeAssetLoader.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

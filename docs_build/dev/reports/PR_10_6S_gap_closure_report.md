@@ -4,15 +4,15 @@
 Close only the Tool UI readiness gaps called out by PR 10.6R, with no fallback/demo data additions and no hardcoded path additions.
 
 ## Files Changed
-- tools/shared/toolLoadDiagnostics.js
-- tools/shared/platformShell.js
-- tools/Asset Browser/main.js
-- tools/Tilemap Studio/main.js
-- tools/Vector Asset Studio/main.js
-- tools/Vector Map Editor/editor/VectorMapEditorApp.js
-- tools/Sprite Editor/index.html
-- tools/Sprite Editor/spriteEditor.css
-- tools/Sprite Editor/modules/spriteEditorApp.js
+- toolbox/shared/toolLoadDiagnostics.js
+- toolbox/shared/platformShell.js
+- toolbox/Asset Browser/main.js
+- toolbox/Tilemap Studio/main.js
+- toolbox/Vector Asset Studio/main.js
+- toolbox/Vector Map Editor/editor/VectorMapEditorApp.js
+- toolbox/Sprite Editor/index.html
+- toolbox/Sprite Editor/spriteEditor.css
+- toolbox/Sprite Editor/modules/spriteEditorApp.js
 - docs_build/dev/reports/PR_10_6S_gap_closure_report.md
 - docs_build/dev/reports/PR_10_6S_tool_ui_readiness_result.md
 

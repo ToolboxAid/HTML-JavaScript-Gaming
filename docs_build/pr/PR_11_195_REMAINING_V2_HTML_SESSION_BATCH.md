@@ -7,8 +7,8 @@ Continue the V2 re-engineer lane with a larger, testable Codex batch. This PR mu
 Codex must identify the next remaining V2 tools that still violate the V2 rules and update only those tools.
 
 Required architecture:
-- `tools/<tool>-v2/index.html` owns static shell, CSS links, shared header mount, menu regions, and app root markup.
-- `tools/<tool>-v2/index.js` owns behavior only: session read, validation, DOM population, rendering into existing nodes, and empty/error state updates.
+- `toolbox/<tool>-v2/index.html` owns static shell, CSS links, shared header mount, menu regions, and app root markup.
+- `toolbox/<tool>-v2/index.js` owns behavior only: session read, validation, DOM population, rendering into existing nodes, and empty/error state updates.
 - V2 tool names shown to users must end with `V2`.
 - Body tool id must use the V2 id, for example `palette-manager-v2`.
 - Header mount must be literal: `<div id="shared-theme-header"></div>`.
@@ -20,7 +20,7 @@ Required architecture:
 - No game changes.
 - No Workspace Manager v1 work.
 - No `platformShell`.
-- No `tools/shared/*`.
+- No `toolbox/shared/*`.
 - No `assetUsageIntegration`.
 - No tool aliases.
 - No fallback/default/sample data.
@@ -53,7 +53,7 @@ Required checks:
   - `document.head.insertAdjacentHTML`
   - `platformShell`
   - `assetUsageIntegration`
-  - `tools/shared/`
+  - `toolbox/shared/`
 - Confirm each changed V2 `index.html` contains:
   - `id="shared-theme-header"`
   - module script for `../../src/engine/theme/mount-shared-header.js`

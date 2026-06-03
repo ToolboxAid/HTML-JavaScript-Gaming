@@ -4,7 +4,7 @@
 Implement authoritative merge-state model enforcement for Workspace V2 session merge/undo state.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
 - docs_build/dev/reports/PR_11_262_merge_state_ssot_report.md
 
@@ -23,6 +23,6 @@ Implement authoritative merge-state model enforcement for Workspace V2 session m
 - Load/refresh recomputes from data, not cached flags.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
 - node tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs

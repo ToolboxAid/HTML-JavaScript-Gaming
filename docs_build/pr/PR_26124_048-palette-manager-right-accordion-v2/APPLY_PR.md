@@ -4,8 +4,8 @@
 Replaced Palette Manager V2 right-column `details`/`summary` accordions with shared accordionV2 markup and right-column-only sizing rules.
 
 ## Runtime Files Changed
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 
 ## Behavior
 - Import/Export now uses `section.accordion-v2` with a shared `accordion-v2__header` and `accordion-v2__content`.

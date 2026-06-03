@@ -1,7 +1,7 @@
 ﻿# Legacy Engine Import Path Guard Report
 
 Generated: 2026-04-12 15:57:09 -04:00
-Scope: tools/src/games/samples/tests (excluding node_modules).
+Scope: toolbox/src/games/samples/tests (excluding node_modules).
 
 Result
 - Guard status: PASS

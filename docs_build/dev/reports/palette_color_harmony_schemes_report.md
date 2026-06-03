@@ -8,11 +8,11 @@ Added a Color Harmony Schemes accordion to Palette Manager V2 under Selected Swa
 
 ## Implementation
 
-- Added `tools/palette-manager-v2/modules/paletteHarmonyUtils.js` for harmony scheme definitions, HSL/RGB conversion, mathematical harmony generation, closest palette matching, parameter normalization, and harmony symbol selection.
-- Added `tools/palette-manager-v2/controls/PaletteHarmonyControl.js` for the accordion UI, match-source selector, scheme selector, scheme-specific numeric inputs, generated color list, and Add Selected/Add All actions.
-- Updated `tools/palette-manager-v2/modules/PaletteManagerApp.js` to track selected source/user swatches for harmony generation, recalculate harmony colors on swatch/scheme/source/parameter changes, and add generated colors with OK/WARN/FAIL status messages.
-- Updated `tools/palette-manager-v2/index.html` with the new accordion directly beneath Selected Swatch.
-- Updated `tools/palette-manager-v2/paletteManagerV2.css` so the selected swatch preview is 30px by 30px and harmony colors render as selectable generated swatches.
+- Added `toolbox/palette-manager-v2/modules/paletteHarmonyUtils.js` for harmony scheme definitions, HSL/RGB conversion, mathematical harmony generation, closest palette matching, parameter normalization, and harmony symbol selection.
+- Added `toolbox/palette-manager-v2/controls/PaletteHarmonyControl.js` for the accordion UI, match-source selector, scheme selector, scheme-specific numeric inputs, generated color list, and Add Selected/Add All actions.
+- Updated `toolbox/palette-manager-v2/modules/PaletteManagerApp.js` to track selected source/user swatches for harmony generation, recalculate harmony colors on swatch/scheme/source/parameter changes, and add generated colors with OK/WARN/FAIL status messages.
+- Updated `toolbox/palette-manager-v2/index.html` with the new accordion directly beneath Selected Swatch.
+- Updated `toolbox/palette-manager-v2/paletteManagerV2.css` so the selected swatch preview is 30px by 30px and harmony colors render as selectable generated swatches.
 - Added targeted Playwright coverage in `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` for empty state, calculated colors, closest-match modes, duplicate avoidance, and Add Selected/Add All behavior.
 
 ## Harmony Schemes
@@ -33,7 +33,7 @@ No hidden or fallback palettes were added.
 
 Passed:
 
-- `node --check tools/palette-manager-v2/modules/paletteHarmonyUtils.js; node --check tools/palette-manager-v2/controls/PaletteHarmonyControl.js; node --check tools/palette-manager-v2/modules/PaletteManagerApp.js; node --check tools/palette-manager-v2/controls/PaletteEditorControl.js; node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
+- `node --check toolbox/palette-manager-v2/modules/paletteHarmonyUtils.js; node --check toolbox/palette-manager-v2/controls/PaletteHarmonyControl.js; node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js; node --check toolbox/palette-manager-v2/controls/PaletteEditorControl.js; node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - Targeted harmony math validation via Node stdin: complementary red -> cyan, triadic red -> green/blue, closest cyan match -> nearest source swatch.
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "generates Palette Manager V2 harmony schemes"`
 - `npm run test:workspace-v2` (59 passed)

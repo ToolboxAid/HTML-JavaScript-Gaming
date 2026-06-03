@@ -20,7 +20,7 @@ docs_build/dev/reports/level_10_6d_palette_contract_evidence/
 2. Use targeted search only in:
 ```text
 samples/
-tools/
+toolbox/
 docs_build/dev/reports/
 ```
 

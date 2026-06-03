@@ -52,9 +52,9 @@ This PR is planning-only. Codex will implement in a follow-up BUILD PR.
 
 ## Proposed file locations
 Likely implementation targets for Codex to evaluate:
-- `tools/Sprite Editor/`
-- `tools/Tilemap Studio/`
-- `tools/Parallax Scene Studio/`
+- `toolbox/Sprite Editor/`
+- `toolbox/Tilemap Studio/`
+- `toolbox/Parallax Scene Studio/`
 - shared project utilities under an existing non-engine tool utility area if present
 - project sample data files under tool samples or shared project asset samples
 - docs_build/pr/

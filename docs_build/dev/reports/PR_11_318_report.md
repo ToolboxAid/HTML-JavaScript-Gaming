@@ -4,8 +4,8 @@
 Add asset selection + details panel behavior in Asset Manager V2 with UI-only state.
 
 ## Files Changed
-- `tools/asset-manager-v2/index.html`
-- `tools/asset-manager-v2/index.js`
+- `toolbox/asset-manager-v2/index.html`
+- `toolbox/asset-manager-v2/index.js`
 - `docs_build/pr/PR_11_318_ASSET_MANAGER_SELECTION_DETAILS/PLAN_PR.md`
 - `docs_build/pr/PR_11_318_ASSET_MANAGER_SELECTION_DETAILS/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_318_report.md`
@@ -25,7 +25,7 @@ Add asset selection + details panel behavior in Asset Manager V2 with UI-only st
   - `Select an asset entry to inspect its session metadata.`
 
 ## Validation Commands
-- `node --check tools/asset-manager-v2/index.js` -> **PASS**
+- `node --check toolbox/asset-manager-v2/index.js` -> **PASS**
 
 ## Full Samples Smoke Decision
 - **Skipped** full samples smoke.

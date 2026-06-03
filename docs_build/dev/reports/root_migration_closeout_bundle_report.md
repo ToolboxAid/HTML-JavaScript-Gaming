@@ -20,9 +20,9 @@ Task: `PR_26154_017-root-migration-closeout-bundle`
 | `scripts/audit-sample-json-ownership.mjs` | Sample root, metadata path, report path, regexes, and report text now use `old_samples` and `docs_build/dev/reports`. |
 | `scripts/engine_usage_audit.py` | Sample bucket detection now uses `old_samples`. |
 | `scripts/run-targeted-test-lanes.mjs` | Removed the obsolete active `samples/` lane check while keeping `old_samples/` and `tests/samples/`. |
-| `tools/dev/checkInternalBarrelGuard.mjs` | Sample entrypoint pattern now uses `old_samples`. |
-| `tools/shared/preview/generate-list-previews.html` | Preview input parser now recognizes `old_samples/phase...` paths. |
-| `tools/schemas/README.md` | Removed an ambiguous trailing slash from the schema `samples` layout label; the actual schema path is unchanged. |
+| `toolbox/dev/checkInternalBarrelGuard.mjs` | Sample entrypoint pattern now uses `old_samples`. |
+| `toolbox/shared/preview/generate-list-previews.html` | Preview input parser now recognizes `old_samples/phase...` paths. |
+| `toolbox/schemas/README.md` | Removed an ambiguous trailing slash from the schema `samples` layout label; the actual schema path is unchanged. |
 
 ## Active Path Closeout
 
@@ -42,7 +42,7 @@ The scan excluded `docs_build/`, tests, reports, `old-tools/`, `old_games/`, `ol
 | --- | --- |
 | `/docs/` | User-facing documentation only: `index.html`, `faq.html`, `reference.html`, `support.html`, and `README.md`. |
 | `/docs_build/` | Build, dev, PR, reports, schema docs, design/reference/release/tool docs, and workflow content. |
-| `/tools/` | Active tool surfaces use `tools/[toolname]/index.html`; support folders remain under `tools/dev`, `tools/shared`, and `tools/schemas`. |
+| `/toolbox/` | Active tool surfaces use `toolbox/[toolname]/index.html`; support folders remain under `toolbox/dev`, `toolbox/shared`, and `toolbox/schemas`. |
 | `/old-tools/` | Deprecated tools live under `old-tools/`. |
 | `/games/` | Active game category pages live under `games/`; `games/index.html` exists and links to game-type tiles. |
 | `/old_games/` | Deprecated playable games live under `old_games/`. |
@@ -54,7 +54,7 @@ The scan excluded `docs_build/`, tests, reports, `old-tools/`, `old_games/`, `ol
 
 - PASS: `games/index.html` exists.
 - PASS: `games/index.html` exposes 7 game-type tiles and every tile href/image resolves.
-- PASS: `tools/index.html` loads the active accordion data source.
+- PASS: `toolbox/index.html` loads the active accordion data source.
 - PASS: Tool groups are alphabetically sorted: AI, Assets, Audio, Colors, Input, Objects, Worlds.
 - PASS: Tool tiles inside every group are alphabetically sorted by visible tool name.
 - PASS: 19 active tool href/image references resolve.

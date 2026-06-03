@@ -12,20 +12,20 @@ Per tool (`asset-manager-v2`, `palette-manager-v2`, `svg-asset-studio-v2`, `tile
 4. empty payload object -> expected `INVALID`
 
 ## Validation Commands Run
-1. `node --check tests/runtime/V2SessionValidation.test.mjs`  
+1. `node --check tests/runtime/V2SessionValidation.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2SessionValidation.test.mjs`  
+2. `node tests/runtime/V2SessionValidation.test.mjs`
 Result: **PASS** (writes `tmp/v2-session-validation-results.json`)
-3. `node --check tools/*-v2/index.js`  
-Result: **FAIL** on Windows/Node CLI wildcard resolution (`MODULE_NOT_FOUND` for literal `tools\\*-v2\\index.js`)
-4. Explicit equivalent per-file syntax sweep for `tools/*-v2/index.js`  
+3. `node --check toolbox/*-v2/index.js`
+Result: **FAIL** on Windows/Node CLI wildcard resolution (`MODULE_NOT_FOUND` for literal `toolbox\\*-v2\\index.js`)
+4. Explicit equivalent per-file syntax sweep for `toolbox/*-v2/index.js`
 Result: **PASS** for:
-   - `tools/asset-manager-v2/index.js`
-   - `tools/palette-manager-v2/index.js`
-   - `tools/svg-asset-studio-v2/index.js`
-   - `tools/tilemap-studio-v2/index.js`
-   - `tools/vector-map-editor-v2/index.js`
-   - `tools/workspace-v2/index.js`
+   - `toolbox/asset-manager-v2/index.js`
+   - `toolbox/palette-manager-v2/index.js`
+   - `toolbox/svg-asset-studio-v2/index.js`
+   - `toolbox/tilemap-studio-v2/index.js`
+   - `toolbox/vector-map-editor-v2/index.js`
+   - `toolbox/workspace-v2/index.js`
 
 ## Pass/Fail By Case
 All five V2 tools passed all four required cases:
@@ -54,5 +54,5 @@ No tool-level failures were reported in `tmp/v2-session-validation-results.json`
 - No games changed.
 - No Workspace Manager v1 changes.
 - No platformShell changes.
-- No `tools/shared/*` changes.
+- No `toolbox/shared/*` changes.
 - No V2 tool HTML structure changes.

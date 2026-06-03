@@ -37,11 +37,11 @@ Validation Results
 - Result: PASS (`JSON_PARSE=PASS`)
 
 2) Workspace manifest validates
-- Command: Schema validation against `tools/schemas/workspace.manifest.schema.json` using repo-aligned validator semantics
+- Command: Schema validation against `toolbox/schemas/workspace.manifest.schema.json` using repo-aligned validator semantics
 - Result: PASS (`WORKSPACE_VALID=true`)
 
 3) Each tool entry validates against tool schema
-- Command: Per-tool validation against `tools/schemas/tools/<tool-id>.schema.json`
+- Command: Per-tool validation against `toolbox/schemas/tools/<tool-id>.schema.json`
 - Result: PASS for all 17 tool entries
 
 4) Wrapper keys removed
@@ -69,5 +69,5 @@ Strict Scope Confirmation
 
 Next Blocker
 - None detected from manifest/schema/registry checks in this PR.
-- Registry availability check: all 17 manifest tool ids are present in `tools/toolRegistry.js`.
+- Registry availability check: all 17 manifest tool ids are present in `toolbox/toolRegistry.js`.
 - If Workspace Manager runtime still reports a tool as unavailable, that would be a post-schema/runtime diagnostic and must be addressed in a separate PR (no registry edits made here).

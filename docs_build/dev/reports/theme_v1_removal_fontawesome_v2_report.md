@@ -46,7 +46,7 @@ Moved files:
 
 - `src/engine/theme/CapturePreviewRuntime.js` was already absent.
 - Targeted active reference search found no exact-path consumers of `src/engine/theme/CapturePreviewRuntime.js`.
-- `tools/shared/tooling/CapturePreviewRuntime.js` remains out of scope; it is a separate active shared tooling file.
+- `toolbox/shared/tooling/CapturePreviewRuntime.js` remains out of scope; it is a separate active shared tooling file.
 
 ## Validation
 

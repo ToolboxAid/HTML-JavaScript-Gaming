@@ -12,21 +12,21 @@
 
 ## Validation
 
-PASS - `node --check tools/midi-studio-v2/js/controls/SongDetailsControl.js`
+PASS - `node --check toolbox/midi-studio-v2/js/controls/SongDetailsControl.js`
 
-PASS - `node --check tools/midi-studio-v2/js/bootstrap.js`
+PASS - `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 
-PASS - `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
+PASS - `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
 
-PASS - `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
+PASS - `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
 
-PASS - `node --check tools/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
+PASS - `node --check toolbox/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
 
-PASS - `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+PASS - `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
 
 PASS - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 
-PASS - HTML restriction check found no inline script blocks, style blocks, inline event handlers, or inline style attributes in `tools/midi-studio-v2/index.html`.
+PASS - HTML restriction check found no inline script blocks, style blocks, inline event handlers, or inline style attributes in `toolbox/midi-studio-v2/index.html`.
 
 WARN - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=chromium -g "PR063|PR062|PR061|PR060"` was not a valid local project name. The repo exposes `playwright`.
 

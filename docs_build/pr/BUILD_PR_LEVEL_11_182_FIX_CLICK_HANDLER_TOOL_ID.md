@@ -13,7 +13,7 @@ Use closest `[data-tool-id]` element and pass its dataset value to launchTool.
 ## Implementation
 
 File:
-tools/Workspace Manager/main.js
+toolbox/Workspace Manager/main.js
 
 Replace click handler logic with:
 

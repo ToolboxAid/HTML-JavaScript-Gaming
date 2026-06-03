@@ -6,7 +6,7 @@ Trim Object Vector Studio V2 saved JSON to durable asset data only and keep pale
 
 ## Scope
 
-- Updated `tools/schemas/tools/object-vector-studio-v2.schema.json` per the repo schema location rule.
+- Updated `toolbox/schemas/tools/object-vector-studio-v2.schema.json` per the repo schema location rule.
 - Root object payload now allows only `version`, `toolId`, `name`, and `objects`.
 - Removed root `palette`, `selection`, `viewport`, and `export` from the object schema.
 - Removed object/shape metadata drift fields from saved object and shape mutation paths.
@@ -19,9 +19,9 @@ Trim Object Vector Studio V2 saved JSON to durable asset data only and keep pale
 Commands run:
 
 ```powershell
-node --check tools/object-vector-studio-v2/js/ToolStarterApp.js
-node --check tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
-node -e "JSON.parse(require('fs').readFileSync('tools/schemas/tools/object-vector-studio-v2.schema.json','utf8')); console.log('schema json ok')"
+node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+node --check toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+node -e "JSON.parse(require('fs').readFileSync('toolbox/schemas/tools/object-vector-studio-v2.schema.json','utf8')); console.log('schema json ok')"
 npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "shows Object Vector Studio V2 layout shell"
 npm run test:workspace-v2
 ```
@@ -39,8 +39,8 @@ Updated `docs_build/dev/reports/playwright_v8_coverage.txt` from the Workspace M
 Changed runtime JS coverage includes:
 
 ```text
-(90%) tools/object-vector-studio-v2/js/ToolStarterApp.js
-(92%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+(90%) toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+(92%) toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
 ```
 
 ## Playwright Coverage

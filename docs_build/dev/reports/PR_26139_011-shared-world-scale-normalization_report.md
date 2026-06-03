@@ -22,10 +22,10 @@
 ## Validation
 - PASS: `node --check src/engine/rendering/WorldScreenTransform.js`
 - PASS: `node --check src/engine/rendering/ObjectVectorRuntimeAssetService.js`
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2App.js`
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2Controls.js`
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
-- PASS: `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2App.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2Controls.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
+- PASS: `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
 - PASS: `node --check tests/playwright/tools/CollisionInspectorV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/CollisionInspectorV2.spec.mjs --project=playwright --workers=1 --reporter=list`
   - `4 passed`
@@ -45,7 +45,7 @@
 - Skipped. This PR is limited to shared scale transform wiring plus targeted Collision Inspector/Object Vector Studio validation.
 
 ## Manual Test Notes
-- Open `tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`.
+- Open `toolbox/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`.
 - Verify the ship appears the same physical size as Asteroids runtime at Collision Inspector zoom `1.0`.
 - Increase Collision Inspector zoom to `5x`; expected result is zoomed inspection only, with unchanged collision/world coordinates.
 - Open Object Vector Studio V2 and use its zoom controls; expected result is editor viewport zoom only, not runtime/world scale changes.

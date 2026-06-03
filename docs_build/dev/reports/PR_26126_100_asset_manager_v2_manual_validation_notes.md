@@ -1,9 +1,9 @@
 # PR_26126_100 Asset Manager V2 Manual Validation Notes
 
 ## Commands
-- `node --check tools/asset-manager-v2/js/controls/AssetFormControl.js`
-- `node --check tools/asset-manager-v2/js/assetManagerMetadata.js`
-- `node --check tools/asset-manager-v2/js/services/AssetSchemaValidator.js`
+- `node --check toolbox/asset-manager-v2/js/controls/AssetFormControl.js`
+- `node --check toolbox/asset-manager-v2/js/assetManagerMetadata.js`
+- `node --check toolbox/asset-manager-v2/js/services/AssetSchemaValidator.js`
 - `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
 - `git diff --check`
 - `npm run test:workspace-v2`

@@ -14,7 +14,7 @@ PASS
 - Added subtle transitions for controls and selectable UI elements.
 
 ## Files Changed
-- `tools/shared/platformShell.css`
+- `toolbox/shared/platformShell.css`
 - `docs_build/dev/reports/PR_11_2_INTERACTION_AND_FEEDBACK_POLISH_report.md`
 
 ## What Was Updated

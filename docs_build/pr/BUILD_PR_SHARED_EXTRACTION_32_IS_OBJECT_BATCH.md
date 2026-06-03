@@ -8,7 +8,7 @@ src/shared/utils/objectUtils.js
 Export:
 isObject
 
-Update tools/dev + tools/shared consumers.
+Update toolbox/dev + toolbox/shared consumers.
 Remove local duplicates.
 
 Constraints:

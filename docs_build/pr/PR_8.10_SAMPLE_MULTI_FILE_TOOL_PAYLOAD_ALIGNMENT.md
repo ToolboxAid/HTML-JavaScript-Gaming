@@ -45,7 +45,7 @@ Example:
 
 ```json
 {
-  "$schema": "../../../tools/vector-map-editor/tool.schema.json",
+  "$schema": "../../../toolbox/vector-map-editor/tool.schema.json",
   "tool": "vector-map-editor",
   "config": {}
 }

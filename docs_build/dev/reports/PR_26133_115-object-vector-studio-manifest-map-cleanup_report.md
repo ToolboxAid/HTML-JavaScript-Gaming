@@ -19,9 +19,9 @@
 - `tests/games/AsteroidsPresentation.test.mjs`
 - `tests/games/AsteroidsValidation.test.mjs`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/schemas/game.manifest.schema.json`
-- `tools/schemas/tools/object-vector-studio-v2.schema.json`
-- `tools/schemas/tools/vector-map-editor.schema.json`
+- `toolbox/schemas/game.manifest.schema.json`
+- `toolbox/schemas/tools/object-vector-studio-v2.schema.json`
+- `toolbox/schemas/tools/vector-map-editor.schema.json`
 - `docs_build/dev/reports/PR_26133_115-object-vector-studio-manifest-map-cleanup_report.md`
 
 ## Validation

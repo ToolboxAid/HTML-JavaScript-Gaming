@@ -5,7 +5,7 @@
 - Kept Tools above Workspace Context.
 - Kept tool grouping labels: Editors, Utilities, Viewers.
 - Kept tile action labels: How To Use, Read Me, Samples (x).
-- Did not modify deprecated `tools/workspace-v2`.
+- Did not modify deprecated `toolbox/workspace-v2`.
 - Did not modify sample JSON.
 - Did not add fallback behavior.
 
@@ -18,7 +18,7 @@
 ## Validation
 - PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - PASS: `npm run test:workspace-v2` completed with 24 passed tests.
-- PASS: Scope check found no diffs under deprecated `tools/workspace-v2` or sample schema paths.
+- PASS: Scope check found no diffs under deprecated `toolbox/workspace-v2` or sample schema paths.
 - SKIPPED: Full samples smoke test, per PR instructions. This PR is Workspace Manager V2 layout scoped.
 
 ## Manual Validation Notes

@@ -1,7 +1,7 @@
 # Project Manifest Contract
 
 ## Purpose and scope
-`html-js-gaming.project` is the shared project root for active first-class tools under `tools/`. It gives the platform one save/open/close contract, one migration entry point, and one place to carry shared asset and palette references across tools.
+`html-js-gaming.project` is the shared project root for active first-class tools under `toolbox/`. It gives the platform one save/open/close contract, one migration entry point, and one place to carry shared asset and palette references across tools.
 
 ## Version
 - Schema: `html-js-gaming.project`

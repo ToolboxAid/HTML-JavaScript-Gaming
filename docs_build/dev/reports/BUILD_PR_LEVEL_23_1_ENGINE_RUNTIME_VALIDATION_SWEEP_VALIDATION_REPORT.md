@@ -8,7 +8,7 @@
 ## Commands Run
 1. `node --input-type=module -e "import { run as s } from './tests/samples/SamplesProgramCombinedPass.test.mjs'; import { run as r } from './tests/runtime/Phase19RuntimeLifecycleValidation.test.mjs'; import { run as e } from './tests/production/EnginePublicBarrelImports.test.mjs'; import { run as b } from './tests/tools/ToolBoundaryEnforcement.test.mjs'; s(); r(); e(); b(); console.log('PASS level23 validation core suite');"`
 2. `node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples`
-3. `node tools/dev/checkSharedExtractionGuard.mjs`
+3. `node toolbox/dev/checkSharedExtractionGuard.mjs`
 
 ## Results Summary
 - Core suite: **PASS**
@@ -28,4 +28,4 @@
 
 ## Evidence Artifacts
 - `docs_build/dev/reports/launch_smoke_report.md`
-- guard output from `tools/dev/checkSharedExtractionGuard.mjs` (captured in failures report)
+- guard output from `toolbox/dev/checkSharedExtractionGuard.mjs` (captured in failures report)

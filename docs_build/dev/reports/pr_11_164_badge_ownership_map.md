@@ -4,7 +4,7 @@
 Who owns the visible `Asset: none` text: Workspace Manager tile state, shared shell badge rendering, or SVG Asset Studio state export?
 
 ## Ownership Verdict
-- Primary owner: `tools/shared/platformShell.js`
+- Primary owner: `toolbox/shared/platformShell.js`
 - Owner function: `renderToolAssetBadge(toolId)`
 - Owner call sites: `renderToolLinks(currentToolId)` row templates that call `renderToolAssetBadge(tool.id)`
 
@@ -18,7 +18,7 @@ Who owns the visible `Asset: none` text: Workspace Manager tile state, shared sh
 
 ## Input Contract Consumed By Emitter
 ### Contract A: shared handoff storage
-- Reader: `readSharedAssetHandoff()` from `tools/shared/assetUsageIntegration.js`
+- Reader: `readSharedAssetHandoff()` from `toolbox/shared/assetUsageIntegration.js`
 - Backing key: `toolboxaid.shared.assetHandoff`
 - Normalized mandatory fields: `assetId`, `sourcePath`
 - Label fields considered by shell: `displayName`, `sourceName`, `name`, `label`, `path`, `sourcePath`
@@ -43,7 +43,7 @@ Who owns the visible `Asset: none` text: Workspace Manager tile state, shared sh
 - Workspace Manager and SVG Asset Studio can both succeed while badge text remains `none` if shared-shell row resolution does not map the active label contract at render time.
 
 ## Smallest Next Fix Candidate
-- Restrict next change to `tools/shared/platformShell.js`.
+- Restrict next change to `toolbox/shared/platformShell.js`.
 - For `toolId === "svg-asset-studio"`, resolve label from the active workspace manifest node (`getManifest()?.tools?.[toolId]?.vectorAssetDocument.sourceName`) before generic `none` fallback.
 - Keep contracts unchanged; no schema/sample/SVG payload rewrites.
 

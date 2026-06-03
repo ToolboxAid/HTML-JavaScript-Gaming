@@ -4,8 +4,8 @@
 Move Palette Manager V2 Validation/Error Viewer Clear into the Validation/Error Viewer header/control area while preserving display-only clear behavior.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
@@ -15,7 +15,7 @@ Move Palette Manager V2 Validation/Error Viewer Clear into the Validation/Error 
 - Do not change pin button size.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Avoid broad refactor.
 

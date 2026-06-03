@@ -1,7 +1,7 @@
 # Playwright Preview Generator V2 Real Root Path
 
 ## Commands
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2App.js`
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "exports manifests and launches tools from fixed Workspace Manager V2 tiles|logs actionable Preview Generator V2 output path resolution failures|loads Gravity Well and Pong manifests"`
 - `npm run test:workspace-v2`

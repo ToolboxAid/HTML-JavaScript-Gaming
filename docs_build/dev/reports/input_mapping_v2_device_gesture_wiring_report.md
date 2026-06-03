@@ -22,7 +22,7 @@ PR: PR_26140_115-fix-input-mapping-v2-device-gesture-wiring
 - PASS: targeted module import validation for changed engine/input and Input Mapping V2 JS modules.
 - PASS: focused Input Mapping V2 Playwright coverage: 11 passed.
 - PASS: `npm run test:workspace-v2`: 70 passed.
-- PASS: additional label follow-up targeted syntax validation with `node --check tools/input-mapping-v2/js/services/InputMappingState.js` and `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`.
+- PASS: additional label follow-up targeted syntax validation with `node --check toolbox/input-mapping-v2/js/services/InputMappingState.js` and `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`.
 - PASS: additional label follow-up focused Playwright validation with `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "launches Input Mapping V2"`: 1 passed.
 - PASS: additional label follow-up full Workspace V2 validation with `npm run test:workspace-v2`: 70 passed.
 - SKIPPED as requested: full samples smoke test.

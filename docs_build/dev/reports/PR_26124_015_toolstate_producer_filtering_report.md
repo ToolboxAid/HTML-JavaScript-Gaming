@@ -1,7 +1,7 @@
 # PR_26124_015
 
 ## Scope
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 
 ## Changes
 - Added `ensureSelectedToolStateProducerToolId()` to keep producer selection pinned to toolState-capable tools only.
@@ -14,7 +14,7 @@
 - Added launch-time `toolStateContext` validation before activation.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js` -> pass
+- `node --check toolbox/workspace-v2/index.js` -> pass
 - `npm run test:workspace-v2` -> pass (17 passed, 0 failed)
 
 ## Notes

@@ -9,9 +9,9 @@ PASS
 - Did not modify standalone sample launch pages or `start_of_day` folders.
 
 ## Schema Files Used
-- `tools/schemas/workspace.schema.json`
-- `tools/schemas/workspace.manifest.schema.json`
-- `tools/schemas/tools/*.schema.json`
+- `toolbox/schemas/workspace.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
+- `toolbox/schemas/tools/*.schema.json`
 
 ## Old JSON Shape Problems (1902)
 - Used sample tool payload schema instead of workspace manifest shape.
@@ -48,7 +48,7 @@ Practical validation run result:
 - `paletteIds sample-1902-workspace-palette`
 
 ## Workspace Validation (More Than Palette)
-- Added shared-shell scoped-preset routing in `tools/shared/platformShell.js`:
+- Added shared-shell scoped-preset routing in `toolbox/shared/platformShell.js`:
   - When `samplePresetPath` points to a workspace-manifest JSON, tool fetch of that path receives `tools[activeToolId]` payload.
   - This keeps workspace manifest as SSoT while preserving existing per-tool loaders.
 - Launch smoke validation confirms workspace/sample/tool launch stability after change:
@@ -86,5 +86,5 @@ Excluded IDs:
 
 ## Files Changed (PR 11.13 Scope)
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
-- `tools/shared/platformShell.js`
+- `toolbox/shared/platformShell.js`
 - `docs_build/dev/reports/PR_11_13_WORKSPACE_1902_SCHEMA_CONFORMANCE_FIX_report.md`

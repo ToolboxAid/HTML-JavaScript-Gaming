@@ -1,7 +1,7 @@
 # BUILD_PR_SHARED_EXTRACTION_48_RUNTIME_ASSET_VALIDATION_BATCH
 
 ## Purpose
-Centralize duplicated runtime asset validation/registry helpers across the exact tools/shared batch identified in the duplicate report.
+Centralize duplicated runtime asset validation/registry helpers across the exact toolbox/shared batch identified in the duplicate report.
 
 ## Single PR Purpose
 Normalize ONLY these helpers:
@@ -12,11 +12,11 @@ Normalize ONLY these helpers:
 ## Exact Files Allowed
 
 ### New shared file
-1. `tools/shared/runtimeAssetValidationUtils.js`
+1. `toolbox/shared/runtimeAssetValidationUtils.js`
 
 ### Consumer files
-2. `tools/shared/runtimeAssetLoader.js`
-3. `tools/shared/runtimeStreaming.js`
+2. `toolbox/shared/runtimeAssetLoader.js`
+3. `toolbox/shared/runtimeStreaming.js`
 
 Do not edit any other file.
 
@@ -30,7 +30,7 @@ Only the 2 listed consumer files are in scope.
 ## Exact Shared Helper Creation
 Create:
 
-`tools/shared/runtimeAssetValidationUtils.js`
+`toolbox/shared/runtimeAssetValidationUtils.js`
 
 Export exactly:
 - `validatePackageManifest`
@@ -79,7 +79,7 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 3 listed files changed
-2. Confirm `tools/shared/runtimeAssetValidationUtils.js` exists and exports:
+2. Confirm `toolbox/shared/runtimeAssetValidationUtils.js` exists and exports:
    - `validatePackageManifest`
    - `createRegistryDefinition`
 3. Confirm local function definitions no longer exist in changed listed consumer files

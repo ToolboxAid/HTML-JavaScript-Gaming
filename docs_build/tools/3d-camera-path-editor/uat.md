@@ -5,7 +5,7 @@ Validate user acceptance readiness for 3D Camera Path Editor across launch, core
 
 ## Scope
 - Tool: `3d-camera-path-editor`
-- Entry point: `tools/3D Camera Path Editor/index.html`
+- Entry point: `toolbox/3D Camera Path Editor/index.html`
 
 ## Validation Scenarios
 

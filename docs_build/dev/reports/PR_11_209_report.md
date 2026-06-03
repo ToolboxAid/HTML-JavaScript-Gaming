@@ -1,11 +1,11 @@
 # PR_11_209 Report — V2 Session Storage Backing (Deterministic) + Test
 
 ## Files Changed
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `tests/runtime/V2SessionStorage.test.mjs`
 
 ## Tools Validated
@@ -31,18 +31,18 @@
 - Failure count: `0`
 
 ## Validation Commands Run
-1. `node --check tests/runtime/V2SessionStorage.test.mjs`  
+1. `node --check tests/runtime/V2SessionStorage.test.mjs`
    - Result: **PASS**
-2. `node tests/runtime/V2SessionStorage.test.mjs`  
+2. `node tests/runtime/V2SessionStorage.test.mjs`
    - Result: **PASS**
-3. `node --check tools/*-v2/index.js`  
+3. `node --check toolbox/*-v2/index.js`
    - Result: **FAIL** in PowerShell (`*` passed literally to Node module loader)
 4. Equivalent per-tool syntax checks:
-   - `node --check tools/asset-manager-v2/index.js` — **PASS**
-   - `node --check tools/palette-manager-v2/index.js` — **PASS**
-   - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
-   - `node --check tools/tilemap-studio-v2/index.js` — **PASS**
-   - `node --check tools/vector-map-editor-v2/index.js` — **PASS**
+   - `node --check toolbox/asset-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/palette-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/svg-asset-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/tilemap-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/vector-map-editor-v2/index.js` — **PASS**
 
 ## Determinism / Fallback Confirmation
 - No fallback data or guessed payloads were added.

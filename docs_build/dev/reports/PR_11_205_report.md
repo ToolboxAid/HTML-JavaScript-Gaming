@@ -13,10 +13,10 @@
 
 ## Route Checks
 Per tool, the runtime test validates:
-- launch route from tools index (`tools/index.html` link target)
-- direct route path exists (`tools/<tool>/index.html`)
+- launch route from tools index (`toolbox/index.html` link target)
+- direct route path exists (`toolbox/<tool>/index.html`)
 - direct URL shape is generated with fixture host context:
-  - `tools/<tool>/index.html?hostContextId=<fixture.hostContextId>`
+  - `toolbox/<tool>/index.html?hostContextId=<fixture.hostContextId>`
 
 All five tools: **PASS** for index-route and direct-route checks.
 
@@ -49,13 +49,13 @@ Command summary:
 
 ## Additional Syntax Validation
 - Requested command run:
-  - `node --check tools/*-v2/index.js` -> **FAIL** in PowerShell/Node wildcard resolution context (`MODULE_NOT_FOUND` for literal `*-v2` path)
+  - `node --check toolbox/*-v2/index.js` -> **FAIL** in PowerShell/Node wildcard resolution context (`MODULE_NOT_FOUND` for literal `*-v2` path)
 - Equivalent per-file validation run:
-  - `node --check tools/asset-manager-v2/index.js` -> **PASS**
-  - `node --check tools/palette-manager-v2/index.js` -> **PASS**
-  - `node --check tools/svg-asset-studio-v2/index.js` -> **PASS**
-  - `node --check tools/tilemap-studio-v2/index.js` -> **PASS**
-  - `node --check tools/vector-map-editor-v2/index.js` -> **PASS**
+  - `node --check toolbox/asset-manager-v2/index.js` -> **PASS**
+  - `node --check toolbox/palette-manager-v2/index.js` -> **PASS**
+  - `node --check toolbox/svg-asset-studio-v2/index.js` -> **PASS**
+  - `node --check toolbox/tilemap-studio-v2/index.js` -> **PASS**
+  - `node --check toolbox/vector-map-editor-v2/index.js` -> **PASS**
 
 ## Failures and Fixes Applied
 - No tool-route or fixture failures were detected by `V2ToolLaunch.test.mjs`.

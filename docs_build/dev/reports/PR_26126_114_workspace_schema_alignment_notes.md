@@ -1,9 +1,9 @@
 # PR_26126_114 Workspace Schema Alignment Notes
 
 ## Schema Sources
-- `tools/schemas/workspace.manifest.schema.json`
-- `tools/schemas/tools/palette-browser.schema.json`
-- `tools/schemas/tools/asset-browser.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
+- `toolbox/schemas/tools/palette-browser.schema.json`
+- `toolbox/schemas/tools/asset-browser.schema.json`
 
 ## Workspace Manifest Shape
 - Workspace Manager V2 generated `workspaceManifest` now uses only schema-supported root fields:

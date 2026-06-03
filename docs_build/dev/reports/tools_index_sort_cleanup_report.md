@@ -5,15 +5,15 @@ Task: `PR_26154_014-tools-index-sort-cleanup`
 ## Scope
 
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- Kept `tools/index.html` layout and markup unchanged.
-- Updated the active Tools index data source: `tools/tools-page-accordions.js`.
+- Kept `toolbox/index.html` layout and markup unchanged.
+- Updated the active Tools index data source: `toolbox/tools-page-accordions.js`.
 - Preserved existing group assignments and tool names.
 - Did not touch `old_games/`, `old_samples/`, or `start_of_day/`.
 - Did not run full samples smoke validation.
 
 ## Ordering Changes
 
-`tools/index.html` loads `tools-page-accordions.js`, so the visible grouped order is controlled by `tools/tools-page-accordions.js`.
+`toolbox/index.html` loads `tools-page-accordions.js`, so the visible grouped order is controlled by `toolbox/tools-page-accordions.js`.
 
 Alphabetized group order:
 
@@ -41,16 +41,16 @@ Alphabetized tool order by group:
 
 | File | Previous Path | Updated Path | Reason |
 | --- | --- | --- | --- |
-| `tools/tools-page-accordions.js` | `../assets/theme/v2/images/tools/localization.png` | `../assets/theme/v2/images/tools/localization-studio.png` | Active Tools index image validation found the previous file missing; the existing matching Localization tile asset is `localization-studio.png`. |
+| `toolbox/tools-page-accordions.js` | `../assets/theme/v2/images/tools/localization.png` | `../assets/theme/v2/images/tools/localization-studio.png` | Active Tools index image validation found the previous file missing; the existing matching Localization tile asset is `localization-studio.png`. |
 
 No tool hrefs were renamed or reassigned.
 
 ## Validation
 
-- PASS: `node --check tools/tools-page-accordions.js`.
+- PASS: `node --check toolbox/tools-page-accordions.js`.
 - PASS: Targeted order validator confirmed group order is alphabetical.
 - PASS: Targeted order validator confirmed every group sorts tool tiles alphabetically by visible tool name.
-- PASS: Targeted link/path validator resolved 19 tool href/image references and 4 `tools/index.html` local refs.
+- PASS: Targeted link/path validator resolved 19 tool href/image references and 4 `toolbox/index.html` local refs.
 - PASS: Targeted stale reference check found no `GameFoundryStudio/`, `src/engine/theme/`, `assets/theme/v2/assets/`, `assets/theme/v2/images/games/`, or `favicon.ico` references in the active Tools index files.
 - PASS: Static validation covered changed HTML/JS/CSS/JSON/Markdown paths.
 - PASS: `git diff --check`.
@@ -60,5 +60,5 @@ No tool hrefs were renamed or reassigned.
 
 ## Notes
 
-- The active Tools index loads `tools/tools-page-accordions.js`.
-- A separate historical helper copy at `assets/theme/v2/js/tools-page-accordions.js` is not imported by `tools/index.html`; it was not changed in this scoped PR.
+- The active Tools index loads `toolbox/tools-page-accordions.js`.
+- A separate historical helper copy at `assets/theme/v2/js/tools-page-accordions.js` is not imported by `toolbox/index.html`; it was not changed in this scoped PR.

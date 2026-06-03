@@ -31,7 +31,7 @@ The tool id is the object key: `vector-map-editor`.
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/workspace-manager/main.js
+- toolbox/workspace-manager/main.js
 - docs_build/dev/reports/workspace_tool_key_id_fix_11_148.txt
 
 ### ALLOWED CHANGES
@@ -73,7 +73,7 @@ Workspace Manager must:
 
 ## Required Fix
 
-In `tools/workspace-manager/main.js`:
+In `toolbox/workspace-manager/main.js`:
 
 - find the logic producing `tool-entry-missing-tool-id`
 - change it so the manifest key is the canonical tool id

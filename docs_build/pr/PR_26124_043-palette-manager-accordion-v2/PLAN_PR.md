@@ -4,15 +4,15 @@
 Replace Palette Manager V2 center `details`/`summary` accordions with a local accordionV2 structure so User Palette and Add User Swatch panels share/fill available center height predictably.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - Workflow docs_build/reports required by `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 
 ## Boundaries
 - Do not change palette JSON logic.
 - Do not change source palette logic.
-- Do not touch `tools/shared`.
+- Do not touch `toolbox/shared`.
 - Do not touch workspace, toolState, session, games, or sample JSON.
 - Do not add dependencies.
 - Do not run the full samples smoke test.
@@ -37,7 +37,7 @@ Replace Palette Manager V2 center `details`/`summary` accordions with a local ac
 - Full samples smoke test: skipped by instruction and because sample JSON is out of scope.
 
 ## Manual Validation
-1. Open `tools/palette-manager-v2/index.html`.
+1. Open `toolbox/palette-manager-v2/index.html`.
 2. Confirm User Palette and Add User Swatch use button-based accordionV2 headers, not center `details`/`summary`.
 3. With both panels open, confirm both share center height and each tile grid scrolls internally.
 4. Collapse User Palette and confirm Add User Swatch fills remaining center height.

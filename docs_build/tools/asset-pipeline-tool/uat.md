@@ -5,7 +5,7 @@ Validate user acceptance readiness for Asset Pipeline Tool across launch, core w
 
 ## Scope
 - Tool: `asset-pipeline-tool`
-- Entry point: `tools/Asset Pipeline Tool/index.html`
+- Entry point: `toolbox/Asset Pipeline Tool/index.html`
 
 ## Validation Scenarios
 

@@ -40,17 +40,17 @@
 - Parallax Scene Studio:
 - `extractParallaxDocumentFromSamplePreset(...)`
 - `tryLoadPresetFromQuery(...)`
-- File: `tools/Parallax Scene Studio/main.js`
+- File: `toolbox/Parallax Scene Studio/main.js`
 
 - Tilemap Studio:
 - `extractTileMapDocumentFromSamplePreset(...)`
 - `tryLoadPresetFromQuery(...)`
-- File: `tools/Tilemap Studio/main.js`
+- File: `toolbox/Tilemap Studio/main.js`
 
 - Vector Asset Studio:
 - `extractVectorAssetPresetFromSamplePreset(...)`
 - `tryLoadPresetFromQuery(...)`
-- File: `tools/Vector Asset Studio/main.js`
+- File: `toolbox/Vector Asset Studio/main.js`
 
 ## Data Rules
 - Do not use `imageDataUrl` in persisted sample/tool/workspace JSON.

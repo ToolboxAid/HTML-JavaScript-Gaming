@@ -45,7 +45,7 @@ Do not add new hosted behavior to platformShell.
 ## Implementation Requirements
 
 ### 1. Hosted Workspace detection
-In `tools/shared/platformShell.js`, detect hosted Workspace mode from URL params:
+In `toolbox/shared/platformShell.js`, detect hosted Workspace mode from URL params:
 
 - `hosted=1`
 - `hostContextId` exists
@@ -99,9 +99,9 @@ Manual UAT on sample 1902:
 
 ## Validation
 Run:
-- `node --check tools/shared/platformShell.js`
-- `node --check "tools/Workspace Manager/main.js"`
-- `node --check "tools/SVG Asset Studio/main.js"`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
 
 Full samples smoke:
 - Skip.

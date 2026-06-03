@@ -4,7 +4,7 @@
 Implement one scoped Palette Manager V2 update: lowercase tag normalization, duplicate guards for user-defined swatch fields, Add accordion field cleanup, and selected-tag removal.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -23,7 +23,7 @@ Implement one scoped Palette Manager V2 update: lowercase tag normalization, dup
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not modify shared accordionV2.
 - Do not broaden changes beyond Palette Manager V2 behavior and PR workflow docs.

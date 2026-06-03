@@ -5,10 +5,10 @@ Date: 2026-05-15
 
 ## Schema Changes
 
-- `tools/schemas/game.manifest.schema.json` now sets `$defs.gameData.additionalProperties` to `false`.
+- `toolbox/schemas/game.manifest.schema.json` now sets `$defs.gameData.additionalProperties` to `false`.
 - The former dedicated `not` branch for `objectVectorRuntime` was removed because `gameData` now allows only explicit properties.
 - `objectVectorRuntime` was not added back to the schema or the Asteroids manifest.
-- `tools/schemas/workspace.manifest.schema.json` already rejects unknown root and `tools` map fields with `additionalProperties: false`.
+- `toolbox/schemas/workspace.manifest.schema.json` already rejects unknown root and `tools` map fields with `additionalProperties: false`.
 
 ## Validation Proof
 

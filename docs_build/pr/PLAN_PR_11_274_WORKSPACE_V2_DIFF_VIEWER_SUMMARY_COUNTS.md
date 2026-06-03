@@ -4,8 +4,8 @@
 Add explicit Diff Viewer summary counts in Workspace V2 so results are understandable without parsing raw JSON.
 
 ## Scope
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2DiffViewerSummaryCounts.test.mjs
 - tests/runtime/V2DiffViewerMessaging.test.mjs (validation run)
 - docs/report only
@@ -23,7 +23,7 @@ Add explicit Diff Viewer summary counts in Workspace V2 so results are understan
 - No non-Diff Viewer Workspace V2 behavior changes.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2DiffViewerSummaryCounts.test.mjs
 - node --check tests/runtime/V2DiffViewerMessaging.test.mjs
 - node tests/runtime/V2DiffViewerSummaryCounts.test.mjs

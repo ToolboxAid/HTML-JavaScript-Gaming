@@ -5,10 +5,10 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
 
 ## Scope Summary
 - Migrated discovered tool-local sample/demo payloads for:
-  - `tools/Vector Map Editor`
-  - `tools/Vector Asset Studio`
-  - `tools/Parallax Scene Studio`
-- Audited `tools/Tilemap Studio` for tool-local sample/demo entries.
+  - `toolbox/Vector Map Editor`
+  - `toolbox/Vector Asset Studio`
+  - `toolbox/Parallax Scene Studio`
+- Audited `toolbox/Tilemap Studio` for tool-local sample/demo entries.
 - Added migrated sample entries under `samples/phase-12` using next available IDs `1212` to `1220`.
 - Updated samples hub indexing through `samples/metadata/samples.index.metadata.json` (the data source used by `samples/index.html`).
 - Removed tool-local sample dropdown/select UI entries from processed tools while keeping explicit query-based preset input support.
@@ -16,8 +16,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
 ## Source To Destination Mapping
 
 ### Vector Map Editor
-- Source tool: `tools/Vector Map Editor`
-- Source sample/demo path: `tools/Vector Map Editor/samples/overworld_route_map.editor.json`
+- Source tool: `toolbox/Vector Map Editor`
+- Source sample/demo path: `toolbox/Vector Map Editor/samples/overworld_route_map.editor.json`
 - Destination sample path: `samples/phase-12/1212/`
 - Assigned phase/id: `phase-12 / 1212`
 - Files moved/copied:
@@ -25,8 +25,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1212/index.html`
   - Created `samples/phase-12/1212/assets/images/preview.svg`
 
-- Source tool: `tools/Vector Map Editor`
-- Source sample/demo path: `tools/Vector Map Editor/samples/dungeon_layout_map.editor.json`
+- Source tool: `toolbox/Vector Map Editor`
+- Source sample/demo path: `toolbox/Vector Map Editor/samples/dungeon_layout_map.editor.json`
 - Destination sample path: `samples/phase-12/1213/`
 - Assigned phase/id: `phase-12 / 1213`
 - Files moved/copied:
@@ -34,8 +34,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1213/index.html`
   - Created `samples/phase-12/1213/assets/images/preview.svg`
 
-- Source tool: `tools/Vector Map Editor`
-- Source sample/demo path: `tools/Vector Map Editor/samples/arena_zone_map.editor.json`
+- Source tool: `toolbox/Vector Map Editor`
+- Source sample/demo path: `toolbox/Vector Map Editor/samples/arena_zone_map.editor.json`
 - Destination sample path: `samples/phase-12/1214/`
 - Assigned phase/id: `phase-12 / 1214`
 - Files moved/copied:
@@ -44,8 +44,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1214/assets/images/preview.svg`
 
 ### Vector Asset Studio
-- Source tool: `tools/Vector Asset Studio`
-- Source sample/demo path: `tools/Vector Asset Studio/samples/sky_gradient_scene.svg`
+- Source tool: `toolbox/Vector Asset Studio`
+- Source sample/demo path: `toolbox/Vector Asset Studio/samples/sky_gradient_scene.svg`
 - Destination sample path: `samples/phase-12/1215/`
 - Assigned phase/id: `phase-12 / 1215`
 - Files moved/copied:
@@ -54,8 +54,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1215/index.html`
   - Created `samples/phase-12/1215/assets/images/preview.svg`
 
-- Source tool: `tools/Vector Asset Studio`
-- Source sample/demo path: `tools/Vector Asset Studio/samples/mountain_range_scene.svg`
+- Source tool: `toolbox/Vector Asset Studio`
+- Source sample/demo path: `toolbox/Vector Asset Studio/samples/mountain_range_scene.svg`
 - Destination sample path: `samples/phase-12/1216/`
 - Assigned phase/id: `phase-12 / 1216`
 - Files moved/copied:
@@ -64,8 +64,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1216/index.html`
   - Created `samples/phase-12/1216/assets/images/preview.svg`
 
-- Source tool: `tools/Vector Asset Studio`
-- Source sample/demo path: `tools/Vector Asset Studio/samples/mario_style_learning_backdrop.svg`
+- Source tool: `toolbox/Vector Asset Studio`
+- Source sample/demo path: `toolbox/Vector Asset Studio/samples/mario_style_learning_backdrop.svg`
 - Destination sample path: `samples/phase-12/1217/`
 - Assigned phase/id: `phase-12 / 1217`
 - Files moved/copied:
@@ -75,8 +75,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1217/assets/images/preview.svg`
 
 ### Parallax Scene Studio
-- Source tool: `tools/Parallax Scene Studio`
-- Source sample/demo path: `tools/Parallax Scene Studio/samples/parallax_sample.json`
+- Source tool: `toolbox/Parallax Scene Studio`
+- Source sample/demo path: `toolbox/Parallax Scene Studio/samples/parallax_sample.json`
 - Destination sample path: `samples/phase-12/1218/`
 - Assigned phase/id: `phase-12 / 1218`
 - Files moved/copied:
@@ -85,8 +85,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1218/index.html`
   - Created `samples/phase-12/1218/assets/images/preview.svg`
 
-- Source tool: `tools/Parallax Scene Studio`
-- Source sample/demo path: `tools/Parallax Scene Studio/samples/tilemap_parallax_sample.json`
+- Source tool: `toolbox/Parallax Scene Studio`
+- Source sample/demo path: `toolbox/Parallax Scene Studio/samples/tilemap_parallax_sample.json`
 - Destination sample path: `samples/phase-12/1219/`
 - Assigned phase/id: `phase-12 / 1219`
 - Files moved/copied:
@@ -95,8 +95,8 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1219/index.html`
   - Created `samples/phase-12/1219/assets/images/preview.svg`
 
-- Source tool: `tools/Parallax Scene Studio`
-- Source sample/demo path: `tools/Parallax Scene Studio/samples/mario_style_learning_level_parallax.json`
+- Source tool: `toolbox/Parallax Scene Studio`
+- Source sample/demo path: `toolbox/Parallax Scene Studio/samples/mario_style_learning_level_parallax.json`
 - Destination sample path: `samples/phase-12/1220/`
 - Assigned phase/id: `phase-12 / 1220`
 - Files moved/copied:
@@ -106,22 +106,22 @@ Build: `BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES`
   - Created `samples/phase-12/1220/assets/images/preview.svg`
 
 ### Tilemap Studio Audit Result
-- Source tool: `tools/Tilemap Studio`
+- Source tool: `toolbox/Tilemap Studio`
 - Discovery result: no tool-local sample/demo `samples/` folder and no sample dropdown/select entries were found.
 - Migration action: none required for tool-local sample payloads.
 
 ## Tool-Local Sample UI Removal
-- `tools/Vector Map Editor/index.html`
+- `toolbox/Vector Map Editor/index.html`
   - Removed sample dropdown/select and load button controls.
-- `tools/Vector Asset Studio/index.html`
+- `toolbox/Vector Asset Studio/index.html`
   - Removed sample dropdown/select and refresh/load controls.
-- `tools/Parallax Scene Studio/index.html`
+- `toolbox/Parallax Scene Studio/index.html`
   - Removed sample dropdown/select and load controls.
-- `tools/Vector Asset Studio/main.js`
+- `toolbox/Vector Asset Studio/main.js`
   - Added null-safe guards so removed controls do not break runtime.
-- `tools/Parallax Scene Studio/main.js`
+- `toolbox/Parallax Scene Studio/main.js`
   - Added null-safe guards so removed controls do not break runtime.
-- `tools/Tilemap Studio`
+- `toolbox/Tilemap Studio`
   - No sample dropdown/select existed, retained unchanged.
 
 ## Samples Hub Update

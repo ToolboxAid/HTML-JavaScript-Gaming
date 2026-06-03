@@ -33,14 +33,14 @@ Requested frequency examples are present:
 
 ## Targeted Static Validation
 
-- `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`: PASS
-- `JSON.parse` for `tools/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
+- `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`: PASS
+- `JSON.parse` for `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
 - HTML/CSS static guard:
   - no inline event handlers: PASS
   - no `<style>` blocks: PASS
   - no inline `<script>` blocks: PASS
   - CSS non-empty: PASS
-- `git diff --check -- tools/audio-sfx-playground-v2 tools/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
+- `git diff --check -- toolbox/audio-sfx-playground-v2 toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
   - Git reported LF-to-CRLF working-copy warnings only.
 
 ## Targeted Node Validation
@@ -66,8 +66,8 @@ Ran a focused Playwright validation through a temporary local HTTP server using 
 
 ## V8 Coverage
 
-- `(100%) tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by focused style slider clamp Playwright validation`
-- `(100%) tools/audio-sfx-playground-v2/js/services/ToolStateSerializer.js - covered by focused style slider clamp Playwright validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by focused style slider clamp Playwright validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/services/ToolStateSerializer.js - covered by focused style slider clamp Playwright validation`
 
 Coverage is advisory per project instructions.
 

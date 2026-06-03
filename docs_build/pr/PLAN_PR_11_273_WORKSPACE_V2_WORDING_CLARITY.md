@@ -4,8 +4,8 @@
 Improve Workspace V2 wording clarity for Session Library and Session Diff Viewer with text-only updates.
 
 ## Scope
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibraryActions.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2DiffViewerMessaging.test.mjs
@@ -25,7 +25,7 @@ Improve Workspace V2 wording clarity for Session Library and Session Diff Viewer
 - No cross-tool changes.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionLibraryActions.test.mjs
 - node --check tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - node --check tests/runtime/V2DiffViewerMessaging.test.mjs

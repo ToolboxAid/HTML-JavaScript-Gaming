@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { runHotReloadSystem, summarizeHotReloadSystem } from "../../tools/shared/hotReloadSystem.js";
+import { runHotReloadSystem, summarizeHotReloadSystem } from "../../toolbox/shared/hotReloadSystem.js";
 
 export async function run() {
   const registry = {

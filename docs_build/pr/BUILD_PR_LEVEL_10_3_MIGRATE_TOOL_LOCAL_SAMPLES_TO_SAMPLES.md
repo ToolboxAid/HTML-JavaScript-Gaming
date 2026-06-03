@@ -4,10 +4,10 @@
 Make `/samples` the only home for samples.
 
 ## Tools To Process
-1. `tools/Vector Map Editor`
-2. `tools/Vector Asset Studio`
-3. `tools/Parallax Scene Studio`
-4. `tools/Tilemap Studio`
+1. `toolbox/Vector Map Editor`
+2. `toolbox/Vector Asset Studio`
+3. `toolbox/Parallax Scene Studio`
+4. `toolbox/Tilemap Studio`
 
 The user says each has three samples. Codex must discover the actual local sample/demo files.
 

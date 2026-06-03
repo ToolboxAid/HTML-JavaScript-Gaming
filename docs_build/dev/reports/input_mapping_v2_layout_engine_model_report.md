@@ -26,19 +26,19 @@
 - `src/engine/input/PointerDragState.js`
 - `tests/input/InputService.test.mjs`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/input-mapping-v2/how_to_use.html`
-- `tools/input-mapping-v2/index.html`
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/bootstrap.js`
-- `tools/input-mapping-v2/js/controls/ActionNavControl.js`
-- `tools/input-mapping-v2/js/controls/ActionSelectionControl.js`
-- `tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `tools/input-mapping-v2/js/controls/DeviceListControl.js`
-- `tools/input-mapping-v2/js/controls/ExportControl.js`
-- `tools/input-mapping-v2/js/controls/GamepadDiagnosticsControl.js`
-- `tools/input-mapping-v2/js/controls/GestureListControl.js`
-- `tools/input-mapping-v2/js/services/EngineInputSourceService.js`
-- `tools/input-mapping-v2/styles/inputMappingV2.css`
+- `toolbox/input-mapping-v2/how_to_use.html`
+- `toolbox/input-mapping-v2/index.html`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/bootstrap.js`
+- `toolbox/input-mapping-v2/js/controls/ActionNavControl.js`
+- `toolbox/input-mapping-v2/js/controls/ActionSelectionControl.js`
+- `toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `toolbox/input-mapping-v2/js/controls/DeviceListControl.js`
+- `toolbox/input-mapping-v2/js/controls/ExportControl.js`
+- `toolbox/input-mapping-v2/js/controls/GamepadDiagnosticsControl.js`
+- `toolbox/input-mapping-v2/js/controls/GestureListControl.js`
+- `toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`
 
 ## Validation
 - Playwright impacted: Yes.
@@ -65,7 +65,7 @@
 - Validates rumble checkbox and unsupported WARN.
 
 ## Manual Validation
-1. Open `tools/input-mapping-v2/index.html`.
+1. Open `toolbox/input-mapping-v2/index.html`.
 2. Confirm the left column accordions are Actions, Devices, Gestures, and Capture.
 3. Confirm the center column shows Captured Mappings tiles at 225px by 225px after adding an action.
 4. Confirm the right column accordions are Diagnostics, Status / Log, and Export.

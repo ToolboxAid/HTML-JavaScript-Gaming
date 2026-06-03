@@ -2,7 +2,7 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 - docs_build/dev/reports/svg_asset_none_trace_11_155.txt
 
 Exact old function/branch:
@@ -32,7 +32,7 @@ Expected rendered text:
 - With valid inline SVG payload but no `sourceName`: `Asset: Inline SVG`
 
 Validation result:
-- node --check "tools/Workspace Manager/main.js" -> PASS
+- node --check "toolbox/Workspace Manager/main.js" -> PASS
 - Active render-path trace check in file -> PASS
   - `applyToolsUsedFilterForGame -> primeSvgAssetStatusLabelFromWorkspaceDiagnostics -> writeSharedAssetHandoff`
   - detection path: `tools["svg-asset-studio"]?.vectorAssetDocument?.svgText`
@@ -43,5 +43,5 @@ Validation result:
   - computed label not none
 
 Strict scope confirmation:
-- Only `tools/Workspace Manager/main.js` and this report were modified.
+- Only `toolbox/Workspace Manager/main.js` and this report were modified.
 - No schema/sample/SVG tool/runtime/other tool changes.

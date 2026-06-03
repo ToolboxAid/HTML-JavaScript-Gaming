@@ -26,7 +26,7 @@
 - Passed: `npm run test:workspace-v2`
 - Result: 36 passed.
 - Playwright V8 coverage updated for changed runtime JS:
-  - `(90%) tools/text2speech-V2/js/TextToSpeechToolApp.js - executed lines 807/807; executed functions 62/69`
+  - `(90%) toolbox/text2speech-V2/js/TextToSpeechToolApp.js - executed lines 807/807; executed functions 62/69`
 
 ## Skipped
 - Full samples smoke test was not run. Reason: this PR is limited to Text to Speech V2 empty-array save/load behavior and direct Workspace Manager V2 integration; the requested `npm run test:workspace-v2` suite covers the scoped behavior.

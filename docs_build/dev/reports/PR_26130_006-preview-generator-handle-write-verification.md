@@ -29,8 +29,8 @@ If no live Workspace Manager V2 repo handle can be restored, Preview Generator V
 
 ## Validation
 
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js`
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2App.js`
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2RepoAccess.js`
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npm run test:workspace-v2`: 23 passed
 - `git diff --check`: passed
@@ -55,8 +55,8 @@ Expected fail behavior: tests fail if Preview Generator V2 silently falls back t
 
 Runtime JavaScript coverage from `npm run test:workspace-v2` included changed Preview Generator V2 files:
 
-- `(88%) tools/preview-generator-v2/PreviewGeneratorV2App.js - changed JS file with browser V8 coverage`
-- `(28%) tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js - advisory low coverage; cache restore branches include browser API and failure-path guards`
+- `(88%) toolbox/preview-generator-v2/PreviewGeneratorV2App.js - changed JS file with browser V8 coverage`
+- `(28%) toolbox/preview-generator-v2/PreviewGeneratorV2RepoAccess.js - advisory low coverage; cache restore branches include browser API and failure-path guards`
 
 `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` is a changed test file and is not collected as browser runtime coverage.
 
@@ -77,5 +77,5 @@ Out of scope: full sample smoke validation. Sample smoke remains skipped until a
 - `docs_build/dev/commit_comment.txt`
 - `docs_build/dev/reports/PR_26130_006-preview-generator-handle-write-verification.md`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/preview-generator-v2/PreviewGeneratorV2App.js`
-- `tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js`
+- `toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
+- `toolbox/preview-generator-v2/PreviewGeneratorV2RepoAccess.js`

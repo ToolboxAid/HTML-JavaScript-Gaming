@@ -10,7 +10,7 @@ This PR must produce working hooks + verifiable outputs (not docs-only).
 
 ## Scope
 Included:
-- error capture hooks across tools/runtime entry points
+- error capture hooks across toolbox/runtime entry points
 - performance timing hooks (load, render/frame where applicable)
 - unified logging standard (levels + format)
 - integration points aligned with 21.3 automation

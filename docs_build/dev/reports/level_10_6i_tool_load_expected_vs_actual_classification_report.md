@@ -2,7 +2,7 @@
 
 ## Files changed
 
-- `tools/shared/toolLoadDiagnostics.js`
+- `toolbox/shared/toolLoadDiagnostics.js`
 - `docs_build/dev/reports/level_10_6i_tool_load_expected_vs_actual_classification_report.md`
 - `docs_build/dev/reports/launch_smoke_report.md` (test-generated output refresh)
 
@@ -86,7 +86,7 @@ Observed classification event for sample `0219` (`sprite-editor`):
 
 Manual launch performed for:
 
-- `tools/Sprite Editor/index.html?sampleId=0219&samplePresetPath=/samples/phase-02/0219/sample.0219.sprite-editor.json`
+- `toolbox/Sprite Editor/index.html?sampleId=0219&samplePresetPath=/samples/phase-02/0219/sample.0219.sprite-editor.json`
 
 Observed console prefixes:
 

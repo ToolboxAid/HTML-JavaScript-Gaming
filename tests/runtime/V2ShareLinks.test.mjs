@@ -8,8 +8,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
 const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-manager-v2.json");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-share-links-results.json");
 
 class MemorySessionStorage {
@@ -115,7 +115,7 @@ export function run() {
   if (payload) {
     try {
       encoded = encodePayload(payload);
-      sessionUrl = `https://example.local/tools/workspace-v2/index.html?session=${encoded}`;
+      sessionUrl = `https://example.local/toolbox/workspace-v2/index.html?session=${encoded}`;
       const parsedUrl = new URL(sessionUrl);
       decoded = decodePayload(parsedUrl.searchParams.get("session") || "");
       assignedHostContextId = generateHostContextId("asset-manager-v2");

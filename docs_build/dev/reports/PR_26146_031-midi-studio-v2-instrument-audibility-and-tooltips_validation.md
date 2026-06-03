@@ -16,8 +16,8 @@ Status: PASS
 ```powershell
 node --check src/engine/audio/PreviewInstrumentPacks.js
 node --check src/engine/audio/PreviewSynthEngine.js
-node --check tools/midi-studio-v2/js/MidiStudioV2App.js
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
+node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave timeline editor is the default editable and playable Studio workflow|octave grid density supports icon controls and simultaneous chord editing" --reporter=list --workers=1 --timeout=60000
 git diff --check
@@ -64,7 +64,7 @@ The targeted MIDI Studio V2 Playwright run validates:
 
 ## Manual Validation Notes
 
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. On the Studio tab, verify Instruments rows show compact icon-only Mute, Solo, Show/Hide, and Delete controls plus accessible browser tooltips.
 3. Open each GM Type dropdown family and verify at least 3 instrument options are available.
 4. Select `Synth Effects` -> `FX 4 (Atmosphere)` and verify the status log shows a WARN mapping message and the preview tone is audible after audio is enabled.

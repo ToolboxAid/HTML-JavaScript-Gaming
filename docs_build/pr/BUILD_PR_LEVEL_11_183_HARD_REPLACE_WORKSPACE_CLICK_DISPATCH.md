@@ -6,7 +6,7 @@ Finish the Workspace Manager SVG launch bug by hard-replacing the click dispatch
 ## Proven Good Path
 Manual URL works:
 
-`/tools/Workspace%20Manager/index.html?tool=svg-asset-studio&sampleId=1902&sampleTitle=Workspace+All+Tools+Integration&samplePresetPath=%2Fsamples%2Fphase-19%2F1902%2Fsample.1902.workspace-all-tools.json`
+`/toolbox/Workspace%20Manager/index.html?tool=svg-asset-studio&sampleId=1902&sampleTitle=Workspace+All+Tools+Integration&samplePresetPath=%2Fsamples%2Fphase-19%2F1902%2Fsample.1902.workspace-all-tools.json`
 
 Confirmed UI:
 
@@ -49,7 +49,7 @@ Do not add fallback data.
 ## Implementation Requirements
 
 ### 1. Remove stale/default click path
-In `tools/Workspace Manager/main.js`, find all click paths that launch tools from:
+In `toolbox/Workspace Manager/main.js`, find all click paths that launch tools from:
 - `currentToolId`
 - active/default tool
 - first accepted tool
@@ -133,9 +133,9 @@ Asset: sample-0901-ship.svg
 
 ## Validation
 Run:
-- `node --check "tools/Workspace Manager/main.js"`
-- `node --check "tools/SVG Asset Studio/main.js"`
-- `node --check tools/shared/workspaceShell.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
+- `node --check toolbox/shared/workspaceShell.js`
 
 Full samples smoke:
 - Skip.

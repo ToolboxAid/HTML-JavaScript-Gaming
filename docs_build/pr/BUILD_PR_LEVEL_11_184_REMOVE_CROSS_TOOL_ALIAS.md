@@ -16,7 +16,7 @@ Even if the alias did not directly cause the observed `vector-map-editor` launch
 
 ## Scope
 One PR purpose only:
-- Remove cross-tool aliasing from `tools/toolRegistry.js`.
+- Remove cross-tool aliasing from `toolbox/toolRegistry.js`.
 
 Do not modify schemas.
 Do not modify sample 1902 JSON.
@@ -29,7 +29,7 @@ Do not add fallback logic.
 ### 1. Remove alias map
 In:
 
-`tools/toolRegistry.js`
+`toolbox/toolRegistry.js`
 
 Remove:
 
@@ -78,8 +78,8 @@ Include:
 
 ## Validation
 Run:
-- `node --check tools/toolRegistry.js`
-- `node --check "tools/Workspace Manager/main.js"`
+- `node --check toolbox/toolRegistry.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
 
 Full samples smoke:
 - Skip.

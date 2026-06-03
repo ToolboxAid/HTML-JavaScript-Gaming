@@ -10,9 +10,9 @@
 
 ## Implementation Notes
 
-- `tools/text2speach-V2/index.html` now places `text2speach-V2SpeechActions` inside `text2speach-V2TextContent` after the textarea.
-- `tools/text2speach-V2/styles/text2speach-V2.css` pins the Text accordion content to a bottom-aligned column layout and sets `resize: none` on Text to Speech V2 textareas.
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js` now relies on `tools/schemas/tools/text2speach-V2.schema.json` as the validation gate for load, import, copy, and export paths.
+- `toolbox/text2speach-V2/index.html` now places `text2speach-V2SpeechActions` inside `text2speach-V2TextContent` after the textarea.
+- `toolbox/text2speach-V2/styles/text2speach-V2.css` pins the Text accordion content to a bottom-aligned column layout and sets `resize: none` on Text to Speech V2 textareas.
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js` now relies on `toolbox/schemas/tools/text2speach-V2.schema.json` as the validation gate for load, import, copy, and export paths.
 - Workspace Manager V2 tests now expect Text to Speech V2 to be disabled for the three current game manifests because those manifests no longer declare a Text to Speech payload.
 
 ## Validation

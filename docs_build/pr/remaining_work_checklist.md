@@ -4,7 +4,7 @@
 - [x] Create canonical list of 17 first-class tools.
 - [x] Verify each tool folder exists.
 - [ ] Verify each tool has exactly one schema. (Current status: 16/17; missing `skin-editor` schema.)
-- [ ] Verify each schema path follows `tools/schemas/tools/<tool>.schema.json`. (Blocked by missing `tools/schemas/tools/skin-editor.schema.json`.)
+- [ ] Verify each schema path follows `toolbox/schemas/tools/<tool>.schema.json`. (Blocked by missing `toolbox/schemas/tools/skin-editor.schema.json`.)
 
 ## Sample Payload Cleanup
 - [ ] Verify all sample tool files use `sample.<id>.<tool>.json`.

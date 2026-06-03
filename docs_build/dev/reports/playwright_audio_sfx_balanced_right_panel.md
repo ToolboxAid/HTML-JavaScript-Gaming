@@ -4,7 +4,7 @@ PR: `PR_26144_007-audio-sfx-balanced-right-panel-layout`
 
 ## Scope
 
-- Updated only `tools/audio-sfx-playground-v2` plus required reports.
+- Updated only `toolbox/audio-sfx-playground-v2` plus required reports.
 - Removed visible Wave Preview metadata text:
   - sound name
   - waveform/frequency/duration/sweep summary
@@ -28,11 +28,11 @@ PASS:
   - preview renderer no longer emits metadata text
   - HTML preview fallback no longer contains visible fallback text
 - Audio / SFX Playground V2 JavaScript syntax check:
-  - `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`
+  - `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`
 - Changed runtime module import check:
   - `SfxPreviewControl.js`
 - Whitespace validation:
-  - `git diff --check -- tools/audio-sfx-playground-v2`
+  - `git diff --check -- toolbox/audio-sfx-playground-v2`
 - JSON validation:
   - No JSON files changed in this PR.
 
@@ -63,7 +63,7 @@ Because Playwright is unavailable in this local environment, browser launch vali
 
 WARN: Runtime JavaScript changed, but Playwright V8 coverage could not be generated because the local Playwright command is unavailable.
 
-- `(WARN) tools/audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - Playwright unavailable`
+- `(WARN) toolbox/audio-sfx-playground-v2/js/controls/SfxPreviewControl.js - Playwright unavailable`
 
 ## Full Samples Smoke Test
 

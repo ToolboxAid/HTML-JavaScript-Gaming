@@ -4,7 +4,7 @@
 Hard-replaced Workspace Manager rendered tool tile click dispatch so tile clicks launch only from the clicked element's `data-tool-id`.
 
 ## Files changed
-- `tools/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/main.js`
 - `docs_build/dev/reports/pr_11_183_validation.md`
 
 ## Old bad path found
@@ -33,9 +33,9 @@ Manual UAT was not run in this terminal session. Expected browser logs:
 The direct query route `?tool=svg-asset-studio` is preserved because initial query handling still writes the selected tool id and calls the existing launch path.
 
 ## Validation
-- PASS: `node --check "tools/Workspace Manager/main.js"`
-- PASS: `node --check "tools/SVG Asset Studio/main.js"`
-- PASS: `node --check tools/shared/workspaceShell.js`
+- PASS: `node --check "toolbox/Workspace Manager/main.js"`
+- PASS: `node --check "toolbox/SVG Asset Studio/main.js"`
+- PASS: `node --check toolbox/shared/workspaceShell.js`
 
 ## Full samples smoke
 Skipped. Reason: targeted Workspace Manager click dispatch fix; full samples smoke takes about 20 minutes and is not required.

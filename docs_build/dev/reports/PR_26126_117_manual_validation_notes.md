@@ -7,5 +7,5 @@
 - Verified Asset Manager V2 loads 13 schema-valid Asteroids assets from `tools.asset-manager-v2.assets`.
 - Verified Return to Workspace restores the Asteroids workspace from session context.
 - Verified Save exports the currently loaded schema-valid manifest.
-- Verified no changes to deprecated `tools/workspace-v2`.
+- Verified no changes to deprecated `toolbox/workspace-v2`.
 - Verified no sample JSON changes.

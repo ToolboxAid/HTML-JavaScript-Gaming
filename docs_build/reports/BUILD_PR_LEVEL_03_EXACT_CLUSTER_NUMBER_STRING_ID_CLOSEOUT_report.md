@@ -19,10 +19,10 @@
 ## Consumers Updated
 - `src/shared/utils/index.js` now routes string/id/number exports through canonical homes.
 - `samples/shared/numberUtils.js` now imports from `src/shared/number/index.js` (single clustered number source).
-- `tools/shared/debugInspectorData.js` now imports number helpers from `src/shared/number/index.js`.
-- `tools/Performance Profiler/main.js` now imports number helpers from `src/shared/number/index.js`.
-- `tools/Replay Visualizer/main.js` now imports number helpers from `src/shared/number/index.js`.
-- `tools/shared/stringUtils.js` now imports `trimSafe` from `src/shared/string/index.js`.
+- `toolbox/shared/debugInspectorData.js` now imports number helpers from `src/shared/number/index.js`.
+- `toolbox/Performance Profiler/main.js` now imports number helpers from `src/shared/number/index.js`.
+- `toolbox/Replay Visualizer/main.js` now imports number helpers from `src/shared/number/index.js`.
+- `toolbox/shared/stringUtils.js` now imports `trimSafe` from `src/shared/string/index.js`.
 
 ## Focused Validation
 - `node --check` on all touched JS files: PASS

@@ -26,6 +26,6 @@
 
 ## Games-Only Guard
 - Context validation rejects workspace roots outside `games/`.
-- Context validation rejects paths containing `samples/` or `tools/`.
+- Context validation rejects paths containing `samples/` or `toolbox/`.
 - `assetsPath` must match the active game root plus `/assets`.
 

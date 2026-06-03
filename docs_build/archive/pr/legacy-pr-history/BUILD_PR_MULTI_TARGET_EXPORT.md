@@ -4,7 +4,7 @@
 Implement the Multi-Target Export defined in `PLAN_PR_MULTI_TARGET_EXPORT` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared multi-target export planner in `tools/shared/multiTargetExport.js`
+- Added shared multi-target export planner in `toolbox/shared/multiTargetExport.js`
   - consumes strict validation and packaging outputs
   - emits deterministic web, desktop, and archive target manifests
   - separates target runtime/layout metadata from shared packaged assets
@@ -22,7 +22,7 @@ Implement the Multi-Target Export defined in `PLAN_PR_MULTI_TARGET_EXPORT` witho
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/multiTargetExport.js`
+  - `node --check toolbox/shared/multiTargetExport.js`
   - `node --check tests/tools/MultiTargetExport.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

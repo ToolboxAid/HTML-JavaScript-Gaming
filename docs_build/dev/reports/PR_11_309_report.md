@@ -1,11 +1,11 @@
 # PR_11_309 Report - Workspace V2 Default Active Palette Initialization
 
 ## Scope
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - Workspace V2 initialization / full reset / export baseline behavior
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/pr/PR_11_309_WORKSPACE_V2_DEFAULT_ACTIVE_PALETTE_INIT/PLAN_PR.md`
 - `docs_build/pr/PR_11_309_WORKSPACE_V2_DEFAULT_ACTIVE_PALETTE_INIT/BUILD_PR.md`
 - `docs_build/dev/codex_commands.md`
@@ -29,13 +29,13 @@
 
 ## Validation
 - Command run:
-  - `node --check tools/workspace-v2/index.js`
+  - `node --check toolbox/workspace-v2/index.js`
 - Result:
   - PASS
 
 ## Execution Notes
 - No schema changes were made.
-- Workspace V2 baseline palette initialization and reset/export guard flow are contained in `tools/workspace-v2/index.js`.
+- Workspace V2 baseline palette initialization and reset/export guard flow are contained in `toolbox/workspace-v2/index.js`.
 - Export baseline remains a single active palette source under `tools.palette-browser` with empty `swatches` allowed.
 
 ## Expected Runtime Outcome

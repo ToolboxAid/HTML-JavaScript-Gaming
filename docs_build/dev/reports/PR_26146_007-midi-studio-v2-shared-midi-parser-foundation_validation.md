@@ -23,7 +23,7 @@
 ## Validation
 
 - PASS: `node --check src/engine/audio/MidiSourceMetadataParser.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/MidiSourceDetailsControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/MidiSourceDetailsControl.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --workers=1 --reporter=line`
 - PASS: `git diff --check`

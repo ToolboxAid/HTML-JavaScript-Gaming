@@ -4,7 +4,7 @@
 Implement the Performance Profiler defined in `PLAN_PR_PERFORMANCE_PROFILER` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared performance profiler in `tools/shared/performanceProfiler.js`
+- Added shared performance profiler in `toolbox/shared/performanceProfiler.js`
   - captures deterministic platform sample units for validation, packaging, runtime, and suite flows
   - reports bottleneck stages in stable readable form
 - Integrated profiler consumption into shared CI and debug surfaces
@@ -21,10 +21,10 @@ Implement the Performance Profiler defined in `PLAN_PR_PERFORMANCE_PROFILER` wit
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/performanceProfiler.js`
+  - `node --check toolbox/shared/performanceProfiler.js`
   - `node --check tests/tools/PerformanceProfiler.test.mjs`
-  - `node --check tools/shared/debugVisualizationLayer.js`
-  - `node --check tools/shared/ciValidationPipeline.js`
+  - `node --check toolbox/shared/debugVisualizationLayer.js`
+  - `node --check toolbox/shared/ciValidationPipeline.js`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`
 

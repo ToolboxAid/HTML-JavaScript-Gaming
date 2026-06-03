@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { WorkspaceManagerV2ContextService } from "../../tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js";
+import { WorkspaceManagerV2ContextService } from "../../toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js";
 
 const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
 const objectVectorToolId = "object-vector-studio-v2";
@@ -51,7 +51,7 @@ function createSessionStorage() {
 }
 
 function createService(sessionStorage) {
-  const locationRef = new URL("http://127.0.0.1/tools/workspace-manager-v2/index.html");
+  const locationRef = new URL("http://127.0.0.1/toolbox/workspace-manager-v2/index.html");
   return new WorkspaceManagerV2ContextService({
     fetchRef: createLocalFetch(),
     locationRef,

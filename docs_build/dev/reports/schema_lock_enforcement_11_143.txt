@@ -4,12 +4,12 @@ Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
 Mode: STRICT SCOPE
 
 Scope
-- Allowed schema files: tools/schemas/**/*.json
+- Allowed schema files: toolbox/schemas/**/*.json
 - No runtime/routing/sample code changes performed
 
 Execution Summary
 1) additionalProperties strictness
-- Audited every schema under tools/schemas/**/*.json.
+- Audited every schema under toolbox/schemas/**/*.json.
 - Result: all root schemas and all nested `type: object` schema nodes already define `additionalProperties: false`.
 - Check result: TOTAL_OBJECT_SCHEMA_MISSES=0
 

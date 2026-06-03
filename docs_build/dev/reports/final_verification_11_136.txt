@@ -7,9 +7,9 @@ Scope
 - Routing files only
 
 Routing files validated
-- tools/shared/toolHostRuntime.js
-- tools/Workspace Manager/main.js
-- tools/shared/platformShell.js (routing-only naming cleanup from prior fallback/default removal)
+- toolbox/shared/toolHostRuntime.js
+- toolbox/Workspace Manager/main.js
+- toolbox/shared/platformShell.js (routing-only naming cleanup from prior fallback/default removal)
 
 Task Execution
 1) Prohibited-pattern search

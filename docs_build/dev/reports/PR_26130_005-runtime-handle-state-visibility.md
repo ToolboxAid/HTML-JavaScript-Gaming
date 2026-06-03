@@ -15,9 +15,9 @@ No `start_of_day` files were modified.
 
 ## Validation
 
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `node --check tools/session-inspector-v2/js/SessionInspectorV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `node --check toolbox/session-inspector-v2/js/SessionInspectorV2App.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "loads Gravity Well|restores sessionStorage toolState read-only|rebinds restored session Save"`: 3 passed
 - `npm run test:workspace-v2`: 22 passed
@@ -45,15 +45,15 @@ Expected fail behavior: tests fail if runtime metadata is missing, a live handle
 
 Runtime JavaScript coverage from `npm run test:workspace-v2`:
 
-- `(88%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 913/913; executed functions 42/48`
-- `(90%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1502/1502; executed functions 140/155`
-- `(93%) tools/session-inspector-v2/js/SessionInspectorV2App.js - executed lines 337/337; executed functions 42/45`
+- `(88%) toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 913/913; executed functions 42/48`
+- `(90%) toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1502/1502; executed functions 140/155`
+- `(93%) toolbox/session-inspector-v2/js/SessionInspectorV2App.js - executed lines 337/337; executed functions 42/45`
 
 Guardrail warnings: none.
 
 ## Manual Test
 
-1. Open `tools/workspace-manager-v2/index.html`.
+1. Open `toolbox/workspace-manager-v2/index.html`.
 2. Pick the repo folder and open Asteroids.
 3. Launch Session Inspector V2 from the Workspace Manager V2 tool tiles.
 4. Select `workspace.repo.reference` and `workspace.tools.asset-manager-v2`.
@@ -69,6 +69,6 @@ Out of scope: full sample launch validation. Sample smoke remains skipped until 
 - `docs_build/dev/commit_comment.txt`
 - `docs_build/dev/reports/PR_26130_005-runtime-handle-state-visibility.md`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/session-inspector-v2/js/SessionInspectorV2App.js`
-- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/session-inspector-v2/js/SessionInspectorV2App.js`
+- `toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`

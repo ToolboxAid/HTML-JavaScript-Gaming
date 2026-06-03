@@ -5,14 +5,14 @@ Date: 2026-05-14
 
 ## Removed Fallbacks
 
-- Removed `tools/shared/asteroidsPlatformDemo.js`.
+- Removed `toolbox/shared/asteroidsPlatformDemo.js`.
 - Removed shared-tool usage of the hardcoded Asteroids SVG constants:
   - `ASTEROIDS_SHIP_SVG`
   - `ASTEROIDS_LARGE_SVG`
   - `ASTEROIDS_MEDIUM_SVG`
   - `ASTEROIDS_SMALL_SVG`
 - Removed the Asteroids `BASE_VECTOR_MAP` runtime collision fallback from `games/Asteroids/entities/Asteroid.js`.
-- Removed Asteroids-specific object IDs and geometry fixtures from `tools/shared/vectorAssetSystem.js`.
+- Removed Asteroids-specific object IDs and geometry fixtures from `toolbox/shared/vectorAssetSystem.js`.
 
 ## Remaining Manifest Load Path
 
@@ -34,5 +34,5 @@ Date: 2026-05-14
 - PASS - `npm run test:workspace-v2` completed with 49 passing tests.
 - PASS - Manifest Object Vector payload validated through `ObjectVectorRuntimeAssetService`.
 - PASS - Focused Asteroids transform and collision probes use geometry derived from `game.manifest.json`.
-- PASS - Targeted scans found no hardcoded Asteroids SVG constants in `tools/shared`.
+- PASS - Targeted scans found no hardcoded Asteroids SVG constants in `toolbox/shared`.
 - PASS - Targeted scans found no `BASE_VECTOR_MAP` fallback in active Asteroids runtime code.

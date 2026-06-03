@@ -3,21 +3,21 @@ import { readFileSync } from "node:fs";
 import {
   SHARED_ACTION_LABELS,
   getSharedShellActions
-} from "../../tools/shared/assetUsageIntegration.js";
+} from "../../toolbox/shared/assetUsageIntegration.js";
 
 const FIRST_CLASS_TOOL_INDEXES = Object.freeze([
-  { toolId: "sprite-editor", indexPath: "../../tools/Sprite Editor/index.html" },
-  { toolId: "tile-map-editor", indexPath: "../../tools/Tilemap Studio/index.html" },
-  { toolId: "parallax-editor", indexPath: "../../tools/Parallax Scene Studio/index.html" },
-  { toolId: "palette-manager-v2", indexPath: "../../tools/palette-manager-v2/index.html" },
-  { toolId: "state-inspector", indexPath: "../../tools/State Inspector/index.html" },
-  { toolId: "replay-visualizer", indexPath: "../../tools/Replay Visualizer/index.html" },
-  { toolId: "performance-profiler", indexPath: "../../tools/Performance Profiler/index.html" },
-  { toolId: "physics-sandbox", indexPath: "../../tools/Physics Sandbox/index.html" },
-  { toolId: "asset-pipeline", indexPath: "../../tools/Asset Pipeline/index.html" },
-  { toolId: "3d-json-payload", indexPath: "../../tools/3D JSON Payload/index.html" },
-  { toolId: "3d-asset-viewer", indexPath: "../../tools/3D Asset Viewer/index.html" },
-  { toolId: "3d-camera-path-editor", indexPath: "../../tools/3D Camera Path Editor/index.html" }
+  { toolId: "sprite-editor", indexPath: "../../toolbox/Sprite Editor/index.html" },
+  { toolId: "tile-map-editor", indexPath: "../../toolbox/Tilemap Studio/index.html" },
+  { toolId: "parallax-editor", indexPath: "../../toolbox/Parallax Scene Studio/index.html" },
+  { toolId: "palette-manager-v2", indexPath: "../../toolbox/palette-manager-v2/index.html" },
+  { toolId: "state-inspector", indexPath: "../../toolbox/State Inspector/index.html" },
+  { toolId: "replay-visualizer", indexPath: "../../toolbox/Replay Visualizer/index.html" },
+  { toolId: "performance-profiler", indexPath: "../../toolbox/Performance Profiler/index.html" },
+  { toolId: "physics-sandbox", indexPath: "../../toolbox/Physics Sandbox/index.html" },
+  { toolId: "asset-pipeline", indexPath: "../../toolbox/Asset Pipeline/index.html" },
+  { toolId: "3d-json-payload", indexPath: "../../toolbox/3D JSON Payload/index.html" },
+  { toolId: "3d-asset-viewer", indexPath: "../../toolbox/3D Asset Viewer/index.html" },
+  { toolId: "3d-camera-path-editor", indexPath: "../../toolbox/3D Camera Path Editor/index.html" }
 ]);
 
 export async function run() {

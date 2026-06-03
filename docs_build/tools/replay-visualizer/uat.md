@@ -5,7 +5,7 @@ Validate user acceptance readiness for Replay Visualizer across launch, core wor
 
 ## Scope
 - Tool: `replay-visualizer`
-- Entry point: `tools/Replay Visualizer/index.html`
+- Entry point: `toolbox/Replay Visualizer/index.html`
 
 ## Validation Scenarios
 

@@ -1,7 +1,7 @@
 # BUILD_PR_LEVEL_21_2_TOOL_TESTING_DOCUMENTATION_AND_REPORT_STANDARDIZATION_VALIDATION
 
 ## Commands Run
-1. `node --input-type=module -` (reads `getActiveToolRegistry()` from `tools/toolRegistry.js` and validates per-tool docs + required sections)
+1. `node --input-type=module -` (reads `getActiveToolRegistry()` from `toolbox/toolRegistry.js` and validates per-tool docs + required sections)
 2. `Get-ChildItem docs/tools -Filter *.md | Where-Object { $_.Name -ne 'README.md' } | Select-String -Pattern '^## Manual Test Cases' | Measure-Object`
 3. `git status --short -- docs_build/dev/start_of_day`
 

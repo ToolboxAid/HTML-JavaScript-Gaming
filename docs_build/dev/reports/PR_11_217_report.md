@@ -33,11 +33,11 @@ Library structure:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2SessionLibrary.test.mjs`  
+1. `node --check tests/runtime/V2SessionLibrary.test.mjs`
    - Result: **PASS**
-2. `node tests/runtime/V2SessionLibrary.test.mjs`  
+2. `node tests/runtime/V2SessionLibrary.test.mjs`
    - Result: **PASS**
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
    - Result: **PASS**
 
 Runtime output:
@@ -54,8 +54,8 @@ Runtime test coverage:
 5. Verify explicit overwrite behavior path (no silent overwrite).
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionLibrary.test.mjs`
 - `docs_build/dev/reports/PR_11_217_report.md`
 

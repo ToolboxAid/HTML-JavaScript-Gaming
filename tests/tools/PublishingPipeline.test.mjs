@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { runPublishingPipeline, summarizePublishingPipeline } from "../../tools/shared/publishingPipeline.js";
+import { runPublishingPipeline, summarizePublishingPipeline } from "../../toolbox/shared/publishingPipeline.js";
 
 export async function run() {
   const result = await runPublishingPipeline({

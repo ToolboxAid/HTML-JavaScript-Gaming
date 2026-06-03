@@ -4,14 +4,14 @@
 Correct workspace schema/session contract boundaries after PR_11_278 by restoring `games[]` manifest shape and moving Workspace V2 resume state to a minimal root `workspaceSession` block.
 
 ## Files
-- tools/schemas/workspace.schema.json
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/schemas/workspace.schema.json
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_279_workspace_schema_restore_and_minimal_workspace_session_block_report.md
 
 ## Implementation
-1. Remove `games[].session` from `tools/schemas/workspace.schema.json`.
+1. Remove `games[].session` from `toolbox/schemas/workspace.schema.json`.
 2. Add optional strict root `workspaceSession` block with only:
    - `schema`
    - `defaultToolId`
@@ -31,11 +31,11 @@ Correct workspace schema/session contract boundaries after PR_11_278 by restorin
 ## Acceptance
 - `games[]` no longer stores session snapshots.
 - `workspaceSession` is the only minimal resume state block.
-- Workspace export/import validates against `tools/schemas/workspace.schema.json`.
+- Workspace export/import validates against `toolbox/schemas/workspace.schema.json`.
 - Cross-tool diff stays blocked with required message.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2SessionMerge.test.mjs`

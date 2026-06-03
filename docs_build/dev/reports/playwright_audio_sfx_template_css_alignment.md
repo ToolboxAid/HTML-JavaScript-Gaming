@@ -9,7 +9,7 @@ Playwright impacted: Yes.
 Behavior intended for Playwright validation:
 
 - Audio / SFX Playground V2 launches directly without console errors.
-- Audio / SFX Playground V2 renders using `tools/_templates-v2/styles/toolStarter.css`.
+- Audio / SFX Playground V2 renders using `toolbox/_tool_template-v2/styles/toolStarter.css`.
 - Workspace V2 still shows the Audio / SFX Playground V2 tile.
 - Workspace V2 tile launch still opens Audio / SFX Playground V2 in workspace launch mode.
 
@@ -39,17 +39,17 @@ Blocked in this environment.
   - JSON parsed.
   - HTML checked for inline script blocks, style blocks, and inline event handlers.
   - CSS checked for balanced braces.
-- `tools/_templates-v2/starter-project-template/config/starter.game.manifest.json` passed Workspace Manager V2 `validateGameManifest`.
-- `git diff --check -- tools/_templates-v2 tools/audio-sfx-playground-v2 docs_build/dev/reports` passed.
+- `toolbox/_tool_template-v2/starter-project-template/config/starter.game.manifest.json` passed Workspace Manager V2 `validateGameManifest`.
+- `git diff --check -- toolbox/_tool_template-v2 toolbox/audio-sfx-playground-v2 docs_build/dev/reports` passed.
 
 ## Manual Validation Steps
 
 1. Install dependencies in an environment with a trusted npm certificate chain.
 2. Run `npm run test:workspace-v2`.
-3. Open `/tools/audio-sfx-playground-v2/index.html`.
+3. Open `/toolbox/audio-sfx-playground-v2/index.html`.
 4. Confirm the page renders with the Tool Template V2 visual pattern.
 5. Confirm browser devtools shows no console errors.
-6. Open `/tools/workspace-manager-v2/index.html?workspace=uat`.
+6. Open `/toolbox/workspace-manager-v2/index.html?workspace=uat`.
 7. Seed the UAT manifest, launch the Audio / SFX Playground V2 tile, and confirm workspace mode opens with no console errors.
 
 ## Full Samples Smoke Test

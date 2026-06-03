@@ -23,7 +23,7 @@ Normalize palette runtime payload contracts so manifest palette input and standa
 
 ## Changed Files
 
-- `tools/Palette Browser/main.js`
+- `toolbox/Palette Browser/main.js`
 - `docs_build/dev/reports/level_10_6_standalone_tool_data_flow_report.md`
 - `docs_build/dev/reports/level_10_6B_palette_contract_alignment.md`
 

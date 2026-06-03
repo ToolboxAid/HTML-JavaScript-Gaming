@@ -14,7 +14,7 @@ Scope: Policy classification for `templates/` only.
 ## Rationale (Evidence-Grounded)
 From `templates_live_usage_inventory.md`:
 - `templates/` has live code + test + docs references.
-- Runtime helpers (`tools/shared/vectorNativeTemplate.js`, `tools/shared/vectorTemplateSampleGame.js`) rely on exact path strings.
+- Runtime helpers (`toolbox/shared/vectorNativeTemplate.js`, `toolbox/shared/vectorTemplateSampleGame.js`) rely on exact path strings.
 - Tests (`tests/tools/VectorNativeTemplate.test.mjs`) assert exact template path values.
 - Active planning/docs currently enforce deferment and non-destructive cleanup sequencing.
 

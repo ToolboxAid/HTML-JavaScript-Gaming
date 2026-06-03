@@ -17,8 +17,8 @@ Validation executed
 Boundary map (validated)
 Allowed edges
 - samples/games/tools -> src/engine public barrel surfaces
-- tools -> tools/shared
-- samples -> tools/shared for explicit tool-linked curriculum tracks
+- tools -> toolbox/shared
+- samples -> toolbox/shared for explicit tool-linked curriculum tracks
 Prohibited edges
 - src/engine -> games|samples|tools
 - src/shared -> src/engine|games|samples|tools

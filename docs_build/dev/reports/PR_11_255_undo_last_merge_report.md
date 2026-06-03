@@ -4,8 +4,8 @@
 Added `Undo Last Merge` for Workspace V2 merge runtime flow. It removes only the most recent merged runtime session from Recent Sessions and `sessionStorage`, without changing Session Library entries.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2UndoLastMerge.test.mjs`
 
 ## Implementation Details
@@ -48,13 +48,13 @@ Added `Undo Last Merge` for Workspace V2 merge runtime flow. It removes only the
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2UndoLastMerge.test.mjs
 node tests/runtime/V2UndoLastMerge.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2UndoLastMerge.test.mjs` -> PASS
 - `node tests/runtime/V2UndoLastMerge.test.mjs` -> PASS
   - output: `tmp/v2-undo-last-merge-results.json`

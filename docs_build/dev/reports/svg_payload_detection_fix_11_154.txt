@@ -2,7 +2,7 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 
 Update made:
 - Replaced SVG Asset Studio detection with direct check:
@@ -11,7 +11,7 @@ Update made:
   tools["svg-asset-studio"]?.vectorAssetDocument?.sourceName
 
 Verification:
-- node --check "tools/Workspace Manager/main.js" -> PASS
+- node --check "toolbox/Workspace Manager/main.js" -> PASS
 - Code check confirms new detection and sourceName label path -> PASS
 - Sample 1902 payload check -> detected=true, label=sample-0901-ship.svg, asset label "Asset: sample-0901-ship.svg"
 

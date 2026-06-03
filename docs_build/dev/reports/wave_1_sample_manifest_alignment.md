@@ -24,8 +24,8 @@ Date: 2026-06-02
 
 | Gap | Status | Required Decision |
 | --- | --- | --- |
-| `tools/schemas/workspace.manifest.schema.json` referenced by `sample.1902.workspace-all-tools.json` | Missing | Replace with active authoritative surfaces or create an explicitly approved replacement in a future PR. |
-| `tools/schemas/workspace.schema.json` | Missing | Must not be assumed. |
+| `toolbox/schemas/workspace.manifest.schema.json` referenced by `sample.1902.workspace-all-tools.json` | Missing | Replace with active authoritative surfaces or create an explicitly approved replacement in a future PR. |
+| `toolbox/schemas/workspace.schema.json` | Missing | Must not be assumed. |
 | `game.manifest.schema.json` currently omits `tile-map-editor`, `parallax-editor`, `sprite-editor`, `asset-pipeline`, and `svg-asset-studio` from root `tools` map | Known limitation | Use Tool State payload validation directly, or add explicitly approved manifest schema support in future execution. |
 | Legacy wrapper samples with no `$schema` | Pending rebuild | Convert or validate via selected target wrapper/schema path in future execution. |
 

@@ -4,7 +4,7 @@
 Close out remaining Workspace V2 session tooling UX correctness issues in one targeted, testable bundle.
 
 ## Scope
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
 - docs/report only
 
@@ -21,7 +21,7 @@ Close out remaining Workspace V2 session tooling UX correctness issues in one ta
 - No cross-tool changes
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
 - node tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
 - node tests/runtime/V2DeterministicStateTransitions.test.mjs

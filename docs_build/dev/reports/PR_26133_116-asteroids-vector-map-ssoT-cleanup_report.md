@@ -24,8 +24,8 @@
 - `tests/games/AsteroidsVectorTransforms.test.mjs`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs`
-- `tools/schemas/tools/README.md`
-- `tools/schemas/workspace.manifest.schema.json`
+- `toolbox/schemas/tools/README.md`
+- `toolbox/schemas/workspace.manifest.schema.json`
 - `docs_build/dev/reports/PR_26133_116-asteroids-vector-map-ssoT-cleanup_report.md`
 
 ## Validation
@@ -45,7 +45,7 @@
   - `AsteroidsCollisionTimingStress`
 - PASS: targeted Object Vector runtime loader validation accepted the migrated Asteroids payload.
 - PASS: targeted Object Vector Studio schema validation accepted the migrated Asteroids payload.
-- PASS: targeted workspace schema audit confirmed `tools/schemas/workspace.manifest.schema.json` no longer allows `vector-map-editor`.
+- PASS: targeted workspace schema audit confirmed `toolbox/schemas/workspace.manifest.schema.json` no longer allows `vector-map-editor`.
 - PASS: targeted Playwright impacted tool validation:
   - `loads Object Vector Studio V2 runtime assets into Asteroids gameplay rendering`
   - `uses header lifecycle controls and launches tools from fixed Workspace Manager V2 tiles`

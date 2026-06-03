@@ -4,7 +4,7 @@
 Append the requested Palette Manager V2 tile pin button override block to the end of the Palette Manager CSS file.
 
 ## Scope
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
@@ -13,10 +13,10 @@ Append the requested Palette Manager V2 tile pin button override block to the en
 - Do not refactor or merge styles.
 - Append the requested block only at the bottom of `paletteManagerV2.css`.
 - Keep the provided `!important` flags.
-- Do not touch JavaScript, HTML, `tools/shared`, workspace/toolState/session behavior, sample JSON, or dependencies.
+- Do not touch JavaScript, HTML, `toolbox/shared`, workspace/toolState/session behavior, sample JSON, or dependencies.
 
 ## Implementation Plan
-1. Read the existing end of `tools/palette-manager-v2/paletteManagerV2.css`.
+1. Read the existing end of `toolbox/palette-manager-v2/paletteManagerV2.css`.
 2. Append the exact requested `.palette-manager-v2__pin-button--tile` CSS block at end of file.
 3. Validate that the final CSS content ends with that exact block.
 4. Confirm the runtime diff is CSS-only.

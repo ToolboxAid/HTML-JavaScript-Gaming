@@ -15,7 +15,7 @@ Apply to these V2 tools only:
 Codex must make the implementation changes. ChatGPT does not author implementation code.
 
 For each scoped V2 tool, Codex must ensure:
-- `tools/<tool>-v2/index.html` owns the static shell.
+- `toolbox/<tool>-v2/index.html` owns the static shell.
 - `index.html` contains the shared header mount: `<div id="shared-theme-header"></div>`.
 - `index.html` owns CSS links, page shell, static markup, and module script loading.
 - `index.js` is behavior-only.
@@ -33,7 +33,7 @@ Do not change:
 - Workspace Manager v1
 - platformShell
 - assetUsageIntegration
-- tools/shared/*
+- toolbox/shared/*
 - start_of_day folders
 
 Do not add:
@@ -54,7 +54,7 @@ Codex must preserve or add scoped V2 logs where applicable:
 - `[*_V2_CONTRACT_LOADED]`
 
 ## Acceptance Criteria
-- Each scoped V2 tool opens directly from its own `tools/<tool>-v2/index.html`.
+- Each scoped V2 tool opens directly from its own `toolbox/<tool>-v2/index.html`.
 - Shared header/image area is mounted through `#shared-theme-header`.
 - Static markup is testable in HTML without running layout-generating JS.
 - JS only reads session, validates state, binds events, and renders dynamic data into existing nodes.

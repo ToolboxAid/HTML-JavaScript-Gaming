@@ -3,7 +3,7 @@
 Codex must replace this template with execution evidence.
 
 Required results:
-- node --check tools/shared/platformShell.js: PASS/FAIL
+- node --check toolbox/shared/platformShell.js: PASS/FAIL
 - sample 1902 Workspace Manager launch: PASS/FAIL
 - SVG Asset Studio badge text: expected `Asset: sample-0901-ship.svg`
 - schema files changed: expected NO

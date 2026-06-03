@@ -5,7 +5,7 @@
 - Kept scope focused to shared pipeline modules (no UI/theme/editor-state/render changes).
 
 ## Validation Stage Additions
-- New shared module: `tools/shared/assetPipelineValidationOutput.js`
+- New shared module: `toolbox/shared/assetPipelineValidationOutput.js`
 - Added registry-level validation for:
   - schema shape (expected section arrays)
   - ID rules (required IDs, supported character set)
@@ -26,7 +26,7 @@
 - Output includes summary + validation counts + sanitized registry payload.
 
 ## Pipeline Integration
-- Updated `tools/shared/assetPipelineFoundation.js` to integrate new stages.
+- Updated `toolbox/shared/assetPipelineFoundation.js` to integrate new stages.
 - Stage map now includes:
   - `validation`
   - `output`
@@ -55,8 +55,8 @@
 ## Exact Files Changed
 - `docs_build/pr/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT.md`
 - `docs_build/reports/asset_pipeline_validation_output_targets.txt`
-- `tools/shared/assetPipelineValidationOutput.js`
-- `tools/shared/assetPipelineFoundation.js`
+- `toolbox/shared/assetPipelineValidationOutput.js`
+- `toolbox/shared/assetPipelineFoundation.js`
 - `docs_build/reports/launch_smoke_report.md`
 - `docs_build/reports/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT_validation.txt`
 - `docs_build/reports/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT_report.md`

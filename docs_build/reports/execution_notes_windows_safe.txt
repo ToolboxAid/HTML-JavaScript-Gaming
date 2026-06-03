@@ -2,10 +2,10 @@ WINDOWS-SAFE EXECUTION NOTES
 
 Standard recommendation:
 1. Run validator first:
-   node tools/codex/path_mapping_validator.js tools/codex/sample_mapping.example.json
+   node toolbox/codex/path_mapping_validator.js toolbox/codex/sample_mapping.example.json
 
 2. Run rename engine:
-   node tools/codex/node_rename_engine_template.js tools/codex/sample_mapping.example.json
+   node toolbox/codex/node_rename_engine_template.js toolbox/codex/sample_mapping.example.json
 
 3. Validate required repo links and sample entry points.
 

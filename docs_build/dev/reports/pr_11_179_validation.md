@@ -4,14 +4,14 @@
 Implemented the hosted SVG tile writer path from `workspaceShell.js` to Workspace Manager.
 
 ## Files changed
-- `tools/shared/workspaceShell.js`
-- `tools/SVG Asset Studio/main.js`
-- `tools/Workspace Manager/main.js`
+- `toolbox/shared/workspaceShell.js`
+- `toolbox/SVG Asset Studio/main.js`
+- `toolbox/Workspace Manager/main.js`
 - `docs_build/dev/reports/pr_11_179_validation.md`
 
 Supporting files validated because they enforce the removed legacy paths:
-- `tools/shared/platformShell.js`
-- `tools/shared/assetUsageIntegration.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/assetUsageIntegration.js`
 
 ## Data flow
 Hosted SVG now follows this path:
@@ -27,7 +27,7 @@ SVG Asset Studio hosted iframe
 ```
 
 ## workspaceShell result
-`tools/shared/workspaceShell.js` now exports `initWorkspaceShell()`.
+`toolbox/shared/workspaceShell.js` now exports `initWorkspaceShell()`.
 
 For hosted `svg-asset-studio`, it normalizes:
 - `toolId: "svg-asset-studio"`
@@ -70,11 +70,11 @@ Manual console capture was not run in this terminal session.
 For sample 1902, the SVG tile should show the actual `vectorAssetDocument.sourceName` such as `sample-0901-ship.svg`, or `Inline SVG` when the SVG text has no source name. It should not show `Asset: none`.
 
 ## Validation
-- PASS: `node --check tools/shared/workspaceShell.js`
-- PASS: `node --check "tools/SVG Asset Studio/main.js"`
-- PASS: `node --check "tools/Workspace Manager/main.js"`
-- PASS: `node --check tools/shared/platformShell.js`
-- PASS: `node --check tools/shared/assetUsageIntegration.js`
+- PASS: `node --check toolbox/shared/workspaceShell.js`
+- PASS: `node --check "toolbox/SVG Asset Studio/main.js"`
+- PASS: `node --check "toolbox/Workspace Manager/main.js"`
+- PASS: `node --check toolbox/shared/platformShell.js`
+- PASS: `node --check toolbox/shared/assetUsageIntegration.js`
 
 ## Full samples smoke
 Skipped. Reason: targeted hosted SVG tile write path; full samples smoke takes about 20 minutes and is not required.

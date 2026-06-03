@@ -4,33 +4,33 @@
 Lock the final approved canonical naming and path convention for active tool folders and related references so future renames do not create path drift again.
 
 ## Canonical Active Tool Paths
-- `tools/Sprite Editor/`
-- `tools/Tilemap Studio/`
-- `tools/Parallax Scene Studio/`
-- `tools/Vector Asset Studio/`
-- `tools/Vector Map Editor/`
-- `tools/shared/`
+- `toolbox/Sprite Editor/`
+- `toolbox/Tilemap Studio/`
+- `toolbox/Parallax Scene Studio/`
+- `toolbox/Vector Asset Studio/`
+- `toolbox/Vector Map Editor/`
+- `toolbox/shared/`
 
 ## Naming Rules
 - Use approved human-readable studio names for active editor-style tools.
 - Use one canonical folder per active tool.
 - Do not keep parallel wrapper folders once a canonical tool path is live.
 - Update launcher links, README examples, sample manifests, and validation docs in the same change as any future rename.
-- Keep `tools/SpriteEditor_old_keep/` and `tools/Sprite Editor/` treated as explicit legacy paths unless separately retired by a dedicated legacy cleanup plan.
+- Keep `toolbox/SpriteEditor_old_keep/` and `toolbox/Sprite Editor/` treated as explicit legacy paths unless separately retired by a dedicated legacy cleanup plan.
 
 ## Required Reference Surfaces
-- `tools/index.html`
+- `toolbox/index.html`
 - tool `index.html` entrypoints
 - tool `README.md` files
 - sample manifests and sample-relative asset paths
 - validation reports and current BUILD/APPLY docs when paths change
 
 ## Audit Checks
-- inventory folders directly under `tools/`
+- inventory folders directly under `toolbox/`
 - flag any pair where a canonical tool and an alternate renamed folder coexist
 - flag launcher entries that point outside canonical folders
 - flag sample manifests or asset paths that resolve through non-canonical folders
-- flag any newly introduced required references to legacy `tools/SpriteEditor_old_keep/`
+- flag any newly introduced required references to legacy `toolbox/SpriteEditor_old_keep/`
 
 ## Expected Outcome
 - canonical paths remain stable

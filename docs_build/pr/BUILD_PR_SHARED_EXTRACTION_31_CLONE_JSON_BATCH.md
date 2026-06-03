@@ -1,6 +1,6 @@
 # BUILD_PR_SHARED_EXTRACTION_31_CLONE_JSON_BATCH
 
-Centralize cloneJson(value) across tools/dev and tools/shared.
+Centralize cloneJson(value) across toolbox/dev and toolbox/shared.
 
 Create:
 src/shared/utils/jsonUtils.js
@@ -8,7 +8,7 @@ src/shared/utils/jsonUtils.js
 Export:
 cloneJson
 
-Update all occurrences from tools/dev + tools/shared listed in dupes report.
+Update all occurrences from toolbox/dev + toolbox/shared listed in dupes report.
 Remove local implementations, import shared.
 
 Constraints:

@@ -14,10 +14,10 @@
 - samples: SKIP because sample JSON alignment is out of scope.
 
 ## Validation Commands
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: `Select-String -Path tools/midi-studio-v2/index.html -Pattern '<script>|<style>|\son[a-zA-Z]+='`
+- PASS: `Select-String -Path toolbox/midi-studio-v2/index.html -Pattern '<script>|<style>|\son[a-zA-Z]+='`
 - PASS: `$env:PLAYWRIGHT_BROWSERS_PATH='node_modules/.cache/ms-playwright'; npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --grep "Twinkle Twinkle Little Star test song data|loads example and starts audible Preview Synth MVP playback|edits spreadsheet note cells|parses guided Song Sheet fields"`
 - PASS: `git diff --check`
 
@@ -27,7 +27,7 @@
 - Changed JS guardrail written: `docs_build/dev/reports/coverage_changed_js_guardrail.txt`.
 
 ## Manual UAT Steps
-1. Open `tools/midi-studio-v2/index.html?manifestPath=/midi-fixture.game.manifest.json`.
+1. Open `toolbox/midi-studio-v2/index.html?manifestPath=/midi-fixture.game.manifest.json`.
 2. Click `Load Example And Play`.
 3. Confirm the visible UAT labels are present: `Now playing`, `Tracks`, `Timeline`, and `Edit notes here`.
 4. Confirm Twinkle Twinkle Little Star notes appear as editable note blocks in the center grid.

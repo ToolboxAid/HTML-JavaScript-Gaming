@@ -14,8 +14,8 @@ Apply STRICT SCOPE execution to perform the previously failing schema boundary f
 
 ### ALLOWED FILES
 
-- tools/schemas/workspace.manifest.schema.json
-- tools/schemas/tools/palette-browser.schema.json
+- toolbox/schemas/workspace.manifest.schema.json
+- toolbox/schemas/tools/palette-browser.schema.json
 
 ### ALLOWED CHANGES
 

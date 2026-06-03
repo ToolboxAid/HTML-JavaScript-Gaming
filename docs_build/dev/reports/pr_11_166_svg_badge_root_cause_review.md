@@ -1,11 +1,11 @@
 # PR 11.166 Review Report — SVG Badge Failure Root Cause
 
 ## Reviewed from repo dump
-- `tools/shared/platformShell.js`
-- `tools/Workspace Manager/main.js`
-- `tools/shared/toolHostRuntime.js`
-- `tools/shared/assetUsageIntegration.js`
-- `tools/shared/toolHostSharedContext.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/shared/toolHostRuntime.js`
+- `toolbox/shared/assetUsageIntegration.js`
+- `toolbox/shared/toolHostSharedContext.js`
 
 ## Root cause
 This is not an SVG data problem, not a schema problem, and not a sample 1902 problem.

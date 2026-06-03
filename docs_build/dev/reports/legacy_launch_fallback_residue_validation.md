@@ -2,7 +2,7 @@
 
 ## Changed Files
 
-- `tools/shared/toolLaunchSSoTData.js`
+- `toolbox/shared/toolLaunchSSoTData.js`
 - `docs_build/dev/reports/legacy_launch_fallback_residue_validation.md`
 
 ## Exact Residue Removed
@@ -44,10 +44,10 @@ Open with Workspace Manager
 
 Code path:
 
-- `tools/shared/toolLaunchSSoT.js:68`
-- `tools/shared/toolLaunchSSoT.js:72`
-- `tools/shared/toolLaunchSSoTData.js:53`
-- `tools/shared/toolLaunchSSoTData.js:57`
+- `toolbox/shared/toolLaunchSSoT.js:68`
+- `toolbox/shared/toolLaunchSSoT.js:72`
+- `toolbox/shared/toolLaunchSSoTData.js:53`
+- `toolbox/shared/toolLaunchSSoTData.js:57`
 - `samples/index.render.js:92`
 
 Command output:
@@ -57,14 +57,14 @@ sampleDefinition {
   launchDefinition: {
     launchId: 'tool.sprite-editor',
     displayName: 'Sprite Editor',
-    targetPath: '/tools/Sprite%20Editor/index.html',
+    targetPath: '/toolbox/Sprite%20Editor/index.html',
     allowedLaunchSources: [ 'samples', 'tools', 'workspace', 'internal' ],
     allowedLaunchTypes: [ 'sample-to-tool', 'tool-internal', 'workspace-internal' ]
   },
   error: ''
 }
 sampleLaunch {
-  href: '/tools/Sprite%20Editor/index.html?sampleId=1208&sampleTitle=Tool+Formatted+Tiles+Parallax',
+  href: '/toolbox/Sprite%20Editor/index.html?sampleId=1208&sampleTitle=Tool+Formatted+Tiles+Parallax',
   error: ''
 }
 ```
@@ -73,9 +73,9 @@ sampleLaunch {
 
 Code path:
 
-- `tools/shared/toolLaunchSSoT.js:101`
-- `tools/shared/toolLaunchSSoT.js:105`
-- `tools/shared/toolLaunchSSoTData.js:67`
+- `toolbox/shared/toolLaunchSSoT.js:101`
+- `toolbox/shared/toolLaunchSSoT.js:105`
+- `toolbox/shared/toolLaunchSSoTData.js:67`
 - `games/index.render.js:148`
 
 Command output:
@@ -85,14 +85,14 @@ gameDefinition {
   launchDefinition: {
     launchId: 'workspace-manager.game-to-workspace',
     displayName: 'Workspace Manager',
-    targetPath: '/tools/Workspace%20Manager/index.html',
+    targetPath: '/toolbox/Workspace%20Manager/index.html',
     allowedLaunchSources: [ 'games', 'workspace', 'internal' ],
     allowedLaunchTypes: [ 'game-to-workspace', 'workspace-internal' ]
   },
   error: ''
 }
 gameLaunch {
-  href: '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game',
+  href: '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game',
   error: ''
 }
 ```
@@ -101,8 +101,8 @@ gameLaunch {
 
 Code path:
 
-- `tools/shared/toolLaunchSSoT.js:121`
-- `tools/shared/toolLaunchSSoT.js:138`
+- `toolbox/shared/toolLaunchSSoT.js:121`
+- `toolbox/shared/toolLaunchSSoT.js:138`
 - `samples/index.render.js:539`
 - `games/index.render.js:419`
 
@@ -113,7 +113,7 @@ clearResult true
 localAfterClear [ [ 'keep.one', 'x' ] ]
 sessionAfterClear [ [ 'keep.two', 'y' ] ]
 launchResult true
-assignCalls [ '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
+assignCalls [ '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
 localAfterLaunch [ [ 'keep.one', 'x' ] ]
 sessionAfterLaunch [ [ 'keep.two', 'y' ] ]
 ```
@@ -140,9 +140,9 @@ disallowedContext {
 
 3. Resolver still enforces explicit source/type access checks:
 
-- `tools/shared/toolLaunchSSoTData.js:130`
-- `tools/shared/toolLaunchSSoT.js:72`
-- `tools/shared/toolLaunchSSoT.js:105`
+- `toolbox/shared/toolLaunchSSoTData.js:130`
+- `toolbox/shared/toolLaunchSSoT.js:72`
+- `toolbox/shared/toolLaunchSSoT.js:105`
 
 ## Proof No Default/Fallback Residue Remains In Touched Launch Flow
 
@@ -155,8 +155,8 @@ disallowedContext {
 Commands run:
 
 ```bash
-node --check tools/shared/toolLaunchSSoTData.js
-node --check tools/shared/toolLaunchSSoT.js
+node --check toolbox/shared/toolLaunchSSoTData.js
+node --check toolbox/shared/toolLaunchSSoT.js
 node --check samples/index.render.js
 node --check games/index.render.js
 ```

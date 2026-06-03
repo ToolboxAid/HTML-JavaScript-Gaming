@@ -9,13 +9,13 @@
 
 ## Files changed
 - `games/Asteroids/game.manifest.json`
-- `tools/shared/asteroidsPlatformDemo.js`
+- `toolbox/shared/asteroidsPlatformDemo.js`
 
 ## Targeted checks run
 
 ### 1) Syntax/import checks
 - `node --check src/engine/runtime/gameImageConvention.js` -> PASS
-- `node --check tools/shared/asteroidsPlatformDemo.js` -> PASS
+- `node --check toolbox/shared/asteroidsPlatformDemo.js` -> PASS
 - `node -e "JSON.parse(require('fs').readFileSync('games/Asteroids/game.manifest.json','utf8')); console.log('ASTEROIDS_MANIFEST_JSON_OK')"` -> PASS
 
 ### 2) Manifest bezel stretch enforcement

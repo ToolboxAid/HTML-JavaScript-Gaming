@@ -16,7 +16,7 @@ PASS
 - docs_build/dev/reports/launch_smoke_report.md (updated by test command)
 
 ## Validation Steps Performed
-1. Launched Vector Map Editor at `tools/Vector Map Editor/index.html`.
+1. Launched Vector Map Editor at `toolbox/Vector Map Editor/index.html`.
 2. Confirmed no hidden/default map load:
 - Status: `No map loaded. Load a map preset or import a map JSON document to begin.`
 - Data object count: `0`

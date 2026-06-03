@@ -1,9 +1,9 @@
 PR_26126_068-tool-template-launch-mode-nav
 
 Scope:
-- Updated the official first-class tool starter at tools/templates/first-class-tool-starter/.
+- Updated the official first-class tool starter at toolbox/templates/first-class-tool-starter/.
 - Updated existing Playwright coverage for the starter launch-mode NAV behavior.
-- No live tools, samples, schemas, roadmap, start_of_day folders, or tools/shared files were modified.
+- No live tools, samples, schemas, roadmap, start_of_day folders, or toolbox/shared files were modified.
 
 Changes:
 - Added separate tool-mode and workspace-mode NAV sections.
@@ -19,20 +19,20 @@ Changes:
   - Export manifest
 - Added hidden-state CSS so only one NAV displays at a time.
 - Kept Preview Generator V2 color-match styling and src/engine/theme usage.
-- Preserved no tools/shared runtime dependency.
+- Preserved no toolbox/shared runtime dependency.
 - Preserved external CSS/JS only; no inline style block, inline script block, or inline event handlers were added.
 
 Validation:
-- node --check tools/templates/first-class-tool-starter/js/controls/ActionNavControl.js
-- node --check tools/templates/first-class-tool-starter/js/ToolStarterApp.js
-- node --check tools/templates/first-class-tool-starter/js/bootstrap.js
-- node --check tools/templates/first-class-tool-starter/js/controls/SourceInputControl.js
+- node --check toolbox/templates/first-class-tool-starter/js/controls/ActionNavControl.js
+- node --check toolbox/templates/first-class-tool-starter/js/ToolStarterApp.js
+- node --check toolbox/templates/first-class-tool-starter/js/bootstrap.js
+- node --check toolbox/templates/first-class-tool-starter/js/controls/SourceInputControl.js
 - node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-- node --check tools/templates/first-class-tool-starter/tests/playwright/FirstClassToolStarter.spec.mjs
-- rg check confirmed tools/templates/first-class-tool-starter/index.html has no inline style block, inline script block, or inline event handlers.
+- node --check toolbox/templates/first-class-tool-starter/tests/playwright/FirstClassToolStarter.spec.mjs
+- rg check confirmed toolbox/templates/first-class-tool-starter/index.html has no inline style block, inline script block, or inline event handlers.
 - git diff --check
 - npm run test:workspace-v2
-- npx playwright test --config tools/templates/first-class-tool-starter/playwright.config.mjs --reporter=list
+- npx playwright test --config toolbox/templates/first-class-tool-starter/playwright.config.mjs --reporter=list
 
 Playwright impacted: Yes
 - This PR changes template UI controls/interactions and launch-mode state.
@@ -48,9 +48,9 @@ Playwright behavior validated:
 - Existing starter accordion, required-field gating, primary action, and status clear behaviors still work.
 
 Manual test notes:
-- Open tools/templates/first-class-tool-starter/index.html and confirm only Tool actions is visible with Export, Copy JSON, and Export toolState.
-- Open tools/templates/first-class-tool-starter/index.html?launch=workspace and confirm only Workspace actions is visible with Import manifest, Copy manifest, and Export manifest.
-- The official starter path is tools/templates/first-class-tool-starter/index.html; tools/templates/README.md designates that folder as the starter entry point.
+- Open toolbox/templates/first-class-tool-starter/index.html and confirm only Tool actions is visible with Export, Copy JSON, and Export toolState.
+- Open toolbox/templates/first-class-tool-starter/index.html?launch=workspace and confirm only Workspace actions is visible with Import manifest, Copy manifest, and Export manifest.
+- The official starter path is toolbox/templates/first-class-tool-starter/index.html; toolbox/templates/README.md designates that folder as the starter entry point.
 
 Full samples smoke test:
 - Skipped. This PR only changes the first-class tool starter template and its targeted tests.

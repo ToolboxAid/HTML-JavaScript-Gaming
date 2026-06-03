@@ -38,7 +38,7 @@
   - `gravityWellVectorIds`
 
 ## Workspace Manager Asset Presence
-- Updated file: `tools/shared/platformShell.js`
+- Updated file: `toolbox/shared/platformShell.js`
 - Result: Gravity Well game launch can hydrate shared asset from manifest vector data (`vector.gravitywell.ship`), preventing empty vector asset state for this game.
 
 ## Validation Run

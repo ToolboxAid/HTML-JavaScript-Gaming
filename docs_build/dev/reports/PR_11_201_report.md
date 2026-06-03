@@ -1,41 +1,41 @@
 # PR_11_201 Report
 
 ## Tools Tested
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 
 ## Files Changed
-- `tools/index.html`
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/index.html`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `docs_build/dev/reports/PR_11_201_report.md`
 
 ## Launch/Session Wiring Adjustments
-- Updated V2 launch links in `tools/index.html` to relative paths (`./<tool>-v2/index.html`) for direct tools-index launches.
+- Updated V2 launch links in `toolbox/index.html` to relative paths (`./<tool>-v2/index.html`) for direct tools-index launches.
 - Updated all V2 tool session readers so:
   - no `hostContextId` -> empty/missing state
   - provided but unresolved `hostContextId` -> actionable invalid/error state
   - valid `hostContextId` with valid session payload -> normal render path
 
 ## Validation Commands
-- `node --check tools/asset-manager-v2/index.js`
-- `node --check tools/palette-manager-v2/index.js`
-- `node --check tools/svg-asset-studio-v2/index.js`
-- `node --check tools/tilemap-studio-v2/index.js`
-- `node --check tools/vector-map-editor-v2/index.js`
+- `node --check toolbox/asset-manager-v2/index.js`
+- `node --check toolbox/palette-manager-v2/index.js`
+- `node --check toolbox/svg-asset-studio-v2/index.js`
+- `node --check toolbox/tilemap-studio-v2/index.js`
+- `node --check toolbox/vector-map-editor-v2/index.js`
 
 ## Validation Results
-- `node --check tools/asset-manager-v2/index.js`: **PASS**
-- `node --check tools/palette-manager-v2/index.js`: **PASS**
-- `node --check tools/svg-asset-studio-v2/index.js`: **PASS**
-- `node --check tools/tilemap-studio-v2/index.js`: **PASS**
-- `node --check tools/vector-map-editor-v2/index.js`: **PASS**
+- `node --check toolbox/asset-manager-v2/index.js`: **PASS**
+- `node --check toolbox/palette-manager-v2/index.js`: **PASS**
+- `node --check toolbox/svg-asset-studio-v2/index.js`: **PASS**
+- `node --check toolbox/tilemap-studio-v2/index.js`: **PASS**
+- `node --check toolbox/vector-map-editor-v2/index.js`: **PASS**
 
 ## Session Scenarios Tested
 
@@ -82,4 +82,4 @@
 - No game files changed.
 - No Workspace Manager v1 files changed.
 - No `platformShell` files changed.
-- No `tools/shared/*` files changed.
+- No `toolbox/shared/*` files changed.

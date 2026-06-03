@@ -1,7 +1,7 @@
 PR 11.162 Dead Wiring Report
 
 Scope
-- File inspected/updated: tools/shared/platformShell.js
+- File inspected/updated: toolbox/shared/platformShell.js
 - Path focus: shared shell asset badge derivation for svg-asset-studio (`renderToolAssetBadge`)
 
 Dead/Unused Branches Found In Touched Path

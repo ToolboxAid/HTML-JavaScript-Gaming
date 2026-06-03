@@ -10,8 +10,8 @@ Canvas Debug Overlay Renderer
 Apply the canvas HUD implementation produced from the build PR and lock the runtime behavior into one sample with minimal, isolated changes.
 
 ## Apply Scope
-- Add `tools/dev/canvasDebugHudRenderer.js`
-- Update `tools/dev/devConsoleIntegration.js`
+- Add `toolbox/dev/canvasDebugHudRenderer.js`
+- Update `toolbox/dev/devConsoleIntegration.js`
 - Update one sample entry file only
 - Keep draw order world-first, HUD-last
 - Preserve current combo keys:
@@ -37,8 +37,8 @@ Apply the canvas HUD implementation produced from the build PR and lock the runt
 - Reload combo does not trigger browser refresh
 
 ## Validation
-- node --check tools/dev/canvasDebugHudRenderer.js
-- node --check tools/dev/devConsoleIntegration.js
+- node --check toolbox/dev/canvasDebugHudRenderer.js
+- node --check toolbox/dev/devConsoleIntegration.js
 - node --check <selected sample file>
 - Manual browser run
 - Verify overlay visibility toggle

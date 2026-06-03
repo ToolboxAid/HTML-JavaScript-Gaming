@@ -4,7 +4,7 @@
 Updated Workspace V2 Session Merge preview/confirm/apply UI state progression so a fresh, conflict-free preview enables `Confirm Preview`, and a confirmed fresh preview enables `Apply Merge`.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2ConfirmPreviewEnableState.test.mjs`
 
 ## Implementation Details
@@ -43,7 +43,7 @@ Updated Workspace V2 Session Merge preview/confirm/apply UI state progression so
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2ConfirmPreviewEnableState.test.mjs
 node --check tests/runtime/V2MergePreviewOverlayFix.test.mjs
 node tests/runtime/V2ConfirmPreviewEnableState.test.mjs
@@ -51,7 +51,7 @@ node tests/runtime/V2MergePreviewOverlayFix.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2ConfirmPreviewEnableState.test.mjs` -> PASS
 - `node --check tests/runtime/V2MergePreviewOverlayFix.test.mjs` -> PASS
 - `node tests/runtime/V2ConfirmPreviewEnableState.test.mjs` -> PASS

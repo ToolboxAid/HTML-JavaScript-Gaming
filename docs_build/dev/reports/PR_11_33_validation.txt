@@ -1,7 +1,7 @@
 PR 11.33 Validation Report (Updated)
 
 Changed files:
-- tools/shared/platformShell.css
+- toolbox/shared/platformShell.css
 - docs_build/dev/reports/PR_11_33_validation.txt
 
 Actual overflow source found:
@@ -33,6 +33,6 @@ Before/after manual validation:
 - Manual browser check still required for visual confirmation in your session.
 
 Validation command results:
-- node --check tools/shared/platformShell.js -> PASS
+- node --check toolbox/shared/platformShell.js -> PASS
 - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools -> PASS
   - Summary: PASS=19 FAIL=0 TOTAL=19

@@ -4,7 +4,7 @@
 Make Workspace V2 session merge-state transitions explicit, controlled, and deterministic for preview/confirm/apply/undo flows.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2DeterministicStateTransitions.test.mjs
 - docs_build/dev/reports/PR_11_265_deterministic_state_transition_enforcement_report.md
 
@@ -23,7 +23,7 @@ Make Workspace V2 session merge-state transitions explicit, controlled, and dete
 - No regressions to PR_11_264 state-model behavior.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2DeterministicStateTransitions.test.mjs
 - node tests/runtime/V2DeterministicStateTransitions.test.mjs
 - node tests/runtime/V2SessionStateModelConsolidation.test.mjs

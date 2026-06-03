@@ -46,7 +46,7 @@
 
 ## Read-Path Adjustment
 - Updated legacy hard reference paths in:
-  - `tools/shared/asteroidsPlatformDemo.js`
+  - `toolbox/shared/asteroidsPlatformDemo.js`
 - Old path:
   - `games/Asteroids/game.manifest.json#tools.primitive-skin-editor.palettes...`
 - New path:

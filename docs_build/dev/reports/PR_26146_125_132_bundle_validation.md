@@ -9,7 +9,7 @@ Date: 2026-05-30
 - Targeted coverage: PR125-132 Playwright slice added for SSoT, Song Sheet, canvas timeline, instruments, playback, export, manifest, and Workspace/tool launch split.
 
 ## Validation
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR125-132" --reporter=line`
   - 2 passed.

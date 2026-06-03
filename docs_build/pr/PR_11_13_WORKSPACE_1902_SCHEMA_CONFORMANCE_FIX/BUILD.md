@@ -4,9 +4,9 @@
 
 ### 1. Validate against actual schemas
 Use the repo schemas:
-- `tools/schemas/workspace.schema.json`
-- `tools/schemas/workspace.manifest.schema.json`
-- tool-specific schemas under `tools/schemas/tools/`
+- `toolbox/schemas/workspace.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
+- tool-specific schemas under `toolbox/schemas/tools/`
 
 Do not infer a custom shape from previous broken 1902 output.
 

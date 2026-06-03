@@ -10,7 +10,7 @@ Use **type-first buckets under each owner `assets/` folder**.
 ### Recommended pattern
 - `games/<GameName>/assets/`
 - `samples/<SampleName>/assets/`
-- `tools/<ToolName>/assets/`
+- `toolbox/<ToolName>/assets/`
 
 Inside each owner `assets/`, use the following standard buckets:
 

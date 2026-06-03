@@ -1,19 +1,19 @@
 # Level 8.20 Workspace Schema Audit Report
 
 ## Scope
-- Audited `tools/schemas/workspace.schema.json` for sample-only concepts.
+- Audited `toolbox/schemas/workspace.schema.json` for sample-only concepts.
 - Re-validated Level 8 status prerequisites:
   - 17/17 first-class tool schema coverage.
   - sample tool payload shape alignment from PR 8.19.
 - Updated roadmap status markers only.
 
 ## Files Changed
-- `tools/schemas/workspace.schema.json`
+- `toolbox/schemas/workspace.schema.json`
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs_build/dev/reports/level_8_20_workspace_schema_audit_report.md`
 
 ## Workspace Schema Audit
-Target: `tools/schemas/workspace.schema.json`
+Target: `toolbox/schemas/workspace.schema.json`
 
 Removed sample-only concepts:
 - removed root `samples` collection

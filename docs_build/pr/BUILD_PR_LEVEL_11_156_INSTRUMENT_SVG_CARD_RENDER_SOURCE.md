@@ -15,7 +15,7 @@ Therefore previous changes did not touch the active render source or the active 
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/workspace-manager/main.js
+- toolbox/workspace-manager/main.js
 - docs_build/dev/reports/svg_card_render_source_11_156.txt
 
 ### ALLOWED CHANGES
@@ -39,7 +39,7 @@ Codex MUST NOT:
 
 ## Required Diagnostic
 
-In `tools/workspace-manager/main.js`, locate the final render path that creates the card text for:
+In `toolbox/workspace-manager/main.js`, locate the final render path that creates the card text for:
 
 - category: Vector Assets
 - title: SVG Asset Studio
@@ -98,7 +98,7 @@ If the active branch cannot be proven statically, leave the diagnostic in the fi
 Run targeted validation only.
 
 Required:
-- JS syntax for `tools/workspace-manager/main.js` passes.
+- JS syntax for `toolbox/workspace-manager/main.js` passes.
 - Static code inspection shows the visible SVG asset label branch reads direct manifest data.
 - If not statically provable, diagnostic remains for one run and report says exactly what console output to send back.
 - `git diff --name-only` contains only ALLOWED FILES.

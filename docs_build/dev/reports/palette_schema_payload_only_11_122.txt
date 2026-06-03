@@ -3,7 +3,7 @@ PR 11.122 - Palette Schema Payload Only
 PASS
 
 Changed schema
-- tools/schemas/tools/palette-browser.schema.json
+- toolbox/schemas/tools/palette-browser.schema.json
 
 Direct palette JSON contract
 - schema: html-js-gaming.palette
@@ -27,11 +27,11 @@ Validation evidence
 - node inspection: palette wrapper schema fields remaining: none.
 
 Search evidence
-- rg against tools/schemas/tools/palette-browser.schema.json found no oneOf, toolPayload, properties.tool, or properties.payload wrapper contract.
+- rg against toolbox/schemas/tools/palette-browser.schema.json found no oneOf, toolPayload, properties.tool, or properties.payload wrapper contract.
 - rg against samples/phase-19/1902/sample.1902.workspace-all-tools.json and palette schema found no palette-browser wrapper tool/payload entry for sample 1902.
 
 Runtime loader change
-- tools/Palette Browser/main.js now imports the fetched raw preset as direct palette JSON instead of extracting rawPreset.payload.
+- toolbox/Palette Browser/main.js now imports the fetched raw preset as direct palette JSON instead of extracting rawPreset.payload.
 - logToolLoadLoaded remains the schema-only gate before Palette Browser imports the data.
 
 Blockers

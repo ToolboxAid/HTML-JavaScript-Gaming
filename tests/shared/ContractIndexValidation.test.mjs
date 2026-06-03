@@ -98,7 +98,7 @@ function assertFileExists(repoRelativePath, label) {
 function assertScopedPath(repoRelativePath, label) {
   assert.equal(repoRelativePath.includes("samples/"), false, `${label} is not a sample path`);
   assert.equal(repoRelativePath.includes("GameFoundryStudio/"), false, `${label} is not a public page path`);
-  assert.equal(repoRelativePath.includes("tools/"), false, `${label} is not a tool runtime path`);
+  assert.equal(repoRelativePath.includes("toolbox/"), false, `${label} is not a tool runtime path`);
   assert.equal(repoRelativePath.includes("games/"), false, `${label} is not a game runtime path`);
   assert.equal(repoRelativePath.includes("src/shared/contracts/tools/"), false, `${label} does not consolidate tool contracts`);
 }

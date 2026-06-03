@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { createRuntimeAssetBinding, resolveRuntimeAsset } from "../../tools/shared/pipeline/runtimeAssetBinding.js";
-import { coordinateGameAssetManifest } from "../../tools/shared/pipeline/gameAssetManifestCoordinator.js";
+import { createRuntimeAssetBinding, resolveRuntimeAsset } from "../../toolbox/shared/pipeline/runtimeAssetBinding.js";
+import { coordinateGameAssetManifest } from "../../toolbox/shared/pipeline/gameAssetManifestCoordinator.js";
 
 export async function run() {
   const coordinated = coordinateGameAssetManifest({

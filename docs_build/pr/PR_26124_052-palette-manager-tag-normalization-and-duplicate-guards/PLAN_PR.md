@@ -4,13 +4,13 @@
 Normalize Palette Manager V2 tags to lowercase everywhere and add duplicate guards for user-defined swatch identity fields.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not modify shared accordionV2.
 - Preserve pin/unpin, sort, search, size, import/export, and tag roundtrip behavior.

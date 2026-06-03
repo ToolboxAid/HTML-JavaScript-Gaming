@@ -64,7 +64,7 @@ After STYLE_16/17 validation, audit and close only if execution-backed:
 - finalize hover-line/hover-treatment completion state
 
 ### Track C / E
-- finalize `/tools/index.html` tools.css separation item
+- finalize `/toolbox/index.html` tools.css separation item
 - finalize tool rollout completion if the rollout is now broad enough
 - finalize compact-header/tool-usability item only if backed by the final state
 

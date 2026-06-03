@@ -4,7 +4,7 @@
 This closeout completed remaining execution-backed style-system items in Tracks A, B, F, and G, and closed supported partials in C/E.
 
 ## Validation Commands Executed
-- `node tools/dev/checkStyleSystemGuard.mjs`
+- `node toolbox/dev/checkStyleSystemGuard.mjs`
 - `rg -n "^\[ |^\[\.\]" docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md`
 - `Get-Content` audits on:
   - `src/engine/theme/main.css`
@@ -40,7 +40,7 @@ This closeout completed remaining execution-backed style-system items in Tracks 
 | F2 Remove ad hoc spacing in migrated pages | `[x]` | Core spacing now driven by tokenized layout/page styles consumed by the four primary entry pages. |
 | F3 Typography standardization | `[x]` | Typography tokens in `tokens.css` and standardized heading/body sizes in `layout.css` + `pages.css`. |
 | G1 Per-PR migration rule | `[x]` | Workflow remains narrow-slice and execution-backed; this PR applies targeted file-scoped changes only. |
-| G2 Validation rule | `[x]` | Enforcement added via `tools/dev/checkStyleSystemGuard.mjs` and executable script `check:style-system-guard` in `package.json`. |
+| G2 Validation rule | `[x]` | Enforcement added via `toolbox/dev/checkStyleSystemGuard.mjs` and executable script `check:style-system-guard` in `package.json`. |
 | G3 Old-style retirement rule | `[x]` | Guarded pages enforce no inline `<style>`/`style=""`; previous cleanup PRs plus current guard make retirement rule enforceable. |
 
 ## Remaining Unchanged Items

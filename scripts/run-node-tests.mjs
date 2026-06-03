@@ -9,7 +9,7 @@ import { registerHooks } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
-const ROOT_ALIASES = ['/src/', '/tools/'];
+const ROOT_ALIASES = ['/src/', '/toolbox/'];
 
 registerHooks({
   resolve(specifier, context, nextResolve) {

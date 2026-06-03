@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const jsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-block-fake-session-save-results.json");
 
 function readText(filePath) {
@@ -107,8 +107,8 @@ export function run() {
   const jsSyntax = checkSyntax(jsPath);
   const testSyntax = checkSyntax(path.join(repoRoot, "tests", "runtime", "V2BlockFakeSessionSave.test.mjs"));
 
-  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!jsSyntax.ok) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
   if (!testSyntax.ok) failures.push("tests/runtime/V2BlockFakeSessionSave.test.mjs failed syntax check.");
 
   const requiredTokens = [

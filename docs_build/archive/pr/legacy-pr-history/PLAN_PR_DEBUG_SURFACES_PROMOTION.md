@@ -1,7 +1,7 @@
 # PLAN_PR_DEBUG_SURFACES_PROMOTION
 
 ## Objective
-Define a docs-first promotion plan that moves proven debug surfaces out of `tools/dev` into shared layers while minimizing engine-core changes and preserving clean boundaries.
+Define a docs-first promotion plan that moves proven debug surfaces out of `toolbox/dev` into shared layers while minimizing engine-core changes and preserving clean boundaries.
 
 ## Workflow
 PLAN_PR -> BUILD_PR -> APPLY_PR

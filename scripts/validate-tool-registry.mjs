@@ -1,13 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getToolRegistry, getVisibleActiveToolRegistry } from "../tools/toolRegistry.js";
+import { getToolRegistry, getVisibleActiveToolRegistry } from "../toolbox/toolRegistry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
-const toolsRoot = path.join(repoRoot, "tools");
-const reportPath = path.join(repoRoot, "docs", "dev", "reports", "tool_registry_validation.txt");
+const toolsRoot = path.join(repoRoot, "toolbox");
+const reportPath = path.join(repoRoot, "docs_build", "dev", "reports", "tool_registry_validation.txt");
 
 const EXPECTED_LEGACY_NAMES = [
   "SpriteEditor_old_keep"
@@ -21,6 +21,7 @@ const IGNORED_DIRECTORIES = new Set([
   "dev",
   "preview",
   "schemas",
+  "_tool_template-v2",
   "templates-v2",
   "templates"
 ]);
@@ -97,23 +98,23 @@ async function main() {
     }
     if (!(await pathExists(path.join(toolsRoot, folderName)))) {
       if (isVisibleActive) {
-        issues.push(`Registry entry ${entry.id} points to missing folder tools/${folderName}`);
+        issues.push(`Registry entry ${entry.id} points to missing folder toolbox/${folderName}`);
       } else {
-        notes.push(`Legacy/inactive entry ${entry.id} points to missing folder tools/${folderName} (allowed).`);
+        notes.push(`Legacy/inactive entry ${entry.id} points to missing folder toolbox/${folderName} (allowed).`);
       }
     }
     if (entryPoint && !(await pathExists(path.join(toolsRoot, entryPoint)))) {
       if (isVisibleActive) {
-        issues.push(`Registry entry ${entry.id} points to missing entry file tools/${entryPoint}`);
+        issues.push(`Registry entry ${entry.id} points to missing entry file toolbox/${entryPoint}`);
       } else {
-        notes.push(`Legacy/inactive entry ${entry.id} points to missing entry file tools/${entryPoint} (allowed).`);
+        notes.push(`Legacy/inactive entry ${entry.id} points to missing entry file toolbox/${entryPoint} (allowed).`);
       }
     }
   }
 
   for (const directory of toolDirectories) {
     if (!registryPaths.includes(directory)) {
-      issues.push(`Filesystem directory tools/${directory} is missing from toolRegistry.js`);
+      issues.push(`Filesystem directory toolbox/${directory} is missing from toolRegistry.js`);
     }
   }
 

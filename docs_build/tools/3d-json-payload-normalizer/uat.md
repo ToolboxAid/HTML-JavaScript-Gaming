@@ -5,7 +5,7 @@ Validate user acceptance readiness for 3D JSON Payload Normalizer across launch,
 
 ## Scope
 - Tool: `3d-json-payload-normalizer`
-- Entry point: `tools/3D JSON Payload Normalizer/index.html`
+- Entry point: `toolbox/3D JSON Payload Normalizer/index.html`
 
 ## Validation Scenarios
 

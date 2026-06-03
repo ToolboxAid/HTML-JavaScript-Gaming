@@ -4,14 +4,14 @@
 Add optional swatch tags to Palette Manager V2 and the palette swatch schema, then split the left column into read-only Selected Swatch details and an editable User Defined Swatch form.
 
 ## Scope
-- `tools/palette-manager-v2/*`
-- `tools/schemas/tools/palette-browser.schema.json`
+- `toolbox/palette-manager-v2/*`
+- `toolbox/schemas/tools/palette-browser.schema.json`
 - Workflow docs_build/reports required by `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 
 ## Boundaries
 - Do not touch workspace/toolState/session logic.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not broaden changes beyond Palette Manager V2 and the palette swatch schema.
 - Preserve accordionV2 behavior.

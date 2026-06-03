@@ -4,12 +4,12 @@
 Implement one scoped Palette Manager V2 refinement: Palette heading action controls, User Palette selection clear button, and Sample Palette scroll preservation during pin actions.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-- `tools/palette-manager-v2/controls/UserPaletteControl.js`
-- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/controls/PaletteEditorControl.js`
+- `toolbox/palette-manager-v2/controls/UserPaletteControl.js`
+- `toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -28,7 +28,7 @@ Implement one scoped Palette Manager V2 refinement: Palette heading action contr
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not change shared accordionV2 behavior.
 - Do not broadly refactor Palette Manager V2.

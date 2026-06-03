@@ -2,7 +2,7 @@
 
 ## Scope
 - Single-tool fix only:
-  - `tools/asset-manager-v2/index.js`
+  - `toolbox/asset-manager-v2/index.js`
 - No schema changes.
 - No other tool changes.
 
@@ -14,7 +14,7 @@
   - persistence occurs only on explicit add/remove actions
 
 ## Files Changed
-- `tools/asset-manager-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
 - `docs_build/pr/PR_11_326_ASSET_MANAGER_MUTATION_SCOPE_FIX/PLAN_PR.md`
 - `docs_build/pr/PR_11_326_ASSET_MANAGER_MUTATION_SCOPE_FIX/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_326_report.md`
@@ -22,7 +22,7 @@
 - `docs_build/dev/commit_comment.txt`
 
 ## Validation Run
-- `node --check tools/asset-manager-v2/index.js` -> PASS
+- `node --check toolbox/asset-manager-v2/index.js` -> PASS
 - `node tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs` -> PASS
 - `npm run test:workspace-v2` -> PASS (`1 passed`, `failed=0`)
 

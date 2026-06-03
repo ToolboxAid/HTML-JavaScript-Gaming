@@ -10,7 +10,7 @@ move under that owner as:
 
 - `games/<GameName>/assets/platform/`
 - `samples/<SampleName>/assets/platform/`
-- `tools/<ToolName>/assets/platform/`
+- `toolbox/<ToolName>/assets/platform/`
 
 ## Important distinction
 This rule applies only to **assets**.
@@ -55,7 +55,7 @@ Move to:
 
 ### Tool-owned
 Move to:
-- `tools/<ToolName>/assets/...`
+- `toolbox/<ToolName>/assets/...`
 
 ### Truly shared assets
 Keep shared only if they are genuinely reused across multiple owners and are not owner-specific.
@@ -83,7 +83,7 @@ repo-wide ownership correction pass.
 1. no owner-specific asset remains under broad `platform/assets`
 2. game assets live under `games/<GameName>/assets/`
 3. sample assets live under `samples/<SampleName>/assets/`
-4. tool assets live under `tools/<ToolName>/assets/`
+4. tool assets live under `toolbox/<ToolName>/assets/`
 5. path references are updated
 6. no runtime/platform code moved
 7. genuinely shared assets, if any, are called out explicitly

@@ -39,17 +39,17 @@ async function openRepoPage(page, pathName) {
 }
 
 test("root tools surface links current tool pages without old_* routes", async ({ page }) => {
-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/tools/index.html");
+  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     await expect(page.locator("[data-tools-accordion-list] .control-card")).not.toHaveCount(0);
     const localizationCard = page.locator(".control-card").filter({
       has: page.locator("h3", { hasText: "Localization" })
     });
-    await expect(localizationCard.locator("a.btn")).toHaveAttribute("href", "../tools/localization/index.html");
+    await expect(localizationCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/localization/index.html");
     const hrefs = await page.locator("a[href]").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     expect(hrefs.filter((href) => href && /(^|\/|\.\.\/)tools\/old_/.test(href))).toEqual([]);
-    expect(failedRequests.filter((request) => request.includes("/tools/old_"))).toEqual([]);
+    expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
     expect(pageErrors).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -58,7 +58,7 @@ test("root tools surface links current tool pages without old_* routes", async (
 });
 
 test("tool template future-state page loads from root Theme V2 paths", async ({ page }) => {
-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/tools/_templates-v2/index.html");
+  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/_tool_template-v2/index.html");
 
   try {
     await expect(page.locator("base")).toHaveAttribute("href", "/");
@@ -70,7 +70,7 @@ test("tool template future-state page loads from root Theme V2 paths", async ({ 
       elements.map((element) => element.getAttribute("src") || element.getAttribute("href")).filter(Boolean)
     ));
     expect(loadedReferences.filter((reference) => reference.includes("GameFoundryStudio/"))).toEqual([]);
-    expect(loadedReferences.filter((reference) => reference.includes("tools/old_"))).toEqual([]);
+    expect(loadedReferences.filter((reference) => reference.includes("toolbox/old_"))).toEqual([]);
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
   } finally {

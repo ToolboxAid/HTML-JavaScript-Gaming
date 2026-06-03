@@ -11,8 +11,8 @@ Status: PASS
 
 ## Files Changed
 
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_040-midi-studio-v2-piano-key-grid-height_validation.md`
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
@@ -30,9 +30,9 @@ Review artifacts are generated separately:
 PASS:
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-node -e "const fs=require('fs'); for (const file of ['tools/midi-studio-v2/styles/midiStudioV2.css']) { const text=fs.readFileSync(file,'utf8'); let depth=0; for (const ch of text) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error(file+': unexpected }'); } if (depth!==0) throw new Error(file+': unbalanced braces'); console.log(file+': CSS brace check OK'); }"
+node -e "const fs=require('fs'); for (const file of ['toolbox/midi-studio-v2/styles/midiStudioV2.css']) { const text=fs.readFileSync(file,'utf8'); let depth=0; for (const ch of text) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error(file+': unexpected }'); } if (depth!==0) throw new Error(file+': unbalanced braces'); console.log(file+': CSS brace check OK'); }"
 npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "octave timeline freezes compact headers and note labels while active cells stay textless|fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync" --config=codex_playwright_system_chrome.config.cjs --reporter=list --workers=1 --timeout=60000
 git diff --check
 ```

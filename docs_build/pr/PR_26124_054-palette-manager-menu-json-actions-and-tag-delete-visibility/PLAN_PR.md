@@ -4,13 +4,13 @@
 Move Palette Manager V2 JSON action buttons into a top `menuSample` area and hide tag delete controls for tags still used by User Palette swatches.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not modify shared accordionV2.
 - Do not add dependencies.
 - Preserve pin/unpin, sort, search, size, import/export behavior, lowercase tag normalization, and duplicate user-defined guards.

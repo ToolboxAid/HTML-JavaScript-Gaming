@@ -6,17 +6,17 @@ Date: 2026-05-25
 
 - `node --check` passed for:
   - `src/tools/common/WorkspaceDirtyNotifier.js`
-  - `tools/audio-sfx-playground-v2/js/bootstrap.js`
-  - `tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js`
-  - `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+  - `toolbox/audio-sfx-playground-v2/js/bootstrap.js`
+  - `toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js`
+  - `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - JSON parse validation passed for:
-  - `tools/schemas/game.manifest.schema.json`
-  - `tools/schemas/tools/audio-sfx-playground-v2.schema.json`
-- HTML external asset guard passed for `tools/audio-sfx-playground-v2/index.html`.
+  - `toolbox/schemas/game.manifest.schema.json`
+  - `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`
+- HTML external asset guard passed for `toolbox/audio-sfx-playground-v2/index.html`.
 - Static validation confirmed:
   - no `src/tools/common/WorkspaceToolStateContract.js`
-  - no `tools/audio-sfx-playground-v2/js/services/WorkspaceDirtyBridge.js`
-  - no Audio / SFX JavaScript import from `tools/workspace-manager-v2`
+  - no `toolbox/audio-sfx-playground-v2/js/services/WorkspaceDirtyBridge.js`
+  - no Audio / SFX JavaScript import from `toolbox/workspace-manager-v2`
 - Node validation confirmed `notifyWorkspaceToolDirty` marks the existing normalized Workspace session dirty and updates the persisted host context.
 
 ## npm run test:workspace-v2

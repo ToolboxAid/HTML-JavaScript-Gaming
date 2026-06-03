@@ -6,9 +6,9 @@
 Find where Workspace loads manifests and determines available tools.
 
 Expected areas:
-- tools/workspace*
-- tools/shared/platformShell*
-- tools/toolRegistry.js
+- toolbox/workspace*
+- toolbox/shared/platformShell*
+- toolbox/toolRegistry.js
 - any schema validation utilities
 - sample 1902 launch page only if required
 

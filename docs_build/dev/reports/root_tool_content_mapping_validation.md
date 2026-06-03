@@ -2,22 +2,22 @@
 
 ## Scope
 - Assumed PR_26152_054 was reverted locally; the worktree was clean before this PR.
-- Changed only 11 root public tool HTML pages under `/tools/*.html`.
-- Did not change `/tools/index.html`; it was validated as the root Tools entry surface.
+- Changed only 11 root public tool HTML pages under `/toolbox/*.html`.
+- Did not change `/toolbox/index.html`; it was validated as the root Tools entry surface.
 - Did not touch Admin, Account, Company, Games, Samples, root index, CSS, Theme V2 CSS, JavaScript, data, or runtime behavior.
 
 ## Mapped pages
-- `tools/ai-assistant.html`
-- `tools/animation-studio.html`
-- `tools/asset-studio.html`
-- `tools/code-studio.html`
-- `tools/input-studio.html`
-- `tools/midi-studio.html`
-- `tools/object-vector-studio.html`
-- `tools/palette-manager.html`
-- `tools/particle-studio.html`
-- `tools/sound-studio.html`
-- `tools/storage-inspector.html`
+- `toolbox/ai-assistant.html`
+- `toolbox/animation-studio.html`
+- `toolbox/asset-studio.html`
+- `toolbox/code-studio.html`
+- `toolbox/input-studio.html`
+- `toolbox/midi-studio.html`
+- `toolbox/object-vector-studio.html`
+- `toolbox/palette-manager.html`
+- `toolbox/particle-studio.html`
+- `toolbox/sound-studio.html`
+- `toolbox/storage-inspector.html`
 
 ## Mapping performed
 - Preserved the existing approved fixed shell structure on each page.
@@ -28,7 +28,7 @@
 - Kept existing Setup and Output accordion content in the left and right shell regions.
 
 ## Browser validation
-PASS - Opened `/tools/index.html` with a targeted local server and Playwright Chromium.
+PASS - Opened `/toolbox/index.html` with a targeted local server and Playwright Chromium.
 PASS - Tools Index rendered 18 cards, preserved A-Z ordering, preserved grouped mode with 9 accordions, preserved tile images/descriptions, and retained group-colored outlines.
 PASS - Tools Index links to all 11 mapped root pages were present and loaded.
 PASS - Opened each affected root tool page.

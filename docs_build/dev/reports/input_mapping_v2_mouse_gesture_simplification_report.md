@@ -23,8 +23,8 @@
 ## Validation
 - `node --check src/engine/input/InputCapabilityDescriptors.js`: PASS
 - `node --check src/engine/input/PointerDragState.js`: PASS
-- `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`: PASS
-- `node --check tools/input-mapping-v2/js/controls/GestureListControl.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/controls/GestureListControl.js`: PASS
 - `node --check tests/input/InputService.test.mjs`: PASS
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`: PASS
 - `node -e "const test = await import('./tests/input/InputService.test.mjs'); test.run();"`: PASS
@@ -46,7 +46,7 @@
 - Confirms compact Gesture/Capture spacing and reduced capture button heights.
 
 ## Manual Validation
-1. Open `tools/input-mapping-v2/index.html`.
+1. Open `toolbox/input-mapping-v2/index.html`.
 2. In Gestures, confirm Mouse shows Drag Release but not Drag Rectangle.
 3. Confirm Wheel Up, Wheel Down, Wheel Left, and Wheel Right are still shown.
 4. Confirm no raw Mouse Move X/Y option appears.

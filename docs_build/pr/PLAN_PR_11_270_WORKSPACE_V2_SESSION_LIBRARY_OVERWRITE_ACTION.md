@@ -4,7 +4,7 @@
 Add a saved-session card overwrite action in Workspace V2 Session Library, aligned with new-only Save rules.
 
 ## Scope
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2SessionLibraryActions.test.mjs
@@ -24,7 +24,7 @@ Add a saved-session card overwrite action in Workspace V2 Session Library, align
 - No cross-tool changes
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
 - node --check tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - node --check tests/runtime/V2SessionLibraryActions.test.mjs

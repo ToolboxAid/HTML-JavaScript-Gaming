@@ -28,7 +28,7 @@ One PR purpose only:
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=Breakout&mount=game
+toolbox/Workspace Manager/index.html?gameId=Breakout&mount=game
 ```
 
 Workspace Manager must:
@@ -36,7 +36,7 @@ Workspace Manager must:
 - render a visible Workspace Manager page
 - load explicit `gameId=Breakout` context
 - clear external launch memory before hydration
-- show tools/workspace surface for the selected game context
+- show toolbox/workspace surface for the selected game context
 - not show a blank page
 - not silently fail
 - not restore default/fallback behavior
@@ -60,8 +60,8 @@ Silent blank page is forbidden.
 
 Codex should inspect narrowly:
 
-- `tools/Workspace Manager/index.html`
-- `tools/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
 - any directly imported Workspace Manager boot/view helpers
 
 Do not scan or rewrite unrelated tools.
@@ -115,7 +115,7 @@ Validation must include:
 - changed files
 - root cause of blank page
 - proof URL renders visible Workspace Manager content:
-  - `tools/Workspace Manager/index.html?gameId=Breakout&mount=game`
+  - `toolbox/Workspace Manager/index.html?gameId=Breakout&mount=game`
 - proof multiple gameIds do not blank
 - proof visible diagnostic renders on invalid/missing gameId
 - proof `gameId || game` fallback is not restored

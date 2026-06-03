@@ -4,14 +4,14 @@
 Replace Palette Manager V2 right-column `details`/`summary` accordions with shared accordionV2 markup and right-column sizing rules.
 
 ## Scope
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - Workflow docs_build/reports required by `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 
 ## Boundaries
 - Do not touch workspace/toolState/session logic.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not modify shared accordionV2 behavior.
 - Do not add dependencies.
 - Do not broadly refactor Palette Manager V2.

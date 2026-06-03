@@ -44,7 +44,7 @@ Behavior only:
   - `/index.html`
   - `/samples/index.html`
   - `/old_games/index.html`
-  - `/tools/index.html`
+  - `/toolbox/index.html`
 - Shared header + shared page intro/title area.
 - Header image stretches side-to-side while preserving aspect ratio.
 - Menu buttons use the existing Toolbox Aid overline/underline hover treatment where available in the Toolbox Aid CSS baseline.
@@ -168,7 +168,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 [x] Keep page visually very close to `/index.html`.
 [x] Use `games.css` only for content-specific differences.
 
-### C4. Reset `/tools/index.html`
+### C4. Reset `/toolbox/index.html`
 [x] Apply same shell and shared header.
 [x] Keep page visually very close to `/index.html`.
 [x] Use `tools.css` only for content-specific differences.
@@ -261,7 +261,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 [x] STYLE_01 — Reset `/index.html` using Toolbox Aid-derived base.
 [x] STYLE_02 — Reset `/samples/index.html`.
 [x] STYLE_03 — Reset `/old_games/index.html`.
-[x] STYLE_04 — Reset `/tools/index.html`.
+[x] STYLE_04 — Reset `/toolbox/index.html`.
 [x] STYLE_05 — Add `.is-collapsible` shared accordion behavior.
 [x] STYLE_06 — Establish shared tool shell and migrate one tool.
 [x] STYLE_07 — Clarify tool launch labels/help text.
@@ -289,7 +289,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 
 #### STYLE_06 Test Section
 
-[x] `tools/State Inspector/index.html` loads with shared theme CSS from `src/engine/theme/main.css`
+[x] `toolbox/State Inspector/index.html` loads with shared theme CSS from `src/engine/theme/main.css`
 [x] `src/engine/theme/tool-shell.css` provides fixed left/right + flexible center shell
 [x] Migrated tool page keeps script wiring unchanged (`platformShell.js`, `main.js`)
 [x] No embedded `<style>` or inline `style=""` added in migrated tool page
@@ -303,10 +303,10 @@ This explanation should be kept visible in related UI/help text so launch choice
 [x] Horizontal scrolling avoided at normal desktop widths for migrated shell tools
 [x] Vertical scrolling reduced where practical in migrated shell tools
 [x] Refined shell validated against migrated shell tools:
-- `tools/State Inspector/index.html`
-- `tools/Performance Profiler/index.html`
-- `tools/Replay Visualizer/index.html`
-- `tools/Physics Sandbox/index.html`
+- `toolbox/State Inspector/index.html`
+- `toolbox/Performance Profiler/index.html`
+- `toolbox/Replay Visualizer/index.html`
+- `toolbox/Physics Sandbox/index.html`
 
 ### STYLE_09 â€” Tool Height and Viewport Fit
 
@@ -316,10 +316,10 @@ This explanation should be kept visible in related UI/help text so launch choice
 [x] Shared CSS Grid shell structure preserved
 [x] STYLE_08 adaptive density improvements preserved
 [x] Refined shell validated against migrated shell tools:
-- `tools/State Inspector/index.html`
-- `tools/Performance Profiler/index.html`
-- `tools/Replay Visualizer/index.html`
-- `tools/Physics Sandbox/index.html`
+- `toolbox/State Inspector/index.html`
+- `toolbox/Performance Profiler/index.html`
+- `toolbox/Replay Visualizer/index.html`
+- `toolbox/Physics Sandbox/index.html`
 
 
 

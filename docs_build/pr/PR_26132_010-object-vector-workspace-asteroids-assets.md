@@ -25,14 +25,14 @@ Wire Object Vector Studio V2 into Workspace Manager V2 launch/session flow and s
 Commands run:
 
 ```powershell
-node -e "const fs=require('fs'); for (const p of ['games/Asteroids/game.manifest.json','tools/schemas/workspace.manifest.schema.json']) { JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'')); } console.log('json ok')"
+node -e "const fs=require('fs'); for (const p of ['games/Asteroids/game.manifest.json','toolbox/schemas/workspace.manifest.schema.json']) { JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'')); } console.log('json ok')"
 @'
 const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
 (async () => {
   const root = process.cwd();
-  const { ObjectVectorStudioV2SchemaService } = await import(pathToFileURL(path.join(root, 'tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js')).href);
+  const { ObjectVectorStudioV2SchemaService } = await import(pathToFileURL(path.join(root, 'toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js')).href);
   const service = new ObjectVectorStudioV2SchemaService({
     fetchRef: async (url) => ({
       ok: true,

@@ -166,7 +166,7 @@ Likely targets:
 - `src/engine/renderer/` shared render pipeline contract utilities
 - `src/engine/assets/` shared contract loader utilities
 - `src/engine/tilemap/` contract-aware integration updates
-- `tools/shared/` vector-compatible contract helpers only if required by existing runtime path
+- `toolbox/shared/` vector-compatible contract helpers only if required by existing runtime path
 - `tests/tools/` and/or `tests/src/src/engine/` new contract tests
 - `docs_build/pr/APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md`
 - `docs_build/operations/dev/change_summary.txt`

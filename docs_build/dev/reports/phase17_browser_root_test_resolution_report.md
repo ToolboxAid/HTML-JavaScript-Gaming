@@ -12,7 +12,7 @@
 - Added a Node `registerHooks` resolver in the Phase17 test for browser-root imports:
   - `/src/`
   - `/games/`
-  - `/tools/`
+  - `/toolbox/`
   - `/samples/`
 - Converted the Phase17 sample imports from static imports to dynamic imports after the resolver is registered.
 - Added direct-run execution so `node tests/runtime/Phase17DebugOverlayBottomRightPosition.test.mjs` runs the assertions instead of only checking module load.

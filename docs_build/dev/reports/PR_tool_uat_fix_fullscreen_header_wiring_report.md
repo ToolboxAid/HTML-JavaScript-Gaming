@@ -8,9 +8,9 @@ PASS
 
 ## Changed Files
 
-- `tools/shared/platformShell.js`
-- `tools/shared/platformShell.css`
-- `tools/toolRegistry.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/platformShell.css`
+- `toolbox/toolRegistry.js`
 - `docs_build/dev/reports/PR_tool_uat_fix_fullscreen_header_wiring_report.md`
 
 ## Root Cause
@@ -73,9 +73,9 @@ From `tmp/pr_tool_uat_fix_fullscreen_header_wiring_validation.json`:
 
 ## Validation Commands/Results
 
-1. `node --check tools/shared/platformShell.js`
+1. `node --check toolbox/shared/platformShell.js`
    - PASS
-2. `node --check tools/toolRegistry.js`
+2. `node --check toolbox/toolRegistry.js`
    - PASS
 3. Targeted fullscreen wiring validation script (browser automation)
    - Output: `tmp/pr_tool_uat_fix_fullscreen_header_wiring_validation.json`

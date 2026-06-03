@@ -2,11 +2,11 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 - docs_build/dev/reports/workspace_svg_asset_status_label_11_153.txt
 
 Changed file:
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 
 Old label behavior:
 - SVG Asset Studio card/status could resolve to `Asset: none` when shared asset status was not primed from direct workspace payload at card/status evaluation time.
@@ -18,7 +18,7 @@ New label behavior:
   `Asset: sample-0901-ship.svg` (for Sample 1902 payload)
 
 Validation result:
-- node --check "tools/Workspace Manager/main.js" -> PASS
+- node --check "toolbox/Workspace Manager/main.js" -> PASS
 - Direct payload source path checks in file -> PASS
   - explicitToolPayloadById.get("svg-asset-studio")
   - vectorAssetDocument?.sourceName
@@ -26,7 +26,7 @@ Validation result:
 - Sample 1902 manifest check -> PASS
   - sourceName = sample-0901-ship.svg
   - expected label basis = Asset: sample-0901-ship.svg
-- git diff --name-only -- "tools/Workspace Manager/main.js" "docs_build/dev/reports/workspace_svg_asset_status_label_11_153.txt" -> PASS
+- git diff --name-only -- "toolbox/Workspace Manager/main.js" "docs_build/dev/reports/workspace_svg_asset_status_label_11_153.txt" -> PASS
 
 Strict scope confirmation:
 - Only Workspace Manager main file and this report were changed.

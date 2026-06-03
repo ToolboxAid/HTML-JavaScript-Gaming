@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Updated `tools/audio-sfx-playground-v2` only.
+- Updated `toolbox/audio-sfx-playground-v2` only.
 - Rebalanced Audio / SFX Playground V2 so the left column now holds Name, Sound Style, selected style description, examples, helper text, and validation status.
 - Moved Wave controls and all oscillator sliders into the center Sound Design work area.
 - Moved Add Noise Layer and noise sliders into the right side of the center Sound Design work area.
@@ -14,9 +14,9 @@
 
 PASS:
 
-- `Get-ChildItem -Recurse -File tools/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }`
+- `Get-ChildItem -Recurse -File toolbox/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }`
 - HTML/CSS/JS static guard:
-  - no `<style>` blocks in `tools/audio-sfx-playground-v2/index.html`
+  - no `<style>` blocks in `toolbox/audio-sfx-playground-v2/index.html`
   - no inline `<script>` blocks
   - no inline event handlers
   - center `#soundDesignContent` exists
@@ -24,14 +24,14 @@ PASS:
   - moved Wave/Noise controls no longer appear inside left `#sfxShapeContent`
   - right-column accordion content IDs remain present
   - side-by-side control grid CSS is present
-- `git diff --check -- tools/audio-sfx-playground-v2`
+- `git diff --check -- toolbox/audio-sfx-playground-v2`
   - PASS with Git LF/CRLF warnings only for `index.html` and `audioSfxLayoutDensity.css`.
 
 ## Focused Playwright Validation
 
 PASS using a local repo HTTP server and Chromium:
 
-- Audio / SFX Playground V2 launched at `/tools/audio-sfx-playground-v2/index.html`.
+- Audio / SFX Playground V2 launched at `/toolbox/audio-sfx-playground-v2/index.html`.
 - No console errors and no page errors.
 - Left-column setup alignment passed:
   - Name and Sound Style labels aligned.
@@ -57,8 +57,8 @@ PASS using a local repo HTTP server and Chromium:
 
 V8 coverage entries captured:
 
-- `tools/audio-sfx-playground-v2/js/bootstrap.js`
-- `tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
+- `toolbox/audio-sfx-playground-v2/js/bootstrap.js`
+- `toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
 
 ## Workspace V2 Validation
 

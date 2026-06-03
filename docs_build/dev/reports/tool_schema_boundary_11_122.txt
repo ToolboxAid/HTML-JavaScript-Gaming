@@ -8,12 +8,12 @@ Purpose
 
 Files searched / reviewed
 - docs_build/pr/BUILD_PR_LEVEL_11_122_TOOL_SCHEMA_BOUNDARY_AND_PAYLOAD_ROUTING.md
-- tools/schemas/tools/*.schema.json
-- tools/schemas/tools/palette-browser.schema.json
-- tools/schemas/workspace.manifest.schema.json
-- tools/shared/platformShell.js
-- tools/Workspace Manager/main.js
-- tools/Palette Browser/main.js
+- toolbox/schemas/tools/*.schema.json
+- toolbox/schemas/tools/palette-browser.schema.json
+- toolbox/schemas/workspace.manifest.schema.json
+- toolbox/shared/platformShell.js
+- toolbox/Workspace Manager/main.js
+- toolbox/Palette Browser/main.js
 - samples/phase-19/1902/sample.1902.workspace-all-tools.json
 - samples/metadata/samples.index.metadata.json
 
@@ -37,7 +37,7 @@ Tool schemas reviewed
 - vector-map-editor.schema.json
 
 Schemas changed
-- tools/schemas/tools/palette-browser.schema.json
+- toolbox/schemas/tools/palette-browser.schema.json
 
 Schema decision
 - Removed Palette Browser wrapper acceptance from the child tool schema.
@@ -57,10 +57,10 @@ Files changed
 - samples/phase-19/1902/sample.1902.workspace-all-tools.json
 - scripts/validate-json-contracts.mjs
 - tests/tools/ToolSchemaStrictModeValidation.test.mjs
-- tools/Palette Browser/main.js
-- tools/Workspace Manager/main.js
-- tools/schemas/tools/palette-browser.schema.json
-- tools/shared/platformShell.js
+- toolbox/Palette Browser/main.js
+- toolbox/Workspace Manager/main.js
+- toolbox/schemas/tools/palette-browser.schema.json
+- toolbox/shared/platformShell.js
 
 Blockers
 - None.

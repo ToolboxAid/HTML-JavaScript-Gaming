@@ -17,10 +17,10 @@
 - `docs_build/pr/BUILD_PR_26124_020-workspace-tools-reengineering-design-docs.md`
 
 ## Source Inputs Used For Accuracy
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
-- `tools/toolRegistry.js`
-- `tools/schemas/workspace.manifest.schema.json`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/schemas/workspace.manifest.schema.json`
 - `tests/fixtures/v2-tools/*.json`
 - `tests/playwright/workspace-v2.validation.spec.js`
 - `tests/playwright/tool-validation/workspace-v2.tool-validation.spec.js`

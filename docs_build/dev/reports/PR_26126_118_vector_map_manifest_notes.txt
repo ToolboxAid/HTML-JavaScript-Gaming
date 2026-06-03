@@ -2,7 +2,7 @@ PR_26126_118 Vector Map Manifest Notes
 
 Scope:
 - The Asteroids vector map reference now lives in games/Asteroids/game.manifest.json under tools.vector-map-editor.
-- The payload uses the existing tools/schemas/tools/vector-map-editor.schema.json structure with a vectorMapDocument root.
+- The payload uses the existing toolbox/schemas/tools/vector-map-editor.schema.json structure with a vectorMapDocument root.
 - Workspace Manager V2 loads the vector map entry as part of the game manifest context.
 
 Manifest entry:

@@ -20,21 +20,21 @@
 - Full samples smoke test was skipped per request and because this scoped UI polish does not broadly affect sample loading/runtime.
 
 ## Validation
-- `node --check tools/input-mapping-v2/js/bootstrap.js`: PASS
-- `node --check tools/input-mapping-v2/js/ToolStarterApp.js`: PASS
-- `node --check tools/input-mapping-v2/js/controls/GestureListControl.js`: PASS
-- `node --check tools/input-mapping-v2/js/controls/CaptureControl.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/bootstrap.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/controls/GestureListControl.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/controls/CaptureControl.js`: PASS
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`: PASS
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "Input Mapping V2"`: PASS, 2 tests after CSS correction
 - `npm run test:workspace-v2`: PASS, 61 tests
 - `git diff --check`: PASS, line-ending warnings only
-- `rg --pcre2 -n "<script(?![^>]*src=)|<style| on[a-zA-Z]+=" tools/input-mapping-v2/index.html tools/input-mapping-v2/how_to_use.html`: PASS, no matches
+- `rg --pcre2 -n "<script(?![^>]*src=)|<style| on[a-zA-Z]+=" toolbox/input-mapping-v2/index.html toolbox/input-mapping-v2/how_to_use.html`: PASS, no matches
 - Sample/JSON diff scan: PASS, no changed sample or JSON files
 - Full samples smoke test: not run, per request
 - Delta ZIP verification: PASS, 7 files, nonzero size
 
 ## Manual Validation
-1. Open `tools/input-mapping-v2/index.html` at a wide desktop viewport.
+1. Open `toolbox/input-mapping-v2/index.html` at a wide desktop viewport.
 2. Confirm the `Gestures` accordion shows Keyboard, Mouse, and Game Controller cards side by side where space allows.
 3. Confirm gesture buttons wrap within cards in side-by-side rows, then narrow the viewport and confirm they wrap down cleanly.
 4. Confirm the `Capture` accordion shows capture controls in a horizontal wrapping flow where space allows.

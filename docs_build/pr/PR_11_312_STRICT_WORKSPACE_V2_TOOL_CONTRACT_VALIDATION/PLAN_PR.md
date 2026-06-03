@@ -4,11 +4,11 @@
 Enforce strict Workspace V2 tool contract validation so tools only consume validated `payloadJson` and reject invalid session JSON visibly.
 
 ## Scope
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `tests/fixtures/v2-tools/palette-manager-v2.json`
 
 ## Steps

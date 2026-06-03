@@ -4,7 +4,7 @@
 Implement a computed single-source session UI state model for Workspace V2 to reduce churn and stale decision paths.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionStateModelConsolidation.test.mjs
 - docs_build/dev/reports/PR_11_264_session_state_model_consolidation_report.md
 
@@ -23,6 +23,6 @@ Implement a computed single-source session UI state model for Workspace V2 to re
 - No regressions in PR_11_263 stabilized messages and enablement semantics.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionStateModelConsolidation.test.mjs
 - node tests/runtime/V2SessionStateModelConsolidation.test.mjs

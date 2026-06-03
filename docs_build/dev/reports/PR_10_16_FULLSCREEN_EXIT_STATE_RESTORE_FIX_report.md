@@ -4,7 +4,7 @@
 - PASS/FAIL: PASS
 
 ## Files Changed
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/PR_10_16_FULLSCREEN_EXIT_STATE_RESTORE_FIX_report.md
 - tmp/PR_10_16_FULLSCREEN_EXIT_STATE_RESTORE_FIX_validation.json
 
@@ -27,7 +27,7 @@
 - Explicit exit trigger path (`[data-tools-platform-exit-fullscreen]`) now calls `exitFullscreenAndRestoreShell(...)`, which also routes to shared cleanup.
 
 ## Validation
-- `node --check tools/shared/platformShell.js` -> PASS
+- `node --check toolbox/shared/platformShell.js` -> PASS
 - Static code-path validation script -> PASS
   - Evidence: `tmp/PR_10_16_FULLSCREEN_EXIT_STATE_RESTORE_FIX_validation.json`
 

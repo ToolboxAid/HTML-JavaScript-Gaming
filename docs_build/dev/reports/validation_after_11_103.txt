@@ -8,16 +8,16 @@ Scope
 - Targeted validation only
 
 Files Changed
-- tools/schemas/workspace.manifest.schema.json
-- tools/shared/platformShell.js
-- tools/Workspace Manager/main.js
+- toolbox/schemas/workspace.manifest.schema.json
+- toolbox/shared/platformShell.js
+- toolbox/Workspace Manager/main.js
 - scripts/validate-json-contracts.mjs
 - tests/tools/ToolSchemaStrictModeValidation.test.mjs
 - tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
 - samples/phase-19/1902/sample.1902.workspace-all-tools.json
 
 Schema Contract Changes
-1) tools/schemas/workspace.manifest.schema.json
+1) toolbox/schemas/workspace.manifest.schema.json
 - tools.required updated: ["palette"] -> ["palette-browser"]
 - tools.properties key renamed: "palette" -> "palette-browser"
 
@@ -26,7 +26,7 @@ Schema Contract Changes
 - Workspace manifest tool key normalization now uses canonical key names directly.
 
 3) Invalid references removed
-- Removed stale test schema entry referencing tools/palette-browser/tool.schema.json
+- Removed stale test schema entry referencing toolbox/palette-browser/tool.schema.json
 - Runtime/source search now shows palette-browser only in docs/history text (no active runtime/test dependency)
 
 Validation Evidence
@@ -38,11 +38,11 @@ Command: node tests/tools/ToolSchemaStrictModeValidation.test.mjs
 Result:
 - PASS (exit 0)
 
-Command: node --check "tools/Workspace Manager/main.js"
+Command: node --check "toolbox/Workspace Manager/main.js"
 Result:
 - PASS (exit 0)
 
-Command: node --check tools/shared/platformShell.js
+Command: node --check toolbox/shared/platformShell.js
 Result:
 - PASS (exit 0)
 
@@ -60,7 +60,7 @@ Scanned workspace-manifest documents:
   - not a tools-key regression for this migration
 
 Repo Key/Reference Checks
-Command: rg -n 'tools\["palette"\]|tools\.palette\b|toolId\s*===\s*"palette"|id\s*===\s*"palette"' src tools samples tests scripts --glob '*.js' --glob '*.mjs' --glob '*.json'
+Command: rg -n 'toolbox\["palette"\]|tools\.palette\b|toolId\s*===\s*"palette"|id\s*===\s*"palette"' src tools samples tests scripts --glob '*.js' --glob '*.mjs' --glob '*.json'
 Result:
 - No active tools.palette-browser key usage remains.
 - Remaining hits are expected message/path text containing tools.palette-browser.

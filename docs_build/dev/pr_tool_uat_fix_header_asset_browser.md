@@ -13,7 +13,7 @@ This PR is tools-only. Do not advance King of the Iceberg work.
 
 ## Scope
 
-Target only shared tools/workspace UI and Asset Browser behavior.
+Target only shared toolbox/workspace UI and Asset Browser behavior.
 
 Likely areas:
 - Shared tool shell/header rendering
@@ -168,8 +168,8 @@ Use targeted validation only.
 Recommended checks:
 
 ```powershell
-node --check tools/shared/platformShell.js
-node --check tools/toolRegistry.js
+node --check toolbox/shared/platformShell.js
+node --check toolbox/toolRegistry.js
 ```
 
 Also run targeted browser/tool validation for:

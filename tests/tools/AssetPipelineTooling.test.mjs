@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { runAssetPipelineTooling } from "../../tools/shared/pipeline/assetPipelineTooling.js";
+import { runAssetPipelineTooling } from "../../toolbox/shared/pipeline/assetPipelineTooling.js";
 
 export async function run() {
   const ready = runAssetPipelineTooling({

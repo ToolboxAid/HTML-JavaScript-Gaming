@@ -13,16 +13,16 @@ Status: PASS for targeted MIDI Studio V2 runtime. WARN for required Workspace V2
 - Export ownership, Save WAV/MP3/OGG wording, instrument SSoT, audition keyboard, Play/Stop, selectedInstrumentId sync, and launch NAV behavior were preserved.
 
 ## Validation Commands
-- PASS: `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: `node --check tools/midi-studio-v2/js/controls/SongDetailsControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
-- PASS: `node --check tools/midi-studio-v2/js/controls/ExportPanelControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/SongDetailsControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
 - PASS: `node --check src/engine/audio/SongSheetParser.js`
-- PASS: `rg --pcre2 -n '<style\b|<script\b(?![^>]*\bsrc=)|\son[a-z]+\s=|style\s=' tools/midi-studio-v2/index.html` returned no inline script, style, event-handler, or inline-style matches.
+- PASS: `rg --pcre2 -n '<style\b|<script\b(?![^>]*\bsrc=)|\son[a-z]+\s=|style\s=' toolbox/midi-studio-v2/index.html` returned no inline script, style, event-handler, or inline-style matches.
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR072-080" --reporter=list` ran 1 test and passed.
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR070|PR071|PR072-075|PR076-079|PR072-080" --reporter=list` ran 5 tests and passed.
 - FAIL unrelated: `npm run test:workspace-v2` ran 72 Workspace Manager V2 tests: 49 passed, 23 failed.

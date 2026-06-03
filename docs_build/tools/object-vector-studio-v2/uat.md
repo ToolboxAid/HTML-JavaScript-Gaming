@@ -4,7 +4,7 @@ Validate that Object Vector Studio V2 is the active vector asset authoring surfa
 
 ## Scope
 - Tool: `object-vector-studio-v2`
-- Entry point: `tools/object-vector-studio-v2/index.html`
+- Entry point: `toolbox/object-vector-studio-v2/index.html`
 - Purpose: build vector assets for ships, enemies, pickups, actors, UI elements, and reusable game objects.
 
 ## Expected

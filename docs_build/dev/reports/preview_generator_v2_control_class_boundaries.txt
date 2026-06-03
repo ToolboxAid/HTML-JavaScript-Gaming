@@ -14,30 +14,30 @@ Boundary changes:
 - PreviewGeneratorV2Ui now constructs the section controls with documentRef and exposes the same coordinator-facing control surface.
 
 Required control classes:
-- tools/preview-generator-v2/controls/TargetSourceControl.js - TargetSourceControl
-- tools/preview-generator-v2/controls/PathsOrIdsControl.js - PathsOrIdsControl
-- tools/preview-generator-v2/controls/LastGeneratedImageControl.js - LastGeneratedImageControl
-- tools/preview-generator-v2/controls/RepoDestinationControl.js - RepoDestinationControl
-- tools/preview-generator-v2/controls/AssetFolderControl.js - AssetFolderControl
-- tools/preview-generator-v2/controls/CaptureModeControl.js - CaptureModeControl
-- tools/preview-generator-v2/controls/RenderControlsControl.js - RenderControlsControl
-- tools/preview-generator-v2/controls/OutputSummaryControl.js - OutputSummaryControl
-- tools/preview-generator-v2/controls/StatusLogControl.js - StatusLogControl
-- tools/preview-generator-v2/controls/GeneratePreviewControl.js - GeneratePreviewControl
+- toolbox/preview-generator-v2/controls/TargetSourceControl.js - TargetSourceControl
+- toolbox/preview-generator-v2/controls/PathsOrIdsControl.js - PathsOrIdsControl
+- toolbox/preview-generator-v2/controls/LastGeneratedImageControl.js - LastGeneratedImageControl
+- toolbox/preview-generator-v2/controls/RepoDestinationControl.js - RepoDestinationControl
+- toolbox/preview-generator-v2/controls/AssetFolderControl.js - AssetFolderControl
+- toolbox/preview-generator-v2/controls/CaptureModeControl.js - CaptureModeControl
+- toolbox/preview-generator-v2/controls/RenderControlsControl.js - RenderControlsControl
+- toolbox/preview-generator-v2/controls/OutputSummaryControl.js - OutputSummaryControl
+- toolbox/preview-generator-v2/controls/StatusLogControl.js - StatusLogControl
+- toolbox/preview-generator-v2/controls/GeneratePreviewControl.js - GeneratePreviewControl
 
 Files removed because the class boundary names were corrected:
-- tools/preview-generator-v2/controls/MenuSampleControl.js
-- tools/preview-generator-v2/controls/StatusControl.js
+- toolbox/preview-generator-v2/controls/MenuSampleControl.js
+- toolbox/preview-generator-v2/controls/StatusControl.js
 
 One class per file:
 - PASS. Every Preview Generator V2 JavaScript file has zero or one class.
 - previewGeneratorV2.bootstrap.js remains the only bootstrap/no-class file.
 
 Inline HTML:
-- PASS. tools/preview-generator-v2/index.html has no inline style or inline script blocks.
+- PASS. toolbox/preview-generator-v2/index.html has no inline style or inline script blocks.
 
-tools/shared:
-- PASS. No tools/shared references were found.
+toolbox/shared:
+- PASS. No toolbox/shared references were found.
 
 Scope guard:
 - PASS. No samples modified.
@@ -45,11 +45,11 @@ Scope guard:
 - PASS. No start_of_day folders modified.
 
 Validation run:
-- node --check for all tools/preview-generator-v2 JavaScript files.
+- node --check for all toolbox/preview-generator-v2 JavaScript files.
 - node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
 - Control class boundary check for required class/file names.
-- Inline style/script check for tools/preview-generator-v2/index.html.
-- tools/shared dependency search.
+- Inline style/script check for toolbox/preview-generator-v2/index.html.
+- toolbox/shared dependency search.
 - npm run test:workspace-v2.
 
 Validation result:

@@ -48,7 +48,7 @@ The remaining `/docs/` surface is limited to public docs and user-facing documen
 - `docs/dev/reports/` references now point to `docs_build/dev/reports/`.
 - `docs/pr/` references now point to `docs_build/pr/`.
 - Moved build-doc bucket references were updated for `docs_build/archive/`, `docs_build/operations/`, `docs_build/reports/`, `docs_build/account/`, and `docs_build/security/`.
-- `tools/old_localization-studio/index.html` now uses `<base href="/">` and root-relative Theme V2 asset references.
+- `toolbox/old_localization-studio/index.html` now uses `<base href="/">` and root-relative Theme V2 asset references.
 
 ## Validation
 

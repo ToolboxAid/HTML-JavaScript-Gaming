@@ -3,7 +3,7 @@
 Task: PR_26140_087-rebuild-input-mapping-v2-from-template
 
 ## Summary
-- Removed the prior hand-built Input Mapping V2 app structure and rebuilt the tool shell from the current `tools/templates-v2/` template.
+- Removed the prior hand-built Input Mapping V2 app structure and rebuilt the tool shell from the current `toolbox/templates-v2/` template.
 - Kept the template header, menus, accordion, panel, and status conventions with external JS/CSS only.
 - Added the Input Mapping V2 feature layer on top of the copied template instead of hand-rolling the shell.
 - Preserved Workspace Manager V2 launch behavior and workspace header return behavior.

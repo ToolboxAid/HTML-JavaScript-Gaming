@@ -1,8 +1,8 @@
 # PR_11_233 — Merge Apply Execution Guard + Audit Trail
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2MergeApplyGuardAudit.test.mjs`
 
 ## Guard + Audit Changes
@@ -24,12 +24,12 @@
   - `conflictCount`
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2MergeApplyGuardAudit.test.mjs`
 - `node tests/runtime/V2MergeApplyGuardAudit.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2MergeApplyGuardAudit.test.mjs` → PASS
 - `node tests/runtime/V2MergeApplyGuardAudit.test.mjs` → PASS
 
@@ -54,4 +54,4 @@ Runtime artifact:
 - No game changes
 - No Workspace Manager v1 changes
 - No legacy tool fixes
-- No `platformShell` or `tools/shared/*` coupling
+- No `platformShell` or `toolbox/shared/*` coupling

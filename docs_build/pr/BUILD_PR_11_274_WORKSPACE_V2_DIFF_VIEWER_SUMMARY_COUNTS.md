@@ -4,8 +4,8 @@
 Implement presentation-only Diff Viewer summary counts in Workspace V2.
 
 ## Files
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2DiffViewerSummaryCounts.test.mjs
 - docs_build/dev/reports/PR_11_274_workspace_v2_diff_viewer_summary_counts_report.md
 
@@ -26,7 +26,7 @@ Implement presentation-only Diff Viewer summary counts in Workspace V2.
 - No diff algorithm behavior changes.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2DiffViewerSummaryCounts.test.mjs
 - node --check tests/runtime/V2DiffViewerMessaging.test.mjs
 - node tests/runtime/V2DiffViewerSummaryCounts.test.mjs

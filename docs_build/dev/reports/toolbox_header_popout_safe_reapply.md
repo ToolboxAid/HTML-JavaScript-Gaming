@@ -3,9 +3,9 @@
 ## Scope
 
 - Reapplied the shared Toolbox header submenu as hover/focus popout navigation.
-- Kept internal `tools/` paths unchanged.
+- Kept internal `toolbox/` paths unchanged.
 - Updated root shared-header tool pages to load the current Theme V2 shared layer after the existing tool page stylesheet.
-- Did not modify `tools/tools-page-accordions.js`.
+- Did not modify `toolbox/tools-page-accordions.js`.
 - Did not touch samples.
 - Did not run automated tests per request.
 

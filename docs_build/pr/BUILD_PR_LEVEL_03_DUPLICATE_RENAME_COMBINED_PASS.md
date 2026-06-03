@@ -37,7 +37,7 @@ Complete the duplicate/rename normalization lane for `getState`-family naming wi
   - `src/`
   - `games/`
   - `samples/`
-  - `tools/`
+  - `toolbox/`
 - Scan summary:
   - total variant entries: `133`
   - domain counts:

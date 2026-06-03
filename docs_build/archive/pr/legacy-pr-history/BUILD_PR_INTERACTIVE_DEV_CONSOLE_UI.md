@@ -23,8 +23,8 @@ Codex must produce implementation code and package:
 
 ## Target Files
 Expected implementation focus:
-- tools/dev/interactiveDevConsoleRenderer.js
-- tools/dev/devConsoleIntegration.js
+- toolbox/dev/interactiveDevConsoleRenderer.js
+- toolbox/dev/devConsoleIntegration.js
 - one sample entry file only
 - optional test file if needed
 
@@ -32,7 +32,7 @@ Expected implementation focus:
 
 ### 1. New interactive console renderer
 Create:
-tools/dev/interactiveDevConsoleRenderer.js
+toolbox/dev/interactiveDevConsoleRenderer.js
 
 Responsibilities:
 - render a console surface on canvas
@@ -45,7 +45,7 @@ Responsibilities:
 
 ### 2. Update dev console integration
 Update:
-tools/dev/devConsoleIntegration.js
+toolbox/dev/devConsoleIntegration.js
 
 Requirements:
 - preserve existing combo keys:

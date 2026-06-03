@@ -101,7 +101,7 @@ If Workspace Manager cannot find/pass the correct tool JSON:
 
 ### 5. Palette Browser specific fix
 
-Update `tools/schemas/tools/palette-browser.schema.json` so it validates only palette payload JSON.
+Update `toolbox/schemas/tools/palette-browser.schema.json` so it validates only palette payload JSON.
 
 Remove acceptance of:
 - `{ tool, version, payload }`

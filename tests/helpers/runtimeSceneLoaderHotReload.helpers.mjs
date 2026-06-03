@@ -3,12 +3,12 @@ import {
   createHotReloadCoordinator,
   createWatcherBridge,
   summarizeRuntimeSceneHotReload
-} from "../../tools/shared/runtimeSceneLoaderHotReload.js";
+} from "../../toolbox/shared/runtimeSceneLoaderHotReload.js";
 import {
   ASSET_DOCUMENT_TYPE,
   COMPOSITION_DOCUMENT_TYPE,
   RENDER_CONTRACT_VERSION
-} from "../../tools/shared/renderPipelineContract.js";
+} from "../../toolbox/shared/renderPipelineContract.js";
 
 function createAssetDocument(tool, docId, kind, path, zIndex = 0, itemOrder = [0]) {
   return {

@@ -4,8 +4,8 @@
 Workspace V2 Diff Viewer only.
 
 ## Files Changed
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2DiffViewerSummaryCounts.test.mjs
 - docs_build/pr/PLAN_PR_11_274_WORKSPACE_V2_DIFF_VIEWER_SUMMARY_COUNTS.md
 - docs_build/pr/BUILD_PR_11_274_WORKSPACE_V2_DIFF_VIEWER_SUMMARY_COUNTS.md
@@ -20,7 +20,7 @@ Workspace V2 Diff Viewer only.
 - Cleared summary text on diff output invalidation/reset paths to prevent stale summaries after selection changes.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2DiffViewerSummaryCounts.test.mjs`
    - PASS

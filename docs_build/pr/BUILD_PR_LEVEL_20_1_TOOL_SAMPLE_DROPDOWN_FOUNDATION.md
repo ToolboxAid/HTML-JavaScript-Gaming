@@ -5,21 +5,21 @@ Implement a single-purpose, testable sample-pack + dropdown-loading foundation f
 
 ## Scope Delivered
 - Added/confirmed tool-local sample manifests and shipped sample content for:
-  - `tools/Tilemap Studio`
-  - `tools/Parallax Scene Studio`
-  - `tools/Vector Map Editor`
-  - `tools/Vector Asset Studio`
-- Added Sample dropdown + Load Sample action to `tools/Vector Map Editor`.
+  - `toolbox/Tilemap Studio`
+  - `toolbox/Parallax Scene Studio`
+  - `toolbox/Vector Map Editor`
+  - `toolbox/Vector Asset Studio`
+- Added Sample dropdown + Load Sample action to `toolbox/Vector Map Editor`.
 - Preserved manual editing flows in each tool (no removals of manual controls).
 - Kept fullscreen behavior unchanged.
 - Updated roadmap status marker in `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`.
 
 ## Notes On Active Tool Path Mapping
 BUILD names map to current repo folders as follows:
-- `tools/Tile Map Editor` -> `tools/Tilemap Studio`
-- `tools/Parallax Editor` -> `tools/Parallax Scene Studio`
-- `tools/Vector Map Editor` -> `tools/Vector Map Editor`
-- `tools/Vector Asset Studio` -> `tools/Vector Asset Studio`
+- `toolbox/Tile Map Editor` -> `toolbox/Tilemap Studio`
+- `toolbox/Parallax Editor` -> `toolbox/Parallax Scene Studio`
+- `toolbox/Vector Map Editor` -> `toolbox/Vector Map Editor`
+- `toolbox/Vector Asset Studio` -> `toolbox/Vector Asset Studio`
 
 ## Implementation Details
 ### Vector Map Editor
@@ -63,12 +63,12 @@ BUILD names map to current repo folders as follows:
 6. Confirm fullscreen behavior is unchanged.
 
 ## Files Changed
-- `tools/Vector Map Editor/index.html`
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
-- `tools/Vector Map Editor/samples/sample-manifest.json`
-- `tools/Vector Map Editor/samples/overworld_route_map.editor.json`
-- `tools/Vector Map Editor/samples/dungeon_layout_map.editor.json`
-- `tools/Vector Map Editor/samples/arena_zone_map.editor.json`
+- `toolbox/Vector Map Editor/index.html`
+- `toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
+- `toolbox/Vector Map Editor/samples/sample-manifest.json`
+- `toolbox/Vector Map Editor/samples/overworld_route_map.editor.json`
+- `toolbox/Vector Map Editor/samples/dungeon_layout_map.editor.json`
+- `toolbox/Vector Map Editor/samples/arena_zone_map.editor.json`
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs_build/pr/BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION.md`
 - `docs_build/dev/reports/change_summary.txt`

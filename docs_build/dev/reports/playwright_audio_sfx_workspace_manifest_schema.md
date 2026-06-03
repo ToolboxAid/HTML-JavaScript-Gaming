@@ -6,10 +6,10 @@ Date: 2026-05-25
 
 - `node --check` passed for changed Audio / SFX and Workspace V2 JavaScript files.
 - JSON parse validation passed for:
-  - `tools/schemas/game.manifest.schema.json`
-  - `tools/schemas/tools/audio-sfx-playground-v2.schema.json`
-- HTML external asset guard passed for `tools/audio-sfx-playground-v2/index.html`.
-- Workspace schema fragment validation passed for `tools/schemas/tools/audio-sfx-playground-v2.schema.json#/$defs/audioSfxPayload`.
+  - `toolbox/schemas/game.manifest.schema.json`
+  - `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`
+- HTML external asset guard passed for `toolbox/audio-sfx-playground-v2/index.html`.
+- Workspace schema fragment validation passed for `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json#/$defs/audioSfxPayload`.
 - Generated Workspace context validation passed with an Audio / SFX payload.
 - Game manifest schema validation passed with `root.tools.audio-sfx-playground-v2`.
 

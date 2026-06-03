@@ -4,28 +4,28 @@
 Apply a minimal tools theme reuse baseline as a docs-to-code follow-up to `PLAN_PR_TOOLS_SHARED_NORMALIZATION`, limited to shell/theme/layout normalization and stylesheet token alignment for active tools.
 
 ## Scope Guardrails
-- Prioritize reuse of existing engine UI/theme assets (`src/engine/ui/hubCommon.css`, `tools/shared/platformShell.css`) before any expansion of tool-local CSS.
+- Prioritize reuse of existing engine UI/theme assets (`src/engine/ui/hubCommon.css`, `toolbox/shared/platformShell.css`) before any expansion of tool-local CSS.
 - Touch active tools only:
-  - `tools/Asset Browser/`
-  - `tools/Palette Browser/`
-  - `tools/Parallax Scene Studio/`
-  - `tools/Sprite Editor/`
-  - `tools/Tilemap Studio/`
-  - `tools/Vector Asset Studio/`
-  - `tools/Vector Map Editor/`
+  - `toolbox/Asset Browser/`
+  - `toolbox/Palette Browser/`
+  - `toolbox/Parallax Scene Studio/`
+  - `toolbox/Sprite Editor/`
+  - `toolbox/Tilemap Studio/`
+  - `toolbox/Vector Asset Studio/`
+  - `toolbox/Vector Map Editor/`
 - Keep `docs_build/archive/tools/SpriteEditor_old_keep/` unchanged.
 - Do not refactor tool-specific behavior.
 - Do not rewrite roadmap wording.
 - Do not touch `docs_build/dev/start_of_day/*`.
 
 ## Exact Target Files
-- `tools/Asset Browser/assetBrowser.css`
-- `tools/Palette Browser/paletteBrowser.css`
-- `tools/Parallax Scene Studio/parallaxEditor.css`
-- `tools/Sprite Editor/spriteEditor.css`
-- `tools/Tilemap Studio/tileMapEditor.css`
-- `tools/Vector Asset Studio/svgBackgroundEditor.css`
-- `tools/Vector Map Editor/vectorMapEditor.css`
+- `toolbox/Asset Browser/assetBrowser.css`
+- `toolbox/Palette Browser/paletteBrowser.css`
+- `toolbox/Parallax Scene Studio/parallaxEditor.css`
+- `toolbox/Sprite Editor/spriteEditor.css`
+- `toolbox/Tilemap Studio/tileMapEditor.css`
+- `toolbox/Vector Asset Studio/svgBackgroundEditor.css`
+- `toolbox/Vector Map Editor/vectorMapEditor.css`
 
 ## Execution Rules
 - Normalize shared shell/theme selectors to use existing shared tokens:

@@ -14,7 +14,7 @@
 - PASS: Preview Generator V2 writes to `games/Pong/assets/images/preview.svg` through the hydrated workspace target path.
 - PASS: Preview Generator V2 does not open a download/save flow for the valid hydrated workspace preview target.
 - PASS: Direct write target is logged to Status.
-- PASS: No deprecated `tools/workspace-v2` changes.
+- PASS: No deprecated `toolbox/workspace-v2` changes.
 - PASS: No sample JSON changes.
 - PASS: No game asset files were modified by validation.
 - SKIPPED: Full samples smoke test, per Preview Generator write-path scope.

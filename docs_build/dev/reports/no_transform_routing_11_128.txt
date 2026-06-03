@@ -9,7 +9,7 @@ Task
 - Ensure payload is passed directly.
 
 Routing file changed
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 
 Targeted payload passing path
 - resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId)

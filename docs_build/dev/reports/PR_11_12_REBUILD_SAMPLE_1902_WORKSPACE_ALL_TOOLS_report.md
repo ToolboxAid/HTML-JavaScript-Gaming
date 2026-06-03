@@ -20,7 +20,7 @@
 To support this no-sidecar architecture, Sprite Editor load diagnostics/path resolution was minimally updated so it can read canonical palette data from the same sample preset file when `palettePath` is not separately provided.
 
 Changed file:
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
 
 Behavior:
 - Accept `samplePresetPath` as a valid palette dependency path when `palettePath` is missing.
@@ -29,7 +29,7 @@ Behavior:
 
 ## Validation
 1. Syntax check
-- `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
+- `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - PASS
 
 2. Full launch smoke (games + samples + tools)
@@ -71,7 +71,7 @@ Behavior:
 ## Changed Files
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
 - `samples/metadata/samples.index.metadata.json`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - `docs_build/dev/reports/PR_11_12_REBUILD_SAMPLE_1902_WORKSPACE_ALL_TOOLS_report.md`
 
 ## Deleted Files

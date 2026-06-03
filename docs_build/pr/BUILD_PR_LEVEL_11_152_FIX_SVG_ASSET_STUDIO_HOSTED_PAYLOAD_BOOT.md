@@ -12,7 +12,7 @@ Fix SVG Asset Studio so Workspace Manager launches read the direct hosted `paylo
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/svg-asset-studio/main.js
+- toolbox/svg-asset-studio/main.js
 - docs_build/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt
 
 ### ALLOWED CHANGES
@@ -69,7 +69,7 @@ Only fix hosted Workspace Manager direct payload boot.
 Targeted validation only.
 
 Required:
-- `tools/svg-asset-studio/main.js` syntax passes.
+- `toolbox/svg-asset-studio/main.js` syntax passes.
 - Hosted payload with `vectorAssetDocument.svgText` loads into the editor.
 - Hosted payload with `sourceName = sample-0901-ship.svg` is recognized.
 - No old fallback/demo SVG is used for valid hosted payload.

@@ -51,7 +51,7 @@ Likely issue types:
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
+toolbox/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
 ```
 
 On load:
@@ -114,7 +114,7 @@ Codex must NOT:
 - reintroduce dropdown + Select Tool + Mount flow
 - create a new header/banner
 - broadly refactor Workspace Manager
-- modify unrelated tools/games/samples
+- modify unrelated toolbox/games/samples
 - modify `start_of_day`
 
 ## Anti-Pattern Guards

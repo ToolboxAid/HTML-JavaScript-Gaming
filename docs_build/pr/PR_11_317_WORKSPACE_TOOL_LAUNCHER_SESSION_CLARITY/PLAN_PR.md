@@ -4,8 +4,8 @@
 Clarify Workspace V2 Asset Manager launch behavior so users can distinguish session-based launch from no-session state.
 
 ## Scope
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/dev/reports/PR_11_317_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

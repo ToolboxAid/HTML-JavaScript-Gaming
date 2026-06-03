@@ -20,7 +20,7 @@
   - `preview-generator-tool`
 
 ## Schema And Runtime Cleanup
-- `tools/schemas/game.manifest.schema.json` now rejects unknown manifest tool keys instead of accepting arbitrary objects.
+- `toolbox/schemas/game.manifest.schema.json` now rejects unknown manifest tool keys instead of accepting arbitrary objects.
 - `palette-manager-v2` is now a first-class game manifest schema property.
 - Workspace Manager V2 now preloads/registers `palette-manager-v2.schema.json` when browser-validating game manifests.
 - `src/engine/runtime/gameImageConvention.js` resolves chrome/preview image assets from Asset Manager V2 only.

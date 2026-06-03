@@ -11,7 +11,7 @@
 
 ### Workspace Manifest Schema
 File:
-- `tools/schemas/workspace.manifest.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
 
 Verified:
 - Top-level `palettes` is removed.

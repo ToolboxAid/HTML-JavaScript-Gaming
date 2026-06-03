@@ -7,7 +7,7 @@
 - Left lowercasing/slug `normalizeGameId` variants and other differing semantics in place.
 
 ## Duplicate Scan
-- Re-ran `tools/shared/powerShell/find_dupes_called.ps1` into `tmp/dupes_called.txt`.
+- Re-ran `toolbox/shared/powerShell/find_dupes_called.ps1` into `tmp/dupes_called.txt`.
 - Verified `node_modules` paths are not present in the regenerated duplicate report.
 - Selected duplicate block counts from `tmp/dupes_called.txt`:
   - `function sanitizeText(value)`: 41 -> 38

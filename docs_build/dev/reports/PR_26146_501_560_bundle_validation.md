@@ -17,8 +17,8 @@ MIDI Studio V2 production signoff path is PASS. Remaining validation WARN is out
 
 | Check | Result | Notes |
 | --- | --- | --- |
-| `node --check tools/midi-studio-v2/js/controls/ExportPanelControl.js` | PASS | Changed runtime JS syntax valid. |
-| `node --check tools/midi-studio-v2/js/controls/MidiSourceDetailsControl.js` | PASS | Changed runtime JS syntax valid. |
+| `node --check toolbox/midi-studio-v2/js/controls/ExportPanelControl.js` | PASS | Changed runtime JS syntax valid. |
+| `node --check toolbox/midi-studio-v2/js/controls/MidiSourceDetailsControl.js` | PASS | Changed runtime JS syntax valid. |
 | `node --check tests/playwright/tools/MidiStudioV2.spec.mjs` | PASS | Changed Playwright syntax valid. |
 | `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "PR501-560" --project=playwright` | PASS | 2 passed. |
 | `npm run test:workspace-v2` | WARN | 49 passed, 23 failed in Workspace Manager V2 tests unrelated to MIDI Studio V2. |

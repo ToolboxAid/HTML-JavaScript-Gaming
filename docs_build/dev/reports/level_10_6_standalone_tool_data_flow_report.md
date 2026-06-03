@@ -66,7 +66,7 @@ All targeted flows now pass with explicit payload-to-UI/state evidence.
 
 - Total roundtrip rows checked: `62`
 - Generic failure signals detected: `25`
-- These are non-targeted tools/slices and were not expanded in this PR to preserve one-PR purpose and minimal scope.
+- These are non-targeted toolbox/slices and were not expanded in this PR to preserve one-PR purpose and minimal scope.
 
 Generic failures detected:
 

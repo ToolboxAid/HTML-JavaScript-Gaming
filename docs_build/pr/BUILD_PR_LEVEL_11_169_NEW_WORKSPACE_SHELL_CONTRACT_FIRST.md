@@ -31,7 +31,7 @@ The correct fix is not another SVG-specific patch and not another `platformShell
 ## Correct Direction
 Workspace-hosted tools need their own contract-first shell layer:
 
-`tools/shared/workspaceShell.js`
+`toolbox/shared/workspaceShell.js`
 
 This shell must:
 1. Load hosted session context.
@@ -52,7 +52,7 @@ This is not a sample rewrite.
 ## Required New File
 Create:
 
-`tools/shared/workspaceShell.js`
+`toolbox/shared/workspaceShell.js`
 
 ## Required Behavior
 
@@ -160,10 +160,10 @@ Do not delete `UNKNOWN`.
 
 ## Validation
 Run:
-- `node --check tools/shared/workspaceShell.js`
-- `node --check tools/shared/platformShell.js`
-- `node --check "tools/Workspace Manager/main.js"`
-- `node --check "tools/SVG Asset Studio/main.js"`
+- `node --check toolbox/shared/workspaceShell.js`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check "toolbox/Workspace Manager/main.js"`
+- `node --check "toolbox/SVG Asset Studio/main.js"`
 
 Manual:
 - open sample 1902

@@ -173,8 +173,8 @@ function validateSample1902ToolPayloads(sampleDocument, schemaIndex) {
   }
   Object.keys(tools).forEach((toolId) => {
     const toolSchemaPath = toolId === "palette-browser"
-      ? "tools/schemas/tools/palette-browser.schema.json"
-      : `tools/schemas/tools/${toolId}.schema.json`;
+      ? "toolbox/schemas/tools/palette-browser.schema.json"
+      : `toolbox/schemas/tools/${toolId}.schema.json`;
     const toolSchema = schemaIndex.get(toolSchemaPath);
     if (!toolSchema) {
       return;
@@ -186,7 +186,7 @@ function validateSample1902ToolPayloads(sampleDocument, schemaIndex) {
 
 function buildSchemaIndex() {
   const repoRootPath = fileURLToPath(new URL("../../", import.meta.url));
-  const schemaRootPath = fileURLToPath(new URL("../../tools/schemas", import.meta.url));
+  const schemaRootPath = fileURLToPath(new URL("../../toolbox/schemas", import.meta.url));
   const schemaFiles = [];
 
   function walk(directory) {
@@ -212,7 +212,7 @@ function buildSchemaIndex() {
 
 export async function run() {
   const schemaIndex = buildSchemaIndex();
-  assert.equal(schemaIndex.size > 0, true, "Expected tools/schemas JSON files to exist.");
+  assert.equal(schemaIndex.size > 0, true, "Expected toolbox/schemas JSON files to exist.");
 
   const strictIssues = [];
   for (const [relativePath, schema] of schemaIndex.entries()) {

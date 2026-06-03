@@ -1,12 +1,12 @@
 # Lane Deduplication Report
 
-Generated: 2026-06-03T17:55:20.029Z
+Generated: 2026-06-03T21:46:03.811Z
 Status: PASS
 
 ## Summary
 
-Raw lane requests: samples
-Unique scheduled lanes: samples
+Raw lane requests: workspace-contract
+Unique scheduled lanes: workspace-contract
 Prevented duplicate lane executions: 0
 Prevented browser launches: 0
 Prevented Workspace lane reruns: 0

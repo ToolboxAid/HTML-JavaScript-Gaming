@@ -1,7 +1,7 @@
 # BUILD_PR_11_325
 
 ## Implementation
-- Updated `tools/workspace-v2/index.js` only.
+- Updated `toolbox/workspace-v2/index.js` only.
 - Restored palette manager availability in Workspace V2 producer path:
   - removed palette option removal behavior
   - removed palette-specific launch/load/apply blocking guards
@@ -16,6 +16,6 @@
 - Kept scope limited to `workspace-v2` interaction only (no schema/other tool changes).
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs`
 - `npm run test:workspace-v2`

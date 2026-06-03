@@ -20,10 +20,10 @@
 - Evidence: `node ./scripts/validate-active-tools-surface.mjs` => `ACTIVE_TOOLS_SURFACE_VALID`.
 
 ## Supporting Code/Test Updates in This PR
-- `tools/Tool Host/main.js`
+- `toolbox/Tool Host/main.js`
   - added control-state synchronization (`syncControlState`) for consistent enabled/disabled behavior.
   - added accessible standalone-link disabled state handling (`aria-disabled`, tab/pointer safeguards).
-- `tools/Tool Host/index.html`
+- `toolbox/Tool Host/index.html`
   - added `aria-live="polite"` to status/meta live regions.
 - `tests/tools/ToolHostDispatchContract.test.mjs`
   - expanded assertions to lock UX control-state and accessibility contract behavior.

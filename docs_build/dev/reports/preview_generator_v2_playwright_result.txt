@@ -4,9 +4,9 @@ Coverage:
 - tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 
 What the test validates:
-- Preview Generator V2 launches from /tools/preview-generator-v2/index.html through the repo HTTP server.
+- Preview Generator V2 launches from /toolbox/preview-generator-v2/index.html through the repo HTTP server.
 - The Preview Generator V2 app shell is visible.
-- tools/common/toolShellCommon.css is loaded.
+- toolbox/common/toolShellCommon.css is loaded.
 - The Preview Generator V2 heading is visible.
 - menuSample nav exists.
 - Generate Preview and Stop buttons are visible and initially disabled.

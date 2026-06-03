@@ -3,46 +3,46 @@
 Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-02
-Source folder: `tools/Asset Browser`
+Source folder: `toolbox/Asset Browser`
 Publish target: `tools.asset-browser`
 
 ## Tool Purpose
 Asset Browser owns approved asset manifest browsing, asset import/load validation, manifest editing, export, and publish to `tools.asset-browser`.
 
 ## Folder/Files Inspected
-- `tools/Asset Browser/assetBrowser.css`
-- `tools/Asset Browser/how_to_use.html`
-- `tools/Asset Browser/index.html`
-- `tools/Asset Browser/main.js`
-- `tools/Asset Browser/README.md`
+- `toolbox/Asset Browser/assetBrowser.css`
+- `toolbox/Asset Browser/how_to_use.html`
+- `toolbox/Asset Browser/index.html`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Asset Browser/README.md`
 
 ## Controls: Control -> Action -> JSON Effect
 | Control | Action | JSON effect |
 |---|---|---|
-| `tools/Asset Browser/index.html`: `input[search]#assetSearchInput` - Filter by name or path | Filters the visible asset entry list. | No tools.asset-browser JSON change; affects the current view filter only. |
-| `tools/Asset Browser/index.html`: `input[file]#importFileInput` - importFileInput | Chooses a local file for asset manifest payload import/load. | Replaces or merges tool-owned asset manifest payload only after the import validates. |
-| `tools/Asset Browser/index.html`: `input[text]#importNameInput` - lowercase-name.ext | Edits the active asset entry field. | Updates the draft asset manifest payload field represented by `importNameInput` before validation. |
-| `tools/Asset Browser/index.html`: `select#assetCategoryFilter` - assetCategoryFilter | Filters the visible asset entry list. | No tools.asset-browser JSON change; affects the current view filter only. |
-| `tools/Asset Browser/index.html`: `button[button]#useAssetInToolButton` - Use In Active Tool | Publishes or applies the validated asset manifest payload. | Writes the validated output shape to tools.asset-browser. |
-| `tools/Asset Browser/index.html`: `select#importCategorySelect` - importCategorySelect | Edits the active asset entry field. | Updates the draft asset manifest payload field represented by `importCategorySelect` before validation. |
-| `tools/Asset Browser/index.html`: `select#importDestinationSelect` - importDestinationSelect | Edits the active asset entry field. | Updates the draft asset manifest payload field represented by `importDestinationSelect` before validation. |
-| `tools/Asset Browser/index.html`: `button[button]#validateImportButton` - Validate Plan | Validates the current asset manifest payload. | Updates validation status; blocks tools.asset-browser output when errors are present. |
-| `tools/Asset Browser/index.html`: `button[button]#downloadImportPlanButton` - Download Plan JSON | Exports the validated asset manifest payload. | Serializes the validated asset manifest payload as the tools.asset-browser output shape. |
+| `toolbox/Asset Browser/index.html`: `input[search]#assetSearchInput` - Filter by name or path | Filters the visible asset entry list. | No tools.asset-browser JSON change; affects the current view filter only. |
+| `toolbox/Asset Browser/index.html`: `input[file]#importFileInput` - importFileInput | Chooses a local file for asset manifest payload import/load. | Replaces or merges tool-owned asset manifest payload only after the import validates. |
+| `toolbox/Asset Browser/index.html`: `input[text]#importNameInput` - lowercase-name.ext | Edits the active asset entry field. | Updates the draft asset manifest payload field represented by `importNameInput` before validation. |
+| `toolbox/Asset Browser/index.html`: `select#assetCategoryFilter` - assetCategoryFilter | Filters the visible asset entry list. | No tools.asset-browser JSON change; affects the current view filter only. |
+| `toolbox/Asset Browser/index.html`: `button[button]#useAssetInToolButton` - Use In Active Tool | Publishes or applies the validated asset manifest payload. | Writes the validated output shape to tools.asset-browser. |
+| `toolbox/Asset Browser/index.html`: `select#importCategorySelect` - importCategorySelect | Edits the active asset entry field. | Updates the draft asset manifest payload field represented by `importCategorySelect` before validation. |
+| `toolbox/Asset Browser/index.html`: `select#importDestinationSelect` - importDestinationSelect | Edits the active asset entry field. | Updates the draft asset manifest payload field represented by `importDestinationSelect` before validation. |
+| `toolbox/Asset Browser/index.html`: `button[button]#validateImportButton` - Validate Plan | Validates the current asset manifest payload. | Updates validation status; blocks tools.asset-browser output when errors are present. |
+| `toolbox/Asset Browser/index.html`: `button[button]#downloadImportPlanButton` - Download Plan JSON | Exports the validated asset manifest payload. | Serializes the validated asset manifest payload as the tools.asset-browser output shape. |
 
 ## Panels And Surfaces Found
-- `tools/Asset Browser/how_to_use.html`: `.tools-platform-surface`
-- `tools/Asset Browser/index.html`: `.app-shell`
-- `tools/Asset Browser/index.html`: `.asset-browser__layout`
-- `tools/Asset Browser/index.html`: `.asset-browser__list`
-- `tools/Asset Browser/index.html`: `.asset-browser__panel`
-- `tools/Asset Browser/index.html`: `.asset-browser__preview`
-- `tools/Asset Browser/index.html`: `.asset-browser__text-preview`
-- `tools/Asset Browser/index.html`: `.panel`
-- `tools/Asset Browser/index.html`: `.tools-platform-layout-grid`
-- `tools/Asset Browser/index.html`: `.tools-platform-resize-panel`
+- `toolbox/Asset Browser/how_to_use.html`: `.tools-platform-surface`
+- `toolbox/Asset Browser/index.html`: `.app-shell`
+- `toolbox/Asset Browser/index.html`: `.asset-browser__layout`
+- `toolbox/Asset Browser/index.html`: `.asset-browser__list`
+- `toolbox/Asset Browser/index.html`: `.asset-browser__panel`
+- `toolbox/Asset Browser/index.html`: `.asset-browser__preview`
+- `toolbox/Asset Browser/index.html`: `.asset-browser__text-preview`
+- `toolbox/Asset Browser/index.html`: `.panel`
+- `toolbox/Asset Browser/index.html`: `.tools-platform-layout-grid`
+- `toolbox/Asset Browser/index.html`: `.tools-platform-resize-panel`
 
 ## Current Component/Class/Function Inventory
-- `tools/Asset Browser/main.js`: applyAssetBrowserPreset; applyLaunchContext; applyProjectState; bindEvents; bootAssetBrowser; buildApprovedAssetEmptyStateText; buildApprovedAssetStatusText; buildImportPlan; buildPresetLoadedStatus; captureProjectState; classifyApprovedAssetState; collectCatalogPathCandidates; downloadImportPlan; emitAssetBrowserControlReadiness; ensureFirstVisibleAssetSelection; extractAssetBrowserCatalogFromPreset; extractAssetBrowserPreset; extractCompanionAssetPayload; findCompanionPresetPath; getActiveAssetEmptyStateMessage; getApi; getAssetTypeFromCategory; getCategoryOrder; getPathExtension; getSelectedAsset; getVisibleAssets; humanizeAssetId; hydrateApprovedAssetCatalog; hydrateCatalogLabels; inferAssetKindFromPath; inferCategoryFromFileName; init; inspectManifestAssetBrowserSource; loadCatalogEntriesFromContext; loadCompanionSampleEntries; loadSampleMetadataManifest; loadSamplePresetCatalogEntries; mapCompanionPresetToEntries; mapKindToCategory; normalizeCatalogEntries; normalizeExplicitCatalogPath; normalizeImportName; normalizeLocalPath; normalizeManifestAssetEntries; normalizeManifestToolAssetEntries; normalizePresetAssetEntries; normalizeSampleId; normalizeSamplePresetPath; normalizeToolId; populateCategoryControls; populateDestinationOptions; pushEntry; readActiveProjectManifest; readCatalogEntriesFromPath; registerToolBootContract; renderAssetList; renderImportPlan; renderPreview; resolveInitialSelectedAssetId; sanitizeText; setAssetBrowserLifecycle; syncAssetBrowserUxContract; syncImportFormFromFile; toTitleCase; tryLoadPresetFromQuery; useSelectedAssetInActiveTool
+- `toolbox/Asset Browser/main.js`: applyAssetBrowserPreset; applyLaunchContext; applyProjectState; bindEvents; bootAssetBrowser; buildApprovedAssetEmptyStateText; buildApprovedAssetStatusText; buildImportPlan; buildPresetLoadedStatus; captureProjectState; classifyApprovedAssetState; collectCatalogPathCandidates; downloadImportPlan; emitAssetBrowserControlReadiness; ensureFirstVisibleAssetSelection; extractAssetBrowserCatalogFromPreset; extractAssetBrowserPreset; extractCompanionAssetPayload; findCompanionPresetPath; getActiveAssetEmptyStateMessage; getApi; getAssetTypeFromCategory; getCategoryOrder; getPathExtension; getSelectedAsset; getVisibleAssets; humanizeAssetId; hydrateApprovedAssetCatalog; hydrateCatalogLabels; inferAssetKindFromPath; inferCategoryFromFileName; init; inspectManifestAssetBrowserSource; loadCatalogEntriesFromContext; loadCompanionSampleEntries; loadSampleMetadataManifest; loadSamplePresetCatalogEntries; mapCompanionPresetToEntries; mapKindToCategory; normalizeCatalogEntries; normalizeExplicitCatalogPath; normalizeImportName; normalizeLocalPath; normalizeManifestAssetEntries; normalizeManifestToolAssetEntries; normalizePresetAssetEntries; normalizeSampleId; normalizeSamplePresetPath; normalizeToolId; populateCategoryControls; populateDestinationOptions; pushEntry; readActiveProjectManifest; readCatalogEntriesFromPath; registerToolBootContract; renderAssetList; renderImportPlan; renderPreview; resolveInitialSelectedAssetId; sanitizeText; setAssetBrowserLifecycle; syncAssetBrowserUxContract; syncImportFormFromFile; toTitleCase; tryLoadPresetFromQuery; useSelectedAssetInActiveTool
 
 ## Target Controls
 Keep:
@@ -60,7 +60,7 @@ Add:
 - clear invalid asset id/path/kind/source feedback
 
 ## JSON Schema/Input Contract Currently Expected
-Tool receives validated payload and owns behavior for asset manifest payload. Current contract baseline: `tools/schemas/tools/asset-browser.schema.json` (asset-browser Payload).
+Tool receives validated payload and owns behavior for asset manifest payload. Current contract baseline: `toolbox/schemas/tools/asset-browser.schema.json` (asset-browser Payload).
 Required keys: `assets`.
 Optional keys: `assetBrowserPreset`, `approvedAssets`, `importHubPreset`.
 
@@ -110,12 +110,12 @@ tools.asset-browser = {
 ```
 
 ## Playwright Expectations
-- load `tools/Asset Browser/index.html` without console errors
+- load `toolbox/Asset Browser/index.html` without console errors
 - import a valid asset manifest and confirm the list/detail surfaces update
 - reject a manifest with an invalid asset id or missing path
 
 ## Manual Test Expectations
-- Open `tools/Asset Browser/index.html` and inspect the asset list/detail flow.
+- Open `toolbox/Asset Browser/index.html` and inspect the asset list/detail flow.
 - Import or paste a valid asset manifest and export it unchanged except for tool-owned normalization.
 - Try an invalid asset key and an entry without `path`; each must block publish.
 

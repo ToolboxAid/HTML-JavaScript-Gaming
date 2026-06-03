@@ -17,7 +17,7 @@ function assertIncludesAll(relativePath, patterns) {
 }
 
 export async function run() {
-  assertIncludesAll("tools/shared/platformShell.css", [
+  assertIncludesAll("toolbox/shared/platformShell.css", [
     /\.tools-platform-layout-grid/,
     /\.tools-platform-control-cluster--primary/,
     /\.tools-platform-control-cluster--workflow/,
@@ -27,13 +27,13 @@ export async function run() {
     /\.tools-platform-dock-panel/
   ]);
 
-  assertIncludesAll("tools/palette-manager-v2/index.html", [
+  assertIncludesAll("toolbox/palette-manager-v2/index.html", [
     /palette-manager-v2__layout tools-platform-layout-grid/,
     /tools-platform-resize-panel" data-panel-side="left"/,
     /tools-platform-resize-panel" data-panel-side="right"/
   ]);
 
-  assertIncludesAll("tools/Parallax Scene Studio/index.html", [
+  assertIncludesAll("toolbox/Parallax Scene Studio/index.html", [
     /tools-platform-control-cluster--primary/,
     /tools-platform-control-cluster--workflow/,
     /tools-platform-control-cluster--preview/,
@@ -41,7 +41,7 @@ export async function run() {
     /preview-panel tools-platform-dock-panel/
   ]);
 
-  assertIncludesAll("tools/Sprite Editor/index.html", [
+  assertIncludesAll("toolbox/Sprite Editor/index.html", [
     /tools-platform-control-cluster--primary/,
     /tools-platform-control-cluster--workflow/,
     /tools-platform-control-cluster--preview/,
@@ -50,7 +50,7 @@ export async function run() {
     /right-panel tools-platform-resize-panel/
   ]);
 
-  assertIncludesAll("tools/Tilemap Studio/index.html", [
+  assertIncludesAll("toolbox/Tilemap Studio/index.html", [
     /tools-platform-control-cluster--primary/,
     /tools-platform-control-cluster--workflow/,
     /tools-platform-control-cluster--preview/,
@@ -59,7 +59,7 @@ export async function run() {
     /right-sidebar tools-platform-resize-panel/
   ]);
 
-  assertIncludesAll("tools/Tool Host/index.html", [
+  assertIncludesAll("toolbox/Tool Host/index.html", [
     /meta tools-platform-control-row/,
     /tools-platform-dock-panel/
   ]);

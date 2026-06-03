@@ -4,7 +4,7 @@
 
 - Preview Generator V2 workspace-launch hydration from Workspace Manager V2.
 - Workspace Manager V2 Playwright coverage for the Preview Generator V2 launch path.
-- Deprecated `tools/workspace-v2` was not modified.
+- Deprecated `toolbox/workspace-v2` was not modified.
 - Sample JSON was not modified.
 - No fallback behavior was added.
 

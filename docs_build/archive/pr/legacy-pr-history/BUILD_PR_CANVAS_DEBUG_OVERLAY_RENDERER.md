@@ -22,8 +22,8 @@ Codex must produce implementation code and the implementation delta ZIP at:
 
 ## File Targets
 Expected implementation focus:
-- tools/dev/canvasDebugHudRenderer.js
-- tools/dev/devConsoleIntegration.js
+- toolbox/dev/canvasDebugHudRenderer.js
+- toolbox/dev/devConsoleIntegration.js
 - one sample entry file only
 - optional test file if needed for renderer validation
 
@@ -31,7 +31,7 @@ Expected implementation focus:
 
 ### 1. New HUD renderer
 Create:
-tools/dev/canvasDebugHudRenderer.js
+toolbox/dev/canvasDebugHudRenderer.js
 
 Responsibilities:
 - accept a 2D canvas context and overlay data
@@ -44,7 +44,7 @@ Responsibilities:
 
 ### 2. Wire into existing integration
 Update:
-tools/dev/devConsoleIntegration.js
+toolbox/dev/devConsoleIntegration.js
 
 Requirements:
 - import canvasDebugHudRenderer.js

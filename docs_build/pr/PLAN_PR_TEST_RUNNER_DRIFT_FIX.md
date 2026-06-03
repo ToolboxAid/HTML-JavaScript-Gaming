@@ -14,7 +14,7 @@ Current repo state shows three categories of test drift:
    - A naive `document.body.innerHTML` fix is invalid in this environment because `document` is undefined.
 3. **Vector template path drift**
    - `tests/tools/VectorNativeTemplate.test.mjs` expects `templates/vector-native-arcade/`
-   - Actual runtime output reports `tools/templates/vector-native-arcade/`
+   - Actual runtime output reports `toolbox/templates/vector-native-arcade/`
 
 ## Constraints
 - **Do not** replace entire files with stubs.
@@ -49,7 +49,7 @@ Codex must inspect the current source before editing:
 ### C. Update vector template expectation
 - Adjust the expected template path in `tests/tools/VectorNativeTemplate.test.mjs` to match the real repo path:
   - from `templates/vector-native-arcade/`
-  - to `tools/templates/vector-native-arcade/`
+  - to `toolbox/templates/vector-native-arcade/`
 
 ## Validation Targets
 1. `npm test --ignore-scripts`

@@ -4,7 +4,7 @@
 PASS
 
 ## Files Changed
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 - docs_build/dev/reports/PR_11_21_workspace_tool_presence_evidence.json
 - docs_build/dev/reports/PR_11_21_WORKSPACE_MANAGER_TOOL_PRESENT_DETECTION_FIX_report.md
 
@@ -27,8 +27,8 @@ PASS
   - tool-schema validity
   - payload `tool` id match
 - Workspace schema contract is loaded from:
-  - `tools/schemas/workspace.manifest.schema.json`
-  - referenced tool schemas under `tools/schemas/tools/*.schema.json`
+  - `toolbox/schemas/workspace.manifest.schema.json`
+  - referenced tool schemas under `toolbox/schemas/tools/*.schema.json`
 - If schema contract cannot be loaded, entries are rejected as not schema-validated.
 - Required workspace tool keys from schema (including `palette`) are enforced in diagnostics.
 - Visible Workspace Manager tools are now derived from accepted `manifest.tools` presence and no longer intersected with game `toolsUsed` when workspace manifest keys are available.
@@ -106,7 +106,7 @@ Visible Workspace Manager tools (from accepted manifest presence):
 - Visible Workspace Manager tools = 17.
 
 ## Validation Commands and Results
-- `node --check "tools/Workspace Manager/main.js"` -> PASS
+- `node --check "toolbox/Workspace Manager/main.js"` -> PASS
 - `node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools` -> PASS (`PASS=19 FAIL=0`)
 - `node` inline invocation of `tests/tools/ToolSchemaStrictModeValidation.test.mjs` `run()` -> PASS
 - Evidence generation command (`manifest.tools` key normalization/classification export) -> PASS

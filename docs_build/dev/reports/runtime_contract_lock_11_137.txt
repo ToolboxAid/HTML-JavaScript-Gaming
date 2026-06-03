@@ -7,12 +7,12 @@ Scope
 - Routing files only
 
 Files Modified
-- tools/shared/toolHostRuntime.js
+- toolbox/shared/toolHostRuntime.js
 - docs_build/dev/reports/runtime_contract_lock_11_137.txt
 
 Task Execution
 1) Added runtime validator
-- Added `validateInput(payloadJson, paletteJson)` in `tools/shared/toolHostRuntime.js`.
+- Added `validateInput(payloadJson, paletteJson)` in `toolbox/shared/toolHostRuntime.js`.
 - Injected call immediately before tool lookup/launch path execution inside:
   - `launch(toolId, payloadJson, paletteJson = null)`
 
@@ -41,7 +41,7 @@ Task Execution
 - PASS valid_input (passed)
 
 5) Syntax validation
-- `node --check tools/shared/toolHostRuntime.js` => PASS
+- `node --check toolbox/shared/toolHostRuntime.js` => PASS
 
 Result
 - PASS

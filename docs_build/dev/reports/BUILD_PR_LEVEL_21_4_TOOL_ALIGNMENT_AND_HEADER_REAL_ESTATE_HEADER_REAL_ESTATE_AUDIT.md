@@ -8,7 +8,7 @@
 
 ## Prioritization Rationale
 - Highest-value lane from 21.3: shared cross-tool shell alignment and compacting header chrome.
-- Single shared shell (`tools/shared/platformShell.js` + `tools/shared/platformShell.css`) applies to all primary tools and yields the largest bounded reduction in vertical waste without per-tool feature rewrites.
+- Single shared shell (`toolbox/shared/platformShell.js` + `toolbox/shared/platformShell.css`) applies to all primary tools and yields the largest bounded reduction in vertical waste without per-tool feature rewrites.
 
 ## In-Scope Tool Surfaces
 - Asset Browser

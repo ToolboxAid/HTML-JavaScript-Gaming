@@ -7,39 +7,39 @@ Summary
 - Did not add fallback/default/demo data.
 
 Removed inference/compatibility helpers
-- tools/3D Asset Viewer/main.js
+- toolbox/3D Asset Viewer/main.js
   - removed extractAssetPayloadFromPreset
-- tools/3D Camera Path Editor/main.js
+- toolbox/3D Camera Path Editor/main.js
   - removed extractCameraPathFromPreset
-- tools/3D JSON Payload/main.js
+- toolbox/3D JSON Payload/main.js
   - removed extractMapPayloadFromPreset
-- tools/Asset Pipeline/main.js
+- toolbox/Asset Pipeline/main.js
   - removed extractPipelinePayloadFromPreset
-- tools/Palette Browser/main.js
+- toolbox/Palette Browser/main.js
   - removed extractPaletteFromSamplePreset
-- tools/Performance Profiler/main.js
+- toolbox/Performance Profiler/main.js
   - removed extractProfileSettingsFromPreset
-- tools/Physics Sandbox/main.js
+- toolbox/Physics Sandbox/main.js
   - removed extractPhysicsBodyFromPreset
-- tools/Replay Visualizer/main.js
+- toolbox/Replay Visualizer/main.js
   - removed extractReplayEventsFromSamplePreset
-- tools/State Inspector/main.js
+- toolbox/State Inspector/main.js
   - removed extractSnapshotFromSamplePreset
-- tools/Tile Model Converter/main.js
+- toolbox/Tile Model Converter/main.js
   - removed extractConverterPayloadFromPreset
-- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+- toolbox/Vector Map Editor/editor/VectorMapEditorApp.js
   - removed extractVectorMapDocumentFromSamplePreset
 
 Shared compatibility cleanup
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
   - readWorkspaceScopedToolDocument no longer falls back to root tool state for documentKey lookups.
   - readPaletteFromManifestPayload now accepts only canonical tools["palette-browser"].payload (legacy palette-browser.palette and root source.palette compatibility removed).
-- tools/shared/schemaOnlyToolPresetValidation.js
+- toolbox/shared/schemaOnlyToolPresetValidation.js
   - renamed inferFailedField -> readFailedField (no behavior widening).
 
 Validation
 1) Removed helper names are not referenced
-- Command scanned tools/tests/src/samples/games for:
+- Command scanned toolbox/tests/src/samples/games for:
   extractAssetPayloadFromPreset
   extractCameraPathFromPreset
   extractMapPayloadFromPreset

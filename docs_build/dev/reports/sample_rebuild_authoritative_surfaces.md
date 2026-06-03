@@ -14,9 +14,9 @@ Date: 2026-06-02
 
 | Surface | Authority | Use For Rebuilt Samples |
 | --- | --- | --- |
-| `tools/schemas/game.manifest.schema.json` | Active manifest schema | Game/sample manifest ownership, launch path, tool map, and asset/tool references where game manifest direction is used. |
-| `tools/schemas/tools/*.schema.json` | Active tool payload schemas | Tool-specific payload validation. |
-| `tools/schemas/samples/sample.tool-payload.schema.json` | Existing sample wrapper schema | Legacy wrapper validation only, unless future rebuild keeps wrapper format intentionally. |
+| `toolbox/schemas/game.manifest.schema.json` | Active manifest schema | Game/sample manifest ownership, launch path, tool map, and asset/tool references where game manifest direction is used. |
+| `toolbox/schemas/tools/*.schema.json` | Active tool payload schemas | Tool-specific payload validation. |
+| `toolbox/schemas/samples/sample.tool-payload.schema.json` | Existing sample wrapper schema | Legacy wrapper validation only, unless future rebuild keeps wrapper format intentionally. |
 | `src/shared/contracts/projectWorkspaceRuntimeContract.js` | ProjectWorkspace runtime-only contract | ProjectWorkspace handoff and runtime coordination boundaries. |
 | `src/shared/contracts/toolStateContract.js` | Tool State contract | Saved tool payload ownership, version, status, visibility, and portability. |
 | `src/shared/contracts/gameManifestContract.js` | Contract-level manifest planning surface | Portable manifest ownership rules for future DB/export alignment. |
@@ -25,10 +25,10 @@ Date: 2026-06-02
 
 | Surface | Status | Decision |
 | --- | --- | --- |
-| `tools/schemas/workspace.schema.json` | Missing | Do not assume it exists. |
-| `tools/schemas/workspace.manifest.schema.json` | Missing | Do not use as authoritative for rebuilt samples in this lane. |
+| `toolbox/schemas/workspace.schema.json` | Missing | Do not assume it exists. |
+| `toolbox/schemas/workspace.manifest.schema.json` | Missing | Do not use as authoritative for rebuilt samples in this lane. |
 | Historical references under `docs_build/dev/reports/` | Historical | Do not treat as active schema ownership. |
-| Historical snapshots under `tools/schemas/docs/` | Historical | Do not treat as active schema ownership. |
+| Historical snapshots under `toolbox/schemas/docs/` | Historical | Do not treat as active schema ownership. |
 | Sample launch behavior | Future | Not an authoritative validation surface until rebuilt sample execution PRs scope it. |
 
 ## Active Game Manifest Tool Keys
@@ -45,7 +45,7 @@ Current `game.manifest.schema.json` governs these tool keys under `tools`:
 
 Other rebuilt sample tools may need either:
 
-- direct Tool State payload validation against `tools/schemas/tools/<toolId>.schema.json`, or
+- direct Tool State payload validation against `toolbox/schemas/tools/<toolId>.schema.json`, or
 - an explicit future schema update before they become manifest-owned sample launch targets.
 
 ## Validation
@@ -53,8 +53,8 @@ Other rebuilt sample tools may need either:
 Static validation surface review only:
 
 ```powershell
-rg --files tools/schemas
-Get-ChildItem tools/schemas -Recurse -Filter '*workspace*'
+rg --files toolbox/schemas
+Get-ChildItem toolbox/schemas -Recurse -Filter '*workspace*'
 node -e "<static active schema surface inventory>"
 ```
 

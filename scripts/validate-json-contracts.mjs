@@ -493,7 +493,7 @@ function schemaPathForToolId(toolId) {
   if (!normalized) {
     return "";
   }
-  return `tools/schemas/tools/${normalized}.schema.json`;
+  return `toolbox/schemas/tools/${normalized}.schema.json`;
 }
 
 function validateToolPayloadShallow(toolId, payload, schema, pointer) {
@@ -647,7 +647,7 @@ function validateLocalAssetFiles(filePath, entries, role, errors) {
 
 function validateGames(schemaIndex, validate) {
   const files = walkFiles(path.join(ROOT, "games"), (filePath) => path.basename(filePath).toLowerCase() === "game.manifest.json");
-  const gameManifestSchemaPath = "tools/schemas/game.manifest.schema.json";
+  const gameManifestSchemaPath = "toolbox/schemas/game.manifest.schema.json";
   const gameManifestSchema = schemaIndex.get(gameManifestSchemaPath);
   const rows = [];
   files.forEach((filePath) => {
@@ -659,7 +659,7 @@ function validateGames(schemaIndex, validate) {
       errors.push("manifest must be an object");
     } else {
       if (!gameManifestSchema) {
-        errors.push("tools/schemas/game.manifest.schema.json not found");
+        errors.push("toolbox/schemas/game.manifest.schema.json not found");
       } else {
         const schemaErrors = validate(manifest, gameManifestSchema, gameManifestSchemaPath, "$");
         errors.push(...schemaErrors.map((error) => `schema ${error}`));
@@ -700,7 +700,7 @@ function validateGames(schemaIndex, validate) {
 function validateToolSchemas(schemaIndex, validate) {
   const rows = [];
   for (const [schemaPath, schema] of schemaIndex.entries()) {
-    if (!schemaPath.startsWith("tools/schemas/tools/") || !schemaPath.endsWith(".schema.json")) {
+    if (!schemaPath.startsWith("toolbox/schemas/tools/") || !schemaPath.endsWith(".schema.json")) {
       continue;
     }
     const errors = [];

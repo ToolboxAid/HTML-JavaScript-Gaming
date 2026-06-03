@@ -14,7 +14,7 @@ Completed the Palette Manager V2 final baseline hardening pass by removing concr
   - `.palette-manager-v2__swatch-name`
   - `.palette-manager-v2__swatch-meta`
 - Removed stale Import accordion `.palette-manager-v2__controls` override after JSON buttons moved to `menuSample`.
-- Preserved the shared platform header `details/summary` wrapper because it is consumed by `tools/shared/platformShell.js` and is not a Palette Manager accordion.
+- Preserved the shared platform header `details/summary` wrapper because it is consumed by `toolbox/shared/platformShell.js` and is not a Palette Manager accordion.
 
 ## Audit Findings
 - No Palette Manager app-level old `details`/`summary` accordion markup remains.
@@ -27,8 +27,8 @@ Completed the Palette Manager V2 final baseline hardening pass by removing concr
 - Pin size was not changed.
 
 ## Validation
-- `node --check tools/palette-manager-v2/modules/SwatchRow.js`: PASS.
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/SwatchRow.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
 - Targeted served-browser Palette Manager V2 final hardening validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warning for changed Palette Manager CSS.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

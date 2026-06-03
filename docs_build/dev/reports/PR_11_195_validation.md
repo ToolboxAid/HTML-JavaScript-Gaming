@@ -8,8 +8,8 @@ Continue the V2 re-engineer lane by tightening remaining V2 behavior modules tha
 - SVG Asset Studio V2
 
 ## Files Changed
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
 - `docs_build/dev/reports/PR_11_195_validation.md`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
@@ -26,40 +26,40 @@ Existing PR source doc was present in the worktree and included in the ZIP:
 Changed JS files:
 
 ```powershell
-node --check tools/palette-manager-v2/index.js
-node --check tools/svg-asset-studio-v2/index.js
+node --check toolbox/palette-manager-v2/index.js
+node --check toolbox/svg-asset-studio-v2/index.js
 ```
 
 Results:
-- `node --check tools/palette-manager-v2/index.js` passed.
-- `node --check tools/svg-asset-studio-v2/index.js` passed.
+- `node --check toolbox/palette-manager-v2/index.js` passed.
+- `node --check toolbox/svg-asset-studio-v2/index.js` passed.
 
 Additional unchanged V2 lane sanity checks were also run:
 
 ```powershell
-node --check tools/vector-map-editor-v2/index.js
-node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-manager-v2/index.js
+node --check toolbox/vector-map-editor-v2/index.js
+node --check toolbox/tilemap-studio-v2/index.js
+node --check toolbox/asset-manager-v2/index.js
 ```
 
 Results:
-- `node --check tools/vector-map-editor-v2/index.js` passed.
-- `node --check tools/tilemap-studio-v2/index.js` passed.
-- `node --check tools/asset-manager-v2/index.js` passed.
+- `node --check toolbox/vector-map-editor-v2/index.js` passed.
+- `node --check toolbox/tilemap-studio-v2/index.js` passed.
+- `node --check toolbox/asset-manager-v2/index.js` passed.
 
 ## Banned JS Pattern Check
 Command covered changed JS files:
 
 ```powershell
-rg -n "document\.body\.innerHTML|document\.head\.insertAdjacentHTML|platformShell|assetUsageIntegration|tools/shared/|\.\.\/shared|fallback|default data|demo data|Inline SVG|Color \$\{|Color [0-9]" -- tools/palette-manager-v2/index.js tools/svg-asset-studio-v2/index.js
+rg -n "document\.body\.innerHTML|document\.head\.insertAdjacentHTML|platformShell|assetUsageIntegration|tools/shared/|\.\.\/shared|fallback|default data|demo data|Inline SVG|Color \$\{|Color [0-9]" -- toolbox/palette-manager-v2/index.js toolbox/svg-asset-studio-v2/index.js
 ```
 
 Result: passed. No matches.
 
 ## HTML Header/Script Check
 Checked paired changed-tool HTML shells:
-- `tools/palette-manager-v2/index.html`
-- `tools/svg-asset-studio-v2/index.html`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/svg-asset-studio-v2/index.html`
 
 Required markers verified:
 - `id="shared-theme-header"`
@@ -80,7 +80,7 @@ Scoped status check found no changes under:
 - games
 - `start_of_day/**`
 - Workspace Manager v1
-- `tools/shared/**`
+- `toolbox/shared/**`
 - `platformShell`
 - `assetUsageIntegration`
 
@@ -88,8 +88,8 @@ No schema, sample, or game files were changed.
 
 ## Manual Browser Validation Notes
 Manual browser validation was not launched from this terminal session. Checklist for the changed V2 tools:
-- Open `tools/palette-manager-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, and valid session palette renders using session-backed names/colors only.
-- Open `tools/svg-asset-studio-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, and valid session SVG requires `payloadJson.vectorAssetDocument.sourceName` plus `svgText`.
+- Open `toolbox/palette-manager-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, and valid session palette renders using session-backed names/colors only.
+- Open `toolbox/svg-asset-studio-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, and valid session SVG requires `payloadJson.vectorAssetDocument.sourceName` plus `svgText`.
 
 ## Full Samples Smoke Decision
 Full samples smoke test skipped.

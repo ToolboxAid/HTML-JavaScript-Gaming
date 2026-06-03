@@ -37,9 +37,9 @@ Result:
 Additional checks:
 
 ```powershell
-node --check tools/object-vector-studio-v2/js/ToolStarterApp.js
-node --check tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
-node --check tools/object-vector-studio-v2/js/bootstrap.js
+node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+node --check toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+node --check toolbox/object-vector-studio-v2/js/bootstrap.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 ```
 
@@ -84,9 +84,9 @@ docs_build/dev/reports/coverage_changed_js_guardrail.txt
 Changed runtime JavaScript coverage includes:
 
 ```text
-(88%) tools/object-vector-studio-v2/js/ToolStarterApp.js
-(94%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
-(100%) tools/object-vector-studio-v2/js/bootstrap.js
+(88%) toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+(94%) toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+(100%) toolbox/object-vector-studio-v2/js/bootstrap.js
 ```
 
 The coverage guardrail reported no changed-runtime-JS warnings.
@@ -97,7 +97,7 @@ Skipped. This PR is limited to Object Vector Studio V2 transform/editing runtime
 
 ## Manual Test Steps
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Import a valid payload with `palette.swatches` and `objects[]`.
 3. Select an object, create rectangle and circle shapes, and confirm the canvas selection box/handles/pivot appear.
 4. Shift-click another shape and confirm multi-select count appears.

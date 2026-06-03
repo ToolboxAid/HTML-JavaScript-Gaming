@@ -12,27 +12,27 @@ Refactor Tool Host so hosted tool presentation is nearly identical to direct-lau
 - Enforce no inline styles, no embedded style blocks, and no JS style-string injection.
 
 ## Exact Targets
-- `tools/Tool Host/index.html`
-- `tools/Tool Host/main.js`
-- `tools/Tool Host/toolHost.css` (new)
-- `tools/shared/toolHostRuntime.js`
+- `toolbox/Tool Host/index.html`
+- `toolbox/Tool Host/main.js`
+- `toolbox/Tool Host/toolHost.css` (new)
+- `toolbox/shared/toolHostRuntime.js`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`
 - `docs_build/dev/reports/validation_checklist.txt`
 
 ## Implementation Status (Execution-Backed)
-- `[x]` Host controls moved into collapsible imported section in `tools/Tool Host/index.html`.
+- `[x]` Host controls moved into collapsible imported section in `toolbox/Tool Host/index.html`.
 - `[x]` Host workspace simplified to iframe mount surface with no panel wrapper chrome.
-- `[x]` Runtime iframe style injection removed from `tools/shared/toolHostRuntime.js`.
-- `[x]` Link disabled state moved from JS inline styles to CSS class in `tools/Tool Host/main.js` + `tools/Tool Host/toolHost.css`.
+- `[x]` Runtime iframe style injection removed from `toolbox/shared/toolHostRuntime.js`.
+- `[x]` Link disabled state moved from JS inline styles to CSS class in `toolbox/Tool Host/main.js` + `toolbox/Tool Host/toolHost.css`.
 - `[x]` No inline style attributes in Tool Host HTML target file.
 
 ## Validation Executed
-1. `rg -n "style\." "tools/Tool Host/main.js" "tools/shared/toolHostRuntime.js"`
+1. `rg -n "style\." "toolbox/Tool Host/main.js" "toolbox/shared/toolHostRuntime.js"`
    - Result: no matches.
-2. `rg -n "<style|style=" "tools/Tool Host/index.html"`
+2. `rg -n "<style|style=" "toolbox/Tool Host/index.html"`
    - Result: no matches.
-3. `rg -n "data-tool-host-(select|state-input|mount|prev|next|unmount|standalone|switch-meta|status|current-label|mount-container)" "tools/Tool Host/index.html"`
+3. `rg -n "data-tool-host-(select|state-input|mount|prev|next|unmount|standalone|switch-meta|status|current-label|mount-container)" "toolbox/Tool Host/index.html"`
    - Result: expected host control and mount selectors present.
 
 ## Notes

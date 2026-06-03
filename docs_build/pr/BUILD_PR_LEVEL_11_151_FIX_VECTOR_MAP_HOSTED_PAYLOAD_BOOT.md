@@ -13,7 +13,7 @@ This means the editor is not consuming the hosted direct payload from Workspace 
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/vector-map-editor/main.js
+- toolbox/vector-map-editor/main.js
 - docs_build/dev/reports/vector_map_hosted_payload_boot_11_151.txt
 
 ### ALLOWED CHANGES
@@ -69,7 +69,7 @@ Only fix hosted Workspace Manager direct payload boot.
 Targeted validation only.
 
 Required:
-- `tools/vector-map-editor/main.js` syntax passes.
+- `toolbox/vector-map-editor/main.js` syntax passes.
 - Hosted payload with:
   - `vectorMapDocument.objects[0].id = "obj-player-path"`
   - `vectorMapDocument.objects[1].id = "obj-hazard-zone"`

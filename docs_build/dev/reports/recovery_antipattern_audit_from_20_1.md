@@ -32,7 +32,7 @@ Codex must replace this file during execution.
   - `54` deletions and `8` renames in baseline diff.
   - Large deletion set under `samples/phase-20/*/index.html`.
   - Tool identity rename path:
-    - `tools/3D Map Editor/*` to `tools/3D JSON Payload Normalizer/*`
+    - `toolbox/3D Map Editor/*` to `toolbox/3D JSON Payload Normalizer/*`
 - Why this is an anti-pattern:
   - Recovery lane is launch-path stabilization, not broad content pruning or feature renaming.
 
@@ -40,7 +40,7 @@ Codex must replace this file during execution.
 - Evidence:
   - `samples/index.render.js` still consumes `toolHints`.
   - `games/index.render.js` consumes `toolsUsed`.
-  - `tools/Workspace Manager/main.js` consumes `toolsUsed`.
+  - `toolbox/Workspace Manager/main.js` consumes `toolsUsed`.
 - Why this is an anti-pattern:
   - Introduces dual metadata semantics for tool launch eligibility.
   - Increases risk of mismatch between games and samples launch routing.
@@ -49,7 +49,7 @@ Codex must replace this file during execution.
 - Evidence in UAT core files:
   - `games/index.render.js` expanded launch behavior and click routing logic.
   - `samples/index.render.js` expanded roundtrip link construction and launch/error handling.
-  - `tools/Workspace Manager/main.js` includes extensive forwarded query handling and host-mode branching.
+  - `toolbox/Workspace Manager/main.js` includes extensive forwarded query handling and host-mode branching.
 - Why this is an anti-pattern:
   - Recovery lane requires clarity and deterministic launch routing.
   - Complexity growth increases likelihood of hidden fallback behavior and regressions.
@@ -67,7 +67,7 @@ Codex must replace this file during execution.
     - `docs_build/dev/reports/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY_uat_report.md`
     - `docs_build/dev/reports/tool_launch_ssot_external_memory_reset_validation.md`
     - `samples/phase-12/1208/data/toolFormattedTileMap.js`
-    - `tools/shared/toolLaunchSSoT.js`
+    - `toolbox/shared/toolLaunchSSoT.js`
 - Why this matters:
   - Not functionally critical, but indicates review hygiene inconsistency.
 

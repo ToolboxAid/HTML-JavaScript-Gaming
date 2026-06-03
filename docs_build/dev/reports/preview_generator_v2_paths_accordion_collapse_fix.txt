@@ -2,7 +2,7 @@ PR_26126_045 Preview Generator V2 Paths accordion collapse fix
 
 Scope
 - Updated Preview Generator V2 accordion behavior only.
-- Updated tools/preview-generator-v2/previewGeneratorV2.css.
+- Updated toolbox/preview-generator-v2/previewGeneratorV2.css.
 - Extended tests/playwright/PreviewGeneratorV2Baseline.spec.mjs to assert the Paths or IDs collapse/expand contract.
 - No samples, schemas, or start_of_day files were modified.
 
@@ -39,7 +39,7 @@ Full samples smoke test
 - Reason: this PR is a targeted Preview Generator V2 accordion/CSS fix and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
 
 Manual validation
-- Open tools/preview-generator-v2/index.html.
+- Open toolbox/preview-generator-v2/index.html.
 - Collapse Paths or IDs and confirm only the header remains visible.
 - Reopen Paths or IDs and confirm the textarea returns and fills the available center space.
 - Confirm Generate Preview behavior is unchanged.

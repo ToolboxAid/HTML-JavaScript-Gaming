@@ -13,10 +13,10 @@ Status: PASS
 
 ## Changed Files
 
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/js/bootstrap.js`
-- `tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/js/bootstrap.js`
+- `toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_034-midi-studio-v2-export-ui-simplification_validation.md`
 - `docs_build/dev/reports/codex_review.diff`
@@ -29,11 +29,11 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/bootstrap.js
-node --check tools/midi-studio-v2/js/controls/RenderedExportActionsControl.js
+node --check toolbox/midi-studio-v2/js/bootstrap.js
+node --check toolbox/midi-studio-v2/js/controls/RenderedExportActionsControl.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-node -e "const fs=require('fs'); const p='tools/midi-studio-v2/styles/midiStudioV2.css'; const css=fs.readFileSync(p,'utf8'); if(/\/\*[^]*$/.test(css.replace(/\/\*[^]*?\*\//g,''))) throw new Error('Unclosed CSS comment'); let depth=0; for (const ch of css.replace(/\/\*[^]*?\*\//g,'')) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error('Unexpected }'); } if (depth!==0) throw new Error('Unbalanced CSS braces'); console.log('CSS syntax guard passed:', p);"
-node -e "const fs=require('fs'); const p='tools/midi-studio-v2/index.html'; const html=fs.readFileSync(p,'utf8'); if(/<script(?![^>]*\ssrc=)[^>]*>/i.test(html)) throw new Error('Inline script block found'); if(/<style\b/i.test(html)) throw new Error('Inline style block found'); if(/\son[a-z]+\s*=/i.test(html)) throw new Error('Inline event handler found'); console.log('HTML external-only guard passed:', p);"
+node -e "const fs=require('fs'); const p='toolbox/midi-studio-v2/styles/midiStudioV2.css'; const css=fs.readFileSync(p,'utf8'); if(/\/\*[^]*$/.test(css.replace(/\/\*[^]*?\*\//g,''))) throw new Error('Unclosed CSS comment'); let depth=0; for (const ch of css.replace(/\/\*[^]*?\*\//g,'')) { if (ch==='{') depth++; if (ch==='}') depth--; if (depth<0) throw new Error('Unexpected }'); } if (depth!==0) throw new Error('Unbalanced CSS braces'); console.log('CSS syntax guard passed:', p);"
+node -e "const fs=require('fs'); const p='toolbox/midi-studio-v2/index.html'; const html=fs.readFileSync(p,'utf8'); if(/<script(?![^>]*\ssrc=)[^>]*>/i.test(html)) throw new Error('Inline script block found'); if(/<style\b/i.test(html)) throw new Error('Inline style block found'); if(/\son[a-z]+\s*=/i.test(html)) throw new Error('Inline event handler found'); console.log('HTML external-only guard passed:', p);"
 npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "launches and renders a valid multi-song manifest payload|exports through Type dropdown and Save without claiming files were written|fast octave note editing supports drag painting keyboard shortcuts selection and timeline scroll sync" --config=codex_playwright_system_chrome.config.cjs --reporter=list --workers=1 --timeout=60000
 git diff --check
 ```
@@ -75,7 +75,7 @@ The targeted MIDI Studio V2 Playwright run validates:
 
 ## Manual Validation Notes
 
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. Import `tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json`.
 3. Confirm the top NAV shows `Type` with `WAV`, `MP3`, and `OGG`, plus one `Save` button.
 4. Confirm there are no separate `Export WAV`, `Export MP3`, or `Export OGG` buttons.

@@ -7,7 +7,7 @@
 - Removed the Playwright repo server's private preview-write endpoint and write capture maps from workspace V2 validation.
 
 ## Preserved
-- `tools/session-inspector/**` is present as actual tool/runtime files and was left unchanged.
+- `toolbox/session-inspector/**` is present as actual tool/runtime files and was left unchanged.
 - Workspace Manager V2 and Preview Generator V2 still launch from the Workspace Manager V2 flow through sessionStorage workspace context.
 - Accordion behavior checks remain covered by `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`.
 - Schema files, sample JSON, and roadmap content were not modified.

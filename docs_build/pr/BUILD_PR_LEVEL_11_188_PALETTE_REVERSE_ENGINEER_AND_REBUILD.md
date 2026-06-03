@@ -17,9 +17,9 @@ This BUILD continues the PR 11.187 restart lane:
 ## Hard Scope
 Modify only files required for this PR:
 
-- `tools/Palette Browser/**`
-- `tools/Palette Browser-v1/**`
-- `tools/common/**`
+- `toolbox/Palette Browser/**`
+- `toolbox/Palette Browser-v1/**`
+- `toolbox/common/**`
 - `docs_build/pr/**`
 - `docs_build/dev/**`
 - `docs_build/dev/reports/**`
@@ -32,7 +32,7 @@ Do not modify:
 - games
 - old Workspace Manager
 - legacy tools other than moving Palette Browser to `Palette Browser-v1`
-- `tools/shared/**`
+- `toolbox/shared/**`
 - `start_of_day/**`
 
 ## Naming Rules
@@ -47,31 +47,31 @@ Do not show `v2` in the UI. `v2` may appear only in docs, report names, comments
 Legacy folder rename rule:
 
 ```text
-tools/Palette Browser/
--> tools/Palette Browser-v1/
+toolbox/Palette Browser/
+-> toolbox/Palette Browser-v1/
 ```
 
 ## Shared Foundation Rule
-Treat `tools/shared/` as deprecated for new Tool v2 work.
+Treat `toolbox/shared/` as deprecated for new Tool v2 work.
 
 Create new shared foundation under:
 
 ```text
-tools/common/
+toolbox/common/
 ```
 
 Required files:
 
 ```text
-tools/common/toolLayout.css
-tools/common/sessionContext.js
-tools/common/toolContract.js
+toolbox/common/toolLayout.css
+toolbox/common/sessionContext.js
+toolbox/common/toolContract.js
 ```
 
 Do not import from:
 
-- `tools/shared/platformShell.js`
-- `tools/shared/assetUsageIntegration.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/assetUsageIntegration.js`
 - old shared handoff modules
 - tool alias registries
 
@@ -135,9 +135,9 @@ The report must document:
 Create clean Palette Browser files:
 
 ```text
-tools/Palette Browser/index.html
-tools/Palette Browser/main.js
-tools/Palette Browser/styles.css
+toolbox/Palette Browser/index.html
+toolbox/Palette Browser/main.js
+toolbox/Palette Browser/styles.css
 ```
 
 The rebuilt tool must:
@@ -148,9 +148,9 @@ The rebuilt tool must:
 - show swatch count
 - show explicit empty state when no palette session data exists
 - show explicit error state when session data is malformed
-- use `tools/common/toolLayout.css`
-- use `tools/common/sessionContext.js`
-- use `tools/common/toolContract.js`
+- use `toolbox/common/toolLayout.css`
+- use `toolbox/common/sessionContext.js`
+- use `toolbox/common/toolContract.js`
 - avoid `platformShell`
 - avoid shared handoff
 - avoid fallback data
@@ -217,9 +217,9 @@ Run targeted validation only.
 Required:
 
 ```powershell
-node --check "tools/common/sessionContext.js"
-node --check "tools/common/toolContract.js"
-node --check "tools/Palette Browser/main.js"
+node --check "toolbox/common/sessionContext.js"
+node --check "toolbox/common/toolContract.js"
+node --check "toolbox/Palette Browser/main.js"
 ```
 
 Run a targeted browser/tool launch check if an existing tool-specific test or local launch path exists.
@@ -230,15 +230,15 @@ Full samples smoke is skipped unless Codex determines this PR changed shared sam
 ## Acceptance Criteria
 Done means:
 
-- `tools/Palette Browser-v1/` contains the legacy Palette Browser files
-- `tools/Palette Browser/` contains the clean rebuilt Palette Browser
+- `toolbox/Palette Browser-v1/` contains the legacy Palette Browser files
+- `toolbox/Palette Browser/` contains the clean rebuilt Palette Browser
 - rebuilt Palette Browser reads session-backed `paletteJson`
 - palette name, swatches, and count render from session data
 - missing session shows empty state
 - malformed session shows error state
 - no fallback/default palette data exists
 - no `platformShell` usage in rebuilt Palette Browser
-- no `tools/shared/**` imports in rebuilt Palette Browser or new common files
+- no `toolbox/shared/**` imports in rebuilt Palette Browser or new common files
 - no schema/sample/game changes
 - reverse engineering report exists
 - targeted validation results are recorded

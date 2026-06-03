@@ -3,15 +3,15 @@ PR 11.123 - Validation After Changes
 PASS
 
 Validation commands/results
-- node --check "tools/Palette Browser/main.js"; node --check "tools/Workspace Manager/main.js"; node --check tools/shared/platformShell.js; node --check scripts/validate-json-contracts.mjs; node --check tests/tools/ToolSchemaStrictModeValidation.test.mjs
+- node --check "toolbox/Palette Browser/main.js"; node --check "toolbox/Workspace Manager/main.js"; node --check toolbox/shared/platformShell.js; node --check scripts/validate-json-contracts.mjs; node --check tests/tools/ToolSchemaStrictModeValidation.test.mjs
   Result: PASS
-- JSON parse check for tools/schemas/workspace.manifest.schema.json, tools/schemas/tools/palette-browser.schema.json, samples/phase-19/1902/sample.1902.workspace-all-tools.json, samples/metadata/samples.index.metadata.json
+- JSON parse check for toolbox/schemas/workspace.manifest.schema.json, toolbox/schemas/tools/palette-browser.schema.json, samples/phase-19/1902/sample.1902.workspace-all-tools.json, samples/metadata/samples.index.metadata.json
   Result: PASS
 - node -e import('./tests/tools/ToolSchemaStrictModeValidation.test.mjs').then(m => m.run())
   Result: PASS
 - node -e import('./tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs').then(m => m.run())
   Result: PASS
-- Palette schema-only validation using tools/shared/schemaOnlyToolPresetValidation.js
+- Palette schema-only validation using toolbox/shared/schemaOnlyToolPresetValidation.js
   Result: samples/phase-02/0213/sample.0213.palette.json PASS valid; wrapper {tool,version,payload} PASS invalid; sample 1902 workspace manifest PASS invalid against palette-browser schema; games/Asteroids/game.manifest.json PASS invalid against palette-browser schema
 - Workspace manifest separation check
   Result: PASS, tools.palette-browser is $ref ./tools/palette-browser.schema.json and contains no palette internals

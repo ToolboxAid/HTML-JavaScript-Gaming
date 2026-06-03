@@ -1,8 +1,8 @@
 # Playwright Preview Generator V2 Repo Writer Retention
 
 ## Commands
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2App.js`
-- `node --check tools/preview-generator-v2/controls/StatusLogControl.js`
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
+- `node --check toolbox/preview-generator-v2/controls/StatusLogControl.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `node --check tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "exports manifests and launches tools from fixed Workspace Manager V2 tiles|keeps Preview Generator V2 repo writer after Asset Manager V2 deletes the preview asset entry|loads Gravity Well and Pong manifests|logs actionable Preview Generator V2 output path resolution failures"`

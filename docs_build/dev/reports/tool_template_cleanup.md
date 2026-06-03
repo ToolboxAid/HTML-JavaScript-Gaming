@@ -4,7 +4,7 @@ Task: PR_26152_277-tool-template-cleanup
 
 ## Scope Completed
 
-- Updated `tools/_templates-v2/index.html`.
+- Updated `toolbox/_tool_template-v2/index.html`.
 - Changed `<base href="../../GameFoundryStudio/">` to `<base href="/GameFoundryStudio/">`.
 - Renamed visible page title and header text from `AI Assistant` to `Tool Template`.
 - Replaced AI Assistant-specific visible copy with reusable Toolbox tool template copy.
@@ -23,7 +23,7 @@ Task: PR_26152_277-tool-template-cleanup
 
 ## Path Updates
 
-- `tools/_templates-v2/index.html`: `<base href="../../GameFoundryStudio/">` changed to `<base href="/GameFoundryStudio/">`.
+- `toolbox/_tool_template-v2/index.html`: `<base href="../../GameFoundryStudio/">` changed to `<base href="/GameFoundryStudio/">`.
 - The final base path keeps existing relative CSS, JS, image, and partial references resolving under `/GameFoundryStudio/assets/...` when the repo root is served by a local dev server.
 
 ## Intentional Non-Changes

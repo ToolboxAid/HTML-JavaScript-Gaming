@@ -5,7 +5,7 @@
 - Treated the current uncommitted root migration path state as broken and recovered it.
 - Limited work to root-migrated GameFoundryStudio pages and path references.
 - Restored migrated pages to the confirmed working `GameFoundryStudio/assets/**` loading path.
-- Preserved root `/tools/index.html` and root `/tools/ai-assistant.html`.
+- Preserved root `/toolbox/index.html` and root `/toolbox/ai-assistant.html`.
 - Did not add CSS.
 - Did not change Theme V2 CSS.
 - Did not redesign pages.
@@ -22,13 +22,13 @@
 - Migrated pages load:
   - `assets/css/theme/v2/theme.css`
   - `assets/js/gamefoundry-partials.js`
-- `/tools/ai-assistant.html` also loads:
+- `/toolbox/ai-assistant.html` also loads:
   - `assets/js/tool-display-mode.js`
-- `/tools/index.html` also loads:
+- `/toolbox/index.html` also loads:
   - `assets/js/tools-page-accordions.js`
-- `/index.html` direct Tools links point to root `/tools/index.html` using `../tools/index.html`.
-- `/tools/index.html` AI Assistant link points to root `/tools/ai-assistant.html` using `../tools/ai-assistant.html`.
-- Unmigrated tools/pages continue resolving under the existing `GameFoundryStudio/` tree.
+- `/index.html` direct Tools links point to root `/toolbox/index.html` using `../toolbox/index.html`.
+- `/toolbox/index.html` AI Assistant link points to root `/toolbox/ai-assistant.html` using `../toolbox/ai-assistant.html`.
+- Unmigrated toolbox/pages continue resolving under the existing `GameFoundryStudio/` tree.
 
 ## Changed Files
 
@@ -42,12 +42,12 @@
 
 - PASS: `node --check GameFoundryStudio/assets/js/gamefoundry-partials.js; node --check GameFoundryStudio/assets/js/tools-page-accordions.js; node --check GameFoundryStudio/assets/js/tool-display-mode.js`
   - Shared navigation, Tools index renderer, and Tool Display Mode scripts are syntactically valid.
-- PASS: `rg -n "<base href=\"GameFoundryStudio/\"|<base href=\"\.\./GameFoundryStudio/\"|assets/css/theme/v2/theme\.css|assets/js/gamefoundry-partials\.js" index.html about.html vision.html mission.html roadmap.html release-notes.html account.html profile.html preferences.html security.html admin tools/index.html tools/ai-assistant.html -g "*.html"`
+- PASS: `rg -n "<base href=\"GameFoundryStudio/\"|<base href=\"\.\./GameFoundryStudio/\"|assets/css/theme/v2/theme\.css|assets/js/gamefoundry-partials\.js" index.html about.html vision.html mission.html roadmap.html release-notes.html account.html profile.html preferences.html security.html admin toolbox/index.html toolbox/ai-assistant.html -g "*.html"`
   - Migrated pages use the recovered base path pattern and load Theme V2/shared partial JS.
-- PASS: `rg -n --pcre2 "<script(?![^>]*\bsrc=)|<style|\son[a-z]+\s*=" index.html about.html vision.html mission.html roadmap.html release-notes.html account.html profile.html preferences.html security.html admin tools/index.html tools/ai-assistant.html -g "*.html"`
+- PASS: `rg -n --pcre2 "<script(?![^>]*\bsrc=)|<style|\son[a-z]+\s*=" index.html about.html vision.html mission.html roadmap.html release-notes.html account.html profile.html preferences.html security.html admin toolbox/index.html toolbox/ai-assistant.html -g "*.html"`
   - No inline script blocks, style blocks, or inline event handlers found.
 - PASS: `rg -n "href: \"\.\./tools/ai-assistant\.html\"|render\(\"ascending\"\)|getGroupedTools|createAccordion|tools\.sort|tools\.reverse|control-card \$\{groupClass\(tool\.group\)\}|assets/images/tools|assets/images/badges|brand-color-swatch" GameFoundryStudio/assets/js/tools-page-accordions.js`
-  - `/tools/index.html` preserves AI Assistant root link, sorting, grouping, images, data, badges, and group-colored outline hooks.
+  - `/toolbox/index.html` preserves AI Assistant root link, sorting, grouping, images, data, badges, and group-colored outline hooks.
 - PASS: `rg -n "\.\./tools/index\.html|tools/index\.html|admin/branding\.html|arcade/index\.html" index.html`
   - Root Home navigation preserves root Tools links and existing product/admin links.
 

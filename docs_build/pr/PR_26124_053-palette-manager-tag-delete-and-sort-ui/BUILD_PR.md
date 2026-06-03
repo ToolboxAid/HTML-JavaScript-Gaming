@@ -4,7 +4,7 @@
 Implement one scoped Palette Manager V2 UI update for tag deletion, Tag sorting, compact source controls, and accordion naming.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -22,7 +22,7 @@ Implement one scoped Palette Manager V2 UI update for tag deletion, Tag sorting,
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not modify shared accordionV2.
 - Do not modify shared sort services.
 - Do not add dependencies.

@@ -1,12 +1,12 @@
 BUILD_PR_CLOUD_RUNTIME validation
 
 Files:
-- tools/shared/cloudRuntime.js
+- toolbox/shared/cloudRuntime.js
 - tests/tools/CloudRuntime.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/cloudRuntime.js
+- node --check toolbox/shared/cloudRuntime.js
 - node --check tests/tools/CloudRuntime.test.mjs
 - node ./scripts/run-node-tests.mjs
 

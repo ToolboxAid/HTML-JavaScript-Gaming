@@ -4,7 +4,7 @@
 Fix Workspace V2 "Export Current Session JSON" so it downloads the active session payload with explicit success/failure status messaging.
 
 ## Scope
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs/report only
 
@@ -22,6 +22,6 @@ Fix Workspace V2 "Export Current Session JSON" so it downloads the active sessio
 - No shared framework/sample changes.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2CurrentSessionExport.test.mjs
 - node tests/runtime/V2CurrentSessionExport.test.mjs

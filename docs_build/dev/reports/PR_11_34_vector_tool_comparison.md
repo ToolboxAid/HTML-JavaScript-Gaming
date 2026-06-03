@@ -5,25 +5,25 @@
 - No implementation/runtime/schema/manifest changes were made for this PR.
 
 ## Files Reviewed
-- `tools/toolRegistry.js`
-- `tools/Vector Map Editor/index.html`
-- `tools/Vector Map Editor/main.js`
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
-- `tools/Vector Map Editor/editor/VectorMapDocument.js`
-- `tools/Vector Map Editor/editor/VectorMapSerializer.js`
-- `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js`
-- `tools/Vector Asset Studio/index.html`
-- `tools/Vector Asset Studio/main.js`
-- `tools/schemas/tools/vector-map-editor.schema.json`
-- `tools/schemas/tools/vector-asset-studio.schema.json`
-- `tools/schemas/workspace.manifest.schema.json`
+- `toolbox/toolRegistry.js`
+- `toolbox/Vector Map Editor/index.html`
+- `toolbox/Vector Map Editor/main.js`
+- `toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
+- `toolbox/Vector Map Editor/editor/VectorMapDocument.js`
+- `toolbox/Vector Map Editor/editor/VectorMapSerializer.js`
+- `toolbox/Vector Map Editor/editor/VectorMapRuntimeExporter.js`
+- `toolbox/Vector Asset Studio/index.html`
+- `toolbox/Vector Asset Studio/main.js`
+- `toolbox/schemas/tools/vector-map-editor.schema.json`
+- `toolbox/schemas/tools/vector-asset-studio.schema.json`
+- `toolbox/schemas/workspace.manifest.schema.json`
 - `samples/phase-09/0901/sample.0901.vector-map-editor.json`
 - `samples/phase-09/0901/sample.0901.vector-asset-studio.json`
 - `samples/phase-12/1204/sample.1204.vector-map-editor.json`
 - `samples/phase-12/1204/sample.1204.vector-asset-studio.json`
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
-- `tools/shared/platformShell.js`
-- `tools/Workspace Manager/main.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/Workspace Manager/main.js`
 - `tests/tools/ToolLocalSampleMigration.test.mjs`
 - `tests/tools/ToolBoundaryEnforcement.test.mjs`
 - `tests/tools/ToolEntryLaunchContract.test.mjs`

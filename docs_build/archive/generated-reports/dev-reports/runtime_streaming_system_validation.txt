@@ -1,12 +1,12 @@
 BUILD_PR_RUNTIME_STREAMING_SYSTEM validation
 
 Files:
-- tools/shared/runtimeStreaming.js
+- toolbox/shared/runtimeStreaming.js
 - tests/tools/RuntimeStreamingSystem.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/runtimeStreaming.js
+- node --check toolbox/shared/runtimeStreaming.js
 - node --check tests/tools/RuntimeStreamingSystem.test.mjs
 - node ./scripts/run-node-tests.mjs
 

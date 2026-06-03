@@ -20,10 +20,10 @@ Task: PR_26140_110-fix-input-mapping-v2-capture-flow-and-card-sizing
 - Preserved PR109 scroll position restoration and token click-to-delete behavior.
 
 ## Validation
-- `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-- `node --check tools/input-mapping-v2/js/services/InputMappingState.js`
-- `node --check tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `node --check tools/input-mapping-v2/js/bootstrap.js`
+- `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `node --check toolbox/input-mapping-v2/js/services/InputMappingState.js`
+- `node --check toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `node --check toolbox/input-mapping-v2/js/bootstrap.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs -g "Input Mapping V2"`: 7 passed.
 - `npm run test:workspace-v2`: 66 passed.
@@ -44,11 +44,11 @@ Validated behavior:
 - mapping scroll position remains preserved across selection, refresh, combo commit, and token deletion.
 
 V8 coverage guardrail:
-- `(68%) tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
-- `(86%) tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `(92%) tools/input-mapping-v2/js/services/InputMappingState.js`
-- `(95%) tools/input-mapping-v2/js/ToolStarterApp.js`
-- `(100%) tools/input-mapping-v2/js/bootstrap.js`
+- `(68%) toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- `(86%) toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `(92%) toolbox/input-mapping-v2/js/services/InputMappingState.js`
+- `(95%) toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `(100%) toolbox/input-mapping-v2/js/bootstrap.js`
 - Guardrail warnings: none.
 
 ## Manual Test Notes

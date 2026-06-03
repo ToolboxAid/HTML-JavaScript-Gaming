@@ -4,7 +4,7 @@
 Consolidate Workspace V2 session/merge UI decision logic into one computed internal state model.
 
 ## Scope
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionStateModelConsolidation.test.mjs
 - PR docs/report only
 
@@ -23,6 +23,6 @@ Consolidate Workspace V2 session/merge UI decision logic into one computed inter
 - No UI redesign
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionStateModelConsolidation.test.mjs
 - node tests/runtime/V2SessionStateModelConsolidation.test.mjs

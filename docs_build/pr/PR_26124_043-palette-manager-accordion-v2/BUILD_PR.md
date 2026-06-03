@@ -3,13 +3,13 @@
 ## Scope Applied
 - Rewrote only the Palette Manager V2 center column accordions.
 - Left left/right `details` panels unchanged.
-- Did not modify palette JSON logic, source palette logic, `tools/shared`, workspace/toolState/session code, games, or sample JSON.
+- Did not modify palette JSON logic, source palette logic, `toolbox/shared`, workspace/toolState/session code, games, or sample JSON.
 - Did not add dependencies.
 
 ## Files Changed
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - `docs_build/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md`
 - `docs_build/pr/PR_26124_043-palette-manager-accordion-v2/BUILD_PR.md`
 - `docs_build/pr/PR_26124_043-palette-manager-accordion-v2/APPLY_PR.md`
@@ -30,8 +30,8 @@
   - source palette select/search/sort/size and pin/unpin controls remain available
 
 ## Validation
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
-- `git diff --check -- tools/palette-manager-v2/index.html tools/palette-manager-v2/modules/PaletteManagerApp.js tools/palette-manager-v2/paletteManagerV2.css docs_build/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md` -> PASS with existing Git LF/CRLF warnings
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
+- `git diff --check -- toolbox/palette-manager-v2/index.html toolbox/palette-manager-v2/modules/PaletteManagerApp.js toolbox/palette-manager-v2/paletteManagerV2.css docs_build/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md` -> PASS with existing Git LF/CRLF warnings
 - Browser/manual layout validation at 1440x960 -> PASS:
   - center panel has zero `details`/`summary` elements
   - both open panels share height

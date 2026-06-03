@@ -51,7 +51,7 @@ Source search roots/files:
 
 - `src/**/*.js`
 - `samples/**/*.js`
-- `tools/**/*.js`
+- `toolbox/**/*.js`
 - `games/**/*.js`
 - `*.html`, `**/*.html`
 - `**/*.json`

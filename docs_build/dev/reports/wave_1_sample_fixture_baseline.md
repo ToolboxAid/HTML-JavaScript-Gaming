@@ -15,15 +15,15 @@ Date: 2026-06-02
 
 | Group | Sample JSON | Current Shape | Current Schema Reference | Authoritative Surface |
 | --- | --- | --- | --- | --- |
-| A | `samples/phase-19/1903/sample.1903.text2speech-V2.json` | Root array payload | none | `tools/schemas/tools/text2speech-V2.schema.json` |
-| B | `samples/phase-14/1413/sample.1413.asset-pipeline.json` | Legacy `tool` / `version` / `payload` wrapper | none | `tools/schemas/tools/asset-pipeline.schema.json` plus Tool State boundary |
-| C | `samples/phase-14/1414/sample.1414.sprite-editor.json` | Legacy `tool` / `version` / `payload` wrapper | none | `tools/schemas/tools/sprite-editor.schema.json` plus Tool State boundary |
-| C | `samples/phase-14/1414/sample.1414.palette.json` | Standalone palette document | `../../../tools/schemas/tools/palette-browser.schema.json` | `tools/schemas/tools/palette-browser.schema.json` plus palette ownership boundary |
-| D | `samples/phase-12/1208/sample.1208.tile-map-editor.json` | Legacy `tool` / `version` / `payload` wrapper | none | `tools/schemas/tools/tile-map-editor.schema.json` plus Tool State boundary |
-| D | `samples/phase-12/1208/sample.1208.parallax-editor.json` | Legacy `tool` / `version` / `payload` wrapper | none | `tools/schemas/tools/parallax-editor.schema.json` plus Tool State boundary |
-| D | `samples/phase-12/1208/sample.1208.palette.json` | Standalone palette document | `../../../tools/schemas/tools/palette-browser.schema.json` | `tools/schemas/tools/palette-browser.schema.json` plus palette ownership boundary |
-| D | `samples/phase-12/1208/sample.1208.svg-asset-studio.json` | Legacy `tool` / `version` / `payload` wrapper | none | `tools/schemas/tools/svg-asset-studio.schema.json` plus asset/vector ownership boundary |
-| E | `samples/phase-19/1902/sample.1902.workspace-all-tools.json` | Workspace-manifest-like sample | `../../../tools/schemas/workspace.manifest.schema.json` | No active workspace schema; must align to `game.manifest.schema.json`, Tool State, and ProjectWorkspace contracts or receive an approved replacement surface |
+| A | `samples/phase-19/1903/sample.1903.text2speech-V2.json` | Root array payload | none | `toolbox/schemas/tools/text2speech-V2.schema.json` |
+| B | `samples/phase-14/1413/sample.1413.asset-pipeline.json` | Legacy `tool` / `version` / `payload` wrapper | none | `toolbox/schemas/tools/asset-pipeline.schema.json` plus Tool State boundary |
+| C | `samples/phase-14/1414/sample.1414.sprite-editor.json` | Legacy `tool` / `version` / `payload` wrapper | none | `toolbox/schemas/tools/sprite-editor.schema.json` plus Tool State boundary |
+| C | `samples/phase-14/1414/sample.1414.palette.json` | Standalone palette document | `../../../toolbox/schemas/tools/palette-browser.schema.json` | `toolbox/schemas/tools/palette-browser.schema.json` plus palette ownership boundary |
+| D | `samples/phase-12/1208/sample.1208.tile-map-editor.json` | Legacy `tool` / `version` / `payload` wrapper | none | `toolbox/schemas/tools/tile-map-editor.schema.json` plus Tool State boundary |
+| D | `samples/phase-12/1208/sample.1208.parallax-editor.json` | Legacy `tool` / `version` / `payload` wrapper | none | `toolbox/schemas/tools/parallax-editor.schema.json` plus Tool State boundary |
+| D | `samples/phase-12/1208/sample.1208.palette.json` | Standalone palette document | `../../../toolbox/schemas/tools/palette-browser.schema.json` | `toolbox/schemas/tools/palette-browser.schema.json` plus palette ownership boundary |
+| D | `samples/phase-12/1208/sample.1208.svg-asset-studio.json` | Legacy `tool` / `version` / `payload` wrapper | none | `toolbox/schemas/tools/svg-asset-studio.schema.json` plus asset/vector ownership boundary |
+| E | `samples/phase-19/1902/sample.1902.workspace-all-tools.json` | Workspace-manifest-like sample | `../../../toolbox/schemas/workspace.manifest.schema.json` | No active workspace schema; must align to `game.manifest.schema.json`, Tool State, and ProjectWorkspace contracts or receive an approved replacement surface |
 
 ## Exact Sample Inputs
 

@@ -7,8 +7,8 @@ Scope
 - Routing files only
 
 Files changed
-- tools/shared/toolHostRuntime.js
-- tools/Workspace Manager/main.js
+- toolbox/shared/toolHostRuntime.js
+- toolbox/Workspace Manager/main.js
 
 Task Results
 1) Added assertions before tool execution
@@ -47,8 +47,8 @@ C. Signature enforcement
 
 Verification
 - Syntax checks:
-  - node --check tools/shared/toolHostRuntime.js -> PASS
-  - node --check tools/Workspace Manager/main.js -> PASS
+  - node --check toolbox/shared/toolHostRuntime.js -> PASS
+  - node --check toolbox/Workspace Manager/main.js -> PASS
 
 - Contract evidence present in code:
   - `assertExplicitLaunchInputs` exists and is invoked before launch execution.

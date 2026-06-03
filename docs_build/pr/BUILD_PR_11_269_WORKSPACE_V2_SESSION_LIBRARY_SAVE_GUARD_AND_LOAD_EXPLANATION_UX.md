@@ -4,8 +4,8 @@
 Enforce save-button guard conditions for new session IDs and improve Session Library Load explanation UX.
 
 ## Files
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibrarySaveGuard.test.mjs
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2SessionLibraryActions.test.mjs
@@ -30,7 +30,7 @@ Enforce save-button guard conditions for new session IDs and improve Session Lib
 - No stale/misleading Session Library status text.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionLibrarySaveGuard.test.mjs
 - node --check tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - node --check tests/runtime/V2SessionLibraryActions.test.mjs

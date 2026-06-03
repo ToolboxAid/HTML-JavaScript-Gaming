@@ -17,7 +17,7 @@
 - Re-exported `isRecord` from the shared type guard in `GameManifestLoader` while preserving its public export.
 
 ## Duplicate Scanner Results
-Source: `tools/shared/powerShell/find_dupes_called.ps1`, refreshed to `tmp/dupes_called.txt`.
+Source: `toolbox/shared/powerShell/find_dupes_called.ps1`, refreshed to `tmp/dupes_called.txt`.
 
 | Candidate | PR034 Count | PR035 Count | Notes |
 | --- | ---: | ---: | --- |
@@ -37,8 +37,8 @@ Source: `tools/shared/powerShell/find_dupes_called.ps1`, refreshed to `tmp/dupes
 
 ## Remaining Repo-Owned Candidates
 - `src/engine/network/*Contract.js` strict `isPlainObject` helpers intentionally require `Object.getPrototypeOf(value) === Object.prototype`; shared non-array object guards would broaden accepted inputs.
-- `src/engine/runtime/fullscreenBezel.js` and `tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js` path helpers differ in coercion and slash normalization semantics.
-- `src/engine/collision/objectVector.js` and `tools/shared/vector/vectorAssetContract.js` point helpers differ in invalid point handling and precision behavior.
+- `src/engine/runtime/fullscreenBezel.js` and `toolbox/preview-generator-v2/PreviewGeneratorV2RepoAccess.js` path helpers differ in coercion and slash normalization semantics.
+- `src/engine/collision/objectVector.js` and `toolbox/shared/vector/vectorAssetContract.js` point helpers differ in invalid point handling and precision behavior.
 - `src/engine/rendering/ObjectVectorRuntimeAssetService.js` and Object Vector Studio V2 shape helpers look similar but have different triangle/square normalization responsibilities.
 - Vector Map Editor clone helpers remain because the tool is deprecated/out of PR scope.
 - Sample-phase and report snapshot duplicates remain out of scope by request.

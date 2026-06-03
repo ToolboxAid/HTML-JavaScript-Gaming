@@ -19,7 +19,7 @@ README.md
 - [Docs Home](../../README.md)
 - [Workflow Surface](../../operations/dev/README.md)
 - [Master Roadmap](../../dev/roadmaps/MASTER_ROADMAP_ENGINE.md)
-- [Tool UAT Docs](../../tools/README.md)
+- [Tool UAT Docs](../../toolbox/README.md)
 - [Architecture Overview](../architecture-standards/architecture/README.md)
 - [Standards](../architecture-standards/standards/README.md)
 - [PR Capability Bundles](../../pr/capabilities/README.md)

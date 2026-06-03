@@ -4,14 +4,14 @@
 Create a rollback snapshot of the current working Palette Manager V2, then harden Palette Manager V2 so it can serve as the clean base pattern for future tool rebuilds.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - `docs_build/dev/reports/PR_26124_058-palette-manager-restore-point/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not create `start_of_day` files.
 - Avoid broad refactor.
@@ -23,10 +23,10 @@ Before changing runtime files, copy the current runtime files that will be edite
 
 The restore point must include:
 - `README.md`
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/paletteManagerV2.css`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
 
 ## Implementation Plan
 1. Convert the remaining left-column `details`/`summary` accordions to the shared `accordionV2` markup.

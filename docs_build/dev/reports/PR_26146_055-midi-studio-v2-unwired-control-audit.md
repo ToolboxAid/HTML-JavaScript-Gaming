@@ -4,9 +4,9 @@
 
 Scope reviewed: MIDI Studio V2 visible UI surfaces after PR054 tab bucket consolidation.
 
-Central marker: `setUnwiredControlState` in `tools/midi-studio-v2/js/controls/UnwiredControlState.js`.
+Central marker: `setUnwiredControlState` in `toolbox/midi-studio-v2/js/controls/UnwiredControlState.js`.
 
-Central style: `.midi-studio-v2__unwired-control` in `tools/midi-studio-v2/styles/midiStudioV2.css`.
+Central style: `.midi-studio-v2__unwired-control` in `toolbox/midi-studio-v2/styles/midiStudioV2.css`.
 
 ## Marked Incomplete / Unwired Controls
 

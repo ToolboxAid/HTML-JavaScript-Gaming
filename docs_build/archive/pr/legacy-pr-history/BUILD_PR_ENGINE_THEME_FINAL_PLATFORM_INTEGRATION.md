@@ -5,7 +5,7 @@ Finalize the active tools platform in the fewest possible remaining steps by app
 
 ## Scope
 In scope:
-- Make the engine theme the required visual system for all active tools under `tools/`
+- Make the engine theme the required visual system for all active tools under `toolbox/`
 - Standardize shared shell/frame/navigation/header/footer behavior across active tools
 - Standardize shared tokens for color, spacing, typography, borders, shadows, focus, buttons, panels, dialogs, tabs, form controls, and status messaging
 - Align tool landing/index surfaces to the same engine-themed platform shell
@@ -22,13 +22,13 @@ Out of scope:
 
 ## Required Target State
 Active first-class tools:
-- `tools/Vector Map Editor/`
-- `tools/Vector Asset Studio/`
-- `tools/Tile Map Editor/`
-- `tools/Parallax Editor/`
+- `toolbox/Vector Map Editor/`
+- `toolbox/Vector Asset Studio/`
+- `toolbox/Tile Map Editor/`
+- `toolbox/Parallax Editor/`
 
 Legacy preserved but excluded from active platform surface:
-- `tools/SpritEditor_old_keep/`
+- `toolbox/SpritEditor_old_keep/`
 
 All active tools must:
 - use the engine theme

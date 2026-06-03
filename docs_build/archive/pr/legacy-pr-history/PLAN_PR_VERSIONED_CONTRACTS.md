@@ -12,10 +12,10 @@ Execute a focused versioned-contracts slice that standardizes contract-version n
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## In Scope
-- Add a shared contract-version policy utility under `tools/shared/`
+- Add a shared contract-version policy utility under `toolbox/shared/`
 - Apply policy-based version checks in:
-  - `tools/shared/renderPipelineContract.js`
-  - `tools/shared/devConsoleDebugOverlay.js`
+  - `toolbox/shared/renderPipelineContract.js`
+  - `toolbox/shared/devConsoleDebugOverlay.js`
 - Expose version metadata helpers for diagnostics and render contracts
 - Update docs_build/reports and Track J roadmap status (bracket-only)
 

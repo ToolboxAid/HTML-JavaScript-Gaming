@@ -3,7 +3,7 @@
 PASS
 
 ## Files Changed
-- tools/Asset Browser/main.js
+- toolbox/Asset Browser/main.js
 - docs_build/dev/reports/PR_10_17_ASSET_BROWSER_IMPORT_HUB_SAMPLE_0204_LOAD_FIX_report.md
 - tmp/PR_10_17_ASSET_BROWSER_IMPORT_HUB_SAMPLE_0204_LOAD_FIX_validation.json
 
@@ -44,7 +44,7 @@ For sample `0204`, the explicit asset payload lives in the companion roundtrip p
 
 ## Validation Steps
 1. Syntax check:
-   - `node --check tools/Asset Browser/main.js` (PASS)
+   - `node --check toolbox/Asset Browser/main.js` (PASS)
 2. Data-path verification for sample `0204`:
    - Read `samples/metadata/samples.index.metadata.json`
    - Confirm `roundtripToolPresets` contains:

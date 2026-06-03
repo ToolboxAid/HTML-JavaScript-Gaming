@@ -4,9 +4,9 @@
 Enforce manifest-only Workspace V2 export/import so exported JSON is workspace manifest root shape, not a custom wrapper.
 
 ## Scope
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
-- tools/schemas/workspace.manifest.schema.json (minimal Workspace V2 session field support only)
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
+- toolbox/schemas/workspace.manifest.schema.json (minimal Workspace V2 session field support only)
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_277_workspace_v2_manifest_only_export_enforcement_report.md
 
@@ -24,6 +24,6 @@ Enforce manifest-only Workspace V2 export/import so exported JSON is workspace m
 - No platformShell/tools/shared rewiring.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2CurrentSessionExport.test.mjs`

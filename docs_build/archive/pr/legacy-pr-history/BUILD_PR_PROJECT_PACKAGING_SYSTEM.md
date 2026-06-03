@@ -4,7 +4,7 @@
 Implement the strict project packaging and export system defined in `PLAN_PR_PROJECT_PACKAGING_SYSTEM` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared strict packaging pipeline in `tools/shared/projectPackaging.js`
+- Added shared strict packaging pipeline in `toolbox/shared/projectPackaging.js`
   - consumes enforced validation output
   - blocks packaging when blocking validation findings exist
   - uses registry as source of truth for asset identity
@@ -18,13 +18,13 @@ Implement the strict project packaging and export system defined in `PLAN_PR_PRO
   - deterministic repeated packaging output
   - blocked packaging when validation fails
 - Integrated packaging participation into registry-aware editors:
-  - `tools/Sprite Editor/`
+  - `toolbox/Sprite Editor/`
     - added `Package Project` action
     - exports strict package manifest JSON + report text for the active sprite project
-  - `tools/Tilemap Studio/`
+  - `toolbox/Tilemap Studio/`
     - added `Package Project` action
     - exports strict package manifest JSON + report text for the active tile-map project
-  - `tools/Parallax Scene Studio/`
+  - `toolbox/Parallax Scene Studio/`
     - added `Package Project` action
     - exports strict package manifest JSON + report text for the active parallax project
 - Preserved strict validation gating
@@ -43,11 +43,11 @@ Implement the strict project packaging and export system defined in `PLAN_PR_PRO
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/projectPackaging.js`
+  - `node --check toolbox/shared/projectPackaging.js`
   - `node --check tests/tools/ProjectPackagingSystem.test.mjs`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Tilemap Studio/main.js`
-  - `node --check tools/Parallax Scene Studio/main.js`
+  - `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
+  - `node --check toolbox/Tilemap Studio/main.js`
+  - `node --check toolbox/Parallax Scene Studio/main.js`
 - Targeted packaging test passed:
   - `node` inline runner for `tests/tools/ProjectPackagingSystem.test.mjs`
 - Full Node test suite passed:

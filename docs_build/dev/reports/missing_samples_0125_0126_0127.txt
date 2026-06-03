@@ -66,11 +66,11 @@ Metadata and index findings:
 - samples/index.html has no exact 0125, 0126, or 0127 references.
 
 Generator/source findings:
-- tools/preview-generator-v2/index.html:943 starts resolveSamplePhase(phase).
-- tools/preview-generator-v2/index.html:955 enumerates phaseDir.entries().
-- tools/preview-generator-v2/index.html:956 filters to physical directory names matching four digits.
-- tools/preview-generator-v2/index.html:957 requires index.html via hasIndexHtml(handle).
-- tools/preview-generator-v2/index.html:958 only pushes entries discovered from those physical folders.
+- toolbox/preview-generator-v2/index.html:943 starts resolveSamplePhase(phase).
+- toolbox/preview-generator-v2/index.html:955 enumerates phaseDir.entries().
+- toolbox/preview-generator-v2/index.html:956 filters to physical directory names matching four digits.
+- toolbox/preview-generator-v2/index.html:957 requires index.html via hasIndexHtml(handle).
+- toolbox/preview-generator-v2/index.html:958 only pushes entries discovered from those physical folders.
 - This means Preview Generator V2 phase-wide generation cannot synthesize 0125, 0126, or 0127 when those folders are absent.
 
 - scripts/generate-samples-index.mjs:33 discovers phase directories from the filesystem.

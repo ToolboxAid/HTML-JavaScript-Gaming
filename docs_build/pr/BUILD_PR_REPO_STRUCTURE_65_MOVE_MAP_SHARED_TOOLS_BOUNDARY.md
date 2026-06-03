@@ -4,7 +4,7 @@
 Enforce boundary between src/shared and tools by moving pure utility logic out of tools into shared.
 
 ## Exact Target Files
-- tools/** files that contain reusable, non-UI logic (identified during execution)
+- toolbox/** files that contain reusable, non-UI logic (identified during execution)
 - src/shared/** destination only (no new structure invention)
 
 ## Required Code Changes

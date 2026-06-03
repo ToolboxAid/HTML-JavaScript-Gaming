@@ -40,21 +40,21 @@ Expected fail behavior:
 - PASS: Playwright V8 coverage report generated at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
 
 Coverage highlights for changed runtime JS:
-- `(100%) tools/renderToolsIndex.js - changed JS file with browser V8 coverage`
-- `(93%) tools/workspace-manager-v2/js/controls/ToolTilesControl.js - changed JS file with browser V8 coverage`
-- `(91%) tools/toolRegistry.js - changed JS file with browser V8 coverage`
-- `(32%) tools/shared/platformShell.js - changed JS file with browser V8 coverage`
-- `(9%) tools/shared/projectSystemAdapters.js - changed JS file with browser V8 coverage`
-- `(6%) tools/shared/projectToolIntegration.js - changed JS file with browser V8 coverage`
+- `(100%) toolbox/renderToolsIndex.js - changed JS file with browser V8 coverage`
+- `(93%) toolbox/workspace-manager-v2/js/controls/ToolTilesControl.js - changed JS file with browser V8 coverage`
+- `(91%) toolbox/toolRegistry.js - changed JS file with browser V8 coverage`
+- `(32%) toolbox/shared/platformShell.js - changed JS file with browser V8 coverage`
+- `(9%) toolbox/shared/projectSystemAdapters.js - changed JS file with browser V8 coverage`
+- `(6%) toolbox/shared/projectToolIntegration.js - changed JS file with browser V8 coverage`
 
 ## Full Samples Smoke Test
 Skipped. This PR removes deprecated active tool availability and adjusts Workspace Manager V2 tile styling; targeted Workspace V2 Playwright coverage is the required validation gate. Full sample smoke remains out of scope and intentionally was not run.
 
 ## Manual Validation
-1. Open `tools/index.html` and confirm Asset Browser / Import Hub and Tile Model Converter are not listed.
+1. Open `toolbox/index.html` and confirm Asset Browser / Import Hub and Tile Model Converter are not listed.
 2. Open Workspace Manager V2, pick the repo, select Asteroids, and confirm the six remaining workspace tiles render without the removed tools.
 3. Confirm each workspace tile keeps How To Use and Read Me action chips pinned to the bottom of the tile.
-4. Try the old direct paths `/tools/Asset%20Browser/index.html` and `/tools/Tile%20Model%20Converter/index.html`; both should be unavailable.
+4. Try the old direct paths `/toolbox/Asset%20Browser/index.html` and `/toolbox/Tile%20Model%20Converter/index.html`; both should be unavailable.
 
 ## Review Artifacts
 - `docs_build/dev/reports/codex_review.diff`

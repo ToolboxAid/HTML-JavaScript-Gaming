@@ -2,7 +2,7 @@
 
 ## Scope
 - Read docs_build/dev/PROJECT_INSTRUCTIONS.md before implementation.
-- Limited implementation to root /tools/** and /tools/index.html.
+- Limited implementation to root /toolbox/** and /toolbox/index.html.
 - Did not change CSS or Theme V2 CSS.
 - Did not migrate Admin, Account, Company, Games, or Samples.
 - Did not change GameFoundryStudio source files.
@@ -10,14 +10,14 @@
 
 ## Root parity work completed
 Created root copies for the current approved GameFoundryStudio/tools source pages:
-- tools/builder.html from GameFoundryStudio/tools/builder.html
-- tools/creator.html from GameFoundryStudio/tools/creator.html
-- tools/game-builder.html from GameFoundryStudio/tools/game-builder.html
-- tools/game-design-studio.html from GameFoundryStudio/tools/game-design-studio.html
-- tools/publisher.html from GameFoundryStudio/tools/publisher.html
-- tools/world-vector-studio.html from GameFoundryStudio/tools/world-vector-studio.html
-- tools/groups/configuration-admin.html from GameFoundryStudio/tools/groups/configuration-admin.html
-- tools/localization-studio/index.html from GameFoundryStudio/tools/localization-studio/index.html
+- toolbox/builder.html from GameFoundryStudio/tools/builder.html
+- toolbox/creator.html from GameFoundryStudio/tools/creator.html
+- toolbox/game-builder.html from GameFoundryStudio/tools/game-builder.html
+- toolbox/game-design-studio.html from GameFoundryStudio/tools/game-design-studio.html
+- toolbox/publisher.html from GameFoundryStudio/tools/publisher.html
+- toolbox/world-vector-studio.html from GameFoundryStudio/tools/world-vector-studio.html
+- toolbox/groups/configuration-admin.html from GameFoundryStudio/tools/groups/configuration-admin.html
+- toolbox/localization-studio/index.html from GameFoundryStudio/tools/localization-studio/index.html
 
 Path-only fixes applied to root copies:
 - Added root base hrefs pointing at GameFoundryStudio for assets and partials.
@@ -27,8 +27,8 @@ Path-only fixes applied to root copies:
 - Kept Localization Studio local CSS/JS loading from the approved GameFoundryStudio/tools/localization-studio support files without copying or changing CSS.
 
 Tools index completion:
-- Added tools/tools-page-accordions.js as the root Tools Index support script copied from the approved GameFoundryStudio accordion behavior with root tool href fixes.
-- Updated tools/index.html to load ../tools/tools-page-accordions.js.
+- Added toolbox/tools-page-accordions.js as the root Tools Index support script copied from the approved GameFoundryStudio accordion behavior with root tool href fixes.
+- Updated toolbox/index.html to load ../toolbox/tools-page-accordions.js.
 - Preserved grouping, sorting, tile images, badge object paths, descriptions, group colors, and card outlines.
 - Fixed tool card action labels so root /tools links read Open Tool.
 
@@ -39,12 +39,12 @@ PASS - Generated root files have no trailing whitespace and include final newlin
 PASS - Targeted inline restriction scan found no <style> blocks, inline script blocks, inline event handlers, inline style attributes, or imageDataUrl references in changed root Tools files.
 PASS - git status --short -- "*.css" returned no CSS files.
 PASS - git status --short -- GameFoundryStudio admin Admin account Account company Company games Games samples Samples index.html returned no files.
-PASS - git diff --check -- tools/index.html passed. Git reported the existing line-ending normalization warning only.
+PASS - git diff --check -- toolbox/index.html passed. Git reported the existing line-ending normalization warning only.
 
 ## Targeted browser validation
 Command: inline Node static server plus Playwright Chromium targeted to root Tools pages only.
 
-/tools/index.html:
+/toolbox/index.html:
 PASS - Rendered 18 tool cards.
 PASS - Loaded 18 tile images.
 PASS - Rendered 18 badge object paths.
@@ -52,7 +52,7 @@ PASS - Initial A-Z ordering began with AI Assistant, Animation Studio, Arcade, A
 PASS - Grouped mode rendered 9 group accordions and 18 cards.
 PASS - Order control returned the list to A-Z sorting.
 PASS - Card outlines retained group-colored 5px left borders.
-PASS - All 16 tool card links that should target root tools resolved to /tools/** pages.
+PASS - All 16 tool card links that should target root tools resolved to /toolbox/** pages.
 PASS - Root tool card action labels read Open Tool.
 PASS - No browser console errors, page errors, 404s, or 403s were detected.
 
@@ -68,28 +68,28 @@ PASS - Localization Studio loaded approved GameFoundryStudio localization styles
 PASS - No browser console errors, page errors, 404s, or 403s were detected.
 
 Validated root pages:
-- /tools/ai-assistant.html
-- /tools/animation-studio.html
-- /tools/asset-studio.html
-- /tools/builder.html
-- /tools/code-studio.html
-- /tools/creator.html
-- /tools/game-builder.html
-- /tools/game-design-studio.html
-- /tools/input-studio.html
-- /tools/midi-studio.html
-- /tools/object-vector-studio.html
-- /tools/palette-manager.html
-- /tools/particle-studio.html
-- /tools/publisher.html
-- /tools/sound-studio.html
-- /tools/storage-inspector.html
-- /tools/world-vector-studio.html
-- /tools/groups/configuration-admin.html
-- /tools/localization-studio/index.html
+- /toolbox/ai-assistant.html
+- /toolbox/animation-studio.html
+- /toolbox/asset-studio.html
+- /toolbox/builder.html
+- /toolbox/code-studio.html
+- /toolbox/creator.html
+- /toolbox/game-builder.html
+- /toolbox/game-design-studio.html
+- /toolbox/input-studio.html
+- /toolbox/midi-studio.html
+- /toolbox/object-vector-studio.html
+- /toolbox/palette-manager.html
+- /toolbox/particle-studio.html
+- /toolbox/publisher.html
+- /toolbox/sound-studio.html
+- /toolbox/storage-inspector.html
+- /toolbox/world-vector-studio.html
+- /toolbox/groups/configuration-admin.html
+- /toolbox/localization-studio/index.html
 
 ## Scope validation
-PASS - Changed files are limited to root /tools/** plus required reports.
+PASS - Changed files are limited to root /toolbox/** plus required reports.
 PASS - No CSS files changed or were added.
 PASS - No Theme V2 CSS changed.
 PASS - No Admin, Account, Company, Games, Samples, root index, or GameFoundryStudio files changed.
@@ -103,7 +103,7 @@ Skipped:
 - engine, integration, samples, and recovery/UAT because no engine/runtime first-class shell, workspace handoff, samples, or broader recovery behavior changed.
 
 ## Playwright Impact
-Playwright impacted: Yes for root Tools UI rendering/link behavior only. Targeted Playwright browser validation passed for /tools/index.html and affected root public tool pages. npm run test:workspace-v2 was not run because the PR explicitly restricts validation to root Tools and does not change Workspace V2/toolState behavior.
+Playwright impacted: Yes for root Tools UI rendering/link behavior only. Targeted Playwright browser validation passed for /toolbox/index.html and affected root public tool pages. npm run test:workspace-v2 was not run because the PR explicitly restricts validation to root Tools and does not change Workspace V2/toolState behavior.
 
 ## Samples Decision
 SKIP - No sample files or sample runtime behavior changed.

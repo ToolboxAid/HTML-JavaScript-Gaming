@@ -7,9 +7,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const toolsRoot = path.join(repoRoot, "toolbox");
+const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-snapshot-results.json");
 
 const TOOLS = [
@@ -154,9 +154,9 @@ export function run() {
   };
   sessionStorageLike.setItem(sampleHostContextId, JSON.stringify(sampleSession));
 
-  const toolUrl = `https://example.test/tools/tilemap-studio-v2/index.html?hostContextId=${encodeURIComponent(sampleHostContextId)}&view=debug`;
+  const toolUrl = `https://example.test/toolbox/tilemap-studio-v2/index.html?hostContextId=${encodeURIComponent(sampleHostContextId)}&view=debug`;
   const toolSnapshot = buildToolSnapshot("tilemap-studio-v2", toolUrl, sampleHostContextId, sessionStorageLike);
-  const workspaceUrl = `https://example.test/tools/workspace-v2/index.html?hostContextId=${encodeURIComponent(sampleHostContextId)}`;
+  const workspaceUrl = `https://example.test/toolbox/workspace-v2/index.html?hostContextId=${encodeURIComponent(sampleHostContextId)}`;
   const workspaceSnapshot = buildWorkspaceSnapshot(workspaceUrl, sessionStorageLike);
 
   if (toolSnapshot.tool !== "tilemap-studio-v2") failures.push("Tool snapshot missing correct tool id.");
@@ -169,7 +169,7 @@ export function run() {
 
   const malformedHostContextId = "snapshot-host-malformed";
   sessionStorageLike.setItem(malformedHostContextId, "{bad-json");
-  const malformedSnapshot = buildToolSnapshot("asset-manager-v2", `https://example.test/tools/asset-manager-v2/index.html?hostContextId=${malformedHostContextId}`, malformedHostContextId, sessionStorageLike);
+  const malformedSnapshot = buildToolSnapshot("asset-manager-v2", `https://example.test/toolbox/asset-manager-v2/index.html?hostContextId=${malformedHostContextId}`, malformedHostContextId, sessionStorageLike);
   if (!malformedSnapshot.sessionError) failures.push("Malformed snapshot should include sessionError.");
 
   const toolRows = TOOLS.map(validateToolHook);

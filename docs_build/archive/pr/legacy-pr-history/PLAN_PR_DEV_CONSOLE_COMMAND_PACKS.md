@@ -52,7 +52,7 @@ and easier to expand without turning the console into a flat list of unrelated c
 - Define registration model
 - Define command help/grouping behavior
 - Define validation and output conventions
-- Keep implementation scoped to tools/dev and the existing console runtime path
+- Keep implementation scoped to toolbox/dev and the existing console runtime path
 - Preserve current sample-level integration and engine-safe boundaries
 
 ## Non-Goals
@@ -111,15 +111,15 @@ Standardize:
 
 ## Candidate Files
 Expected future implementation focus:
-- tools/dev/commandPacks/
+- toolbox/dev/commandPacks/
   - sceneCommandPack.js
   - renderCommandPack.js
   - entityCommandPack.js
   - debugCommandPack.js
   - hotReloadCommandPack.js
   - validationCommandPack.js
-- tools/dev/devConsoleCommandRegistry.js
-- tools/dev/devConsoleIntegration.js
+- toolbox/dev/devConsoleCommandRegistry.js
+- toolbox/dev/devConsoleIntegration.js
 - optional tests under tests/tools/
 
 ## Acceptance Criteria

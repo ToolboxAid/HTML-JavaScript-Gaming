@@ -4,9 +4,9 @@ PR: `PR_26145_016-audio-sfx-play-selected-sound-and-move-play-button`
 
 ## Targeted Static Validation
 
-- `node --check tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - PASS
-- HTML external script/style guard for `tools/audio-sfx-playground-v2/index.html` - PASS
-- `git diff --check -- tools/audio-sfx-playground-v2/index.html tools/audio-sfx-playground-v2/styles/audioSfxLayoutDensity.css tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - PASS, with existing LF/CRLF working-copy warnings for edited HTML/CSS
+- `node --check toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - PASS
+- HTML external script/style guard for `toolbox/audio-sfx-playground-v2/index.html` - PASS
+- `git diff --check -- toolbox/audio-sfx-playground-v2/index.html toolbox/audio-sfx-playground-v2/styles/audioSfxLayoutDensity.css toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - PASS, with existing LF/CRLF working-copy warnings for edited HTML/CSS
 
 ## Focused Playwright Validation
 
@@ -35,7 +35,7 @@ Measured focused validation highlights:
 
 ## Playwright V8 Coverage
 
-- `(100%) tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - covered by focused add, select, tile playback, editor restore, and Play button placement validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - covered by focused add, select, tile playback, editor restore, and Play button placement validation`
 
 Changed runtime JavaScript files were present in focused coverage.
 
@@ -59,7 +59,7 @@ Skipped. This PR only impacts Audio / SFX Playground V2 tile playback and Play b
 
 ## Manual Validation Steps
 
-1. Open `tools/audio-sfx-playground-v2/index.html` through the repo test server or Workspace V2 tile.
+1. Open `toolbox/audio-sfx-playground-v2/index.html` through the repo test server or Workspace V2 tile.
 2. Create at least two named SFX tiles.
 3. Click a non-active tile.
 4. Confirm the clicked tile becomes selected and its settings load into the editor.

@@ -75,23 +75,23 @@ C) Prohibited behaviors
 
 Evidence (code locations)
 - Direct-only child palette route enforcement:
-  - tools/shared/platformShell.js:501-508
+  - toolbox/shared/platformShell.js:501-508
 - Palette wrapper acceptance in handoff extraction:
-  - tools/shared/platformShell.js:1241-1244
+  - toolbox/shared/platformShell.js:1241-1244
 - Fallback palette id/display:
-  - tools/shared/platformShell.js:1249-1253
-  - tools/shared/platformShell.js:1218-1219
+  - toolbox/shared/platformShell.js:1249-1253
+  - toolbox/shared/platformShell.js:1218-1219
 - Palette transform functions and remap:
-  - tools/shared/platformShell.js:1180-1209
-  - tools/shared/platformShell.js:1213-1221
+  - toolbox/shared/platformShell.js:1180-1209
+  - toolbox/shared/platformShell.js:1213-1221
 - Palette injection into shared handoff:
-  - tools/shared/platformShell.js:1287-1297
-  - tools/shared/platformShell.js:1317-1328
-  - tools/shared/platformShell.js:1351-1362
+  - toolbox/shared/platformShell.js:1287-1297
+  - toolbox/shared/platformShell.js:1317-1328
+  - toolbox/shared/platformShell.js:1351-1362
 - Palette dependency lock for non-palette tools:
-  - tools/shared/platformShell.js:1551-1554
-  - tools/shared/platformShell.js:1580-1587
-  - tools/shared/platformShell.js:1891-1899
+  - toolbox/shared/platformShell.js:1551-1554
+  - toolbox/shared/platformShell.js:1580-1587
+  - toolbox/shared/platformShell.js:1891-1899
 
 Final Status
 - FAIL

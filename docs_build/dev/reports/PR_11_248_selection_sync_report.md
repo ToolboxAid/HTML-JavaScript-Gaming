@@ -4,7 +4,7 @@
 Wired saved-session row actions (`Use in Library`, `Load`) to also sync Session A/B selections for both Diff and Merge selectors, with A-then-B fill behavior, no overwrite when both set, and no same-session duplication.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SelectionSyncRowActions.test.mjs`
 
 ## Implementation Details
@@ -25,13 +25,13 @@ Wired saved-session row actions (`Use in Library`, `Load`) to also sync Session 
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2SelectionSyncRowActions.test.mjs
 node tests/runtime/V2SelectionSyncRowActions.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2SelectionSyncRowActions.test.mjs` -> PASS
 - `node tests/runtime/V2SelectionSyncRowActions.test.mjs` -> PASS
   - output: `tmp/v2-selection-sync-row-actions-results.json`

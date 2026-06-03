@@ -1,23 +1,23 @@
 # BUILD_PR_STYLE_INDEX_HEADER_AND_BODY_CONSISTENCY_FIX
 
 ## Purpose
-Fix the inconsistency where `tools/index.html` correctly shows the full-width stretched header and correct page-body colors, but `index.html`, `games/index.html`, and `samples/index.html` do not.
+Fix the inconsistency where `toolbox/index.html` correctly shows the full-width stretched header and correct page-body colors, but `index.html`, `games/index.html`, and `samples/index.html` do not.
 
 ## Single PR Purpose
 Make the four main entry pages render the shared header and body theme consistently.
 
 ## Confirmed Symptom
-- `tools/index.html` is the current good baseline.
+- `toolbox/index.html` is the current good baseline.
 - `index.html`, `games/index.html`, and `samples/index.html` do not match it for:
   - full-width header stretch behavior
   - page body colors / shared theme rendering
 
 ## Required Fix Direction
-1. Treat `tools/index.html` as the visual baseline for:
+1. Treat `toolbox/index.html` as the visual baseline for:
    - shared header stretch behavior
    - shared body/theme color behavior
 2. Audit the differences between:
-   - `/tools/index.html`
+   - `/toolbox/index.html`
    - `/index.html`
    - `/games/index.html`
    - `/samples/index.html`
@@ -31,7 +31,7 @@ Make the four main entry pages render the shared header and body theme consisten
 - do not redesign the pages
 - do not change header structure unless required for consistency
 - prefer fixing shared CSS imports, shared body classes, and shared shell/theme usage
-- preserve the working `tools/index.html` behavior unless a shared fix requires an equivalent adjustment
+- preserve the working `toolbox/index.html` behavior unless a shared fix requires an equivalent adjustment
 
 ## Likely Root Causes To Check
 - missing or different shared CSS imports
@@ -42,9 +42,9 @@ Make the four main entry pages render the shared header and body theme consisten
 - inconsistent use of shared header mount point or shared page shell markup
 
 ## Acceptance
-- `/index.html` matches the full-width header behavior of `/tools/index.html`
-- `/games/index.html` matches the full-width header behavior of `/tools/index.html`
-- `/samples/index.html` matches the full-width header behavior of `/tools/index.html`
-- the three pages also match the body/theme color behavior of `/tools/index.html`
+- `/index.html` matches the full-width header behavior of `/toolbox/index.html`
+- `/games/index.html` matches the full-width header behavior of `/toolbox/index.html`
+- `/samples/index.html` matches the full-width header behavior of `/toolbox/index.html`
+- the three pages also match the body/theme color behavior of `/toolbox/index.html`
 - no regressions to the working tools page
 - change is visually testable

@@ -15,7 +15,7 @@ Normalize engine rendering to one boundary: `src/engine/rendering`.
 
 ### 3) Import/export normalization
 - Updated sample/test imports from `/src/engine/render/index.js` and `../../src/engine/render/...` to rendering equivalents.
-- Updated render-domain contract labels in `tools/shared/renderPipelineContract.js` from `engine/render` to `engine/rendering`.
+- Updated render-domain contract labels in `toolbox/shared/renderPipelineContract.js` from `engine/render` to `engine/rendering`.
 - Updated sample metadata references from `engine/render/index/*` and `/src/engine/render/index.js` to rendering equivalents.
 
 ### 4) Structure simplicity

@@ -20,9 +20,9 @@ Continue the direct-JSON/schema-only path until samples, games, and tools work t
 
 Move these files out of runtime tool folders:
 
-- `tools/palette-editor/tool.schema.json`
-- `tools/vector-asset-studio/tool.schema.json`
-- `tools/vector-map-editor/tool.schema.json`
+- `toolbox/palette-editor/tool.schema.json`
+- `toolbox/vector-asset-studio/tool.schema.json`
+- `toolbox/vector-map-editor/tool.schema.json`
 
 Use this destination:
 
@@ -30,13 +30,13 @@ Use this destination:
 
 Examples:
 
-- `tools/palette-editor/tool.schema.json`
+- `toolbox/palette-editor/tool.schema.json`
   -> `tests/fixtures/tool-schemas/palette-editor/tool.schema.json`
 
-- `tools/vector-asset-studio/tool.schema.json`
+- `toolbox/vector-asset-studio/tool.schema.json`
   -> `tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json`
 
-- `tools/vector-map-editor/tool.schema.json`
+- `toolbox/vector-map-editor/tool.schema.json`
   -> `tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json`
 
 Update any test references to the new paths.
@@ -124,7 +124,7 @@ Run targeted validation only.
 
 Required:
 - moved schema fixture files exist under `tests/fixtures/tool-schemas`
-- old runtime `tools/*/tool.schema.json` files no longer exist
+- old runtime `toolbox/*/tool.schema.json` files no longer exist
 - test references updated
 - JSON parses
 - changed schemas validate

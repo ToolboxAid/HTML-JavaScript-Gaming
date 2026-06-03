@@ -12,8 +12,8 @@ Date: 2026-06-02
 
 ## Registration Sources
 
-- `tools/toolRegistry.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `src/shared/contracts/tools/toolContractsIndex.js`
 
 ## Results

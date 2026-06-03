@@ -10,8 +10,8 @@ Scope: final full-lane integrity sweep after roadmap completion (samples, tools,
 - [PASS] All roundtrip preset rows have matching toolHints entries :: mismatches=0
 - [PASS] Per-tool roundtrip link counts stay within 2..5 :: over5=0, under2=0
 - [PASS] samples/index.render.js uses metadata-driven roundtrip preset routing :: samples/index.render.js
-- [PASS] Workspace Manager has no phase20/samplePreset legacy path :: tools/Workspace Manager/main.js
-- [PASS] platformShell has no phase20 preset apply hooks :: tools/shared/platformShell.js
+- [PASS] Workspace Manager has no phase20/samplePreset legacy path :: toolbox/Workspace Manager/main.js
+- [PASS] platformShell has no phase20 preset apply hooks :: toolbox/shared/platformShell.js
 - [PASS] Games hub launch href is workspace-only :: games/index.render.js
 - [PASS] Game launch guard enforces hosted workspace + hostContext validation :: games/shared/workspaceGameLaunchGuard.js
 - [PASS] Game runtime hydrator publishes __WORKSPACE_GAME_RUNTIME__ :: games/shared/workspaceGameRuntimeHydrator.js

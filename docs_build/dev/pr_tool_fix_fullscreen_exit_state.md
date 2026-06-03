@@ -29,8 +29,8 @@ Target only:
 
 Likely files:
 
-- `tools/shared/platformShell.js`
-- `tools/shared/platformShell.css`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/platformShell.css`
 
 Do not modify:
 
@@ -103,7 +103,7 @@ Do not run long sample suites.
 Run:
 
 ```powershell
-node --check tools/shared/platformShell.js
+node --check toolbox/shared/platformShell.js
 ```
 
 If CSS only changes, note CSS review in report.

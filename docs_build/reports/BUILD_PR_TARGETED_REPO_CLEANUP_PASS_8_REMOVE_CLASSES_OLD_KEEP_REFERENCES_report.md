@@ -21,7 +21,7 @@ Execute docs-only removal/neutralization of legacy marker token references based
 - No edits under `templates/`.
 - No edits under `docs_build/archive/`.
 - No edits under `start_of_day/*`.
-- No runtime code changes (`tools/`, `src/`, `games/`, `samples/`, `tests/` unchanged in this lane).
+- No runtime code changes (`toolbox/`, `src/`, `games/`, `samples/`, `tests/` unchanged in this lane).
 
 ## Outcome
 - Scoped docs token references were neutralized.

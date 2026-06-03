@@ -8,16 +8,16 @@ PASS
 
 ## Changed Files
 
-- `tools/shared/platformShell.js`
-- `tools/shared/platformShell.css`
-- `tools/Asset Browser/main.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/platformShell.css`
+- `toolbox/Asset Browser/main.js`
 - `docs_build/dev/reports/PR_tool_uat_fix_header_asset_browser_report.md`
 
 ## Validation Performed
 
 1. Syntax checks on changed JavaScript:
-   - `node --check tools/shared/platformShell.js` -> PASS
-   - `node --check tools/Asset Browser/main.js` -> PASS
+   - `node --check toolbox/shared/platformShell.js` -> PASS
+   - `node --check toolbox/Asset Browser/main.js` -> PASS
 
 2. Targeted tool-shell header/intro validation (focused browser automation):
    - Generated evidence: `tmp/pr_tool_uat_fix_header_asset_browser_validation.json`
@@ -35,7 +35,7 @@ PASS
 
 3. Targeted Asset Browser sample 0204 validation:
    - URL used:
-     - `/tools/Asset Browser/index.html?sampleId=0204&sampleTitle=Sample%200204&samplePresetPath=/samples/phase-02/0204/sample.0204.asset-browser.json`
+     - `/toolbox/Asset Browser/index.html?sampleId=0204&sampleTitle=Sample%200204&samplePresetPath=/samples/phase-02/0204/sample.0204.asset-browser.json`
    - Captured from `tmp/pr_tool_uat_fix_header_asset_browser_validation.json`.
 
 ## Asset Browser 0204 Observed Final State

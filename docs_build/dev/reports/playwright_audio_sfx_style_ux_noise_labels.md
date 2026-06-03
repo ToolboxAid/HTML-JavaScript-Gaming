@@ -19,13 +19,13 @@ PR: `PR_26145_007-audio-sfx-style-ux-and-noise-label-cleanup`
 
 ## Targeted Static Validation
 
-- `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`: PASS
-- `JSON.parse` for `tools/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
-- HTML static guard for `tools/audio-sfx-playground-v2/index.html`:
+- `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`: PASS
+- `JSON.parse` for `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
+- HTML static guard for `toolbox/audio-sfx-playground-v2/index.html`:
   - no inline event handlers: PASS
   - no `<style>` blocks: PASS
   - no inline `<script>` blocks: PASS
-- `git diff --check -- tools/audio-sfx-playground-v2 tools/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
+- `git diff --check -- toolbox/audio-sfx-playground-v2 toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
   - Git reported LF-to-CRLF working-copy warnings only.
 
 ## Targeted Node Validation
@@ -55,7 +55,7 @@ Ran a focused Playwright validation through a temporary local HTTP server using 
 
 ## V8 Coverage
 
-- `(100%) tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by focused style UX/noise label Playwright validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by focused style UX/noise label Playwright validation`
 
 Coverage is advisory per project instructions.
 

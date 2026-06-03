@@ -21,37 +21,37 @@ Classification
 - Reason: deterministic schema ambiguity from overlapping oneOf branches in jsonValue (`number` + `integer`) caused valid integer values to match multiple branches.
 
 Fixes applied
-1) File: tools/schemas/tools/sprite-editor.schema.json
+1) File: toolbox/schemas/tools/sprite-editor.schema.json
 - Change made: removed redundant `{ "type": "integer" }` from `$defs.jsonValue.oneOf`.
 - Before: jsonValue.oneOf included both `number` and `integer`.
 - After: jsonValue.oneOf includes `number` only for numeric branch.
 - Validation result: PASS.
 
-2) File: tools/schemas/tools/tile-map-editor.schema.json
+2) File: toolbox/schemas/tools/tile-map-editor.schema.json
 - Change made: removed redundant `{ "type": "integer" }` from `$defs.jsonValue.oneOf`.
 - Before: jsonValue.oneOf included both `number` and `integer`.
 - After: numeric branch is `number` only.
 - Validation result: PASS.
 
-3) File: tools/schemas/tools/parallax-editor.schema.json
+3) File: toolbox/schemas/tools/parallax-editor.schema.json
 - Change made: removed redundant `{ "type": "integer" }` from `$defs.jsonValue.oneOf`.
 - Before: jsonValue.oneOf included both `number` and `integer`.
 - After: numeric branch is `number` only.
 - Validation result: PASS.
 
-4) File: tools/schemas/tools/vector-map-editor.schema.json
+4) File: toolbox/schemas/tools/vector-map-editor.schema.json
 - Change made: removed redundant `{ "type": "integer" }` from `$defs.jsonValue.oneOf`.
 - Before: jsonValue.oneOf included both `number` and `integer`.
 - After: numeric branch is `number` only.
 - Validation result: PASS.
 
-5) File: tools/schemas/tools/skin-editor.schema.json
+5) File: toolbox/schemas/tools/skin-editor.schema.json
 - Change made: removed redundant `{ "type": "integer" }` from `$defs.jsonValue.oneOf`.
 - Before: jsonValue.oneOf included both `number` and `integer`.
 - After: numeric branch is `number` only.
 - Validation result: PASS.
 
-6) File: tools/schemas/tools/asset-pipeline.schema.json
+6) File: toolbox/schemas/tools/asset-pipeline.schema.json
 - Change made: removed redundant `{ "type": "integer" }` from `$defs.jsonValue.oneOf`.
 - Before: jsonValue.oneOf included both `number` and `integer`.
 - After: numeric branch is `number` only.

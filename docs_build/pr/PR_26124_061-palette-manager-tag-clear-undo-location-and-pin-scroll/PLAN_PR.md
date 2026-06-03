@@ -4,13 +4,13 @@
 Refine Palette Manager V2 heading controls, User Palette selection clearing, and Sample Palette scroll preservation while pinning.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Preserve accordionV2 behavior.
 - Preserve import/export, sort, search, size, pin/unpin, Pin All, multi-select, and existing tag behavior.

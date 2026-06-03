@@ -3,7 +3,7 @@
 ## Scope
 
 - Workspace Manager V2 UI and Preview Generator V2 workspace-launch hydration only.
-- Deprecated `tools/workspace-v2` was not modified.
+- Deprecated `toolbox/workspace-v2` was not modified.
 - Sample JSON was not modified.
 - No fallback behavior was added.
 
@@ -37,7 +37,7 @@
 
 ## Manual Validation Notes
 
-1. Open `tools/workspace-manager-v2/index.html`.
+1. Open `toolbox/workspace-manager-v2/index.html`.
 2. Confirm the center panel shows Tools and Workspace JSON only; Workspace Context is not shown.
 3. Confirm tool tiles are grouped under Editors, Utilities, and Viewers and each tile shows How To Use and Read Me labels.
 4. Select Asteroids and launch Preview Generator V2 from the Preview Generator V2 tile.

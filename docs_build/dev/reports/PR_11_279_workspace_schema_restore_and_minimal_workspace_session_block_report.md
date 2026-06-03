@@ -4,9 +4,9 @@
 Workspace schema restore and Workspace V2 export/import contract correction only.
 
 ## Files Changed
-- tools/schemas/workspace.schema.json
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/schemas/workspace.schema.json
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/pr/PLAN_PR_11_279_WORKSPACE_SCHEMA_RESTORE_PLUS_MINIMAL_WORKSPACE_SESSION_BLOCK.md
 - docs_build/pr/BUILD_PR_11_279_WORKSPACE_SCHEMA_RESTORE_PLUS_MINIMAL_WORKSPACE_SESSION_BLOCK.md
@@ -18,7 +18,7 @@ Workspace schema restore and Workspace V2 export/import contract correction only
 - Removed Workspace V2 runtime logic that wrote session snapshots into `games[]`.
 
 ## Minimal Session Fields Added
-Added one optional strict top-level block in `tools/schemas/workspace.schema.json`:
+Added one optional strict top-level block in `toolbox/schemas/workspace.schema.json`:
 - `workspaceSession`
   - `schema`
   - `defaultToolId`
@@ -44,8 +44,8 @@ No extra runtime/transient fields were added (no merge audit, diff output, undo 
 - Workspace V2 import validates against workspace schema shape and accepts valid payloads with/without optional `workspaceSession`.
 
 ## Workspace Manifest Schema File Decision
-- `tools/schemas/workspace.manifest.schema.json` was not modified.
-- Workspace V2 export/import validation in this PR targets `tools/schemas/workspace.schema.json` per requirement.
+- `toolbox/schemas/workspace.manifest.schema.json` was not modified.
+- Workspace V2 export/import validation in this PR targets `toolbox/schemas/workspace.schema.json` per requirement.
 
 ## Same-Tool Diff Guard
 - Cross-tool diff remains blocked with required message:
@@ -53,7 +53,7 @@ No extra runtime/transient fields were added (no merge audit, diff output, undo 
 - Same-tool diff behavior remains unchanged.
 
 ## Validation Commands Run
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
    - PASS

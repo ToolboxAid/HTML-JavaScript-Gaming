@@ -4,7 +4,7 @@ Validate that Asset Manager V2 is the active V2 surface for authoring and valida
 
 ## Scope
 - Tool: `asset-manager-v2`
-- Entry point: `tools/asset-manager-v2/index.html`
+- Entry point: `toolbox/asset-manager-v2/index.html`
 - Purpose: create and validate audio, color, data, font, image, localization, shader, and video asset entries for V2 workspace and game manifest flows.
 
 ## Expected

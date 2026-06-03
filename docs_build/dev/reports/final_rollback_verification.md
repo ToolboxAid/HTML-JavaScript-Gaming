@@ -13,8 +13,8 @@
 - Remaining direct-write endpoint strings are negative assertions in Workspace Manager V2 Playwright coverage only.
 
 ## Preserved Items
-- Session Inspector remains present as tracked first-class tool files under `tools/session-inspector/**`.
-- Session Inspector remains registered in `tools/toolRegistry.js` and platform shell tool lists.
+- Session Inspector remains present as tracked first-class tool files under `toolbox/session-inspector/**`.
+- Session Inspector remains registered in `toolbox/toolRegistry.js` and platform shell tool lists.
 - Workspace Manager V2 accordion behavior remains covered by `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`.
 - Targeted launch validation confirmed Workspace Manager V2 and Session Inspector accordion toggles still open and close.
 - Rename/move cleanup and cosmetic/layout-only shell changes remain intact; this verification did not modify those runtime surfaces.

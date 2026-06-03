@@ -4,7 +4,7 @@
 Workspace V2 session library / diff / merge / delete / refresh UX only.
 
 ## Files Changed
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionUxStabilization.test.mjs
 - docs_build/pr/PLAN_PR_11_263_WORKSPACE_V2_SESSION_UX_STABILIZATION_BUNDLE.md
 - docs_build/pr/BUILD_PR_11_263_WORKSPACE_V2_SESSION_UX_STABILIZATION_BUNDLE.md
@@ -31,7 +31,7 @@ Workspace V2 session library / diff / merge / delete / refresh UX only.
 - Kept existing stale merge-state clearing behavior from prior PRs intact.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2SessionUxStabilization.test.mjs`
    - PASS

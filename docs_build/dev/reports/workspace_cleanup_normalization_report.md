@@ -20,7 +20,7 @@ PR: `PR_26140_058-normalize-uat-fixture-and-sample-tool-map`
 
 ## UAT Fixture
 - `tests/fixtures/workspace-v2/uat.manifest.json` now uses:
-  - `$schema: "tools/schemas/game.manifest.schema.json"`
+  - `$schema: "toolbox/schemas/game.manifest.schema.json"`
   - `schema: "html-js-gaming.game-manifest"`
 - Temporary UAT loading now requires a game-manifest-shaped fixture.
 - The Workspace Manager V2 runtime still generates the session/toolState context from the UAT game manifest at launch time.

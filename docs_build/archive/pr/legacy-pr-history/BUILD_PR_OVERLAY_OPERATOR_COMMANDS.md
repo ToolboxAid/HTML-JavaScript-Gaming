@@ -9,8 +9,8 @@ BUILD_PR_OVERLAY_OPERATOR_COMMANDS.md
 Implement debug-only `overlay.*` operator commands through the Dev Console command registry using approved public overlay/registry APIs.
 
 ## Implementation Scope
-- Add `tools/dev/commandPacks/overlayCommandPack.js`
-- Wire pack into `tools/dev/devConsoleIntegration.js`
+- Add `toolbox/dev/commandPacks/overlayCommandPack.js`
+- Wire pack into `toolbox/dev/devConsoleIntegration.js`
 - Keep integration sample-level (`MultiSystemDemoScene.js` remains the target reference)
 
 ## API Boundary
@@ -49,8 +49,8 @@ Not allowed:
 - failed state set -> `OVERLAY_PANEL_SET_FAILED`
 
 ## Validation Evidence
-- `node --check tools/dev/commandPacks/overlayCommandPack.js` passed
-- `node --check tools/dev/devConsoleIntegration.js` passed
+- `node --check toolbox/dev/commandPacks/overlayCommandPack.js` passed
+- `node --check toolbox/dev/devConsoleIntegration.js` passed
 - sample command harness execution passed for:
   - help/list/status/order
   - show/hide/toggle

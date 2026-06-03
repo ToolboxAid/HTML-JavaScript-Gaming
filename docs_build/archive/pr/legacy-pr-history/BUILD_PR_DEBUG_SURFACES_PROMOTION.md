@@ -1,7 +1,7 @@
 # BUILD_PR_DEBUG_SURFACES_PROMOTION
 
 ## Objective
-Create an authoritative docs-only BUILD bundle for extraction/relocation of proven debug surfaces from `tools/dev` into shared layers, with no feature expansion.
+Create an authoritative docs-only BUILD bundle for extraction/relocation of proven debug surfaces from `toolbox/dev` into shared layers, with no feature expansion.
 
 ## Workflow
 PLAN_PR -> BUILD_PR -> APPLY_PR

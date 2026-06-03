@@ -7,8 +7,8 @@ Scope
 - Routing files only
 
 Files changed
-- tools/shared/toolHostRuntime.js
-- tools/Workspace Manager/main.js
+- toolbox/shared/toolHostRuntime.js
+- toolbox/Workspace Manager/main.js
 
 Task Outcome
 1) Found global/implicit input usage
@@ -36,8 +36,8 @@ Runtime Assertion Status
 - Assertions throw before tool execution.
 
 Verification
-- `node --check tools/shared/toolHostRuntime.js` -> PASS
-- `node --check tools/Workspace Manager/main.js` -> PASS
+- `node --check toolbox/shared/toolHostRuntime.js` -> PASS
+- `node --check toolbox/Workspace Manager/main.js` -> PASS
 - Structural checks:
   - launch signature exists -> PASS
   - runtime uses payload/palette-only sharedContext -> PASS

@@ -1,34 +1,34 @@
 ﻿# PR 11.188 Palette Manager Reverse Engineering Report
 
 ## Purpose
-Reverse engineer the legacy Palette Browser / Manager behavior, preserve the legacy implementation under `tools/Palette Browser-v1/`, and rebuild the route `tools/Palette Browser/` as the clean Tool v2 **Palette Manager** screen.
+Reverse engineer the legacy Palette Browser / Manager behavior, preserve the legacy implementation under `toolbox/Palette Browser-v1/`, and rebuild the route `toolbox/Palette Browser/` as the clean Tool v2 **Palette Manager** screen.
 
 ## Legacy Files Inspected
 Legacy files inspected before rebuilding the active route:
 
-- `tools/Palette Browser/index.html`
-- `tools/Palette Browser/main.js`
-- `tools/Palette Browser/paletteBrowser.css`
-- `tools/Palette Browser/README.md`
-- `tools/Palette Browser/how_to_use.html`
-- `tools/Palette Browser/assets/images/preview.svg`
+- `toolbox/Palette Browser/index.html`
+- `toolbox/Palette Browser/main.js`
+- `toolbox/Palette Browser/paletteBrowser.css`
+- `toolbox/Palette Browser/README.md`
+- `toolbox/Palette Browser/how_to_use.html`
+- `toolbox/Palette Browser/assets/images/preview.svg`
 
 Immediate legacy input dependencies inspected for Palette behavior evidence only:
 
-- `tools/shared/paletteDocumentContract.js`
+- `toolbox/shared/paletteDocumentContract.js`
 - `src/engine/paletteList.js`
 
 ## Legacy Preservation
 The legacy implementation is preserved at:
 
 ```text
-tools/Palette Browser-v1/
+toolbox/Palette Browser-v1/
 ```
 
 The active route remains:
 
 ```text
-tools/Palette Browser/
+toolbox/Palette Browser/
 ```
 
 This preserves route continuity while changing the rebuilt visible product name to Palette Manager.
@@ -90,10 +90,10 @@ Deleted from the rebuilt active tool:
 - Tool id alias dependencies.
 
 ## Legacy Systems Avoided
-The rebuilt `tools/Palette Browser/` files and new `tools/common/` files do not import or call:
+The rebuilt `toolbox/Palette Browser/` files and new `toolbox/common/` files do not import or call:
 
-- `tools/shared/platformShell.js`
-- `tools/shared/assetUsageIntegration.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/assetUsageIntegration.js`
 - shared handoff modules
 - Workspace Manager v1 files
 - tool alias registries
@@ -143,7 +143,7 @@ Palette Manager reuses that pattern conceptually through the new Tool v2 common 
 - `tool-card-grid`
 - `tool-panel`
 
-The header/details area is wrapped in a local `<details>` / `<summary>` accordion styled in `tools/common/toolLayout.css`. It does not use `platformShell`, the old shared shell header, or legacy fullscreen header behavior.
+The header/details area is wrapped in a local `<details>` / `<summary>` accordion styled in `toolbox/common/toolLayout.css`. It does not use `platformShell`, the old shared shell header, or legacy fullscreen header behavior.
 
 ## Final Rebuilt Palette Manager Contract
 Palette Manager reads only session-backed `paletteJson`.
@@ -151,8 +151,8 @@ Palette Manager reads only session-backed `paletteJson`.
 Supported data paths:
 
 1. Workspace URL writes session and launches the tool with `hostContextId`; Palette Manager reads the matching session context.
-2. Tool URL provides explicit `paletteJson` or `paletteData`; `tools/common/sessionContext.js` writes that explicit data to session first, then Palette Manager reads session.
-3. Tool URL provides explicit `paletteUrl`; `tools/common/sessionContext.js` fetches that explicit URL, writes the result to session first, then Palette Manager reads session.
+2. Tool URL provides explicit `paletteJson` or `paletteData`; `toolbox/common/sessionContext.js` writes that explicit data to session first, then Palette Manager reads session.
+3. Tool URL provides explicit `paletteUrl`; `toolbox/common/sessionContext.js` fetches that explicit URL, writes the result to session first, then Palette Manager reads session.
 
 Minimum valid contract:
 
@@ -240,33 +240,33 @@ Deferred:
 - workspace session update controls
 
 ## Files Created Or Rebuilt
-- `tools/Palette Browser-v1/**` preserves the legacy implementation.
-- `tools/Palette Browser/index.html` rebuilt Palette Manager shell.
-- `tools/Palette Browser/main.js` class-based Palette Manager controller/renderers.
-- `tools/Palette Browser/styles.css` Palette Manager local styling.
-- `tools/common/toolLayout.css` Tool v2 layout/header accordion foundation.
-- `tools/common/sessionContext.js` session-backed context reader/writer.
-- `tools/common/toolContract.js` narrow Palette Manager contract validator.
+- `toolbox/Palette Browser-v1/**` preserves the legacy implementation.
+- `toolbox/Palette Browser/index.html` rebuilt Palette Manager shell.
+- `toolbox/Palette Browser/main.js` class-based Palette Manager controller/renderers.
+- `toolbox/Palette Browser/styles.css` Palette Manager local styling.
+- `toolbox/common/toolLayout.css` Tool v2 layout/header accordion foundation.
+- `toolbox/common/sessionContext.js` session-backed context reader/writer.
+- `toolbox/common/toolContract.js` narrow Palette Manager contract validator.
 
 ## Validation Performed
 Targeted validation run:
 
 ```powershell
-node --check "tools/common/sessionContext.js"
-node --check "tools/common/toolContract.js"
-node --check "tools/Palette Browser/main.js"
+node --check "toolbox/common/sessionContext.js"
+node --check "toolbox/common/toolContract.js"
+node --check "toolbox/Palette Browser/main.js"
 ```
 
 Results:
 
-- `node --check "tools/common/sessionContext.js"` passed.
-- `node --check "tools/common/toolContract.js"` passed.
-- `node --check "tools/Palette Browser/main.js"` passed.
+- `node --check "toolbox/common/sessionContext.js"` passed.
+- `node --check "toolbox/common/toolContract.js"` passed.
+- `node --check "toolbox/Palette Browser/main.js"` passed.
 
 Additional targeted inspection:
 
 ```powershell
-rg -n "Palette Browser / Manager|Palette Browser v2|Palette Manager v2|platformShell|assetUsageIntegration|shared/|handoff|\?tool=" "tools/Palette Browser" "tools/common"
+rg -n "Palette Browser / Manager|Palette Browser v2|Palette Manager v2|platformShell|assetUsageIntegration|shared/|handoff|\?tool=" "toolbox/Palette Browser" "toolbox/common"
 ```
 
 Result: no matches.
@@ -274,7 +274,7 @@ Result: no matches.
 Protected-scope status check:
 
 ```powershell
-git status --short -- schemas samples games start_of_day tools/shared "tools/Workspace Manager"
+git status --short -- schemas samples games start_of_day toolbox/shared "toolbox/Workspace Manager"
 ```
 
 Result: no changes listed.

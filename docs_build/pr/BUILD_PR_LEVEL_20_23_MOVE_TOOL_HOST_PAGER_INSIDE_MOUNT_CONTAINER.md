@@ -36,7 +36,7 @@ Required structure/behavior:
 
 One PR purpose only:
 
-- remove `section.tool-host-pager` from the top-level host shell in `tools/Workspace Manager/index.html`
+- remove `section.tool-host-pager` from the top-level host shell in `toolbox/Workspace Manager/index.html`
 - ensure pager markup is created/rendered inside `data-tool-host-mount-container`
 - place the pager inside mounted Workspace Manager content above Editors
 - keep pager behavior wired to existing Prev/Next/current-label/select behavior
@@ -44,7 +44,7 @@ One PR purpose only:
 
 ## Required HTML Result
 
-`tools/Workspace Manager/index.html` must no longer contain this top-level sibling before the mount container:
+`toolbox/Workspace Manager/index.html` must no longer contain this top-level sibling before the mount container:
 
 ```html
 <section class="tool-host-pager" aria-label="Workspace tool pager">
@@ -66,7 +66,7 @@ The host shell should keep only the mount container under the main shell, unless
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
+toolbox/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
 ```
 
 Runtime must:
@@ -111,7 +111,7 @@ Codex must NOT:
 - restore `gameId || game`
 - change samples behavior
 - change game `Open with Workspace Manager` behavior
-- modify unrelated tools/games/samples
+- modify unrelated toolbox/games/samples
 - modify `start_of_day`
 - broad refactor Workspace Manager
 
@@ -131,7 +131,7 @@ Create:
 Validation must include:
 
 - changed files
-- proof `tools/Workspace Manager/index.html` no longer has top-level `section.tool-host-pager`
+- proof `toolbox/Workspace Manager/index.html` no longer has top-level `section.tool-host-pager`
 - proof `section.tool-host-pager` is rendered inside `[data-tool-host-mount-container]`
 - proof pager appears above Editors/card grid inside mounted content
 - proof pager is not above Toolbox Aid site header/chrome

@@ -19,4 +19,4 @@ Branch: main
 
 ## Notes
 - Launch smoke report refreshed at `docs_build/reports/launch_smoke_report.md`.
-- Scope remained limited to shared event/command and UI utility extraction in `tools/shared`.
+- Scope remained limited to shared event/command and UI utility extraction in `toolbox/shared`.

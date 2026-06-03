@@ -15,9 +15,9 @@ Implemented independent sort key and direction toggles for Palette Manager V2 Us
 - Tag sorting uses normalized lowercase tag text and reverses correctly for descending.
 
 ## Validation
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
 - Targeted served-browser Palette Manager V2 sort toggle validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

@@ -17,13 +17,13 @@ MIDI Studio V2 now preserves the import manifest workflow while repairing the PR
 
 ## Files Changed
 
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/controls/ToolShellControl.js`
-- `tools/midi-studio-v2/js/controls/SongDetailsControl.js`
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/controls/ToolShellControl.js`
+- `toolbox/midi-studio-v2/js/controls/SongDetailsControl.js`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/js/services/MidiStudioStateSerializer.js`
 - `src/engine/audio/InstrumentGridParser.js`
 - `src/engine/audio/PreviewInstrumentPacks.js`
 - `src/engine/audio/PreviewSynthEngine.js`
@@ -34,7 +34,7 @@ MIDI Studio V2 now preserves the import manifest workflow while repairing the PR
 
 - PASS: `node --check` for changed MIDI Studio V2 JS, changed engine audio JS, and the Playwright spec.
 - PASS: UAT manifest JSON parse.
-- PASS: external-only HTML guard for `tools/midi-studio-v2/index.html`.
+- PASS: external-only HTML guard for `toolbox/midi-studio-v2/index.html`.
 - PASS: dynamic lane parser smoke for additional manifest lanes and drum tokens.
 - PASS: targeted MIDI Studio V2 Playwright affected lane:
   - `imports UAT manifest`

@@ -597,11 +597,11 @@ Remove old location after apply:
 
 | Target | Exists? | Live References? | Proposed Classification | Evidence Summary | Action Now | Recommended Future PR Scope |
 | --- | --- | --- | --- | --- | --- | --- |
-| `templates/` | yes | yes | `needs-manual-review` | Active refs in `tools/shared/vectorNativeTemplate.js`, `tools/shared/vectorTemplateSampleGame.js`, `tests/tools/VectorNativeTemplate.test.mjs`, and docs/planning surfaces. | none in this PR | Dedicated cleanup/build lane to classify keep vs migrate-later with dependency verification. |
-| `docs_build/archive/tools/SpriteEditor_old_keep/` policy | yes | yes | `keep` | Legacy-hidden runtime registry entry in `tools/toolRegistry.js`; referenced in specs, roadmap, and reports. | none in this PR | Separate legacy policy PR to define exact retirement criteria and transition gates. |
+| `templates/` | yes | yes | `needs-manual-review` | Active refs in `toolbox/shared/vectorNativeTemplate.js`, `toolbox/shared/vectorTemplateSampleGame.js`, `tests/tools/VectorNativeTemplate.test.mjs`, and docs/planning surfaces. | none in this PR | Dedicated cleanup/build lane to classify keep vs migrate-later with dependency verification. |
+| `docs_build/archive/tools/SpriteEditor_old_keep/` policy | yes | yes | `keep` | Legacy-hidden runtime registry entry in `toolbox/toolRegistry.js`; referenced in specs, roadmap, and reports. | none in this PR | Separate legacy policy PR to define exact retirement criteria and transition gates. |
 | `legacy class-retention policy marker` policy target | no | yes (docs-only) | `needs-manual-review` | Path not present on disk; only planning references found in roadmap/targets/build spec docs. | none in this PR | Clarify whether this is a historical placeholder, rename candidate, or retired concept before any cleanup execution. |
 | `docs_build/archive/` archived-notes policy | yes | yes | `keep` | Archive destination is actively documented across docs structure/readme/paths files; policy item still planned in roadmap. | none in this PR | Policy-definition PR to formalize retention + move criteria for archived notes. |
-| Legacy path imports (`/engine/`, `../engine/`, `./engine/`) | pattern check | no (active code) | `future-delete-candidate` | No matches for inspected old-engine import patterns in tools/src/old_games/samples. | none in this PR | Add guard/reporting checks in future cleanup PR to prevent regressions and retire stale legacy-import guidance. |
+| Legacy path imports (`/engine/`, `../engine/`, `./engine/`) | pattern check | no (active code) | `future-delete-candidate` | No matches for inspected old-engine import patterns in toolbox/src/old_games/samples. | none in this PR | Add guard/reporting checks in future cleanup PR to prevent regressions and retire stale legacy-import guidance. |
 | Eventual legacy-retirement candidates list | yes | yes (planning) | `migrate-later` | Explicitly tracked in roadmap + cleanup target docs and referenced by this BUILD spec. | none in this PR | Convert candidates into exact, dependency-ordered cleanup BUILDs after reference-safe verification. |
 
 ## Notes
@@ -654,30 +654,30 @@ Lane: BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS
 ## Work Executed
 1. Moved directory:
    - `templates/starter-project-template/`
-   - -> `tools/templates/starter-project-template/`
+   - -> `toolbox/templates/starter-project-template/`
 2. Updated only direct starter-template references required for correctness:
    - `scripts/validate-starter-project-template.mjs`
-     - `TEMPLATE_MANIFEST_PATH` now points to `tools/templates/starter-project-template/config/starter.project.json`
-   - `tools/templates/starter-project-template/README.md`
-     - Open-flow manifest path now points to `tools/templates/starter-project-template/config/starter.project.json`
+     - `TEMPLATE_MANIFEST_PATH` now points to `toolbox/templates/starter-project-template/config/starter.project.json`
+   - `toolbox/templates/starter-project-template/README.md`
+     - Open-flow manifest path now points to `toolbox/templates/starter-project-template/config/starter.project.json`
 
 ## Guard Compliance
-- `tools/templates/vector-native-arcade/` untouched.
+- `toolbox/templates/vector-native-arcade/` untouched.
 - No changes under:
   - `docs_build/dev/start_of_day/chatGPT/`
   - `docs_build/dev/start_of_day/codex/`
   - `docs_build/archive/`
 
 ## Validation Summary
-- `tools/templates/starter-project-template/` exists: PASS
+- `toolbox/templates/starter-project-template/` exists: PASS
 - `templates/starter-project-template/` no longer exists: PASS
-- `tools/templates/vector-native-arcade/` remains untouched: PASS
-- required direct references updated to `tools/templates/starter-project-template/`: PASS
+- `toolbox/templates/vector-native-arcade/` remains untouched: PASS
+- required direct references updated to `toolbox/templates/starter-project-template/`: PASS
 - protected start_of_day directories untouched: PASS
 
 ## Notes
 - No archive actions performed.
-- No modifications were made inside `tools/templates/vector-native-arcade/`.
+- No modifications were made inside `toolbox/templates/vector-native-arcade/`.
 ```
 
 ## Preserved Source: `docs_build/reports/spriteeditor_archive_move_report.md`
@@ -688,7 +688,7 @@ Lane: BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS
 Generated: 2026-04-12
 
 ## Move Summary
-- Source: tools/SpriteEditor_old_keep/
+- Source: toolbox/SpriteEditor_old_keep/
 - Destination: docs_build/archive/tools/SpriteEditor_old_keep/
 - Files moved: 44
 - Source path exists after move: no
@@ -723,7 +723,7 @@ Generated: 2026-04-12
 
 ## Runtime Impact Check
 - Runtime wiring files were not modified.
-- Runtime import/require/dynamic-import scan for SpriteEditor_old_keep in tools/src/old_games/samples/tests: no matches.
+- Runtime import/require/dynamic-import scan for SpriteEditor_old_keep in toolbox/src/old_games/samples/tests: no matches.
 - Active tools launch smoke:
   - Command: npm run test:launch-smoke -- --tools
   - Result: PASS 11/11 tools, FAIL 0
@@ -735,7 +735,7 @@ Generated: 2026-04-12
 - Remaining non-doc references to SpriteEditor_old_keep exist in legacy metadata/baseline files and runtime registry metadata by design under the no-runtime-wiring constraint.
 
 ## Commands Used
-- Move-Item -LiteralPath tools/SpriteEditor_old_keep -Destination docs_build/archive/tools/SpriteEditor_old_keep
+- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination docs_build/archive/tools/SpriteEditor_old_keep
 - rg -n -P (?<!docs_build/archive/)tools/SpriteEditor_old_keep docs --glob !docs_build/archive/**
 - rg import/require patterns for SpriteEditor_old_keep across tools src games samples tests
 - npm run test:launch-smoke -- --tools
@@ -749,7 +749,7 @@ Generated: 2026-04-12
 Generated: 2026-04-12
 
 ## Step 1: Old Path Does Not Exist
-- Check: tools/SpriteEditor_old_keep/
+- Check: toolbox/SpriteEditor_old_keep/
 - Result: PASS (path missing)
 
 ## Step 2: New Archive Path Exists With Identical Structure
@@ -769,8 +769,8 @@ Generated: 2026-04-12
 
 ### Non-Archive Matches (Exact)
 - .\docs_build\dev\codex_commands.md:6:tools/SpriteEditor_old_keep/
-- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:6:- Source: tools/SpriteEditor_old_keep/
-- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:53:- Move-Item -LiteralPath tools/SpriteEditor_old_keep -Destination docs_build/archive/tools/SpriteEditor_old_keep
+- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:6:- Source: toolbox/SpriteEditor_old_keep/
+- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:53:- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination docs_build/archive/tools/SpriteEditor_old_keep
 - .\docs_build\dev\reports\spriteeditor_archive_move_report.md:54:- rg -n -P (?<!docs_build/archive/)tools/SpriteEditor_old_keep docs --glob !docs_build/archive/**
 - .\tools\shared\find-duplicate-methods\found_dupes_called_count.txt:110:   -> Line 12: \tools\SpriteEditor_old_keep\modules\integration\integrationRegistry.js
 - .\tools\shared\find-duplicate-methods\found_dupes_called_count.txt:111:   -> Line 11: \tools\SpriteEditor_old_keep\modules\integration\systemIntegration.js
@@ -782,16 +782,16 @@ Generated: 2026-04-12
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:149:   -> Line 16: \tools\SpriteEditor_old_keep\modules\integration\integrationContracts.js
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:500:   -> Line 12: \tools\SpriteEditor_old_keep\modules\integration\integrationRegistry.js
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:501:   -> Line 11: \tools\SpriteEditor_old_keep\modules\integration\systemIntegration.js
-- .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:4:Move `tools/SpriteEditor_old_keep/` to `docs_build/archive/tools/SpriteEditor_old_keep/` as a non-executable reference artifact.
+- .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:4:Move `toolbox/SpriteEditor_old_keep/` to `docs_build/archive/tools/SpriteEditor_old_keep/` as a non-executable reference artifact.
 - .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:22:tools/SpriteEditor_old_keep/
-- .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:29:  tools/SpriteEditor_old_keep/
-- .\tools\dev\checkSharedExtractionGuard.baseline.json:1725:      "file": "tools/SpriteEditor_old_keep/modules/appCommands.js",
-- .\tools\dev\checkSharedExtractionGuard.baseline.json:1730:      "file": "tools/SpriteEditor_old_keep/modules/appCommands.js",
-- .\tools\dev\checkSharedExtractionGuard.baseline.json:1735:      "file": "tools/SpriteEditor_old_keep/modules/appIO.js",
-- .\tools\dev\checkSharedExtractionGuard.baseline.json:1740:      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
-- .\tools\dev\checkSharedExtractionGuard.baseline.json:1745:      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
-- .\tools\dev\checkSharedExtractionGuard.baseline.json:1750:      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
-- .\tools\dev\checkSharedExtractionGuard.baseline.json:1755:      "file": "tools/SpriteEditor_old_keep/modules/integration/integrationContracts.js",
+- .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:29:  toolbox/SpriteEditor_old_keep/
+- .\tools\dev\checkSharedExtractionGuard.baseline.json:1725:      "file": "toolbox/SpriteEditor_old_keep/modules/appCommands.js",
+- .\tools\dev\checkSharedExtractionGuard.baseline.json:1730:      "file": "toolbox/SpriteEditor_old_keep/modules/appCommands.js",
+- .\tools\dev\checkSharedExtractionGuard.baseline.json:1735:      "file": "toolbox/SpriteEditor_old_keep/modules/appIO.js",
+- .\tools\dev\checkSharedExtractionGuard.baseline.json:1740:      "file": "toolbox/SpriteEditor_old_keep/modules/appPalette.js",
+- .\tools\dev\checkSharedExtractionGuard.baseline.json:1745:      "file": "toolbox/SpriteEditor_old_keep/modules/appPalette.js",
+- .\tools\dev\checkSharedExtractionGuard.baseline.json:1750:      "file": "toolbox/SpriteEditor_old_keep/modules/appPalette.js",
+- .\tools\dev\checkSharedExtractionGuard.baseline.json:1755:      "file": "toolbox/SpriteEditor_old_keep/modules/integration/integrationContracts.js",
 
 ### Archive/Historical Match Files
 - docs_build/archive\dev-ops\QC_click_by_click_test_script.md
@@ -838,10 +838,10 @@ Lane: BUILD_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION
 ## Scope Executed
 1. Moved template directory:
    - `templates/vector-native-arcade/`
-   - -> `tools/templates/vector-native-arcade/`
+   - -> `toolbox/templates/vector-native-arcade/`
 2. Updated only the required four files:
-   - `tools/shared/vectorNativeTemplate.js`
-   - `tools/shared/vectorTemplateSampleGame.js`
+   - `toolbox/shared/vectorNativeTemplate.js`
+   - `toolbox/shared/vectorTemplateSampleGame.js`
    - `tests/tools/VectorNativeTemplate.test.mjs`
    - `games/vector-arcade-sample/README.md`
 3. Wrote required validation artifacts:
@@ -852,10 +852,10 @@ Lane: BUILD_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION
 All required path references were normalized from:
 - `templates/vector-native-arcade/`
 to:
-- `tools/templates/vector-native-arcade/`
+- `toolbox/templates/vector-native-arcade/`
 
 ## Move Result
-- Destination exists: `tools/templates/vector-native-arcade/`
+- Destination exists: `toolbox/templates/vector-native-arcade/`
 - Source removed: `templates/vector-native-arcade/`
 - Files moved under destination: `15`
 
@@ -867,7 +867,7 @@ to:
   - `docs_build/archive/`
 
 ## Validation Summary
-- Legacy path references in the four target files (bare, non-`tools/`): `0`
+- Legacy path references in the four target files (bare, non-`toolbox/`): `0`
 - Canonical active path references in the four target files: `28`
 
 ## Notes
@@ -887,8 +887,8 @@ Lane: APPLY_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION_VALIDATE
 Validate prior relocation outcomes without making structural changes.
 
 ## Checks
-1. `tools/templates/vector-native-arcade/` exists: **PASS**
-   - Evidence: `Test-Path tools/templates/vector-native-arcade` -> `True`
+1. `toolbox/templates/vector-native-arcade/` exists: **PASS**
+   - Evidence: `Test-Path toolbox/templates/vector-native-arcade` -> `True`
 
 2. `templates/vector-native-arcade/` does not exist: **PASS**
    - Evidence: `Test-Path templates/vector-native-arcade` -> `False`
@@ -898,10 +898,10 @@ Validate prior relocation outcomes without making structural changes.
      - `Test-Path templates/starter-project-template` -> `True`
      - `git diff --name-only -- templates/starter-project-template` -> no entries
 
-4. Target files use `tools/templates/vector-native-arcade/`: **PASS**
+4. Target files use `toolbox/templates/vector-native-arcade/`: **PASS**
    - Files checked:
-     - `tools/shared/vectorNativeTemplate.js`
-     - `tools/shared/vectorTemplateSampleGame.js`
+     - `toolbox/shared/vectorNativeTemplate.js`
+     - `toolbox/shared/vectorTemplateSampleGame.js`
      - `tests/tools/VectorNativeTemplate.test.mjs`
      - `games/vector-arcade-sample/README.md`
    - Evidence:

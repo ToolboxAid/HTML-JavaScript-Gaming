@@ -9,7 +9,7 @@
 - `git diff --name-status 32979aae..HEAD`
 - `git status --short`
 - targeted file inspection of PR/build docs and report artifacts
-- `git diff --cached -- tools/shared/platformShell.js`
+- `git diff --cached -- toolbox/shared/platformShell.js`
 
 ## Classification Legend
 - `KEEP`: proven useful evidence or process source-of-truth
@@ -20,8 +20,8 @@
 ## Path Ledger (PR 11.154+ Badge Lane)
 | Path | Class | Evidence | Recommendation |
 |---|---|---|---|
-| `tools/shared/platformShell.js` | INVESTIGATE | Owns visible badge emission path (`renderToolAssetBadge` -> `Asset: ...` template). Contains staged 11.160+ wiring churn branches. | Keep under investigation; no new behavior edits in this PR. |
-| `tools/Workspace Manager/main.js` | UNKNOWN | Changed in PR 11.156-11.158. Reports indicate this path was patched repeatedly while visible badge persisted. | Avoid blind revert; isolate only if owner-path validation proves redundant. |
+| `toolbox/shared/platformShell.js` | INVESTIGATE | Owns visible badge emission path (`renderToolAssetBadge` -> `Asset: ...` template). Contains staged 11.160+ wiring churn branches. | Keep under investigation; no new behavior edits in this PR. |
+| `toolbox/Workspace Manager/main.js` | UNKNOWN | Changed in PR 11.156-11.158. Reports indicate this path was patched repeatedly while visible badge persisted. | Avoid blind revert; isolate only if owner-path validation proves redundant. |
 | `docs_build/dev/codex_commands.md` | KEEP | Repro command provenance across attempts. | Keep. |
 | `docs_build/dev/commit_comment.txt` | KEEP | Commit-intent provenance for audit lane. | Keep. |
 | `docs_build/dev/reports/svg_asset_none_trace_11_155.txt` | KEEP | Captures early function/branch trace and failure hypothesis. | Keep as diagnostic history. |
@@ -51,6 +51,6 @@
 | `docs_build/pr/PR_11_164_DEAD_CODE_LEDGER_AND_REVERT_MAP.md` | KEEP | Current controlling spec for this recovery PR. | Keep. |
 
 ## Summary
-- Confirmed primary investigate owner: `tools/shared/platformShell.js`.
+- Confirmed primary investigate owner: `toolbox/shared/platformShell.js`.
 - Confirmed immediate safe dead artifacts to revert: empty/placeholder/manifest-only report files.
 - No runtime behavior was modified in this audit PR.

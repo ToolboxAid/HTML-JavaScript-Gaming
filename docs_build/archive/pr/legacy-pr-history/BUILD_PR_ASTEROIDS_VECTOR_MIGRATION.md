@@ -12,9 +12,9 @@ Migrate the flagship Asteroids platform demo to use first-class vector assets as
 - document temporary fallback behavior clearly
 
 ## Implemented Files
-- `tools/shared/asteroidsPlatformDemo.js`
-- `tools/shared/projectAssetValidation.js`
-- `tools/shared/projectPackaging.js`
+- `toolbox/shared/asteroidsPlatformDemo.js`
+- `toolbox/shared/projectAssetValidation.js`
+- `toolbox/shared/projectPackaging.js`
 - `tests/games/AsteroidsPlatformDemo.test.mjs`
 - `games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json`
 - `games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json`
@@ -38,9 +38,9 @@ Migrate the flagship Asteroids platform demo to use first-class vector assets as
 - Vector assets are the preferred path and should be treated as the target baseline for future demo/template work.
 
 ## Verification
-- `node --check tools/shared/asteroidsPlatformDemo.js`
-- `node --check tools/shared/projectAssetValidation.js`
-- `node --check tools/shared/projectPackaging.js`
+- `node --check toolbox/shared/asteroidsPlatformDemo.js`
+- `node --check toolbox/shared/projectAssetValidation.js`
+- `node --check toolbox/shared/projectPackaging.js`
 - `node --check tests/games/AsteroidsPlatformDemo.test.mjs`
 - `node ./scripts/run-node-tests.mjs`
 - Result: `107/107` explicit `run()` tests passed.

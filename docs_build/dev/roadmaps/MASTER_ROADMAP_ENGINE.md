@@ -14,7 +14,7 @@
 ## Conservative Rebaseline (2026-04-12)
 - status updates in this revision are conservative and execution-backed
 - recent tool-host, asset-pipeline, debug-inspector, and launch-smoke lanes are reflected without broad scope expansion
-- `templates/` cleanup was completed by relocating active template surfaces to `tools/templates/` and removing the empty root `templates/` directory
+- `templates/` cleanup was completed by relocating active template surfaces to `toolbox/templates/` and removing the empty root `templates/` directory
 
 ---
 
@@ -61,7 +61,7 @@
 - tools are created when they unblock engine/content progress
 - tools do not define engine behavior
 - tools share common IO/state/util layers where appropriate
-- tools remain organized under `tools/`
+- tools remain organized under `toolbox/`
 - active tools list remains explicit
 - legacy tools remain isolated and visibly non-current
 - 3D tools arrive when 3D capability needs them, not before
@@ -106,7 +106,7 @@
 - [x] `src/shared` target established
 - [x] `games/` target established
 - [x] `games/_template/` target established
-- [x] `tools/shared` target established
+- [x] `toolbox/shared` target established
 - [x] phase-based `samples/` grouping target established
 - [x] dependency direction rules defined
 - [x] shared asset promotion rules defined
@@ -134,7 +134,7 @@
 - [x] `games/_template/flow`
 - [x] `samples/phase-01`
 - [x] `samples/phase-13`
-- [x] `tools/shared`
+- [x] `toolbox/shared`
 
 ### Recent Checkpoint Notes
 - [x] broad import-path correction from `engine/` to `src/engine/` applied across remaining games/samples
@@ -514,7 +514,7 @@
 - [x] archived notes policy defined
 - [x] imports pointing to legacy paths reduced
 - [x] roadmap for eventual legacy retirement defined
-- [x] `templates/` folder evaluated, relocated to `tools/templates/`, and root `templates/` removed after validation
+- [x] `templates/` folder evaluated, relocated to `toolbox/templates/`, and root `templates/` removed after validation
 
 ---
 
@@ -543,7 +543,7 @@
 - [x] Apply master roadmap baseline
 - [x] Normalize samples phase structure
 - [x] Establish games/_template and normalize games layer
-- [x] Normalize tools/shared and tool boundaries
+- [x] Normalize toolbox/shared and tool boundaries
 - [x] Normalize assets/data ownership
 - [x] Expand testing/validation structure
 
@@ -590,7 +590,7 @@
 - [x] re-baseline this roadmap after active execution lanes stabilize
 - [x] split future implementation into small dependency-ordered PRs
 
-- [x] relocate active template surfaces to `tools/templates/` and remove the empty root `templates/` directory
+- [x] relocate active template surfaces to `toolbox/templates/` and remove the empty root `templates/` directory
 
 ---
 
@@ -707,7 +707,7 @@
 
 ## 18. Engine Finalization & Hardening (Deferred Execution)
 
-> Purpose: convert the built system into a clean, stable, production-grade engine after all major capability tracks are complete.  
+> Purpose: convert the built system into a clean, stable, production-grade engine after all major capability tracks are complete.
 > This is NOT a scaffolding phase � it is a consolidation + enforcement phase.
 
 ### Scope Rules
@@ -778,7 +778,7 @@
 
 ## 19. Architecture Maturity & Long-Term Stability (Deferred Execution)
 
-> Purpose: ensure the system is scalable, explainable, and extensible long-term.  
+> Purpose: ensure the system is scalable, explainable, and extensible long-term.
 > This phase turns the engine into a platform, not just a project.
 
 ### Scope Rules
@@ -873,7 +873,7 @@
 - [x] Canonical 17 first-class tool inventory documented.
 - [x] Tool folder paths verified for all 17 first-class tools.
 - [x] Explicit schema paths recorded for all 17 first-class tools.
-- [x] Close first-class schema gap by adding `tools/schemas/tools/skin-editor.schema.json`.
+- [x] Close first-class schema gap by adding `toolbox/schemas/tools/skin-editor.schema.json`.
 - [x] Define launcher pairing contract: pass tool payload object plus shared data objects.
 - [x] Verify all 17 tools have exactly one schema.
 - [x] Verify sample tool payload files match workspace/game `tools[]` item shape.
@@ -900,6 +900,6 @@
 - [x] Palette standalone singleton correction is complete (`game.manifest.json` root `palette`, no tool-owned `palettes`).
 - [x] Palette tool singleton + tool section metadata correction is complete (`tools["palette-browser"].palette` + metadata on all tool sections).
 - [x] Games index Workspace Manager open-action browser test is complete (`gameId` + `mount=game`, legacy `?game=` rejected, diagnostic check included).
-- [x] `tools/shared/asteroidsPlatformDemo.js` shared-boundary audit is complete with move recommendation captured for follow-up.
+- [x] `toolbox/shared/asteroidsPlatformDemo.js` shared-boundary audit is complete with move recommendation captured for follow-up.
 - [x] Manifest payload expectation test + cleanup completed (no root legacy manifest blocks, no `sourcePath`, palette singleton enforced, Asteroids tool payloads pruned to active data domains).
 - [x] Workspace Manager shared palette binding now hydrates from `game.manifest.json` `tools["palette-browser"].palette` (with root `palette` compatibility fallback only).

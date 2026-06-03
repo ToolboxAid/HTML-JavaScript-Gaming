@@ -9,7 +9,7 @@ Apply the approved server dashboard foundation with surgical sample-level change
 - Preserve existing combo keys
 - Do not refactor unrelated network code
 - Do not introduce new feature scope
-- Keep all work under `tools/dev` plus sample wiring
+- Keep all work under `toolbox/dev` plus sample wiring
 
 ## Ordered Apply Sequence
 1. Add `serverDashboardProviders.js`

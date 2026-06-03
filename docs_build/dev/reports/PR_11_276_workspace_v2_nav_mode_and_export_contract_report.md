@@ -4,8 +4,8 @@
 Workspace V2 nav/import/export UI only, plus validation that tool pages do not expose workspace controls.
 
 ## Files Changed
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/pr/PLAN_PR_11_276_WORKSPACE_V2_NAV_MODE_SEPARATION_AND_EXPORT_CONTRACT_CORRECTION.md
 - docs_build/pr/BUILD_PR_11_276_WORKSPACE_V2_NAV_MODE_SEPARATION_AND_EXPORT_CONTRACT_CORRECTION.md
@@ -24,7 +24,7 @@ Workspace V2 nav/import/export UI only, plus validation that tool pages do not e
 - Tool pages validated to confirm they do not expose workspace-session import/export controls.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
    - PASS

@@ -5,15 +5,15 @@ Date: 2026-05-25
 ## Targeted validation
 
 - `node --check` passed for changed Audio / SFX JavaScript files:
-  - `tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js`
-  - `tools/audio-sfx-playground-v2/js/bootstrap.js`
-  - `tools/audio-sfx-playground-v2/js/controls/ActionNavControl.js`
-  - `tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
-  - `tools/audio-sfx-playground-v2/js/controls/SfxTileListControl.js`
-  - `tools/audio-sfx-playground-v2/js/services/AudioSfxEngine.js`
-  - `tools/audio-sfx-playground-v2/js/services/ToolStateSerializer.js`
-- JSON parse validation passed for `tools/schemas/tools/audio-sfx-playground-v2.schema.json`.
-- HTML guard passed for `tools/audio-sfx-playground-v2/index.html`: no inline `<script>`, `<style>`, or inline event handlers.
+  - `toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js`
+  - `toolbox/audio-sfx-playground-v2/js/bootstrap.js`
+  - `toolbox/audio-sfx-playground-v2/js/controls/ActionNavControl.js`
+  - `toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
+  - `toolbox/audio-sfx-playground-v2/js/controls/SfxTileListControl.js`
+  - `toolbox/audio-sfx-playground-v2/js/services/AudioSfxEngine.js`
+  - `toolbox/audio-sfx-playground-v2/js/services/ToolStateSerializer.js`
+- JSON parse validation passed for `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`.
+- HTML guard passed for `toolbox/audio-sfx-playground-v2/index.html`: no inline `<script>`, `<style>`, or inline event handlers.
 - Serializer validation confirmed `playbackMode: "loop"` round-trips and invalid playback modes are rejected.
 - UI/docs text check found no planned/start API wording in Audio / SFX UI/docs.
 
@@ -37,7 +37,7 @@ Failures were outside this PR's Audio / SFX playback path:
 
 ## Focused Playwright validation
 
-Ran focused Playwright scripts against `tools/audio-sfx-playground-v2/index.html` with Chromium and a stub Web Audio API.
+Ran focused Playwright scripts against `toolbox/audio-sfx-playground-v2/index.html` with Chromium and a stub Web Audio API.
 
 Validated:
 
@@ -54,13 +54,13 @@ Result: focused impacted validation passed.
 
 ## V8 coverage
 
-(100%) tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - 17430/17430 bytes used in focused playback validation
-(100%) tools/audio-sfx-playground-v2/js/bootstrap.js - 4940/4940 bytes used in focused playback validation
-(100%) tools/audio-sfx-playground-v2/js/controls/ActionNavControl.js - 3793/3793 bytes used in focused playback validation
-(100%) tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - 27855/27855 bytes used in focused playback validation
-(100%) tools/audio-sfx-playground-v2/js/controls/SfxTileListControl.js - 1522/1522 bytes used in focused playback validation
-(100%) tools/audio-sfx-playground-v2/js/services/AudioSfxEngine.js - 6245/6245 bytes used in focused playback validation
-(100%) tools/audio-sfx-playground-v2/js/services/ToolStateSerializer.js - 9216/9216 bytes used in focused playback validation
+(100%) toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - 17430/17430 bytes used in focused playback validation
+(100%) toolbox/audio-sfx-playground-v2/js/bootstrap.js - 4940/4940 bytes used in focused playback validation
+(100%) toolbox/audio-sfx-playground-v2/js/controls/ActionNavControl.js - 3793/3793 bytes used in focused playback validation
+(100%) toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - 27855/27855 bytes used in focused playback validation
+(100%) toolbox/audio-sfx-playground-v2/js/controls/SfxTileListControl.js - 1522/1522 bytes used in focused playback validation
+(100%) toolbox/audio-sfx-playground-v2/js/services/AudioSfxEngine.js - 6245/6245 bytes used in focused playback validation
+(100%) toolbox/audio-sfx-playground-v2/js/services/ToolStateSerializer.js - 9216/9216 bytes used in focused playback validation
 
 ## Full samples smoke
 

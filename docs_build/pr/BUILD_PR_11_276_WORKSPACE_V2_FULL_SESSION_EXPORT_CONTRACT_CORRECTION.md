@@ -4,7 +4,7 @@
 Implement full Workspace V2 session-container export from the current export control path.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_276_workspace_v2_full_session_export_contract_correction_report.md
 
@@ -27,6 +27,6 @@ Implement full Workspace V2 session-container export from the current export con
 - No export fallback/default data.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2CurrentSessionExport.test.mjs
 - node tests/runtime/V2CurrentSessionExport.test.mjs

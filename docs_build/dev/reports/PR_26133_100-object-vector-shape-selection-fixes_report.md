@@ -20,7 +20,7 @@
 - PASS: marker structure and size verified in Playwright selectors: shape X span 16px, object + span 16px.
 
 ## Commands
-- PASS: node --check tools/object-vector-studio-v2/js/ToolStarterApp.js
+- PASS: node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js
 - PASS: node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 - PASS: git diff --check (CRLF advisory warnings only)
 - PASS: npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "Object Vector Studio V2 layout shell|creates Object Vector Studio V2 shapes with canvas drawing"

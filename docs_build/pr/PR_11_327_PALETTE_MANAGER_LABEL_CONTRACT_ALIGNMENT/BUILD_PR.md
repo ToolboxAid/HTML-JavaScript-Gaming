@@ -7,7 +7,7 @@
 - No unrelated runtime edits
 
 ## Change
-- Updated `toolLabel` mapping in `tools/palette-manager-v2/index.js`:
+- Updated `toolLabel` mapping in `toolbox/palette-manager-v2/index.js`:
   - from `"Asset Browser V2"`
   - to `"Asset Manager V2"`
 
@@ -16,7 +16,7 @@
 - Prevents mismatched standalone/workspace launch wording for the same tool.
 
 ## Validation Performed
-1. `node --check tools/palette-manager-v2/index.js` -> PASS
+1. `node --check toolbox/palette-manager-v2/index.js` -> PASS
 2. `npm run test:workspace-v2` -> PASS (`1 passed`, `failed=0`)
 
 ## Full Samples Smoke

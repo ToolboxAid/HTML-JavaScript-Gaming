@@ -11,7 +11,7 @@ Date: 2026-05-06
 
 ## Schema Updates
 
-- `tools/schemas/tools/asset-browser.schema.json` requires `type`, `kind`, `role`, `path`, and `source`.
+- `toolbox/schemas/tools/asset-browser.schema.json` requires `type`, `kind`, `role`, `path`, and `source`.
 - The schema keeps strict `additionalProperties: false`.
 - `$defs.assetRolesByType` maps allowed roles by broad type.
 - `$defs.assetKindsByType` maps allowed file-format kinds by broad type.

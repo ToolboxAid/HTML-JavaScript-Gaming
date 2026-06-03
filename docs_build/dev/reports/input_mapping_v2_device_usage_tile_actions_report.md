@@ -22,14 +22,14 @@
 
 ## Validation
 - `node --check src/engine/input/InputCapabilityDescriptors.js`: PASS
-- `node --check tools/input-mapping-v2/js/bootstrap.js`: PASS
-- `node --check tools/input-mapping-v2/js/ToolStarterApp.js`: PASS
-- `node --check tools/input-mapping-v2/js/controls/ActionSelectionControl.js`: PASS
-- `node --check tools/input-mapping-v2/js/controls/CaptureControl.js`: PASS
-- `node --check tools/input-mapping-v2/js/controls/DeviceListControl.js`: PASS
-- `node --check tools/input-mapping-v2/js/controls/PreviewPanelControl.js`: PASS
-- `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`: PASS
-- `node --check tools/input-mapping-v2/js/services/InputMappingState.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/bootstrap.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/controls/ActionSelectionControl.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/controls/CaptureControl.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/controls/DeviceListControl.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/services/InputMappingState.js`: PASS
 - `node --check tests/input/InputService.test.mjs`: PASS
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`: PASS
 - `node -e "const test = await import('./tests/input/InputService.test.mjs'); test.run();"`: PASS
@@ -52,7 +52,7 @@
 - Confirms combo display, selected tile behavior, gamepad auto-polling, and capture highlight/cancel behavior remain intact.
 
 ## Manual Validation
-1. Open `tools/input-mapping-v2/index.html`.
+1. Open `toolbox/input-mapping-v2/index.html`.
 2. In Devices, confirm there is no separate Wheel card and `Gamepad rumble/haptic feedback` is inside Game Controller.
 3. In Gestures, confirm wheel directions appear under Mouse.
 4. Capture keyboard, mouse, drag release, and game controller inputs; confirm the selected action highlights the used source controls while capture is idle.

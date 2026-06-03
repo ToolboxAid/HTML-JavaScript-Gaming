@@ -4,7 +4,7 @@
 Define the smallest safe foundation for a read-only server dashboard surface that extends the current debug platform without mixing console, overlay, and remote/system views.
 
 ## Scope
-- Add a server dashboard surface under `tools/dev/server-dashboard`
+- Add a server dashboard surface under `toolbox/dev/server-dashboard`
 - Keep the dashboard read-only
 - Keep all work sample-level
 - Keep engine core unchanged
@@ -45,7 +45,7 @@ This surface must remain:
 - Last refresh timestamp
 
 ## Ownership
-### `tools/dev/server-dashboard`
+### `toolbox/dev/server-dashboard`
 Owns:
 - host lifecycle
 - dashboard registry

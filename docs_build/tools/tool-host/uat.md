@@ -5,7 +5,7 @@ Validate user acceptance readiness for Tool Host across launch, core workflow, a
 
 ## Scope
 - Tool: `tool-host`
-- Entry point: `tools/Tool Host/index.html`
+- Entry point: `toolbox/Tool Host/index.html`
 
 ## Validation Scenarios
 

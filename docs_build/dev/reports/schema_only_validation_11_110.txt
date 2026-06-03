@@ -6,8 +6,8 @@ Purpose implemented:
 
 Validation path changes:
 1) Added shared schema-only validator
-- tools/shared/schemaOnlyToolPresetValidation.js
-  - Loads canonical schema by tool id: /tools/schemas/tools/<toolId>.schema.json
+- toolbox/shared/schemaOnlyToolPresetValidation.js
+  - Loads canonical schema by tool id: /toolbox/schemas/tools/<toolId>.schema.json
   - Validates loaded JSON value against schema (strict object/array/type/required/additionalProperties checks)
   - Throws a formatted contract error with:
     - tool id/name
@@ -17,28 +17,28 @@ Validation path changes:
     - validation summary
 
 2) Wired schema gate into shared loaded boundary
-- tools/shared/toolLoadDiagnostics.js
+- toolbox/shared/toolLoadDiagnostics.js
   - logToolLoadLoaded is now async.
   - When loadedDocument is provided, schema validation runs before boundary emission.
   - Invalid schema now throws before tool-specific extraction/normalization path continues.
 
 3) Updated active sample-preset load callers to await loaded-boundary schema validation and pass loadedDocument
-- tools/3D Asset Viewer/main.js
-- tools/3D Camera Path Editor/main.js
-- tools/3D JSON Payload/main.js
-- tools/Asset Browser/main.js
-- tools/Asset Pipeline/main.js
-- tools/Palette Browser/main.js
-- tools/Parallax Scene Studio/main.js
-- tools/Performance Profiler/main.js
-- tools/Physics Sandbox/main.js
-- tools/Replay Visualizer/main.js
-- tools/SVG Asset Studio/main.js
-- tools/Sprite Editor/modules/spriteEditorApp.js
-- tools/State Inspector/main.js
-- tools/Tile Model Converter/main.js
-- tools/Tilemap Studio/main.js
-- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+- toolbox/3D Asset Viewer/main.js
+- toolbox/3D Camera Path Editor/main.js
+- toolbox/3D JSON Payload/main.js
+- toolbox/Asset Browser/main.js
+- toolbox/Asset Pipeline/main.js
+- toolbox/Palette Browser/main.js
+- toolbox/Parallax Scene Studio/main.js
+- toolbox/Performance Profiler/main.js
+- toolbox/Physics Sandbox/main.js
+- toolbox/Replay Visualizer/main.js
+- toolbox/SVG Asset Studio/main.js
+- toolbox/Sprite Editor/modules/spriteEditorApp.js
+- toolbox/State Inspector/main.js
+- toolbox/Tile Model Converter/main.js
+- toolbox/Tilemap Studio/main.js
+- toolbox/Vector Map Editor/editor/VectorMapEditorApp.js
 
 Schema-only load-path simplifications applied in this PR:
 - Removed several post-load custom required-field throws and switched to canonical payload access in:
@@ -58,7 +58,7 @@ Schema-only load-path simplifications applied in this PR:
 Targeted validation executed:
 1) Syntax checks
 - node --check on changed JS files
-- Result: PASS for all changed JS files, including tools/shared/schemaOnlyToolPresetValidation.js
+- Result: PASS for all changed JS files, including toolbox/shared/schemaOnlyToolPresetValidation.js
 
 2) Schema gate behavior sanity (targeted runtime helper check)
 - Ran a targeted Node ESM script invoking enforceToolPresetSchemaOnlyContract with mocked fetch.

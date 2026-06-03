@@ -5,8 +5,8 @@ Chosen SSoT
 
 Files searched
 - docs_build/pr/BUILD_PR_LEVEL_11_120_SAMPLE_TOOL_LINK_COUNT_RECONCILIATION.md
-- tools/index.html
-- tools/renderToolsIndex.js
+- toolbox/index.html
+- toolbox/renderToolsIndex.js
 - samples/index.html
 - samples/index.render.js
 - samples/shared/sampleDetailPageEnhancement.js
@@ -17,7 +17,7 @@ Files searched
 Files changed
 - samples/metadata/samples.index.metadata.json
 - samples/index.render.js
-- tools/renderToolsIndex.js
+- toolbox/renderToolsIndex.js
 - docs_build/dev/reports/sample_tool_relationship_reconciliation_11_120.txt
 - docs_build/dev/reports/tools_index_expected_relationships_11_120.txt
 - docs_build/dev/reports/samples_index_rendered_links_11_120.txt
@@ -25,16 +25,16 @@ Files changed
 - docs_build/dev/reports/validation_after_11_120.txt
 
 Baseline counts
-- BUILD-reported tools/index expected relationship count: 34.
+- BUILD-reported toolbox/index expected relationship count: 34.
 - BUILD-reported samples/index rendered Open Tool link count: 22.
 - User-observed current samples/index link count after prior cleanup: 31.
-- User-observed current tools/index Samples count after prior cleanup: 30.
+- User-observed current toolbox/index Samples count after prior cleanup: 30.
 
 Reconciled counts
 - Final metadata SSoT relationships: 31.
 - Final samples hub visible relationships: 31 total = 30 Open <tool> links + 1 Open with Workspace Manager link.
 - Final tools hub Samples counts: 31.
-- samples/index.html and tools/index.html now agree at 31.
+- samples/index.html and toolbox/index.html now agree at 31.
 
 Entries added or restored to SSoT
 - 1208:tile-map-editor -> /samples/phase-12/1208/sample.1208.tile-map-editor.json
@@ -75,9 +75,9 @@ Renderer reconciliation
 - samples/index.render.js now builds the 1902 Workspace Manager launch href from roundtripToolPresets instead of a hardcoded sample.1902 path constant.
 - samples/index.render.js derives tool filter tokens from renderable relationships, including workspace-manager for the 1902 workspace link.
 - samples/index.render.js no longer injects a skin-editor filter option when no renderable SSoT relationship exists.
-- tools/renderToolsIndex.js now counts explicit roundtripToolPresets with matching toolHints and presetPath.
-- tools/renderToolsIndex.js now counts workspace-manager and renders Samples (1) on the Workspace Manager card.
-- tools/renderToolsIndex.js no longer uses toolsUsed or raw toolHints as the relationship count source.
+- toolbox/renderToolsIndex.js now counts explicit roundtripToolPresets with matching toolHints and presetPath.
+- toolbox/renderToolsIndex.js now counts workspace-manager and renders Samples (1) on the Workspace Manager card.
+- toolbox/renderToolsIndex.js no longer uses toolsUsed or raw toolHints as the relationship count source.
 
 Why final count is not 34
 - The old 34 count included direct visible-tool fan-out for sample 1902.

@@ -4,7 +4,7 @@ PR: `PR_26144_009-audio-sfx-json-import-export-behavior`
 
 ## Scope
 
-- Updated only `tools/audio-sfx-playground-v2` plus required reports.
+- Updated only `toolbox/audio-sfx-playground-v2` plus required reports.
 - Made Export JSON perform a browser JSON file download.
 - Made Copy JSON copy the same validated export payload used by Export JSON.
 - Kept the export payload as the Audio / SFX toolState object containing:
@@ -27,13 +27,13 @@ PASS:
   - CSS braces are balanced
   - JSON action labels are present
 - Audio / SFX Playground V2 JavaScript syntax check:
-  - `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`
+  - `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`
 - JSON import/export behavior check:
   - valid exported toolState round-trips through `readToolState`
   - invalid active-sound mismatch is rejected
   - Export JSON download path creates a JSON blob, click target, and object URL cleanup
 - Whitespace validation:
-  - `git diff --check -- tools/audio-sfx-playground-v2`
+  - `git diff --check -- toolbox/audio-sfx-playground-v2`
 - JSON file validation:
   - No JSON files changed in this PR.
 
@@ -63,8 +63,8 @@ Because Playwright is unavailable in this local environment, browser launch vali
 
 WARN: Runtime JavaScript changed, but Playwright V8 coverage could not be generated because the local Playwright command is unavailable.
 
-- `(WARN) tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - Playwright unavailable`
-- `(WARN) tools/audio-sfx-playground-v2/js/services/ToolStateSerializer.js - Playwright unavailable`
+- `(WARN) toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - Playwright unavailable`
+- `(WARN) toolbox/audio-sfx-playground-v2/js/services/ToolStateSerializer.js - Playwright unavailable`
 
 ## Full Samples Smoke Test
 

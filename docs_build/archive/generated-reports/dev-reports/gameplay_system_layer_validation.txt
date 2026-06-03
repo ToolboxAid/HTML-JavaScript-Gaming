@@ -1,12 +1,12 @@
 BUILD_PR_GAMEPLAY_SYSTEM_LAYER validation
 
 Files:
-- tools/shared/gameplaySystemLayer.js
+- toolbox/shared/gameplaySystemLayer.js
 - tests/tools/GameplaySystemLayer.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/gameplaySystemLayer.js
+- node --check toolbox/shared/gameplaySystemLayer.js
 - node --check tests/tools/GameplaySystemLayer.test.mjs
 - node ./scripts/run-node-tests.mjs
 

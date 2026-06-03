@@ -4,7 +4,7 @@
 Make the Palette Manager V2 right column allocate its height between Import/Export and Validation/Error Viewer without changing behavior or content.
 
 ## Scope
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -24,7 +24,7 @@ Make the Palette Manager V2 right column allocate its height between Import/Expo
 - Do not touch workspace/toolState/session logic.
 - Do not touch sample JSON.
 - Do not modify left or center panel layout.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 
 ## Validation

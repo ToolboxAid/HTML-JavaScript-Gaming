@@ -4,7 +4,7 @@
 Perform a final Palette Manager V2 stabilization audit before marking the tool complete.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - Required PR workflow docs and review artifacts.
 
 ## Boundaries
@@ -13,12 +13,12 @@ Perform a final Palette Manager V2 stabilization audit before marking the tool c
 - Do not refactor structure.
 - Do not touch workspace/toolState behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not run the full samples smoke test.
 
 ## Checks
-1. Confirm Palette Manager V2 has no `tools/shared` dependencies.
+1. Confirm Palette Manager V2 has no `toolbox/shared` dependencies.
 2. Confirm no stale CSS override artifacts remain where they create layout maintenance risk.
 3. Confirm no duplicate controls or duplicate IDs.
 4. Confirm required refs exist and are used by controls.
@@ -41,7 +41,7 @@ Perform a final Palette Manager V2 stabilization audit before marking the tool c
 - Default requested gate: `npm run test:workspace-v2`
 
 ## Manual Validation
-1. Open `/tools/palette-manager-v2/index.html`.
+1. Open `/toolbox/palette-manager-v2/index.html`.
 2. Collapse/expand User Palette, Sample Palette Swatch, Tags, Selected Swatch, User Defined Swatch, Palette JSON, and Validation/Error Viewer.
 3. Confirm Import JSON, Copy JSON, and Export JSON remain centered and clickable.
 4. Confirm Validation/Error Viewer Clear clears displayed messages and future validation messages still appear.

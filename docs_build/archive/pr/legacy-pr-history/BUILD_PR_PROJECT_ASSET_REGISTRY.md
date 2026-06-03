@@ -9,7 +9,7 @@ BUILD_PR_PROJECT_ASSET_REGISTRY.md
 Implement project-level asset registry support for Sprite Editor, Tile Map Editor, and Parallax Editor using additive, non-destructive behavior while preserving legacy standalone file compatibility and avoiding engine core API changes.
 
 ## Implemented scope
-- Added shared tool utility: `tools/shared/projectAssetRegistry.js`
+- Added shared tool utility: `toolbox/shared/projectAssetRegistry.js`
   - registry sanitize + merge helpers
   - project-relative path normalization
   - section upsert with duplicate reduction (`id` and normalized `path`)
@@ -30,10 +30,10 @@ Implement project-level asset registry support for Sprite Editor, Tile Map Edito
   - layer-level `parallaxSourceId` and document `assetRefs.parallaxSourceIds`
   - registry reference resolution fallback on load/sample load
 - Added sample project data with shared references:
-  - `tools/shared/samples/project-asset-registry-demo/project.assets.json`
-  - `tools/shared/samples/project-asset-registry-demo/hero-idle.sprite.json`
-  - `tools/shared/samples/project-asset-registry-demo/overworld-main.tilemap.json`
-  - `tools/shared/samples/project-asset-registry-demo/overworld-main.parallax.json`
+  - `toolbox/shared/samples/project-asset-registry-demo/project.assets.json`
+  - `toolbox/shared/samples/project-asset-registry-demo/hero-idle.sprite.json`
+  - `toolbox/shared/samples/project-asset-registry-demo/overworld-main.tilemap.json`
+  - `toolbox/shared/samples/project-asset-registry-demo/overworld-main.parallax.json`
 
 ## Compatibility contract
 - Legacy standalone tool files continue to load when no registry file exists.
@@ -43,12 +43,12 @@ Implement project-level asset registry support for Sprite Editor, Tile Map Edito
 
 ## Validation summary
 - Syntax checks passed:
-  - `node --check tools/shared/projectAssetRegistry.js`
-  - `node --check tools/Sprite Editor/modules/projectModel.js`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Sprite Editor/main.js`
-  - `node --check tools/Tilemap Studio/main.js`
-  - `node --check tools/Parallax Scene Studio/main.js`
+  - `node --check toolbox/shared/projectAssetRegistry.js`
+  - `node --check toolbox/Sprite Editor/modules/projectModel.js`
+  - `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
+  - `node --check toolbox/Sprite Editor/main.js`
+  - `node --check toolbox/Tilemap Studio/main.js`
+  - `node --check toolbox/Parallax Scene Studio/main.js`
 - Manual contract checklist updated and marked pass in `docs_build/reports/validation_checklist.txt`.
 
 ## Packaging

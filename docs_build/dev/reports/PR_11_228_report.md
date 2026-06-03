@@ -1,13 +1,13 @@
 # PR_11_228 Report - V2 Tool State Snapshot (Export for Debug)
 
 ## Files Changed
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2Snapshot.test.mjs`
 - `docs_build/dev/reports/PR_11_228_report.md`
 
@@ -69,11 +69,11 @@ Workspace snapshot sample:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2Snapshot.test.mjs`  
+1. `node --check tests/runtime/V2Snapshot.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2Snapshot.test.mjs`  
+2. `node tests/runtime/V2Snapshot.test.mjs`
 Result: **PASS** (writes `tmp/v2-snapshot-results.json`)
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
 Result: **PASS**
 
 ## No Fallback Confirmation

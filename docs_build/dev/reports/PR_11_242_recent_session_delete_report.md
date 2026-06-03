@@ -4,8 +4,8 @@
 Implemented Workspace V2 session deletion UX updates so recent sessions can be deleted directly, library delete scope is explicit, and recent-only session IDs entered in the library delete field produce a clear actionable message.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2RecentSessionDelete.test.mjs`
 
 ## Implementation Notes
@@ -22,7 +22,7 @@ Implemented Workspace V2 session deletion UX updates so recent sessions can be d
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2RecentSessionDelete.test.mjs
 node --check tests/runtime/V2DiffMergeButtonState.test.mjs
 node tests/runtime/V2RecentSessionDelete.test.mjs
@@ -30,7 +30,7 @@ node tests/runtime/V2DiffMergeButtonState.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2RecentSessionDelete.test.mjs` -> PASS
 - `node --check tests/runtime/V2DiffMergeButtonState.test.mjs` -> PASS
 - `node tests/runtime/V2RecentSessionDelete.test.mjs` -> PASS

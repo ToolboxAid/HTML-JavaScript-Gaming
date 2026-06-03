@@ -1,7 +1,7 @@
 # PR 11.167 Validation
 
 ## Change Summary
-Updated `tools/shared/platformShell.js` so hosted `svg-asset-studio` badge rendering reads hosted session context first.
+Updated `toolbox/shared/platformShell.js` so hosted `svg-asset-studio` badge rendering reads hosted session context first.
 
 Hosted source path:
 
@@ -12,13 +12,13 @@ Hosted source path:
 Existing shared handoff behavior remains in the standalone/non-hosted badge path.
 
 ## Files Changed
-- `tools/shared/platformShell.js`
+- `toolbox/shared/platformShell.js`
 - `docs_build/dev/reports/pr_11_167_validation.md`
 
 ## Targeted Validation
-- `node --check tools/shared/platformShell.js` - PASS
-- `node --check "tools/Workspace Manager/main.js"` - PASS
-- `node --check "tools/SVG Asset Studio/main.js"` - PASS
+- `node --check toolbox/shared/platformShell.js` - PASS
+- `node --check "toolbox/Workspace Manager/main.js"` - PASS
+- `node --check "toolbox/SVG Asset Studio/main.js"` - PASS
 
 ## Manual UAT
 Manual browser UAT is required outside this terminal pass:

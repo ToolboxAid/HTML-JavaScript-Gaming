@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
+const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-diff-results.json");
 
 function readText(filePath) {
@@ -90,8 +90,8 @@ export function run() {
   const jsHasComputeMethod = workspaceJsText.includes("computeSessionDiff(leftPayload, rightPayload)");
   const jsHasSelectMethod = workspaceJsText.includes("computeSelectedSessionDiff()");
 
-  if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!workspaceHtmlExists) failures.push("Missing tools/workspace-v2/index.html.");
+  if (!workspaceJsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!workspaceHtmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
   if (!syntaxValid) failures.push("workspace-v2/index.js failed syntax check.");
   if (!htmlHasDiffUi) failures.push("Diff viewer UI nodes are missing.");
   if (!jsHasCandidatesMethod) failures.push("Missing buildSessionDiffCandidates().");

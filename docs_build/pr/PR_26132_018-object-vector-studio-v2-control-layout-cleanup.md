@@ -22,10 +22,10 @@ Playwright impacted: Yes.
 
 Commands run:
 
-- `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
-- `node --check tools/object-vector-studio-v2/js/bootstrap.js`
+- `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
+- `node --check toolbox/object-vector-studio-v2/js/bootstrap.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `node --check tools/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs`
+- `node --check toolbox/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --grep "Object Vector Studio V2" --reporter=list`
 - `npm run test:workspace-v2`
 
@@ -59,7 +59,7 @@ Expected fail behavior:
 
 ## Manual Validation
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Confirm left column order: Object, Object Details, Objects.
 3. Confirm right column order: Shape/Tools, Palette, JSON Details, Dependency Graph, Status Log.
 4. Load a valid Object Vector payload with a runtime palette.

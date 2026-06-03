@@ -13,7 +13,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Target Structure (Sample-Level)
 ```text
-tools/dev/server-dashboard/
+toolbox/dev/server-dashboard/
   serverDashboardHost.js
   serverDashboardRegistry.js
   serverDashboardProviders.js

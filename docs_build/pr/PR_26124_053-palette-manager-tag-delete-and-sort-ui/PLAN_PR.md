@@ -4,13 +4,13 @@
 Update Palette Manager V2 tag management and sorting UI without changing shared services or palette JSON contracts.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not modify shared accordionV2.
 - Do not modify shared sort services.
 - Do not add dependencies.

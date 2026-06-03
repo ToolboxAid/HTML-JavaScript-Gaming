@@ -4,7 +4,7 @@
 Added an early cross-tool validation gate in Workspace V2 Session Merge preview. If selected Session A/B payload `toolId` values differ, preview is blocked immediately with a clear message and both selected tool IDs, before deep merge/conflict preview runs.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2CrossToolMergeBlock.test.mjs`
 
 ## Implementation Details
@@ -28,7 +28,7 @@ Added an early cross-tool validation gate in Workspace V2 Session Merge preview.
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2CrossToolMergeBlock.test.mjs
 node --check tests/runtime/V2MergeConflictSummary.test.mjs
 node --check tests/runtime/V2ConfirmPreviewEnableState.test.mjs
@@ -38,7 +38,7 @@ node tests/runtime/V2ConfirmPreviewEnableState.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2CrossToolMergeBlock.test.mjs` -> PASS
 - `node --check tests/runtime/V2MergeConflictSummary.test.mjs` -> PASS
 - `node --check tests/runtime/V2ConfirmPreviewEnableState.test.mjs` -> PASS

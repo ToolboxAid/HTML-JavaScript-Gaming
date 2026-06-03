@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-persistence-results.json");
 
@@ -216,10 +216,10 @@ function validateTool(toolId) {
     if (fixtureValid && !hostContextId) failures.push("Fixture hostContextId is missing.");
   }
 
-  const validUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId || "missing-host-context-id")}`;
-  const emptyUrl = `tools/${toolId}/index.html`;
+  const validUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId || "missing-host-context-id")}`;
+  const emptyUrl = `toolbox/${toolId}/index.html`;
   const invalidHostContextId = `${toolId}-invalid-host`;
-  const invalidUrl = `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(invalidHostContextId)}`;
+  const invalidUrl = `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(invalidHostContextId)}`;
   const invalidSessionContext = buildInvalidSession(toolId, sessionContext);
   const sessionByContextId = {};
   if (hostContextId) {

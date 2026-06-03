@@ -4,9 +4,9 @@
 Add one scoped Palette Manager V2 startup path that loads and validates sample palette JSON from the `samplePresetPath` URL parameter.
 
 ## Scope
-- `tools/palette-manager-v2/main.js`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/modules/PaletteValidationService.js`
+- `toolbox/palette-manager-v2/main.js`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/modules/PaletteValidationService.js`
 - Required PR workflow docs and review artifacts.
 
 ## Implementation
@@ -25,7 +25,7 @@ Add one scoped Palette Manager V2 startup path that loads and validates sample p
 ## Boundaries
 - Do not modify workspace/toolState behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add fallback/default data.
 - Do not add dependencies.
 - Do not modify Palette Manager CSS or layout.

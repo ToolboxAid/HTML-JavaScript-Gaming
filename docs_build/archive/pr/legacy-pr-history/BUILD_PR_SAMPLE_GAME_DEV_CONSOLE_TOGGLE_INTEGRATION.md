@@ -9,10 +9,10 @@ Dev Console + Debug Overlay Sample Integration
 ## Implementation Steps (Codex)
 
 1. Create file:
-tools/dev/devConsoleIntegration.js
+toolbox/dev/devConsoleIntegration.js
 
 2. Implement:
-- import runtime from tools/shared/devConsoleDebugOverlay.js
+- import runtime from toolbox/shared/devConsoleDebugOverlay.js
 - key handling:
   ` → toggleConsole()
   Shift + ` → toggleOverlay()

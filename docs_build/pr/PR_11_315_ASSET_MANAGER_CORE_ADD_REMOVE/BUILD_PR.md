@@ -8,7 +8,7 @@
   - `path`
   - `Add Asset` button
   - action status readout
-- Implemented strict add validation in `tools/asset-manager-v2/index.js`:
+- Implemented strict add validation in `toolbox/asset-manager-v2/index.js`:
   - requires non-empty `id`, `label`, `kind`, `path`
   - rejects duplicate `id`
   - rejects add when no valid session is loaded
@@ -19,6 +19,6 @@
 - Updated valid state to keep Workspace persistence through existing write-back path so exports reflect add/remove updates.
 
 ## Validation
-- `node --check tools/asset-manager-v2/index.js`
+- `node --check toolbox/asset-manager-v2/index.js`
 - legacy-id content audit -> zero matches
 - legacy-id path audit -> zero matches

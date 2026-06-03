@@ -38,8 +38,8 @@
 - PASS: `node --check src/engine/rendering/WorldScreenTransform.js`
 - PASS: `node --check src/engine/rendering/ObjectVectorRuntimeAssetService.js`
 - PASS: `node --check src/engine/collision/objectVector.js`
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
-- PASS: `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
+- PASS: `node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js`
 - PASS: `node --check tests/playwright/tools/CollisionInspectorV2.spec.mjs`
 - PASS: `npm run build:manifest`
   - Wrote `docs/build/sample-manifest.json`; generated output was removed after validation.
@@ -68,5 +68,5 @@
 
 ## Manual Test Notes
 - Open `games/Asteroids/index.html`, rotate the ship, fire bullets, and verify ship, bullet, asteroid, and UFO placement/orientation remain visually aligned.
-- Open `tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`, choose ship/bullet/asteroid/UFO pairs, change A/B rotation and zoom, and verify origins, heading guides, transformed points, and collision results update consistently.
+- Open `toolbox/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`, choose ship/bullet/asteroid/UFO pairs, change A/B rotation and zoom, and verify origins, heading guides, transformed points, and collision results update consistently.
 - Open Object Vector Studio V2, select/rotate transformed shapes, and verify selection bounds track preview geometry while editor zoom remains viewport-only.

@@ -3,7 +3,7 @@
 ## Production Access
 - Asset Manager V2 production access remains session/context based through Workspace Manager.
 - The valid Workspace Manager session path is still covered by the Asset Manager V2 Playwright suite.
-- Direct `tools/asset-manager-v2/index.html?workspace=prod` launch is treated as invalid.
+- Direct `toolbox/asset-manager-v2/index.html?workspace=prod` launch is treated as invalid.
 
 ## Temporary Access
 - `?workspace=UAT` remains the only temporary URL-based Asset Manager V2 access path.

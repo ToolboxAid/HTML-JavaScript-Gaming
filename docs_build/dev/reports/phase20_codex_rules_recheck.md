@@ -6,11 +6,11 @@ BLOCKED
 
 ## Recheck Scope
 
-- `tools/shared/toolLaunchSSoTData.js`
-- `tools/shared/toolLaunchSSoT.js`
+- `toolbox/shared/toolLaunchSSoTData.js`
+- `toolbox/shared/toolLaunchSSoT.js`
 - `samples/index.render.js`
 - `games/index.render.js`
-- `tools/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/main.js`
 
 ## Rules Checklist
 
@@ -26,7 +26,7 @@ BLOCKED
 
 ## Failing Evidence
 
-Fallback/default residues in `tools/Workspace Manager/main.js`:
+Fallback/default residues in `toolbox/Workspace Manager/main.js`:
 
 - `:270` -> `return toolIds[0] || "";`
 - `:463` -> tool select fallback to `toolIds[0]`

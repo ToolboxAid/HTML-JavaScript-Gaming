@@ -19,7 +19,7 @@ Unify project-level data across tools so assets, maps, and scenes can be shared 
 - deep editor refactors
 
 ## Strategy
-- leverage tools/shared/projectSystem
+- leverage toolbox/shared/projectSystem
 - align asset paths and IDs
 - minimal adapters per tool
 

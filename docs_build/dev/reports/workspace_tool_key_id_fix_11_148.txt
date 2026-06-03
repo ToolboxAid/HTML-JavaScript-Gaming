@@ -4,7 +4,7 @@ Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
 Mode: STRICT SCOPE
 
 Changed File
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 
 Exact Behavior Changed
 - Workspace manifest parsing now treats the object key under `tools` as the authoritative tool id.
@@ -21,11 +21,11 @@ Exact Behavior Changed
 
 Validation Commands / Results
 1) JS syntax
-- Command: `node --check "tools/Workspace Manager/main.js"`
+- Command: `node --check "toolbox/Workspace Manager/main.js"`
 - Result: PASS
 
 2) Removal of missing-tool-id diagnostic logic
-- Command: `rg -n "tool-entry-missing-tool-id|tool-entry-id-mismatch" "tools/Workspace Manager/main.js"`
+- Command: `rg -n "tool-entry-missing-tool-id|tool-entry-id-mismatch" "toolbox/Workspace Manager/main.js"`
 - Result: PASS (no matches)
 
 3) Sample 1902 direct manifest compatibility evidence
@@ -38,11 +38,11 @@ Validation Commands / Results
 - Result:
   - docs_build/dev/codex_commands.md
   - docs_build/dev/commit_comment.txt
-  - tools/Workspace Manager/main.js
+  - toolbox/Workspace Manager/main.js
 - Note: the two `docs_build/dev/*` files are pre-existing unrelated workspace diffs.
 
-- Command: `git diff --name-only -- "tools/Workspace Manager/main.js" "docs_build/dev/reports/workspace_tool_key_id_fix_11_148.txt"`
-- Result: `tools/Workspace Manager/main.js`
+- Command: `git diff --name-only -- "toolbox/Workspace Manager/main.js" "docs_build/dev/reports/workspace_tool_key_id_fix_11_148.txt"`
+- Result: `toolbox/Workspace Manager/main.js`
 
 Strict Scope Confirmation
 - No schema files modified.

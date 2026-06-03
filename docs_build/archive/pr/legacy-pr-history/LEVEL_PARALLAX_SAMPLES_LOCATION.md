@@ -3,7 +3,7 @@
 
 Parallax sample files must reside in:
 
-tools/Parallax Scene Studio/samples/
+toolbox/Parallax Scene Studio/samples/
 
 These are editor-local learning and test files.
 

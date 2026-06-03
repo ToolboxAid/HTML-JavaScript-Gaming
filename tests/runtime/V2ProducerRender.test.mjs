@@ -8,8 +8,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
-const toolsRoot = path.join(repoRoot, "tools");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const toolsRoot = path.join(repoRoot, "toolbox");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-producer-render-results.json");
 
 const TOOLS = [
@@ -91,7 +91,7 @@ function generateHostContextId(toolId) {
 }
 
 function buildLaunchUrl(toolId, hostContextId) {
-  return `tools/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId)}`;
+  return `toolbox/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId)}`;
 }
 
 function readHostContextIdFromUrl(launchUrl) {

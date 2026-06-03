@@ -1,7 +1,7 @@
 # PR_11_310 Report - Workspace V2 Legacy/Conflicting Logic Cleanup
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/pr/PR_11_310_WORKSPACE_V2_STATE_CLEANUP/PLAN_PR.md`
 - `docs_build/pr/PR_11_310_WORKSPACE_V2_STATE_CLEANUP/BUILD_PR.md`
 - `docs_build/dev/codex_commands.md`
@@ -16,7 +16,7 @@
 - Kept workspace import/export centered on `tools.*` structure and retained existing schema/data shapes.
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 
 ## Validation Results
 - PASS: syntax check succeeded.

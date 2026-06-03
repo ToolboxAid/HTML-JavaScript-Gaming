@@ -1,11 +1,11 @@
 # PR_11_221 Report - V2 Error Logging (Structured)
 
 ## Files Changed
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.js`
 - `tests/runtime/V2ErrorLogging.test.mjs`
 - `docs_build/dev/reports/PR_11_221_report.md`
 
@@ -59,13 +59,13 @@ Example RUNTIME:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2ErrorLogging.test.mjs`  
+1. `node --check tests/runtime/V2ErrorLogging.test.mjs`
 Result: **PASS**
-2. `node tests/runtime/V2ErrorLogging.test.mjs`  
+2. `node tests/runtime/V2ErrorLogging.test.mjs`
 Result: **PASS** (writes `tmp/v2-error-logging-results.json`)
-3. `node --check tools/*-v2/index.js`  
-Result: **FAIL** on Windows/Node wildcard resolution (`MODULE_NOT_FOUND` for literal `tools\\*-v2\\index.js`)
-4. Explicit equivalent per-file syntax sweep for `tools/*-v2/index.js`  
+3. `node --check toolbox/*-v2/index.js`
+Result: **FAIL** on Windows/Node wildcard resolution (`MODULE_NOT_FOUND` for literal `toolbox\\*-v2\\index.js`)
+4. Explicit equivalent per-file syntax sweep for `toolbox/*-v2/index.js`
 Result: **PASS** for all detected V2 tool JS files
 
 Runtime test assertions passed for all five target tools:

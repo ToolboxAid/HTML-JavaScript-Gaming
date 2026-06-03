@@ -5,14 +5,14 @@ PASS/FAIL: PASS
 Baseline commit used:
 - 4dc2b0f1e5dda41c4220626910964c2c492aa7f6
 - Subject: Show Workspace Manager asset status from embedded tool payloads - PR 11.22
-- Baseline file reset: tools/shared/platformShell.js
+- Baseline file reset: toolbox/shared/platformShell.js
 
 Files changed:
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/PR_11_27_validation.txt
 
 Root cause of grayed-out buttons:
-- Workspace-context tool disablement in tools/shared/platformShell.js used a global palette gate:
+- Workspace-context tool disablement in toolbox/shared/platformShell.js used a global palette gate:
   - non-palette tools were disabled whenever shared palette handoff was not ready.
 - This gate ignored whether a tool already had valid embedded payload state in manifest.tools[toolId].
 - Result: payload-backed tools appeared in Workspace Manager with embedded status labels, but links remained disabled/grayed out.
@@ -26,7 +26,7 @@ Why payload presence now enables launch:
 - This keeps utility/unsupported cases gated while allowing payload-backed tools to open without selectedAssetId/assetRegistry/external file requirements.
 
 Validation commands/results:
-- node --check tools/shared/platformShell.js -> PASS
+- node --check toolbox/shared/platformShell.js -> PASS
 - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools -> PASS
   - Summary: PASS=19 FAIL=0 TOTAL=19
 

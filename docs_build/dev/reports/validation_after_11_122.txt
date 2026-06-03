@@ -3,19 +3,19 @@ PR 11.122 - Validation After Changes
 PASS
 
 Commands run and results
-- node --check "tools/Palette Browser/main.js"
+- node --check "toolbox/Palette Browser/main.js"
   Result: PASS
-- node --check "tools/Workspace Manager/main.js"
+- node --check "toolbox/Workspace Manager/main.js"
   Result: PASS
-- node --check tools/shared/platformShell.js
+- node --check toolbox/shared/platformShell.js
   Result: PASS
 - node --check scripts/validate-json-contracts.mjs
   Result: PASS
 - node --check tests/tools/ToolSchemaStrictModeValidation.test.mjs
   Result: PASS
-- JSON parse check for tools/schemas/tools/palette-browser.schema.json, tools/schemas/workspace.manifest.schema.json, samples/phase-19/1902/sample.1902.workspace-all-tools.json, samples/metadata/samples.index.metadata.json
+- JSON parse check for toolbox/schemas/tools/palette-browser.schema.json, toolbox/schemas/workspace.manifest.schema.json, samples/phase-19/1902/sample.1902.workspace-all-tools.json, samples/metadata/samples.index.metadata.json
   Result: PASS
-- Palette schema-only validation using tools/shared/schemaOnlyToolPresetValidation.js
+- Palette schema-only validation using toolbox/shared/schemaOnlyToolPresetValidation.js
   Result: direct palette PASS valid; wrapper PASS invalid; workspace manifest PASS invalid; Asteroids game manifest PASS invalid
 - node -e import('./tests/tools/ToolSchemaStrictModeValidation.test.mjs').then(m => m.run())
   Result: PASS

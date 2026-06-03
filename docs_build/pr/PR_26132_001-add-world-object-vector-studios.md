@@ -6,10 +6,10 @@ Add World Vector Studio V2 and Object Vector Studio V2 as copied First-Class Too
 
 ## Changes
 
-- Copied `tools/templates-v2/` into `tools/world-vector-studio-v2/`.
-- Copied `tools/templates-v2/` into `tools/object-vector-studio-v2/`.
+- Copied `toolbox/templates-v2/` into `toolbox/world-vector-studio-v2/`.
+- Copied `toolbox/templates-v2/` into `toolbox/object-vector-studio-v2/`.
 - Updated copied tool ids, visible titles, headers, README documentation, and copied launch checks.
-- Registered both new tools in `tools/toolRegistry.js` for registry-driven tools index launch wiring.
+- Registered both new tools in `toolbox/toolRegistry.js` for registry-driven tools index launch wiring.
 - Marked Vector Map Editor and Primitive Skin Editor as deprecated in tool tiles and their existing documentation only.
 - Added How To Use pages for the two new studio tools.
 - Added Workspace Manager V2 Playwright coverage for tools index cards, launch definitions, and direct launch of both copied tool shells.

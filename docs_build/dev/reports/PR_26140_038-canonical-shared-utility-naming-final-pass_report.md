@@ -12,7 +12,7 @@
 
 ## Remaining Intentional Aliases
 - `tests/run-tests.mjs`: `run as run...` aliases remain because every test module exports the same `run` function name and the aggregate runner needs distinct callable names.
-- `src/engine/**/index.js` and `tools/shared/**/index.js`: `export { default as ... }` remains for public barrel APIs that expose default class/module exports under stable named exports.
+- `src/engine/**/index.js` and `toolbox/shared/**/index.js`: `export { default as ... }` remains for public barrel APIs that expose default class/module exports under stable named exports.
 - `src/shared/index.js`: `export * as shared...` namespace exports remain as intentional top-level shared-family barrels.
 - `tests/core/EngineCoreBoundaryBaseline.test.mjs` and `tests/runtime/Phase19OverlayExpansionFramework.test.mjs`: namespace imports remain because these tests validate module/barrel surfaces as namespaces.
 - `tests/shared/SharedNumberStringIdCloseout.test.mjs` and `tests/shared/SharedFoundationCombinedPass.test.mjs`: `legacy...` aliases remain to compare legacy compatibility modules against canonical utilities.

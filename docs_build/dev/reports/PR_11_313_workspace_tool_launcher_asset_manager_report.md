@@ -4,11 +4,11 @@
 Make Workspace V2 explicitly able to open tools via a visible tools menu and rename Asset Browser V2 to Asset Manager V2 in user-facing UI while keeping `asset-manager-v2` contracts intact.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
-- `tools/asset-manager-v2/index.html`
-- `tools/asset-manager-v2/index.js`
-- `tools/index.html`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
+- `toolbox/asset-manager-v2/index.html`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/index.html`
 - `tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs`
 - `docs_build/pr/PR_11_313_WORKSPACE_V2_TOOL_LAUNCHER_ASSET_MANAGER_UI/PLAN_PR.md`
 - `docs_build/pr/PR_11_313_WORKSPACE_V2_TOOL_LAUNCHER_ASSET_MANAGER_UI/BUILD_PR.md`
@@ -29,8 +29,8 @@ Make Workspace V2 explicitly able to open tools via a visible tools menu and ren
   - existing invalid/empty behavior still used when `assetCatalog` is missing/invalid.
 
 ## Validation Commands Run
-- `node --check tools/workspace-v2/index.js` -> **PASS**
-- `node --check tools/asset-manager-v2/index.js` -> **PASS**
+- `node --check toolbox/workspace-v2/index.js` -> **PASS**
+- `node --check toolbox/asset-manager-v2/index.js` -> **PASS**
 - `node --check tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs` -> **PASS**
 - `node tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs` -> **PASS**
 

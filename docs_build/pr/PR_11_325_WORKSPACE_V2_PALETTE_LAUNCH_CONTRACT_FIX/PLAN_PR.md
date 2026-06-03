@@ -4,7 +4,7 @@
 Fix the first/highest-impact FAIL from the audit (`workspace-v2`) by restoring contract-valid Workspace V2 launch handling for `palette-manager-v2`.
 
 ## Scope
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/pr/PR_11_325_WORKSPACE_V2_PALETTE_LAUNCH_CONTRACT_FIX/PLAN_PR.md`
 - `docs_build/pr/PR_11_325_WORKSPACE_V2_PALETTE_LAUNCH_CONTRACT_FIX/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_325_report.md`

@@ -30,4 +30,4 @@
 - PASS: `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "uses header lifecycle controls and launches tools from fixed Workspace Manager V2 tiles"`
 
 ## Notes
-- Workspace Manager V2 browser validation previously failed current game manifests with `root.tools.asset-manager-v2: unresolved schema reference tools/asset-manager-v2.schema.json`. The manifest schema requires `asset-manager-v2`, so Workspace Manager now preloads and registers that schema alongside the other referenced tool schemas.
+- Workspace Manager V2 browser validation previously failed current game manifests with `root.tools.asset-manager-v2: unresolved schema reference toolbox/asset-manager-v2.schema.json`. The manifest schema requires `asset-manager-v2`, so Workspace Manager now preloads and registers that schema alongside the other referenced tool schemas.

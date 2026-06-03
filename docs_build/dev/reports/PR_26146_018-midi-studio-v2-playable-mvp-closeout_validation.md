@@ -14,11 +14,11 @@
 
 ## Commands
 - `node --check src/engine/audio/PreviewSynthEngine.js`
-- `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `node --check tools/midi-studio-v2/js/bootstrap.js`
-- `node --check tools/midi-studio-v2/js/controls/ActionNavControl.js`
-- `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `node --check tools/midi-studio-v2/js/controls/AudioDiagnosticsControl.js`
+- `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `node --check toolbox/midi-studio-v2/js/bootstrap.js`
+- `node --check toolbox/midi-studio-v2/js/controls/ActionNavControl.js`
+- `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `node --check toolbox/midi-studio-v2/js/controls/AudioDiagnosticsControl.js`
 - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs` (initial run failed because Chromium was missing)
 - `npx.cmd playwright install chromium` (failed because default browser cache was outside writable workspace)

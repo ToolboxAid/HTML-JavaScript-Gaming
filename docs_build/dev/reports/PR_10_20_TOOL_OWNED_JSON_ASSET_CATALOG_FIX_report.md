@@ -6,7 +6,7 @@ Fix tool-owned JSON asset catalog behavior for samples `0204`, `1413`, and `1505
 ## Changed Files
 
 ### Tool
-- `tools/Asset Browser/main.js`
+- `toolbox/Asset Browser/main.js`
 
 ### Sample 0204
 - `samples/phase-02/0204/sample.0204.asset-browser.json`
@@ -32,7 +32,7 @@ Observed failure pattern from prior evidence:
 - Set `search: ""`
 - Kept preset-only UI fields (selection/import defaults) as UI state only
 
-2. Hardened `applyAssetBrowserPreset` in `tools/Asset Browser/main.js`:
+2. Hardened `applyAssetBrowserPreset` in `toolbox/Asset Browser/main.js`:
 - If JSON catalog is non-empty but preset filters produce zero visible results, revert UI filter state to unfiltered (`All` + empty search).
 - Emit a diagnostics warning describing the preset filter reset.
 
@@ -70,7 +70,7 @@ Observed failure pattern from prior evidence:
 ## Validation
 
 ### Commands
-1. `node --check tools/Asset Browser/main.js`
+1. `node --check toolbox/Asset Browser/main.js`
 2. `node --check samples/phase-02/0204/main.js`
 3. `node --check samples/phase-14/1413/main.js`
 4. `node --check samples/phase-15/1505/main.js`

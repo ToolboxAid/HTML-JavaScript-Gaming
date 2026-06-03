@@ -32,8 +32,8 @@ Expected pass behavior: all targeted and workspace-v2 Playwright tests pass with
 Expected fail behavior: mismatched gestures produce actionable WARN status/log text and do not create mapping tokens.
 
 ## Validation
-PASS `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-PASS `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`
+PASS `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+PASS `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
 PASS `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 PASS `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs -g "Input Mapping V2"` - 8 passed.
 PASS `npm run test:workspace-v2` - 67 passed.

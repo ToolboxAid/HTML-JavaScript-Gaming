@@ -1,7 +1,7 @@
 # BUILD_PR_SHARED_EXTRACTION_31_CLONE_JSON_BATCH_RETRY
 
 ## Purpose
-Centralize duplicated `cloneJson(value)` implementations across the exact tools/dev + tools/shared batch identified in the duplicate report, without guessing scope.
+Centralize duplicated `cloneJson(value)` implementations across the exact toolbox/dev + toolbox/shared batch identified in the duplicate report, without guessing scope.
 
 ## Single PR Purpose
 Normalize ONLY this helper:
@@ -14,34 +14,34 @@ Normalize ONLY this helper:
 1. `src/shared/utils/jsonUtils.js`
 
 ### Consumer files
-2. `tools/dev/devConsoleIntegration.js`
-3. `tools/dev/advanced/debugMacroRegistry.js`
-4. `tools/dev/advanced/debugPanelGroupRegistry.js`
-5. `tools/dev/inspectors/inspectorStore.js`
-6. `tools/dev/plugins/debugPluginSystem.js`
-7. `tools/dev/presets/debugPresetApplier.js`
-8. `tools/dev/presets/debugPresetRegistry.js`
-9. `tools/shared/assetMarketplace.js`
-10. `tools/shared/asteroidsPlatformDemo.js`
-11. `tools/shared/cloudRuntime.js`
-12. `tools/shared/collaborationSystem.js`
-13. `tools/shared/contractVersioning.js`
-14. `tools/shared/devConsoleDebugOverlay.js`
-15. `tools/shared/hotReloadSystem.js`
-16. `tools/shared/multiTargetExport.js`
-17. `tools/shared/performanceBenchmarks.js`
-18. `tools/shared/platformValidationSuite.js`
-19. `tools/shared/pluginArchitecture.js`
-20. `tools/shared/renderPipelineContract.js`
-21. `tools/shared/runtimeAssetLoader.js`
-22. `tools/shared/runtimeSceneLoaderHotReload.js`
-23. `tools/shared/runtimeStreaming.js`
-24. `tools/shared/vectorAssetSystem.js`
-25. `tools/shared/vectorGeometryRuntime.js`
-26. `tools/shared/vectorNativeTemplate.js`
-27. `tools/shared/vectorTemplateSampleGame.js`
-28. `tools/shared/vector/vectorAssetContract.js`
-29. `tools/shared/vector/vectorRenderPrep.js`
+2. `toolbox/dev/devConsoleIntegration.js`
+3. `toolbox/dev/advanced/debugMacroRegistry.js`
+4. `toolbox/dev/advanced/debugPanelGroupRegistry.js`
+5. `toolbox/dev/inspectors/inspectorStore.js`
+6. `toolbox/dev/plugins/debugPluginSystem.js`
+7. `toolbox/dev/presets/debugPresetApplier.js`
+8. `toolbox/dev/presets/debugPresetRegistry.js`
+9. `toolbox/shared/assetMarketplace.js`
+10. `toolbox/shared/asteroidsPlatformDemo.js`
+11. `toolbox/shared/cloudRuntime.js`
+12. `toolbox/shared/collaborationSystem.js`
+13. `toolbox/shared/contractVersioning.js`
+14. `toolbox/shared/devConsoleDebugOverlay.js`
+15. `toolbox/shared/hotReloadSystem.js`
+16. `toolbox/shared/multiTargetExport.js`
+17. `toolbox/shared/performanceBenchmarks.js`
+18. `toolbox/shared/platformValidationSuite.js`
+19. `toolbox/shared/pluginArchitecture.js`
+20. `toolbox/shared/renderPipelineContract.js`
+21. `toolbox/shared/runtimeAssetLoader.js`
+22. `toolbox/shared/runtimeSceneLoaderHotReload.js`
+23. `toolbox/shared/runtimeStreaming.js`
+24. `toolbox/shared/vectorAssetSystem.js`
+25. `toolbox/shared/vectorGeometryRuntime.js`
+26. `toolbox/shared/vectorNativeTemplate.js`
+27. `toolbox/shared/vectorTemplateSampleGame.js`
+28. `toolbox/shared/vector/vectorAssetContract.js`
+29. `toolbox/shared/vector/vectorRenderPrep.js`
 
 Do not edit any other file.
 

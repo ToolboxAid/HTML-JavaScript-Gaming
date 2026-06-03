@@ -14,8 +14,8 @@ Fix Text to Speech V2 layout height behavior only.
 
 ## Files Changed
 
-- `tools/text2speach-V2/index.html`
-- `tools/text2speach-V2/styles/text2speach-V2.css`
+- `toolbox/text2speach-V2/index.html`
+- `toolbox/text2speach-V2/styles/text2speach-V2.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
 ## Validation

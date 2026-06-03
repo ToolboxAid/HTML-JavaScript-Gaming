@@ -21,8 +21,8 @@
 - The manifest-size canvas is hosted in a scrollable viewport instead of being scaled down by CSS.
 
 ## Validation
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2Controls.js`
-- PASS: `node --check tools/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2Controls.js`
+- PASS: `node --check toolbox/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
 - PASS: `node --check tests/playwright/tools/CollisionInspectorV2.spec.mjs`
 - PASS: `npx playwright test tests/playwright/tools/CollisionInspectorV2.spec.mjs --project=playwright --workers=1 --reporter=list`
   - Validates Tool Starter layout classes.
@@ -46,8 +46,8 @@
 - Skipped. This PR is limited to Collision Inspector V2 template/layout, rotate controls, and diagnostic scale display. It does not broadly change shared runtime sample loading.
 
 ## Changed Files
-- `tools/collision-inspector-v2/index.html`
-- `tools/collision-inspector-v2/styles/collisionInspectorV2.css`
-- `tools/collision-inspector-v2/js/CollisionInspectorV2Controls.js`
-- `tools/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
+- `toolbox/collision-inspector-v2/index.html`
+- `toolbox/collision-inspector-v2/styles/collisionInspectorV2.css`
+- `toolbox/collision-inspector-v2/js/CollisionInspectorV2Controls.js`
+- `toolbox/collision-inspector-v2/js/CollisionInspectorV2Renderer.js`
 - `tests/playwright/tools/CollisionInspectorV2.spec.mjs`

@@ -22,13 +22,13 @@ BLOCKED
 Result: PASS
 
 - Label is `Open <tool>` at `samples/index.render.js:104`.
-- Launch uses SSoT resolver at `samples/index.render.js:92` -> `tools/shared/toolLaunchSSoT.js:62`.
-- Resolved target path format is `tools/<tool>/index.html`:
-  - `sampleLaunch.href = /tools/Sprite%20Editor/index.html?...`
+- Launch uses SSoT resolver at `samples/index.render.js:92` -> `toolbox/shared/toolLaunchSSoT.js:62`.
+- Resolved target path format is `toolbox/<tool>/index.html`:
+  - `sampleLaunch.href = /toolbox/Sprite%20Editor/index.html?...`
 - External launch memory clear remains intact via:
   - `samples/index.render.js:539`
-  - `tools/shared/toolLaunchSSoT.js:121`
-  - `tools/shared/toolLaunchSSoT.js:138`
+  - `toolbox/shared/toolLaunchSSoT.js:121`
+  - `toolbox/shared/toolLaunchSSoT.js:138`
 - Missing/invalid context fails visibly:
   - `sampleMissingContext => href: ''`
   - `sampleMissingTarget => href: ''`
@@ -39,13 +39,13 @@ Result: PASS
 Result: PASS
 
 - Label is `Open with Workspace Manager` at `games/index.render.js:263`.
-- Launch uses SSoT resolver at `games/index.render.js:148` -> `tools/shared/toolLaunchSSoT.js:95`.
-- Resolved target path format is `tools/Workspace Manager/index.html`:
-  - `gameLaunch.href = /tools/Workspace%20Manager/index.html?gameId=2001&mount=game`
+- Launch uses SSoT resolver at `games/index.render.js:148` -> `toolbox/shared/toolLaunchSSoT.js:95`.
+- Resolved target path format is `toolbox/Workspace Manager/index.html`:
+  - `gameLaunch.href = /toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game`
 - External launch memory clear remains intact via:
   - `games/index.render.js:419`
-  - `tools/shared/toolLaunchSSoT.js:121`
-  - `tools/shared/toolLaunchSSoT.js:138`
+  - `toolbox/shared/toolLaunchSSoT.js:121`
+  - `toolbox/shared/toolLaunchSSoT.js:138`
 - Missing/invalid context fails visibly:
   - `gameInvalidContext => href: ''`
   - visible UI error path: `Workspace launch error` in `games/index.render.js:268`
@@ -57,25 +57,25 @@ Result: FAIL
 
 Validated route path:
 
-`games/index.html -> Open with Workspace Manager -> /tools/Workspace%20Manager/index.html?gameId=2001&mount=game`
+`games/index.html -> Open with Workspace Manager -> /toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game`
 
 Pass evidence:
 
 - Route resolves correctly from SSoT (`gameLaunch` output).
 - Memory clear occurs before navigation (`assignCalls` output after clear).
 - Explicit context load exists in Workspace Manager:
-  - `writeToolHostSharedContext(...)` at `tools/Workspace Manager/main.js:381`
-  - `hostMode: "game"` / `gameId: gameEntry.id` at `tools/Workspace Manager/main.js:386-387`
+  - `writeToolHostSharedContext(...)` at `toolbox/Workspace Manager/main.js:381`
+  - `hostMode: "game"` / `gameId: gameEntry.id` at `toolbox/Workspace Manager/main.js:386-387`
 
 Fail evidence (fallback/default behavior still present):
 
 - First-item default selection remains:
-  - `tools/Workspace Manager/main.js:270` -> `return toolIds[0] || "";`
-  - `tools/Workspace Manager/main.js:463`
-  - `tools/Workspace Manager/main.js:475`
+  - `toolbox/Workspace Manager/main.js:270` -> `return toolIds[0] || "";`
+  - `toolbox/Workspace Manager/main.js:463`
+  - `toolbox/Workspace Manager/main.js:475`
 - Legacy compatibility query fallback remains:
-  - `tools/Workspace Manager/main.js:153` (`searchParams.get("gameId") || searchParams.get("game")`)
-  - `tools/Workspace Manager/main.js:284` (`url.searchParams.get("game") || url.searchParams.get("gameId")`)
+  - `toolbox/Workspace Manager/main.js:153` (`searchParams.get("gameId") || searchParams.get("game")`)
+  - `toolbox/Workspace Manager/main.js:284` (`url.searchParams.get("game") || url.searchParams.get("gameId")`)
 
 ## 4. Codex Rules Recheck (Summary)
 
@@ -98,9 +98,9 @@ Next required BUILD_PR:
 
 ## Validation Commands Executed
 
-- `node --check tools/shared/toolLaunchSSoTData.js`
-- `node --check tools/shared/toolLaunchSSoT.js`
+- `node --check toolbox/shared/toolLaunchSSoTData.js`
+- `node --check toolbox/shared/toolLaunchSSoT.js`
 - `node --check samples/index.render.js`
 - `node --check games/index.render.js`
-- `node --check tools/Workspace Manager/main.js`
+- `node --check toolbox/Workspace Manager/main.js`
 - module scripts validating launch resolution, error behavior, and memory-clear behavior

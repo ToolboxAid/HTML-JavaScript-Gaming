@@ -16,7 +16,7 @@ Added back action handlers to V2 tool JS:
 - Back target resolves to `fromTool` when present and valid.
 - Otherwise back target defaults to `workspace-v2`.
 - Back URLs preserve `hostContextId` using:
-  - `tools/<target>-v2/index.html?hostContextId=<id>`
+  - `toolbox/<target>-v2/index.html?hostContextId=<id>`
 
 For tool action chains:
 - `workspace-v2` launch now appends `fromTool=workspace-v2`
@@ -43,18 +43,18 @@ Output:
 - failures: `0`
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
-- `tools/asset-manager-v2/index.html`
-- `tools/asset-manager-v2/index.js`
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.html`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/tilemap-studio-v2/index.html`
-- `tools/tilemap-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.html`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
+- `toolbox/asset-manager-v2/index.html`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.html`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/tilemap-studio-v2/index.html`
+- `toolbox/tilemap-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.html`
+- `toolbox/vector-map-editor-v2/index.js`
 - `tests/runtime/V2BackNav.test.mjs`
 - `docs_build/dev/reports/PR_11_214_report.md`
 
@@ -63,15 +63,15 @@ Output:
    - Result: **PASS**
 2. `node tests/runtime/V2BackNav.test.mjs`
    - Result: **PASS**
-3. `node --check tools/*-v2/index.js`
+3. `node --check toolbox/*-v2/index.js`
    - Result: **FAIL** in PowerShell wildcard expansion (`*` passed literally to Node)
 4. Equivalent per-file syntax checks:
-   - `node --check tools/workspace-v2/index.js` — **PASS**
-   - `node --check tools/asset-manager-v2/index.js` — **PASS**
-   - `node --check tools/palette-manager-v2/index.js` — **PASS**
-   - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
-   - `node --check tools/tilemap-studio-v2/index.js` — **PASS**
-   - `node --check tools/vector-map-editor-v2/index.js` — **PASS**
+   - `node --check toolbox/workspace-v2/index.js` — **PASS**
+   - `node --check toolbox/asset-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/palette-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/svg-asset-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/tilemap-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/vector-map-editor-v2/index.js` — **PASS**
 
 ## HostContext + Fallback Confirmation
 - `hostContextId` is preserved through forward and back URL construction.

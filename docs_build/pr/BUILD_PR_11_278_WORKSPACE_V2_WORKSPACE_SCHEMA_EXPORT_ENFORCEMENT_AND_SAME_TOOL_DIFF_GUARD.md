@@ -4,9 +4,9 @@
 Implement workspace.schema-based Workspace V2 export/import enforcement and same-tool-only diff guard.
 
 ## Files
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
-- tools/schemas/workspace.schema.json
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
+- toolbox/schemas/workspace.schema.json
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_278_workspace_schema_export_enforcement_and_same_tool_diff_guard_report.md
 
@@ -20,7 +20,7 @@ Implement workspace.schema-based Workspace V2 export/import enforcement and same
    - no `exportedAt`
 3. Add minimal workspace schema support for Workspace V2 session payload carriage inside `games[].session` (no broad schema rewrite).
 4. Validate workspace export/import payloads against workspace schema rules in Workspace V2 runtime validator before export download/import apply.
-5. Reject wrapper/non-schema payloads with actionable error text naming `tools/schemas/workspace.schema.json`.
+5. Reject wrapper/non-schema payloads with actionable error text naming `toolbox/schemas/workspace.schema.json`.
 6. Add same-tool diff guard:
    - disable `Compute Diff` when `Session A toolId !== Session B toolId`
    - show exact message: `Diff requires sessions from the same tool.`
@@ -33,7 +33,7 @@ Implement workspace.schema-based Workspace V2 export/import enforcement and same
 - Same-tool diff behavior remains unchanged.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2SessionMerge.test.mjs`

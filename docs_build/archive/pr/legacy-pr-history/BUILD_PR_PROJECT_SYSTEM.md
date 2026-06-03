@@ -8,29 +8,29 @@
 - Per-tool persistence adapters for active tools only
 
 ## Modules created
-- `tools/shared/projectManifestContract.js`
-- `tools/shared/projectSystem.js`
-- `tools/shared/projectSystemAdapters.js`
+- `toolbox/shared/projectManifestContract.js`
+- `toolbox/shared/projectSystem.js`
+- `toolbox/shared/projectSystemAdapters.js`
 - `docs/reference/architecture-standards/specs/project_manifest_contract.md`
 - `scripts/validate-project-system.mjs`
 
 ## Modules changed
-- `tools/shared/platformShell.js`
-- `tools/shared/platformShell.css`
-- `tools/Tilemap Studio/main.js`
-- `tools/Parallax Scene Studio/main.js`
-- `tools/Sprite Editor/main.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
-- `tools/Vector Asset Studio/main.js`
-- `tools/Asset Browser/main.js`
-- `tools/Palette Browser/main.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/platformShell.css`
+- `toolbox/Tilemap Studio/main.js`
+- `toolbox/Parallax Scene Studio/main.js`
+- `toolbox/Sprite Editor/main.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Vector Asset Studio/main.js`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Palette Browser/main.js`
 
 ## Public/runtime boundaries
 - The shell owns project actions: New, Open, Save, Save As, Close
 - The manifest contract owns schema/version/validation/migration rules
 - Adapters own tool-specific capture/apply behavior
 - Shared asset/palette references stay rooted in manifest `sharedReferences`
-- `tools/index.html` remains tool-only
+- `toolbox/index.html` remains tool-only
 - `Sprite Editor` remains first-class
 - `SpriteEditor_old_keep` remains hidden legacy and excluded
 
@@ -50,17 +50,17 @@
 - Persisted shared asset/palette handoffs through manifest references instead of duplicating them in shell state
 
 ## Validation performed
-- `node --check tools/shared/projectManifestContract.js`
-- `node --check tools/shared/projectSystem.js`
-- `node --check tools/shared/projectSystemAdapters.js`
-- `node --check tools/shared/platformShell.js`
-- `node --check tools/Tilemap Studio/main.js`
-- `node --check tools/Parallax Scene Studio/main.js`
-- `node --check tools/Sprite Editor/main.js`
-- `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-- `node --check tools/Vector Asset Studio/main.js`
-- `node --check tools/Asset Browser/main.js`
-- `node --check tools/Palette Browser/main.js`
+- `node --check toolbox/shared/projectManifestContract.js`
+- `node --check toolbox/shared/projectSystem.js`
+- `node --check toolbox/shared/projectSystemAdapters.js`
+- `node --check toolbox/shared/platformShell.js`
+- `node --check toolbox/Tilemap Studio/main.js`
+- `node --check toolbox/Parallax Scene Studio/main.js`
+- `node --check toolbox/Sprite Editor/main.js`
+- `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
+- `node --check toolbox/Vector Asset Studio/main.js`
+- `node --check toolbox/Asset Browser/main.js`
+- `node --check toolbox/Palette Browser/main.js`
 - `node scripts/validate-tool-registry.mjs`
 - `node scripts/validate-active-tools-surface.mjs`
 - `node scripts/validate-project-system.mjs`

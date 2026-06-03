@@ -18,11 +18,11 @@ Codex must replace this file during execution.
   - Risk: game tile/title/workspace routing behavior changed repeatedly.
 - `samples/index.render.js`
   - Risk: sample tool launch generation and roundtrip behavior changed repeatedly.
-- `tools/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/main.js`
   - Risk: host-mode query propagation and launch filtering expanded significantly.
-- `tools/shared/platformShell.js`
+- `toolbox/shared/platformShell.js`
   - Risk: launch clearing/hydration logic and shared binding behavior changed across multiple commits.
-- `tools/shared/toolLaunchSSoT.js` (added)
+- `toolbox/shared/toolLaunchSSoT.js` (added)
   - Risk: centralized launch behavior introduced late in sequence; requires independent validation.
 
 ## High Risk Policy/Boundary Files
@@ -38,9 +38,9 @@ Codex must replace this file during execution.
 ## High Risk Churn Groups (Path Patterns)
 - `samples/phase-*/**`
   - Risk: broad additive/deletive churn increases replay difficulty and regression risk.
-- `tools/*/index.html`
+- `toolbox/*/index.html`
   - Risk: 8 tool index files changed/added/renamed; launch and UI behavior intertwined.
-- `tools/*/main.js`
+- `toolbox/*/main.js`
   - Risk: multiple tool runtime contracts changed outside isolated launch lane.
 - `games/*/index.html` and `games/*/main.js`
   - Risk: workspace boot and game launch guard paths changed across many games.
@@ -56,12 +56,12 @@ Codex must replace this file during execution.
   - `docs_build/dev/reports/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY_uat_report.md`
   - `docs_build/dev/reports/tool_launch_ssot_external_memory_reset_validation.md`
   - `samples/phase-12/1208/data/toolFormattedTileMap.js`
-  - `tools/shared/toolLaunchSSoT.js`
+  - `toolbox/shared/toolLaunchSSoT.js`
 
 ## Risk-Based Triage Recommendation
 - Reset to baseline first.
 - Reapply only launch-critical recovery in small PR slices:
-  1. `games/index*` and `tools/Workspace Manager/main.js` routing only.
+  1. `games/index*` and `toolbox/Workspace Manager/main.js` routing only.
   2. `samples/index*` direct tool launch routing only.
   3. workspace memory-clear behavior only after explicit test confirmation.
 - Defer all unrelated tool UI, sample content, and roadmap/document churn until after launch path stability is proven.

@@ -219,7 +219,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../../../../../GameFoundryStudio/`
 
-### `tools/_templates-v2/index.html`
+### `toolbox/_tool_template-v2/index.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -230,7 +230,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `/GameFoundryStudio/`
 
-### `tools/ai-assistant.html`
+### `toolbox/ai-assistant.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -241,7 +241,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/animation-studio.html`
+### `toolbox/animation-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -252,7 +252,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/asset-studio.html`
+### `toolbox/asset-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -263,7 +263,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/builder.html`
+### `toolbox/builder.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -272,7 +272,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/code-studio.html`
+### `toolbox/code-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -283,7 +283,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/creator.html`
+### `toolbox/creator.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -292,7 +292,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/game-builder.html`
+### `toolbox/game-builder.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -303,7 +303,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/game-design-studio.html`
+### `toolbox/game-design-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -314,7 +314,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/groups/configuration-admin.html`
+### `toolbox/groups/configuration-admin.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -325,13 +325,13 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../../GameFoundryStudio/`
 
-### `tools/index.html`
+### `toolbox/index.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/theme/v2/theme.css`
 - `src` -> `assets/js/gamefoundry-partials.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/input-studio.html`
+### `toolbox/input-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -342,7 +342,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/localization-studio/index.html`
+### `toolbox/localization-studio/index.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -353,7 +353,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../../GameFoundryStudio/`
 
-### `tools/midi-studio.html`
+### `toolbox/midi-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -364,7 +364,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/object-vector-studio.html`
+### `toolbox/object-vector-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -375,7 +375,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/palette-manager.html`
+### `toolbox/palette-manager.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -386,7 +386,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/particle-studio.html`
+### `toolbox/particle-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -397,7 +397,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/publisher.html`
+### `toolbox/publisher.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -408,7 +408,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/sound-studio.html`
+### `toolbox/sound-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -419,7 +419,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/storage-inspector.html`
+### `toolbox/storage-inspector.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`
@@ -430,7 +430,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../GameFoundryStudio/`
 
-### `tools/tools-page-accordions.js`
+### `toolbox/tools-page-accordions.js`
 - `js:18` -> `assets/images/...`
 - `js:28` -> `assets/images/...`
 - `js:38` -> `assets/images/...`
@@ -451,7 +451,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `js:208` -> `assets/images/...`
 - `js:332` -> `assets/images/...`
 
-### `tools/world-vector-studio.html`
+### `toolbox/world-vector-studio.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`

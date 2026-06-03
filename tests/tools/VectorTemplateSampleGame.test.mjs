@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildVectorTemplateSampleGame, createVectorTemplateSampleGameDefinition, summarizeVectorTemplateSampleGame } from "../../tools/shared/vectorTemplateSampleGame.js";
+import { buildVectorTemplateSampleGame, createVectorTemplateSampleGameDefinition, summarizeVectorTemplateSampleGame } from "../../toolbox/shared/vectorTemplateSampleGame.js";
 
 export async function run() {
   const definition = createVectorTemplateSampleGameDefinition();

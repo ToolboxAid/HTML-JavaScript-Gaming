@@ -35,6 +35,6 @@
 - Skipped. This PR is limited to Collision Inspector V2 usability/layout polish and targeted validation.
 
 ## Changed Files
-- `tools/collision-inspector-v2/index.html`
-- `tools/collision-inspector-v2/styles/collisionInspectorV2.css`
+- `toolbox/collision-inspector-v2/index.html`
+- `toolbox/collision-inspector-v2/styles/collisionInspectorV2.css`
 - `tests/playwright/tools/CollisionInspectorV2.spec.mjs`

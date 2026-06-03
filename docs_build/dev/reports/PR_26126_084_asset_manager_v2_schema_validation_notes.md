@@ -4,9 +4,9 @@ Date: 2026-05-06
 
 ## Schema Changes
 
-- Moved the canonical sample wrapper schema to `tools/schemas/samples/sample.tool-payload.schema.json`.
-- Kept `tools/schemas/sample.tool-payload.schema.json` as a compatibility `$ref` pointer so existing sample JSON files remain unmodified.
-- Expanded `tools/schemas/tools/asset-browser.schema.json` asset id patterns and `kind` enum to include `image`, `audio`, `font`, `video`, `shader`, `data`, and `localization`.
+- Moved the canonical sample wrapper schema to `toolbox/schemas/samples/sample.tool-payload.schema.json`.
+- Kept `toolbox/schemas/sample.tool-payload.schema.json` as a compatibility `$ref` pointer so existing sample JSON files remain unmodified.
+- Expanded `toolbox/schemas/tools/asset-browser.schema.json` asset id patterns and `kind` enum to include `image`, `audio`, `font`, `video`, `shader`, `data`, and `localization`.
 - Required `role` on asset entries and kept role validation schema-owned through `assetRolesByKind`.
 - Kept `stretchOverride` optional and constrained to `image.*.bezel` assets only; generic asset records do not require Stretch.
 

@@ -9,7 +9,7 @@ Task
 3. Ensure separate pass-through.
 
 Routing file changed
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 
 Palette usage found
 - Workspace scoped preset routing for child tools and palette-browser.

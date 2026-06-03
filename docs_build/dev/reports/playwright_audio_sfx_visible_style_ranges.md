@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Updated `tools/audio-sfx-playground-v2` only.
+- Updated `toolbox/audio-sfx-playground-v2` only.
 - Made Sound Style clamp ranges visible in each slider value output.
 - Added help text clarifying that Sound Style changes recommended operating ranges and clamps current values, while waveform options remain selectable.
 - Preserved external CSS/JS only; no inline event handlers or style/script blocks were added.
@@ -11,22 +11,22 @@
 
 PASS:
 
-- `Get-ChildItem -Recurse -File tools/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }`
+- `Get-ChildItem -Recurse -File toolbox/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }`
 - HTML/CSS guard:
-  - no `<style>` blocks in `tools/audio-sfx-playground-v2/index.html`
+  - no `<style>` blocks in `toolbox/audio-sfx-playground-v2/index.html`
   - no inline `<script>` blocks
   - no inline event handlers
   - Sound Style tooltip includes range and waveform guidance
   - Wave tooltip confirms every waveform remains selectable
   - density CSS reserves the compact slider/range output layout
-- `git diff --check -- tools/audio-sfx-playground-v2`
+- `git diff --check -- toolbox/audio-sfx-playground-v2`
   - PASS with Git LF/CRLF warnings only for `index.html` and `audioSfxLayoutDensity.css`.
 
 ## Focused Playwright Validation
 
 PASS using a local repo HTTP server and Chromium:
 
-- Audio / SFX Playground V2 launched at `/tools/audio-sfx-playground-v2/index.html`.
+- Audio / SFX Playground V2 launched at `/toolbox/audio-sfx-playground-v2/index.html`.
 - No console errors and no page errors on launch or during style/slider interactions.
 - Initial range labels rendered:
   - Frequency: `880 Hz [20-20000 Hz]`
@@ -48,7 +48,7 @@ PASS using a local repo HTTP server and Chromium:
 
 V8 coverage entry captured:
 
-- `tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
+- `toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
 
 ## Workspace V2 Validation
 

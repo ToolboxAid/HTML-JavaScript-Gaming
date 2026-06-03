@@ -39,7 +39,7 @@ tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs
 4. For each game:
    - find the "Open with Workspace Manager" action/link/button
    - verify the target URL contains:
-     - `tools/Workspace%20Manager/index.html`
+     - `toolbox/Workspace%20Manager/index.html`
      - `gameId=<id>`
      - `mount=game`
    - verify it does NOT use:
@@ -55,16 +55,16 @@ tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs
 - run every launch smoke test twice
 - replace the games-only smoke path
 
-## Objective B — Boundary Audit for `tools/shared/asteroidsPlatformDemo.js`
+## Objective B — Boundary Audit for `toolbox/shared/asteroidsPlatformDemo.js`
 
 ## User Question
 Why does:
 
 ```text
-tools/shared/asteroidsPlatformDemo.js
+toolbox/shared/asteroidsPlatformDemo.js
 ```
 
-live under `tools/shared/`?
+live under `toolbox/shared/`?
 
 Is that crossing a boundary?
 
@@ -72,8 +72,8 @@ Is that crossing a boundary?
 Likely yes, if this file contains game/domain demo logic for Asteroids.
 
 ### Correct Boundary
-- `tools/shared/` should contain tool-agnostic shared tool utilities only.
-- Asteroids platform/demo logic should not live in `tools/shared/`.
+- `toolbox/shared/` should contain tool-agnostic shared tool utilities only.
+- Asteroids platform/demo logic should not live in `toolbox/shared/`.
 - If it is game-specific, move toward:
   ```text
   games/Asteroids/shared/
@@ -97,7 +97,7 @@ docs_build/dev/reports/level_10_2_asteroids_platform_demo_boundary_audit.md
 ```
 
 Report:
-- what imports `tools/shared/asteroidsPlatformDemo.js`
+- what imports `toolbox/shared/asteroidsPlatformDemo.js`
 - what it imports
 - whether it contains Asteroids/game-specific logic
 - whether it contains tool-generic logic
@@ -140,6 +140,6 @@ Update `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` status only:
 - Test covers all games from the index.
 - Test validates `gameId` and `mount=game`.
 - Test rejects old `?game=` query.
-- `tools/shared/asteroidsPlatformDemo.js` boundary audit exists.
+- `toolbox/shared/asteroidsPlatformDemo.js` boundary audit exists.
 - No start_of_day changes.
 - Delta ZIP returned.

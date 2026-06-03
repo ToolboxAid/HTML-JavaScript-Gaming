@@ -7,8 +7,8 @@ Generated: 2026-04-24T00:58:14.358Z
 [x] Roundtrip sample pages pass sampleId + samplePresetPath to tools
 
 Execution evidence:
-- Tools index derives Samples (x) from metadata toolHints and links to samples filter: tools/renderToolsIndex.js
+- Tools index derives Samples (x) from metadata toolHints and links to samples filter: toolbox/renderToolsIndex.js
 - Mapped preset files exist for all metadata-mapped links: 9 preset files present
-- Mapped tools emit "Loaded preset from" status on query-based preload: tools/Parallax Scene Studio/main.js; tools/Tilemap Studio/main.js; tools/Vector Asset Studio/main.js
+- Mapped tools emit "Loaded preset from" status on query-based preload: toolbox/Parallax Scene Studio/main.js; toolbox/Tilemap Studio/main.js; toolbox/Vector Asset Studio/main.js
 - Roundtrip sample pages pass sampleId + samplePresetPath to tools: samples/phase-12/1208|1209|1210|1211/index.html
 - overall: pass

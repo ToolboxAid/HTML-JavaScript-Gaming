@@ -4,8 +4,8 @@
 Enforce strict Workspace V2 navigation mode separation by removing mode switching and keeping Workspace V2 import/export controls workspace-session only.
 
 ## Scope
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs/report only
 
@@ -22,6 +22,6 @@ Enforce strict Workspace V2 navigation mode separation by removing mode switchin
 - No unrelated tool behavior changes.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2CurrentSessionExport.test.mjs
 - node tests/runtime/V2CurrentSessionExport.test.mjs

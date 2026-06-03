@@ -2,7 +2,7 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 - docs_build/dev/reports/svg_card_render_source_11_156.txt
 
 Exact function/branch changed:
@@ -37,14 +37,14 @@ Expected rendered text:
 - Inline SVG with missing sourceName: `Asset: Inline SVG`
 
 Validation result:
-- `node --check "tools/Workspace Manager/main.js"` -> PASS
+- `node --check "toolbox/Workspace Manager/main.js"` -> PASS
 - Static branch verification in file -> PASS
 - Sample 1902 payload verification -> PASS
   - has vectorAssetDocument
   - has svgText
   - sourceName = sample-0901-ship.svg
   - computed rendered text not `Asset: none`
-- `git diff --name-only -- "tools/Workspace Manager/main.js" "docs_build/dev/reports/svg_card_render_source_11_156.txt"` -> PASS
+- `git diff --name-only -- "toolbox/Workspace Manager/main.js" "docs_build/dev/reports/svg_card_render_source_11_156.txt"` -> PASS
 
 Strict scope confirmation:
 - Only allowed files were modified.

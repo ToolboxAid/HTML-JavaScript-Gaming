@@ -27,19 +27,19 @@ Implement a reusable vector-native arcade template that preserves the accepted s
 - `templates/vector-native-arcade/runtime/bootstrap.runtime.json`
 - `templates/vector-native-arcade/docs/STARTER_GUIDE.md`
 - `templates/vector-native-arcade/docs/ROLLBACK_NOTES.md`
-- `tools/shared/vectorNativeTemplate.js`
+- `toolbox/shared/vectorNativeTemplate.js`
 - `tests/tools/VectorNativeTemplate.test.mjs`
 - `tests/run-tests.mjs`
 
 ## Build Notes
-- Added a reusable template definition and verifier in `tools/shared/vectorNativeTemplate.js`.
+- Added a reusable template definition and verifier in `toolbox/shared/vectorNativeTemplate.js`.
 - The template uses a vector-only visual contract with required vector IDs for player, obstacles, title, and HUD starter content.
 - The template preserves strict validation, packaging, runtime, debug, profiler, CI, export, and publishing flows.
 - The template does not package or load sprite fallback assets as part of the active runtime baseline.
 - Runtime bootstrap remains compatible with `games/Asteroids/main.js#bootAsteroids` as a starter seam without modifying engine core APIs.
 
 ## Verification
-- `node --check tools/shared/vectorNativeTemplate.js`
+- `node --check toolbox/shared/vectorNativeTemplate.js`
 - `node --check tests/tools/VectorNativeTemplate.test.mjs`
 - `node ./scripts/run-node-tests.mjs`
 - Result: `108/108` explicit `run()` tests passed.

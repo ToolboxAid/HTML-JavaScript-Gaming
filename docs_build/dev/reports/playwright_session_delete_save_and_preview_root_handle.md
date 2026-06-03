@@ -1,13 +1,13 @@
 # Playwright Session Delete Save And Preview Root Handle
 
 ## Commands
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `node --check tools/workspace-manager-v2/js/controls/ManifestMenuControl.js`
-- `node --check tools/workspace-manager-v2/js/controls/StatusLogControl.js`
-- `node --check tools/session-inspector-v2/js/SessionInspectorV2App.js`
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2App.js`
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js`
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `node --check toolbox/workspace-manager-v2/js/controls/ManifestMenuControl.js`
+- `node --check toolbox/workspace-manager-v2/js/controls/StatusLogControl.js`
+- `node --check toolbox/session-inspector-v2/js/SessionInspectorV2App.js`
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2RepoAccess.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "launches Session Inspector V2 with V2 labels|starts with no active game even when stale session hydration exists|exports manifests and launches tools from fixed Workspace Manager V2 tiles|keeps Preview Generator V2 repo writer after Asset Manager V2 deletes the preview asset entry|guards Workspace Manager V2 Close Workspace with dirty sessions|logs actionable Preview Generator V2 output path resolution failures"`
 - `npm run test:workspace-v2`

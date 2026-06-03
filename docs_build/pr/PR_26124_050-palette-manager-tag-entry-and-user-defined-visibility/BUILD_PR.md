@@ -4,7 +4,7 @@
 Implement one scoped Palette Manager V2 update: replace direct tag text editing with explicit tag entry controls, and hide populated User Defined Swatch form data unless the selected swatch is user-defined.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
@@ -32,7 +32,7 @@ Implement one scoped Palette Manager V2 update: replace direct tag text editing 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not modify shared accordionV2.
 - Do not broaden changes beyond Palette Manager V2 behavior and PR workflow docs.

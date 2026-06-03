@@ -1,7 +1,7 @@
 # PR 10.10 Tilemap Studio UAT Report
 
 ## Scope
-- Tool: `tools/Tilemap Studio`
+- Tool: `toolbox/Tilemap Studio`
 - Purpose: apply only UAT UI behavior for empty state, tile selection, control state, render stability, and workspace stability.
 - Constraints honored: no tile data/schema changes, no feature additions.
 
@@ -42,10 +42,10 @@
 - Workspace stability preserved (no auto-close/reload additions): PASS
 
 ## Files Changed
-- `tools/Tilemap Studio/main.js`
-- `tools/Tilemap Studio/tileMapEditor.css`
+- `toolbox/Tilemap Studio/main.js`
+- `toolbox/Tilemap Studio/tileMapEditor.css`
 
 ## Validation
-- `node --check tools/Tilemap Studio/main.js` PASS
+- `node --check toolbox/Tilemap Studio/main.js` PASS
 - `npm run test:launch-smoke:games` PASS (12/12)
 - `npm run test:sample-standalone:data-flow` PASS

@@ -1,8 +1,8 @@
 # PR_11_231 Report — V2 Session Merge (Controlled)
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionMerge.test.mjs`
 
 ## Merge Examples
@@ -23,11 +23,11 @@
 ## Validation Results
 - `node --check tests/runtime/V2SessionMerge.test.mjs` → PASS
 - `node tests/runtime/V2SessionMerge.test.mjs` → PASS
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 
 Runtime artifact:
 - `tmp/v2-session-merge-results.json`
 
 ## Scope + Guardrail Confirmation
 - No fallback/demo data was introduced.
-- No schemas, samples, games, Workspace Manager v1, platformShell, or `tools/shared/*` files were modified.
+- No schemas, samples, games, Workspace Manager v1, platformShell, or `toolbox/shared/*` files were modified.

@@ -4,8 +4,8 @@ Task: `PR_26154_019-tools-legacy-and-capture-runtime-audit`
 
 ## Scope
 
-- Investigated `tools/shared/tooling/CapturePreviewRuntime.js`.
-- Started a targeted legacy review of current `tools/` content.
+- Investigated `toolbox/shared/tooling/CapturePreviewRuntime.js`.
+- Started a targeted legacy review of current `toolbox/` content.
 - Audited `scripts/` for legacy/V1 cleanup and test-related placement.
 - Moved only confirmed test-related skip shims; did not move ambiguous tools.
 
@@ -16,7 +16,7 @@ Classification: `obsolete`.
 Evidence:
 
 - Active reference search excluding docs, tests, reports, `old-tools/`, `old_games/`, `old_samples/`, `start_of_day/`, and `tmp/` found no imports or calls for:
-  - `tools/shared/tooling/CapturePreviewRuntime.js`
+  - `toolbox/shared/tooling/CapturePreviewRuntime.js`
   - `CapturePreviewRuntime.js`
   - `bootCapturePreview`
 - Full repository search found only the file itself and historical docs/reports.
@@ -24,23 +24,23 @@ Evidence:
 
 Change:
 
-- Deleted `tools/shared/tooling/CapturePreviewRuntime.js`.
+- Deleted `toolbox/shared/tooling/CapturePreviewRuntime.js`.
 
 ## Tools Legacy Review
 
 | Item | Classification | Action |
 | --- | --- | --- |
-| `tools/toolRegistry.js` | Active shared registry | Kept; imported by validation scripts and shared tool host code. |
-| `tools/renderToolsIndex.js` | Active validation/render helper | Kept; referenced by `scripts/validate-active-tools-surface.mjs`. |
-| `tools/dev/` | Active dev guard surface | Kept; package scripts call guard files under this folder. |
-| `tools/shared/` | Active shared tool/runtime support | Kept; active scripts, shared runtime code, and tests import this folder. |
-| `tools/schemas/` | Active schema surface | Kept; schema validation and engine/runtime references still use it. |
-| `tools/_templates-v2/` | Active template/source surface | Kept; project instructions and vector template helpers still reference it. |
-| `tools/configuration-admin/` | Active routed page, not listed in active Tools index | Kept; route map references it. |
-| `tools/builder/` | Ambiguous standalone tool page | Not moved; no proof in this PR that direct access is deprecated. |
-| `tools/creator/` | Ambiguous standalone tool page | Not moved; no proof in this PR that direct access is deprecated. |
+| `toolbox/toolRegistry.js` | Active shared registry | Kept; imported by validation scripts and shared tool host code. |
+| `toolbox/renderToolsIndex.js` | Active validation/render helper | Kept; referenced by `scripts/validate-active-tools-surface.mjs`. |
+| `toolbox/dev/` | Active dev guard surface | Kept; package scripts call guard files under this folder. |
+| `toolbox/shared/` | Active shared tool/runtime support | Kept; active scripts, shared runtime code, and tests import this folder. |
+| `toolbox/schemas/` | Active schema surface | Kept; schema validation and engine/runtime references still use it. |
+| `toolbox/_tool_template-v2/` | Active template/source surface | Kept; project instructions and vector template helpers still reference it. |
+| `toolbox/configuration-admin/` | Active routed page, not listed in active Tools index | Kept; route map references it. |
+| `toolbox/builder/` | Ambiguous standalone tool page | Not moved; no proof in this PR that direct access is deprecated. |
+| `toolbox/creator/` | Ambiguous standalone tool page | Not moved; no proof in this PR that direct access is deprecated. |
 
-No folders were moved from `tools/` to `old-tools/` in this PR because the remaining legacy-looking folders were either actively referenced or ambiguous.
+No folders were moved from `toolbox/` to `old-tools/` in this PR because the remaining legacy-looking folders were either actively referenced or ambiguous.
 
 ## Scripts Audit
 

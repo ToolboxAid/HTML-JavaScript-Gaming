@@ -39,7 +39,7 @@ Task: PR_26152_015-pre-root-company-vision-cleanup
   - Checked Company footer links render and resolve.
   - Checked About, Vision, Mission, Roadmap, and Contact render with header/footer partials.
   - Checked `magic-panel.png` resolves with HTTP 200 and has content.
-  - Checked nested partial/assets loading for `tools/game-builder.html`, `tools/groups/configuration-admin.html`, `admin/controls.html`, `account/profile.html`, and `vision.html`.
+  - Checked nested partial/assets loading for `toolbox/game-builder.html`, `toolbox/groups/configuration-admin.html`, `admin/controls.html`, `account/profile.html`, and `vision.html`.
   - Checked vertical accordion, horizontal accordion button, shared button display, control rows, and existing controls script behavior.
   - Result: Passed, 35 checks.
 

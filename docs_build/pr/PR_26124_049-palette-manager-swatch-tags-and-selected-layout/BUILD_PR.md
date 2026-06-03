@@ -4,12 +4,12 @@
 Implement one scoped Palette Manager V2 update: optional swatch tags, selected/detail layout split, tag suggestions, and matching swatch schema support.
 
 ## Scope
-- `tools/palette-manager-v2/*`
-- `tools/schemas/tools/palette-browser.schema.json`
+- `toolbox/palette-manager-v2/*`
+- `toolbox/schemas/tools/palette-browser.schema.json`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
-1. Update `tools/schemas/tools/palette-browser.schema.json`:
+1. Update `toolbox/schemas/tools/palette-browser.schema.json`:
    - `tags` is optional,
    - `tags` is an array of strings,
    - each tag item is a non-empty string,
@@ -26,7 +26,7 @@ Implement one scoped Palette Manager V2 update: optional swatch tags, selected/d
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not modify shared accordionV2.
 - Do not change pin/unpin, sort, search, size, import/export behavior except to preserve tags.

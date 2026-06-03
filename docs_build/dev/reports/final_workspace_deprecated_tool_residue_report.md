@@ -9,10 +9,10 @@
 ## Files Cleaned
 - `docs/tools/object-vector-studio-v2/uat.md`
 - `docs/tools/world-vector-studio-v2/uat.md`
-- `tools/object-vector-studio-v2/README.md`
-- `tools/object-vector-studio-v2/how_to_use.html`
-- `tools/world-vector-studio-v2/README.md`
-- `tools/world-vector-studio-v2/how_to_use.html`
+- `toolbox/object-vector-studio-v2/README.md`
+- `toolbox/object-vector-studio-v2/how_to_use.html`
+- `toolbox/world-vector-studio-v2/README.md`
+- `toolbox/world-vector-studio-v2/how_to_use.html`
 - `scripts/validate-starter-project-template.mjs`
 - `scripts/validate-project-system.mjs`
 - `scripts/PS/New-Game-from-Template.ps1`
@@ -22,8 +22,8 @@
 - `tests/tools/ObjectVectorFinalRuntimeCleanup.test.mjs`
 - `tests/tools/ToolLocalSampleMigration.test.mjs`
 - `games/shared/gameManifestAssets.js`
-- `tools/shared/platformShell.js`
-- `tools/preview-generator-v2/PreviewGeneratorV2App.js`
+- `toolbox/shared/platformShell.js`
+- `toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
 
 ## Out Of Scope Left Alone
 - No schema files were changed.

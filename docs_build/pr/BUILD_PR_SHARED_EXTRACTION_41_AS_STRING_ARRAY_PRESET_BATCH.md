@@ -14,8 +14,8 @@ Normalize ONLY this helper:
 1. `src/shared/utils/arrayUtils.js`
 
 ### Consumer files
-2. `tools/dev/advanced/debugPanelGroupRegistry.js`
-3. `tools/dev/presets/debugPresetRegistry.js`
+2. `toolbox/dev/advanced/debugPanelGroupRegistry.js`
+3. `toolbox/dev/presets/debugPresetRegistry.js`
 
 Do not edit any other file.
 

@@ -16,7 +16,7 @@
 - `node tests/runtime/V2ToolLaunch.test.mjs` -> FAIL (palette fixture contract drift in test logic).
 - `node tests/runtime/V2ToolActionFlow.test.mjs` -> FAIL (string-token matcher drift in test logic).
 - `node tests/runtime/V2SessionValidation.test.mjs` -> FAIL (palette contract drift in test logic).
-- `node --check tools/*-v2/index.js` (run per file) -> PASS.
+- `node --check toolbox/*-v2/index.js` (run per file) -> PASS.
 - Static contract inspection of each V2 tool `index.js` + `index.html`.
 
 ## Per-Tool Status

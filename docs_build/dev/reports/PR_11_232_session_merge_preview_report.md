@@ -4,8 +4,8 @@
 Workspace V2 session/runtime merge area only.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionMergePreview.test.mjs`
 
 ## Implementation Summary
@@ -26,12 +26,12 @@ Workspace V2 session/runtime merge area only.
 - No auto-merge/fallback behavior added.
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2SessionMergePreview.test.mjs`
 - `node tests/runtime/V2SessionMergePreview.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2SessionMergePreview.test.mjs` → PASS
 - `node tests/runtime/V2SessionMergePreview.test.mjs` → PASS
 
@@ -54,4 +54,4 @@ Validated behaviors:
 - No game changes
 - No Workspace Manager v1 changes
 - No legacy tool fixes
-- No `platformShell` or `tools/shared/*` coupling
+- No `platformShell` or `toolbox/shared/*` coupling

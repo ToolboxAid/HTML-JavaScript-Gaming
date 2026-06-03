@@ -4,7 +4,7 @@
 Make Palette Manager V2 Sample/Source Palette individual pin/unpin preserve the current source grid scroll position reliably after render.
 
 ## Scope
-- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+- `toolbox/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
@@ -14,7 +14,7 @@ Make Palette Manager V2 Sample/Source Palette individual pin/unpin preserve the 
 - Do not change Validation/Error Viewer behavior.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Avoid broad refactor.
 

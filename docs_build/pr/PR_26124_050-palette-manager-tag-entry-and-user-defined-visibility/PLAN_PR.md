@@ -4,13 +4,13 @@
 Refine Palette Manager V2 tag editing so tags are added through explicit tag entry controls, and show User Defined Swatch form data only for selected user-defined swatches.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Do not change shared accordionV2.
 - Preserve pin/unpin, sort, search, size, and import/export behavior.

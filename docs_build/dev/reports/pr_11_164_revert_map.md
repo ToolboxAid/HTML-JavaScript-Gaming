@@ -4,7 +4,7 @@
 Provide the smallest evidence-backed rollback plan for SVG tile/shared-shell badge churn (starting PR 11.154) without introducing another behavior fix in this PR.
 
 ## Ownership Anchor
-- Visible `Asset: none` output owner remains the shared shell renderer path in `tools/shared/platformShell.js`.
+- Visible `Asset: none` output owner remains the shared shell renderer path in `toolbox/shared/platformShell.js`.
 - Therefore rollback planning must prioritize shell-lane churn before touching unrelated contracts.
 
 ## Tier 1: Immediate Safe Reverts (No Runtime Risk)
@@ -25,14 +25,14 @@ These are dead/placeholder artifacts and can be reverted first.
 ## Tier 2: Conditional Reverts (Gate On Targeted Validation)
 These paths are churned but potentially still carrying useful partial behavior. Revert only with owner-path validation proof.
 
-1. `tools/shared/platformShell.js` (staged/uncommitted SVG badge branches)
+1. `toolbox/shared/platformShell.js` (staged/uncommitted SVG badge branches)
 - Current class: `INVESTIGATE`
 - Why conditional: this file emits the visible badge; blind revert may remove both failed and useful wiring.
 - Minimal rollback strategy:
   - Revert only post-11.158 SVG-specific badge fallback additions in `renderToolAssetBadge` and adjacent helper branches if a controlled A/B check shows no regression in non-SVG tools.
   - Preserve non-SVG generic badge behavior and existing handoff API contracts.
 
-2. `tools/Workspace Manager/main.js`
+2. `toolbox/Workspace Manager/main.js`
 - Current class: `UNKNOWN`
 - Why conditional: PR 11.156-11.158 edits were in this file, but evidence shows visible badge owner moved to shared shell.
 - Minimal rollback strategy:
@@ -60,9 +60,9 @@ Keep these as chain-of-custody and execution evidence for the failed lane:
 - `docs_build/dev/reports/pr_11_164_dead_code_ledger.md`
 
 ## Next PR Boundary (Post-Audit)
-- Next implementation PR should be owner-scoped to `tools/shared/platformShell.js` only.
+- Next implementation PR should be owner-scoped to `toolbox/shared/platformShell.js` only.
 - Validate with targeted checks only (no full smoke):
-  - `node --check tools/shared/platformShell.js`
+  - `node --check toolbox/shared/platformShell.js`
   - launch sample 1902 path and verify visible `Asset:` badge row text.
 
 ## Runtime Safety Statement

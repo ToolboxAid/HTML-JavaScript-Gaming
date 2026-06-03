@@ -15,7 +15,7 @@
 
 ## Remaining Intentional Legacy Guards
 
-- `tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js` keeps the `root.vectorMaps` rejection path as deprecated-input rejection only.
+- `toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js` keeps the `root.vectorMaps` rejection path as deprecated-input rejection only.
 - Object Vector Studio V2 tests keep legacy `vectorMaps` import fixtures/assertions to prove deprecated input fails visibly and actionably.
 - Vector Map Editor remains present as a deprecated standalone compatibility tool/schema, not as an Object Vector Studio V2 object-geometry source.
 

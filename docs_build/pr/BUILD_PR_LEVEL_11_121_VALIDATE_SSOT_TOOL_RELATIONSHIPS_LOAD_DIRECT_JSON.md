@@ -1,7 +1,7 @@
 # BUILD_PR_LEVEL_11_121_VALIDATE_SSOT_TOOL_RELATIONSHIPS_LOAD_DIRECT_JSON
 
 ## Purpose
-Now that `tools/index.html` and `samples/index.html` counts match, validate that every SSoT sample/tool relationship actually loads direct JSON through the target tool.
+Now that `toolbox/index.html` and `samples/index.html` counts match, validate that every SSoT sample/tool relationship actually loads direct JSON through the target tool.
 
 ## Scope
 - testable validation/cleanup PR

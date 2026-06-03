@@ -4,8 +4,8 @@
 Added explicit inline enable-state feedback for Diff and Merge actions so users can see when actions are enabled or disabled without relying only on button visuals.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2EnableStateFeedback.test.mjs`
 
 ## Implementation
@@ -24,13 +24,13 @@ Added explicit inline enable-state feedback for Diff and Merge actions so users 
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2EnableStateFeedback.test.mjs
 node tests/runtime/V2EnableStateFeedback.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2EnableStateFeedback.test.mjs` -> PASS
 - `node tests/runtime/V2EnableStateFeedback.test.mjs` -> PASS
   - output: `tmp/v2-enable-state-feedback-results.json`

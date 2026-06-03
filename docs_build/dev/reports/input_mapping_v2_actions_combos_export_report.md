@@ -17,15 +17,15 @@
 - Kept `Copy JSON` wired to copy the payload JSON.
 
 ## Files Changed
-- `tools/input-mapping-v2/index.html`
-- `tools/input-mapping-v2/how_to_use.html`
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/bootstrap.js`
-- `tools/input-mapping-v2/js/controls/ActionNavControl.js`
-- `tools/input-mapping-v2/js/controls/ActionSelectionControl.js`
-- `tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `tools/input-mapping-v2/js/services/EngineInputSourceService.js`
-- `tools/input-mapping-v2/styles/inputMappingV2.css`
+- `toolbox/input-mapping-v2/index.html`
+- `toolbox/input-mapping-v2/how_to_use.html`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/bootstrap.js`
+- `toolbox/input-mapping-v2/js/controls/ActionNavControl.js`
+- `toolbox/input-mapping-v2/js/controls/ActionSelectionControl.js`
+- `toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
 ## Validation
@@ -52,7 +52,7 @@
 - No sample JSON changes.
 
 ## Manual Validation
-1. Open `tools/input-mapping-v2/index.html`.
+1. Open `toolbox/input-mapping-v2/index.html`.
 2. Confirm the Actions buttons read `Add Action`, `Clear Actions`, `Delete Action` in that order.
 3. Select an action, click `Add Action`, click `Capture Combo`, then press `Ctrl` and `R`.
 4. Expected: the selected mapping tile shows `Combo Ctrl + R`, remains selectable, and Export shows a toolState preview containing the combo binding.

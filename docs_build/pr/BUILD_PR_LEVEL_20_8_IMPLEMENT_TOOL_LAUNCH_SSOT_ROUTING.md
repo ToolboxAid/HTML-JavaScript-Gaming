@@ -8,8 +8,8 @@ Implement the first runtime slice of the launch SSoT contract created in `docs_b
 
 One PR purpose only:
 
-- route sample-launched tools through explicit `tools/<tool>/index.html` targets
-- route game-launched workspace flows through `tools/Workspace Manager/index.html`
+- route sample-launched tools through explicit `toolbox/<tool>/index.html` targets
+- route game-launched workspace flows through `toolbox/Workspace Manager/index.html`
 - clear launch memory for external launches from samples or games
 - remove default/fallback launch behavior only where touched by this launch path
 
@@ -62,7 +62,7 @@ Likely files include, only if needed:
 - sample metadata / launch metadata files
 - `games/index.html`
 - game metadata / workspace metadata files
-- `tools/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/index.html`
 - existing shared launch helpers
 
 Codex must not scan or rewrite the whole repo.
@@ -75,8 +75,8 @@ Codex must document validation in:
 
 Validation must include:
 
-- sample tile launches resolve to explicit `tools/<tool>/index.html`
-- game tile launches resolve to `tools/Workspace Manager/index.html`
+- sample tile launches resolve to explicit `toolbox/<tool>/index.html`
+- game tile launches resolve to `toolbox/Workspace Manager/index.html`
 - external launch memory is cleared before loading
 - missing launch data fails visibly
 - no default/fallback path remains in touched launch flow

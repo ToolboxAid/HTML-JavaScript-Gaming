@@ -54,7 +54,7 @@ Updated:
 - Root page/template references.
 - Account/Admin/Company page references.
 - Active tool page references.
-- `tools/dev/checkStyleSystemGuard.mjs`.
+- `toolbox/dev/checkStyleSystemGuard.mjs`.
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 
 ## Styles Bundle Nav Parity

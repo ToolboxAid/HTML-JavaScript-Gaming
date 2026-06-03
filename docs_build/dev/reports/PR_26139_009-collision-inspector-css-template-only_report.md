@@ -7,7 +7,7 @@
 - Preserved A/B rotate inputs, fixed three-decimal Origins output, scale normalization, and shared engine collision behavior from PR_26139_008.
 
 ## Template CSS Cleanup
-- Removed local `:root` theme variable declarations from `tools/collision-inspector-v2/styles/collisionInspectorV2.css`.
+- Removed local `:root` theme variable declarations from `toolbox/collision-inspector-v2/styles/collisionInspectorV2.css`.
 - Removed local body/page shell styling.
 - Removed local global `button`, `input`, `select`, and `textarea` styling.
 - Removed local Tool Starter header, menu, panel, field, and output base styling.
@@ -37,6 +37,6 @@
 - Skipped as requested. This PR is limited to Collision Inspector V2 CSS/template alignment and targeted visual/layout validation.
 
 ## Changed Files
-- `tools/collision-inspector-v2/index.html`
-- `tools/collision-inspector-v2/styles/collisionInspectorV2.css`
+- `toolbox/collision-inspector-v2/index.html`
+- `toolbox/collision-inspector-v2/styles/collisionInspectorV2.css`
 - `tests/playwright/tools/CollisionInspectorV2.spec.mjs`

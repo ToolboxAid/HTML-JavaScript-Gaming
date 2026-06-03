@@ -4,7 +4,7 @@ Validate that Palette Manager V2 is the active V2 surface for editing validated 
 
 ## Scope
 - Tool: `palette-manager-v2`
-- Entry point: `tools/palette-manager-v2/index.html`
+- Entry point: `toolbox/palette-manager-v2/index.html`
 - Purpose: edit user palette swatches, browse source palettes, manage tags, and publish validated palette data for V2 workspace and game manifest flows.
 
 ## Expected

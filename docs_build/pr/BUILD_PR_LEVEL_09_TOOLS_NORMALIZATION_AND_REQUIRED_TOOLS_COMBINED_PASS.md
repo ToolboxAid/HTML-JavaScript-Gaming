@@ -33,16 +33,16 @@ Confirmed existing first-class required tools remain normalized:
 ## File Changes
 
 ### Added
-- `tools/Physics Sandbox/index.html`
-- `tools/Physics Sandbox/main.js`
-- `tools/Asset Pipeline Tool/index.html`
-- `tools/Asset Pipeline Tool/main.js`
-- `tools/Tile Model Converter/index.html`
-- `tools/Tile Model Converter/main.js`
+- `toolbox/Physics Sandbox/index.html`
+- `toolbox/Physics Sandbox/main.js`
+- `toolbox/Asset Pipeline Tool/index.html`
+- `toolbox/Asset Pipeline Tool/main.js`
+- `toolbox/Tile Model Converter/index.html`
+- `toolbox/Tile Model Converter/main.js`
 - `tests/tools/RequiredToolsBaseline.test.mjs`
 
 ### Updated
-- `tools/toolRegistry.js`
+- `toolbox/toolRegistry.js`
 - `tests/tools/ToolEntryLaunchContract.test.mjs`
 - `tests/tools/ToolBoundaryEnforcement.test.mjs`
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
@@ -58,7 +58,7 @@ Focused checks run:
   - `tests/tools/AssetPipelineTooling.test.mjs`
 
 Attempted additional check:
-- `tests/tools/PerformanceProfiler.test.mjs` currently fails due a pre-existing module-resolution issue in shared runtime loader dependencies (`tools/shared/runtimeAssetLoader.js` importing `C:/src/engine/assets/AssetRegistry.js`).
+- `tests/tools/PerformanceProfiler.test.mjs` currently fails due a pre-existing module-resolution issue in shared runtime loader dependencies (`toolbox/shared/runtimeAssetLoader.js` importing `C:/src/engine/assets/AssetRegistry.js`).
 
 ## Roadmap Status
 

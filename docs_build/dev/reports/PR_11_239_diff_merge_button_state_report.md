@@ -1,8 +1,8 @@
 # PR_11_239 — Diff/Merge Button State Wiring
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2DiffMergeButtonState.test.mjs`
 
 ## Scope Confirmation
@@ -27,13 +27,13 @@
   - `Choose two different sessions.`
 
 ## Validation Commands Run
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2DiffMergeButtonState.test.mjs`
 - `node tests/runtime/V2DiffMergeButtonState.test.mjs`
 - `node tests/runtime/V2RecentSessionSelectorBinding.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2DiffMergeButtonState.test.mjs` → PASS
 - `node tests/runtime/V2DiffMergeButtonState.test.mjs` → PASS
 - `node tests/runtime/V2RecentSessionSelectorBinding.test.mjs` → PASS

@@ -7,9 +7,9 @@
 - Did not rename runtime symbols, change gameplay behavior, change schemas, or perform repo-wide cleanup.
 
 ## Guardrail Behavior
-- `tools/dev/checkIntentionalAliasLedgerGuard.mjs` scans repo-owned JS/MJS under `src`, `games`, `tools`, `tests`, and `samples`.
-- It skips `node_modules`, `tmp`, `tests/results`, generated/vendor/minified files, docs report/archive paths, and the archived `tools/Vector Map Editor` path.
-- It collects import/export statements containing `as` and requires each occurrence to match `tools/dev/intentionalAliasLedger.json`.
+- `toolbox/dev/checkIntentionalAliasLedgerGuard.mjs` scans repo-owned JS/MJS under `src`, `games`, `tools`, `tests`, and `samples`.
+- It skips `node_modules`, `tmp`, `tests/results`, generated/vendor/minified files, docs report/archive paths, and the archived `toolbox/Vector Map Editor` path.
+- It collects import/export statements containing `as` and requires each occurrence to match `toolbox/dev/intentionalAliasLedger.json`.
 - The guard also fails if a ledger entry goes stale and no longer matches current code.
 
 ## Intentional Alias Ledger Entries
@@ -23,7 +23,7 @@
 - Asteroids local `wrap(value, max)` gameplay adapter over the shared `wrap(value, min, max)` helper.
 
 ## Validation
-- PASS: `node --check tools/dev/checkIntentionalAliasLedgerGuard.mjs`.
+- PASS: `node --check toolbox/dev/checkIntentionalAliasLedgerGuard.mjs`.
 - PASS: `npm run check:intentional-alias-ledger`.
   - `files_scanned=1772`
   - `aliases_found=297`

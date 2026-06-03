@@ -1,8 +1,8 @@
 # PR_26124_017
 
 ## Scope
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/ui/workspace-v2.asset-manager.spec.js`
 - `tests/playwright/workspace-v2.validation.spec.js`
 
@@ -24,7 +24,7 @@
   - no auto-promotion on save/export
 
 ## Validation
-- `node --check tools/workspace-v2/index.js` -> pass
+- `node --check toolbox/workspace-v2/index.js` -> pass
 - `node --check tests/ui/workspace-v2.asset-manager.spec.js` -> pass
 - `node --check tests/playwright/workspace-v2.validation.spec.js` -> pass
 - `npm run test:workspace-v2` -> pass (`20 passed`, `0 failed`)

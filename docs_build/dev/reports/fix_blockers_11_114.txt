@@ -3,7 +3,7 @@ Date: 2026-04-30
 
 Detection scope
 - Validation source: node ./scripts/validate-json-contracts.mjs --details
-- Files considered: sample JSON rows validated by tools/schemas/* plus tool schema files in tools/schemas/tools/*.
+- Files considered: sample JSON rows validated by toolbox/schemas/* plus tool schema files in toolbox/schemas/tools/*.
 
 NON-FIXABLE classification results
 - No NON-FIXABLE validation failures remained after deterministic schema fixes.

@@ -7,7 +7,7 @@ Lane: BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT
 - `src/`
 - `games/`
 - `samples/`
-- `tools/`
+- `toolbox/`
 - relevant HTML files under those directories
 - docs and templates excluded from baseline metrics
 

@@ -1,7 +1,7 @@
 # PR_11_192_20260501_04 — V2 Tool HTML Shell Correction
 
 ## Purpose
-Correct the V2 tool implementation direction so static page structure lives in `tools/<tool>-v2/index.html` and JavaScript stays behavior-only.
+Correct the V2 tool implementation direction so static page structure lives in `toolbox/<tool>-v2/index.html` and JavaScript stays behavior-only.
 
 ## Scope
 - Palette Manager V2
@@ -12,14 +12,14 @@ Correct the V2 tool implementation direction so static page structure lives in `
 Each V2 tool must use:
 
 ```text
-tools/<tool>-v2/index.html
+toolbox/<tool>-v2/index.html
   - static CSS links
   - <div id="shared-theme-header"></div>
   - static page shell
   - static menuTool/menuWorkspace containers
   - module script reference
 
-tools/<tool>-v2/index.js
+toolbox/<tool>-v2/index.js
   - single class behavior
   - read session
   - validate contract
@@ -34,7 +34,7 @@ tools/<tool>-v2/index.js
 - Do not overwrite `document.body.innerHTML`.
 - Do not use non-V2 body dataset/tool ids for V2 entries.
 - Do not copy/paste legacy tool implementation into V2.
-- Do not touch schemas, samples, games, Workspace Manager v1, `platformShell`, or `tools/shared/*`.
+- Do not touch schemas, samples, games, Workspace Manager v1, `platformShell`, or `toolbox/shared/*`.
 
 ## Acceptance
 - `index.html` owns static shell and header mount.

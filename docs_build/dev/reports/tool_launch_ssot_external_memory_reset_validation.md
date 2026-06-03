@@ -9,15 +9,15 @@
 
 ## Files Changed
 
-- `tools/shared/toolLaunchSSoT.js`
+- `toolbox/shared/toolLaunchSSoT.js`
 - `samples/index.render.js`
 - `games/index.render.js`
 
 ## SSoT Change Summary
 
-- Added `tools/shared/toolLaunchSSoT.js` as the launch SSoT for:
-  - sample tool routes: `tools/<tool>/index.html`
-  - game workspace route: `tools/Workspace Manager/index.html?game=<gameId>`
+- Added `toolbox/shared/toolLaunchSSoT.js` as the launch SSoT for:
+  - sample tool routes: `toolbox/<tool>/index.html`
+  - game workspace route: `toolbox/Workspace Manager/index.html?game=<gameId>`
 - Removed per-page direct route construction for game workspace links.
 - Sample launch links now resolve through registry-backed tool lookup and explicit launch validation.
 
@@ -33,7 +33,7 @@
 
 ### Static validation performed
 
-1. `node --check tools/shared/toolLaunchSSoT.js`
+1. `node --check toolbox/shared/toolLaunchSSoT.js`
 2. `node --check samples/index.render.js`
 3. `node --check games/index.render.js`
 
@@ -48,11 +48,11 @@
 
 1. Open `samples/index.html`.
 2. Click at least one tool tile.
-3. Confirm browser opens `tools/<tool>/index.html`.
+3. Confirm browser opens `toolbox/<tool>/index.html`.
 4. Confirm previous tool/workspace launch memory is cleared first.
 5. Return to `games/index.html`.
 6. Click a game tile.
-7. Confirm browser opens `tools/Workspace Manager/index.html`.
+7. Confirm browser opens `toolbox/Workspace Manager/index.html`.
 8. Confirm previous workspace memory is cleared first.
 9. Confirm the requested game/workspace then loads from SSoT data.
 10. Confirm no tool silently loads through a default/fallback.

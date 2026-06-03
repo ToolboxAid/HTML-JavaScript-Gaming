@@ -15,7 +15,7 @@ Reviewed normalized references in active docs (`docs/`, excluding `docs_build/ar
   - 71 matches
 - On-disk path check:
   - `Test-Path legacy class-retention policy marker` -> `False`
-- Runtime/code import check scope (`tools/src/games/samples/tests`):
+- Runtime/code import check scope (`toolbox/src/games/samples/tests`):
   - no matches in this lane
 
 ## Step 2) Decision

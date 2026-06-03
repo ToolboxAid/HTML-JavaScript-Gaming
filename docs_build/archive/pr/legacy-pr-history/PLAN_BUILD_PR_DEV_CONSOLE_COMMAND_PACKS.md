@@ -24,7 +24,7 @@ Define AND implement a namespaced command-pack system for the dev console in a s
 ## Implementation (Codex MUST do)
 
 ### Create
-tools/dev/devConsoleCommandRegistry.js
+toolbox/dev/devConsoleCommandRegistry.js
 
 Responsibilities:
 - register command packs
@@ -36,7 +36,7 @@ Responsibilities:
 ---
 
 ### Create command packs
-tools/dev/commandPacks/
+toolbox/dev/commandPacks/
 
 - sceneCommandPack.js
 - renderCommandPack.js
@@ -54,7 +54,7 @@ Each pack:
 ---
 
 ### Update
-tools/dev/devConsoleIntegration.js
+toolbox/dev/devConsoleIntegration.js
 
 - route all commands through registry
 - remove any flat command handling

@@ -46,7 +46,7 @@ User selects tool from dropdown
 One PR purpose only:
 
 - move the tool selector dropdown above the Editors section
-- hide/lock tools/cards below with an overlay until explicit tool selection
+- hide/lock toolbox/cards below with an overlay until explicit tool selection
 - auto-mount/activate the selected tool when the dropdown changes
 - remove or hide redundant Select Tool / Mount controls from the initial game-launched flow
 - preserve explicit selection requirement
@@ -58,7 +58,7 @@ One PR purpose only:
 For:
 
 ```text
-tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
+toolbox/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
 ```
 
 Workspace Manager must:
@@ -119,8 +119,8 @@ Allowed:
 
 Likely files:
 
-- `tools/Workspace Manager/main.js`
-- `tools/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/index.html`
 - Workspace Manager CSS only if required by existing layout
 
 ## Forbidden Changes
@@ -137,7 +137,7 @@ Codex must NOT:
 - mount a tool on initial game launch before user selection
 - create a second SSoT
 - broadly refactor Workspace Manager
-- modify unrelated tools/games/samples
+- modify unrelated toolbox/games/samples
 - modify `start_of_day`
 - rewrite roadmap text outside status markers
 

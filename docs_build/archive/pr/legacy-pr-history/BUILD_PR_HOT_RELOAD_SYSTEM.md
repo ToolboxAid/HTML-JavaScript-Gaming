@@ -4,7 +4,7 @@
 Implement the Hot Reload System defined in `PLAN_PR_HOT_RELOAD_SYSTEM` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared hot reload planner/executor in `tools/shared/hotReloadSystem.js`
+- Added shared hot reload planner/executor in `toolbox/shared/hotReloadSystem.js`
   - validates authoring state before reload
   - reuses strict packaging for reload boundaries
   - reloads runtime only when the packaged fingerprint changes
@@ -23,7 +23,7 @@ Implement the Hot Reload System defined in `PLAN_PR_HOT_RELOAD_SYSTEM` without c
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/hotReloadSystem.js`
+  - `node --check toolbox/shared/hotReloadSystem.js`
   - `node --check tests/tools/HotReloadSystem.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

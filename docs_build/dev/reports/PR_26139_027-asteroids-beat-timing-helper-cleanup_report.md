@@ -28,7 +28,7 @@
 - V8 coverage collected the changed Asteroids files:
   - `(51%) games/Asteroids/game/AsteroidsGameScene.js - changed JS file with browser V8 coverage`
   - `(100%) games/Asteroids/game/asteroidsBeatTiming.js - changed JS file with browser V8 coverage`
-- Note: the existing changed-runtime guardrail classifies only `src/`, `tools/`, and `common/` as runtime JS, so Asteroids game files appear under `Changed JS files considered` rather than `Changed runtime JS files covered`.
+- Note: the existing changed-runtime guardrail classifies only `src/`, `toolbox/`, and `common/` as runtime JS, so Asteroids game files appear under `Changed JS files considered` rather than `Changed runtime JS files covered`.
 
 ## Full Samples
 - Full samples smoke test was skipped.

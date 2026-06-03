@@ -12,7 +12,7 @@ Repo Cleanup Phase 1G — Engine Promotion (Strong Candidates Only)
 Promote only “Strong Candidate” helpers (identified in Phase 1F) into src/engine/ as reusable, engine-owned utilities.
 
 ## Scope
-- Source: tools/SpriteEditor_old_keep/shared/
+- Source: toolbox/SpriteEditor_old_keep/shared/
 - Target: src/engine/
 - docs_build/pr
 - docs_build/dev

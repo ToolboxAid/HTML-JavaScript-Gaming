@@ -137,7 +137,7 @@ async function openPreviewGenerator(page, {
     });
   }
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${server.baseUrl}/toolbox/preview-generator-v2/index.html`, { waitUntil: "domcontentloaded" });
   return server;
 }
 

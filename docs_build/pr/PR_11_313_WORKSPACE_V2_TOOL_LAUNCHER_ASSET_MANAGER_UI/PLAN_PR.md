@@ -4,11 +4,11 @@
 Enable explicit Workspace V2 tool launching and rename Asset Browser V2 to Asset Manager V2 in user-facing UI while preserving `asset-manager-v2` contract IDs and payload/session rules.
 
 ## Scope
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
-- `tools/asset-manager-v2/index.html`
-- `tools/asset-manager-v2/index.js`
-- `tools/index.html`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
+- `toolbox/asset-manager-v2/index.html`
+- `toolbox/asset-manager-v2/index.js`
+- `toolbox/index.html`
 - `tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs`
 - PR docs_build/reports for this change
 

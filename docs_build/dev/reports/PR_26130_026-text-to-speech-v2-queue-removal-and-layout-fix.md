@@ -17,7 +17,7 @@ Updated Text to Speech V2 and direct Workspace Manager V2/tool references for Qu
 
 ## Schema And Migration Notes
 
-- `tools/schemas/tools/text2speech-V2.schema.json` remains a root array schema with `minItems: 1`.
+- `toolbox/schemas/tools/text2speech-V2.schema.json` remains a root array schema with `minItems: 1`.
 - Each named speech item now requires: `id`, `name`, `text`, `gender`, `language`, `voice`, `voiceAge`, `volume`, `rate`, `pitch`, `characterPreset`, and `ssmlLikePreset`.
 - `queueMode` is no longer allowed by `additionalProperties: false`.
 - No `queueMode` import migration path is included in this PR. Existing payloads containing `queueMode` are rejected before render/import/save with an actionable schema validation message.
@@ -50,9 +50,9 @@ Skipped. This PR is limited to Text to Speech V2 direct behavior and Workspace M
 
 ## Manual Validation
 
-1. Open `/tools/text2speech-V2/index.html?samplePresetPath=/samples/phase-19/1903/sample.1903.text2speech-V2.json`.
+1. Open `/toolbox/text2speech-V2/index.html?samplePresetPath=/samples/phase-19/1903/sample.1903.text2speech-V2.json`.
 2. Confirm Queue Mode is not visible and Output Summary contains only the named speech item array.
 3. Confirm Import JSON rejects an item containing `queueMode`.
 4. Confirm the Text to Speak textarea expands with the accordion and has no manual resize handle.
 5. Confirm clicking Clear empties Status without collapsing the Status accordion.
-6. Confirm `/tools/text2speach-V2/index.html` no longer redirects to the canonical tool.
+6. Confirm `/toolbox/text2speach-V2/index.html` no longer redirects to the canonical tool.

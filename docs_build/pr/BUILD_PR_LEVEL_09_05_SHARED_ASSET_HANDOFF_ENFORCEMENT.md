@@ -6,7 +6,7 @@ Implement the smallest enforcement slice that makes the shared asset and shared 
 This PR must tighten launch/consume behavior for shared asset flows without widening into engine refactors, sample work, or broad UI redesign.
 
 ## Why This PR Exists
-09_04 established the asset usage contract, moved active template surfaces under `tools/templates/`, and proved normalized shared asset locations across Asteroids and the starter project baseline. However, the contract is still only partially effective until active tools consistently:
+09_04 established the asset usage contract, moved active template surfaces under `toolbox/templates/`, and proved normalized shared asset locations across Asteroids and the starter project baseline. However, the contract is still only partially effective until active tools consistently:
 - launch shared browse/import/manage flows through the common shell
 - publish normalized handoff payloads under the approved storage keys
 - consume shared handoff summaries without silently forking tool-private defaults
@@ -16,9 +16,9 @@ This PR closes that enforcement gap.
 ## Source Baseline
 Treat these as the architectural baseline for this PR:
 - `docs/reference/architecture-standards/specs/asset_usage_contract.md`
-- `tools/shared/vectorAssetSystem.js`
-- `tools/Asset Browser/main.js`
-- `tools/templates/starter-project-template/config/starter.project.json`
+- `toolbox/shared/vectorAssetSystem.js`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/templates/starter-project-template/config/starter.project.json`
 - `tests/tools/VectorAssetSystem.test.mjs`
 
 ## In Scope
@@ -114,9 +114,9 @@ If some tools already comply, keep edits surgical and only normalize the drift t
 
 ### Likely file targets
 Use only if needed; do not expand beyond proven necessity.
-- `tools/shared/...` shared launch/handoff helper(s)
+- `toolbox/shared/...` shared launch/handoff helper(s)
 - active tool entry scripts for the in-scope tools
-- `tools/Asset Browser/main.js`
+- `toolbox/Asset Browser/main.js`
 - palette browser/manager entry script if present and required
 - focused tests under `tests/tools/`
 - starter template config only if compatibility needs a narrow update

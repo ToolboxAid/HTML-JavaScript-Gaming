@@ -15,13 +15,13 @@ User-verified:
 
 - Games path is partially working:
   - clicking `Open with Workspace Manager` opens Workspace Manager
-  - but Workspace Manager displays the game, not the tools/workspace tool selection surface
+  - but Workspace Manager displays the game, not the toolbox/workspace tool selection surface
 
 ## Scope
 
 One PR purpose only:
 
-- keep game launch routed through `tools/Workspace Manager/index.html`
+- keep game launch routed through `toolbox/Workspace Manager/index.html`
 - preserve explicit `gameId`
 - preserve external launch memory clear
 - preserve no fallback/default behavior
@@ -34,7 +34,7 @@ For this UAT path:
 ```text
 games/index.html
   -> Open with Workspace Manager
-  -> tools/Workspace Manager/index.html?gameId=<id>&mount=game
+  -> toolbox/Workspace Manager/index.html?gameId=<id>&mount=game
 ```
 
 Workspace Manager must:
@@ -42,7 +42,7 @@ Workspace Manager must:
 - open Workspace Manager
 - load explicit game context from `gameId`
 - clear external launch memory before hydrating context
-- show the tools/workspace selection surface
+- show the toolbox/workspace selection surface
 - not immediately mount/show the game iframe as the primary view
 - not auto-select the first tool
 - not fallback to stale memory
@@ -67,7 +67,7 @@ Allowed:
 
 Likely target:
 
-- `tools/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/main.js`
 
 Codex may inspect nearby Workspace Manager files only if required to identify the existing view-selection pattern.
 
@@ -121,14 +121,14 @@ Validation must include:
 - proof `gameId || game` fallback is not restored
 - proof `toolIds[0]` first-tool selection is not restored
 - proof external launch memory clear remains intact
-- proof initial game-launched Workspace Manager view shows tools/workspace surface, not the game surface
+- proof initial game-launched Workspace Manager view shows toolbox/workspace surface, not the game surface
 - proof sample `Open <tool>` behavior remains untouched
 - anti-pattern self-check
 
 ## Acceptance
 
 - `games/index.html -> Open with Workspace Manager` opens Workspace Manager.
-- Workspace Manager shows tools/workspace surface for selected game context.
+- Workspace Manager shows toolbox/workspace surface for selected game context.
 - Workspace Manager does not immediately show the game surface as the primary view.
 - No fallback/default behavior is restored.
 - Samples behavior remains untouched.

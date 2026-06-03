@@ -6,7 +6,7 @@ PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH.md
 # PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH
 
 ## Goal
-Plan a small, surgical usability-polish PR for the isolated Sprite Editor at `tools/Sprite Editor/` now that core features are working.
+Plan a small, surgical usability-polish PR for the isolated Sprite Editor at `toolbox/Sprite Editor/` now that core features are working.
 
 ## Confirmed baseline (locked)
 - draw / erase / fill
@@ -21,8 +21,8 @@ Plan a small, surgical usability-polish PR for the isolated Sprite Editor at `to
 - configurable pixel size / zoom
 
 ## Scope rules (locked)
-- Do not review, modify, migrate, or delete any pre-existing sprite editor outside `tools/Sprite Editor/`.
-- Keep scope limited to `tools/Sprite Editor/`, `tools/index.html` only if needed, and docs_build/reports.
+- Do not review, modify, migrate, or delete any pre-existing sprite editor outside `toolbox/Sprite Editor/`.
+- Keep scope limited to `toolbox/Sprite Editor/`, `toolbox/index.html` only if needed, and docs_build/reports.
 - Do not expand into engine or unrelated tools.
 - Docs-first.
 - One PR per purpose.
@@ -30,7 +30,7 @@ Plan a small, surgical usability-polish PR for the isolated Sprite Editor at `to
 - No destructive changes.
 
 ## In scope
-- Usability-only polish in `tools/Sprite Editor/`:
+- Usability-only polish in `toolbox/Sprite Editor/`:
   - visibility and feedback improvements
   - keyboard shortcut support
   - undo/redo behavior
@@ -48,17 +48,17 @@ Plan a small, surgical usability-polish PR for the isolated Sprite Editor at `to
 
 ## Exact files likely to change in BUILD_PR
 Primary code targets:
-- `tools/Sprite Editor/index.html`
-- `tools/Sprite Editor/spriteEditor.css`
-- `tools/Sprite Editor/main.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
-- `tools/Sprite Editor/modules/projectModel.js` (only if needed for undo/redo snapshot contract)
-- `tools/Sprite Editor/modules/constants.js`
-- `tools/Sprite Editor/modules/colorUtils.js` (only if needed for recent swatch behavior)
-- `tools/Sprite Editor/README.md`
+- `toolbox/Sprite Editor/index.html`
+- `toolbox/Sprite Editor/spriteEditor.css`
+- `toolbox/Sprite Editor/main.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Sprite Editor/modules/projectModel.js` (only if needed for undo/redo snapshot contract)
+- `toolbox/Sprite Editor/modules/constants.js`
+- `toolbox/Sprite Editor/modules/colorUtils.js` (only if needed for recent swatch behavior)
+- `toolbox/Sprite Editor/README.md`
 
 Optional integration target:
-- `tools/index.html` (only if a tiny non-destructive description tweak is needed)
+- `toolbox/index.html` (only if a tiny non-destructive description tweak is needed)
 
 Required docs/report targets:
 - `docs_build/pr/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH.md`
@@ -122,7 +122,7 @@ Required docs/report targets:
 - Contract: load failure leaves current project untouched.
 
 ## Manual validation checklist for BUILD/APPLY
-- Open `tools/Sprite Editor/index.html` directly in browser.
+- Open `toolbox/Sprite Editor/index.html` directly in browser.
 - Confirm active state row visibility and correctness.
 - Confirm shortcut mappings (`P`, `E`, `F`, `G`, `O`, `[`, `]`) with status feedback.
 - Confirm undo/redo on draw, fill, frame ops, and import/resize actions.
@@ -133,7 +133,7 @@ Required docs/report targets:
 - If status bar is implemented, confirm canvas size, zoom, frame, and cursor position update correctly.
 - Stress test drag drawing to verify interpolation reliability.
 - Save JSON and reload; verify UI control restoration and status messages.
-- Confirm `tools/index.html` link remains correct for `tools/Sprite Editor/index.html`.
+- Confirm `toolbox/index.html` link remains correct for `toolbox/Sprite Editor/index.html`.
 - Confirm no edits outside approved file list.
 
 ## BUILD_PR command
@@ -142,8 +142,8 @@ Required docs/report targets:
 Required BUILD constraints:
 - Apply only this plan.
 - Keep PR small and surgical.
-- No changes outside `tools/Sprite Editor/` + docs_build/reports (+ `tools/index.html` only if strictly needed).
-- Do not touch any pre-existing sprite editor implementation outside `tools/Sprite Editor/`.
+- No changes outside `toolbox/Sprite Editor/` + docs_build/reports (+ `toolbox/index.html` only if strictly needed).
+- Do not touch any pre-existing sprite editor implementation outside `toolbox/Sprite Editor/`.
 - No src/engine/unrelated tool/samples changes.
 - Preserve file headers and docs-first workflow.
 - Produce delta zip: `tmp/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH_delta.zip`.

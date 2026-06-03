@@ -1,8 +1,8 @@
 # PR_26124_018-workspace-toolstate-lifecycle-ux
 
 ## Scope
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/playwright/workspace-v2.validation.spec.js`
 - `tests/ui/workspace-v2.asset-manager.spec.js`
 
@@ -34,7 +34,7 @@
   - no sample JSON changes.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js` -> pass
+- `node --check toolbox/workspace-v2/index.js` -> pass
 - `node --check tests/playwright/workspace-v2.validation.spec.js` -> pass
 - `node --check tests/ui/workspace-v2.asset-manager.spec.js` -> pass
 - `npm run test:workspace-v2` -> pass (`20 passed`, `0 failed`)

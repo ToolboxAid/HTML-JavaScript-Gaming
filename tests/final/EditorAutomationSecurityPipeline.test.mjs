@@ -5,10 +5,10 @@ David Quesenberry
 EditorAutomationSecurityPipeline.test.mjs
 */
 import assert from 'node:assert/strict';
-import LevelEditor from '../../tools/shared/editor/LevelEditor.js';
-import TileMapEditor from '../../tools/shared/editor/TileMapEditor.js';
-import EntityPlacementEditor from '../../tools/shared/editor/EntityPlacementEditor.js';
-import TimelineEditor from '../../tools/shared/editor/TimelineEditor.js';
+import LevelEditor from '../../toolbox/shared/editor/LevelEditor.js';
+import TileMapEditor from '../../toolbox/shared/editor/TileMapEditor.js';
+import EntityPlacementEditor from '../../toolbox/shared/editor/EntityPlacementEditor.js';
+import TimelineEditor from '../../toolbox/shared/editor/TimelineEditor.js';
 import AutomatedTestRunner from '../../src/engine/automation/AutomatedTestRunner.js';
 import RegressionPlaybackHarness from '../../src/engine/automation/RegressionPlaybackHarness.js';
 import BenchmarkRunner from '../../src/engine/automation/BenchmarkRunner.js';
@@ -17,12 +17,12 @@ import PacketValidator from '../../src/engine/security/PacketValidator.js';
 import DataIntegrityService from '../../src/engine/security/DataIntegrityService.js';
 import PermissionGate from '../../src/engine/security/PermissionGate.js';
 import SessionTrustValidator from '../../src/engine/security/SessionTrustValidator.js';
-import AssetImportPipeline from '../../tools/shared/pipeline/AssetImportPipeline.js';
-import TexturePreprocessPipeline from '../../tools/shared/pipeline/TexturePreprocessPipeline.js';
-import AudioPreprocessPipeline from '../../tools/shared/pipeline/AudioPreprocessPipeline.js';
-import ContentMigrationSystem from '../../tools/shared/pipeline/ContentMigrationSystem.js';
-import BuildAssetManifestSystem from '../../tools/shared/pipeline/BuildAssetManifestSystem.js';
-import ContentValidationPipeline from '../../tools/shared/pipeline/ContentValidationPipeline.js';
+import AssetImportPipeline from '../../toolbox/shared/pipeline/AssetImportPipeline.js';
+import TexturePreprocessPipeline from '../../toolbox/shared/pipeline/TexturePreprocessPipeline.js';
+import AudioPreprocessPipeline from '../../toolbox/shared/pipeline/AudioPreprocessPipeline.js';
+import ContentMigrationSystem from '../../toolbox/shared/pipeline/ContentMigrationSystem.js';
+import BuildAssetManifestSystem from '../../toolbox/shared/pipeline/BuildAssetManifestSystem.js';
+import ContentValidationPipeline from '../../toolbox/shared/pipeline/ContentValidationPipeline.js';
 
 export async function run() {
   const level = new LevelEditor({ width: 4, height: 3 });

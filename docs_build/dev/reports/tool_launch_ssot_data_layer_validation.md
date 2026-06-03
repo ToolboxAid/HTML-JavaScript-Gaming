@@ -2,12 +2,12 @@
 
 ## Exact SSoT File Path
 
-- `tools/shared/toolLaunchSSoTData.js`
+- `toolbox/shared/toolLaunchSSoTData.js`
 
 ## Changed Files
 
-- `tools/shared/toolLaunchSSoTData.js`
-- `tools/shared/toolLaunchSSoT.js`
+- `toolbox/shared/toolLaunchSSoTData.js`
+- `toolbox/shared/toolLaunchSSoT.js`
 - `samples/index.render.js`
 - `games/index.render.js`
 - `docs_build/dev/reports/tool_launch_ssot_data_layer_validation.md`
@@ -42,8 +42,8 @@ launchIds [
 
 Launch id structure is defined in SSoT data layer:
 
-- `tools/shared/toolLaunchSSoTData.js:55`
-- `tools/shared/toolLaunchSSoTData.js:65`
+- `toolbox/shared/toolLaunchSSoTData.js:55`
+- `toolbox/shared/toolLaunchSSoTData.js:65`
 
 ## Proof Sample Actions Still Say `Open <tool>`
 
@@ -65,13 +65,13 @@ Open with Workspace Manager
 
 1. Sample launch resolution now reads launch metadata from SSoT data layer:
 
-- `tools/shared/toolLaunchSSoT.js:68`
-- `tools/shared/toolLaunchSSoT.js:72`
+- `toolbox/shared/toolLaunchSSoT.js:68`
+- `toolbox/shared/toolLaunchSSoT.js:72`
 
 2. Sample launch target path is defined in SSoT data layer as `targetPath`:
 
-- `tools/shared/toolLaunchSSoTData.js:53`
-- `tools/shared/toolLaunchSSoTData.js:57`
+- `toolbox/shared/toolLaunchSSoTData.js:53`
+- `toolbox/shared/toolLaunchSSoTData.js:57`
 
 3. Sample UI launch call passes source/type context and uses resolver:
 
@@ -86,14 +86,14 @@ sampleDefinition {
   launchDefinition: {
     launchId: 'tool.sprite-editor',
     displayName: 'Sprite Editor',
-    targetPath: '/tools/Sprite%20Editor/index.html',
+    targetPath: '/toolbox/Sprite%20Editor/index.html',
     allowedLaunchSources: [ 'samples', 'tools', 'workspace', 'internal' ],
     allowedLaunchTypes: [ 'sample-to-tool', 'tool-internal', 'workspace-internal' ]
   },
   error: ''
 }
 sampleLaunch {
-  href: '/tools/Sprite%20Editor/index.html?sampleId=1208&sampleTitle=Tool+Formatted+Tiles+Parallax',
+  href: '/toolbox/Sprite%20Editor/index.html?sampleId=1208&sampleTitle=Tool+Formatted+Tiles+Parallax',
   error: ''
 }
 ```
@@ -102,12 +102,12 @@ sampleLaunch {
 
 1. Game launch resolution now reads workspace launch metadata from SSoT data layer:
 
-- `tools/shared/toolLaunchSSoT.js:101`
-- `tools/shared/toolLaunchSSoT.js:105`
+- `toolbox/shared/toolLaunchSSoT.js:101`
+- `toolbox/shared/toolLaunchSSoT.js:105`
 
 2. Workspace Manager target path is defined in SSoT data layer as `targetPath`:
 
-- `tools/shared/toolLaunchSSoTData.js:67`
+- `toolbox/shared/toolLaunchSSoTData.js:67`
 
 3. Game UI launch call passes source/type context and uses resolver:
 
@@ -122,14 +122,14 @@ gameDefinition {
   launchDefinition: {
     launchId: 'workspace-manager.game-to-workspace',
     displayName: 'Workspace Manager',
-    targetPath: '/tools/Workspace%20Manager/index.html',
+    targetPath: '/toolbox/Workspace%20Manager/index.html',
     allowedLaunchSources: [ 'games', 'workspace', 'internal' ],
     allowedLaunchTypes: [ 'game-to-workspace', 'workspace-internal' ]
   },
   error: ''
 }
 gameLaunch {
-  href: '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game',
+  href: '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game',
   error: ''
 }
 ```
@@ -138,8 +138,8 @@ gameLaunch {
 
 Code path remains:
 
-- `tools/shared/toolLaunchSSoT.js:121`
-- `tools/shared/toolLaunchSSoT.js:138`
+- `toolbox/shared/toolLaunchSSoT.js:121`
+- `toolbox/shared/toolLaunchSSoT.js:138`
 - `samples/index.render.js:539`
 - `games/index.render.js:419`
 
@@ -150,7 +150,7 @@ clearResult true
 localAfterClear [ [ 'keep.one', 'x' ] ]
 sessionAfterClear [ [ 'keep.two', 'y' ] ]
 launchResult true
-assignCalls [ '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
+assignCalls [ '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
 localAfterLaunch [ [ 'keep.one', 'x' ] ]
 sessionAfterLaunch [ [ 'keep.two', 'y' ] ]
 ```
@@ -174,18 +174,18 @@ disallowedSource {
 
 3. Guard rails are explicit in SSoT data + resolver:
 
-- `tools/shared/toolLaunchSSoTData.js:100`
-- `tools/shared/toolLaunchSSoTData.js:121`
-- `tools/shared/toolLaunchSSoT.js:69`
-- `tools/shared/toolLaunchSSoT.js:102`
+- `toolbox/shared/toolLaunchSSoTData.js:100`
+- `toolbox/shared/toolLaunchSSoTData.js:121`
+- `toolbox/shared/toolLaunchSSoT.js:69`
+- `toolbox/shared/toolLaunchSSoT.js:102`
 
 ## Static Validation
 
 Commands run:
 
 ```bash
-node --check tools/shared/toolLaunchSSoTData.js
-node --check tools/shared/toolLaunchSSoT.js
+node --check toolbox/shared/toolLaunchSSoTData.js
+node --check toolbox/shared/toolLaunchSSoT.js
 node --check samples/index.render.js
 node --check games/index.render.js
 ```

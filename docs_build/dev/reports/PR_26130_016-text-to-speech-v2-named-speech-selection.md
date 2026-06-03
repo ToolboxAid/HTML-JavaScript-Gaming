@@ -65,16 +65,16 @@ Additional checks passed:
 npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "Text to Speech V2"
 node --check src/engine/audio/TextToSpeechDefaults.js
 node --check src/engine/audio/TextToSpeechEngine.js
-node --check tools/text2speach-V2/js/TextToSpeechToolApp.js
-node --check tools/text2speach-V2/js/bootstrap.js
-node --check tools/text2speach-V2/js/controls/ActionNavControl.js
-node --check tools/text2speach-V2/js/controls/QueueControl.js
-node --check tools/text2speach-V2/js/controls/SpeechOptionsControl.js
+node --check toolbox/text2speach-V2/js/TextToSpeechToolApp.js
+node --check toolbox/text2speach-V2/js/bootstrap.js
+node --check toolbox/text2speach-V2/js/controls/ActionNavControl.js
+node --check toolbox/text2speach-V2/js/controls/QueueControl.js
+node --check toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-node -e "JSON.parse(require('node:fs').readFileSync('tools/schemas/tools/text2speach-V2.schema.json','utf8')); console.log('schema ok')"
+node -e "JSON.parse(require('node:fs').readFileSync('toolbox/schemas/tools/text2speach-V2.schema.json','utf8')); console.log('schema ok')"
 git diff --check HEAD -- .
-rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" tools/text2speach-V2/index.html
-rg -n "tools/shared|imageDataUrl|start_of_day" src/engine/audio tools/text2speach-V2 tools/schemas/tools/text2speach-V2.schema.json tests/playwright/tools/WorkspaceManagerV2.spec.mjs
+rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" toolbox/text2speach-V2/index.html
+rg -n "toolbox/shared|imageDataUrl|start_of_day" src/engine/audio toolbox/text2speach-V2 toolbox/schemas/tools/text2speach-V2.schema.json tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 ```
 
 The inline HTML restriction scan and forbidden-scope scan returned no matches. `git diff --check` reported only existing Windows line-ending warnings and no whitespace errors.
@@ -91,11 +91,11 @@ Changed runtime JS coverage included:
 
 - `src/engine/audio/TextToSpeechDefaults.js`
 - `src/engine/audio/TextToSpeechEngine.js`
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js`
-- `tools/text2speach-V2/js/bootstrap.js`
-- `tools/text2speach-V2/js/controls/ActionNavControl.js`
-- `tools/text2speach-V2/js/controls/QueueControl.js`
-- `tools/text2speach-V2/js/controls/SpeechOptionsControl.js`
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js`
+- `toolbox/text2speach-V2/js/bootstrap.js`
+- `toolbox/text2speach-V2/js/controls/ActionNavControl.js`
+- `toolbox/text2speach-V2/js/controls/QueueControl.js`
+- `toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js`
 
 The coverage guard reported no low-coverage changed runtime JS files.
 
@@ -113,7 +113,7 @@ tmp/PR_26130_016-text-to-speech-v2-named-speech-selection_delta.zip
 
 ## Manual Validation Steps
 
-1. Open `tools/text2speach-V2/index.html`.
+1. Open `toolbox/text2speach-V2/index.html`.
 2. Confirm the center accordion reads `Text to Speak` and no visible `Speech text` label appears.
 3. Confirm Repeat Count and Delay Between Repeats controls are absent.
 4. Select different named speech tiles and confirm the Name input updates.
@@ -131,14 +131,14 @@ Expected outcome: named speech selection and playback remain independent, remove
 - `src/engine/audio/TextToSpeechDefaults.js`
 - `src/engine/audio/TextToSpeechEngine.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/schemas/tools/text2speach-V2.schema.json`
-- `tools/text2speach-V2/index.html`
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js`
-- `tools/text2speach-V2/js/bootstrap.js`
-- `tools/text2speach-V2/js/controls/ActionNavControl.js`
-- `tools/text2speach-V2/js/controls/QueueControl.js`
-- `tools/text2speach-V2/js/controls/SpeechOptionsControl.js`
-- `tools/text2speach-V2/styles/text2speach-V2.css`
+- `toolbox/schemas/tools/text2speach-V2.schema.json`
+- `toolbox/text2speach-V2/index.html`
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js`
+- `toolbox/text2speach-V2/js/bootstrap.js`
+- `toolbox/text2speach-V2/js/controls/ActionNavControl.js`
+- `toolbox/text2speach-V2/js/controls/QueueControl.js`
+- `toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js`
+- `toolbox/text2speach-V2/styles/text2speach-V2.css`
 - `docs_build/dev/reports/PR_26130_016-text-to-speech-v2-named-speech-selection.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`

@@ -48,7 +48,7 @@ Secondary only if required:
 
 ## Disallowed Diff Area
 - `src/engine/**`
-- `tools/**`
+- `toolbox/**`
 - `games/**`
 - `tests/**`
 - other Phase 12 sample folders

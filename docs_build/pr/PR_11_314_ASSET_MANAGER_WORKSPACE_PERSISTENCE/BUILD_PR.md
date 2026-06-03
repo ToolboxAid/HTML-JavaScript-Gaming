@@ -16,8 +16,8 @@
   - `tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs`
 
 ## Validation
-- `node --check tools/asset-manager-v2/index.js`
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/asset-manager-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs`
 - `node tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs`
 - `rg -n "legacy asset browser id token" .` (legacy-id zero-reference check command was executed with the legacy token and returned no matches)

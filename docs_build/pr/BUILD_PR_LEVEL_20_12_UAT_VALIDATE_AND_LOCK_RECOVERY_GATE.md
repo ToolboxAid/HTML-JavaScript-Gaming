@@ -39,7 +39,7 @@ Validate:
 
 - sample tool actions are labeled `Open <tool>`
 - sample tool actions route through SSoT
-- sample tool targets resolve to `tools/<tool>/index.html`
+- sample tool targets resolve to `toolbox/<tool>/index.html`
 - sample external launch clears prior launch memory
 - sample missing/invalid launch context fails visibly
 - sample launch does not use fallback/default target
@@ -50,7 +50,7 @@ Validate:
 
 - game workspace action is labeled `Open with Workspace Manager`
 - game workspace action routes through SSoT
-- game workspace target resolves to `tools/Workspace Manager/index.html`
+- game workspace target resolves to `toolbox/Workspace Manager/index.html`
 - game external launch clears prior launch memory
 - game missing/invalid launch context fails visibly
 - game launch does not use fallback/default target
@@ -62,7 +62,7 @@ Validate:
 ```text
 games/index.html
   -> Open with Workspace Manager
-  -> tools/Workspace Manager/index.html
+  -> toolbox/Workspace Manager/index.html
   -> external launch memory cleared
   -> explicit game/workspace context loaded
   -> no fallback/default behavior used

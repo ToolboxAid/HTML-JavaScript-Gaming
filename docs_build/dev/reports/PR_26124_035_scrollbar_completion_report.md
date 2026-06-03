@@ -2,7 +2,7 @@
 
 ## Scope
 - Completed the User Palette scrollbar requirement for Palette Manager V2.
-- CSS/layout only; no JSON, schema, sample, games, workspace, toolState, session, or tools/shared changes.
+- CSS/layout only; no JSON, schema, sample, games, workspace, toolState, session, or toolbox/shared changes.
 
 ## Changes
 - Center palette accordions now hide overflow at the accordion boundary.

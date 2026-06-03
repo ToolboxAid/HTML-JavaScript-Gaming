@@ -4,13 +4,13 @@ Date: 2026-04-11
 
 ## Files Changed
 - docs_build/pr/BUILD_PR_TOOLS_THEME_REUSE_BASELINE.md
-- tools/Asset Browser/assetBrowser.css
-- tools/Palette Browser/paletteBrowser.css
-- tools/Parallax Scene Studio/parallaxEditor.css
-- tools/Sprite Editor/spriteEditor.css
-- tools/Tilemap Studio/tileMapEditor.css
-- tools/Vector Asset Studio/svgBackgroundEditor.css
-- tools/Vector Map Editor/vectorMapEditor.css
+- toolbox/Asset Browser/assetBrowser.css
+- toolbox/Palette Browser/paletteBrowser.css
+- toolbox/Parallax Scene Studio/parallaxEditor.css
+- toolbox/Sprite Editor/spriteEditor.css
+- toolbox/Tilemap Studio/tileMapEditor.css
+- toolbox/Vector Asset Studio/svgBackgroundEditor.css
+- toolbox/Vector Map Editor/vectorMapEditor.css
 
 ## Implementation Summary
 - Added BUILD doc with exact target files, validation expectations, failure conditions, and exact ZIP output path.

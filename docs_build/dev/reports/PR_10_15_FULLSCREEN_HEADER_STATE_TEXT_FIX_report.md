@@ -4,7 +4,7 @@
 - PASS/FAIL: PASS
 
 ## Changed Files
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/PR_10_15_FULLSCREEN_HEADER_STATE_TEXT_FIX_report.md
 - tmp/PR_10_15_FULLSCREEN_HEADER_STATE_TEXT_FIX_validation.json
 
@@ -16,7 +16,7 @@
 - Diagnostics remain available via `title`/data attributes without multi-line visible error summary text.
 
 ## Validation Commands and Results
-- `node --check tools/shared/platformShell.js` -> PASS
+- `node --check toolbox/shared/platformShell.js` -> PASS
 - Targeted browser validation script -> PASS
 - Evidence: tmp/PR_10_15_FULLSCREEN_HEADER_STATE_TEXT_FIX_validation.json
 

@@ -4,13 +4,13 @@
 Add a Palette Manager V2 Sample Palette Swatch `Pin All` action and remove `Tag` sorting from Sample Palette Swatch while keeping `Tag` sorting for User Palette.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Preserve accordionV2 behavior.
 - Preserve import/export behavior.

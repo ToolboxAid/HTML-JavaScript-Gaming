@@ -6,8 +6,8 @@ ToolHostDispatchContract.test.mjs
 */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { createToolHostManifest, getToolHostEntryById } from "../../tools/shared/toolHostManifest.js";
-import { getVisibleActiveToolRegistry } from "../../tools/toolRegistry.js";
+import { createToolHostManifest, getToolHostEntryById } from "../../toolbox/shared/toolHostManifest.js";
+import { getVisibleActiveToolRegistry } from "../../toolbox/toolRegistry.js";
 
 export async function run() {
   const activeTools = getVisibleActiveToolRegistry();
@@ -26,8 +26,8 @@ export async function run() {
   assert.equal(getToolHostEntryById(manifest, ""), null, "Empty tool id should not resolve.");
   assert.equal(getToolHostEntryById(manifest, "missing-tool"), null, "Unknown tool id should not resolve.");
 
-  const hostMainSource = readFileSync(new URL("../../tools/Tool Host/main.js", import.meta.url), "utf8");
-  const hostIndexSource = readFileSync(new URL("../../tools/Tool Host/index.html", import.meta.url), "utf8");
+  const hostMainSource = readFileSync(new URL("../../toolbox/Tool Host/main.js", import.meta.url), "utf8");
+  const hostIndexSource = readFileSync(new URL("../../toolbox/Tool Host/index.html", import.meta.url), "utf8");
   assert.match(hostMainSource, /searchParams\.get\("tool"\)/, "Tool host should read tool dispatch from query params.");
   assert.match(
     hostMainSource,
@@ -65,7 +65,7 @@ export async function run() {
     "Tool host status region should announce updates accessibly."
   );
 
-  const toolsIndexRendererSource = readFileSync(new URL("../../tools/renderToolsIndex.js", import.meta.url), "utf8");
+  const toolsIndexRendererSource = readFileSync(new URL("../../toolbox/renderToolsIndex.js", import.meta.url), "utf8");
   assert.match(
     toolsIndexRendererSource,
     /Tool Host\/index\.html\?tool=/,

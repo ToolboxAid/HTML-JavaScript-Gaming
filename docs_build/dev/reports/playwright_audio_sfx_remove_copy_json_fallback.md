@@ -4,9 +4,9 @@ Date: 2026-05-25
 
 ## Targeted validation
 
-- `node --check tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` passed.
-- JSON parse validation passed for `tools/schemas/tools/audio-sfx-playground-v2.schema.json`.
-- HTML external asset guard passed for `tools/audio-sfx-playground-v2/index.html`.
+- `node --check toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` passed.
+- JSON parse validation passed for `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`.
+- HTML external asset guard passed for `toolbox/audio-sfx-playground-v2/index.html`.
 - Static grep verified no `execCommand`, hidden `textarea`, fallback, or legacy browser copy path remains in `AudioSfxPlaygroundV2App.js`.
 
 ## npm run test:workspace-v2

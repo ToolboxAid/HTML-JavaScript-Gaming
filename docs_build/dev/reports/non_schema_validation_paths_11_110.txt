@@ -18,11 +18,11 @@ Allowed non-schema checks retained:
 - Rationale: allowed pre-schema boundary (JSON parse check).
 
 Remaining post-schema custom checks still present in changed loader paths:
-- tools/Sprite Editor/modules/spriteEditorApp.js
+- toolbox/Sprite Editor/modules/spriteEditorApp.js
   - throw new Error("Preset payload did not include a sprite project.")
-- tools/SVG Asset Studio/main.js
+- toolbox/SVG Asset Studio/main.js
   - throw new Error("Preset did not include a vector SVG payload.")
-- tools/Tilemap Studio/main.js
+- toolbox/Tilemap Studio/main.js
   - throw new Error("Preset payload did not include a tilemap document or tilemap document path.")
   - throw new Error("Preset payload did not include a tilemap document.")
 

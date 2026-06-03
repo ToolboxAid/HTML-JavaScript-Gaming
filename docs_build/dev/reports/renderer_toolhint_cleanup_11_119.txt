@@ -3,7 +3,7 @@ PR 11.119 - Renderer Toolhint Cleanup
 Files searched
 - samples/index.render.js
 - samples/shared/sampleDetailPageEnhancement.js
-- tools/shared/toolLaunchSSoT.js
+- toolbox/shared/toolLaunchSSoT.js
 - samples/metadata/samples.index.metadata.json
 
 Files changed
@@ -12,7 +12,7 @@ Files changed
 
 Problem path removed
 - Before: samples/index.render.js could call resolveSampleToolLaunchHref with samplePresetPath="" when a runtime sample row had toolHints but no matching roundtripToolPresets entry.
-- Effect: a stale hint-only row could render a link like /tools/3D%20Camera%20Path%20Editor/index.html?sampleId=0201&sampleTitle=Camera+Follow.
+- Effect: a stale hint-only row could render a link like /toolbox/3D%20Camera%20Path%20Editor/index.html?sampleId=0201&sampleTitle=Camera+Follow.
 - After: buildRoundtripLinks returns without creating a link when getExplicitRoundtripPresetPath(sample, toolId) returns empty.
 
 Related detail-page cleanup

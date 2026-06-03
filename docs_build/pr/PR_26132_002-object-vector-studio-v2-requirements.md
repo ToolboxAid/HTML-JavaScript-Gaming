@@ -7,7 +7,7 @@ Document Object Vector Studio V2 requirements before runtime implementation and 
 ## Changes
 
 - Updated user-facing labels for the new studios to include `V2`.
-- Added Object Vector Studio V2 requirements/design documentation at `tools/object-vector-studio-v2/docs/OBJECT_VECTOR_STUDIO_V2_REQUIREMENTS.md`.
+- Added Object Vector Studio V2 requirements/design documentation at `toolbox/object-vector-studio-v2/docs/OBJECT_VECTOR_STUDIO_V2_REQUIREMENTS.md`.
 - Documented schema-only session loading, launched-with-parameters file reads, required palette behavior, responsive hide-header layout, accordion space sharing, scrollable controls, selected item visibility, object tiles, column responsibilities, workspace nav, and tool nav.
 - Kept Primitive Skin Editor and Vector Map Editor available and only updated their deprecation text to point to the V2 studio names.
 
@@ -24,7 +24,7 @@ No Playwright impact. This PR is requirements/docs and user-facing naming only.
 
 ## Manual Validation
 
-1. Open `tools/object-vector-studio-v2/docs/OBJECT_VECTOR_STUDIO_V2_REQUIREMENTS.md`.
+1. Open `toolbox/object-vector-studio-v2/docs/OBJECT_VECTOR_STUDIO_V2_REQUIREMENTS.md`.
 2. Confirm it covers schema-only session loading, launched-with-parameters file read, required palette, responsive hide-header layout, accordion behavior, scrollable controls, selected item visibility, left/right column responsibilities, object tiles, workspace nav, and tool nav.
 3. Open the tool index after the previous PR is applied and confirm the user-facing names read `Object Vector Studio V2` and `World Vector Studio V2`.
 

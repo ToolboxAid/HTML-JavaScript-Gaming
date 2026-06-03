@@ -11,13 +11,13 @@
 
 ## Validation
 
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
-- `node --check tools/asset-manager-v2/js/services/WorkspaceBridge.js`
-- `node --check tools/palette-manager-v2/main.js`
-- `node --check tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js`
-- `node --check tools/session-inspector-v2/js/SessionInspectorV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `node --check toolbox/asset-manager-v2/js/AssetManagerV2App.js`
+- `node --check toolbox/asset-manager-v2/js/services/WorkspaceBridge.js`
+- `node --check toolbox/palette-manager-v2/main.js`
+- `node --check toolbox/preview-generator-v2/PreviewGeneratorV2ShellControl.js`
+- `node --check toolbox/session-inspector-v2/js/SessionInspectorV2App.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - Focused return-regression rerun passed: 3 passed.
 - `git diff --check`
@@ -44,13 +44,13 @@ Expected fail behavior: tests fail if return navigation drops the live repo hand
 
 ## Playwright V8 Coverage
 
-- `(63%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 643/643; executed functions 36/57`
-- `(76%) tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js - executed lines 166/166; executed functions 13/17`
-- `(83%) tools/palette-manager-v2/main.js - executed lines 227/227; executed functions 15/18`
-- `(87%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 710/710; executed functions 39/45`
-- `(90%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1458/1458; executed functions 136/151`
-- `(93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 305/305; executed functions 25/27`
-- `(93%) tools/session-inspector-v2/js/SessionInspectorV2App.js - executed lines 309/309; executed functions 41/44`
+- `(63%) toolbox/asset-manager-v2/js/AssetManagerV2App.js - executed lines 643/643; executed functions 36/57`
+- `(76%) toolbox/preview-generator-v2/PreviewGeneratorV2ShellControl.js - executed lines 166/166; executed functions 13/17`
+- `(83%) toolbox/palette-manager-v2/main.js - executed lines 227/227; executed functions 15/18`
+- `(87%) toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 710/710; executed functions 39/45`
+- `(90%) toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1458/1458; executed functions 136/151`
+- `(93%) toolbox/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 305/305; executed functions 25/27`
+- `(93%) toolbox/session-inspector-v2/js/SessionInspectorV2App.js - executed lines 309/309; executed functions 41/44`
 
 `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` is a changed test file and is not collected as browser runtime coverage.
 
@@ -67,13 +67,13 @@ Expected fail behavior: tests fail if return navigation drops the live repo hand
 
 ## Changed Files
 
-- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `tools/asset-manager-v2/js/AssetManagerV2App.js`
-- `tools/asset-manager-v2/js/services/WorkspaceBridge.js`
-- `tools/palette-manager-v2/main.js`
-- `tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js`
-- `tools/session-inspector-v2/js/SessionInspectorV2App.js`
+- `toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/asset-manager-v2/js/AssetManagerV2App.js`
+- `toolbox/asset-manager-v2/js/services/WorkspaceBridge.js`
+- `toolbox/palette-manager-v2/main.js`
+- `toolbox/preview-generator-v2/PreviewGeneratorV2ShellControl.js`
+- `toolbox/session-inspector-v2/js/SessionInspectorV2App.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

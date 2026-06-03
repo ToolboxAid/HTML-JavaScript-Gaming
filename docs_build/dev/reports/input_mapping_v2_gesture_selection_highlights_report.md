@@ -53,15 +53,15 @@ Expected fail behavior: selected gestures lose highlighting, Keyboard Release ma
 Passed:
 
 - `node --check src/engine/input/InputCapabilityDescriptors.js`
-- `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-- `node --check tools/input-mapping-v2/js/controls/GestureListControl.js`
-- `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `node --check toolbox/input-mapping-v2/js/controls/GestureListControl.js`
+- `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs -g "Input Mapping V2" --project=playwright --workers=1 --reporter=list` - 3 passed.
 - `npm run test:workspace-v2` - 62 passed.
 - `git diff --check` - passed; Git reported LF-to-CRLF working-copy warnings only.
 - `git status --short -- samples games` - no sample/game JSON changes.
-- `rg "imageDataUrl" tools/input-mapping-v2 src/engine/input tests/playwright/tools/WorkspaceManagerV2.spec.mjs` - no matches.
+- `rg "imageDataUrl" toolbox/input-mapping-v2 src/engine/input tests/playwright/tools/WorkspaceManagerV2.spec.mjs` - no matches.
 
 Coverage:
 
@@ -88,7 +88,7 @@ Skipped:
 
 - `src/engine/input/InputCapabilityDescriptors.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/controls/GestureListControl.js`
-- `tools/input-mapping-v2/js/services/EngineInputSourceService.js`
-- `tools/input-mapping-v2/styles/inputMappingV2.css`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/controls/GestureListControl.js`
+- `toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`

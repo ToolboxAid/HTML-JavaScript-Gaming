@@ -464,7 +464,7 @@ docs/
         PLAN_PR_VERSIONED_CONTRACTS.md
         SYSTEM_RULES_PR_v2.md
       README.md
-    tools/
+    toolbox/
       SpriteEditor_old_keep/
         assets/
           images/

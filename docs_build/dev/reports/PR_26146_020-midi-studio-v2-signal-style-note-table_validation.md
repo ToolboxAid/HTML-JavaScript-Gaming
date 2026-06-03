@@ -9,10 +9,10 @@
 - No SoundFont playback, rendered export implementation, MIDI input/recording, inline script/style blocks, or inline event handlers were added.
 
 ## Changed Files
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_020-midi-studio-v2-signal-style-note-table_validation.md`
 - `docs_build/dev/reports/codex_review.diff`
@@ -23,10 +23,10 @@
 - `docs_build/dev/commit_comment.txt`
 
 ## Validation
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: external HTML guard checked `tools/midi-studio-v2/index.html`; only external script references were found and no inline style/event handlers were added.
+- PASS: external HTML guard checked `toolbox/midi-studio-v2/index.html`; only external script references were found and no inline style/event handlers were added.
 - PASS: `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "Twinkle|loads example and starts audible|edits spreadsheet|applies Preview Synth"`
   - Result: 4 passed.
 - PASS: `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "renders an aligned|reports grid note"`

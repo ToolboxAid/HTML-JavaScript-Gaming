@@ -65,27 +65,27 @@
 
 ## Files Audited
 - `docs_build/pr/BUILD_PR_LEVEL_10_6R_TOOL_UI_CONTROL_INVENTORY_COMPLETION.md`
-- `tools/toolRegistry.js`
-- `tools/shared/toolLaunchSSoT.js`
-- `tools/shared/toolLaunchSSoTData.js`
-- `tools/shared/toolLoadDiagnostics.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/shared/toolLaunchSSoT.js`
+- `toolbox/shared/toolLaunchSSoTData.js`
+- `toolbox/shared/toolLoadDiagnostics.js`
 - `samples/index.render.js`
 - `games/index.render.js`
-- `tools/Workspace Manager/main.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
-- `tools/Palette Browser/main.js`
-- `tools/Asset Browser/main.js`
-- `tools/Tilemap Studio/main.js`
-- `tools/Vector Asset Studio/main.js`
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
-- `tools/Replay Visualizer/main.js`
-- `tools/State Inspector/main.js`
-- `tools/Performance Profiler/main.js`
-- `tools/Physics Sandbox/main.js`
-- `tools/Asset Pipeline Tool/main.js`
-- `tools/Tile Model Converter/main.js`
-- `tools/3D JSON Payload Normalizer/main.js`
-- `tools/3D Asset Viewer/main.js`
-- `tools/3D Camera Path Editor/main.js`
-- `tools/Parallax Scene Studio/main.js`
-- `tools/Skin Editor/main.js`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Palette Browser/main.js`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Tilemap Studio/main.js`
+- `toolbox/Vector Asset Studio/main.js`
+- `toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
+- `toolbox/Replay Visualizer/main.js`
+- `toolbox/State Inspector/main.js`
+- `toolbox/Performance Profiler/main.js`
+- `toolbox/Physics Sandbox/main.js`
+- `toolbox/Asset Pipeline Tool/main.js`
+- `toolbox/Tile Model Converter/main.js`
+- `toolbox/3D JSON Payload Normalizer/main.js`
+- `toolbox/3D Asset Viewer/main.js`
+- `toolbox/3D Camera Path Editor/main.js`
+- `toolbox/Parallax Scene Studio/main.js`
+- `toolbox/Skin Editor/main.js`

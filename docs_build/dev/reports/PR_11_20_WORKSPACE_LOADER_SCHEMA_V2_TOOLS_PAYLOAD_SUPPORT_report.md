@@ -4,8 +4,8 @@
 PASS
 
 ## Files Changed
-- tools/Workspace Manager/main.js
-- tools/shared/platformShell.js
+- toolbox/Workspace Manager/main.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/PR_11_20_WORKSPACE_LOADER_SCHEMA_V2_TOOLS_PAYLOAD_SUPPORT_report.md
 
 ## Old Loader Assumptions Found
@@ -70,8 +70,8 @@ Result:
 - Launch smoke includes PASS for `samples/phase-19/1902/index.html` and all listed active tools, including but not limited to Asset Browser, Sprite Editor, Tilemap Studio, Vector Asset Studio, Vector Map Editor, and Palette Browser.
 
 ## Validation Commands and Results
-- `node --check "tools/Workspace Manager/main.js"` -> PASS
-- `node --check "tools/shared/platformShell.js"` -> PASS
+- `node --check "toolbox/Workspace Manager/main.js"` -> PASS
+- `node --check "toolbox/shared/platformShell.js"` -> PASS
 - `npm run test:launch-smoke -- --tools --samples --sample-range=1902-1902` -> PASS (suite executed; report summary `PASS=287 FAIL=0` includes sample `1902` PASS and all active tool entries PASS)
 - Manifest classification evidence command (Node inline script against sample 1902 + tool host manifest) -> PASS (`acceptedCount=17`, `rejected=[]`)
 

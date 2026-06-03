@@ -4,7 +4,7 @@
 Revise SVG Asset Studio v2 so its top header matches `/index.html` by using the existing shared theme header mount and source conventions.
 
 ## Files Codex may edit
-- `tools/SVG Asset Studio v2/main.js`
+- `toolbox/SVG Asset Studio v2/main.js`
 
 ## Files Codex must not edit
 - schemas
@@ -12,7 +12,7 @@ Revise SVG Asset Studio v2 so its top header matches `/index.html` by using the 
 - games
 - Workspace Manager v1 files
 - `platformShell` files
-- `tools/shared/*`
+- `toolbox/shared/*`
 - legacy Palette Browser files
 - Palette Manager files
 - start_of_day folders
@@ -49,7 +49,7 @@ Revise SVG Asset Studio v2 so its top header matches `/index.html` by using the 
 Run targeted validation only:
 
 ```powershell
-node --check "tools/SVG Asset Studio v2/main.js"
+node --check "toolbox/SVG Asset Studio v2/main.js"
 ```
 
 Manual browser validation:

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../../tools/shared/debugVisualizationLayer.js";
+import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../../toolbox/shared/debugVisualizationLayer.js";
 
 export async function run() {
   const result = buildDebugVisualizationLayer({

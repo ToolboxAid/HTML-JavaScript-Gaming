@@ -4,7 +4,7 @@
 Implement the AI Authoring Assistant defined in `PLAN_PR_AI_AUTHORING_ASSISTANT` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared AI authoring assistant in `tools/shared/aiAuthoringAssistant.js`
+- Added shared AI authoring assistant in `toolbox/shared/aiAuthoringAssistant.js`
   - produces deterministic authoring suggestions from validation, remediation, packaging, runtime, and debug context
   - keeps state-changing actions behind explicit confirmation boundaries
   - emits auditable traces and readable report text
@@ -19,7 +19,7 @@ Implement the AI Authoring Assistant defined in `PLAN_PR_AI_AUTHORING_ASSISTANT`
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/aiAuthoringAssistant.js`
+  - `node --check toolbox/shared/aiAuthoringAssistant.js`
   - `node --check tests/tools/AiAuthoringAssistant.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

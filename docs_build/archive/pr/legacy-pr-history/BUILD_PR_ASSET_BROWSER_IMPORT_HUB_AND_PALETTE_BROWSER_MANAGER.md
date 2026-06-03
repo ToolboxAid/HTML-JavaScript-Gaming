@@ -1,7 +1,7 @@
 # BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER
 
 ## Objective
-Implement two new first-class tools under `tools/`:
+Implement two new first-class tools under `toolbox/`:
 
 1. `Asset Browser / Import Hub`
 2. `Palette Browser / Manager`
@@ -9,18 +9,18 @@ Implement two new first-class tools under `tools/`:
 The build stays surgical: both tools use the shared engine theme and platform shell, are surfaced through the registry-driven tools landing page, keep `Sprite Editor` first-class, and keep `SpriteEditor_old_keep` preserved but hidden.
 
 ## Files Added
-- `tools/Asset Browser/index.html`
-- `tools/Asset Browser/main.js`
-- `tools/Asset Browser/assetBrowser.css`
-- `tools/Asset Browser/README.md`
-- `tools/Palette Browser/index.html`
-- `tools/Palette Browser/main.js`
-- `tools/Palette Browser/paletteBrowser.css`
-- `tools/Palette Browser/README.md`
+- `toolbox/Asset Browser/index.html`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Asset Browser/assetBrowser.css`
+- `toolbox/Asset Browser/README.md`
+- `toolbox/Palette Browser/index.html`
+- `toolbox/Palette Browser/main.js`
+- `toolbox/Palette Browser/paletteBrowser.css`
+- `toolbox/Palette Browser/README.md`
 
 ## Files Updated
-- `tools/toolRegistry.js`
-- `tools/index.html`
+- `toolbox/toolRegistry.js`
+- `toolbox/index.html`
 - `scripts/validate-tool-registry.mjs`
 - `scripts/validate-active-tools-surface.mjs`
 - `docs_build/dev/COMMIT_COMMENT.txt`
@@ -30,7 +30,7 @@ The build stays surgical: both tools use the shared engine theme and platform sh
 ## Implementation Summary
 
 ### Asset Browser / Import Hub
-- Added a launchable first-class tool at `tools/Asset Browser/`.
+- Added a launchable first-class tool at `toolbox/Asset Browser/`.
 - Uses shared shell and engine theme.
 - Browses approved asset locations only.
 - Previews real repo-backed vector, sprite, tilemap, parallax, palette, and workflow JSON assets.
@@ -42,7 +42,7 @@ The build stays surgical: both tools use the shared engine theme and platform sh
   - downloadable import-plan JSON
 
 ### Palette Browser / Manager
-- Added a launchable first-class tool at `tools/Palette Browser/`.
+- Added a launchable first-class tool at `toolbox/Palette Browser/`.
 - Uses shared shell and engine theme.
 - Loads built-in palettes from `src/engine/paletteList.js`.
 - Supports local custom palette workflows through browser storage:
@@ -55,7 +55,7 @@ The build stays surgical: both tools use the shared engine theme and platform sh
 - Publishes a lightweight palette handoff record for active art tools.
 
 ### Registry and Landing Surface
-- Registered both tools as active first-class entries in `tools/toolRegistry.js`.
+- Registered both tools as active first-class entries in `toolbox/toolRegistry.js`.
 - The tools landing page continues to render from the shared registry-driven grid.
 - Removed the now-obsolete planned placeholder cards for the two live tools.
 - Kept samples off the tools landing page.
@@ -68,13 +68,13 @@ The build stays surgical: both tools use the shared engine theme and platform sh
 - Added checks that fail if the static landing page still contains placeholder text for live tools.
 
 ## Validation Performed
-- `node --check tools/Asset Browser/main.js`
-- `node --check tools/Palette Browser/main.js`
+- `node --check toolbox/Asset Browser/main.js`
+- `node --check toolbox/Palette Browser/main.js`
 - `node scripts/validate-tool-registry.mjs`
 - `node scripts/validate-active-tools-surface.mjs`
 
 ## Acceptance Summary
-- Both tools exist under `tools/`.
+- Both tools exist under `toolbox/`.
 - Both tools are active in the shared registry.
 - Both tools load through the shared src/engine/platform shell.
 - The tools landing page surfaces them through the existing registry-driven launcher.

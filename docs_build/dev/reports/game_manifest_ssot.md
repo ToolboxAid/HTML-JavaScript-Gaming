@@ -1,7 +1,7 @@
 # PR_26128_007 Game Manifest SSoT
 
 ## Summary
-- Added `tools/schemas/game.manifest.schema.json` as the dedicated schema for `games/**/game.manifest.json`.
+- Added `toolbox/schemas/game.manifest.schema.json` as the dedicated schema for `games/**/game.manifest.json`.
 - Reworked the Workspace Manager V2 discovery path to validate discovered `game.manifest.json` files against the dedicated game schema, not `workspace.manifest.schema.json`.
 - Converted the current Workspace Manager V2 game project manifests for Asteroids, Gravity Well, and Pong into the game-manifest SSoT envelope.
 - Preserved existing Workspace Manager V2 launch/session behavior by deriving the runtime workspace context from `game.workspace`.
@@ -28,7 +28,7 @@
 - Full samples smoke test was skipped because this BUILD explicitly requested targeted Workspace Manager V2 validation and to skip full samples smoke.
 
 ## Validation
-- PASS: `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- PASS: `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- PASS: JSON parse for `tools/schemas/game.manifest.schema.json`, `games/Asteroids/game.manifest.json`, `games/GravityWell/game.manifest.json`, and `games/Pong/game.manifest.json`
+- PASS: JSON parse for `toolbox/schemas/game.manifest.schema.json`, `games/Asteroids/game.manifest.json`, `games/GravityWell/game.manifest.json`, and `games/Pong/game.manifest.json`
 - PASS: `npm run test:workspace-v2` - 11 passed

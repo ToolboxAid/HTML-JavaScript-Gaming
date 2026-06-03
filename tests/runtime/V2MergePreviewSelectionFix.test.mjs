@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-merge-preview-selection-fix-results.json");
 
 function readText(filePath) {
@@ -190,7 +190,7 @@ export function run() {
   const applyBody = applyStart >= 0 && applyEnd > applyStart ? workspaceJsText.slice(applyStart, applyEnd) : "";
   const applyHasTwoSessionMessage = applyBody.includes("Need at least two valid sessions to merge.");
 
-  if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
+  if (!workspaceJsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
   if (!syntaxValid) failures.push("workspace-v2/index.js failed syntax check.");
   if (!hasLeftPlaceholder || !hasRightPlaceholder) failures.push("Missing explicit Session A/B placeholder options.");
   if (!hasMissingA || !hasMissingB) failures.push("Missing specific Session A/Session B missing-selection messages.");

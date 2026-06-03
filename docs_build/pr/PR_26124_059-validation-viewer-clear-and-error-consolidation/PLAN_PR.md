@@ -4,13 +4,13 @@
 Add a display-only Clear action to Palette Manager V2 Validation/Error Viewer and consolidate duplicate user swatch validation messages into a single line.
 
 ## Scope
-- `tools/palette-manager-v2/*`
+- `toolbox/palette-manager-v2/*`
 - PR workflow docs and required review artifacts only.
 
 ## Boundaries
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 - Preserve existing validation behavior.
 - Avoid broad refactor.

@@ -4,7 +4,7 @@
 Remove palette-manager from Workspace V2 Producer selection, remove duplicate textarea import path, and keep a single Import Workspace Session JSON flow with file-picker-first behavior.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/dev/reports/PR_11_308_report.md`
 
 ## Implementation Summary
@@ -18,10 +18,10 @@ Remove palette-manager from Workspace V2 Producer selection, remove duplicate te
 - Updated Producer default selection to a non-palette tool (`asset-manager-v2`) with first-option fallback.
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 
 ## Validation Results
-- PASS: JavaScript syntax check succeeded for `tools/workspace-v2/index.js`.
+- PASS: JavaScript syntax check succeeded for `toolbox/workspace-v2/index.js`.
 
 ## Full Samples Smoke Test
 - Skipped.

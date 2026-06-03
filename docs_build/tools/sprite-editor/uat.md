@@ -5,7 +5,7 @@ Validate user acceptance readiness for Sprite Editor across launch, core workflo
 
 ## Scope
 - Tool: `sprite-editor`
-- Entry point: `tools/Sprite Editor/index.html`
+- Entry point: `toolbox/Sprite Editor/index.html`
 
 ## Validation Scenarios
 

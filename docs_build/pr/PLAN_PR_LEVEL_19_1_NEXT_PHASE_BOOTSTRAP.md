@@ -26,7 +26,7 @@ Prepare a docs-first Level 19 planning bootstrap as the next execution wrapper a
 4. `19.5` API/Boundary/Contract Lockdown Planning Gate
 
 ## Out of Scope
-- no `src/`, `samples/`, `games/`, or `tools/` implementation edits
+- no `src/`, `samples/`, `games/`, or `toolbox/` implementation edits
 - no roadmap checkbox status updates in this planning bootstrap
 - no broad repo refactors
 

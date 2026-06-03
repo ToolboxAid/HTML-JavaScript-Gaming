@@ -8,13 +8,13 @@
 ## Goal
 - Establish a single source of truth sample-data lane where sample JSON is reused by both:
 - sample execution (`samples/phase-xx/xxxx/index.html`)
-- tool preload flows (`tools/<tool>/index.html?...`)
+- tool preload flows (`toolbox/<tool>/index.html?...`)
 - Exclude `Phase 20 - Tool Preset Integration` from this roadmap lane.
 
 ## Source Inputs
 - `tmp/tools_used.txt` (tool sample coverage and candidate sample list)
 - `samples/metadata/samples.index.metadata.json` (sample catalog metadata)
-- `tools/toolRegistry.js` (active tool registry and ids)
+- `toolbox/toolRegistry.js` (active tool registry and ids)
 
 ## Kickoff Status (2026-04-23)
 - [x] Roadmap kickoff started

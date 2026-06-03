@@ -34,7 +34,7 @@
 
 ## Query-string Contract Confirmation
 
-- Workspace Manager URL remains `tools/Workspace Manager/index.html?game=<gameId>` (encoded path form also valid).
+- Workspace Manager URL remains `toolbox/Workspace Manager/index.html?game=<gameId>` (encoded path form also valid).
 - Selected game id is passed using `game=<gameId>`.
 
 ## Roadmap Handling

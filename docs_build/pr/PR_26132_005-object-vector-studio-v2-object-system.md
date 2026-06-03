@@ -35,10 +35,10 @@ Result:
 Additional checks:
 
 ```powershell
-node --check tools/object-vector-studio-v2/js/ToolStarterApp.js
-node --check tools/object-vector-studio-v2/js/bootstrap.js
-node --check tools/object-vector-studio-v2/js/controls/StatusLogControl.js
-node --check tools/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs
+node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+node --check toolbox/object-vector-studio-v2/js/bootstrap.js
+node --check toolbox/object-vector-studio-v2/js/controls/StatusLogControl.js
+node --check toolbox/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 git diff --check
 ```
@@ -79,12 +79,12 @@ docs_build/dev/reports/coverage_changed_js_guardrail.txt
 Changed runtime JavaScript coverage includes:
 
 ```text
-(57%) tools/object-vector-studio-v2/js/controls/StatusLogControl.js
-(91%) tools/object-vector-studio-v2/js/controls/ActionNavControl.js
-(92%) tools/object-vector-studio-v2/js/controls/ToolStarterShellControl.js
-(93%) tools/object-vector-studio-v2/js/ToolStarterApp.js
-(100%) tools/object-vector-studio-v2/js/bootstrap.js
-(100%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
+(57%) toolbox/object-vector-studio-v2/js/controls/StatusLogControl.js
+(91%) toolbox/object-vector-studio-v2/js/controls/ActionNavControl.js
+(92%) toolbox/object-vector-studio-v2/js/controls/ToolStarterShellControl.js
+(93%) toolbox/object-vector-studio-v2/js/ToolStarterApp.js
+(100%) toolbox/object-vector-studio-v2/js/bootstrap.js
+(100%) toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
 ```
 
 The coverage guardrail reported no changed-runtime-JS warnings.
@@ -95,7 +95,7 @@ Skipped. This PR is limited to Object Vector Studio V2 object management foundat
 
 ## Manual Test Steps
 
-1. Open `tools/object-vector-studio-v2/index.html`.
+1. Open `toolbox/object-vector-studio-v2/index.html`.
 2. Try Add with an object name before importing JSON and confirm Status Log shows a `FAIL` message.
 3. Import invalid JSON missing `palette` and confirm no object tiles render.
 4. Import valid JSON with `palette.swatches` and `objects[]`.

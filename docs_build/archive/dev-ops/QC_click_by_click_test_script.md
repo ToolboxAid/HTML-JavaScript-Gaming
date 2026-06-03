@@ -16,7 +16,7 @@
 ## 1. Launch / Smoke Test
 
 ### 1.1 Open editor
-- [x] Open `tools/SpriteEditor_old_keep/index.html`
+- [x] Open `toolbox/SpriteEditor_old_keep/index.html`
 - [x] Verify editor loads without visible errors
 - [x] Verify no console errors on load
 
@@ -216,7 +216,7 @@ For each tool below:
 - [x] Remove a layer if supported
 - [x] Verify state remains valid
 [-] after duplicat, the name overlaps %
-[-] layer > toggle visibilty is not required 
+[-] layer > toggle visibilty is not required
 [-] what does solo do? also, after click show/hide works, but the text does not change
 [-] order is backward, the layer on top should paint over the layer below
 [-] 2+ layers move into the animation preview
@@ -296,7 +296,7 @@ For each help topic:
   - [x] Close button
 - [x] Click `Close`
 - [x] Verify popup closes
-- missing Palette 
+- missing Palette
 
 Topics to test:
 - [x] Files

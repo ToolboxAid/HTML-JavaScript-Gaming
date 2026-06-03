@@ -5,20 +5,20 @@
 - Baseline: PR_26146_085-088.
 
 ## Changed Surface
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/js/bootstrap.js`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/js/controls/ExportPanelControl.js`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/js/bootstrap.js`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 
 ## Validation
 - PASS: changed-file syntax checks
-  - `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
-  - `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-  - `node --check tools/midi-studio-v2/js/controls/ExportPanelControl.js`
-  - `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+  - `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
   - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: targeted MIDI Studio Playwright
   - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "PR089-092"`

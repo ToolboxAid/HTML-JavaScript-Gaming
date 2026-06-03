@@ -5,7 +5,7 @@ Validate user acceptance readiness for 3D Asset Viewer across launch, core workf
 
 ## Scope
 - Tool: `3d-asset-viewer`
-- Entry point: `tools/3D Asset Viewer/index.html`
+- Entry point: `toolbox/3D Asset Viewer/index.html`
 
 ## Validation Scenarios
 

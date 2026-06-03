@@ -3,9 +3,9 @@
 ## Validation Command
 - A Node validation check instantiated `WorkspaceManagerV2ContextService`, loaded `games/Asteroids/game.manifest.json`, and compared the generated context against the actual repo schemas.
 - The check used:
-  - `tools/schemas/workspace.manifest.schema.json`
-  - `tools/schemas/tools/palette-browser.schema.json`
-  - `tools/schemas/tools/asset-browser.schema.json`
+  - `toolbox/schemas/workspace.manifest.schema.json`
+  - `toolbox/schemas/tools/palette-browser.schema.json`
+  - `toolbox/schemas/tools/asset-browser.schema.json`
 
 ## Result
 - Generated Workspace Manager V2 context schema validation: PASS.

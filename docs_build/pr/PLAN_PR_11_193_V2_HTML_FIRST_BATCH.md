@@ -20,15 +20,15 @@ Codex must not copy old v1 implementation blocks into the V2 tools. Use the exis
 ## Non-Negotiable Rules
 - V2 tool names must end with `V2`.
 - V2 tool ids and folders must end with `-v2`.
-- `tools/<tool>-v2/index.html` owns static shell/layout/CSS links/header mount.
-- `tools/<tool>-v2/index.js` owns behavior only.
+- `toolbox/<tool>-v2/index.html` owns static shell/layout/CSS links/header mount.
+- `toolbox/<tool>-v2/index.js` owns behavior only.
 - No JS-driven full body replacement.
 - No JS-driven stylesheet injection.
 - No dynamic header script injection from tool JS.
 - Use `<div id="shared-theme-header"></div>` in every V2 `index.html`.
 - Use `../../src/engine/theme/mount-shared-header.js` from every V2 `index.html`.
 - No `platformShell`.
-- No `tools/shared/*`.
+- No `toolbox/shared/*`.
 - No Workspace Manager v1 wiring.
 - No schema changes.
 - No sample changes.

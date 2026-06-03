@@ -4,11 +4,11 @@
 Perform one append-only Palette Manager V2 CSS change by placing the requested tile pin button override block at the very end of `paletteManagerV2.css`.
 
 ## Scope
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
-1. Inspect the current end of `tools/palette-manager-v2/paletteManagerV2.css`.
+1. Inspect the current end of `toolbox/palette-manager-v2/paletteManagerV2.css`.
 2. Append exactly this CSS block at the end of the file:
 
 ```css

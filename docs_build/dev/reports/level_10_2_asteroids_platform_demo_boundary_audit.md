@@ -1,7 +1,7 @@
 # Level 10.2 Asteroids Platform Demo Boundary Audit
 
 ## File Audited
-- `tools/shared/asteroidsPlatformDemo.js`
+- `toolbox/shared/asteroidsPlatformDemo.js`
 
 ## Consumers (Who Imports It)
 - `tests/games/AsteroidsPlatformDemo.test.mjs`
@@ -33,7 +33,7 @@ No runtime game boot/module import was found outside tests.
 - It orchestrates tool/shared pipeline modules, but the orchestration content is game-domain specific.
 
 ## Boundary Conclusion
-- Current placement in `tools/shared/` is a boundary smell.
+- Current placement in `toolbox/shared/` is a boundary smell.
 - The file is not a tool-agnostic shared utility.
 
 ## Recommended Target
@@ -49,4 +49,4 @@ No runtime game boot/module import was found outside tests.
   - this PR scope is focused on Workspace Manager open-action runtime testing plus audit.
 
 ## Follow-Up Recommendation
-- Create a focused follow-up BUILD to relocate `tools/shared/asteroidsPlatformDemo.js` to a game-owned or test-fixture-owned boundary and update imports atomically.
+- Create a focused follow-up BUILD to relocate `toolbox/shared/asteroidsPlatformDemo.js` to a game-owned or test-fixture-owned boundary and update imports atomically.

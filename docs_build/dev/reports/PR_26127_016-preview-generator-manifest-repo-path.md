@@ -1,7 +1,7 @@
 # PR_26127_016-preview-generator-manifest-repo-path
 
 ## Summary
-- Added optional `repoPath` support to `tools/schemas/workspace.manifest.schema.json`.
+- Added optional `repoPath` support to `toolbox/schemas/workspace.manifest.schema.json`.
 - Added `repoPath` to `games/Asteroids/game.manifest.json` as the absolute filesystem repo path for direct preview writes.
 - Kept `repoRoot` as the display label.
 - Workspace Manager V2 now reads `repoPath`, surfaces `Select Repo` when it is missing, and passes manifest/session context through to launched tools.
@@ -33,6 +33,6 @@
 - Validated manifest `repoPath`, Preview Generator workspace launch with direct write enabled, missing `repoPath` disabled/actionable state, hidden Pick Repo Folder, and no `/__workspace-manager-v2/repo-root` dependency.
 
 ## Out Of Scope
-- Deprecated `tools/workspace-v2` was not modified.
+- Deprecated `toolbox/workspace-v2` was not modified.
 - Sample JSON was not modified.
 - Full samples smoke test was skipped because this PR is manifest repo path and Preview Generator launch scoped.

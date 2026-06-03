@@ -12,7 +12,7 @@ Other tools do not have assets yet and are intentionally out of scope for this P
 ## STRICT SCOPE
 
 ### ALLOWED FILES
-- tools/vector-map-editor/main.js
+- toolbox/vector-map-editor/main.js
 - docs_build/dev/reports/vector_map_workspace_object_render_11_150.txt
 
 ### ALLOWED CHANGES
@@ -67,7 +67,7 @@ Vector Map Editor must:
 Run targeted validation only.
 
 Required:
-- `tools/vector-map-editor/main.js` syntax passes.
+- `toolbox/vector-map-editor/main.js` syntax passes.
 - Workspace launch of Sample 1902 opens Vector Map Editor.
 - Vector Map Editor renders Sample 1902 objects:
   - `obj-player-path`

@@ -135,7 +135,7 @@ function ConvertTo-GameManifestForGame {
     $manifest.game.folder = $GameId
     $manifest.launch.directPath = "/games/$GameId/index.html"
     if ($null -ne $manifest.launch.workspaceManagerPath) {
-        $manifest.launch.workspaceManagerPath = "/tools/workspace-manager-v2/index.html?gameId=$GameId"
+        $manifest.launch.workspaceManagerPath = "/toolbox/workspace-manager-v2/index.html?gameId=$GameId"
     }
 
     if ($null -ne $manifest.tools.'palette-manager-v2') {

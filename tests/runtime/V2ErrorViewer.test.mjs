@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-error-viewer-results.json");
 
 const LOG_STORAGE_KEY = "v2-error-logs";
@@ -125,8 +125,8 @@ export function run() {
   const hasClearMethod = workspaceJsText.includes("clearErrorLogs()");
   const hasIgnoreInvalidWarning = workspaceJsText.includes("[WorkspaceV2ErrorViewer] Ignored");
 
-  if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!syntaxValid) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!workspaceJsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!syntaxValid) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
   if (!hasErrorStorageKey) failures.push("Workspace V2 missing v2-error-logs storage key wiring.");
   if (!hasReadMethod) failures.push("Workspace V2 missing readErrorLogs() method.");
   if (!hasGroupMethod) failures.push("Workspace V2 missing groupErrorLogsByTool(errorLogs) method.");

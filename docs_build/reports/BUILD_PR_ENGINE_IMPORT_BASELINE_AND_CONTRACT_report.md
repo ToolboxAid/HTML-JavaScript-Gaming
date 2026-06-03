@@ -9,7 +9,7 @@ Generated: 2026-04-12
 - `docs_build/reports/validation_checklist.txt`
 
 ## Work Performed
-1. Baseline scan executed for `/src/engine/` usage across `src/`, `games/`, `samples/`, `tools/`, and HTML files.
+1. Baseline scan executed for `/src/engine/` usage across `src/`, `games/`, `samples/`, `toolbox/`, and HTML files.
 2. Import-style contract assessment documented from scan evidence.
 3. No import rewrites performed.
 4. No file/folder moves performed.

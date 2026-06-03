@@ -43,7 +43,7 @@ Sample tool payload files may contain:
 
 ```json
 {
-  "$schema": "../../../tools/schemas/tools/<tool>.schema.json",
+  "$schema": "../../../toolbox/schemas/tools/<tool>.schema.json",
   "tool": "<tool>",
   "version": 1,
   "palette": "./sample.palette.json",

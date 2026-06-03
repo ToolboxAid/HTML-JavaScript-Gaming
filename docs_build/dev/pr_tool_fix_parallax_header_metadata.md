@@ -163,8 +163,8 @@ Do not run long sample suites.
 Run only relevant checks:
 
 ```powershell
-node --check tools/shared/platformShell.js
-node --check tools/toolRegistry.js
+node --check toolbox/shared/platformShell.js
+node --check toolbox/toolRegistry.js
 ```
 
 If another JS file changes, run `node --check` on that file only.

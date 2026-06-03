@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildCollaborationSystem, summarizeCollaborationSystem } from "../../tools/shared/collaborationSystem.js";
+import { buildCollaborationSystem, summarizeCollaborationSystem } from "../../toolbox/shared/collaborationSystem.js";
 
 export async function run() {
   const result = buildCollaborationSystem({

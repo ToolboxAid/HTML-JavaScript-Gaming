@@ -11,12 +11,12 @@ Normalize ONLY this helper:
 ## Exact Files Allowed
 
 ### New shared file
-1. `tools/dev/shared/runtimeRegistryUtils.js`
+1. `toolbox/dev/shared/runtimeRegistryUtils.js`
 
 ### Consumer files
-2. `tools/dev/commandPacks/groupCommandPack.js`
-3. `tools/dev/commandPacks/overlayCommandPack.js`
-4. `tools/dev/presets/debugPresetApplier.js`
+2. `toolbox/dev/commandPacks/groupCommandPack.js`
+3. `toolbox/dev/commandPacks/overlayCommandPack.js`
+4. `toolbox/dev/presets/debugPresetApplier.js`
 
 Do not edit any other file.
 
@@ -30,7 +30,7 @@ Only the 3 listed consumer files are in scope.
 ## Exact Shared Helper Creation
 Create:
 
-`tools/dev/shared/runtimeRegistryUtils.js`
+`toolbox/dev/shared/runtimeRegistryUtils.js`
 
 Export exactly:
 
@@ -58,7 +58,7 @@ then:
 - remove the local `getRuntimeAndRegistry(context)` function definition
 - import `getRuntimeAndRegistry` from the correct relative path to:
   - `../shared/runtimeRegistryUtils.js` for command pack files
-  - `../shared/runtimeRegistryUtils.js` for `tools/dev/presets/debugPresetApplier.js`
+  - `../shared/runtimeRegistryUtils.js` for `toolbox/dev/presets/debugPresetApplier.js`
 - if the file already imports from that module, add `getRuntimeAndRegistry` with the minimum safe edit
 - do not duplicate imports
 - do not touch unrelated helpers
@@ -83,7 +83,7 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 4 listed files changed
-2. Confirm `tools/dev/shared/runtimeRegistryUtils.js` exists and exports `getRuntimeAndRegistry`
+2. Confirm `toolbox/dev/shared/runtimeRegistryUtils.js` exists and exports `getRuntimeAndRegistry`
 3. Confirm local `function getRuntimeAndRegistry(context)` definitions no longer exist in changed listed consumer files
 4. Confirm changed consumer files import `getRuntimeAndRegistry` from `../shared/runtimeRegistryUtils.js`
 5. Confirm no unrelated files changed

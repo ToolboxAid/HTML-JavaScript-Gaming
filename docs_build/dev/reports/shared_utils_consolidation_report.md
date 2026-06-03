@@ -35,8 +35,8 @@
 - PASS: changed-file syntax validation for 198 changed JavaScript files.
 - PASS: changed-file import target validation for 197 changed JavaScript files, excluding the guard selftest fixture that intentionally contains fake import text.
 - PASS: no active import/export statements reference `shared/utils/`.
-- PASS: `node tools/dev/checkSharedExtractionGuard.mjs --update-baseline` and follow-up guard run.
-- PASS: `node tools/dev/checkSharedExtractionGuard.selftest.mjs`.
+- PASS: `node toolbox/dev/checkSharedExtractionGuard.mjs --update-baseline` and follow-up guard run.
+- PASS: `node toolbox/dev/checkSharedExtractionGuard.selftest.mjs`.
 - PASS: `node tests/shared/SharedFoundationCombinedPass.test.mjs`.
 - PASS: `node tests/shared/SharedNumberStringIdCloseout.test.mjs`.
 - PASS: `npm run test:workspace-v2` (59 passed).

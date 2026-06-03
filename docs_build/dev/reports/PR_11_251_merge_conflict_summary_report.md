@@ -4,8 +4,8 @@
 Added a compact actionable conflict summary for Session Merge previews with conflicts, rendered above the raw preview JSON. Confirm/Apply remain disabled for conflict previews, and raw JSON preview remains available.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2MergeConflictSummary.test.mjs`
 
 ## Implementation Details
@@ -34,13 +34,13 @@ Added a compact actionable conflict summary for Session Merge previews with conf
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2MergeConflictSummary.test.mjs
 node tests/runtime/V2MergeConflictSummary.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2MergeConflictSummary.test.mjs` -> PASS
 - `node tests/runtime/V2MergeConflictSummary.test.mjs` -> PASS
   - output: `tmp/v2-merge-conflict-summary-results.json`

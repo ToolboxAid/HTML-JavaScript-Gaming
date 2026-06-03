@@ -1,22 +1,22 @@
 PR_26126_049 Preview Generator V2 final verification and lock
 
 Scope
-- Final verification pass for tools/preview-generator-v2.
-- Updated tools/preview-generator-v2/PreviewGeneratorV2Logger.js to remove the remaining console.log mirror.
+- Final verification pass for toolbox/preview-generator-v2.
+- Updated toolbox/preview-generator-v2/PreviewGeneratorV2Logger.js to remove the remaining console.log mirror.
 - No samples, schemas, or start_of_day files were modified.
 
 Final verification results
 - index.html has no inline <style> tags.
 - index.html has no inline style attributes.
 - index.html has no inline <script> blocks; script tags use src attributes.
-- Preview Generator V2 has no tools/shared or platformShell references.
+- Preview Generator V2 has no toolbox/shared or platformShell references.
 - Preview Generator V2 has no console.*, debugger, TODO, FIXME, temporary, temp, or debug matches after cleanup.
 - Preview Generator V2 has no accordionV2.js, mountAccordionV2, or setAccordionV2Open runtime references.
 
 Class/file structure
 - One class per JavaScript file was verified.
 - previewGeneratorV2.bootstrap.js intentionally has zero classes and only bootstraps the app/shell.
-- All control files under tools/preview-generator-v2/controls contain one class each.
+- All control files under toolbox/preview-generator-v2/controls contain one class each.
 - One control per class remains true for:
   - AccordionSection
   - AssetFolderControl
@@ -49,8 +49,8 @@ Cleanup
 - No other behavior was changed.
 
 Validation
-- JavaScript syntax check passed for tools/preview-generator-v2/*.js.
-- JavaScript syntax check passed for tools/preview-generator-v2/controls/*.js.
+- JavaScript syntax check passed for toolbox/preview-generator-v2/*.js.
+- JavaScript syntax check passed for toolbox/preview-generator-v2/controls/*.js.
 - JavaScript syntax check passed for tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
 - npm run test:workspace-v2 passed.
 - Result: 3 passed.
@@ -65,7 +65,7 @@ Full samples smoke test
 - Reason: this PR is a targeted Preview Generator V2 verification/cleanup pass and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
 
 Manual validation
-- Open tools/preview-generator-v2/index.html.
+- Open toolbox/preview-generator-v2/index.html.
 - Confirm the tool loads cleanly.
 - Toggle all accordions and confirm consistent behavior.
 - Use Status Clear and confirm the visible log clears.

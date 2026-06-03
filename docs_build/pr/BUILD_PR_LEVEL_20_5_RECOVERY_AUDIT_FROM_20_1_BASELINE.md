@@ -22,8 +22,8 @@ Codex must document what changed after `3f7e9df`, identify junk/anti-pattern cod
 
 The intended current lane is:
 
-- All samples launch tools through `tools/<tool>/index.html`
-- All games launch through `tools/Workspace Manager/index.html`
+- All samples launch tools through `toolbox/<tool>/index.html`
+- All games launch through `toolbox/Workspace Manager/index.html`
 - External launches from samples or games must clear launch memory before loading tool/workspace
 - Launch data must move into a single source of truth
 - No default/fallback launch behavior may remain

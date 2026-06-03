@@ -4,12 +4,12 @@
 Correct V2 tools so `index.html` owns the static shell and `index.js` remains behavior-only. This `_04` pass revalidated the corrected V2 lane and packages the requested artifact.
 
 ## Changed Files
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/index.js`
-- `tools/svg-asset-studio-v2/index.html`
-- `tools/svg-asset-studio-v2/index.js`
-- `tools/vector-map-editor-v2/index.html`
-- `tools/vector-map-editor-v2/index.js`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/index.js`
+- `toolbox/svg-asset-studio-v2/index.html`
+- `toolbox/svg-asset-studio-v2/index.js`
+- `toolbox/vector-map-editor-v2/index.html`
+- `toolbox/vector-map-editor-v2/index.js`
 - `docs_build/dev/reports/PR_11_192_validation.md`
 
 ## HTML Shell Evidence
@@ -24,9 +24,9 @@ Each corrected V2 `index.html` owns:
 - tool module script: `./index.js`
 
 Confirmed for:
-- `tools/palette-manager-v2/index.html`
-- `tools/svg-asset-studio-v2/index.html`
-- `tools/vector-map-editor-v2/index.html`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/svg-asset-studio-v2/index.html`
+- `toolbox/vector-map-editor-v2/index.html`
 
 ## Behavior-Only JS Evidence
 Each corrected V2 `index.js` contains one class and keeps behavior in JS only:
@@ -47,15 +47,15 @@ Confirmed no `index.js` contains:
 All requested validation commands were run. No validation command was skipped.
 
 ```powershell
-node --check tools/palette-manager-v2/index.js
-node --check tools/svg-asset-studio-v2/index.js
-node --check tools/vector-map-editor-v2/index.js
+node --check toolbox/palette-manager-v2/index.js
+node --check toolbox/svg-asset-studio-v2/index.js
+node --check toolbox/vector-map-editor-v2/index.js
 ```
 
 Results:
-- `node --check tools/palette-manager-v2/index.js` passed.
-- `node --check tools/svg-asset-studio-v2/index.js` passed.
-- `node --check tools/vector-map-editor-v2/index.js` passed.
+- `node --check toolbox/palette-manager-v2/index.js` passed.
+- `node --check toolbox/svg-asset-studio-v2/index.js` passed.
+- `node --check toolbox/vector-map-editor-v2/index.js` passed.
 
 ## Guard Scan
 A targeted file-content guard scan checked the corrected V2 tool folders for forbidden shell-building and legacy coupling markers:
@@ -66,7 +66,7 @@ A targeted file-content guard scan checked the corrected V2 tool folders for for
 - `<style>`
 - `platformShell`
 - `assetUsageIntegration`
-- `tools/shared`
+- `toolbox/shared`
 - `Workspace Manager`
 - `handoff`
 - `fallback`
@@ -85,7 +85,7 @@ No changes were made to:
 - `start_of_day/**`
 - Workspace Manager v1
 - `platformShell`
-- `tools/shared/**`
+- `toolbox/shared/**`
 - legacy tools
 
 ## Manual Validation

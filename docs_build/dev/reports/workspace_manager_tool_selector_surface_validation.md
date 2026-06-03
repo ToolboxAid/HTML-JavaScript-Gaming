@@ -2,22 +2,22 @@
 
 ## Changed Files
 
-- `tools/Workspace Manager/index.html`
-- `tools/Workspace Manager/main.js`
-- `tools/Workspace Manager/toolHost.css`
+- `toolbox/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/toolHost.css`
 - `docs_build/dev/reports/workspace_manager_tool_selector_surface_validation.md`
 
 ## Proof Tool Selector No Longer Renders As Top Detached Banner
 
 Header now contains shell/title + source + status, not selector controls:
 
-- `tools/Workspace Manager/index.html:10-13`
+- `toolbox/Workspace Manager/index.html:10-13`
 
 Key evidence lines:
 
-- `tools/Workspace Manager/index.html:11` (`Workspace Manager` shell title)
-- `tools/Workspace Manager/index.html:12` (`data-tool-host-game-source`)
-- `tools/Workspace Manager/index.html:13` (`data-tool-host-status`)
+- `toolbox/Workspace Manager/index.html:11` (`Workspace Manager` shell title)
+- `toolbox/Workspace Manager/index.html:12` (`data-tool-host-game-source`)
+- `toolbox/Workspace Manager/index.html:13` (`data-tool-host-status`)
 
 Selector controls were removed from header and relocated to main surface.
 
@@ -25,31 +25,31 @@ Selector controls were removed from header and relocated to main surface.
 
 Main tools surface contains selector and controls:
 
-- `tools/Workspace Manager/index.html:19` (`<main class="tool-host-workspace">`)
-- `tools/Workspace Manager/index.html:20` (`<section class="tool-host-surface" ...>`)
-- `tools/Workspace Manager/index.html:21` (`tool-host-surface__controls`)
-- `tools/Workspace Manager/index.html:23` (`data-tool-host-select`)
-- `tools/Workspace Manager/index.html:31-32` (`data-tool-host-current-label`, `data-tool-host-switch-meta`)
+- `toolbox/Workspace Manager/index.html:19` (`<main class="tool-host-workspace">`)
+- `toolbox/Workspace Manager/index.html:20` (`<section class="tool-host-surface" ...>`)
+- `toolbox/Workspace Manager/index.html:21` (`tool-host-surface__controls`)
+- `toolbox/Workspace Manager/index.html:23` (`data-tool-host-select`)
+- `toolbox/Workspace Manager/index.html:31-32` (`data-tool-host-current-label`, `data-tool-host-switch-meta`)
 
 Layout styling binds this section as embedded surface:
 
-- `tools/Workspace Manager/toolHost.css:77` (`.tool-host-surface`)
-- `tools/Workspace Manager/toolHost.css:84` (`.tool-host-surface__controls`)
-- `tools/Workspace Manager/toolHost.css:91` (`.tool-host-workspace__mount`)
+- `toolbox/Workspace Manager/toolHost.css:77` (`.tool-host-surface`)
+- `toolbox/Workspace Manager/toolHost.css:84` (`.tool-host-surface__controls`)
+- `toolbox/Workspace Manager/toolHost.css:91` (`.tool-host-workspace__mount`)
 
 ## Proof Explicit Tool Selection Is Still Required
 
 Explicit selection guard remains intact:
 
-- `tools/Workspace Manager/main.js:528-529`
-- `tools/Workspace Manager/main.js:706-707`
+- `toolbox/Workspace Manager/main.js:528-529`
+- `toolbox/Workspace Manager/main.js:706-707`
 
 Behavior still writes visible status `Select a tool to mount.` when no explicit tool is selected.
 
 ## Proof No First-Tool Selection Is Restored
 
 - No first-item selection fallback logic was reintroduced.
-- Game-launch and init paths still return with explicit status when no requested tool exists (`tools/Workspace Manager/main.js:628-631`, `tools/Workspace Manager/main.js:706-707`).
+- Game-launch and init paths still return with explicit status when no requested tool exists (`toolbox/Workspace Manager/main.js:628-631`, `toolbox/Workspace Manager/main.js:706-707`).
 
 ## Proof `toolIds[0]` Is Not Restored
 
@@ -72,16 +72,16 @@ legacyGameParamRead 0
 
 Header shell keeps source + status visible:
 
-- `tools/Workspace Manager/index.html:12` (`data-tool-host-game-source`)
-- `tools/Workspace Manager/index.html:13` (`data-tool-host-status`)
+- `toolbox/Workspace Manager/index.html:12` (`data-tool-host-game-source`)
+- `toolbox/Workspace Manager/index.html:13` (`data-tool-host-status`)
 
 Runtime writes explicit game source values:
 
-- `tools/Workspace Manager/main.js:199` (`writeGameSource`)
-- `tools/Workspace Manager/main.js:609` (`missing gameId`)
-- `tools/Workspace Manager/main.js:617` (`invalid gameId`)
-- `tools/Workspace Manager/main.js:622` (`valid game source`)
-- `tools/Workspace Manager/main.js:639` (`none`)
+- `toolbox/Workspace Manager/main.js:199` (`writeGameSource`)
+- `toolbox/Workspace Manager/main.js:609` (`missing gameId`)
+- `toolbox/Workspace Manager/main.js:617` (`invalid gameId`)
+- `toolbox/Workspace Manager/main.js:622` (`valid game source`)
+- `toolbox/Workspace Manager/main.js:639` (`none`)
 
 ## Proof Sample `Open <tool>` Remains Untouched
 
@@ -95,7 +95,7 @@ Sample launch label and launch behavior remain unchanged:
 Commands run successfully:
 
 ```bash
-node --check tools/Workspace\ Manager/main.js
+node --check toolbox/Workspace\ Manager/main.js
 node --check games/index.render.js
 node --check samples/index.render.js
 ```

@@ -4,7 +4,7 @@
 PASS
 
 ## Files Changed
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/PR_11_22_workspace_embedded_payload_asset_status_evidence.json
 - docs_build/dev/reports/PR_11_22_WORKSPACE_MANAGER_EMBEDDED_PAYLOAD_ASSET_STATUS_FIX_report.md
 
@@ -50,8 +50,8 @@ Evidence summary for sample 1902:
 - each visible mapped tool resolves one of the required embedded payload document keys.
 
 ## Validation Commands and Results
-- `node --check "tools/shared/platformShell.js"` -> PASS
-- `node --check "tools/Workspace Manager/main.js"` -> PASS
+- `node --check "toolbox/shared/platformShell.js"` -> PASS
+- `node --check "toolbox/Workspace Manager/main.js"` -> PASS
 - `node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools` -> PASS (`PASS=19 FAIL=0`)
 - embedded payload evidence generation script (sample 1902 mapping/status export) -> PASS (`payloadBackedMissing=0`)
 

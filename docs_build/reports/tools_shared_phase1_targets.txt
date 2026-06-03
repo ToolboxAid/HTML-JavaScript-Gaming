@@ -4,10 +4,10 @@ Primary target families:
 1. project system helper normalization
 2. runtime asset loader helper normalization
 3. runtime asset validation helper normalization
-4. safe vector helper normalization where already represented in tools/shared/vector/*
+4. safe vector helper normalization where already represented in toolbox/shared/vector/*
 
 Do first:
-- reuse existing tools/shared modules
+- reuse existing toolbox/shared modules
 - swap imports where helper semantics already align
 - introduce the smallest adapters only when necessary
 

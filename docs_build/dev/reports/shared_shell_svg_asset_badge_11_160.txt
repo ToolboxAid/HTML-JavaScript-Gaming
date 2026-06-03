@@ -1,5 +1,5 @@
 files changed:
-- tools/shared/platformShell.js
+- toolbox/shared/platformShell.js
 - docs_build/dev/reports/shared_shell_svg_asset_badge_11_160.txt
 
 functions changed:
@@ -39,17 +39,17 @@ expected visible output:
 - for Sample 1902 expected label remains: Asset: sample-0901-ship.svg
 
 validation command/result:
-- command: node --check tools/shared/platformShell.js
+- command: node --check toolbox/shared/platformShell.js
   result: pass
-- command: git diff --name-only -- tools/shared/platformShell.js docs_build/dev/reports/shared_shell_svg_asset_badge_11_160.txt
+- command: git diff --name-only -- toolbox/shared/platformShell.js docs_build/dev/reports/shared_shell_svg_asset_badge_11_160.txt
   result:
-    tools/shared/platformShell.js
-- command: git status --short -- tools/shared/platformShell.js docs_build/dev/reports/shared_shell_svg_asset_badge_11_160.txt
+    toolbox/shared/platformShell.js
+- command: git status --short -- toolbox/shared/platformShell.js docs_build/dev/reports/shared_shell_svg_asset_badge_11_160.txt
   result:
-    MM tools/shared/platformShell.js
+    MM toolbox/shared/platformShell.js
     ?? docs_build/dev/reports/shared_shell_svg_asset_badge_11_160.txt
 
 strict scope confirmation:
-- only allowed file modified for code: tools/shared/platformShell.js
+- only allowed file modified for code: toolbox/shared/platformShell.js
 - only allowed report file created: docs_build/dev/reports/shared_shell_svg_asset_badge_11_160.txt
 - no schema/sample/runtime/workspace-manager/svg-tool files were modified

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tools/schemas/palette.schema.json",
+  "$id": "toolbox/schemas/palette.schema.json",
   "type": "object",
   "required": ["schema", "version", "name", "swatches"],
   "additionalProperties": false,

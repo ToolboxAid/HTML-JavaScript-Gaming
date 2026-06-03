@@ -1,16 +1,16 @@
 # Preview Generator V2 Common Styles Applied - PR_26126_037
 
 Common stylesheet added:
-- tools/common/toolShellCommon.css
+- toolbox/common/toolShellCommon.css
 
 Preview Generator V2 consumption:
-- tools/preview-generator-v2/index.html now links ../common/toolShellCommon.css.
+- toolbox/preview-generator-v2/index.html now links ../common/toolShellCommon.css.
 - Preview Generator V2 markup now uses generic tool-shell-common classes for shared shell/header/accordion/fullscreen layout declarations.
 
 Consolidated declaration blocks:
 
 1. Header frame host sizing
-- Moved from tools/preview-generator-v2/previewGeneratorV2.css [data-preview-generator-v2-header].
+- Moved from toolbox/preview-generator-v2/previewGeneratorV2.css [data-preview-generator-v2-header].
 - Added common class: .tool-shell-common__header-frame.
 - Declaration block: display: block; width: calc(100% - 32px); margin: 10px auto.
 

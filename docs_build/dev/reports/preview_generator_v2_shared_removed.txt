@@ -1,26 +1,26 @@
 # Preview Generator V2 Shared Removal - PR_26126_037
 
 Scope:
-- tools/preview-generator-v2
-- tools/common/toolShellCommon.css
+- toolbox/preview-generator-v2
+- toolbox/common/toolShellCommon.css
 - tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 
 Result:
-- PASS: Preview Generator V2 has zero dependencies on tools/shared.
-- PASS: No tools/shared imports were present or introduced.
-- PASS: No tools/shared script references were present or introduced.
-- PASS: No tools/shared CSS references were present or introduced.
+- PASS: Preview Generator V2 has zero dependencies on toolbox/shared.
+- PASS: No toolbox/shared imports were present or introduced.
+- PASS: No toolbox/shared script references were present or introduced.
+- PASS: No toolbox/shared CSS references were present or introduced.
 - PASS: No platformShell.css or platformShell.js references were present or introduced.
 
 Verification command:
-- rg -n "tools/shared|../shared|../../tools/shared|platformShell|shared/" tools/preview-generator-v2 tools/common tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+- rg -n "toolbox/shared|../shared|../../toolbox/shared|platformShell|shared/" toolbox/preview-generator-v2 toolbox/common tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 
 Verification output:
-- no tools/shared references found
+- no toolbox/shared references found
 
 Behavior replacement:
-- No tools/shared behavior needed replacement because Preview Generator V2 already used local PreviewGeneratorV2ShellControl plus src/engine/theme assets for header and accordion behavior.
-- PR_26126_037 did not add any tools/shared dependency.
+- No toolbox/shared behavior needed replacement because Preview Generator V2 already used local PreviewGeneratorV2ShellControl plus src/engine/theme assets for header and accordion behavior.
+- PR_26126_037 did not add any toolbox/shared dependency.
 
 Runtime dependencies that remain:
 - src/engine/theme/main.css
@@ -28,9 +28,9 @@ Runtime dependencies that remain:
 - src/engine/theme/accordionV2/accordionV2.css
 - src/engine/theme/accordionV2/accordionV2.js
 - src/engine/theme/mount-shared-header.js
-- tools/palette-manager-v2/paletteManagerV2.css
-- tools/common/toolShellCommon.css
-- tools/preview-generator-v2/previewGeneratorV2.css
+- toolbox/palette-manager-v2/paletteManagerV2.css
+- toolbox/common/toolShellCommon.css
+- toolbox/preview-generator-v2/previewGeneratorV2.css
 - html2canvas CDN script
 
 Out of scope:

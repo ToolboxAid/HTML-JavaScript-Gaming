@@ -8,7 +8,7 @@ Normalize remaining tools import paths to align with canonical structure.
 
 ## Required Code Changes
 - replace any remaining:
-  tools/... → tools/... (correct root alignment if mis-referenced, e.g., ./tools vs tools/)
+  toolbox/... → toolbox/... (correct root alignment if mis-referenced, e.g., ./tools vs toolbox/)
 
 ## Constraints
 - ONLY modify files that already contain incorrect paths

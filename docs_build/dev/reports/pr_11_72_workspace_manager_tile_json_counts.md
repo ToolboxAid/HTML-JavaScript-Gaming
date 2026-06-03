@@ -1,7 +1,7 @@
 # PR 11.72 Workspace Manager Tool Tile JSON Counts
 
 ## Files Changed
-- `tools/renderToolsIndex.js`
+- `toolbox/renderToolsIndex.js`
 - `docs_build/dev/reports/pr_11_72_workspace_manager_tile_json_counts.md`
 
 ## Count Source Before
@@ -46,7 +46,7 @@ Result:
 ### 4) Syntax check
 Command:
 ```text
-node --check tools/renderToolsIndex.js
+node --check toolbox/renderToolsIndex.js
 ```
 Result: PASS
 

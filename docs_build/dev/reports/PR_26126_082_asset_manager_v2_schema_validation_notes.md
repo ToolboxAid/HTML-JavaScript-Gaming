@@ -2,7 +2,7 @@
 
 ## Schema Changes
 
-- `tools/schemas/tools/asset-browser.schema.json` now limits asset ids and `kind` values to `image`, `audio`, and `font`.
+- `toolbox/schemas/tools/asset-browser.schema.json` now limits asset ids and `kind` values to `image`, `audio`, and `font`.
 - `svg`, `data`, and `other` asset ids/kinds are rejected by the schema patterns and enum.
 - `asset-manager-v2` is an allowed asset entry `source` so Asset Manager V2 can create entries without reusing the legacy Asset Browser source value.
 - `stretchOverride` remains restricted to `image.*.bezel` entries.

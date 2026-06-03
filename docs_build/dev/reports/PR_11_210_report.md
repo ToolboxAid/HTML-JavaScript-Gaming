@@ -37,18 +37,18 @@ Additional precedence checks passed:
 - Failure count: `0`
 
 ## Validation Commands Run
-1. `node --check tests/runtime/V2SessionSource.test.mjs`  
+1. `node --check tests/runtime/V2SessionSource.test.mjs`
    - Result: **PASS**
-2. `node tests/runtime/V2SessionSource.test.mjs`  
+2. `node tests/runtime/V2SessionSource.test.mjs`
    - Result: **PASS**
-3. `node --check tools/*-v2/index.js`  
+3. `node --check toolbox/*-v2/index.js`
    - Result: **FAIL** in PowerShell (`*` passed literally to Node module loader)
 4. Equivalent per-tool syntax checks:
-   - `node --check tools/asset-manager-v2/index.js` — **PASS**
-   - `node --check tools/palette-manager-v2/index.js` — **PASS**
-   - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
-   - `node --check tools/tilemap-studio-v2/index.js` — **PASS**
-   - `node --check tools/vector-map-editor-v2/index.js` — **PASS**
+   - `node --check toolbox/asset-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/palette-manager-v2/index.js` — **PASS**
+   - `node --check toolbox/svg-asset-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/tilemap-studio-v2/index.js` — **PASS**
+   - `node --check toolbox/vector-map-editor-v2/index.js` — **PASS**
 
 ## Fallback Confirmation
 - No fallback/default/demo data introduced.

@@ -9,9 +9,9 @@ Scope:
 - No CSS, HTML, JavaScript, samples, schemas, or roadmap files were modified.
 
 CSS files audited:
-- tools/templates-v2/styles/toolStarter.css
-- tools/palette-manager-v2/paletteManagerV2.css
-- tools/preview-generator-v2/previewGeneratorV2.css
+- toolbox/templates-v2/styles/toolStarter.css
+- toolbox/palette-manager-v2/paletteManagerV2.css
+- toolbox/preview-generator-v2/previewGeneratorV2.css
 
 Method:
 - Parsed CSS declaration blocks and normalized declarations inside braces.
@@ -20,9 +20,9 @@ Method:
 - Reviewed required style areas manually against the declaration-block findings.
 
 Declaration-block scan summary:
-- tools/templates-v2/styles/toolStarter.css: 53 declaration blocks.
-- tools/palette-manager-v2/paletteManagerV2.css: 117 declaration blocks.
-- tools/preview-generator-v2/previewGeneratorV2.css: 39 declaration blocks.
+- toolbox/templates-v2/styles/toolStarter.css: 53 declaration blocks.
+- toolbox/palette-manager-v2/paletteManagerV2.css: 117 declaration blocks.
+- toolbox/preview-generator-v2/previewGeneratorV2.css: 39 declaration blocks.
 - Palette Manager V2 exact matches to Template V2: 7 declaration blocks.
 - Preview Generator V2 exact matches to Template V2: 4 declaration blocks.
 

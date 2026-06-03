@@ -5,9 +5,9 @@
 - Commit comment: `Remove Workspace Manager default and query fallbacks`
 
 ## Changed Files
-- `tools/Workspace Manager/index.html`
-- `tools/Workspace Manager/main.js`
-- `tools/Workspace Manager/toolHost.css`
+- `toolbox/Workspace Manager/index.html`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/toolHost.css`
 - `docs_build/dev/reports/workspace_manager_rollback_header_and_tool_pager_validation.md`
 
 ## Proof: Failed Header/Banner/Control Area Removed
@@ -20,47 +20,47 @@
 
 ## Proof: Normal Workspace Manager Content Loads Below Site Chrome
 - Workspace mount surface remains present and is the primary page body container:
-  - `tools/Workspace Manager/index.html:17` `<div data-tool-host-mount-container class="tool-host-workspace__mount"></div>`
+  - `toolbox/Workspace Manager/index.html:17` `<div data-tool-host-mount-container class="tool-host-workspace__mount"></div>`
 - Layout keeps mount surface filling remaining page area:
-  - `tools/Workspace Manager/toolHost.css:14` `.tool-host-workspace {`
-  - `tools/Workspace Manager/toolHost.css:15` `display: flex;`
-  - `tools/Workspace Manager/toolHost.css:16` `flex-direction: column;`
-  - `tools/Workspace Manager/toolHost.css:26` `.tool-host-workspace__mount {`
-  - `tools/Workspace Manager/toolHost.css:27` `flex: 1 1 auto;`
+  - `toolbox/Workspace Manager/toolHost.css:14` `.tool-host-workspace {`
+  - `toolbox/Workspace Manager/toolHost.css:15` `display: flex;`
+  - `toolbox/Workspace Manager/toolHost.css:16` `flex-direction: column;`
+  - `toolbox/Workspace Manager/toolHost.css:26` `.tool-host-workspace__mount {`
+  - `toolbox/Workspace Manager/toolHost.css:27` `flex: 1 1 auto;`
 
 ## Proof: Only [PREV] <toolname> [NEXT] Was Added
 - Pager markup only:
-  - `tools/Workspace Manager/index.html:11` `<section class="tool-host-pager" ...>`
-  - `tools/Workspace Manager/index.html:12` `[PREV]`
-  - `tools/Workspace Manager/index.html:13` current tool label span
-  - `tools/Workspace Manager/index.html:14` `[NEXT]`
+  - `toolbox/Workspace Manager/index.html:11` `<section class="tool-host-pager" ...>`
+  - `toolbox/Workspace Manager/index.html:12` `[PREV]`
+  - `toolbox/Workspace Manager/index.html:13` current tool label span
+  - `toolbox/Workspace Manager/index.html:14` `[NEXT]`
 - No new header/banner block exists in `index.html`.
 
 ## Proof: Pager Appears Above Existing Tools/Editors Section
 - Pager block is defined before mount/editors container in DOM:
-  - `tools/Workspace Manager/index.html:11` pager section
-  - `tools/Workspace Manager/index.html:17` mount container
+  - `toolbox/Workspace Manager/index.html:11` pager section
+  - `toolbox/Workspace Manager/index.html:17` mount container
 - Pager is centered:
-  - `tools/Workspace Manager/toolHost.css:31` `.tool-host-pager {`
-  - `tools/Workspace Manager/toolHost.css:35` `justify-content: center;`
+  - `toolbox/Workspace Manager/toolHost.css:31` `.tool-host-pager {`
+  - `toolbox/Workspace Manager/toolHost.css:35` `justify-content: center;`
 
 ## Proof: First Available Tool Selected/Mounted On Load
 - Initial tool selection for explicit game launch context uses first available tool:
-  - `tools/Workspace Manager/main.js:657` `const initialToolId = requestedToolId || (initialGameEntry && gameLaunchRequested ? (toolIds[0] || "") : "");`
+  - `toolbox/Workspace Manager/main.js:657` `const initialToolId = requestedToolId || (initialGameEntry && gameLaunchRequested ? (toolIds[0] || "") : "");`
 - Selected tool is mounted during init:
-  - `tools/Workspace Manager/main.js:677` `mountSelectedTool("init");`
+  - `toolbox/Workspace Manager/main.js:677` `mountSelectedTool("init");`
 
 ## Proof: Prev/Next Changes Selected/Mounted Tool
 - Prev handler changes selection and mounts:
-  - `tools/Workspace Manager/main.js:540` prev click binding
-  - `tools/Workspace Manager/main.js:544` `mountSelectedTool("prev");`
+  - `toolbox/Workspace Manager/main.js:540` prev click binding
+  - `toolbox/Workspace Manager/main.js:544` `mountSelectedTool("prev");`
 - Next handler changes selection and mounts:
-  - `tools/Workspace Manager/main.js:549` next click binding
-  - `tools/Workspace Manager/main.js:553` `mountSelectedTool("next");`
+  - `toolbox/Workspace Manager/main.js:549` next click binding
+  - `toolbox/Workspace Manager/main.js:553` `mountSelectedTool("next");`
 
 ## Proof: gameId || game Fallback Not Restored
 - `readInitialGameId` uses only `gameId`:
-  - `tools/Workspace Manager/main.js:279` `const gameId = (url.searchParams.get("gameId") || "").trim();`
+  - `toolbox/Workspace Manager/main.js:279` `const gameId = (url.searchParams.get("gameId") || "").trim();`
 - Command checks:
   - `PASS: main.js missing gameId || game`
   - `PASS: main.js missing searchParams.get("game")`
@@ -72,9 +72,9 @@
 
 ## External Memory / Stale Memory Guard
 - Existing context cleanup remains intact:
-  - `tools/Workspace Manager/main.js:4` imports `removeToolHostSharedContextById`
-  - `tools/Workspace Manager/main.js:347` `unmountGameFrame()` cleanup routine
-  - `tools/Workspace Manager/main.js:622` cleanup bound on `beforeunload`
+  - `toolbox/Workspace Manager/main.js:4` imports `removeToolHostSharedContextById`
+  - `toolbox/Workspace Manager/main.js:347` `unmountGameFrame()` cleanup routine
+  - `toolbox/Workspace Manager/main.js:622` cleanup bound on `beforeunload`
 
 ## Anti-Pattern Self-Check
 - No `gameId || game` fallback restored: PASS

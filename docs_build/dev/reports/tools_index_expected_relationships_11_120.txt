@@ -1,17 +1,17 @@
 PR 11.120 - Tools Index Relationship Count
 
 Files searched
-- tools/index.html
-- tools/renderToolsIndex.js
+- toolbox/index.html
+- toolbox/renderToolsIndex.js
 - samples/metadata/samples.index.metadata.json
 
 Before
-- tools/renderToolsIndex.js counted sample?.toolsUsed when present, otherwise sample?.toolHints.
+- toolbox/renderToolsIndex.js counted sample?.toolsUsed when present, otherwise sample?.toolHints.
 - It also excluded the Workspace Manager card from Samples (x), which produced the user-observed 30 while samples/index.html showed 31.
-- BUILD-reported tools/index relationship count: 34.
+- BUILD-reported toolbox/index relationship count: 34.
 
 After
-- tools/renderToolsIndex.js reads samples/metadata/samples.index.metadata.json.
+- toolbox/renderToolsIndex.js reads samples/metadata/samples.index.metadata.json.
 - It counts only relationships where:
   - sample.phase is not 20
   - roundtripToolPresets has toolId
@@ -55,5 +55,5 @@ Blocked from old count
 - 1902:3d-camera-path-editor - not a direct tools hub sample count; covered by workspace-manager:1
 
 Validation
-- node --check tools/renderToolsIndex.js: PASS.
+- node --check toolbox/renderToolsIndex.js: PASS.
 - Count harness result: tools hub Samples counts sum = 31.

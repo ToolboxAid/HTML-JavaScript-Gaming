@@ -8,22 +8,22 @@
 ## Execution Commands
 - `Get-Content` audits on:
   - `src/engine/theme/tool-shell.css`
-  - `tools/shared/debugInspectorTools.css`
+  - `toolbox/shared/debugInspectorTools.css`
   - `src/engine/theme/layout.css`
   - `src/engine/theme/header.css`
   - `src/engine/theme/nav.css`
   - `src/engine/theme/toolboxaid-header.html`
 - Inline-style checks on migrated shell tools:
-  - `tools/State Inspector/index.html`
-  - `tools/Performance Profiler/index.html`
-  - `tools/Replay Visualizer/index.html`
-  - `tools/Physics Sandbox/index.html`
+  - `toolbox/State Inspector/index.html`
+  - `toolbox/Performance Profiler/index.html`
+  - `toolbox/Replay Visualizer/index.html`
+  - `toolbox/Physics Sandbox/index.html`
 - Style-thrashing scan on migrated shell tool JS:
-  - `tools/State Inspector/main.js`
-  - `tools/Performance Profiler/main.js`
-  - `tools/Replay Visualizer/main.js`
-  - `tools/Physics Sandbox/main.js`
-  - `tools/shared/debugToolInteractionFlow.js`
+  - `toolbox/State Inspector/main.js`
+  - `toolbox/Performance Profiler/main.js`
+  - `toolbox/Replay Visualizer/main.js`
+  - `toolbox/Physics Sandbox/main.js`
+  - `toolbox/shared/debugToolInteractionFlow.js`
 
 ## Roadmap Status Mapping
 

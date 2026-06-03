@@ -24,12 +24,12 @@
 - Sample 0104 comparison was removed from visible diagnostics because it duplicated the same InputService-backed state now shown by the Input Mapping V2 engine diagnostics. It can remain a conceptual comparison point in reports, but it is no longer useful as visible Gamepad Diagnostics UI.
 
 ## Validation
-- `node --check tools/input-mapping-v2/js/bootstrap.js`: PASS
-- `node --check tools/input-mapping-v2/js/ToolStarterApp.js`: PASS
-- `node --check tools/input-mapping-v2/js/controls/ExportControl.js`: PASS
-- `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/bootstrap.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/controls/ExportControl.js`: PASS
+- `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`: PASS
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "Input Mapping V2"`: PASS, 2 tests
-- `rg --pcre2 -n "<script(?![^>]*src=)|<style| on[a-zA-Z]+=" tools/input-mapping-v2/index.html tools/input-mapping-v2/how_to_use.html`: PASS, no matches
+- `rg --pcre2 -n "<script(?![^>]*src=)|<style| on[a-zA-Z]+=" toolbox/input-mapping-v2/index.html toolbox/input-mapping-v2/how_to_use.html`: PASS, no matches
 - `npm run test:workspace-v2`: PASS, 61 tests
 - `git diff --check`: PASS, line-ending warnings only
 - Full samples smoke test: not run, per request

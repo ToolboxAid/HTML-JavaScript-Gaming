@@ -1,7 +1,7 @@
 # PR_11_236 — Centralize Workspace V2 Session Inventory For Diff And Merge
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionInventoryDiffMerge.test.mjs`
 
 ## Implementation Summary
@@ -36,12 +36,12 @@
 - Audit trail retained.
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2SessionInventoryDiffMerge.test.mjs`
 - `node tests/runtime/V2SessionInventoryDiffMerge.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2SessionInventoryDiffMerge.test.mjs` → PASS
 - `node tests/runtime/V2SessionInventoryDiffMerge.test.mjs` → PASS
 
@@ -73,4 +73,4 @@ Runtime artifact:
 - No game changes
 - No Workspace Manager v1 work
 - No legacy tool fixes
-- No `platformShell` / `tools/shared/*` work
+- No `platformShell` / `toolbox/shared/*` work

@@ -2,7 +2,7 @@
 
 ## Changed Files
 
-- `tools/Workspace Manager/main.js`
+- `toolbox/Workspace Manager/main.js`
 - `docs_build/dev/reports/workspace_manager_default_query_fallback_removal_validation.md`
 
 ## Exact Removal Proof For `toolIds[0]`
@@ -13,7 +13,7 @@ Command output:
 toolIds0 0
 ```
 
-Evidence command checked `tools/Workspace Manager/main.js` for `toolIds[0]` occurrences and found none.
+Evidence command checked `toolbox/Workspace Manager/main.js` for `toolIds[0]` occurrences and found none.
 
 ## Exact Removal Proof For `gameId || game`
 
@@ -25,7 +25,7 @@ gameOrFallbackB 0
 legacyGameRead 0
 ```
 
-Evidence command checked `tools/Workspace Manager/main.js` for:
+Evidence command checked `toolbox/Workspace Manager/main.js` for:
 
 - `searchParams.get("gameId") || searchParams.get("game")`
 - `url.searchParams.get("game") || url.searchParams.get("gameId")`
@@ -37,8 +37,8 @@ All counts are zero.
 
 Workspace Manager now enforces explicit `gameId` for game-launch mode:
 
-- `tools/Workspace Manager/main.js:573`
-- `tools/Workspace Manager/main.js:623`
+- `toolbox/Workspace Manager/main.js:573`
+- `toolbox/Workspace Manager/main.js:623`
 
 Visible failure message used in both init/popstate game-launch paths:
 
@@ -50,8 +50,8 @@ Workspace Manager game launch requires a valid gameId query parameter.
 
 Code path evidence:
 
-- `tools/Workspace Manager/main.js:573-576`
-- `tools/Workspace Manager/main.js:623-627`
+- `toolbox/Workspace Manager/main.js:573-576`
+- `toolbox/Workspace Manager/main.js:623-627`
 
 Behavior:
 
@@ -61,8 +61,8 @@ Behavior:
 
 - no `toolIds[0]` fallback remains.
 - Tool mounting requires explicit selection/query:
-  - `tools/Workspace Manager/main.js:494-497`
-  - `tools/Workspace Manager/main.js:659-660`
+  - `toolbox/Workspace Manager/main.js:494-497`
+  - `toolbox/Workspace Manager/main.js:659-660`
 
 ## Proof Memory Clear Remains Intact
 
@@ -73,15 +73,15 @@ clearResult true
 localAfterClear [ [ 'keep.one', 'x' ] ]
 sessionAfterClear [ [ 'keep.two', 'y' ] ]
 launchResult true
-assignCalls [ '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
+assignCalls [ '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
 localAfterLaunch [ [ 'keep.one', 'x' ] ]
 sessionAfterLaunch [ [ 'keep.two', 'y' ] ]
 ```
 
 Code path evidence:
 
-- `tools/shared/toolLaunchSSoT.js:121`
-- `tools/shared/toolLaunchSSoT.js:138`
+- `toolbox/shared/toolLaunchSSoT.js:121`
+- `toolbox/shared/toolLaunchSSoT.js:138`
 - `games/index.render.js:419`
 - `samples/index.render.js:539`
 
@@ -107,11 +107,11 @@ Path:
 Commands run:
 
 ```bash
-node --check tools/shared/toolLaunchSSoTData.js
-node --check tools/shared/toolLaunchSSoT.js
+node --check toolbox/shared/toolLaunchSSoTData.js
+node --check toolbox/shared/toolLaunchSSoT.js
 node --check samples/index.render.js
 node --check games/index.render.js
-node --check tools/Workspace Manager/main.js
+node --check toolbox/Workspace Manager/main.js
 ```
 
 All commands exited successfully.

@@ -4,8 +4,8 @@
 Enable core add/remove asset actions in Asset Manager V2 with strict entry validation and persistence through the Workspace export path.
 
 ## Files Changed
-- `tools/asset-manager-v2/index.html`
-- `tools/asset-manager-v2/index.js`
+- `toolbox/asset-manager-v2/index.html`
+- `toolbox/asset-manager-v2/index.js`
 - `docs_build/pr/PR_11_315_ASSET_MANAGER_CORE_ADD_REMOVE/PLAN_PR.md`
 - `docs_build/pr/PR_11_315_ASSET_MANAGER_CORE_ADD_REMOVE/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_315_report.md`
@@ -26,7 +26,7 @@ Enable core add/remove asset actions in Asset Manager V2 with strict entry valid
   - valid session payload is re-persisted for Workspace V2 export path
 
 ## Validation Commands
-- `node --check tools/asset-manager-v2/index.js` -> **PASS**
+- `node --check toolbox/asset-manager-v2/index.js` -> **PASS**
 - legacy-id content search -> **PASS** (zero matches)
 - legacy-id path search -> **PASS** (zero matches)
 

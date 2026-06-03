@@ -5,9 +5,9 @@ Executed `BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD` as
 
 Changed runtime scope is limited to:
 
-- `tools/Palette Browser/**`
-- `tools/Palette Browser-v1/**`
-- `tools/common/**`
+- `toolbox/Palette Browser/**`
+- `toolbox/Palette Browser-v1/**`
+- `toolbox/common/**`
 
 Documentation scope is limited to:
 
@@ -15,15 +15,15 @@ Documentation scope is limited to:
 - `docs_build/dev/**`
 - `docs_build/dev/reports/**`
 
-No schemas, samples, games, `start_of_day/**`, Workspace Manager v1, or `tools/shared/**` were changed.
+No schemas, samples, games, `start_of_day/**`, Workspace Manager v1, or `toolbox/shared/**` were changed.
 
 ## Validation
 Required targeted validation passed:
 
 ```powershell
-node --check "tools/common/sessionContext.js"
-node --check "tools/common/toolContract.js"
-node --check "tools/Palette Browser/main.js"
+node --check "toolbox/common/sessionContext.js"
+node --check "toolbox/common/toolContract.js"
+node --check "toolbox/Palette Browser/main.js"
 ```
 
 Full samples smoke skipped: this PR did not modify shared sample loader/framework behavior and did not modify samples/games.

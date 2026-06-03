@@ -1,12 +1,12 @@
 # BUILD_PR - PR_26124_045-palette-manager-hidden-header-wide-layout
 
 ## Scope Applied
-- Updated only `tools/palette-manager-v2/paletteManagerV2.css`.
+- Updated only `toolbox/palette-manager-v2/paletteManagerV2.css`.
 - Added Palette Manager layout overrides scoped to the existing platform hidden-header/fullscreen state.
-- Did not modify workspace/toolState/session code, sample JSON, `tools/shared`, shared accordionV2 behavior, or dependencies.
+- Did not modify workspace/toolState/session code, sample JSON, `toolbox/shared`, shared accordionV2 behavior, or dependencies.
 
 ## Files Changed
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - `docs_build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md`
 - `docs_build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md`
 - `docs_build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md`
@@ -31,7 +31,7 @@
 ## Validation
 - No PR045 JS files changed.
 - `node --check src/engine/theme/accordionV2/accordionV2.js` -> PASS
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
 - `git diff --check` -> PASS with existing Git LF/CRLF warning
 - Browser/manual layout validation at 1920x1000 -> PASS:
   - normal layout remained capped at `1600px`

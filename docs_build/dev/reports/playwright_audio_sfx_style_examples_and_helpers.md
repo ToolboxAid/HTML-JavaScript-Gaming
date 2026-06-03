@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Updated `tools/audio-sfx-playground-v2` only.
+- Updated `toolbox/audio-sfx-playground-v2` only.
 - Added 2-4 example sound ideas beneath the selected Sound Style description.
 - Added deterministic live "Why this sounds this way" helper text tied to current waveform, noise, sweep, envelope, duration, and frequency settings.
 - Preserved existing slider range labels, Recommended Zone indicators, style clamps, waveform availability, slider focus behavior, and single-line slider rows.
@@ -13,9 +13,9 @@
 
 PASS:
 
-- `Get-ChildItem -Recurse -File tools/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }`
+- `Get-ChildItem -Recurse -File toolbox/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }`
 - HTML/CSS/JS static guard:
-  - no `<style>` blocks in `tools/audio-sfx-playground-v2/index.html`
+  - no `<style>` blocks in `toolbox/audio-sfx-playground-v2/index.html`
   - no inline `<script>` blocks
   - no inline event handlers
   - `#styleExamples` and `#settingsHelper` are present
@@ -23,14 +23,14 @@ PASS:
   - `STYLE_EXAMPLES` and `settingHelperMessages` exist in `SfxControlPanel.js`
   - requested helper messages exist for noise waveform and large negative sweep
   - style examples/helper CSS exists in `audioSfxLayoutDensity.css`
-- `git diff --check -- tools/audio-sfx-playground-v2`
+- `git diff --check -- toolbox/audio-sfx-playground-v2`
   - PASS with Git LF/CRLF warnings only for `index.html` and `audioSfxLayoutDensity.css`.
 
 ## Focused Playwright Validation
 
 PASS using a local repo HTTP server and Chromium:
 
-- Audio / SFX Playground V2 launched at `/tools/audio-sfx-playground-v2/index.html`.
+- Audio / SFX Playground V2 launched at `/toolbox/audio-sfx-playground-v2/index.html`.
 - No console errors and no page errors.
 - Style examples update correctly:
   - Custom: `Coin Pickup`, `Laser Sweep`, `Menu Confirm`
@@ -54,8 +54,8 @@ PASS using a local repo HTTP server and Chromium:
 
 V8 coverage entries captured:
 
-- `tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
-- `tools/audio-sfx-playground-v2/js/bootstrap.js`
+- `toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`
+- `toolbox/audio-sfx-playground-v2/js/bootstrap.js`
 
 ## Workspace V2 Validation
 

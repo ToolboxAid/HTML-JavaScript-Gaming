@@ -4,11 +4,11 @@ PR: `PR_26145_014-audio-sfx-center-column-tight-layout`
 
 ## Targeted Static Validation
 
-- `node --check tools/audio-sfx-playground-v2/js/bootstrap.js` - PASS
-- `node --check tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - PASS
-- `node --check tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js` - PASS
-- HTML external script/style guard for `tools/audio-sfx-playground-v2/index.html` - PASS
-- `git diff --check -- tools/audio-sfx-playground-v2` - PASS, with existing LF/CRLF working-copy warnings only
+- `node --check toolbox/audio-sfx-playground-v2/js/bootstrap.js` - PASS
+- `node --check toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - PASS
+- `node --check toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js` - PASS
+- HTML external script/style guard for `toolbox/audio-sfx-playground-v2/index.html` - PASS
+- `git diff --check -- toolbox/audio-sfx-playground-v2` - PASS, with existing LF/CRLF working-copy warnings only
 
 ## Focused Playwright Validation
 
@@ -40,9 +40,9 @@ Measured layout highlights:
 
 ## Playwright V8 Coverage
 
-- `(100%) tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - covered by focused launch, rename, style, slider, accordion, preview/export-state flows`
-- `(100%) tools/audio-sfx-playground-v2/js/bootstrap.js - covered by focused tool launch`
-- `(100%) tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by style, slider, name, rename, and validation flows`
+- `(100%) toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js - covered by focused launch, rename, style, slider, accordion, preview/export-state flows`
+- `(100%) toolbox/audio-sfx-playground-v2/js/bootstrap.js - covered by focused tool launch`
+- `(100%) toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by style, slider, name, rename, and validation flows`
 
 Changed runtime JavaScript files were present in focused coverage.
 
@@ -68,7 +68,7 @@ Skipped. This PR only impacts Audio / SFX Playground V2 layout and rename behavi
 
 ## Manual Validation Steps
 
-1. Open `tools/audio-sfx-playground-v2/index.html` through the repo test server or Workspace V2 tile.
+1. Open `toolbox/audio-sfx-playground-v2/index.html` through the repo test server or Workspace V2 tile.
 2. Confirm Sound Design uses the center column width with Wave Controls and Noise Controls side by side.
 3. Confirm Noise Controls begin at the same vertical level as Wave Controls.
 4. Add the default `Coin` SFX tile.

@@ -15,8 +15,8 @@ for this exact debug batch:
 2. `games/network_sample_a/debug/networkSampleADebug.js`
 3. `games/network_sample_b/debug/networkSampleBDebug.js`
 4. `games/network_sample_c/debug/networkSampleCDebug.js`
-5. `tools/dev/inspectors/inspectorStore.js`
-6. `tools/dev/plugins/debugPluginSystem.js`
+5. `toolbox/dev/inspectors/inspectorStore.js`
+6. `toolbox/dev/plugins/debugPluginSystem.js`
 
 This BUILD does **not** change any other helper or file.
 
@@ -31,8 +31,8 @@ Edit only these 7 files:
 3. `games/network_sample_a/debug/networkSampleADebug.js`
 4. `games/network_sample_b/debug/networkSampleBDebug.js`
 5. `games/network_sample_c/debug/networkSampleCDebug.js`
-6. `tools/dev/inspectors/inspectorStore.js`
-7. `tools/dev/plugins/debugPluginSystem.js`
+6. `toolbox/dev/inspectors/inspectorStore.js`
+7. `toolbox/dev/plugins/debugPluginSystem.js`
 
 Do not edit any other file.
 

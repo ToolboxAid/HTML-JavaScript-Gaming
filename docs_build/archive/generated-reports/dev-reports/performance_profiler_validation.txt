@@ -1,17 +1,17 @@
 BUILD_PR_PERFORMANCE_PROFILER validation
 
 Files:
-- tools/shared/performanceProfiler.js
-- tools/shared/debugVisualizationLayer.js
-- tools/shared/ciValidationPipeline.js
+- toolbox/shared/performanceProfiler.js
+- toolbox/shared/debugVisualizationLayer.js
+- toolbox/shared/ciValidationPipeline.js
 - tests/tools/PerformanceProfiler.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/performanceProfiler.js
+- node --check toolbox/shared/performanceProfiler.js
 - node --check tests/tools/PerformanceProfiler.test.mjs
-- node --check tools/shared/debugVisualizationLayer.js
-- node --check tools/shared/ciValidationPipeline.js
+- node --check toolbox/shared/debugVisualizationLayer.js
+- node --check toolbox/shared/ciValidationPipeline.js
 - node ./scripts/run-node-tests.mjs
 
 Behavior confirmed:

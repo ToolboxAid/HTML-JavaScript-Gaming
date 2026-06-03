@@ -1,20 +1,20 @@
 # PR_11_215 Report — V2 Entry Landing (Workspace V2 as Default)
 
 ## Entry Behavior
-- Updated `tools/index.html` to provide a prominent default V2 entry section:
+- Updated `toolbox/index.html` to provide a prominent default V2 entry section:
   - heading: `Default V2 Entry`
   - primary action: `Open Workspace V2`
   - route: `./workspace-v2/index.html`
 - This establishes Workspace V2 as the clear launch surface for V2 flows.
 
 ## Workspace V2 UX Adjustment
-- Minor copy update in `tools/workspace-v2/index.html` clarifies Workspace V2 as the default V2 entry and explicit session/URL wiring surface.
+- Minor copy update in `toolbox/workspace-v2/index.html` clarifies Workspace V2 as the default V2 entry and explicit session/URL wiring surface.
 
 ## Flow Validation
 Runtime test: `tests/runtime/V2EntryFlow.test.mjs`
 
 Validated:
-1. `tools/index.html` exists.
+1. `toolbox/index.html` exists.
 2. Workspace V2 route exists from index (`./workspace-v2/index.html`) and explicit `Open Workspace V2` action exists.
 3. Workspace producer launch wiring includes:
    - `hostContextId` query parameter
@@ -35,15 +35,15 @@ Tools validated:
 ## Pass/Fail
 - `node --check tests/runtime/V2EntryFlow.test.mjs` -> **PASS**
 - `node tests/runtime/V2EntryFlow.test.mjs` -> **PASS**
-- `node --check tools/workspace-v2/index.js` -> **PASS**
+- `node --check toolbox/workspace-v2/index.js` -> **PASS**
 
 Runtime output:
 - `tmp/v2-entry-flow-results.json`
 - failures: `0`
 
 ## Files Changed
-- `tools/index.html`
-- `tools/workspace-v2/index.html`
+- `toolbox/index.html`
+- `toolbox/workspace-v2/index.html`
 - `tests/runtime/V2EntryFlow.test.mjs`
 - `docs_build/dev/reports/PR_11_215_report.md`
 

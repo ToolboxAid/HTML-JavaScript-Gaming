@@ -1,7 +1,7 @@
 # PR_11_311 Report - Strict Schema Validation Enforcement
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `docs_build/pr/PR_11_311_STRICT_SCHEMA_VALIDATION_ENFORCEMENT/PLAN_PR.md`
 - `docs_build/pr/PR_11_311_STRICT_SCHEMA_VALIDATION_ENFORCEMENT/BUILD_PR.md`
 - `docs_build/dev/codex_commands.md`
@@ -21,7 +21,7 @@
 - Session history/library payloads must pass validation to be loadable.
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 
 ## Validation Results
 - PASS

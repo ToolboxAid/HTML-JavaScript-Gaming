@@ -12,10 +12,10 @@ PR: `PR_26140_106-fix-input-mapping-v2-spacing-and-used-key-highlight`
 
 ## Changed Files
 
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
-- `tools/input-mapping-v2/styles/inputMappingV2.css`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
 ## Implementation Notes
@@ -55,9 +55,9 @@ Added/updated focused coverage for:
 
 PASS:
 
-- `node --check tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-- `node --check tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- `node --check toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `node --check toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
 - `node --input-type=module -e "await import('./tools/input-mapping-v2/js/ToolStarterApp.js'); await import('./tools/input-mapping-v2/js/controls/PreviewPanelControl.js'); await import('./tools/input-mapping-v2/js/controls/CaptureControl.js'); console.log('input mapping controls import ok');"`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs -g "keeps Input Mapping V2 spacing compact and highlights saved selected inputs" --reporter=line` (`1 passed`)
@@ -80,7 +80,7 @@ Skipped by explicit PR instruction: do not run the full samples smoke test.
 
 ## Manual Validation
 
-1. Open `tools/input-mapping-v2/index.html`.
+1. Open `toolbox/input-mapping-v2/index.html`.
 2. Add/select `Cancel`, select Keyboard Press, click Capture Keyboard, press `P`.
 3. Select another mapping tile, then select `Cancel` again.
 4. Expected: the `Cancel` tile token `Keyboard / KeyP / Press` is highlighted with a visible glow, `Keyboard KeyP` is highlighted in the Capture used-controls area without pressing `P` again, and hover/title metadata includes `Press`.

@@ -2,19 +2,19 @@
 
 ## Changed Files
 
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/README.md`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/bootstrap.js`
-- `tools/midi-studio-v2/js/controls/*.js`
-- `tools/midi-studio-v2/js/services/*.js`
-- `tools/schemas/tools/midi-studio-v2.schema.json`
-- `tools/schemas/game.manifest.schema.json`
-- `tools/toolRegistry.js`
-- `tools/renderToolsIndex.js`
-- `tools/index.html`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/README.md`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/bootstrap.js`
+- `toolbox/midi-studio-v2/js/controls/*.js`
+- `toolbox/midi-studio-v2/js/services/*.js`
+- `toolbox/schemas/tools/midi-studio-v2.schema.json`
+- `toolbox/schemas/game.manifest.schema.json`
+- `toolbox/toolRegistry.js`
+- `toolbox/renderToolsIndex.js`
+- `toolbox/index.html`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `docs_build/dev/codex_commands.md`
@@ -24,7 +24,7 @@
 
 ## Scope
 
-Built MIDI Studio V2 as a first-class Workspace V2 tool under `tools/midi-studio-v2/`.
+Built MIDI Studio V2 as a first-class Workspace V2 tool under `toolbox/midi-studio-v2/`.
 
 The tool preserves the Tool Template V2 header, NAV, left/center/right panels, accordions, status/logging, external CSS, external JavaScript, and HTML restrictions. It does not add MIDI input, recording, a DAW workflow, piano-roll editing, hidden fallback songs, hidden default manifests, or silent sample data.
 
@@ -40,8 +40,8 @@ The tool preserves the Tool Template V2 header, NAV, left/center/right panels, a
 ## Commands
 
 - `node --check` on changed JavaScript and Playwright files.
-- JSON parse check for `tools/schemas/tools/midi-studio-v2.schema.json` and `tools/schemas/game.manifest.schema.json`.
-- HTML inline restriction scan for `tools/midi-studio-v2/index.html`.
+- JSON parse check for `toolbox/schemas/tools/midi-studio-v2.schema.json` and `toolbox/schemas/game.manifest.schema.json`.
+- HTML inline restriction scan for `toolbox/midi-studio-v2/index.html`.
 - Targeted serializer validation with Node ESM import.
 - `git diff --check`
 - `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --workers=1 --reporter=line`
@@ -79,7 +79,7 @@ Expected fail behavior:
 
 ## Manual Validation
 
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. Import a game manifest with root `music.songs`.
 3. Confirm the Songs list shows every song.
 4. Select each song and confirm source, instrument set, rendered WAV/MP3/OGG targets, details, and Game Music Director rows update.

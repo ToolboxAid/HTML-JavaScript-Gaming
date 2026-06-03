@@ -21,22 +21,22 @@ Full samples smoke test skipped because this PR is limited to Workspace Manager 
 
 `repoPath` is used.
 
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js:849`: `contextResultFromManifest` copies `workspaceManifest.repoPath || ""` onto the active game metadata as `game.repoPath`.
-- `tools/preview-generator-v2/PreviewGeneratorV2App.js:1449`: workspace launch hydration calls `normalizeAbsoluteRepoPath(manifest.repoPath)` to derive the workspace repo root path when present.
-- `tools/asset-manager-v2/js/services/WorkspaceBridge.js:87`: workspace context extra-field filtering treats `repoPath` as an allowed root field.
-- `tools/schemas/workspace.manifest.schema.json:49` and `tools/schemas/game.manifest.schema.json:136`: schemas define `repoPath`.
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js:849`: `contextResultFromManifest` copies `workspaceManifest.repoPath || ""` onto the active game metadata as `game.repoPath`.
+- `toolbox/preview-generator-v2/PreviewGeneratorV2App.js:1449`: workspace launch hydration calls `normalizeAbsoluteRepoPath(manifest.repoPath)` to derive the workspace repo root path when present.
+- `toolbox/asset-manager-v2/js/services/WorkspaceBridge.js:87`: workspace context extra-field filtering treats `repoPath` as an allowed root field.
+- `toolbox/schemas/workspace.manifest.schema.json:49` and `toolbox/schemas/game.manifest.schema.json:136`: schemas define `repoPath`.
 - Current game/workspace manifests persist `repoPath` in `games/Asteroids/game.manifest.json:27`, `games/GravityWell/game.manifest.json:27`, `games/Pong/game.manifest.json:27`, and `games/_template/workspace-manager-v2-UAT.manifest.json:12`.
 - Workspace Manager V2 Playwright coverage asserts `repoPath` is preserved in active contexts and not used as a silent Preview Generator V2 fallback when the required workspace repo session reference is missing.
 
 ## Changed Files
 
-- `tools/workspace-manager-v2/index.html`
-- `tools/workspace-manager-v2/js/bootstrap.js`
-- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `tools/workspace-manager-v2/js/controls/GameSelectorControl.js`
-- `tools/workspace-manager-v2/js/controls/ManifestMenuControl.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `tools/workspace-manager-v2/styles/workspaceManagerV2.css`
+- `toolbox/workspace-manager-v2/index.html`
+- `toolbox/workspace-manager-v2/js/bootstrap.js`
+- `toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `toolbox/workspace-manager-v2/js/controls/GameSelectorControl.js`
+- `toolbox/workspace-manager-v2/js/controls/ManifestMenuControl.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/workspace-manager-v2/styles/workspaceManagerV2.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

@@ -18,13 +18,13 @@ PASS - Continued from PR_26146_066 and kept the change focused on MIDI Studio V2
 
 ## Validation
 
-- PASS - `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS - `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS - `node --check tools/midi-studio-v2/js/bootstrap.js`
+- PASS - `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS - `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS - `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 - PASS - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --grep "PR067"` passed 1 test.
 - PASS - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright --grep "PR0(60|61|62|63|64|65|66|67)"` passed 8 tests.
-- PASS - `rg --pcre2 -n "<script(?![^>]*src=)|<style\\b|\\sstyle=|\\son[a-z]+=" tools/midi-studio-v2/index.html` returned no inline script/style/event handler matches.
+- PASS - `rg --pcre2 -n "<script(?![^>]*src=)|<style\\b|\\sstyle=|\\son[a-z]+=" toolbox/midi-studio-v2/index.html` returned no inline script/style/event handler matches.
 - PASS - `git diff --check`
 - PASS - `npm run codex:review-artifacts`
 

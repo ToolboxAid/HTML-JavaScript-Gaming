@@ -10,7 +10,7 @@ Apply BUILD_PR_PERFORMANCE_BENCHMARKS exactly as defined.
 
 ## Applied Scope
 - shared benchmark suite runtime added:
-  - `tools/shared/performanceBenchmarks.js`
+  - `toolbox/shared/performanceBenchmarks.js`
 - benchmark suite tests added:
   - `tests/tools/PerformanceBenchmarks.test.mjs`
 - test runner wired for benchmark suite coverage:

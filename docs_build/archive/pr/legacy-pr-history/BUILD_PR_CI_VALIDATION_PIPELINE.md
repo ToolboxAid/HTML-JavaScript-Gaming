@@ -4,7 +4,7 @@
 Implement the CI Validation Pipeline defined in `PLAN_PR_CI_VALIDATION_PIPELINE` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared CI validation pipeline helper in `tools/shared/ciValidationPipeline.js`
+- Added shared CI validation pipeline helper in `toolbox/shared/ciValidationPipeline.js`
   - consumes the Level 15 platform validation suite
   - produces deterministic CI gate status and artifact planning
   - emits readable branch/trigger-aware report text
@@ -23,7 +23,7 @@ Implement the CI Validation Pipeline defined in `PLAN_PR_CI_VALIDATION_PIPELINE`
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/ciValidationPipeline.js`
+  - `node --check toolbox/shared/ciValidationPipeline.js`
   - `node --check scripts/run-platform-validation-suite.mjs`
   - `node --check tests/tools/CiValidationPipeline.test.mjs`
 - Full Node test suite passed:

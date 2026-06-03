@@ -16,11 +16,11 @@ Task: `PR_26146_093-096-midi-studio-v2-arrangement-and-export-lane`
 
 PASS:
 
-- `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `node --check tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
-- `node --check tools/midi-studio-v2/js/controls/ExportPanelControl.js`
-- `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `node --check tools/midi-studio-v2/js/bootstrap.js`
+- `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `node --check toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
+- `node --check toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
+- `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 
 ### Targeted MIDI Studio Playwright
@@ -77,11 +77,11 @@ Covered by the targeted MIDI Studio validation:
 
 ## Changed Runtime Files
 
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/js/bootstrap.js`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/controls/ExportPanelControl.js`
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/js/bootstrap.js`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/controls/ExportPanelControl.js`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`

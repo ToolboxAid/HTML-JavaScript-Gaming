@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const toolsRoot = path.join(repoRoot, "tools");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-size-results.json");
 
 const URL_LENGTH_LIMIT = 2000;
@@ -68,7 +68,7 @@ function validateStorageLimit(sessionPayload) {
 
 function validateUrlLimit(sessionPayload) {
   const encoded = encodeSessionPayload(sessionPayload);
-  const shareUrl = new URL("https://example.test/tools/workspace-v2/index.html");
+  const shareUrl = new URL("https://example.test/toolbox/workspace-v2/index.html");
   shareUrl.searchParams.set("session", encoded);
   if (shareUrl.toString().length > URL_LENGTH_LIMIT) {
     return {
@@ -144,8 +144,8 @@ export function run() {
   const hasUrlGuardMessage = workspaceJsText.includes("Session size exceeds allowed limit for URL payload");
   const hasStorageGuardMessage = workspaceJsText.includes("Session size exceeds allowed limit. Payload is");
 
-  if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!workspaceSyntax.syntaxValid) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!workspaceJsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!workspaceSyntax.syntaxValid) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
   if (!hasWorkspaceUrlLimit) failures.push("Missing workspace URL size limit constant.");
   if (!hasWorkspaceStorageLimit) failures.push("Missing workspace storage size limit constant.");
   if (!hasStorageGuardMethod) failures.push("Missing workspace validateSessionPayloadSize(sessionPayload).");

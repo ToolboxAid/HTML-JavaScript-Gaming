@@ -8,16 +8,16 @@ PR: `PR_26140_055-remove-workspace-manifest-documentkind`
 - Removed active code and test expectations that accepted `workspace-manifest` as the valid document kind.
 
 ## Updated Active Paths
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
   - Generates Workspace Manager contexts with `project-manifest`.
   - Validates generated contexts against `project-manifest`.
-- `tools/shared/projectManifestContract.js`
+- `toolbox/shared/projectManifestContract.js`
   - Uses `PROJECT_DOCUMENT_KIND = "project-manifest"`.
-- `tools/asset-manager-v2/js/services/WorkspaceBridge.js`
+- `toolbox/asset-manager-v2/js/services/WorkspaceBridge.js`
   - Validates workspace-launched contexts as project manifest contexts.
-- `tools/preview-generator-v2/PreviewGeneratorV2App.js`
+- `toolbox/preview-generator-v2/PreviewGeneratorV2App.js`
   - Resolves workspace launch contexts using the project manifest document kind.
-- `tools/shared/documentModeGuards.js` and `tools/shared/platformShell.js`
+- `toolbox/shared/documentModeGuards.js` and `toolbox/shared/platformShell.js`
   - Detect project manifests using `project-manifest` or `schema: "html-js-gaming.project"`.
 - `scripts/validate-json-contracts.mjs`
   - Skips project-manifest sample-style documents using the new document kind.

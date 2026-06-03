@@ -5,19 +5,19 @@
 - Baseline: PR_26146_081-084.
 
 ## Changed Surface
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/js/bootstrap.js`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- `tools/midi-studio-v2/js/controls/PlaybackControl.js`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/js/bootstrap.js`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- `toolbox/midi-studio-v2/js/controls/PlaybackControl.js`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 
 ## Validation
 - PASS: changed-file syntax checks
-  - `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-  - `node --check tools/midi-studio-v2/js/bootstrap.js`
-  - `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
-  - `node --check tools/midi-studio-v2/js/controls/PlaybackControl.js`
+  - `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+  - `node --check toolbox/midi-studio-v2/js/bootstrap.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+  - `node --check toolbox/midi-studio-v2/js/controls/PlaybackControl.js`
   - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: targeted MIDI Studio Playwright
   - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "validates PR085-088 composition mapping regenerate sync audition and playback states"`

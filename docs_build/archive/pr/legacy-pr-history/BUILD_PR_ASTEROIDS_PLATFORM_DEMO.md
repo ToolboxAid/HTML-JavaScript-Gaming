@@ -28,7 +28,7 @@ Implement the flagship Asteroids-style demo defined in PLAN_PR_ASTEROIDS_PLATFOR
 - no engine core API files
 
 ## Implemented Files
-- `tools/shared/asteroidsPlatformDemo.js`
+- `toolbox/shared/asteroidsPlatformDemo.js`
 - `tests/games/AsteroidsPlatformDemo.test.mjs`
 - `games/Asteroids/platform/assets/palettes/asteroids-hud.palette.json`
 - `games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json`
@@ -44,7 +44,7 @@ Implement the flagship Asteroids-style demo defined in PLAN_PR_ASTEROIDS_PLATFOR
 - Kept the content paths project-relative and validation-compatible so the demo remains reusable as a future template candidate.
 
 ## Verification
-- `node --check tools/shared/asteroidsPlatformDemo.js`
+- `node --check toolbox/shared/asteroidsPlatformDemo.js`
 - `node --check tests/games/AsteroidsPlatformDemo.test.mjs`
 - `node ./scripts/run-node-tests.mjs`
 - Result: `106/106` explicit `run()` tests passed.

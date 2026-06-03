@@ -4,7 +4,7 @@
 Fixed Undo Last Merge visibility/placement by rendering the button directly in the Session Merge action group (Preview / Confirm / Apply / Undo), with initial disabled state and existing PR_11_255 undo wiring.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.html`
 - `tests/runtime/V2UndoButtonRender.test.mjs`
 
 ## Implementation Details
@@ -17,7 +17,7 @@ Fixed Undo Last Merge visibility/placement by rendering the button directly in t
   - `<button id="workspaceV2UndoLastMergeButton" ... disabled>`
 
 2. Wiring usage
-- Reused existing PR_11_255 logic in `tools/workspace-v2/index.js`:
+- Reused existing PR_11_255 logic in `toolbox/workspace-v2/index.js`:
   - `updateUndoLastMergeState()`
   - `undoLastMerge()`
   - refreshes recent list and selector state
@@ -26,7 +26,7 @@ Fixed Undo Last Merge visibility/placement by rendering the button directly in t
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2UndoButtonRender.test.mjs
 node --check tests/runtime/V2UndoLastMerge.test.mjs
 node tests/runtime/V2UndoButtonRender.test.mjs
@@ -34,7 +34,7 @@ node tests/runtime/V2UndoLastMerge.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2UndoButtonRender.test.mjs` -> PASS
 - `node --check tests/runtime/V2UndoLastMerge.test.mjs` -> PASS
 - `node tests/runtime/V2UndoButtonRender.test.mjs` -> PASS

@@ -4,7 +4,7 @@
 Palette Manager V2 now loads sample palette JSON from a `samplePresetPath` URL parameter during startup.
 
 ## Applied Changes
-- Added startup URL parameter handling in `tools/palette-manager-v2/main.js`.
+- Added startup URL parameter handling in `toolbox/palette-manager-v2/main.js`.
 - Fetches `samplePresetPath` when present and reports visible fetch/JSON failures.
 - Reuses `PaletteManagerApp.importPaletteDocument` for URL-loaded preset JSON.
 - Extended `PaletteValidationService.extractImportedPaletteDocument` to accept:
@@ -21,9 +21,9 @@ Palette Manager V2 now loads sample palette JSON from a `samplePresetPath` URL p
 - Failed fetch or schema validation shows a clear Validation/Error Viewer message and does not silently fallback.
 
 ## Validation
-- PASS: `node --check tools/palette-manager-v2/main.js`
-- PASS: `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- PASS: `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
+- PASS: `node --check toolbox/palette-manager-v2/main.js`
+- PASS: `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- PASS: `node --check toolbox/palette-manager-v2/modules/PaletteValidationService.js`
 - PASS: `node tests/tools/PaletteManagerV2Baseline.test.mjs`
 - PASS: targeted Palette Manager V2 URL preset validation for sample `0219`
 - PASS: targeted invalid `samplePresetPath` validation shows fetch failure
@@ -32,9 +32,9 @@ Palette Manager V2 now loads sample palette JSON from a `samplePresetPath` URL p
 - SKIPPED: full samples smoke test, by instruction.
 
 ## Manual Test
-1. Open `/tools/palette-manager-v2/index.html?sampleId=0219&sampleTitle=Sprite%20Atlas%20Image%20Rendering&samplePresetPath=/samples/phase-02/0219/sample.0219.palette.json`.
+1. Open `/toolbox/palette-manager-v2/index.html?sampleId=0219&sampleTitle=Sprite%20Atlas%20Image%20Rendering&samplePresetPath=/samples/phase-02/0219/sample.0219.palette.json`.
 2. Confirm User Palette contains six sample swatches.
 3. Confirm Palette JSON shows `tools.palette-browser.swatches`.
 4. Confirm status says the sample preset loaded.
-5. Open `/tools/palette-manager-v2/index.html?samplePresetPath=/samples/missing-palette.json`.
+5. Open `/toolbox/palette-manager-v2/index.html?samplePresetPath=/samples/missing-palette.json`.
 6. Confirm Validation/Error Viewer shows a sample preset fetch failure.

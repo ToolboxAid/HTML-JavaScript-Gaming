@@ -24,21 +24,21 @@ const label = `Open ${normalize(tool.displayName) || normalize(tool.name) || too
 
 This preserves required sample launch semantics and does not use `Open with Workspace Manager` for sample-to-tool actions.
 
-## Proof Samples Route To `tools/<tool>/index.html`
+## Proof Samples Route To `toolbox/<tool>/index.html`
 
 Command output:
 
 ```text
 sampleLaunch {
-  href: '/tools/Sprite%20Editor/index.html?sampleId=1208&sampleTitle=Tool+Formatted+Tiles+Parallax',
+  href: '/toolbox/Sprite%20Editor/index.html?sampleId=1208&sampleTitle=Tool+Formatted+Tiles+Parallax',
   error: ''
 }
 ```
 
 Code proof:
 
-- `tools/shared/toolLaunchSSoT.js:75`
-- `tools/shared/toolLaunchSSoT.js:86`
+- `toolbox/shared/toolLaunchSSoT.js:75`
+- `toolbox/shared/toolLaunchSSoT.js:86`
 - `samples/index.render.js:92`
 - `samples/index.render.js:345`
 
@@ -56,22 +56,22 @@ Additional V2 hardening:
 
 - Removed unlabeled game launch triggers (`game-title-link`, card-click launch) so workspace launch is exposed through the required labeled action path.
 
-## Proof Games Route To `tools/Workspace Manager/index.html`
+## Proof Games Route To `toolbox/Workspace Manager/index.html`
 
 Command output:
 
 ```text
 gameLaunch {
-  href: '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game',
+  href: '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game',
   error: ''
 }
 ```
 
 Code proof:
 
-- `tools/shared/toolLaunchSSoT.js:105`
-- `tools/shared/toolLaunchSSoT.js:117`
-- `tools/shared/toolLaunchSSoT.js:118`
+- `toolbox/shared/toolLaunchSSoT.js:105`
+- `toolbox/shared/toolLaunchSSoT.js:117`
+- `toolbox/shared/toolLaunchSSoT.js:118`
 - `games/index.render.js:147`
 - `games/index.render.js:407`
 
@@ -84,15 +84,15 @@ clearResult true
 localAfterClear [ [ 'keep.one', 'x' ] ]
 sessionAfterClear [ [ 'keep.two', 'y' ] ]
 launchResult true
-assignCalls [ '/tools/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
+assignCalls [ '/toolbox/Workspace%20Manager/index.html?gameId=2001&mount=game' ]
 localAfterLaunch [ [ 'keep.one', 'x' ] ]
 sessionAfterLaunch [ [ 'keep.two', 'y' ] ]
 ```
 
 Code proof:
 
-- `tools/shared/toolLaunchSSoT.js:123`
-- `tools/shared/toolLaunchSSoT.js:140`
+- `toolbox/shared/toolLaunchSSoT.js:123`
+- `toolbox/shared/toolLaunchSSoT.js:140`
 - `samples/index.render.js:537`
 - `games/index.render.js:416`
 
@@ -125,7 +125,7 @@ Metadata scan used during validation:
 Commands run:
 
 ```bash
-node --check tools/shared/toolLaunchSSoT.js
+node --check toolbox/shared/toolLaunchSSoT.js
 node --check games/index.render.js
 node --check samples/index.render.js
 ```

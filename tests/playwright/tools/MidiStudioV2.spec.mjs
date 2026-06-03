@@ -287,7 +287,7 @@ async function openMidiStudio(page, routePayload = validManifest, midiRoutes = {
     });
   });
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html?manifestPath=/midi-fixture.game.manifest.json`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${server.baseUrl}/toolbox/midi-studio-v2/index.html?manifestPath=/midi-fixture.game.manifest.json`, { waitUntil: "domcontentloaded" });
   return server;
 }
 
@@ -295,7 +295,7 @@ async function openMidiStudioForImport(page, audioOptions = {}) {
   const server = await startRepoServer();
   await installMockAudio(page, audioOptions);
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${server.baseUrl}/toolbox/midi-studio-v2/index.html`, { waitUntil: "domcontentloaded" });
   return server;
 }
 
@@ -339,7 +339,7 @@ async function openMidiStudioFromWorkspace(page, manifestPayload, audioOptions =
     }));
   }, { hostContextId, manifest: manifestPayload });
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}&workspaceMode=uat`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${server.baseUrl}/toolbox/midi-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}&workspaceMode=uat`, { waitUntil: "domcontentloaded" });
   return server;
 }
 
@@ -347,7 +347,7 @@ async function openMidiStudioWorkspaceProxyNav(page, audioOptions = {}) {
   const server = await startRepoServer();
   await installMockAudio(page, audioOptions);
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/midi-studio-v2/index.html?launch=workspace`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${server.baseUrl}/toolbox/midi-studio-v2/index.html?launch=workspace`, { waitUntil: "domcontentloaded" });
   return server;
 }
 
@@ -7208,7 +7208,7 @@ test.describe("MIDI Studio V2", () => {
     const midiTabIds = ["song-setup", "studio", "instruments", "auto-create-parts", "midi-import", "diagnostics", "export"];
     const server = await openMidiStudioForImport(page);
     try {
-      const indexHtml = await fs.readFile(path.resolve("tools/midi-studio-v2/index.html"), "utf8");
+      const indexHtml = await fs.readFile(path.resolve("toolbox/midi-studio-v2/index.html"), "utf8");
       expect(indexHtml.match(/<script\b(?![^>]*\bsrc=)[^>]*>/gi) || []).toEqual([]);
       expect(indexHtml).not.toMatch(/<style\b|\son[a-z]+\s*=/i);
 

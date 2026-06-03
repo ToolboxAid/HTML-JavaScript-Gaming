@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
+const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "v2-selection-feedback-enable-state-results.json");
 
 function read(filePath) {
@@ -58,8 +58,8 @@ export function run() {
   const jsHasConfirmAfterPreview = js.includes("this.confirmMergeButton.disabled = false;");
   const jsHasApplyAfterConfirm = js.includes("this.applyMergeButton.disabled = false;");
 
-  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!htmlExists) failures.push("Missing tools/workspace-v2/index.html.");
+  if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+  if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
   if (!syntax.ok) failures.push("workspace-v2/index.js failed syntax check.");
   if (!htmlHasLabels) failures.push("Missing inline selected-session feedback labels in HTML.");
   if (!htmlHasNoSessionDefaults) failures.push("Missing 'No session selected' defaults in HTML.");

@@ -13,7 +13,7 @@ The requested literal pattern `samples/**/palette.*.*.json` has no matches in th
 ## Implementation
 1. Enumerate `samples/**/*.palette.json`.
 2. Parse and rewrite only files requiring schema fixes.
-3. Preserve top-level palette metadata already allowed by `tools/schemas/tools/palette-browser.schema.json`.
+3. Preserve top-level palette metadata already allowed by `toolbox/schemas/tools/palette-browser.schema.json`.
 4. Normalize each swatch to:
    - `symbol`: one-character string,
    - `hex`: `#RRGGBB` or `#RRGGBBAA`,

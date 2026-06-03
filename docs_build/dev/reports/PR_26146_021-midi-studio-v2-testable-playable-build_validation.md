@@ -8,9 +8,9 @@
 - No SoundFont playback, rendered export implementation, MIDI input/recording, inline style blocks, or inline event handlers were added.
 
 ## Changed Files
-- `tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/reports/PR_26146_021-midi-studio-v2-testable-playable-build_validation.md`
 - `docs_build/dev/reports/codex_review.diff`
@@ -21,10 +21,10 @@
 - `docs_build/dev/commit_comment.txt`
 
 ## Validation
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
-- PASS: HTML guard checked `tools/midi-studio-v2/index.html`; no inline style blocks or inline event handlers were found.
+- PASS: HTML guard checked `toolbox/midi-studio-v2/index.html`; no inline style blocks or inline event handlers were found.
 - PASS: `npx.cmd playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --grep "Twinkle|loads example and starts audible|edits spreadsheet"`
   - Result: 3 passed.
   - Validated Twinkle example load, note blocks, playable note count, active Preview Synth playback, playhead movement, Stop All Audio reset, and editing visible note cells into playback data.

@@ -4,8 +4,8 @@
 Implemented row-level Session Library actions so saved sessions are usable without copy/paste. Added explicit saved-vs-recent helper text and direct row controls for Copy ID, Use in Library, Load, and Delete Saved.
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SavedSessionRowActions.test.mjs`
 
 ## Implemented UI/Behavior
@@ -32,13 +32,13 @@ Implemented row-level Session Library actions so saved sessions are usable witho
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2SavedSessionRowActions.test.mjs
 node tests/runtime/V2SavedSessionRowActions.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2SavedSessionRowActions.test.mjs` -> PASS
 - `node tests/runtime/V2SavedSessionRowActions.test.mjs` -> PASS
   - output: `tmp/v2-saved-session-row-actions-results.json`

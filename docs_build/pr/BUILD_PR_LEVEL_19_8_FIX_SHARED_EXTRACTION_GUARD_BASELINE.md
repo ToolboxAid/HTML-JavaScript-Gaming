@@ -2,7 +2,7 @@
 
 ## Purpose
 Fix blocking validation failure:
-tools/dev/checkSharedExtractionGuard.mjs baseline drift (baseline_unexpected=288)
+toolbox/dev/checkSharedExtractionGuard.mjs baseline drift (baseline_unexpected=288)
 
 ## Scope
 - Single purpose PR
@@ -14,7 +14,7 @@ tools/dev/checkSharedExtractionGuard.mjs baseline drift (baseline_unexpected=288
    npm test (observe baseline failure)
 
 2. Run guard script directly:
-   node tools/dev/checkSharedExtractionGuard.mjs
+   node toolbox/dev/checkSharedExtractionGuard.mjs
 
 3. Identify:
    - newly valid shared extractions OR

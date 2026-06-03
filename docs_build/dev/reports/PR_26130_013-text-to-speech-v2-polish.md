@@ -59,13 +59,13 @@ Additional checks passed:
 ```text
 node --check src/engine/audio/TextToSpeechDefaults.js
 node --check src/engine/audio/TextToSpeechEngine.js
-node --check tools/text2speach-V2/js/TextToSpeechToolApp.js
-node --check tools/text2speach-V2/js/controls/SpeechOptionsControl.js
-node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js
-node --check tools/toolRegistry.js
+node --check toolbox/text2speach-V2/js/TextToSpeechToolApp.js
+node --check toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js
+node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js
+node --check toolbox/toolRegistry.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-node -e "JSON.parse(require('node:fs').readFileSync('tools/schemas/tools/text2speach-V2.schema.json','utf8'));"
-rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" tools/text2speach-V2/index.html tools/text2speach-V2/how_to_use.html
+node -e "JSON.parse(require('node:fs').readFileSync('toolbox/schemas/tools/text2speach-V2.schema.json','utf8'));"
+rg -n -P "<script(?![^>]*\bsrc=)|<style|\son[a-zA-Z]+=" toolbox/text2speach-V2/index.html toolbox/text2speach-V2/how_to_use.html
 git diff --check HEAD -- .
 ```
 
@@ -85,7 +85,7 @@ tmp/PR_26130_013-text-to-speech-v2-polish_delta.zip
 
 ## Manual Validation Steps
 
-1. Open `tools/text2speach-V2/index.html`.
+1. Open `toolbox/text2speach-V2/index.html`.
 2. Confirm the browser title and visible heading read `Text to Speech V2`.
 3. Confirm the intro/header uses the shared first-class tool shell framing and the queue accordion reads `Named Sentences`.
 4. Select `Alert warning`, `Narrator welcome`, and `Hero ready`; Speech Options should update every option from the selected named sentence.
@@ -98,15 +98,15 @@ Expected outcome: user-facing naming is polished, the internal `text2speach-V2` 
 - `src/engine/audio/TextToSpeechDefaults.js`
 - `src/engine/audio/TextToSpeechEngine.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/schemas/tools/text2speach-V2.schema.json`
-- `tools/text2speach-V2/README.md`
-- `tools/text2speach-V2/how_to_use.html`
-- `tools/text2speach-V2/index.html`
-- `tools/text2speach-V2/js/TextToSpeechToolApp.js`
-- `tools/text2speach-V2/js/controls/SpeechOptionsControl.js`
-- `tools/text2speach-V2/styles/text2speach-V2.css`
-- `tools/toolRegistry.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/schemas/tools/text2speach-V2.schema.json`
+- `toolbox/text2speach-V2/README.md`
+- `toolbox/text2speach-V2/how_to_use.html`
+- `toolbox/text2speach-V2/index.html`
+- `toolbox/text2speach-V2/js/TextToSpeechToolApp.js`
+- `toolbox/text2speach-V2/js/controls/SpeechOptionsControl.js`
+- `toolbox/text2speach-V2/styles/text2speach-V2.css`
+- `toolbox/toolRegistry.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `docs_build/dev/reports/PR_26130_013-text-to-speech-v2-polish.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`

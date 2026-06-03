@@ -24,7 +24,7 @@ Suggested DoD additions:
 - Add control-ready checks for `paletteLockText`, `fpsInput/fpsValue`, preview play/pause, and asset-registry load/save controls.
 - Add requirement that `sampleSourceText/sampleSourceDetailText` reflect loaded sample context.
 Files inspected:
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - `samples/metadata/samples.index.metadata.json`
 No implementation changes made:
 - yes
@@ -44,7 +44,7 @@ Suggested DoD additions:
 - Add explicit control-ready checks for `paletteSelectionText` and `paletteSummaryText`.
 - Add requirement that swatch count in UI equals loaded `swatches.length`.
 Files inspected:
-- `tools/Palette Browser/main.js`
+- `toolbox/Palette Browser/main.js`
 - `tests/runtime/SampleStandaloneToolDataFlow.test.mjs`
 No implementation changes made:
 - yes
@@ -66,7 +66,7 @@ Suggested DoD additions:
 - Add required controls for tileset atlas configuration and generated tile preview state.
 - Add readiness checks for layer-kind-specific rendering and selected-layer visibility state.
 Files inspected:
-- `tools/Tilemap Studio/main.js`
+- `toolbox/Tilemap Studio/main.js`
 - `tests/runtime/SampleStandaloneToolDataFlow.test.mjs`
 No implementation changes made:
 - yes
@@ -87,7 +87,7 @@ Suggested DoD additions:
 - Add required control checks for object selection detail panel, transform controls, and flag binding.
 - Add required check that object list count and selected-object editor state match loaded document.
 Files inspected:
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
+- `toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
 No implementation changes made:
 - yes
 
@@ -107,7 +107,7 @@ Suggested DoD additions:
 - Add control-ready checks for each palette target readout and active swatch state.
 - Add explicit failure condition when editing proceeds with missing required palette target bindings.
 Files inspected:
-- `tools/Vector Asset Studio/main.js`
+- `toolbox/Vector Asset Studio/main.js`
 No implementation changes made:
 - yes
 
@@ -124,7 +124,7 @@ Suggested DoD additions:
 - Add required checks for source JSON input/load controls and event output panel binding.
 - Keep speed control optional unless implemented in current tool UI.
 Files inspected:
-- `tools/Replay Visualizer/main.js`
+- `toolbox/Replay Visualizer/main.js`
 - `tests/runtime/SampleStandaloneToolDataFlow.test.mjs`
 No implementation changes made:
 - yes
@@ -144,8 +144,8 @@ Suggested DoD additions:
 - Add required readiness checks for forwarded launch params and mount failure surface.
 - Add explicit launch-tile check for workspace-launch error badge/text visibility when launch href resolution fails.
 Files inspected:
-- `tools/Workspace Manager/main.js`
-- `tools/shared/toolLaunchSSoT.js`
+- `toolbox/Workspace Manager/main.js`
+- `toolbox/shared/toolLaunchSSoT.js`
 - `games/index.render.js`
 No implementation changes made:
 - yes
@@ -166,7 +166,7 @@ Suggested DoD additions:
 Files inspected:
 - `samples/index.render.js`
 - `samples/shared/sampleDetailPageEnhancement.js`
-- `tools/shared/toolLaunchSSoT.js`
+- `toolbox/shared/toolLaunchSSoT.js`
 No implementation changes made:
 - yes
 
@@ -199,19 +199,19 @@ Suggested DoD additions:
 - Add explicit per-tool DoD sections for all sample-launched tools listed above.
 - For each section, include minimum required field checks and minimum required control-binding checks aligned to existing runtime test expectations.
 Files inspected:
-- `tools/Asset Browser/main.js`
-- `tools/Asset Pipeline Tool/main.js`
-- `tools/State Inspector/main.js`
-- `tools/3D Camera Path Editor/main.js`
-- `tools/3D Asset Viewer/main.js`
-- `tools/3D JSON Payload Normalizer/main.js`
-- `tools/Physics Sandbox/main.js`
-- `tools/Performance Profiler/main.js`
-- `tools/Tile Model Converter/main.js`
-- `tools/Parallax Scene Studio/main.js`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/Asset Pipeline Tool/main.js`
+- `toolbox/State Inspector/main.js`
+- `toolbox/3D Camera Path Editor/main.js`
+- `toolbox/3D Asset Viewer/main.js`
+- `toolbox/3D JSON Payload Normalizer/main.js`
+- `toolbox/Physics Sandbox/main.js`
+- `toolbox/Performance Profiler/main.js`
+- `toolbox/Tile Model Converter/main.js`
+- `toolbox/Parallax Scene Studio/main.js`
 - `samples/metadata/samples.index.metadata.json`
 - `tests/runtime/SampleStandaloneToolDataFlow.test.mjs`
-- `tools/toolRegistry.js`
+- `toolbox/toolRegistry.js`
 No implementation changes made:
 - yes
 
@@ -227,7 +227,7 @@ Suggested DoD additions:
 - Require evidence fields for count parity when applicable (`expectedCount`, `actualCount`) to avoid false success.
 Files inspected:
 - `docs_build/pr/BUILD_PR_LEVEL_10_6M_TOOL_UI_READINESS_DOD.md`
-- `tools/shared/toolLoadDiagnostics.js`
+- `toolbox/shared/toolLoadDiagnostics.js`
 No implementation changes made:
 - yes
 

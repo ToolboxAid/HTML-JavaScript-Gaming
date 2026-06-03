@@ -15,13 +15,13 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/SongSheetControl.js
-node --check tools/midi-studio-v2/js/controls/SongDetailsControl.js
-node --check tools/midi-studio-v2/js/MidiStudioV2App.js
-node --check tools/midi-studio-v2/js/bootstrap.js
-node --check tools/midi-studio-v2/js/services/MidiStudioStateSerializer.js
+node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js
+node --check toolbox/midi-studio-v2/js/controls/SongDetailsControl.js
+node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js
+node --check toolbox/midi-studio-v2/js/bootstrap.js
+node --check toolbox/midi-studio-v2/js/services/MidiStudioStateSerializer.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
-rg --pcre2 -n '<style\b|<script\b(?![^>]*\bsrc=)|\son[a-z]+\s=|style\s=' tools/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
+rg --pcre2 -n '<style\b|<script\b(?![^>]*\bsrc=)|\son[a-z]+\s=|style\s=' toolbox/midi-studio-v2/index.html; if ($LASTEXITCODE -eq 1) { exit 0 } else { exit $LASTEXITCODE }
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright -g 'keeps PR062'
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright -g 'keeps PR062|parses guided Song Sheet|shows guided Song Sheet warnings|rejects invalid guided Song Sheet|consolidates existing tab buckets|canvas note editing flow|syncs PR060|builds PR061|keeps Export tab usable'
 git diff --check

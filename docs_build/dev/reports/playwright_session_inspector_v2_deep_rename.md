@@ -11,7 +11,7 @@ PASS: 14/14 tests passed.
 - Workspace Manager V2 shows `Session Inspector V2` in the Viewers tool group.
 - Workspace Manager V2 no longer exposes an old `session-inspector` tile id.
 - Workspace Manager V2 hydrates `workspace.tools.session-inspector-v2.schema` and `workspace.tools.session-inspector-v2.state`.
-- Session Inspector V2 launches from `tools/session-inspector-v2/index.html`.
+- Session Inspector V2 launches from `toolbox/session-inspector-v2/index.html`.
 - Session Inspector V2 uses V2 page labels, ids, stylesheet path, and tool id.
 - Session Inspector V2 accordions open and close.
 - Session Inspector V2 CSS uses shared theme tokens.

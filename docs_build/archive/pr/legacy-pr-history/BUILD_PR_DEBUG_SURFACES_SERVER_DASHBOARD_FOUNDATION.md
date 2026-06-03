@@ -6,7 +6,7 @@ BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION.md
 # BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION
 
 ## Build Summary
-Prepared a docs-first foundation bundle for a read-only server dashboard surface scoped to `tools/dev/server-dashboard`. This BUILD_PR remains one-purpose, sample-level, and does not modify engine core APIs or behavior.
+Prepared a docs-first foundation bundle for a read-only server dashboard surface scoped to `toolbox/dev/server-dashboard`. This BUILD_PR remains one-purpose, sample-level, and does not modify engine core APIs or behavior.
 
 ## Workflow Discipline
 PLAN_PR -> BUILD_PR -> APPLY_PR
@@ -22,7 +22,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Server Dashboard Foundation Surface
 ### Target folder
-`tools/dev/server-dashboard/`
+`toolbox/dev/server-dashboard/`
 
 ### Planned implementation units
 - `serverDashboardHost.js`
@@ -77,7 +77,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 - no engine-core work is requested
 
 ## Apply Gate for Next PR
-APPLY_PR should only implement the documented foundation surface under `tools/dev/server-dashboard` plus sample wiring, with no scope expansion.
+APPLY_PR should only implement the documented foundation surface under `toolbox/dev/server-dashboard` plus sample wiring, with no scope expansion.
 
 ## Packaging Target
 `<project folder>/tmp/BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION_delta.zip`

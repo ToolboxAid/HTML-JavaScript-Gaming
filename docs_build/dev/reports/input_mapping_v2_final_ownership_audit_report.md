@@ -16,16 +16,16 @@ Playwright impacted: Yes. This PR verifies and lightly stabilizes Input Mapping 
 
 - `src/engine/input/PointerDragState.js`: mouse drag state now ignores move events when the originally pressed mouse button is no longer held, preventing accidental drag completion from unrelated mouse movement.
 - `src/engine/input/InputCaptureSession.js`: invalid gamepad inputs keep strict validation but refresh the capture timeout so users can correct the input without the original timer expiring mid-flow.
-- `tools/input-mapping-v2/js/ToolStarterApp.js`: gamepad button release bindings are displayed as transient live highlights so release gestures are visible long enough to verify.
-- `tools/input-mapping-v2/js/controls/PreviewPanelControl.js`: Action Mapping(s) card elements are preserved across refreshes when the action set is unchanged, preventing transient card detach during visual-state refreshes.
-- `tools/input-mapping-v2/styles/inputMappingV2.css`: center-column non-fill accordions size to content so Action Mapping(s) keeps the remaining vertical space.
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`: gamepad button release bindings are displayed as transient live highlights so release gestures are visible long enough to verify.
+- `toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`: Action Mapping(s) card elements are preserved across refreshes when the action set is unchanged, preventing transient card detach during visual-state refreshes.
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`: center-column non-fill accordions size to content so Action Mapping(s) keeps the remaining vertical space.
 
 ## Audit Results
 
 - JSON export/copy empty action filtering: PASS. `InputMappingState.payload()` filters actions with `inputs.length > 0`; explicit browser validation produced `emptyExportActions: 0`, `mappedExportActions: 1`, and matching copied/exported JSON.
 - Active manifest wiring: PASS. `games/Asteroids/game.manifest.json` contains `tools.input-mapping-v2` with `toolId: "input-mapping-v2"` and `engineInputModel: "src/engine/input/InputMap"`.
-- Workspace Manager discovery/load path: PASS. `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`, `tools/toolRegistry.js`, and `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` reference `input-mapping-v2`.
-- Local-only lifecycle audit: PASS. Search for local-only capture/combo/gesture lifecycle patterns in `tools/input-mapping-v2/js` returned no matches.
+- Workspace Manager discovery/load path: PASS. `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`, `toolbox/toolRegistry.js`, and `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` reference `input-mapping-v2`.
+- Local-only lifecycle audit: PASS. Search for local-only capture/combo/gesture lifecycle patterns in `toolbox/input-mapping-v2/js` returned no matches.
 - Engine ownership audit: PASS. Reusable capture/combo/release/hold/double-click/drag/device compatibility behavior is under `src/engine/input/**`.
 - Import behavior: PASS. Import controls are disabled with the actionable reason that Input Mapping V2 imports through Workspace Manager `game.manifest` launch data.
 - Schemas and sample JSON: unchanged.
@@ -39,7 +39,7 @@ Playwright impacted: Yes. This PR verifies and lightly stabilizes Input Mapping 
 - Export/copy JSON empty-action confirmation: PASS.
 - Active manifest check: PASS, `tools.input-mapping-v2` present.
 - Workspace Manager load-path reference check: PASS.
-- `git diff --check`: PASS, no whitespace errors. Git reported the existing CRLF normalization warning for `tools/input-mapping-v2/styles/inputMappingV2.css`.
+- `git diff --check`: PASS, no whitespace errors. Git reported the existing CRLF normalization warning for `toolbox/input-mapping-v2/styles/inputMappingV2.css`.
 
 ## Manual Validation
 

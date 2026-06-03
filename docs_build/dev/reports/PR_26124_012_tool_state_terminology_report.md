@@ -1,8 +1,8 @@
 # PR_26124_012 Tool-State Terminology Rename Report
 
 ## Scope
-- Runtime/UI: `tools/workspace-v2/index.js`, `tools/workspace-v2/index.html`
-- Schema contract touchpoints: `tools/schemas/workspace.manifest.schema.json` (verification)
+- Runtime/UI: `toolbox/workspace-v2/index.js`, `toolbox/workspace-v2/index.html`
+- Schema contract touchpoints: `toolbox/schemas/workspace.manifest.schema.json` (verification)
 - Active Workspace V2 tests: `tests/ui/workspace-v2.asset-manager.spec.js`, `tests/playwright/workspace-v2.validation.spec.js`, `tests/playwright/tool-validation/workspace-v2.tool-validation.spec.js`
 
 ## Required rename terms searched
@@ -20,21 +20,21 @@
 
 ## Implementation summary
 - Standardized Workspace V2 non-browser session terminology to tool-state language in runtime/UI and active Playwright-facing surfaces.
-- Updated remaining non-browser runtime strings and identifiers in `tools/workspace-v2/index.js` (for example: activation messages, merge result validation token, fixture load messages, library error text).
+- Updated remaining non-browser runtime strings and identifiers in `toolbox/workspace-v2/index.js` (for example: activation messages, merge result validation token, fixture load messages, library error text).
 - Updated Playwright tool-validation helper naming from session-oriented helpers to tool-state-oriented helpers.
 
 ## Search results
 
 ### Active Workspace V2 contract/UI/test surface
 Command run:
-- `rg -n "savedSessions|activeSession|sessionId|Session Library|Workspace Session|Create Session \+ Launch|New Session|Load Fixture|session payload|saved session|active session" tools/workspace-v2/index.js tools/workspace-v2/index.html tools/schemas/workspace.manifest.schema.json tests/ui/workspace-v2.asset-manager.spec.js tests/playwright/workspace-v2.validation.spec.js tests/playwright/tool-validation/workspace-v2.tool-validation.spec.js`
+- `rg -n "savedSessions|activeSession|sessionId|Session Library|Workspace Session|Create Session \+ Launch|New Session|Load Fixture|session payload|saved session|active session" toolbox/workspace-v2/index.js toolbox/workspace-v2/index.html toolbox/schemas/workspace.manifest.schema.json tests/ui/workspace-v2.asset-manager.spec.js tests/playwright/workspace-v2.validation.spec.js tests/playwright/tool-validation/workspace-v2.tool-validation.spec.js`
 
 Result:
 - `0` matches
 
 ### Remaining `session` wording (intentional)
 Command run:
-- `rg -n "session|Session|workspaceSession" tools/workspace-v2/index.js tools/workspace-v2/index.html tests/ui/workspace-v2.asset-manager.spec.js tests/playwright/tool-validation/workspace-v2.tool-validation.spec.js`
+- `rg -n "session|Session|workspaceSession" toolbox/workspace-v2/index.js toolbox/workspace-v2/index.html tests/ui/workspace-v2.asset-manager.spec.js tests/playwright/tool-validation/workspace-v2.tool-validation.spec.js`
 
 Remaining categories:
 1. Browser storage concepts (`sessionStorage`, `Session Storage`, `Clear Session Storage`)
@@ -56,7 +56,7 @@ Reason for keeping these in this PR:
 - Renaming those files/messages would rewrite historical report context and expand this PR beyond the runtime/UI/contract rename lane.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `npm run test:workspace-v2` -> PASS (`19 passed, 0 failed`)
 
 ## Full samples smoke test

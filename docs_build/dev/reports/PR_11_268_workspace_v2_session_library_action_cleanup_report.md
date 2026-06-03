@@ -4,8 +4,8 @@
 Workspace V2 Session Library only.
 
 ## Files Changed
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionLibraryActionCleanup.test.mjs
 - tests/runtime/V2SessionLibraryActions.test.mjs
 - docs_build/pr/PLAN_PR_11_268_WORKSPACE_V2_SESSION_LIBRARY_ACTION_CLEANUP.md
@@ -29,7 +29,7 @@ Workspace V2 Session Library only.
   - Save success: `Saved session created. Manage this session from its Saved Sessions card.`
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - PASS
 2. `node --check tests/runtime/V2SessionLibraryActionCleanup.test.mjs`
    - PASS

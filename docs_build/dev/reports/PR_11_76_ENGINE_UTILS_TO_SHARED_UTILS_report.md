@@ -36,4 +36,4 @@
 ## Acceptance Summary
 - `src/shared/utils/*` now contains no files.
 - Moved utilities are under `src/shared/utils/*`.
-- No active imports remain in `src/`, `samples/`, or `tools/` for `engine/utils` paths.
+- No active imports remain in `src/`, `samples/`, or `toolbox/` for `engine/utils` paths.

@@ -171,7 +171,7 @@ export function run() {
   assertErrorCodes(validateProjectDataStoreRecord({ ...validRecords[5], payload: { approvalStatus: "aiApproved" } }), [PROJECT_DATA_STORE_CONTRACT_ERRORS.APPROVAL_STATUS_INVALID]);
   assertErrorCodes(validateProjectDataStoreRecord({ ...validRecords[6], payload: { publishStatus: "ready" } }), [PROJECT_DATA_STORE_CONTRACT_ERRORS.PUBLISH_STATUS_INVALID]);
   assertErrorCodes(validateProjectDataStoreRecord({ ...validRecords[0], localStorage: {} }), [PROJECT_DATA_STORE_CONTRACT_ERRORS.FIELD_NOT_ALLOWED]);
-  assertErrorCodes(validateProjectDataStoreRecord({ ...validRecords[0], payload: { toolPage: "/tools/index.html" } }), [PROJECT_DATA_STORE_CONTRACT_ERRORS.FIELD_NOT_ALLOWED]);
+  assertErrorCodes(validateProjectDataStoreRecord({ ...validRecords[0], payload: { toolPage: "/toolbox/index.html" } }), [PROJECT_DATA_STORE_CONTRACT_ERRORS.FIELD_NOT_ALLOWED]);
 
   const wrongCollectionSnapshot = {
     ...createEmptyProjectDataStoreSnapshot(),

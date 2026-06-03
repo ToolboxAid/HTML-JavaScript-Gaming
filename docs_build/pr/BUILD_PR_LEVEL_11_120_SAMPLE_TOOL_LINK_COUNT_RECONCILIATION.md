@@ -2,7 +2,7 @@
 
 ## Purpose
 Create one authoritative SSoT for all sample/tool relationships and reconcile the mismatch between:
-- `tools/index.html` expected sample relationships: 34
+- `toolbox/index.html` expected sample relationships: 34
 - `samples/index.html` rendered `Open <tool>` links: 22
 
 ## Scope
@@ -18,7 +18,7 @@ Create one authoritative SSoT for all sample/tool relationships and reconcile th
 
 There are currently two conflicting views:
 
-1. `tools/index.html` indicates 34 sample/tool relationships.
+1. `toolbox/index.html` indicates 34 sample/tool relationships.
 2. `samples/index.html` shows only 22 `Open <tool>` links.
 
 This means sample/tool relationship data is not controlled by a single source of truth.
@@ -31,7 +31,7 @@ Use exactly one authoritative file for sample/tool relationships:
 
 This file must contain the complete and correct sample/tool relationship data needed by both:
 - `samples/index.html`
-- `tools/index.html`
+- `toolbox/index.html`
 
 No other runtime source may define sample/tool links.
 
@@ -39,7 +39,7 @@ No other runtime source may define sample/tool links.
 
 Codex must compare:
 
-1. relationships implied/rendered by `tools/index.html`
+1. relationships implied/rendered by `toolbox/index.html`
 2. links rendered by `samples/index.html`
 3. entries in `samples/metadata/samples.index.metadata.json`
 4. any generated/derived sample/tool metadata files
@@ -63,7 +63,7 @@ If any file is derived from the SSoT:
 ### 3. Both hubs must read same SSoT
 Both:
 - `samples/index.html` / sample hub renderer
-- `tools/index.html` / tools hub renderer
+- `toolbox/index.html` / tools hub renderer
 
 must use the same SSoT relationship data or a generated artifact derived only from that SSoT.
 
@@ -100,7 +100,7 @@ Known-bad entries include:
 
 Codex must produce a reconciled relationship report showing:
 
-- all 34 relationships from `tools/index.html`
+- all 34 relationships from `toolbox/index.html`
 - all 22 current `samples/index.html` links
 - SSoT entries before change
 - SSoT entries after change

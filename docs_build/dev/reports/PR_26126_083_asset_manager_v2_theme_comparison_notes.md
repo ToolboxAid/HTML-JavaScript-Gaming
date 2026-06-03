@@ -4,7 +4,7 @@ Date: 2026-05-06
 
 ## Scope
 
-Compared `tools/asset-manager-v2/index.html` rendered styling against `tools/templates-v2/index.html` after aligning `tools/asset-manager-v2/styles/assetManager.css` with the Templates V2 theme variables and shell structure.
+Compared `toolbox/asset-manager-v2/index.html` rendered styling against `toolbox/templates-v2/index.html` after aligning `toolbox/asset-manager-v2/styles/assetManager.css` with the Templates V2 theme variables and shell structure.
 
 ## Method
 

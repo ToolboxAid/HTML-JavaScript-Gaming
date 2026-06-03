@@ -4,7 +4,7 @@
 Fixed merge post-apply state refresh ordering so `Undo Last Merge` enables immediately after successful apply/registration, without requiring a second run or page reload.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2UndoEnableStateRefresh.test.mjs`
 
 ## Implementation Details
@@ -36,7 +36,7 @@ Fixed merge post-apply state refresh ordering so `Undo Last Merge` enables immed
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2UndoEnableStateRefresh.test.mjs
 node --check tests/runtime/V2UndoLastMerge.test.mjs
 node tests/runtime/V2UndoEnableStateRefresh.test.mjs
@@ -44,7 +44,7 @@ node tests/runtime/V2UndoLastMerge.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2UndoEnableStateRefresh.test.mjs` -> PASS
 - `node --check tests/runtime/V2UndoLastMerge.test.mjs` -> PASS
 - `node tests/runtime/V2UndoEnableStateRefresh.test.mjs` -> PASS

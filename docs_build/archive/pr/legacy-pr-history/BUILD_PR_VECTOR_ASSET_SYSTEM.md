@@ -8,29 +8,29 @@ Implement the first-class vector asset system defined in `PLAN_PR_VECTOR_ASSET_S
 - integrate vector assets into the dependency graph, validation, packaging, and runtime flows
 - use the SVG-focused tool as the authoring bridge for normalized vector asset output
 - normalize forward-facing tool naming to:
-  - `tools/Sprite Editor/`
-  - `tools/Tilemap Studio/`
-  - `tools/Parallax Scene Studio/`
-  - `tools/Vector Asset Studio/`
+  - `toolbox/Sprite Editor/`
+  - `toolbox/Tilemap Studio/`
+  - `toolbox/Parallax Scene Studio/`
+  - `toolbox/Vector Asset Studio/`
 - document transitional compatibility for legacy tool paths
 
 ## Implemented Files
-- `tools/shared/projectAssetRegistry.js`
-- `tools/shared/projectAssetValidation.js`
-- `tools/shared/projectPackaging.js`
-- `tools/shared/gameplaySystemLayer.js`
-- `tools/shared/vector/vectorAssetBridge.js`
-- `tools/shared/vectorAssetSystem.js`
+- `toolbox/shared/projectAssetRegistry.js`
+- `toolbox/shared/projectAssetValidation.js`
+- `toolbox/shared/projectPackaging.js`
+- `toolbox/shared/gameplaySystemLayer.js`
+- `toolbox/shared/vector/vectorAssetBridge.js`
+- `toolbox/shared/vectorAssetSystem.js`
 - `tests/tools/VectorAssetSystem.test.mjs`
 - `tests/run-tests.mjs`
 - `games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json`
 - `games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json`
 - `games/Asteroids/platform/assets/vectors/asteroids-title.vector.json`
-- `tools/index.html`
-- `tools/Sprite Editor/*`
-- `tools/Tilemap Studio/*`
-- `tools/Parallax Scene Studio/*`
-- `tools/Vector Asset Studio/*`
+- `toolbox/index.html`
+- `toolbox/Sprite Editor/*`
+- `toolbox/Tilemap Studio/*`
+- `toolbox/Parallax Scene Studio/*`
+- `toolbox/Vector Asset Studio/*`
 
 ## Vector Asset Contracts
 - Registry adds a `vectors` section with normalized `source.kind`, `source.path`, geometry, style, and optional `paletteId`.
@@ -40,34 +40,34 @@ Implement the first-class vector asset system defined in `PLAN_PR_VECTOR_ASSET_S
 - Runtime consumes packaged vector assets through the existing strict data-asset path, preserving deterministic load order and fail-fast behavior.
 
 ## SVG Authoring Bridge
-- Added `tools/shared/vector/vectorAssetBridge.js` to normalize SVG-authored path data into first-class vector asset definitions.
-- `tools/Vector Asset Studio/` is now the normalized forward-facing authoring path.
-- The current implementation bridge redirects to `tools/Vector Asset Studio/` during the transition window.
+- Added `toolbox/shared/vector/vectorAssetBridge.js` to normalize SVG-authored path data into first-class vector asset definitions.
+- `toolbox/Vector Asset Studio/` is now the normalized forward-facing authoring path.
+- The current implementation bridge redirects to `toolbox/Vector Asset Studio/` during the transition window.
 
 ## Tool Naming Normalization
 Forward-facing normalized paths now exist in the repo and should be treated as the target standard:
 
-- `tools/Sprite Editor/`
-- `tools/Tilemap Studio/`
-- `tools/Parallax Scene Studio/`
-- `tools/Vector Asset Studio/`
+- `toolbox/Sprite Editor/`
+- `toolbox/Tilemap Studio/`
+- `toolbox/Parallax Scene Studio/`
+- `toolbox/Vector Asset Studio/`
 
 ## Transitional Compatibility
 Legacy implementation paths remain intact during transition and are compatibility-only:
 
-- `tools/Sprite Editor/` backs `tools/Sprite Editor/`
-- `tools/Tilemap Studio/` backs `tools/Tilemap Studio/`
-- `tools/Parallax Scene Studio/` backs `tools/Parallax Scene Studio/`
-- `tools/Vector Asset Studio/` backs `tools/Vector Asset Studio/`
+- `toolbox/Sprite Editor/` backs `toolbox/Sprite Editor/`
+- `toolbox/Tilemap Studio/` backs `toolbox/Tilemap Studio/`
+- `toolbox/Parallax Scene Studio/` backs `toolbox/Parallax Scene Studio/`
+- `toolbox/Vector Asset Studio/` backs `toolbox/Vector Asset Studio/`
 
 Legacy naming such as `SpriteEditor` is not treated as the target standard.
 
 ## Verification
-- `node --check tools/shared/projectAssetRegistry.js`
-- `node --check tools/shared/projectAssetValidation.js`
-- `node --check tools/shared/projectPackaging.js`
-- `node --check tools/shared/vector/vectorAssetBridge.js`
-- `node --check tools/shared/vectorAssetSystem.js`
+- `node --check toolbox/shared/projectAssetRegistry.js`
+- `node --check toolbox/shared/projectAssetValidation.js`
+- `node --check toolbox/shared/projectPackaging.js`
+- `node --check toolbox/shared/vector/vectorAssetBridge.js`
+- `node --check toolbox/shared/vectorAssetSystem.js`
 - `node --check tests/tools/VectorAssetSystem.test.mjs`
 - `node ./scripts/run-node-tests.mjs`
 - Result: `107/107` explicit `run()` tests passed.

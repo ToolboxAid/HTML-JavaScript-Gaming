@@ -5,8 +5,8 @@ PR: 10.6T
 Scope: Vector Asset Studio and Vector Map Editor UI-state finalization only.
 
 ## Files Changed
-- `tools/Vector Asset Studio/main.js`
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
+- `toolbox/Vector Asset Studio/main.js`
+- `toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
 - `docs_build/dev/reports/PR_10_6T_vector_tool_ui_state_finalization_report.md`
 
 ## Controls Fixed

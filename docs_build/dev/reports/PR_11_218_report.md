@@ -28,11 +28,11 @@ Implemented share-link support in `workspace-v2`:
 
 ## Validation Results
 Commands run:
-1. `node --check tests/runtime/V2ShareLinks.test.mjs`  
+1. `node --check tests/runtime/V2ShareLinks.test.mjs`
    - Result: **PASS**
-2. `node tests/runtime/V2ShareLinks.test.mjs`  
+2. `node tests/runtime/V2ShareLinks.test.mjs`
    - Result: **PASS**
-3. `node --check tools/workspace-v2/index.js`  
+3. `node --check toolbox/workspace-v2/index.js`
    - Result: **PASS**
 
 Runtime output:
@@ -44,8 +44,8 @@ Runtime output:
   - no syntax errors
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2ShareLinks.test.mjs`
 - `docs_build/dev/reports/PR_11_218_report.md`
 

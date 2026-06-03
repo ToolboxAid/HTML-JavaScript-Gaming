@@ -1,7 +1,7 @@
 # PR_26126_115 Workspace Manifest SSoT Notes
 
 ## Manifest Schema
-- `tools/schemas/workspace.manifest.schema.json` is now the source of truth for Workspace Manager V2 generated launch data.
+- `toolbox/schemas/workspace.manifest.schema.json` is now the source of truth for Workspace Manager V2 generated launch data.
 - The schema now requires active game context directly on the workspace manifest:
   - `gameId`
   - `gameRoot`
@@ -25,7 +25,7 @@
 - Asset Manager V2 writes validated assets back to `tools.asset-manager-v2.assets`.
 
 ## Scope
-- Deprecated `tools/workspace-v2/` was not modified.
+- Deprecated `toolbox/workspace-v2/` was not modified.
 - Sample JSON was not modified.
 - Temporary `?workspace=UAT` remains isolated and unchanged.
 

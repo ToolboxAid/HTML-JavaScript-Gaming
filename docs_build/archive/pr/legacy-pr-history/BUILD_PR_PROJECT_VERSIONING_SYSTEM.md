@@ -4,7 +4,7 @@
 Implement the Project Versioning System defined in `PLAN_PR_PROJECT_VERSIONING_SYSTEM` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared versioning and migration reporting in `tools/shared/projectVersioning.js`
+- Added shared versioning and migration reporting in `toolbox/shared/projectVersioning.js`
   - evaluates project schema version compatibility
   - evaluates package manifest version compatibility
   - emits deterministic migration step recommendations
@@ -21,7 +21,7 @@ Implement the Project Versioning System defined in `PLAN_PR_PROJECT_VERSIONING_S
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/projectVersioning.js`
+  - `node --check toolbox/shared/projectVersioning.js`
   - `node --check tests/tools/ProjectVersioningSystem.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

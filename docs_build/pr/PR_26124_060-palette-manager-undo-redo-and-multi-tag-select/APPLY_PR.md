@@ -15,11 +15,11 @@ Added local Palette Manager V2 undo/redo history, User Palette multi-select chec
 - Preserved lowercase tag normalization and duplicate tag avoidance.
 
 ## Validation
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-- `node --check tools/palette-manager-v2/modules/PaletteHistoryStack.js`: PASS.
-- `node --check tools/palette-manager-v2/modules/SwatchRow.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
-- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/PaletteHistoryStack.js`: PASS.
+- `node --check toolbox/palette-manager-v2/modules/SwatchRow.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
+- `node --check toolbox/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
 - Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 - `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.

@@ -15,7 +15,7 @@ Normalize ONLY this helper:
 
 ### Consumer files
 2. `src/src/engine/debug/inspectors/commands/registerInspectorCommands.js`
-3. `tools/dev/presets/debugPresetApplier.js`
+3. `toolbox/dev/presets/debugPresetApplier.js`
 
 Do not edit any other file.
 

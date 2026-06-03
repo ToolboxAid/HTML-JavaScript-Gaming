@@ -9,7 +9,7 @@ PR: `PR_26140_054-remove-workspace-schema-usage`
 - Preserved Workspace Manager V2 and tool launch behavior.
 
 ## Removed Active Workspace Schema Usage
-- Deleted `tools/schemas/workspace.manifest.schema.json`.
+- Deleted `toolbox/schemas/workspace.manifest.schema.json`.
 - Removed `WORKSPACE_MANIFEST_SCHEMA_PATH`, `WORKSPACE_SESSION_SCHEMA_REF`, and `loadWorkspaceManifestSchema()` from Workspace Manager V2.
 - Removed root `$schema` emission from generated Workspace Manager contexts and template workspace manifests.
 - Removed `workspaceSchemaRef` from workspace-launched tool session metadata.
@@ -18,13 +18,13 @@ PR: `PR_26140_054-remove-workspace-schema-usage`
 - Renamed the Workspace schema boundary test to `ToolManifestBoundary` and updated it to guard against the removed schema file.
 
 ## Current Acceptance Gates
-- Game manifests validate through `tools/schemas/game.manifest.schema.json`.
+- Game manifests validate through `toolbox/schemas/game.manifest.schema.json`.
 - Workspace Manager V2 generated contexts validate through an explicit manifest/toolState contract check.
 - Tool payloads validate directly against their current tool schemas:
-  - `tools/schemas/tools/asset-manager-v2.schema.json`
-  - `tools/schemas/tools/object-vector-studio-v2.schema.json`
-  - `tools/schemas/tools/palette-manager-v2.schema.json`
-  - `tools/schemas/tools/text2speech-V2.schema.json`
+  - `toolbox/schemas/tools/asset-manager-v2.schema.json`
+  - `toolbox/schemas/tools/object-vector-studio-v2.schema.json`
+  - `toolbox/schemas/tools/palette-manager-v2.schema.json`
+  - `toolbox/schemas/tools/text2speech-V2.schema.json`
 - Normalized workspace tool sessions keep the existing `schema`, `workspace`, `data`, and `dirty` shape.
 
 ## ToolState Save/Load/Import/Export Confirmation
@@ -36,7 +36,7 @@ PR: `PR_26140_054-remove-workspace-schema-usage`
 
 ## Active Reference Audit
 - Active search for `workspace schema`, `workspaceSchemaRef`, `workspace.manifest.schema`, `schema-valid workspace`, `workspace manifest schema`, and `schema-only workspace` returned no matches outside excluded historical or out-of-scope locations.
-- Excluded locations were `node_modules`, `tests/results`, `docs_build/dev/reports`, `tmp`, `docs_build/pr`, `tools/schemas/docs`, `docs_build/dev/roadmaps`, and `samples`.
+- Excluded locations were `node_modules`, `tests/results`, `docs_build/dev/reports`, `tmp`, `docs_build/pr`, `toolbox/schemas/docs`, `docs_build/dev/roadmaps`, and `samples`.
 - Roadmaps and sample JSON were intentionally left untouched.
 
 ## Validation
@@ -52,4 +52,4 @@ PR: `PR_26140_054-remove-workspace-schema-usage`
 - Full samples smoke test was skipped as requested.
 - Sample JSON was not modified.
 - Roadmap text was not modified.
-- Historical schema docs under `tools/schemas/docs` and PR snapshots were not modified.
+- Historical schema docs under `toolbox/schemas/docs` and PR snapshots were not modified.

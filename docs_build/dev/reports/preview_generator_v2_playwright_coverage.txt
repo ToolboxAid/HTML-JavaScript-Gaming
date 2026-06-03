@@ -15,7 +15,7 @@ Coverage aggregation:
 Tool entry verification:
 - Preview Generator V2 runtime entries found: 19
 - Palette Manager runtime entries found: 12
-- Workspace V2 browser entry point was not exercised by this Playwright run; no tools/workspace-v2 index entry exists in the active tool surface.
+- Workspace V2 browser entry point was not exercised by this Playwright run; no toolbox/workspace-v2 index entry exists in the active tool surface.
 
 Coverage report expectations:
 - Entries use the format `(xx%) <file-path> - <details>`.
@@ -25,4 +25,4 @@ Coverage report expectations:
 Manual test notes:
 - Open docs_build/dev/reports/playwright_v8_coverage_report.txt.
 - Confirm the Exercised tool entry points section lists Preview Generator V2 and Palette Manager as exercised.
-- Confirm the Files with executed line/function counts section contains both tools/preview-generator-v2/* and tools/palette-manager-v2/* entries.
+- Confirm the Files with executed line/function counts section contains both toolbox/preview-generator-v2/* and toolbox/palette-manager-v2/* entries.

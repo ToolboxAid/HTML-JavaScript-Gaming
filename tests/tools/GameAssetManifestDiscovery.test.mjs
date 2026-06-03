@@ -4,8 +4,8 @@ import asteroidsGameManifest from "../../games/Asteroids/game.manifest.json" wit
 import {
   discoverRuntimeAssetSourcesFromManifest,
   validateGameAssetManifestStructure
-} from "../../tools/shared/pipeline/gameAssetManifestDiscovery.js";
-import { createRuntimeManifestAssetLookup } from "../../tools/shared/pipeline/runtimeAssetLookup.js";
+} from "../../toolbox/shared/pipeline/gameAssetManifestDiscovery.js";
+import { createRuntimeManifestAssetLookup } from "../../toolbox/shared/pipeline/runtimeAssetLookup.js";
 
 export async function run() {
   const asteroidsManifest = {

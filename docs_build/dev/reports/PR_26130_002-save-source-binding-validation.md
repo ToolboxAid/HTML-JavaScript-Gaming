@@ -9,8 +9,8 @@
 
 ## Validation
 
-- `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `node --check toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `node --check toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `git diff --check`
 - `npm run test:workspace-v2` passed: 21 passed.
@@ -36,17 +36,17 @@ Expected fail behavior: tests fail if Save writes only session context, keeps a 
 
 ## Playwright V8 Coverage
 
-- `(88%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 532/532; executed functions 36/41`
-- `(93%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1347/1347; executed functions 129/138`
+- `(88%) toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 532/532; executed functions 36/41`
+- `(93%) toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1347/1347; executed functions 129/138`
 
 ## repoPath Usage
 
 `repoPath` is used.
 
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js:849`: `contextResultFromManifest` copies `workspaceManifest.repoPath || ""` onto active game metadata as `game.repoPath`.
-- `tools/preview-generator-v2/PreviewGeneratorV2App.js:1449`: workspace launch hydration reads `manifest.repoPath` with `normalizeAbsoluteRepoPath(manifest.repoPath)` when present.
-- `tools/asset-manager-v2/js/services/WorkspaceBridge.js:87`: workspace context extra-field filtering allows `repoPath` as a known root workspace field.
-- `tools/schemas/workspace.manifest.schema.json:49` and `tools/schemas/game.manifest.schema.json:136`: schemas define the `repoPath` field.
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js:849`: `contextResultFromManifest` copies `workspaceManifest.repoPath || ""` onto active game metadata as `game.repoPath`.
+- `toolbox/preview-generator-v2/PreviewGeneratorV2App.js:1449`: workspace launch hydration reads `manifest.repoPath` with `normalizeAbsoluteRepoPath(manifest.repoPath)` when present.
+- `toolbox/asset-manager-v2/js/services/WorkspaceBridge.js:87`: workspace context extra-field filtering allows `repoPath` as a known root workspace field.
+- `toolbox/schemas/workspace.manifest.schema.json:49` and `toolbox/schemas/game.manifest.schema.json:136`: schemas define the `repoPath` field.
 - Current manifests persist `repoPath` in `games/Asteroids/game.manifest.json:27`, `games/GravityWell/game.manifest.json:27`, `games/Pong/game.manifest.json:27`, and `games/_template/workspace-manager-v2-UAT.manifest.json:12`.
 
 ## Manual Test
@@ -60,8 +60,8 @@ Expected fail behavior: tests fail if Save writes only session context, keeps a 
 
 ## Changed Files
 
-- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `toolbox/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- `toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

@@ -1,22 +1,22 @@
 BUILD_PR_EDITOR_EXPERIENCE_LAYER validation
 
 Files:
-- tools/shared/editorExperienceLayer.js
+- toolbox/shared/editorExperienceLayer.js
 - tests/tools/EditorExperienceLayer.test.mjs
 - tests/run-tests.mjs
-- tools/Sprite Editor/index.html
-- tools/Sprite Editor/modules/spriteEditorApp.js
-- tools/Tilemap Studio/index.html
-- tools/Tilemap Studio/main.js
-- tools/Parallax Scene Studio/index.html
-- tools/Parallax Scene Studio/main.js
+- toolbox/Sprite Editor/index.html
+- toolbox/Sprite Editor/modules/spriteEditorApp.js
+- toolbox/Tilemap Studio/index.html
+- toolbox/Tilemap Studio/main.js
+- toolbox/Parallax Scene Studio/index.html
+- toolbox/Parallax Scene Studio/main.js
 
 Checks passed:
-- node --check tools/shared/editorExperienceLayer.js
+- node --check toolbox/shared/editorExperienceLayer.js
 - node --check tests/tools/EditorExperienceLayer.test.mjs
-- node --check tools/Sprite Editor/modules/spriteEditorApp.js
-- node --check tools/Tilemap Studio/main.js
-- node --check tools/Parallax Scene Studio/main.js
+- node --check toolbox/Sprite Editor/modules/spriteEditorApp.js
+- node --check toolbox/Tilemap Studio/main.js
+- node --check toolbox/Parallax Scene Studio/main.js
 - node ./scripts/run-node-tests.mjs
 
 Behavior confirmed:

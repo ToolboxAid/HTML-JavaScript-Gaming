@@ -17,7 +17,7 @@ Accordion ownership audit
 - Status uses AccordionSection through StatusLogControl.
 
 Duplicate/custom logic check
-- Accordion open/closed state mutation is centralized in tools/preview-generator-v2/controls/AccordionSection.js.
+- Accordion open/closed state mutation is centralized in toolbox/preview-generator-v2/controls/AccordionSection.js.
 - Search found no Preview Generator V2 use of accordionV2.js, mountAccordionV2, or setAccordionV2Open.
 - The remaining classList.toggle result outside AccordionSection is PreviewGeneratorV2ShellControl fullscreen/header behavior, not accordion behavior.
 - No inline accordion logic was added.
@@ -44,7 +44,7 @@ Full samples smoke test
 - Reason: this PR is a targeted Preview Generator V2 accordion consistency/test pass and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
 
 Manual validation
-- Open tools/preview-generator-v2/index.html.
+- Open toolbox/preview-generator-v2/index.html.
 - Toggle Target Source, Asset Folder, Capture Mode, Render Controls, Paths or IDs, Last Generated Image, Output Summary, and Status.
 - Confirm each section collapses/expands with the same icon/open-state behavior.
 - Confirm Paths or IDs still stretches when reopened.

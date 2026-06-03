@@ -40,7 +40,7 @@ Remove direct relative import patterns into shared code from sample/tool entry p
 This includes affected files such as:
 - phase 12 / phase 13 sample entry points and scenes
 - tool `main.js` entry files
-- `tools/shared/vector/vectorSafeValueUtils.js` itself if it currently reaches shared code through a forbidden path pattern. fileciteturn0file0
+- `toolbox/shared/vector/vectorSafeValueUtils.js` itself if it currently reaches shared code through a forbidden path pattern. fileciteturn0file0
 
 ### Rule 3 — consolidate numeric helper clones
 For all duplicated finite-number helper patterns, route callers through a single canonical helper implementation.
@@ -87,7 +87,7 @@ Run the guard first, then full tests.
 
 ## Validation commands
 ```text
-node tools/dev/checkSharedExtractionGuard.mjs
+node toolbox/dev/checkSharedExtractionGuard.mjs
 npm test --ignore-scripts
 npm test
 ```

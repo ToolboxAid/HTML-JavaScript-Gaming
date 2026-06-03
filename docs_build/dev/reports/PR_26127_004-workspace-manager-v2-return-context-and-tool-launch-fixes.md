@@ -2,7 +2,7 @@
 
 ## Scope
 - Updated Workspace Manager V2, workspace-launched V2 tool handoff, and related Playwright coverage.
-- Did not modify deprecated `tools/workspace-v2`.
+- Did not modify deprecated `toolbox/workspace-v2`.
 - Did not modify sample JSON.
 - Did not add fallback behavior.
 
@@ -23,11 +23,11 @@
 - PASS: `npx playwright test tests/playwright/tools/AssetManagerV2.spec.mjs tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list` completed with 17 passed tests.
 - PASS: `npm run test:workspace-v2` completed with 24 passed tests.
 - PASS: `git diff --check`.
-- PASS: Scope check found no diffs under deprecated `tools/workspace-v2` or sample schema paths.
+- PASS: Scope check found no diffs under deprecated `toolbox/workspace-v2` or sample schema paths.
 - SKIPPED: Full samples smoke test, per PR instructions. This PR is Workspace Manager V2 context/tool launch scoped.
 
 ## Manual Validation Notes
-- Open `tools/workspace-manager-v2/index.html?workspace=uat`, seed UAT, launch Asset Manager V2, then Return to Workspace; the Workspace Manager URL should preserve `workspace=uat`.
+- Open `toolbox/workspace-manager-v2/index.html?workspace=uat`, seed UAT, launch Asset Manager V2, then Return to Workspace; the Workspace Manager URL should preserve `workspace=uat`.
 - Load Asteroids in Workspace Manager V2; Tool tiles should omit Workspace Manager V2 and include Templates V2, Asset Manager V2, Palette Manager V2, and Preview Generator V2.
 - Launch Palette Manager V2 from Workspace Manager V2; active workspace palette swatches should display in the user palette.
 - Launch Preview Generator V2 from Workspace Manager V2; Repo selected, Target Source, asset folder, paths, Status log hydration, and existing preview image behavior should reflect the active workspace context.

@@ -15,6 +15,6 @@ Manual review checklist:
 - UAT button seeds a temporary Asteroids manifest/session from Workspace Manager V2.
 - Asset Manager V2, Palette Manager V2, and Preview Generator V2 launch through Workspace Manager V2 tool tiles.
 - Workspace-launched tools show only Return to Workspace in their workspace nav.
-- Deprecated tools/workspace-v2 was not modified.
+- Deprecated toolbox/workspace-v2 was not modified.
 - sample JSON files were not modified.
 

@@ -59,11 +59,11 @@ Focused Workspace V2 coverage now validates:
 Passed:
 
 - `node --check src/engine/input/GamepadHapticsService.js`
-- `node --check tools/input-mapping-v2/js/services/EngineInputSourceService.js`
-- `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-- `node --check tools/input-mapping-v2/js/bootstrap.js`
-- `node --check tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `node --check tools/input-mapping-v2/js/controls/DeviceListControl.js`
+- `node --check toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `node --check toolbox/input-mapping-v2/js/bootstrap.js`
+- `node --check toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `node --check toolbox/input-mapping-v2/js/controls/DeviceListControl.js`
 - `node --check tests/input/GamepadHapticsService.test.mjs`
 - `node --check tests/run-tests.mjs`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
@@ -73,7 +73,7 @@ Passed:
 - `npm run test:workspace-v2` - 61 passed.
 - `git diff --check` - passed; Git reported LF-to-CRLF working-copy warnings only.
 - `git status --short -- samples games` - no sample/game JSON changes.
-- `rg "imageDataUrl" tools/input-mapping-v2 src/engine/input tests/input tests/playwright/tools/WorkspaceManagerV2.spec.mjs` - no matches.
+- `rg "imageDataUrl" toolbox/input-mapping-v2 src/engine/input tests/input tests/playwright/tools/WorkspaceManagerV2.spec.mjs` - no matches.
 
 Notes:
 
@@ -98,10 +98,10 @@ Notes:
 - `tests/input/GamepadHapticsService.test.mjs`
 - `tests/run-tests.mjs`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
-- `tools/input-mapping-v2/index.html`
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/bootstrap.js`
-- `tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `tools/input-mapping-v2/js/controls/DeviceListControl.js`
-- `tools/input-mapping-v2/js/services/EngineInputSourceService.js`
-- `tools/input-mapping-v2/styles/inputMappingV2.css`
+- `toolbox/input-mapping-v2/index.html`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/bootstrap.js`
+- `toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `toolbox/input-mapping-v2/js/controls/DeviceListControl.js`
+- `toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`

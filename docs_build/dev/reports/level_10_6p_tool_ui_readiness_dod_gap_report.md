@@ -84,17 +84,17 @@
 ## Evidence Files Inspected
 - `docs_build/pr/BUILD_PR_LEVEL_10_6P_COMPLETE_TOOL_UI_READINESS_DOD.md`
 - `docs_build/dev/dod/tool_ui_readiness_dod.md`
-- `tools/toolRegistry.js`
-- `tools/shared/toolHostManifest.js`
-- `tools/shared/toolLaunchSSoT.js`
-- `tools/shared/toolLoadDiagnostics.js`
-- `tools/Workspace Manager/main.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/shared/toolHostManifest.js`
+- `toolbox/shared/toolLaunchSSoT.js`
+- `toolbox/shared/toolLoadDiagnostics.js`
+- `toolbox/Workspace Manager/main.js`
 - `samples/index.render.js`
 - `games/index.render.js`
 - `samples/metadata/samples.index.metadata.json`
 - `games/metadata/games.index.metadata.json`
 - `tests/runtime/SampleStandaloneToolDataFlow.test.mjs`
-- Active tool runtime files under `tools/**` for all surfaces listed above.
+- Active tool runtime files under `toolbox/**` for all surfaces listed above.
 
 ## Validation Commands
 - `npm run test:launch-smoke:games` -> PASS (`PASS=12 FAIL=0 TOTAL=12`)

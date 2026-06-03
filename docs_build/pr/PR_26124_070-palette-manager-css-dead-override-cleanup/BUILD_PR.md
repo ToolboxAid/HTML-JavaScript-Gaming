@@ -4,11 +4,11 @@
 Perform one scoped Palette Manager V2 CSS cleanup by removing only confirmed dead or duplicate override blocks from `paletteManagerV2.css`.
 
 ## Scope
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 - PR workflow docs and required review artifacts.
 
 ## Implementation
-1. Inspect `tools/palette-manager-v2/paletteManagerV2.css` and the shared accordionV2 CSS for direct duplicate coverage.
+1. Inspect `toolbox/palette-manager-v2/paletteManagerV2.css` and the shared accordionV2 CSS for direct duplicate coverage.
 2. Remove only these confirmed dead/duplicate blocks:
    - `.palette-manager-v2__right-accordion--import`
      - closed-state `flex`, `min-height`, and `overflow` are already covered by shared accordionV2 closed/base rules; open behavior remains in `.palette-manager-v2__right-accordion--import.is-open`.
@@ -28,7 +28,7 @@ Perform one scoped Palette Manager V2 CSS cleanup by removing only confirmed dea
 - Do not change layout, spacing, sizing, pin styling, or pin size.
 - Do not touch workspace/toolState/session behavior.
 - Do not touch sample JSON.
-- Do not modify `tools/shared`.
+- Do not modify `toolbox/shared`.
 - Do not add dependencies.
 
 ## Validation

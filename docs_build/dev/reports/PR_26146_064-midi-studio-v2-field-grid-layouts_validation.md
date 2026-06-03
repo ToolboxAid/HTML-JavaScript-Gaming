@@ -13,13 +13,13 @@
 
 ## Validation
 
-PASS - `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
+PASS - `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
 
-PASS - `node --check tools/midi-studio-v2/js/controls/SongSheetControl.js`
+PASS - `node --check toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
 
 PASS - `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 
-PASS - HTML restriction check found no inline script blocks, style blocks, inline event handlers, or inline style attributes in `tools/midi-studio-v2/index.html`.
+PASS - HTML restriction check found no inline script blocks, style blocks, inline event handlers, or inline style attributes in `toolbox/midi-studio-v2/index.html`.
 
 PASS - `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs --project=playwright -g "PR064"`
 

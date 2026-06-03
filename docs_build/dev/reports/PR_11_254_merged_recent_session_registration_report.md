@@ -4,7 +4,7 @@
 Updated Workspace V2 merge post-apply flow so successful merged results are immediately registered as runtime sessions and added to Recent Sessions, without auto-saving to Session Library.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2MergedRecentSessionRegistration.test.mjs`
 
 ## Implementation Details
@@ -44,13 +44,13 @@ Updated Workspace V2 merge post-apply flow so successful merged results are imme
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2MergedRecentSessionRegistration.test.mjs
 node tests/runtime/V2MergedRecentSessionRegistration.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2MergedRecentSessionRegistration.test.mjs` -> PASS
 - `node tests/runtime/V2MergedRecentSessionRegistration.test.mjs` -> PASS
   - output: `tmp/v2-merged-recent-session-registration-results.json`

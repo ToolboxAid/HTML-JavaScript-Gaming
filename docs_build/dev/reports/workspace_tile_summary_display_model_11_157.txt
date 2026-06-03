@@ -2,7 +2,7 @@
 Date: 2026-04-30
 
 Files changed:
-- tools/Workspace Manager/main.js
+- toolbox/Workspace Manager/main.js
 - docs_build/dev/reports/workspace_tile_summary_display_model_11_157.txt
 
 Exact function/branch changed:
@@ -27,13 +27,13 @@ Expected rendered text:
 - If sourceName missing but svgText exists: `Asset: Inline SVG`
 
 Validation result:
-- `node --check "tools/Workspace Manager/main.js"` -> PASS
+- `node --check "toolbox/Workspace Manager/main.js"` -> PASS
 - Static trace confirms display model mapping in `summarizeDirectToolPayloadLabel` for `vectorAssetDocument` -> PASS
 - Sample 1902 static payload check -> PASS
   - sourceName: `sample-0901-ship.svg`
   - computed summary: `sample-0901-ship.svg`
   - expected asset line: `Asset: sample-0901-ship.svg`
-- `git diff --name-only -- "tools/Workspace Manager/main.js" "docs_build/dev/reports/workspace_tile_summary_display_model_11_157.txt"` -> PASS
+- `git diff --name-only -- "toolbox/Workspace Manager/main.js" "docs_build/dev/reports/workspace_tile_summary_display_model_11_157.txt"` -> PASS
 
 Strict scope confirmation:
 - Only allowed files were modified.

@@ -4,7 +4,7 @@
 Implement the Runtime Streaming System defined in `PLAN_PR_RUNTIME_STREAMING_SYSTEM` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared runtime streaming support in `tools/shared/runtimeStreaming.js`
+- Added shared runtime streaming support in `toolbox/shared/runtimeStreaming.js`
   - derives deterministic boot and lazy chunk groups from strict package manifests
   - emits stream-ready manifest extensions
   - loads requested chunks with strict fail-fast behavior
@@ -22,7 +22,7 @@ Implement the Runtime Streaming System defined in `PLAN_PR_RUNTIME_STREAMING_SYS
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/runtimeStreaming.js`
+  - `node --check toolbox/shared/runtimeStreaming.js`
   - `node --check tests/tools/RuntimeStreamingSystem.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

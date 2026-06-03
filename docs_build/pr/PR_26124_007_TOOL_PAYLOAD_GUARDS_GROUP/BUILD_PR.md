@@ -2,8 +2,8 @@
 
 ## Scope
 - Exactly two related tools:
-  - `tools/asset-manager-v2/index.js`
-  - `tools/palette-manager-v2/index.js`
+  - `toolbox/asset-manager-v2/index.js`
+  - `toolbox/palette-manager-v2/index.js`
 - No schema changes
 - No sample JSON changes
 - No other tool changes
@@ -27,6 +27,6 @@
 - Preserve deterministic workspace launch behavior without fallback/default injection.
 
 ## Validation
-- `node --check tools/asset-manager-v2/index.js` -> PASS
-- `node --check tools/palette-manager-v2/index.js` -> PASS
+- `node --check toolbox/asset-manager-v2/index.js` -> PASS
+- `node --check toolbox/palette-manager-v2/index.js` -> PASS
 - `npm run test:workspace-v2` -> PASS (`1 passed`, `failed=0`)

@@ -1,7 +1,7 @@
 # PR_26140_084 Workspace Asset Catalog Residue Cleanup Report
 
 ## Summary
-- Removed active `workspace.asset-catalog.json` fallback path construction from `tools/shared/platformShell.js`.
+- Removed active `workspace.asset-catalog.json` fallback path construction from `toolbox/shared/platformShell.js`.
 - Changed shared tool hydration to read Asset Manager V2 entries from `game.manifest.json`.
 - Renamed `games/shared/workspaceGameAssetCatalog.js` to `games/shared/gameManifestAssets.js`.
 - Replaced workspace-oriented helper exports with manifest-oriented exports:
@@ -25,7 +25,7 @@
 
 ## Validation
 - Ran targeted syntax/import validation for:
-  - `tools/shared/platformShell.js`
+  - `toolbox/shared/platformShell.js`
   - `games/shared/gameManifestAssets.js`
   - `games/shared/workspaceGameRuntimeHydrator.js`
   - changed game audio/index files

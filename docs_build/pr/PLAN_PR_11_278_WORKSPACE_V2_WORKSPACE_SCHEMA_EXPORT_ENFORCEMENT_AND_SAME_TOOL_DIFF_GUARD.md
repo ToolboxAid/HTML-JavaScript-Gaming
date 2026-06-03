@@ -1,12 +1,12 @@
 # PLAN_PR_11_278_WORKSPACE_V2_WORKSPACE_SCHEMA_EXPORT_ENFORCEMENT_AND_SAME_TOOL_DIFF_GUARD
 
 ## Purpose
-Enforce Workspace V2 workspace export/import against `tools/schemas/workspace.schema.json` and block cross-tool session diff comparisons.
+Enforce Workspace V2 workspace export/import against `toolbox/schemas/workspace.schema.json` and block cross-tool session diff comparisons.
 
 ## Scope
-- tools/workspace-v2/index.html
-- tools/workspace-v2/index.js
-- tools/schemas/workspace.schema.json (smallest required addition only)
+- toolbox/workspace-v2/index.html
+- toolbox/workspace-v2/index.js
+- toolbox/schemas/workspace.schema.json (smallest required addition only)
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_278_workspace_schema_export_enforcement_and_same_tool_diff_guard_report.md
 
@@ -24,7 +24,7 @@ Enforce Workspace V2 workspace export/import against `tools/schemas/workspace.sc
 - No cross-tool implementation edits.
 
 ## Validation
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2CurrentSessionExport.test.mjs`
 - `node tests/runtime/V2SessionMerge.test.mjs`

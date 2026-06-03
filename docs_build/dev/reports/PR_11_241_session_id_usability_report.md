@@ -1,8 +1,8 @@
 # PR_11_241 — Session ID Usability (Recent Sessions + Library)
 
 ## Files Changed
-- `tools/workspace-v2/index.html`
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.html`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SessionIdUsability.test.mjs`
 
 ## Implementation Summary
@@ -27,13 +27,13 @@
 - No merge/diff computation changes.
 
 ## Validation Commands
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`
 - `node --check tests/runtime/V2SessionIdUsability.test.mjs`
 - `node tests/runtime/V2SessionIdUsability.test.mjs`
 - `node tests/runtime/V2DiffMergeButtonState.test.mjs`
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` → PASS
+- `node --check toolbox/workspace-v2/index.js` → PASS
 - `node --check tests/runtime/V2SessionIdUsability.test.mjs` → PASS
 - `node tests/runtime/V2SessionIdUsability.test.mjs` → PASS
 - `node tests/runtime/V2DiffMergeButtonState.test.mjs` → PASS

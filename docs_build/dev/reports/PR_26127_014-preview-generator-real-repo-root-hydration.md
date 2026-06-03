@@ -30,6 +30,6 @@
 - Validated Asteroids Preview Generator V2 workspace launch, absolute repo root hydration, direct write to `games/Asteroids/assets/images/preview.svg`, status path logging, and blocked non-absolute repoRoot handling.
 
 ## Out Of Scope
-- Deprecated `tools/workspace-v2` was not modified.
+- Deprecated `toolbox/workspace-v2` was not modified.
 - Sample JSON was not modified.
 - Full samples smoke test was skipped because this PR is Preview Generator repo hydration scoped.

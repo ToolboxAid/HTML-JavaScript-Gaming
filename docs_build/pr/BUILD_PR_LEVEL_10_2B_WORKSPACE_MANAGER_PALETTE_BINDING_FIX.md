@@ -29,7 +29,7 @@ Current model:
 When opening:
 
 ```text
-/tools/Workspace%20Manager/index.html?gameId=<id>&mount=game
+/toolbox/Workspace%20Manager/index.html?gameId=<id>&mount=game
 ```
 
 Workspace Manager must:

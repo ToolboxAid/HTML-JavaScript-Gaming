@@ -12,7 +12,7 @@
       "id": "vector.template.player",
       "type": "vector",
       "displayName": "Template Player Vector",
-      "sourcePath": "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
+      "sourcePath": "toolbox/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
       "sourceToolId": "svg-asset-studio",
       "updatedAt": "2026-04-05T00:00:00.000Z",
       "metadata": {
@@ -23,7 +23,7 @@
       "id": "palette.vector-native-primary",
       "type": "palette",
       "displayName": "Vector Native Primary Palette",
-      "sourcePath": "tools/templates-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
+      "sourcePath": "toolbox/templates-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
       "sourceToolId": "palette-manager-v2",
       "updatedAt": "2026-04-05T00:00:00.000Z",
       "metadata": {
@@ -37,21 +37,21 @@
         "id": "vector.template.player",
         "type": "vector",
         "displayName": "Template Player Vector",
-        "sourcePath": "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
+        "sourcePath": "toolbox/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
         "sourceToolId": "svg-asset-studio"
       },
       {
         "id": "tilemap.template.arena",
         "type": "tilemap",
         "displayName": "Template Arena Tilemap",
-        "sourcePath": "tools/templates-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
+        "sourcePath": "toolbox/templates-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
         "sourceToolId": "tile-map-editor"
       },
       {
         "id": "parallax.template.backdrop",
         "type": "parallax",
         "displayName": "Template Backdrop Parallax",
-        "sourcePath": "tools/templates-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
+        "sourcePath": "toolbox/templates-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
         "sourceToolId": "parallax-editor"
       },
       {
@@ -67,7 +67,7 @@
         "id": "palette.vector-native-primary",
         "type": "palette",
         "displayName": "Vector Native Primary Palette",
-        "sourcePath": "tools/templates-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
+        "sourcePath": "toolbox/templates-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
         "sourceToolId": "palette-manager-v2"
       }
     ]
@@ -135,7 +135,7 @@
         ],
         "tilesetAtlas": {
           "schema": "toolbox.tileset-atlas/1",
-          "imageName": "tools/templates-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
+          "imageName": "toolbox/templates-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
           "imageWidth": 0,
           "imageHeight": 0,
           "tileWidth": 24,
@@ -220,7 +220,7 @@
           {
             "id": "tileset.template.ui",
             "name": "Template UI Tileset",
-            "path": "tools/templates-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
+            "path": "toolbox/templates-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
             "tileWidth": 24,
             "tileHeight": 24,
             "sourceTool": "tile-map-editor"
@@ -230,7 +230,7 @@
           {
             "id": "tilemap.template.arena",
             "name": "Template Arena Tilemap",
-            "path": "tools/templates-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
+            "path": "toolbox/templates-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
             "tilesetId": "tileset.template.ui",
             "sourceTool": "tile-map-editor"
           }
@@ -260,7 +260,7 @@
             "name": "Starter Backdrop",
             "parallaxSourceId": "parallax.template.backdrop",
             "drawOrder": 0,
-            "imageSource": "tools/templates-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg",
+            "imageSource": "toolbox/templates-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg",
             "scrollFactorX": 0.4,
             "scrollFactorY": 0.2,
             "offsetX": 0,
@@ -294,7 +294,7 @@
           {
             "id": "image.template.backdrop",
             "name": "Template Backdrop SVG",
-            "path": "tools/templates-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg",
+            "path": "toolbox/templates-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg",
             "sourceTool": "parallax-editor"
           }
         ],
@@ -302,7 +302,7 @@
           {
             "id": "parallax.template.backdrop",
             "name": "Template Backdrop Parallax",
-            "path": "tools/templates-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
+            "path": "toolbox/templates-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
             "imageId": "image.template.backdrop",
             "sourceTool": "parallax-editor"
           }
@@ -386,7 +386,7 @@
   },
   "workspace": {
     "lastOpenTool": "vector-map-editor",
-    "notes": "Single starter template proving shared asset and palette references across the active first-class tools without adding gameplay or samples to tools/index.html."
+    "notes": "Single starter template proving shared asset and palette references across the active first-class tools without adding gameplay or samples to toolbox/index.html."
   },
   "migration": {
     "sourceVersion": 1,

@@ -12,7 +12,7 @@
 - Discovers game cards from DOM (`#games-index-list article[data-game-id]`).
 - Discovers Workspace Manager actions (`a[data-workspace-launch-href]`) per launchable game.
 - Validates each Workspace Manager action URL:
-  - path resolves to `tools/Workspace Manager/index.html`
+  - path resolves to `toolbox/Workspace Manager/index.html`
   - query contains `gameId=<id>`
   - query contains `mount=game`
   - query does not use legacy `?game=`

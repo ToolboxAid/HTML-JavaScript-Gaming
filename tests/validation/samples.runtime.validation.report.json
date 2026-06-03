@@ -1,5 +1,5 @@
 {
-  "$schema": "../../tools/schemas/samples/sample.tool-payload.schema.json",
+  "$schema": "../../toolbox/schemas/samples/sample.tool-payload.schema.json",
   "version": 1,
   "generatedAt": "2026-04-13T21:06:29.167Z",
   "scope": "samples-runtime-only",

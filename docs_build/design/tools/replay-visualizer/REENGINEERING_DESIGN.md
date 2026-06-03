@@ -3,44 +3,44 @@
 Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-16
-Source folder: `tools/Replay Visualizer`
+Source folder: `toolbox/Replay Visualizer`
 Publish target: `tools.replay-visualizer`
 
 ## Tool Purpose
 Replay Visualizer owns replay event import, validation, playback visualization, export, and publish to `tools.replay-visualizer`.
 
 ## Folder/Files Inspected
-- `tools/Replay Visualizer/how_to_use.html`
-- `tools/Replay Visualizer/index.html`
-- `tools/Replay Visualizer/main.js`
-- `tools/Replay Visualizer/README.md`
+- `toolbox/Replay Visualizer/how_to_use.html`
+- `toolbox/Replay Visualizer/index.html`
+- `toolbox/Replay Visualizer/main.js`
+- `toolbox/Replay Visualizer/README.md`
 
 ## Controls: Control -> Action -> JSON Effect
 | Control | Action | JSON effect |
 |---|---|---|
-| `tools/Replay Visualizer/index.html`: `input[range]#replayTimeSlider` - 0 | Edits the current replay event payload through `replayTimeSlider`. | Updates draft replay event payload data and requires validation before tools.replay-visualizer publish. |
-| `tools/Replay Visualizer/index.html`: `button[button]#loadReplayButton` - Load Replay JSON | Starts replay event payload import/load. | Reads incoming JSON into the tool-owned replay event payload only after validation succeeds. |
-| `tools/Replay Visualizer/index.html`: `button[button]#playReplayButton` - Play | Controls preview/playback for the current replay event payload. | No tools.replay-visualizer JSON change unless a schema-owned playback setting is explicitly edited. |
-| `tools/Replay Visualizer/index.html`: `button[button]#pauseReplayButton` - Pause | Controls preview/playback for the current replay event payload. | No tools.replay-visualizer JSON change unless a schema-owned playback setting is explicitly edited. |
-| `tools/Replay Visualizer/index.html`: `button[button]#resetReplayButton` - Reset | Creates or resets a draft replay event payload. | Initializes tool-owned replay event payload data; tools.replay-visualizer is unchanged until validation and publish/export. |
-| `tools/Replay Visualizer/index.html`: `textarea#replayJsonInput` - {"events":[{"timeMs":0,"type":"boot"}]} | Edits the active replay event or playback setting field. | Updates the draft replay event payload field represented by `replayJsonInput` before validation. |
+| `toolbox/Replay Visualizer/index.html`: `input[range]#replayTimeSlider` - 0 | Edits the current replay event payload through `replayTimeSlider`. | Updates draft replay event payload data and requires validation before tools.replay-visualizer publish. |
+| `toolbox/Replay Visualizer/index.html`: `button[button]#loadReplayButton` - Load Replay JSON | Starts replay event payload import/load. | Reads incoming JSON into the tool-owned replay event payload only after validation succeeds. |
+| `toolbox/Replay Visualizer/index.html`: `button[button]#playReplayButton` - Play | Controls preview/playback for the current replay event payload. | No tools.replay-visualizer JSON change unless a schema-owned playback setting is explicitly edited. |
+| `toolbox/Replay Visualizer/index.html`: `button[button]#pauseReplayButton` - Pause | Controls preview/playback for the current replay event payload. | No tools.replay-visualizer JSON change unless a schema-owned playback setting is explicitly edited. |
+| `toolbox/Replay Visualizer/index.html`: `button[button]#resetReplayButton` - Reset | Creates or resets a draft replay event payload. | Initializes tool-owned replay event payload data; tools.replay-visualizer is unchanged until validation and publish/export. |
+| `toolbox/Replay Visualizer/index.html`: `textarea#replayJsonInput` - {"events":[{"timeMs":0,"type":"boot"}]} | Edits the active replay event or playback setting field. | Updates the draft replay event payload field represented by `replayJsonInput` before validation. |
 
 ## Panels And Surfaces Found
-- `tools/Replay Visualizer/how_to_use.html`: `.tools-platform-surface`
-- `tools/Replay Visualizer/index.html`: `.app-shell`
-- `tools/Replay Visualizer/index.html`: `.debug-tool-list`
-- `tools/Replay Visualizer/index.html`: `.debug-tool-panel`
-- `tools/Replay Visualizer/index.html`: `.debug-tool-timeline`
-- `tools/Replay Visualizer/index.html`: `.panel`
-- `tools/Replay Visualizer/index.html`: `.tool-shell`
-- `tools/Replay Visualizer/index.html`: `.tool-shell-container`
-- `tools/Replay Visualizer/index.html`: `.tool-shell-page`
-- `tools/Replay Visualizer/index.html`: `.tool-shell__center`
-- `tools/Replay Visualizer/index.html`: `.tool-shell__left`
-- `tools/Replay Visualizer/index.html`: `.tool-shell__right`
+- `toolbox/Replay Visualizer/how_to_use.html`: `.tools-platform-surface`
+- `toolbox/Replay Visualizer/index.html`: `.app-shell`
+- `toolbox/Replay Visualizer/index.html`: `.debug-tool-list`
+- `toolbox/Replay Visualizer/index.html`: `.debug-tool-panel`
+- `toolbox/Replay Visualizer/index.html`: `.debug-tool-timeline`
+- `toolbox/Replay Visualizer/index.html`: `.panel`
+- `toolbox/Replay Visualizer/index.html`: `.tool-shell`
+- `toolbox/Replay Visualizer/index.html`: `.tool-shell-container`
+- `toolbox/Replay Visualizer/index.html`: `.tool-shell-page`
+- `toolbox/Replay Visualizer/index.html`: `.tool-shell__center`
+- `toolbox/Replay Visualizer/index.html`: `.tool-shell__left`
+- `toolbox/Replay Visualizer/index.html`: `.tool-shell__right`
 
 ## Current Component/Class/Function Inventory
-- `tools/Replay Visualizer/main.js`: applyEvents; applyProjectState; bindEvents; bootReplayVisualizer; buildPresetLoadedStatus; captureProjectState; clampTimeMs; getApi; getDurationMs; loadReplayFromInput; normalizeSamplePresetPath; playReplay; registerToolBootContract; renderCurrentEvent; renderEventList; setCurrentTimeMs; setStatus; stopPlayback; tryLoadPresetFromQuery; updateControlState
+- `toolbox/Replay Visualizer/main.js`: applyEvents; applyProjectState; bindEvents; bootReplayVisualizer; buildPresetLoadedStatus; captureProjectState; clampTimeMs; getApi; getDurationMs; loadReplayFromInput; normalizeSamplePresetPath; playReplay; registerToolBootContract; renderCurrentEvent; renderEventList; setCurrentTimeMs; setStatus; stopPlayback; tryLoadPresetFromQuery; updateControlState
 
 ## Target Controls
 Keep:
@@ -57,7 +57,7 @@ Add:
 - event/timeline diagnostics
 
 ## JSON Schema/Input Contract Currently Expected
-Tool receives validated payload and owns behavior for replay event payload. Current contract baseline: `tools/schemas/tools/replay-visualizer.schema.json` (replay-visualizer Payload).
+Tool receives validated payload and owns behavior for replay event payload. Current contract baseline: `toolbox/schemas/tools/replay-visualizer.schema.json` (replay-visualizer Payload).
 Required keys: `events`.
 Optional keys: none identified for this contract.
 
@@ -89,12 +89,12 @@ tools.replay-visualizer = {
 ```
 
 ## Playwright Expectations
-- load `tools/Replay Visualizer/index.html` without console errors
+- load `toolbox/Replay Visualizer/index.html` without console errors
 - play/scrub a valid replay payload
 - reject invalid replay JSON
 
 ## Manual Test Expectations
-- Open `tools/Replay Visualizer/index.html` and confirm timeline/playback controls render.
+- Open `toolbox/Replay Visualizer/index.html` and confirm timeline/playback controls render.
 - Load a valid replay, play/scrub it, validate, export, and publish.
 - Try malformed JSON and invalid event data; each must block publish.
 

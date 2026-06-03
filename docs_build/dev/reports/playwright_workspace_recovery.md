@@ -6,7 +6,7 @@
 - Targeted Preview Generator V2 workspace launch validation: Pass.
 - Repo selection without `showDirectoryPicker` dependency: Pass. The targeted probe disabled `window.showDirectoryPicker`, selected Asteroids in Workspace Manager V2, launched Preview Generator V2 from workspace context, hydrated `repoPath` from the session context, and wrote `games/Asteroids/assets/images/preview.svg` through the restored baseline write path.
 - Accordion controls: Pass. The targeted probe collapsed and reopened the Active Game accordion and verified `hidden` plus `aria-expanded` state changes.
-- Session Inspector launch: Not run. `tools/session-inspector/index.html` is not present in this checkout, so there was no Session Inspector page to launch after rollback.
+- Session Inspector launch: Not run. `toolbox/session-inspector/index.html` is not present in this checkout, so there was no Session Inspector page to launch after rollback.
 
 ## Removed Coupling Checks
 - `selectRepoButton` was absent from Workspace Manager V2 after rollback.

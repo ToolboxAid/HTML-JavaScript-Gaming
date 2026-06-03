@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getToolById, getVisibleActiveToolRegistry } from "../tools/toolRegistry.js";
+import { getToolById, getVisibleActiveToolRegistry } from "../toolbox/toolRegistry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,9 +31,9 @@ const REQUIRED_ACTIVE_TOOL_NAMES = [
 ];
 
 const REQUIRED_SHARED_FILES = [
-  "tools/shared/projectManifestContract.js",
-  "tools/shared/projectSystem.js",
-  "tools/shared/projectSystemAdapters.js",
+  "toolbox/shared/projectManifestContract.js",
+  "toolbox/shared/projectSystem.js",
+  "toolbox/shared/projectSystemAdapters.js",
   "docs/specs/project_manifest_contract.md"
 ];
 
@@ -47,19 +47,19 @@ const REQUIRED_SHELL_LABELS = [
 
 const TOOL_BOOTSTRAP_CHECKS = [
   {
-    file: "tools/Tilemap Studio/main.js",
+    file: "toolbox/Tilemap Studio/main.js",
     pattern: "window.tileMapStudioApp = app;"
   },
   {
-    file: "tools/Parallax Scene Studio/main.js",
+    file: "toolbox/Parallax Scene Studio/main.js",
     pattern: "window.parallaxSceneStudioApp = app;"
   },
   {
-    file: "tools/Sprite Editor/main.js",
+    file: "toolbox/Sprite Editor/main.js",
     pattern: "window.spriteEditorApp ="
   },
   {
-    file: "tools/palette-manager-v2/main.js",
+    file: "toolbox/palette-manager-v2/main.js",
     pattern: "window.paletteManagerV2App ="
   }
 ];
@@ -112,7 +112,7 @@ async function main() {
     notes.push("SpriteEditor_old_keep remains hidden legacy");
   }
 
-  const platformShellText = await readText("tools/shared/platformShell.js");
+  const platformShellText = await readText("toolbox/shared/platformShell.js");
   for (const label of REQUIRED_SHELL_LABELS) {
     if (!platformShellText.includes(label)) {
       issues.push(`Shared shell is missing project action label: ${label}`);
@@ -124,11 +124,11 @@ async function main() {
     notes.push("shared shell is wired to project system controller");
   }
 
-  const toolsIndexText = await readText("tools/index.html");
+  const toolsIndexText = await readText("toolbox/index.html");
   if (/samples\//i.test(toolsIndexText)) {
-    issues.push("tools/index.html should stay tool-only and sample-free.");
+    issues.push("toolbox/index.html should stay tool-only and sample-free.");
   } else {
-    notes.push("tools/index.html remains tool-only");
+    notes.push("toolbox/index.html remains tool-only");
   }
 
   for (const check of TOOL_BOOTSTRAP_CHECKS) {

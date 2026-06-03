@@ -96,10 +96,10 @@ Target shared tool pages only.
 
 Likely files:
 
-- `tools/*/index.html`
-- `tools/shared/platformShell.js`
-- `tools/shared/platformShell.css`
-- `tools/toolRegistry.js`
+- `toolbox/*/index.html`
+- `toolbox/shared/platformShell.js`
+- `toolbox/shared/platformShell.css`
+- `toolbox/toolRegistry.js`
 
 Do not modify:
 
@@ -131,8 +131,8 @@ Do not run long sample suites.
 Run:
 
 ```powershell
-node --check tools/shared/platformShell.js
-node --check tools/toolRegistry.js
+node --check toolbox/shared/platformShell.js
+node --check toolbox/toolRegistry.js
 ```
 
 If any per-tool JS changes, run `node --check` on those files only.
@@ -181,6 +181,6 @@ Include:
 - PASS/FAIL
 - changed files
 - root cause
-- tools/index files updated
+- toolbox/index files updated
 - validation commands/results
 - remaining issues

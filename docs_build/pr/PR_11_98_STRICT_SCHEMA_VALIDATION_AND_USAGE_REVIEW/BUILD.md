@@ -4,7 +4,7 @@
 Make schemas strict and force repo data/code to conform. Samples and games must be reviewed, not just tools.
 
 ## Inputs
-- Current repo schemas under `tools/schemas/**` or equivalent schema folder.
+- Current repo schemas under `toolbox/schemas/**` or equivalent schema folder.
 - Uploaded schema set from this session.
 - Current samples under `samples/**`.
 - Current game manifests under `games/**`.

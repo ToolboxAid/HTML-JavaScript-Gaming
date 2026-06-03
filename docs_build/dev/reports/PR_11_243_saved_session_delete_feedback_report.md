@@ -12,7 +12,7 @@ Updated Workspace V2 Session Library delete UX so `Delete Saved Session` always 
 - No Recent Session delete behavior changes.
 
 ## Files Changed
-- `tools/workspace-v2/index.js`
+- `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2SavedSessionDeleteFeedback.test.mjs`
 
 ## Implemented Behavior
@@ -37,13 +37,13 @@ Additional guarantees:
 
 ## Validation Commands Run
 ```powershell
-node --check tools/workspace-v2/index.js
+node --check toolbox/workspace-v2/index.js
 node --check tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
 node tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
 ```
 
 ## Validation Results
-- `node --check tools/workspace-v2/index.js` -> PASS
+- `node --check toolbox/workspace-v2/index.js` -> PASS
 - `node --check tests/runtime/V2SavedSessionDeleteFeedback.test.mjs` -> PASS
 - `node tests/runtime/V2SavedSessionDeleteFeedback.test.mjs` -> PASS
   - Output: `tmp/v2-saved-session-delete-feedback-results.json`

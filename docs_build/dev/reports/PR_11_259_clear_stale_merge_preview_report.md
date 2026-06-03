@@ -4,7 +4,7 @@
 Workspace V2 Session Merge UI state only.
 
 ## Files Changed
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2ClearStaleMergePreview.test.mjs
 
 ## Implementation Summary
@@ -21,7 +21,7 @@ Workspace V2 Session Merge UI state only.
 - Preview is still enabled when current selections are valid distinct candidates, and cross-tool/same-session validation flow remains intact.
 
 ## Validation Commands
-1. `node --check tools/workspace-v2/index.js`
+1. `node --check toolbox/workspace-v2/index.js`
    - Result: PASS
 2. `node --check tests/runtime/V2ClearStaleMergePreview.test.mjs`
    - Result: PASS

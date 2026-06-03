@@ -6,7 +6,7 @@ Playwright impacted: Yes.
 
 ## Scope
 
-- Added an exported toolState schema for Audio / SFX Playground V2 under `tools/schemas/tool-states/`.
+- Added an exported toolState schema for Audio / SFX Playground V2 under `toolbox/schemas/tool-states/`.
 - Updated Audio / SFX Playground V2 JSON export/import/copy behavior so `payload.sounds[]` is the single source of truth.
 - Removed duplicated active sound data from exported JSON. The selected sound is resolved by `payload.activeSoundId` pointing to an entry in `payload.sounds[]`.
 
@@ -17,7 +17,7 @@ PASS: JavaScript syntax validation
 Command:
 
 ```powershell
-Get-ChildItem -Recurse -File tools/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }
+Get-ChildItem -Recurse -File toolbox/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }
 ```
 
 PASS: HTML/CSS static validation
@@ -29,7 +29,7 @@ PASS: Schema JSON parse validation
 Command:
 
 ```powershell
-Get-Content -Raw tools/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json | ConvertFrom-Json | Out-Null
+Get-Content -Raw toolbox/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json | ConvertFrom-Json | Out-Null
 ```
 
 PASS: Targeted schema/export/import behavior validation
@@ -55,7 +55,7 @@ PASS: Diff whitespace validation
 Command:
 
 ```powershell
-git diff --check -- tools/audio-sfx-playground-v2 tools/schemas
+git diff --check -- toolbox/audio-sfx-playground-v2 toolbox/schemas
 ```
 
 ## Workspace V2 Validation
@@ -99,8 +99,8 @@ Expected Playwright fail behavior:
 
 Playwright V8 coverage could not be collected because Playwright is not available in this environment.
 
-WARN: `tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - changed runtime JavaScript; coverage unavailable.
-WARN: `tools/audio-sfx-playground-v2/js/services/ToolStateSerializer.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/services/ToolStateSerializer.js` - changed runtime JavaScript; coverage unavailable.
 
 ## Full Samples Smoke Test
 

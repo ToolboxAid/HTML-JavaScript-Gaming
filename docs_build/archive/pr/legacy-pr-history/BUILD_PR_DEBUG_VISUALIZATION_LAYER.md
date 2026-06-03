@@ -4,7 +4,7 @@
 Implement the Debug Visualization Layer defined in `PLAN_PR_DEBUG_VISUALIZATION_LAYER` without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared debug visualization builder in `tools/shared/debugVisualizationLayer.js`
+- Added shared debug visualization builder in `toolbox/shared/debugVisualizationLayer.js`
   - renders deterministic dependency graph, validation, remediation, packaging, and runtime trace sections
   - emits stable readable debug report text
 - Added automated coverage in `tests/tools/DebugVisualizationLayer.test.mjs`
@@ -21,11 +21,11 @@ Implement the Debug Visualization Layer defined in `PLAN_PR_DEBUG_VISUALIZATION_
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/debugVisualizationLayer.js`
+  - `node --check toolbox/shared/debugVisualizationLayer.js`
   - `node --check tests/tools/DebugVisualizationLayer.test.mjs`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Tilemap Studio/main.js`
-  - `node --check tools/Parallax Scene Studio/main.js`
+  - `node --check toolbox/Sprite Editor/modules/spriteEditorApp.js`
+  - `node --check toolbox/Tilemap Studio/main.js`
+  - `node --check toolbox/Parallax Scene Studio/main.js`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`
 

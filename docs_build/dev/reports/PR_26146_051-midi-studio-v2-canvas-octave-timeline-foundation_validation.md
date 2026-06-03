@@ -16,8 +16,8 @@ Status: PASS
 ## Validation Commands
 
 ```powershell
-node --check tools/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js
-node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js
+node --check toolbox/midi-studio-v2/js/controls/OctaveTimelineCanvasRenderer.js
+node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js
 node --check tests/playwright/tools/MidiStudioV2.spec.mjs
 npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "canvas octave timeline edits canonical data and drives playback without DOM grid repaint" --reporter=list --workers=1 --timeout=60000
 git diff --check
@@ -61,7 +61,7 @@ The targeted MIDI Studio V2 Playwright test validates:
 
 ## Manual Validation Notes
 
-1. Open `tools/midi-studio-v2/index.html`.
+1. Open `toolbox/midi-studio-v2/index.html`.
 2. Import the MIDI Studio V2 UAT manifest.
 3. Confirm Studio opens to Octave Timeline and the center timeline is canvas-backed while left/right controls remain DOM.
 4. Select Lead, click a note cell in the canvas, and confirm selected song JSON/details update through the canonical arrangement.

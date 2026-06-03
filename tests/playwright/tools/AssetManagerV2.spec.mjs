@@ -174,7 +174,7 @@ async function openAssetManagerV2(page, query = "", { assetFiles = [] } = {}) {
     await installFakeAssetFilePicker(page, assetFiles);
   }
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/asset-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/asset-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -187,18 +187,18 @@ async function openWorkspaceManagerV2(page, { assetFiles = [], query = "", repoP
     await installFakeAssetFilePicker(page, assetFiles);
   }
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/workspace-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openAssetManagerWithSessionContext(page, context, hostContextId = "workspace-manager-v2-test-context") {
   const server = await startRepoServer();
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
   await page.evaluate(({ id, value }) => {
     sessionStorage.setItem(id, JSON.stringify(value));
   }, { id: hostContextId, value: context });
-  const toolUrl = new URL(`${server.baseUrl}/tools/asset-manager-v2/index.html`);
+  const toolUrl = new URL(`${server.baseUrl}/toolbox/asset-manager-v2/index.html`);
   toolUrl.searchParams.set("launch", "workspace");
   toolUrl.searchParams.set("fromTool", "workspace-manager-v2");
   toolUrl.searchParams.set("hostContextId", hostContextId);
@@ -904,7 +904,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
 
       const helperPreviewCoverage = await page.evaluate(async () => {
-        const { createAssetPreviewModel, renderAssetPreviewHtml } = await import("/tools/asset-manager-v2/js/assetPreviewHelpers.js");
+        const { createAssetPreviewModel, renderAssetPreviewHtml } = await import("/toolbox/asset-manager-v2/js/assetPreviewHelpers.js");
         const sharedHelperResponse = await fetch("/src/shared/assets/assetPreviewHelpers.js", { cache: "no-store" });
         const entries = [
           ["image", "png", "sprite", "assets/images/preview.png"],
@@ -1154,10 +1154,10 @@ test.describe("Asset Manager V2", () => {
       await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
       await expect(page).not.toHaveURL(/workspace=uat/i);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 loaded 0 validated assets from tools\.asset-manager-v2\.assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 loaded 0 validated assets from toolbox\.asset-manager-v2\.assets\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 loaded 3 palette colors from active palette context\./);
       const uatContext = await page.evaluate(async () => {
-        const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
+        const { WorkspaceBridge } = await import("/toolbox/asset-manager-v2/js/services/WorkspaceBridge.js");
         const bridge = new WorkspaceBridge({ windowRef: window });
         const contextResult = bridge.readContext();
         const previewContext = bridge.readWorkspacePreviewContext();
@@ -1187,7 +1187,7 @@ test.describe("Asset Manager V2", () => {
       const uatPreviewRoot = await page.locator("#assetPreview img.asset-manager-v2__preview-media").evaluate((image) => image.getAttribute("src"));
       expect(uatPreviewRoot).toContain("/games/_template/assets/");
       expect(uatPreviewRoot).not.toContain("/samples/");
-      expect(uatPreviewRoot).not.toContain("/tools/");
+      expect(uatPreviewRoot).not.toContain("/toolbox/");
 
       await page.locator("#assetKindFont").check();
       await page.locator("#pickAssetFileButton").click();
@@ -1306,7 +1306,7 @@ test.describe("Asset Manager V2", () => {
       assetsPath: "games/Asteroids/assets",
       tools: {
         "palette-manager-v2": {
-          "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+          "$schema": "toolbox/schemas/tools/palette-manager-v2.schema.json",
           schema: "html-js-gaming.palette",
           version: 1,
           name: "Asteroids Palette",
@@ -1437,7 +1437,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#returnToWorkspaceButton")).toBeEnabled();
       await expect(page.locator("#workspaceInsertAssetsButton")).toHaveCount(0);
       await expect(page.locator("#workspaceCopyManifestButton")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from toolbox\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
       const hostContextId = await page.evaluate(() => new URL(window.location.href).searchParams.get("hostContextId"));
       const initialAssetCount = await page.evaluate((id) => {
@@ -1446,7 +1446,7 @@ test.describe("Asset Manager V2", () => {
       }, hostContextId);
       expect(initialAssetCount).toBe(15);
       const workspacePreviewContext = await page.evaluate(async () => {
-        const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
+        const { WorkspaceBridge } = await import("/toolbox/asset-manager-v2/js/services/WorkspaceBridge.js");
         return new WorkspaceBridge({ windowRef: window }).readWorkspacePreviewContext();
       });
       expect(workspacePreviewContext).toEqual({

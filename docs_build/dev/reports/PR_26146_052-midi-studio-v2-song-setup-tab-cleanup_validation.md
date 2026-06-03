@@ -10,13 +10,13 @@ This PR reorders the MIDI Studio V2 tabs so Song Setup is first/default, renames
 
 ## Files Changed
 
-- `tools/midi-studio-v2/index.html`
-- `tools/midi-studio-v2/js/MidiStudioV2App.js`
-- `tools/midi-studio-v2/js/bootstrap.js`
-- `tools/midi-studio-v2/js/controls/SongDetailsControl.js`
-- `tools/midi-studio-v2/js/controls/SongSetupControl.js`
-- `tools/midi-studio-v2/js/controls/SongSheetControl.js`
-- `tools/midi-studio-v2/styles/midiStudioV2.css`
+- `toolbox/midi-studio-v2/index.html`
+- `toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- `toolbox/midi-studio-v2/js/bootstrap.js`
+- `toolbox/midi-studio-v2/js/controls/SongDetailsControl.js`
+- `toolbox/midi-studio-v2/js/controls/SongSetupControl.js`
+- `toolbox/midi-studio-v2/js/controls/SongSheetControl.js`
+- `toolbox/midi-studio-v2/styles/midiStudioV2.css`
 - `tests/playwright/tools/MidiStudioV2.spec.mjs`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

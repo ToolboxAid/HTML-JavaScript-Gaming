@@ -14,12 +14,12 @@ Status: PASS
 - Changed timing preview advancement from a fixed fast interval to tempo/subdivision-derived bar/beat/note column stepping.
 
 ## Validation Commands
-- PASS: `node --check tools/midi-studio-v2/js/controls/InstrumentGridControl.js`
-- PASS: `node --check tools/midi-studio-v2/js/MidiStudioV2App.js`
-- PASS: `node --check tools/midi-studio-v2/js/bootstrap.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/controls/InstrumentGridControl.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/MidiStudioV2App.js`
+- PASS: `node --check toolbox/midi-studio-v2/js/bootstrap.js`
 - PASS: `node --check tests/playwright/tools/MidiStudioV2.spec.mjs`
 - PASS: `node -e "JSON.parse(require('fs').readFileSync('tests/fixtures/midi-studio-v2/uat-midi-studio-v2.game.manifest.json','utf8')); console.log('json ok')"`
-- PASS: `rg --pcre2 -n "<style|on(click|change|input|submit)=|<script(?![^>]*src)" tools/midi-studio-v2/index.html` returned no matches.
+- PASS: `rg --pcre2 -n "<style|on(click|change|input|submit)=|<script(?![^>]*src)" toolbox/midi-studio-v2/index.html` returned no matches.
 - PASS: `npx playwright test tests/playwright/tools/MidiStudioV2.spec.mjs -g "imports UAT|shows guided visible options|animates Preview Synth playhead|applies Preview Synth instruments|expands and restores" --reporter=list --workers=1`
 - PASS: `git diff --check` exited 0; Git reported line-ending normalization warnings only.
 

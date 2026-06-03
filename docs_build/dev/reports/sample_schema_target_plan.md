@@ -20,10 +20,10 @@ Rebuilt samples should move from standalone sample payload files toward explicit
 | --- | --- | --- |
 | Game/sample manifest | PLANNED | Use the current game manifest contract direction for sample ownership, launch target, tool references, and asset references. |
 | ProjectWorkspace handoff | PLANNED | ProjectWorkspace remains runtime coordination only; rebuilt samples provide explicit manifest input and explicit Tool State input. |
-| Tool payloads | PLANNED | Tool payloads must match the active per-tool schemas under `tools/schemas/tools/` or an approved future schema update. |
+| Tool payloads | PLANNED | Tool payloads must match the active per-tool schemas under `toolbox/schemas/tools/` or an approved future schema update. |
 | Palette data | PLANNED | Palette payloads must be project-owned or tool-state-linked; standalone palette JSON should not imply hidden global state. |
 | Asset references | PLANNED | Use file/path fields such as image names, asset paths, and manifest asset IDs. Do not persist `imageDataUrl`. |
-| Workspace manifest sample | PLANNED | Resolve the missing `tools/schemas/workspace.manifest.schema.json` reference before making workspace-style samples active validation targets. |
+| Workspace manifest sample | PLANNED | Resolve the missing `toolbox/schemas/workspace.manifest.schema.json` reference before making workspace-style samples active validation targets. |
 
 ## Required Boundaries
 

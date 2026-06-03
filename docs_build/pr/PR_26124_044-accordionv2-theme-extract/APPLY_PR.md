@@ -21,7 +21,7 @@ Applied the accordionV2 theme extraction and updated Palette Manager V2 to use t
 - Full samples smoke test was not run.
 
 ## Manual Apply Check
-1. Open `tools/palette-manager-v2/index.html`.
+1. Open `toolbox/palette-manager-v2/index.html`.
 2. Confirm User Palette and Add User Swatch use `.accordion-v2` classes.
 3. Confirm both center panels share height when open.
 4. Collapse either center panel and confirm the other fills available center height.

@@ -4,7 +4,7 @@
 Fix the next failing tool from the audit (`asset-manager-v2`) by removing unintended passive payload mutation while preserving launch and explicit add/remove behavior.
 
 ## Scope
-- `tools/asset-manager-v2/index.js`
+- `toolbox/asset-manager-v2/index.js`
 - `docs_build/pr/PR_11_326_ASSET_MANAGER_MUTATION_SCOPE_FIX/PLAN_PR.md`
 - `docs_build/pr/PR_11_326_ASSET_MANAGER_MUTATION_SCOPE_FIX/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_326_report.md`

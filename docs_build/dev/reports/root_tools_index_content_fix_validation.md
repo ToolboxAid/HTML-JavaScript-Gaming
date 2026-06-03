@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Fixed missing content on root `/tools/index.html`.
+- Fixed missing content on root `/toolbox/index.html`.
 - Restored tool image references, badge references, descriptions, grouping information, links, and color indicators.
 - Kept the root Tools index on the approved Theme V2 structure.
 - Did not add CSS.
@@ -12,7 +12,7 @@
 
 ## Changed Files
 
-- `tools/index.html`
+- `toolbox/index.html`
 - `docs_build/dev/commit_comment.txt`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
@@ -20,17 +20,17 @@
 
 ## Validation Commands
 
-- PASS: `rg -n --pcre2 "<script(?![^>]*\bsrc=)|<style|\son[a-z]+\s*=" tools/index.html`
+- PASS: `rg -n --pcre2 "<script(?![^>]*\bsrc=)|<style|\son[a-z]+\s*=" toolbox/index.html`
   - No inline script blocks, style blocks, or inline event handlers found.
-- PASS: `rg -n "assets/images/tools/|assets/images/badges/|brand-color-swatch|tool-group-|<p>|href=" tools/index.html`
+- PASS: `rg -n "assets/images/tools/|assets/images/badges/|brand-color-swatch|tool-group-|<p>|href=" toolbox/index.html`
   - Root Tools index contains tool image references, badge references, color indicators, grouping classes, descriptions, and links.
 - PASS: `rg --files GameFoundryStudio/assets/images/tools GameFoundryStudio/assets/images/badges GameFoundryStudio/tools GameFoundryStudio/marketplace GameFoundryStudio/arcade | rg "ai-assistant|animation-studio|asset-studio|code-studio|game-builder|game-design-studio|input-studio|localization-studio|midi-studio|object-vector-studio|palette-manager|particle-studio|publish-studio|publisher|sound-studio|storage-inspector|world-vector-studio|marketplace|arcade"`
   - Referenced tool images, badge images, and runtime page targets exist.
-- PASS: `rg -o "tool-group-[a-z-]+" tools/index.html`
+- PASS: `rg -o "tool-group-[a-z-]+" toolbox/index.html`
   - Grouping classes render for all tool cards.
 - PASS: `git status --short -- GameFoundryStudio/assets/css/theme/v2`
   - No Theme V2 CSS files changed.
-- PASS: `git status --short -- GameFoundryStudio/assets/css/theme/v2 tools/index.html docs_build/dev/commit_comment.txt docs_build/dev/reports/codex_review.diff docs_build/dev/reports/codex_changed_files.txt docs_build/dev/reports/root_tools_index_content_fix_validation.md`
+- PASS: `git status --short -- GameFoundryStudio/assets/css/theme/v2 toolbox/index.html docs_build/dev/commit_comment.txt docs_build/dev/reports/codex_review.diff docs_build/dev/reports/codex_changed_files.txt docs_build/dev/reports/root_tools_index_content_fix_validation.md`
   - Scoped status shows only the root Tools index content fix plus required reports.
 
 ## Content Validation

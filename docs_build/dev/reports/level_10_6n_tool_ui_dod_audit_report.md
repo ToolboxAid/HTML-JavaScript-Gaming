@@ -12,7 +12,7 @@
 
 ## Cross-Tool Findings
 - `[tool-load:*]` diagnostics exist broadly, but `[tool-ui:control-ready]` diagnostics were not found in active tool runtime files.
-- `tools/shared/toolLoadDiagnostics.js` defines explicit expected contract blocks only for `sprite-editor` and `palette-browser`; other tools rely on generic classification.
+- `toolbox/shared/toolLoadDiagnostics.js` defines explicit expected contract blocks only for `sprite-editor` and `palette-browser`; other tools rely on generic classification.
 - Sample/game tile surfaces validate route resolution, not downstream required-input readiness per tool.
 - Several tools can show usable/default UI without proving sample-launched required input consumption.
 
@@ -568,15 +568,15 @@
 ## Files Inspected
 - `docs_build/pr/BUILD_PR_LEVEL_10_6N_TOOL_UI_DOD_AUDIT.md`
 - `docs_build/pr/BUILD_PR_LEVEL_10_6M_TOOL_UI_READINESS_DOD.md`
-- `tools/toolRegistry.js`
-- `tools/shared/toolLaunchSSoT.js`
-- `tools/shared/toolLaunchSSoTData.js`
-- `tools/shared/toolLoadDiagnostics.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/shared/toolLaunchSSoT.js`
+- `toolbox/shared/toolLaunchSSoTData.js`
+- `toolbox/shared/toolLoadDiagnostics.js`
 - `samples/index.render.js`
 - `games/index.render.js`
 - `samples/index.html`
 - `games/index.html`
-- Active tool runtime files under `tools/**` for all discovered launch surfaces.
+- Active tool runtime files under `toolbox/**` for all discovered launch surfaces.
 - `samples/metadata/samples.index.metadata.json`
 - `games/metadata/games.index.metadata.json`
 

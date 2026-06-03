@@ -4,7 +4,7 @@
 Implement a single Workspace V2 UX stabilization bundle for session library/diff/merge/delete/refresh consistency.
 
 ## Files
-- tools/workspace-v2/index.js
+- toolbox/workspace-v2/index.js
 - tests/runtime/V2SessionUxStabilization.test.mjs
 - docs_build/dev/reports/PR_11_263_session_ux_stabilization_report.md
 
@@ -31,6 +31,6 @@ Implement a single Workspace V2 UX stabilization bundle for session library/diff
 - No stale preview-state regressions introduced.
 
 ## Validation
-- node --check tools/workspace-v2/index.js
+- node --check toolbox/workspace-v2/index.js
 - node --check tests/runtime/V2SessionUxStabilization.test.mjs
 - node tests/runtime/V2SessionUxStabilization.test.mjs

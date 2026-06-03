@@ -1,12 +1,12 @@
 BUILD_PR_MULTI_TARGET_EXPORT validation
 
 Files:
-- tools/shared/multiTargetExport.js
+- toolbox/shared/multiTargetExport.js
 - tests/tools/MultiTargetExport.test.mjs
 - tests/run-tests.mjs
 
 Checks passed:
-- node --check tools/shared/multiTargetExport.js
+- node --check toolbox/shared/multiTargetExport.js
 - node --check tests/tools/MultiTargetExport.test.mjs
 - node ./scripts/run-node-tests.mjs
 

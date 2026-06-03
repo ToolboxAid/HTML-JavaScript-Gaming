@@ -74,7 +74,7 @@ These are guidance targets. Codex may adjust exact paths if the repo requires be
 - src/engine/scene/SceneCompositionResolver.js
 - src/engine/validation/RuntimeContractValidator.js
 - src/engine/debug/HotReloadCoordinator.js
-- samples/<target-sample>/ or tools/dev harness wiring as appropriate
+- samples/<target-sample>/ or toolbox/dev harness wiring as appropriate
 - tests/scene/RuntimeSceneLoader.test.mjs
 - tests/debug/HotReloadCoordinator.test.mjs
 

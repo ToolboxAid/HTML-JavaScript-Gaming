@@ -8,7 +8,7 @@
 - `tests/runtime/V2ToolSmoke.test.mjs`
 
 ### Test Purpose
-Scans `tools/*-v2` directories and verifies each V2 tool has:
+Scans `toolbox/*-v2` directories and verifies each V2 tool has:
 - `index.html`
 - `index.js`
 - `<div id="shared-theme-header"></div>`

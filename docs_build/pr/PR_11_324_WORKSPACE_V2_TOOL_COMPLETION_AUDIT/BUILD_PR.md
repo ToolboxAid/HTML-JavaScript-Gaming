@@ -17,9 +17,9 @@
 - `node tests/runtime/V2ToolLaunch.test.mjs`
 - `node tests/runtime/V2ToolActionFlow.test.mjs`
 - `node tests/runtime/V2SessionValidation.test.mjs`
-- `node --check tools/asset-manager-v2/index.js`
-- `node --check tools/palette-manager-v2/index.js`
-- `node --check tools/svg-asset-studio-v2/index.js`
-- `node --check tools/tilemap-studio-v2/index.js`
-- `node --check tools/vector-map-editor-v2/index.js`
-- `node --check tools/workspace-v2/index.js`
+- `node --check toolbox/asset-manager-v2/index.js`
+- `node --check toolbox/palette-manager-v2/index.js`
+- `node --check toolbox/svg-asset-studio-v2/index.js`
+- `node --check toolbox/tilemap-studio-v2/index.js`
+- `node --check toolbox/vector-map-editor-v2/index.js`
+- `node --check toolbox/workspace-v2/index.js`

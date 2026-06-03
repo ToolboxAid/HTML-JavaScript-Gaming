@@ -32,7 +32,7 @@
   - `scripts/validate-active-tools-surface.mjs`
   - removes stale fixed active-name assumptions
   - derives active entrypoint validation dynamically from visible active registry
-  - resolves sample/help paths correctly relative to `tools/`
+  - resolves sample/help paths correctly relative to `toolbox/`
   - converts historical docs checks to optional targets to prevent false hard-fail on removed docs
 
 ## Files Changed

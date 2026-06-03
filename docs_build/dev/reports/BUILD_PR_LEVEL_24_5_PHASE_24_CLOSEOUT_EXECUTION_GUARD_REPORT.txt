@@ -12,8 +12,8 @@ Result
 
 Guard entry point
 - package.json script: check:phase24-closeout-guard
-- runtime: tools/dev/checkPhase24CloseoutExecutionGuard.mjs
-- baseline: tools/dev/checkPhase24CloseoutExecutionGuard.baseline.json
+- runtime: toolbox/dev/checkPhase24CloseoutExecutionGuard.mjs
+- baseline: toolbox/dev/checkPhase24CloseoutExecutionGuard.baseline.json
 
 Scope notes
 - No roadmap text/status edits

@@ -14,11 +14,11 @@ PR: `PR_26140_114-reorder-input-mapping-v2-capture-device-and-gesture-flow`
 ## Files Changed
 
 - `src/engine/input/InputCapabilityDescriptors.js`
-- `tools/input-mapping-v2/index.html`
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/controls/CaptureControl.js`
-- `tools/input-mapping-v2/js/controls/GestureListControl.js`
-- `tools/input-mapping-v2/styles/inputMappingV2.css`
+- `toolbox/input-mapping-v2/index.html`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- `toolbox/input-mapping-v2/js/controls/GestureListControl.js`
+- `toolbox/input-mapping-v2/styles/inputMappingV2.css`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`
@@ -28,9 +28,9 @@ PR: `PR_26140_114-reorder-input-mapping-v2-capture-device-and-gesture-flow`
 
 Targeted syntax/import validation:
 
-- PASS `node --check tools/input-mapping-v2/js/ToolStarterApp.js`
-- PASS `node --check tools/input-mapping-v2/js/controls/CaptureControl.js`
-- PASS `node --check tools/input-mapping-v2/js/controls/GestureListControl.js`
+- PASS `node --check toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- PASS `node --check toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+- PASS `node --check toolbox/input-mapping-v2/js/controls/GestureListControl.js`
 - PASS `node --check src/engine/input/InputCapabilityDescriptors.js`
 - PASS `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
@@ -81,9 +81,9 @@ Expected fail behavior:
 
 - `docs_build/dev/reports/playwright_v8_coverage_report.txt` was refreshed by the Workspace V2 Playwright run.
 - Changed runtime JS files are present in the coverage guardrail:
-  - `(94%) tools/input-mapping-v2/js/ToolStarterApp.js`
-  - `(89%) tools/input-mapping-v2/js/controls/CaptureControl.js`
-  - `(93%) tools/input-mapping-v2/js/controls/GestureListControl.js`
+  - `(94%) toolbox/input-mapping-v2/js/ToolStarterApp.js`
+  - `(89%) toolbox/input-mapping-v2/js/controls/CaptureControl.js`
+  - `(93%) toolbox/input-mapping-v2/js/controls/GestureListControl.js`
   - `(95%) src/engine/input/InputCapabilityDescriptors.js`
 
 ## Manual Validation

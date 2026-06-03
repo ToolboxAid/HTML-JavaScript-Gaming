@@ -4,7 +4,7 @@
 Implement the publishing pipeline layer over the accepted Level 17 platform baseline without changing engine core APIs.
 
 ## Implemented Scope
-- Added shared publishing pipeline in `tools/shared/publishingPipeline.js`
+- Added shared publishing pipeline in `toolbox/shared/publishingPipeline.js`
   - composes CI validation, multi-target export, and cloud runtime layers
   - blocks publishing when CI or export readiness is not satisfied
   - emits deterministic release target plans and readable publishing reports
@@ -12,7 +12,7 @@ Implement the publishing pipeline layer over the accepted Level 17 platform base
 
 ## Validation Summary
 - Syntax checks passed:
-  - `node --check tools/shared/publishingPipeline.js`
+  - `node --check toolbox/shared/publishingPipeline.js`
   - `node --check tests/tools/PublishingPipeline.test.mjs`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`

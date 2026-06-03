@@ -4,14 +4,14 @@
 Updated Palette Manager V2 only to fix right-column accordion sizing, user-added swatch source handling, and 8-digit hex input support.
 
 ## Runtime Files Changed
-- `tools/palette-manager-v2/README.md`
-- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-- `tools/palette-manager-v2/how_to_use.html`
-- `tools/palette-manager-v2/index.html`
-- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `tools/palette-manager-v2/modules/PaletteValidationService.js`
-- `tools/palette-manager-v2/modules/paletteUtils.js`
-- `tools/palette-manager-v2/paletteManagerV2.css`
+- `toolbox/palette-manager-v2/README.md`
+- `toolbox/palette-manager-v2/controls/PaletteEditorControl.js`
+- `toolbox/palette-manager-v2/how_to_use.html`
+- `toolbox/palette-manager-v2/index.html`
+- `toolbox/palette-manager-v2/modules/PaletteManagerApp.js`
+- `toolbox/palette-manager-v2/modules/PaletteValidationService.js`
+- `toolbox/palette-manager-v2/modules/paletteUtils.js`
+- `toolbox/palette-manager-v2/paletteManagerV2.css`
 
 ## Behavior
 - Collapsed Import/Export uses `flex: 0 0 auto` and no longer consumes the right-column free height.

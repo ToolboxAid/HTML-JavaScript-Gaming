@@ -3,8 +3,8 @@
 ## Scope
 - Read docs_build/dev/PROJECT_INSTRUCTIONS.md before implementation.
 - Changed only the active reusable public tool-shell layout CSS used by the affected root public shell pages.
-- Affected behavior surface: the 11 root /tools/*.html pages that use .tool-workspace and tool-display-mode.js side-column collapse controls.
-- /tools/index.html was validated as the root Tools entry/link surface.
+- Affected behavior surface: the 11 root /toolbox/*.html pages that use .tool-workspace and tool-display-mode.js side-column collapse controls.
+- /toolbox/index.html was validated as the root Tools entry/link surface.
 - No tool HTML, JavaScript, data, images, partials, Admin, Account, Company, Games, Samples, or root index files were changed.
 - No page-local CSS, tool-local CSS, inline style/script/event handlers, or new component behavior were added.
 
@@ -16,21 +16,21 @@
 - The existing focus-mode grid tracks were left unchanged.
 
 ## Targeted Browser Validation
-Command: inline Node static server plus Playwright Chromium targeted to /tools/index.html and the affected root shell pages.
+Command: inline Node static server plus Playwright Chromium targeted to /toolbox/index.html and the affected root shell pages.
 Viewport: 1440 x 960.
 
 Validated pages:
-- /tools/ai-assistant.html
-- /tools/animation-studio.html
-- /tools/asset-studio.html
-- /tools/code-studio.html
-- /tools/input-studio.html
-- /tools/midi-studio.html
-- /tools/object-vector-studio.html
-- /tools/palette-manager.html
-- /tools/particle-studio.html
-- /tools/sound-studio.html
-- /tools/storage-inspector.html
+- /toolbox/ai-assistant.html
+- /toolbox/animation-studio.html
+- /toolbox/asset-studio.html
+- /toolbox/code-studio.html
+- /toolbox/input-studio.html
+- /toolbox/midi-studio.html
+- /toolbox/object-vector-studio.html
+- /toolbox/palette-manager.html
+- /toolbox/particle-studio.html
+- /toolbox/sound-studio.html
+- /toolbox/storage-inspector.html
 
 Measured result on every affected shell page:
 - Initial open layout: 280px / 584px / 280px.
@@ -53,7 +53,7 @@ PASS - Center header remained h2 Workspace on every affected page.
 PASS - Center image, display-mode badge, and display-mode character image loaded on every affected page.
 PASS - Existing vertical accordions closed and reopened on every affected page.
 PASS - No browser console errors, request failures, 404s, or 403s were detected.
-PASS - /tools/index.html rendered, loaded 18 tile images, and contained links to all 11 affected root shell pages.
+PASS - /toolbox/index.html rendered, loaded 18 tile images, and contained links to all 11 affected root shell pages.
 
 ## Static Validation
 PASS - git diff --check HEAD~1 HEAD -- GameFoundryStudio/assets/css/gamefoundrystudio.css.

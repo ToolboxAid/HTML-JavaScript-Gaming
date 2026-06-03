@@ -7,10 +7,10 @@ Candidate files searched:
 - samples/metadata/samples.index.metadata.json
 - samples/metadata/metadataReference.js
 - samples/shared/sampleDetailPageEnhancement.js
-- tools/renderToolsIndex.js
-- tools/Asset Browser/main.js
-- tools/SVG Asset Studio/main.js
-- tools/Sprite Editor/modules/spriteEditorApp.js
+- toolbox/renderToolsIndex.js
+- toolbox/Asset Browser/main.js
+- toolbox/SVG Asset Studio/main.js
+- toolbox/Sprite Editor/modules/spriteEditorApp.js
 
 Active sample-tile SSoT file:
 - samples/metadata/samples.index.metadata.json
@@ -23,7 +23,7 @@ Why this is the SSoT:
 
 Non-SSoT readers that do not replace tile SSoT:
 - samples/shared/sampleDetailPageEnhancement.js (sample detail page only).
-- tools/renderToolsIndex.js and tool modules (tool-side metadata lookup only).
+- toolbox/renderToolsIndex.js and tool modules (tool-side metadata lookup only).
 
 SSoT enforcement action taken:
 - Confirmed single active tile-link source already enforced; no loader code change required.

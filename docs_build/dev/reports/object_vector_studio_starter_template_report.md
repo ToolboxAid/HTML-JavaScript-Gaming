@@ -2,9 +2,9 @@
 
 ## Inspection
 
-- Inspected `tools/object-vector-studio-v2/starter-project-template`.
+- Inspected `toolbox/object-vector-studio-v2/starter-project-template`.
 - Searched active tool, test, script, package, and docs_build/dev report paths for references to the active path.
-- No active references to `tools/object-vector-studio-v2/starter-project-template` were found.
+- No active references to `toolbox/object-vector-studio-v2/starter-project-template` were found.
 
 ## Result
 

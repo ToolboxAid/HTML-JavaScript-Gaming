@@ -18,7 +18,7 @@ Audit status before deletion: NO
 .\docs_build\dev\reports\PR_11_49_audit_before.txt:108:- samples\phase-02\0201\sample.0201.3d-camera-path-editor.json
 .\docs_build\dev\reports\PR_11_49_audit_after.txt:2:NO  - samples\phase-02\0201\sample.0201.3d-camera-path-editor.json
 .\docs_build\dev\reports\PR_11_49_audit_after.txt:106:- samples\phase-02\0201\sample.0201.3d-camera-path-editor.json
-.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:54:| samples/phase-02/0201/sample.0201.3d-camera-path-editor.json | 0201 | 3d-camera-path-editor | /tools/3D Camera Path Editor/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
+.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:54:| samples/phase-02/0201/sample.0201.3d-camera-path-editor.json | 0201 | 3d-camera-path-editor | /toolbox/3D Camera Path Editor/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
 .\samples\metadata\samples.index.metadata.json:1029:          "presetPath": "/samples/phase-02/0201/sample.0201.3d-camera-path-editor.json"
 [relative path search]
 (no matches)
@@ -33,7 +33,7 @@ Audit status before deletion: NO
 [exact filename search]
 .\docs_build\dev\reports\PR_11_52_audit_before.txt:3:NO  - samples\phase-02\0202\sample.0202.3d-camera-path-editor.json
 .\docs_build\dev\reports\PR_11_52_audit_before.txt:105:- samples\phase-02\0202\sample.0202.3d-camera-path-editor.json
-.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:55:| samples/phase-02/0202/sample.0202.3d-camera-path-editor.json | 0202 | 3d-camera-path-editor | /tools/3D Camera Path Editor/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
+.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:55:| samples/phase-02/0202/sample.0202.3d-camera-path-editor.json | 0202 | 3d-camera-path-editor | /toolbox/3D Camera Path Editor/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
 .\docs_build\dev\reports\PR_11_51_audit_before.txt:3:NO  - samples\phase-02\0202\sample.0202.3d-camera-path-editor.json
 .\docs_build\dev\reports\PR_11_51_audit_before.txt:105:- samples\phase-02\0202\sample.0202.3d-camera-path-editor.json
 .\docs_build\dev\reports\PR_11_51_audit_after.txt:3:NO  - samples\phase-02\0202\sample.0202.3d-camera-path-editor.json
@@ -61,7 +61,7 @@ Decision: KEEP (manifest-indirect reference present)
 === samples/phase-02/0210/sample.0210.physics-sandbox.json ===
 Audit status before deletion: NO
 [exact filename search]
-.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:62:| samples/phase-02/0210/sample.0210.physics-sandbox.json | 0210 | physics-sandbox | /tools/Physics Sandbox/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
+.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:62:| samples/phase-02/0210/sample.0210.physics-sandbox.json | 0210 | physics-sandbox | /toolbox/Physics Sandbox/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
 .\docs_build\dev\reports\PR_11_49_audit_before.txt:10:NO  - samples\phase-02\0210\sample.0210.physics-sandbox.json
 .\docs_build\dev\reports\PR_11_49_audit_before.txt:113:- samples\phase-02\0210\sample.0210.physics-sandbox.json
 .\docs_build\dev\reports\PR_11_49_audit_after.txt:10:NO  - samples\phase-02\0210\sample.0210.physics-sandbox.json
@@ -96,7 +96,7 @@ Audit status before deletion: NO
 .\docs_build\dev\reports\sample_json_js_reference_audit.csv:20:"samples\phase-02\0221","samples\phase-02\0221\sample.0221.3d-json-payload-normalizer.json","False","","",""
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:14:1. `samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json`
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:22:| `samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json` | KEEP + WIRE | No code/data move. Verified explicit sample metadata wiring remains valid. | Sample metadata already includes `toolHints: 3d-json-payload-normalizer` and roundtrip preset path to this JSON; ownership is sample-local and tool-aligned. |
-.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:72:| samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json | 0221 | 3d-json-payload-normalizer | /tools/3D JSON Payload Normalizer/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
+.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:72:| samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json | 0221 | 3d-json-payload-normalizer | /toolbox/3D JSON Payload Normalizer/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
 .\docs_build\dev\reports\PR_11_52_audit_before.txt:20:NO  - samples\phase-02\0221\sample.0221.3d-json-payload-normalizer.json
 .\docs_build\dev\reports\PR_11_52_audit_before.txt:115:- samples\phase-02\0221\sample.0221.3d-json-payload-normalizer.json
 .\docs_build\dev\reports\PR_11_51_audit_before.txt:20:NO  - samples\phase-02\0221\sample.0221.3d-json-payload-normalizer.json
@@ -124,7 +124,7 @@ Decision: KEEP (manifest-indirect reference present)
 === samples/phase-05/0510/sample.0510.asset-pipeline-tool.json ===
 Audit status before deletion: NO
 [exact filename search]
-.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:95:| samples/phase-05/0510/sample.0510.asset-pipeline-tool.json | 0510 | asset-pipeline-tool | /tools/Asset Pipeline Tool/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
+.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:95:| samples/phase-05/0510/sample.0510.asset-pipeline-tool.json | 0510 | asset-pipeline-tool | /toolbox/Asset Pipeline Tool/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:15:2. `samples/phase-05/0510/sample.0510.asset-pipeline-tool.json`
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:23:| `samples/phase-05/0510/sample.0510.asset-pipeline-tool.json` | KEEP + WIRE | No code/data move. Verified explicit sample metadata wiring remains valid. | Sample metadata already maps `asset-pipeline-tool` to this JSON preset; payload shape matches tool schema intent. |
 .\docs_build\dev\reports\PR_11_49_audit_before.txt:43:NO  - samples\phase-05\0510\sample.0510.asset-pipeline-tool.json
@@ -182,7 +182,7 @@ Audit status before deletion: NO
 .\docs_build\dev\reports\PR_11_48_validation.txt:16:2) samples/phase-05/0512/sample.0512.performance-profiler.json
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:16:3. `samples/phase-05/0512/sample.0512.performance-profiler.json`
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:24:| `samples/phase-05/0512/sample.0512.performance-profiler.json` | KEEP + WIRE | No code/data move. Verified explicit sample metadata wiring remains valid. | Sample metadata already maps `performance-profiler` to this JSON preset; sample-local ownership is clear. |
-.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:96:| samples/phase-05/0512/sample.0512.performance-profiler.json | 0512 | performance-profiler | /tools/Performance Profiler/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
+.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:96:| samples/phase-05/0512/sample.0512.performance-profiler.json | 0512 | performance-profiler | /toolbox/Performance Profiler/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
 .\docs_build\pr\PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:21:- `samples/phase-05/0512/sample.0512.performance-profiler.json`
 [relative path search]
 (no matches)
@@ -195,7 +195,7 @@ Decision: KEEP (manifest-indirect reference present)
 === samples/phase-07/0708/sample.0708.replay-visualizer.json ===
 Audit status before deletion: NO
 [exact filename search]
-.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:97:| samples/phase-07/0708/sample.0708.replay-visualizer.json | 0708 | replay-visualizer | /tools/Replay Visualizer/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
+.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:97:| samples/phase-07/0708/sample.0708.replay-visualizer.json | 0708 | replay-visualizer | /toolbox/Replay Visualizer/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
 .\docs_build\dev\reports\PR_11_50_audit_before.txt:45:NO  - samples\phase-07\0708\sample.0708.replay-visualizer.json
 .\docs_build\dev\reports\PR_11_50_audit_before.txt:133:- samples\phase-07\0708\sample.0708.replay-visualizer.json
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:17:4. `samples/phase-07/0708/sample.0708.replay-visualizer.json`
@@ -233,7 +233,7 @@ Decision: KEEP (manifest-indirect reference present)
 Audit status before deletion: NO
 [exact filename search]
 .\samples\metadata\samples.index.metadata.json:8855:          "presetPath": "/samples/phase-16/1606/sample.1606.physics-sandbox.json"
-.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:146:| samples/phase-16/1606/sample.1606.physics-sandbox.json | 1606 | physics-sandbox | /tools/Physics Sandbox/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
+.\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:146:| samples/phase-16/1606/sample.1606.physics-sandbox.json | 1606 | physics-sandbox | /toolbox/Physics Sandbox/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
 .\docs_build\dev\reports\PR_11_49_audit_before.txt:97:NO  - samples\phase-16\1606\sample.1606.physics-sandbox.json
 .\docs_build\dev\reports\PR_11_49_audit_before.txt:165:- samples\phase-16\1606\sample.1606.physics-sandbox.json
 .\docs_build\dev\reports\PR_11_49_audit_after.txt:95:NO  - samples\phase-16\1606\sample.1606.physics-sandbox.json

@@ -3,10 +3,10 @@
 ## Reuse Order
 1. `src/engine/theme/*`
 2. `src/engine/ui/*`
-3. `tools/shared/platformShell.css`
+3. `toolbox/shared/platformShell.css`
 4. tool-local CSS only for tool-specific concerns
 
-## Allowed In `tools/shared`
+## Allowed In `toolbox/shared`
 - shell chrome
 - common UI primitives
 - common IO
@@ -15,7 +15,7 @@
 - project manifest / registry / validation helpers
 - shared panel/inspector utilities
 
-## Forbidden In `tools/shared`
+## Forbidden In `toolbox/shared`
 - speculative abstractions without reuse proof
 - tool-specific editor state
 - tool-specific workflows

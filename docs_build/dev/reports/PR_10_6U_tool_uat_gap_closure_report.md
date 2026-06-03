@@ -46,7 +46,7 @@ Build Doc: `docs_build/pr/BUILD_PR_LEVEL_10_6U_TOOL_UAT_GAP_CLOSURE.md`
 
 Status: PASS
 Evidence:
-- Implemented explicit status constants and propagation in `tools/Asset Browser/main.js`:
+- Implemented explicit status constants and propagation in `toolbox/Asset Browser/main.js`:
   - `APPROVED_ASSET_STATUS` includes all four required values.
   - `emitAssetBrowserControlReadiness` includes `approvedAssetsState` payload.
   - `logToolLoadLoaded` / `logToolLoadWarning` now emit status context.
@@ -107,7 +107,7 @@ Evidence:
 Status: PASS
 Evidence:
 - Clarified static expectation text in:
-  - `tools/Sprite Editor/modules/spriteEditorApp.js` (`sampleId === "0219"` expectation note)
+  - `toolbox/Sprite Editor/modules/spriteEditorApp.js` (`sampleId === "0219"` expectation note)
   - `samples/phase-02/0219/index.html`
   - `samples/phase-02/0219/README.md`
   - `samples/phase-02/0219/SpriteAtlasImageRenderingScene.js`
@@ -142,7 +142,7 @@ Evidence:
 
 Status: PASS
 Evidence:
-- Added explicit diagnostic emission in `tools/State Inspector/main.js`:
+- Added explicit diagnostic emission in `toolbox/State Inspector/main.js`:
   - `[state-inspector:manual-json]` with `classification: "manual-json-empty"`
   - `classification: "invalid-json"`
 
@@ -186,12 +186,12 @@ Evidence:
 ---
 
 ## Files Changed
-- `tools/Asset Browser/main.js`
-- `tools/State Inspector/index.html`
-- `tools/State Inspector/main.js`
-- `tools/Vector Asset Studio/main.js`
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `toolbox/Asset Browser/main.js`
+- `toolbox/State Inspector/index.html`
+- `toolbox/State Inspector/main.js`
+- `toolbox/Vector Asset Studio/main.js`
+- `toolbox/Vector Map Editor/editor/VectorMapEditorApp.js`
+- `toolbox/Sprite Editor/modules/spriteEditorApp.js`
 - `samples/metadata/samples.index.metadata.json`
 - `samples/phase-02/0219/index.html`
 - `samples/phase-02/0219/README.md`

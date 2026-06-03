@@ -17,10 +17,10 @@ Close the Section-12 2D Capability Track in one coherent pass using existing val
 ### 1) Runtime/import normalization for deterministic Node validation
 Normalized absolute `/src/...` imports to repo-relative imports across:
 - `games/Asteroids/*` runtime files touched in this PR
-- `tools/shared/runtimeAssetLoader.js`
-- `tools/shared/runtimeStreaming.js`
-- `tools/shared/devConsoleDebugOverlay.js`
-- `tools/dev/*` debug integration files touched in this PR
+- `toolbox/shared/runtimeAssetLoader.js`
+- `toolbox/shared/runtimeStreaming.js`
+- `toolbox/shared/devConsoleDebugOverlay.js`
+- `toolbox/dev/*` debug integration files touched in this PR
 - `src/engine/debug/*` inspector/shared utilities touched in this PR
 
 This removed environment-specific `C:/src/...` resolver failures and enabled focused 2D validation coverage to run consistently.

@@ -260,20 +260,20 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | sample | 1713 | samples\phase-17\1713\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1801 | samples\phase-18\1801\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1901 | samples\phase-19\1901\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | 3D Asset Viewer | tools\3D Asset Viewer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | 3D Camera Path Editor | tools\3D Camera Path Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | 3D JSON Payload Normalizer | tools\3D JSON Payload Normalizer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Asset Browser | tools\Asset Browser\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Asset Pipeline Tool | tools\Asset Pipeline Tool\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Palette Browser | tools\Palette Browser\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Parallax Scene Studio | tools\Parallax Scene Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Performance Profiler | tools\Performance Profiler\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Physics Sandbox | tools\Physics Sandbox\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Replay Visualizer | tools\Replay Visualizer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Sprite Editor | tools\Sprite Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | State Inspector | tools\State Inspector\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Tile Model Converter | tools\Tile Model Converter\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Tilemap Studio | tools\Tilemap Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Tool Host | tools\Tool Host\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Vector Asset Studio | tools\Vector Asset Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Vector Map Editor | tools\Vector Map Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | 3D Asset Viewer | toolbox\3D Asset Viewer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | 3D Camera Path Editor | toolbox\3D Camera Path Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | 3D JSON Payload Normalizer | toolbox\3D JSON Payload Normalizer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Asset Browser | toolbox\Asset Browser\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Asset Pipeline Tool | toolbox\Asset Pipeline Tool\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Palette Browser | toolbox\Palette Browser\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Parallax Scene Studio | toolbox\Parallax Scene Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Performance Profiler | toolbox\Performance Profiler\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Physics Sandbox | toolbox\Physics Sandbox\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Replay Visualizer | toolbox\Replay Visualizer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Sprite Editor | toolbox\Sprite Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | State Inspector | toolbox\State Inspector\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Tile Model Converter | toolbox\Tile Model Converter\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Tilemap Studio | toolbox\Tilemap Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Tool Host | toolbox\Tool Host\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Vector Asset Studio | toolbox\Vector Asset Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Vector Map Editor | toolbox\Vector Map Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

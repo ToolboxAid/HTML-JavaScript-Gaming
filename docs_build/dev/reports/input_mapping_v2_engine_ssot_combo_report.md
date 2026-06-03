@@ -23,9 +23,9 @@ Date: 2026-05-23
 - `src/engine/input/GamepadState.js`
 - `src/engine/input/GamepadInputAdapter.js`
 - `src/engine/input/InputCapabilityDescriptors.js`
-- `tools/input-mapping-v2/js/services/EngineInputSourceService.js`
-- `tools/input-mapping-v2/js/ToolStarterApp.js`
-- `tools/input-mapping-v2/js/controls/PreviewPanelControl.js`
+- `toolbox/input-mapping-v2/js/services/EngineInputSourceService.js`
+- `toolbox/input-mapping-v2/js/ToolStarterApp.js`
+- `toolbox/input-mapping-v2/js/controls/PreviewPanelControl.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
 ## Validation

@@ -6,14 +6,14 @@ Bundle the rejected validation-only PR with a concrete testable V2 implementatio
 Codex must complete Asset Browser V2 using the active V2 architecture and add/execute targeted validation evidence for the V2 lane.
 
 ## Scope
-- Complete/repair `tools/asset-manager-v2/` only as the testable implementation target.
+- Complete/repair `toolbox/asset-manager-v2/` only as the testable implementation target.
 - Add or update targeted validation that verifies V2 tool shell boundaries.
 - Keep the validation focused on V2 tools touched by PR_11_188 through PR_11_196.
 
 ## Mandatory Architecture
 - Tool directory name and display name must end with `V2`.
-- `tools/asset-manager-v2/index.html` owns static shell, CSS links, header mount, page layout, and root DOM nodes.
-- `tools/asset-manager-v2/index.js` owns behavior only.
+- `toolbox/asset-manager-v2/index.html` owns static shell, CSS links, header mount, page layout, and root DOM nodes.
+- `toolbox/asset-manager-v2/index.js` owns behavior only.
 - Header mount must be exactly: `<div id="shared-theme-header"></div>`.
 - Tool must read session-backed data only.
 - Tool must not fetch, guess, synthesize, default, or fallback data.
@@ -25,7 +25,7 @@ Codex must complete Asset Browser V2 using the active V2 architecture and add/ex
 - No game changes.
 - No Workspace Manager v1 work.
 - No platformShell.
-- No `tools/shared/*` imports.
+- No `toolbox/shared/*` imports.
 - No assetUsageIntegration.
 - No legacy code copy/paste.
 - No helper classes.

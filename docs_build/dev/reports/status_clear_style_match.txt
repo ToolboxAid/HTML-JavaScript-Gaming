@@ -5,8 +5,8 @@ Scope:
 - Existing Status header placement and Clear behavior were preserved.
 
 Preview Generator V2 styling reviewed:
-- `tools/preview-generator-v2/index.html`
-- `tools/preview-generator-v2/previewGeneratorV2.css`
+- `toolbox/preview-generator-v2/index.html`
+- `toolbox/preview-generator-v2/previewGeneratorV2.css`
 - Preview Generator V2 keeps Clear in the Status header action row with:
   - `preview-generator-v2__status-header-actions`
   - `preview-generator-v2__status-clear-button`
@@ -14,7 +14,7 @@ Preview Generator V2 styling reviewed:
   - 10px rounded border inherited from the Palette Manager surface button pattern
 
 Changes:
-- Updated `tools/templates-v2/styles/toolStarter.css` so `#clearStatusButton` visually follows the Preview Generator V2 header action button pattern:
+- Updated `toolbox/templates-v2/styles/toolStarter.css` so `#clearStatusButton` visually follows the Preview Generator V2 header action button pattern:
   - compact `2px 6px` padding
   - 10px border radius
   - same status header action spacing
@@ -33,7 +33,7 @@ Playwright impacted: Yes
 
 Validation:
 - `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs` passed.
-- `node --check tools/templates-v2/js/controls/StatusLogControl.js` passed.
+- `node --check toolbox/templates-v2/js/controls/StatusLogControl.js` passed.
 - `npm run test:workspace-v2` passed: 7 tests passed.
 - `git diff --check` passed.
 

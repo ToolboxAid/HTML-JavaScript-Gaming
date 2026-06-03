@@ -1,7 +1,7 @@
 Entry page consistency fix strategy
 
 Known good baseline:
-- tools/index.html
+- toolbox/index.html
 
 Known mismatches:
 - index.html
@@ -12,6 +12,6 @@ Fix method:
 - compare shared CSS imports
 - compare body classes
 - compare page shell/header wrapper structure
-- normalize the three non-matching pages to the same working shared-theme path as tools/index.html
+- normalize the three non-matching pages to the same working shared-theme path as toolbox/index.html
 
 Keep scope surgical.

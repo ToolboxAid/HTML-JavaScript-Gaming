@@ -4,7 +4,7 @@ PR: `PR_26145_008-audio-sfx-slider-focus-and-control-limits`
 
 ## Scope
 
-- Audited `tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`.
+- Audited `toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js`.
 - Moved Audio / SFX slider `min`, `max`, `step`, and default values into the centralized `SLIDER_LIMITS` table in `SfxControlPanel.js`.
 - Removed scattered slider limit attributes from the Audio / SFX HTML; the control now applies them at mount.
 - Kept Sound Style as defaults/guidance only:
@@ -15,14 +15,14 @@ PR: `PR_26145_008-audio-sfx-slider-focus-and-control-limits`
 
 ## Targeted Static Validation
 
-- `node --check` over `tools/audio-sfx-playground-v2/js/**/*.js`: PASS
-- `JSON.parse` for `tools/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
+- `node --check` over `toolbox/audio-sfx-playground-v2/js/**/*.js`: PASS
+- `JSON.parse` for `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`: PASS
 - HTML/CSS static guard:
   - no inline event handlers: PASS
   - no `<style>` blocks: PASS
   - no inline `<script>` blocks: PASS
   - CSS non-empty: PASS
-- `git diff --check -- tools/audio-sfx-playground-v2`: PASS
+- `git diff --check -- toolbox/audio-sfx-playground-v2`: PASS
   - Git reported LF-to-CRLF working-copy warnings only.
 
 ## Targeted Node Validation
@@ -55,7 +55,7 @@ Ran a focused Playwright validation through a temporary local HTTP server using 
 
 ## V8 Coverage
 
-- `(100%) tools/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by focused slider focus Playwright validation`
+- `(100%) toolbox/audio-sfx-playground-v2/js/controls/SfxControlPanel.js - covered by focused slider focus Playwright validation`
 
 Coverage is advisory per project instructions.
 

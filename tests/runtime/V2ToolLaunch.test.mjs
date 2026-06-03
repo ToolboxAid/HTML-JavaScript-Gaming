@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "tools");
+const toolsRoot = path.join(repoRoot, "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const toolsIndexPath = path.join(toolsRoot, "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "v2-tool-launch-results.json");
@@ -26,7 +26,7 @@ function readText(filePath) {
 
 function hasIndexRoute(indexHtmlText, toolId) {
   const relHref = `./${toolId}/index.html`;
-  const absHref = `/tools/${toolId}/index.html`;
+  const absHref = `/toolbox/${toolId}/index.html`;
   const bareHref = `${toolId}/index.html`;
   return (
     indexHtmlText.includes(`href="${relHref}"`) ||
@@ -80,7 +80,7 @@ function validateTool(toolId, toolsIndexHtmlText) {
 
   const routeFromIndexValid = hasIndexRoute(toolsIndexHtmlText, toolId);
   const routePathExists = fs.existsSync(toolIndexHtmlPath);
-  const directUrl = `tools/${toolId}/index.html`;
+  const directUrl = `toolbox/${toolId}/index.html`;
   const fixtureExists = fs.existsSync(fixturePath);
 
   let fixtureValidJson = false;
@@ -111,9 +111,9 @@ function validateTool(toolId, toolsIndexHtmlText) {
   const { syntaxValid, syntaxError } = checkJsSyntax(toolIndexJsPath);
 
   const failures = [];
-  if (!routeFromIndexValid) failures.push("Missing V2 route from tools/index.html.");
-  if (!routePathExists) failures.push("Missing tools/<tool>-v2/index.html route target.");
-  if (!fs.existsSync(toolIndexJsPath)) failures.push("Missing tools/<tool>-v2/index.js route runtime target.");
+  if (!routeFromIndexValid) failures.push("Missing V2 route from toolbox/index.html.");
+  if (!routePathExists) failures.push("Missing toolbox/<tool>-v2/index.html route target.");
+  if (!fs.existsSync(toolIndexJsPath)) failures.push("Missing toolbox/<tool>-v2/index.js route runtime target.");
   if (!fixtureExists) failures.push("Missing fixture file.");
   if (fixtureExists && !fixtureValidJson) failures.push("Fixture is not valid JSON.");
   if (fixtureValidJson && !hostContextId) failures.push("Fixture hostContextId is missing or empty.");
@@ -145,7 +145,7 @@ function validateTool(toolId, toolsIndexHtmlText) {
 }
 
 export function run() {
-  assert.ok(fs.existsSync(toolsIndexPath), "tools/index.html is missing.");
+  assert.ok(fs.existsSync(toolsIndexPath), "toolbox/index.html is missing.");
   const toolsIndexHtmlText = readText(toolsIndexPath);
   const rows = REQUIRED_V2_TOOLS.map((toolId) => validateTool(toolId, toolsIndexHtmlText));
   const failures = rows.flatMap((row) => row.failures.map((entry) => `${row.tool}: ${entry}`));

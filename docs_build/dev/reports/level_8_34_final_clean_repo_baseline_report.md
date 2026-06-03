@@ -31,7 +31,7 @@
    - Command:
      - `npm test`
    - Result:
-     - `FAIL` (`EXIT:1`) due existing pretest guard baseline drift in `tools/dev/checkSharedExtractionGuard.mjs`
+     - `FAIL` (`EXIT:1`) due existing pretest guard baseline drift in `toolbox/dev/checkSharedExtractionGuard.mjs`
    - Notes:
      - Failure is not introduced by this PR scope.
      - Reported guard summary from run:

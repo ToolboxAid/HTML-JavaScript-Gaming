@@ -6,8 +6,8 @@ Playwright impacted: Yes.
 
 ## Scope
 
-- Moved the Audio / SFX Playground V2 schema to `tools/schemas/tools/audio-sfx-playground-v2.schema.json`.
-- Removed the old `tools/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json` path.
+- Moved the Audio / SFX Playground V2 schema to `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`.
+- Removed the old `toolbox/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json` path.
 - Updated Audio / SFX Playground V2 JSON import/export/copy schema references to the corrected tools schema path.
 - Added duplicate SFX name rejection for add, rename, export, copy, and import flows.
 
@@ -18,7 +18,7 @@ PASS: JavaScript syntax validation
 Command:
 
 ```powershell
-Get-ChildItem -Recurse -File tools/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }
+Get-ChildItem -Recurse -File toolbox/audio-sfx-playground-v2/js -Filter *.js | ForEach-Object { node --check $_.FullName }
 ```
 
 PASS: Moved schema JSON parse validation
@@ -26,7 +26,7 @@ PASS: Moved schema JSON parse validation
 Command:
 
 ```powershell
-Get-Content -Raw tools/schemas/tools/audio-sfx-playground-v2.schema.json | ConvertFrom-Json | Out-Null
+Get-Content -Raw toolbox/schemas/tools/audio-sfx-playground-v2.schema.json | ConvertFrom-Json | Out-Null
 ```
 
 PASS: Diff whitespace validation
@@ -34,7 +34,7 @@ PASS: Diff whitespace validation
 Command:
 
 ```powershell
-git diff --check -- tools/audio-sfx-playground-v2 tools/schemas
+git diff --check -- toolbox/audio-sfx-playground-v2 toolbox/schemas
 ```
 
 PASS: Stale schema reference scan
@@ -42,7 +42,7 @@ PASS: Stale schema reference scan
 Command:
 
 ```powershell
-rg "tool-states|audio-sfx-playground-v2\.tool-state|TOOL_STATE_SCHEMA_PATH" tools/audio-sfx-playground-v2 tools/schemas
+rg "tool-states|audio-sfx-playground-v2\.tool-state|TOOL_STATE_SCHEMA_PATH" toolbox/audio-sfx-playground-v2 toolbox/schemas
 ```
 
 The scan returned no matches.
@@ -51,8 +51,8 @@ PASS: Targeted schema/export/name behavior validation
 
 Validated with an inline Node module script:
 
-- New schema exists at `tools/schemas/tools/audio-sfx-playground-v2.schema.json`.
-- Old `tools/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json` path is removed.
+- New schema exists at `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`.
+- Old `toolbox/schemas/tool-states/audio-sfx-playground-v2.tool-state.schema.json` path is removed.
 - Schema `$id` uses the corrected tools schema path.
 - Schema `$schema` const uses the corrected tools schema path.
 - Serializer export uses the corrected schema path.
@@ -87,7 +87,7 @@ operable program or batch file.
 Expected Playwright pass behavior when dependencies are available:
 
 - Workspace V2 launches Audio / SFX Playground V2.
-- Copy JSON and Export JSON reference `tools/schemas/tools/audio-sfx-playground-v2.schema.json`.
+- Copy JSON and Export JSON reference `toolbox/schemas/tools/audio-sfx-playground-v2.schema.json`.
 - The old `tool-states` schema path is not referenced.
 - Duplicate add attempts are visibly rejected.
 - Duplicate rename attempts are visibly rejected.
@@ -107,8 +107,8 @@ Expected Playwright fail behavior:
 
 Playwright V8 coverage could not be collected because Playwright is not available in this environment.
 
-WARN: `tools/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - changed runtime JavaScript; coverage unavailable.
-WARN: `tools/audio-sfx-playground-v2/js/services/ToolStateSerializer.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/AudioSfxPlaygroundV2App.js` - changed runtime JavaScript; coverage unavailable.
+WARN: `toolbox/audio-sfx-playground-v2/js/services/ToolStateSerializer.js` - changed runtime JavaScript; coverage unavailable.
 
 ## Full Samples Smoke Test
 

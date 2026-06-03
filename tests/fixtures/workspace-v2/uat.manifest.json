@@ -1,5 +1,5 @@
 {
-  "$schema": "tools/schemas/game.manifest.schema.json",
+  "$schema": "toolbox/schemas/game.manifest.schema.json",
   "schema": "html-js-gaming.game-manifest",
   "version": 1,
   "game": {
@@ -9,12 +9,12 @@
   },
   "launch": {
     "directPath": "/old_games/_template/index.html",
-    "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?workspace=uat",
+    "workspaceManagerPath": "/toolbox/workspace-manager-v2/index.html?workspace=uat",
     "workspaceManagerOptional": true
   },
   "tools": {
     "palette-manager-v2": {
-      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "$schema": "toolbox/schemas/tools/palette-manager-v2.schema.json",
       "schema": "html-js-gaming.palette",
       "version": 1,
       "id": "workspace-manager-v2-uat-sample",
@@ -56,7 +56,7 @@
       ]
     },
     "asset-manager-v2": {
-      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "$schema": "toolbox/schemas/tools/asset-manager-v2.schema.json",
       "schema": "html-js-gaming.asset-manager-v2",
       "version": 1,
       "id": "asset-manager-v2.uat.registry",
