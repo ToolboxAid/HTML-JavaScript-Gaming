@@ -1,9 +1,9 @@
-Tools index sort cleanup
+Theme V1 removal and Font Awesome V2 migration
 
-PR: PR_26154_014-tools-index-sort-cleanup
+PR: PR_26154_015-theme-v1-removal-fontawesome-v2
 
-- Sort active Tools index groups alphabetically by group name.
-- Sort tool tiles alphabetically by visible tool name within each existing group.
-- Preserve all existing group assignments, tool names, and launch hrefs.
-- Fix the active Localization tile image path to the existing `localization-studio.png` asset.
-- Validate active Tools index ordering, resolved local href/image paths, stale path strings, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.
+- Move `assets/theme/v1/fontawesome/` to `assets/theme/v2/fonts/fontawesome/`.
+- Update `src/engine/theme/main.css` to import Font Awesome from the V2 fonts path.
+- Keep `assets/theme/v1/` because two active runtime header templates still consume `images/toolboxaid-header.png`.
+- Confirm `src/engine/theme/CapturePreviewRuntime.js` is already absent and `src/engine/theme/` remains non-empty/runtime-owned.
+- Validate targeted references, changed static files, diff whitespace, review artifacts, and repo-structured delta ZIP packaging.

@@ -12,7 +12,10 @@
 - `Theme.js` and `ThemeTokens.js` provide runtime theme helpers used by tooling.
 - `accordionV2/` contains the runtime accordion component CSS and JS.
 
-Static legacy assets consumed by this runtime surface now live under `assets/theme/v1/`.
+Static runtime assets currently consumed by this surface:
+
+- `assets/theme/v1/images/toolboxaid-header.png` remains a legacy runtime header image.
+- `assets/theme/v2/fonts/fontawesome/` contains the Font Awesome font package imported by `main.css`.
 
 ## Import
 
