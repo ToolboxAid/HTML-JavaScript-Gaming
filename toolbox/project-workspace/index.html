@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Project Workspace - Game Foundry Studio</title>
+    <title>Project Workspace - GameFoundryStudio</title>
     <meta name="description" content="Project Workspace Toolbox wireframe for planning Build, Play and Share readiness without persistence or database behavior.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
@@ -49,6 +49,19 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion">
+                                <summary>Project Progress Model</summary>
+                                <div class="accordion-body">
+                                    <p><span class="pill">Project Progress</span> Core path in-progress.</p>
+                                    <p><span class="pill">Publishing Progress</span> Publish blocked until configuration and required assets are ready.</p>
+                                    <p><span class="pill">Current Focus</span> Complete Game Configuration.</p>
+                                    <p><span class="pill">Recommended Next Tool</span> Game Configuration.</p>
+                                    <p><span class="pill">requiredForTestable</span> Project Workspace, Game Design, Game Configuration, Palette Manager, Input, Assets, Object Vector, World Vector, Animation.</p>
+                                    <p><span class="pill">requiredForPublish</span> Required testable path plus Publish.</p>
+                                    <p><span class="pill">status</span> locked, ready, in-progress, or complete.</p>
+                                    <p><span class="pill">progressChecklist</span> Static checklist text only; no persistence is implemented.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
                                 <summary>Requirement Gate</summary>
                                 <div class="accordion-body">
                                     <p>Static wireframe gate for required playable checks. No project state is saved.</p>
@@ -57,9 +70,9 @@
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="learn-studio" data-tool-icon-src="assets/theme-v2/images/badges/learn-studio.png" data-tool-character-src="assets/theme-v2/images/characters/learn-studio.png"></div>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="project-workspace" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                     <section class="tool-center-panel">
-                        <img src="assets/theme-v2/images/tools/learn-studio.png" alt="Project Workspace preview">
+                        <img src="assets/theme-v2/images/image-missing.svg" alt="Project Workspace preview">
                         <h2>Workspace Overview</h2>
                         <p>Project Workspace is the static planning surface that coordinates which tools are ready, blocked, or deferred before a game moves toward playable release.</p>
                         <div class="grid cols-3" aria-label="Project Workspace readiness summary">

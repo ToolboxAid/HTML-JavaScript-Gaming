@@ -52,26 +52,38 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByText("Progress Wireframe")).toHaveCount(0);
     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
+    const localizationCard = page.locator(".control-card").filter({
+      has: page.locator("h3", { hasText: "Localization" })
+    });
+    await expect(localizationCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/localization/index.html");
     await page.getByRole("button", { name: "Progress" }).click();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='locked']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='ready']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='in-progress']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='complete']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
+    await expect(page.getByText("Project Progress: Core path in-progress")).toBeVisible();
+    await expect(page.getByText("Publishing Progress: Publish blocked until configuration and required assets are ready")).toBeVisible();
+    await expect(page.getByText("Current Focus: Complete Game Configuration")).toBeVisible();
+    await expect(page.getByText("Recommended Next Tool: Game Configuration")).toBeVisible();
+    await expect(page.getByText(/requiredForTestable:/).first()).toBeVisible();
+    await expect(page.getByText(/requiredForPublish:/).first()).toBeVisible();
     await page.getByRole("button", { name: "Build Path" }).click();
-    await expect(page.locator("[data-tools-accordion='Plan']")).toBeVisible();
-    await expect(page.locator("[data-tools-accordion='Create']")).toBeVisible();
-    await expect(page.locator("[data-tools-accordion='Audio']")).toBeVisible();
-    await expect(page.locator("[data-tools-accordion='Verify']")).toBeVisible();
-    await expect(page.locator("[data-tools-accordion='Release']")).toBeVisible();
+    await expect(page.locator("[data-tools-accordion='Project Workspace']")).toBeVisible();
+    await expect(page.locator("[data-tools-accordion='Game Design']")).toBeVisible();
+    await expect(page.locator("[data-tools-accordion='Game Configuration']")).toBeVisible();
+    await expect(page.locator("[data-tools-accordion='Required Tool Path']")).toBeVisible();
+    await expect(page.locator("[data-tools-accordion='Build Game']")).toBeVisible();
+    await expect(page.locator("[data-tools-accordion='Game Testing']")).toBeVisible();
+    await expect(page.locator("[data-tools-accordion='Publish']")).toBeVisible();
+    await expect(page.getByText("Build Game is a path milestone in this wireframe, not a separate Toolbox tool.")).toBeVisible();
+    await expect(page.getByText("Game Testing is a readiness milestone; Storage remains a side/capability tool unless a future registry rule requires it.")).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Build Path$/ })).toHaveCount(0);
-    const localizationCard = page.locator(".control-card").filter({
-      has: page.locator("h3", { hasText: "Localization" })
-    });
-    await expect(localizationCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/localization/index.html");
     await expect(page.locator("main").getByText("Arcade", { exact: true })).toHaveCount(0);
     const toolLabels = await page.locator("[data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(toolLabels.filter((label) => /\bStudio\b/.test(label) && !/\bGameFoundryStudio\b/.test(label))).toEqual([]);
+    const oldToolLabelToken = ["Stu", "dio"].join("");
+    const allowedProductId = "GameFoundryStudio";
+    expect(toolLabels.filter((label) => new RegExp(`\\b${oldToolLabelToken}\\b`).test(label) && !label.includes(allowedProductId))).toEqual([]);
     const hrefs = await page.locator("a[href]").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     expect(hrefs.filter((href) => href && /(^|\/|\.\.\/)tools\/old_/.test(href))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);

@@ -11,7 +11,7 @@
     const pageTitle = document.querySelector(".page-title h1");
     const toolName = pageTitle ? pageTitle.textContent.trim() : "Tool";
     const routeSlug = window.location.pathname.split("/").pop().replace(/\.html$/, "");
-    const toolSlug = slot.dataset.toolSlug || (routeSlug === "publisher" ? "publish-studio" : routeSlug);
+    const toolSlug = slot.dataset.toolSlug || routeSlug;
 
     function explicitPngName(source) {
         if (!source) return "";

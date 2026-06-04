@@ -16,7 +16,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "animation-studio",
+    id: "animation",
     name: "Animation",
     displayName: "Animation",
     shortDescription: "Animate characters and bring games to life.",
@@ -30,7 +30,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "asset-studio",
+    id: "assets",
     name: "Assets",
     displayName: "Assets",
     shortDescription: "Create sprites, animations, vectors and palettes.",
@@ -44,7 +44,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "cloud-studio",
+    id: "cloud",
     name: "Cloud",
     displayName: "Cloud",
     shortDescription: "Plan connected storage, sync, versioning, and publishing support for Toolbox workflows.",
@@ -58,7 +58,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "code-studio",
+    id: "code",
     name: "Custom Extensions",
     displayName: "Custom Extensions",
     shortDescription: "Register approved Engine V2 extension hooks and creator-private custom logic.",
@@ -72,7 +72,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "game-design-studio",
+    id: "game-design",
     name: "Game Design",
     displayName: "Game Design",
     shortDescription: "Plan gameplay, systems, rules, and player experience.",
@@ -100,7 +100,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "input-studio",
+    id: "input",
     name: "Input",
     displayName: "Input",
     shortDescription: "Map keyboard, mouse, gamepad and touch controls.",
@@ -114,7 +114,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "localization-studio",
+    id: "localization",
     name: "Localization",
     displayName: "Localization",
     shortDescription: "Plan translation, language coverage, contributor review, and future localization workflows.",
@@ -128,7 +128,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "midi-studio-v2",
+    id: "midi",
     name: "MIDI",
     displayName: "MIDI",
     shortDescription: "Compose game music using MIDI tools and instruments.",
@@ -142,7 +142,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "object-vector-studio-v2",
+    id: "object-vector",
     name: "Object Vector",
     displayName: "Object Vector",
     shortDescription: "Design scalable objects and vector shapes with precision.",
@@ -156,7 +156,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "palette-manager-v2",
+    id: "palette-manager",
     name: "Palette Manager",
     displayName: "Palette Manager",
     shortDescription: "Craft and manage color palettes for your games.",
@@ -170,7 +170,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "particle-studio",
+    id: "particles",
     name: "Particles",
     displayName: "Particles",
     shortDescription: "Create particles, fire, smoke, sparks and visual effects.",
@@ -184,7 +184,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "publish-studio",
+    id: "publish",
     name: "Publish",
     displayName: "Publish",
     shortDescription: "Prepare publishing workflows and release-ready game packages.",
@@ -212,7 +212,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "sound-studio",
+    id: "sound",
     name: "Sound",
     displayName: "Sound",
     shortDescription: "Design and edit sound effects for immersive audio.",
@@ -226,7 +226,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "storage-inspector-v2",
+    id: "storage-inspector",
     name: "Storage Inspector",
     displayName: "Storage Inspector",
     shortDescription: "Inspect and manage saves, local storage and game data.",
@@ -240,7 +240,7 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "world-vector-studio-v2",
+    id: "world-vector",
     name: "World Vector",
     displayName: "World Vector",
     shortDescription: "Build worlds, maps and levels with powerful tools.",

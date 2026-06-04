@@ -307,3 +307,38 @@ Required reports:
 - `docs_build/dev/reports/stack-toolbox-wireframes.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+## PR_26155_013-015
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Created stacked Toolbox cleanup/model bundle:
+  - `PR_26155_013-studio-vocabulary-cleanup`
+  - `PR_26155_014-project-progress-model`
+  - `PR_26155_015-toolbox-build-path-model`
+- Normalized active Toolbox tool ids, route keys, tool display slugs, labels, and active Playwright assertions away from old tool identity wording while keeping `GameFoundryStudio`.
+- Updated the active Toolbox registry and shared header route map.
+- Added static Project Progress model support to the existing transitional Toolbox renderer.
+- Added static Build Path model support to the existing transitional Toolbox renderer.
+- Kept `toolbox/tools-page-accordions.js` as the active renderer.
+- Did not add CSS, database behavior, persistence, save/load behavior, or Arcade.
+
+Validation:
+- `node --check toolbox/tools-page-accordions.js`.
+- `node --check toolbox/toolRegistry.js`.
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`.
+- `node --check assets/theme-v2/js/tool-display-mode.js`.
+- `node scripts/validate-active-tools-surface.mjs`.
+- `node scripts/validate-tool-registry.mjs`.
+- Focused active Toolbox vocabulary scan allowing only `GameFoundryStudio`.
+- Confirmed no CSS files in the diff.
+- Targeted affected-page browser check for `toolbox/index.html`, `toolbox/project-workspace/index.html`, `toolbox/game-design/index.html`, and `toolbox/game-configuration/index.html`.
+- `npm run test:workspace-v2` (legacy command name for the Project Workspace test lane).
+- `git diff --check`.
+
+Required reports:
+- `docs_build/dev/reports/studio-vocabulary-cleanup.md`
+- `docs_build/dev/reports/project-progress-model.md`
+- `docs_build/dev/reports/toolbox-build-path-model.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

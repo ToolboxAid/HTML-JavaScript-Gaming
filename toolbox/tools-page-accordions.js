@@ -30,7 +30,7 @@
                 {
                     title: "Project Workspace",
                     href: "../toolbox/project-workspace/index.html",
-                    image: "../assets/theme-v2/images/tools/learn-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Coordinate Build, Play, and Share readiness for one game project.",
                     role: "ForgeBot",
                     mascot: "forgebot",
@@ -40,7 +40,7 @@
                     title: "Game Design",
                     subgroup: "Design Contract",
                     href: "../toolbox/game-design/index.html",
-                    image: "../assets/theme-v2/images/tools/game-design-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Design gameplay, systems, rules, and player experience.",
                     role: "ForgeBot",
                     mascot: "forgebot",
@@ -50,7 +50,7 @@
                     title: "Game Configuration",
                     subgroup: "Playable Gate",
                     href: "../toolbox/game-configuration/index.html",
-                    image: "../assets/theme-v2/images/tools/settings-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Plan release profile, debug visibility, and playable readiness gates.",
                     role: "ForgeBot",
                     mascot: "forgebot",
@@ -64,7 +64,7 @@
                 {
                     title: "Cloud",
                     href: "../toolbox/cloud/index.html",
-                    image: "../assets/theme-v2/images/tools/cloud-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Manage connected storage, sync, and publishing support.",
                     role: "ForgeBot",
                     mascot: "forgebot",
@@ -73,16 +73,16 @@
                 {
                     title: "Localization",
                     href: "../toolbox/localization/index.html",
-                    image: "../assets/theme-v2/images/tools/localization-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Plan game translation, language coverage, and contributor review workflows.",
                     role: "Community / Media",
-                    mascot: "localization-studio",
+                    mascot: "localization",
                     theme: "bot"
                 },
                 {
                     title: "Publish",
                     href: "../toolbox/publish/index.html",
-                    image: "../assets/theme-v2/images/tools/publish-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Prepare publishing workflows and release-ready game packages.",
                     role: "ForgeBot",
                     mascot: "forgebot",
@@ -105,7 +105,7 @@
                 {
                     title: "MIDI",
                     href: "../toolbox/midi/index.html",
-                    image: "../assets/theme-v2/images/tools/midi-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Build MIDI-driven audio and music interaction flows.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
@@ -114,7 +114,7 @@
                 {
                     title: "Sound",
                     href: "../toolbox/sound/index.html",
-                    image: "../assets/theme-v2/images/tools/sound-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Prepare audio, sound effects, and game sound workflows.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
@@ -142,7 +142,7 @@
                 {
                     title: "Input",
                     href: "../toolbox/input/index.html",
-                    image: "../assets/theme-v2/images/tools/input-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Map player controls and configure input workflows.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
@@ -157,7 +157,7 @@
                     title: "Animation",
                     subgroup: "Animated Sprite",
                     href: "../toolbox/animation/index.html",
-                    image: "../assets/theme-v2/images/tools/animation-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Create timing, animation states, and motion workflows.",
                     role: "Spark",
                     mascot: "spark",
@@ -167,7 +167,7 @@
                     title: "Assets",
                     subgroup: "Sprite",
                     href: "../toolbox/assets/index.html",
-                    image: "../assets/theme-v2/images/tools/asset-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Create sprites, animations, vectors and palettes.",
                     role: "Pixel Smith",
                     mascot: "pixel-smith",
@@ -177,7 +177,7 @@
                     title: "Custom Extensions",
                     subgroup: "Custom Extensions",
                     href: "../toolbox/code/index.html",
-                    image: "../assets/theme-v2/images/tools/code-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Register approved Engine V2 extension hooks and creator-private custom logic.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
@@ -187,7 +187,7 @@
                     title: "Object Vector",
                     subgroup: "Vector",
                     href: "../toolbox/object-vector/index.html",
-                    image: "../assets/theme-v2/images/tools/object-vector-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Create object-ready vector assets and reusable scene pieces.",
                     role: "Pixel Smith",
                     mascot: "pixel-smith",
@@ -202,7 +202,7 @@
                     title: "Particles",
                     subgroup: "Isometric",
                     href: "../toolbox/particles/index.html",
-                    image: "../assets/theme-v2/images/tools/particle-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Author visual effects, emitters, and particle looks.",
                     role: "Spark",
                     mascot: "spark",
@@ -212,7 +212,7 @@
                     title: "World Vector",
                     subgroup: "Vector",
                     href: "../toolbox/world-vector/index.html",
-                    image: "../assets/theme-v2/images/tools/world-vector-studio.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Shape world layouts, maps, terrain, and scene geometry.",
                     role: "Pixel Smith",
                     mascot: "pixel-smith",
@@ -244,60 +244,181 @@
         "Worlds": "swatch-orange"
     };
     const badgeMap = {
-        "Publish": "publish-studio"
+        "AI Assistant": "ai-assistant",
+        "Palette Manager": "palette-manager",
+        "Storage Inspector": "storage-inspector"
     };
-    const readinessMap = {
-        "AI Assistant": "ready",
-        "Animation": "in-progress",
-        "Assets": "in-progress",
-        "Cloud": "locked",
-        "Custom Extensions": "locked",
-        "Game Configuration": "locked",
-        "Game Design": "in-progress",
-        "Input": "ready",
-        "Localization": "locked",
-        "MIDI": "ready",
-        "Object Vector": "ready",
-        "Palette Manager": "complete",
-        "Particles": "locked",
-        "Project Workspace": "in-progress",
-        "Publish": "locked",
-        "Sound": "ready",
-        "Storage Inspector": "complete",
-        "World Vector": "in-progress"
+    const defaultProgress = {
+        requiredForTestable: false,
+        requiredForPublish: false,
+        status: "ready",
+        progressChecklist: ["Review readiness"]
+    };
+    const projectProgressSummary = {
+        projectProgress: "Core path in-progress",
+        publishingProgress: "Publish blocked until configuration and required assets are ready",
+        currentFocus: "Complete Game Configuration",
+        recommendedNextTool: "Game Configuration"
+    };
+    const progressModel = {
+        "AI Assistant": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "ready",
+            progressChecklist: ["Use for guidance", "Keep side/capability status"]
+        },
+        "Animation": {
+            requiredForTestable: true,
+            requiredForPublish: false,
+            status: "in-progress",
+            progressChecklist: ["Draft animation states", "Confirm playable timing"]
+        },
+        "Assets": {
+            requiredForTestable: true,
+            requiredForPublish: true,
+            status: "in-progress",
+            progressChecklist: ["Create required sprites", "Attach release-safe previews"]
+        },
+        "Cloud": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Side/capability tool", "Enable only when project sync is required"]
+        },
+        "Custom Extensions": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Side/capability tool", "Review extension contract before use"]
+        },
+        "Game Configuration": {
+            requiredForTestable: true,
+            requiredForPublish: true,
+            status: "locked",
+            progressChecklist: ["Choose release profile", "Disable public debug settings", "Confirm playable gate"]
+        },
+        "Game Design": {
+            requiredForTestable: true,
+            requiredForPublish: true,
+            status: "in-progress",
+            progressChecklist: ["Define win condition", "Document core loop", "List required content"]
+        },
+        "Input": {
+            requiredForTestable: true,
+            requiredForPublish: true,
+            status: "ready",
+            progressChecklist: ["Map controls", "Verify keyboard/gamepad path"]
+        },
+        "Localization": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Side/capability tool", "Use when translation is required"]
+        },
+        "MIDI": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "ready",
+            progressChecklist: ["Optional audio path", "Attach music only if required"]
+        },
+        "Object Vector": {
+            requiredForTestable: true,
+            requiredForPublish: true,
+            status: "ready",
+            progressChecklist: ["Create object geometry", "Confirm collision-ready export"]
+        },
+        "Palette Manager": {
+            requiredForTestable: true,
+            requiredForPublish: true,
+            status: "complete",
+            progressChecklist: ["Choose palette", "Confirm accessible contrast"]
+        },
+        "Particles": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Optional effects path", "Use when visual effects are required"]
+        },
+        "Project Workspace": {
+            requiredForTestable: true,
+            requiredForPublish: true,
+            status: "in-progress",
+            progressChecklist: ["Create project", "Confirm current focus", "Pick next required tool"]
+        },
+        "Publish": {
+            requiredForTestable: false,
+            requiredForPublish: true,
+            status: "locked",
+            progressChecklist: ["Prepare release package", "Confirm share metadata", "Review public readiness"]
+        },
+        "Sound": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "ready",
+            progressChecklist: ["Optional sound path", "Attach effects only if required"]
+        },
+        "Storage Inspector": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "complete",
+            progressChecklist: ["Side/capability tool", "Inspect saves without blocking build path"]
+        },
+        "World Vector": {
+            requiredForTestable: true,
+            requiredForPublish: true,
+            status: "in-progress",
+            progressChecklist: ["Draft world layout", "Confirm map bounds"]
+        }
     };
     const buildPathGroups = [
         {
-            title: "Plan",
+            title: "Project Workspace",
             groupClass: "tool-group-ai-learning",
-            tools: ["Project Workspace", "AI Assistant", "Game Design", "Game Configuration", "Palette Manager", "Input"]
+            note: "Start with the single project surface that coordinates current focus, readiness, and recommended next tool.",
+            tools: ["Project Workspace"]
         },
         {
-            title: "Create",
-            groupClass: "tool-group-build-create",
-            tools: ["Assets", "Object Vector", "World Vector", "Animation", "Particles"]
-        },
-        {
-            title: "Audio",
-            groupClass: "tool-group-media-audio",
-            tools: ["MIDI", "Sound"]
-        },
-        {
-            title: "Verify",
+            title: "Game Design",
             groupClass: "tool-group-development-system",
-            tools: ["Storage Inspector", "Custom Extensions"]
+            note: "Define gameplay, rules, player experience, and the requirements that shape the build path.",
+            tools: ["Game Design"]
         },
         {
-            title: "Release",
+            title: "Game Configuration",
+            groupClass: "tool-group-development-system",
+            note: "Set the release profile, debug policy, and playable gate before the required tool path is treated as ready.",
+            tools: ["Game Configuration"]
+        },
+        {
+            title: "Required Tool Path",
+            groupClass: "tool-group-build-create",
+            note: "Use the registry fields requiredForTestable and requiredForPublish to identify blockers.",
+            tools: ["Palette Manager", "Input", "Assets", "Object Vector", "World Vector", "Animation"]
+        },
+        {
+            title: "Build Game",
+            groupClass: "tool-group-media-audio",
+            note: "Build Game is a path milestone in this wireframe, not a separate Toolbox tool.",
+            tools: []
+        },
+        {
+            title: "Game Testing",
+            groupClass: "tool-group-development-system",
+            note: "Game Testing is a readiness milestone; Storage remains a side/capability tool unless a future registry rule requires it.",
+            tools: []
+        },
+        {
+            title: "Publish",
             groupClass: "tool-group-community-marketplace",
-            tools: ["Cloud", "Localization", "Publish"]
+            note: "Publish is required for public release; Cloud, Marketplace, Learn, AI Assistant, Settings, and Storage remain side/capability surfaces by default.",
+            tools: ["Publish"]
         }
     ];
     const progressOrder = ["complete", "in-progress", "ready", "locked"];
     const allTools = toolGroups.flatMap((group) => group.tools.map((tool) => ({
         ...tool,
         group: group.group,
-        readiness: readinessMap[tool.title] || "ready"
+        ...(progressModel[tool.title] || defaultProgress)
     })));
 
     function groupClass(groupName) {
@@ -312,7 +433,7 @@
         if (badgeMap[tool.title]) {
             return badgeMap[tool.title];
         }
-        return tool.image.split("/").pop().replace(".png", "");
+        return "index";
     }
 
     function setActiveButton(mode) {
@@ -362,9 +483,9 @@
     }
 
     function getProgressGroups() {
-        return progressOrder.map((readiness) => ({
-            title: readiness,
-            tools: getOrderedTools("ascending").filter((tool) => tool.readiness === readiness),
+        return progressOrder.map((status) => ({
+            title: status,
+            tools: getOrderedTools("ascending").filter((tool) => tool.status === status),
             groupClass: "tool-group-development-system"
         })).filter((group) => group.tools.length > 0);
     }
@@ -373,8 +494,32 @@
         return buildPathGroups.map((group) => ({
             title: group.title,
             tools: group.tools.map((title) => allTools.find((tool) => tool.title === title)).filter(Boolean),
-            groupClass: group.groupClass
-        })).filter((group) => group.tools.length > 0);
+            groupClass: group.groupClass,
+            note: group.note
+        }));
+    }
+
+    function createProgressSummary() {
+        const article = document.createElement("article");
+        article.className = "callout";
+
+        const title = document.createElement("h3");
+        title.textContent = "Project Progress";
+
+        const projectProgress = document.createElement("p");
+        projectProgress.textContent = "Project Progress: " + projectProgressSummary.projectProgress;
+
+        const publishingProgress = document.createElement("p");
+        publishingProgress.textContent = "Publishing Progress: " + projectProgressSummary.publishingProgress;
+
+        const currentFocus = document.createElement("p");
+        currentFocus.textContent = "Current Focus: " + projectProgressSummary.currentFocus;
+
+        const nextTool = document.createElement("p");
+        nextTool.textContent = "Recommended Next Tool: " + projectProgressSummary.recommendedNextTool;
+
+        article.append(title, projectProgress, publishingProgress, currentFocus, nextTool);
+        return article;
     }
 
     function createGroupLabel(groupName) {
@@ -425,8 +570,8 @@
 
         const readiness = document.createElement("span");
         readiness.className = "pill";
-        readiness.dataset.toolboxReadiness = tool.readiness;
-        readiness.textContent = tool.readiness;
+        readiness.dataset.toolboxReadiness = tool.status;
+        readiness.textContent = tool.status;
 
         const title = document.createElement("h3");
         title.textContent = tool.title;
@@ -440,7 +585,17 @@
         link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
 
         if (options.showReadiness) {
-            body.append(badgeCluster, group, readiness, title, description, link);
+            const requirements = document.createElement("p");
+            requirements.textContent = `requiredForTestable: ${tool.requiredForTestable ? "yes" : "no"} | requiredForPublish: ${tool.requiredForPublish ? "yes" : "no"}`;
+
+            const checklist = document.createElement("ul");
+            tool.progressChecklist.forEach((item) => {
+                const entry = document.createElement("li");
+                entry.textContent = item;
+                checklist.append(entry);
+            });
+
+            body.append(badgeCluster, group, readiness, title, description, requirements, checklist, link);
         } else {
             body.append(badgeCluster, group, title, description, link);
         }
@@ -460,6 +615,12 @@
         const body = document.createElement("div");
         body.className = "accordion-body";
 
+        if (group.note) {
+            const note = document.createElement("p");
+            note.textContent = group.note;
+            body.append(note);
+        }
+
         const grid = document.createElement("div");
         grid.className = "card-grid";
 
@@ -467,7 +628,9 @@
             grid.append(createToolCard(tool, options));
         });
 
-        body.append(grid);
+        if (group.tools.length) {
+            body.append(grid);
+        }
         details.append(summary, body);
         return details;
     }
@@ -487,7 +650,7 @@
             list.replaceChildren(...accordions);
         } else if (mode === "progress") {
             const accordions = getProgressGroups().map((group) => createAccordion(group, true, { showReadiness: true }));
-            list.replaceChildren(...accordions);
+            list.replaceChildren(createProgressSummary(), ...accordions);
         } else if (mode === "build-path") {
             const accordions = getBuildPathGroups().map((group) => createAccordion(group, true));
             list.replaceChildren(...accordions);
