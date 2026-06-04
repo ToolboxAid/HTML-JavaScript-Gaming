@@ -147,8 +147,9 @@ import {
                                 "requiredForPublish": false,
                                 "status": "in-progress",
                                 "progressChecklist": [
-                                        "Review readiness",
-                                        "Static wireframe text only"
+                                        "Project purpose context required",
+                                        "Game type, genre, and play style required",
+                                        "Validation overlay hands off to Game Configuration"
                                 ]
                         },
                         {
@@ -880,8 +881,9 @@ import {
                 "requiredForPublish": true,
                 "status": "in-progress",
                 "progressChecklist": [
-                        "Review readiness",
-                        "Static wireframe text only"
+                        "Project purpose context required",
+                        "Game type, genre, and play style required",
+                        "Validation overlay hands off to Game Configuration"
                 ]
         },
         "Game Configuration": {

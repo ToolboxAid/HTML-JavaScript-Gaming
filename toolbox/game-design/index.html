@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Game Design - GameFoundryStudio</title>
-    <meta name="description" content="Game Design Toolbox wireframe for defining game purpose, rules, systems, and requirements before configuration.">
+    <meta name="description" content="Game Design Toolbox runtime for project purpose, game type, genre, play style, capability demos, and configuration readiness.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,46 +18,56 @@
             <div class="container">
                 <div class="kicker">Toolbox / Game Design</div>
                 <h1>Game Design</h1>
-                <p class="lede">Wireframe the game concept, rules, playable requirements, and handoff to configuration without adding runtime save behavior.</p>
+                <p class="lede">Define the playable concept for the active Project Workspace project before Game Configuration begins.</p>
             </div>
         </section>
         <section class="section">
             <div class="container container--tool-wide">
                 <div class="tool-workspace tool-workspace--wide">
-                    <aside class="tool-column tool-group-build-create">
+                    <aside class="tool-column tool-group-build">
                         <div class="tool-column-header molten-orange">
                             <h2>Game Design</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Purpose</summary>
-                                <div class="accordion-body">
-                                    <form>
-                                        <label>Genre <input type="text" placeholder="Platformer, puzzle, adventure"></label>
-                                        <label>Players <input type="text" placeholder="Single player, co-op, versus"></label>
-                                        <label>Audience <input type="text" placeholder="Who this game is for"></label>
-                                        <label>Pitch <textarea rows="3" placeholder="One-paragraph game promise"></textarea></label>
-                                    </form>
+                                <summary>Project Context</summary>
+                                <div class="accordion-body content-stack">
+                                    <label for="gameDesignProjectSelect">Project Context
+                                        <select id="gameDesignProjectSelect" data-game-design-project-select></select>
+                                    </label>
+                                    <p>Active Project: <span data-game-design-active-project>No Project Workspace project</span></p>
+                                    <p>Project Purpose: <span data-game-design-project-purpose>No purpose</span></p>
+                                    <p>Project Status: <span data-game-design-project-status>No project status</span></p>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
-                                <summary>Rules And Systems</summary>
+                            <details class="vertical-accordion" open>
+                                <summary>Purpose Flow</summary>
                                 <div class="accordion-body">
-                                    <form>
-                                        <label>Core Rules <textarea rows="3" placeholder="What the player can and cannot do"></textarea></label>
-                                        <label>Win Conditions <textarea rows="3" placeholder="How the player succeeds"></textarea></label>
-                                        <label>Lose Conditions <textarea rows="3" placeholder="How the player fails"></textarea></label>
-                                        <label>Progression <textarea rows="3" placeholder="Levels, unlocks, pacing, difficulty"></textarea></label>
-                                    </form>
+                                    <p>Project purpose flows from Project Workspace into Game Design. Capability Demo projects remain Project Workspace projects and are authored through the same design fields.</p>
+                                    <p><span class="pill">handoff</span> Game Design feeds Game Configuration readiness.</p>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
-                                <summary>Requirements</summary>
+                            <details class="vertical-accordion" open>
+                                <summary>Design Fields</summary>
                                 <div class="accordion-body">
-                                    <p>Static design requirements for playable release planning.</p>
-                                    <p><span class="pill">required</span> Win and lose conditions</p>
-                                    <p><span class="pill">required</span> Control expectations</p>
-                                    <p><span class="pill">deferred</span> Share copy and marketing notes</p>
+                                    <form class="content-stack" data-game-design-form>
+                                        <label for="gameDesignType">Game Type
+                                            <select id="gameDesignType" data-game-design-type></select>
+                                        </label>
+                                        <label for="gameDesignGenre">Genre
+                                            <select id="gameDesignGenre" data-game-design-genre></select>
+                                        </label>
+                                        <label for="gameDesignPlayStyle">Play Style
+                                            <select id="gameDesignPlayStyle" data-game-design-play-style></select>
+                                        </label>
+                                        <label for="gameDesignSummary">Design Summary
+                                            <textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the project promise, core loop, and player goal."></textarea>
+                                        </label>
+                                        <label for="gameDesignCapabilityNotes">Capability Demo Notes
+                                            <textarea id="gameDesignCapabilityNotes" rows="3" data-game-design-capability-notes placeholder="Optional notes when this project demonstrates a specific capability."></textarea>
+                                        </label>
+                                        <button class="btn" type="submit">Save Game Design</button>
+                                    </form>
                                 </div>
                             </details>
                         </div>
@@ -66,29 +76,43 @@
                     <section class="tool-center-panel">
                         <img src="assets/theme-v2/images/image-missing.svg" alt="Game Design preview">
                         <h2>Design Workspace</h2>
-                        <p>Game Design turns an idea into the static design contract for Project Workspace and Game Configuration review.</p>
+                        <p>Game Design now saves an in-memory design document against the active Project Workspace project. No database, auth, cloud, or persistence behavior is implemented.</p>
                         <div class="grid cols-3" aria-label="Game Design readiness summary">
-                            <article class="mini-stat"><strong>5</strong>Design fields drafted</article>
-                            <article class="mini-stat"><strong>2</strong>Playable blockers</article>
-                            <article class="mini-stat"><strong>1</strong>Configuration handoff</article>
+                            <article class="mini-stat"><strong data-game-design-status>Needs Input</strong>Design status</article>
+                            <article class="mini-stat"><strong data-game-design-recommended-tool>Game Design</strong>Next tool</article>
+                            <article class="mini-stat"><strong>Mock</strong>Repository only</article>
                         </div>
-                        <article class="card" role="dialog" aria-labelledby="game-design-missing-requirements-title">
+                        <article class="card" role="dialog" aria-labelledby="game-design-project-overlay-title" data-game-design-project-overlay hidden>
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Static Overlay Wireframe</div>
-                                    <h3 id="game-design-missing-requirements-title">Missing Requirements</h3>
+                                    <div class="kicker">Validation Overlay</div>
+                                    <h3 id="game-design-project-overlay-title">Missing Project Context</h3>
                                 </div>
-                                <p>This static card represents the missing-requirements overlay before the design can move into configuration.</p>
-                                <div class="grid cols-3">
-                                    <article class="callout"><h3>Win Conditions</h3><p><span class="pill">missing</span> Define how players succeed.</p></article>
-                                    <article class="callout"><h3>Lose Conditions</h3><p><span class="pill">missing</span> Define failure and retry rules.</p></article>
-                                    <article class="callout"><h3>Input Needs</h3><p><span class="pill">ready</span> Controls can move to Input next.</p></article>
+                                <p>Open or seed a Project Workspace project before saving Game Design.</p>
+                                <a class="btn" href="toolbox/project-workspace/index.html">Open Project Workspace</a>
+                            </div>
+                        </article>
+                        <article class="card" role="dialog" aria-labelledby="game-design-validation-title" data-game-design-validation-overlay hidden>
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Actionable Validation</div>
+                                    <h3 id="game-design-validation-title">Missing Requirements</h3>
                                 </div>
-                                <div class="status" role="status">Wireframe only: design fields are not persisted.</div>
+                                <ul data-game-design-validation-list></ul>
+                            </div>
+                        </article>
+                        <article class="card" data-game-design-capability-panel>
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Capability Demo Authoring</div>
+                                    <h3>Capability Demos Remain Projects</h3>
+                                </div>
+                                <p>Capability demos remain Project Workspace projects. Authoring data is stored as Game Design data, not as a separate demo system.</p>
+                                <ul data-game-design-capability-demos></ul>
                             </div>
                         </article>
                     </section>
-                    <aside class="tool-column tool-group-build-create">
+                    <aside class="tool-column tool-group-build">
                         <div class="tool-column-header forge-gold">
                             <h2>Inspector</h2>
                         </div>
@@ -96,27 +120,37 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body">
-                                    <pre><code>{
-  "genre": "",
-  "players": "",
-  "winConditions": [],
-  "loseConditions": [],
-  "requirementsReady": false
-}</code></pre>
+                                    <pre><code data-game-design-output>{}</code></pre>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
-                                <summary>Next Step</summary>
+                            <details class="vertical-accordion" open>
+                                <summary>Repository Tables</summary>
                                 <div class="accordion-body">
-                                    <p>Send the completed design contract to Game Configuration when required design fields are complete.</p>
-                                    <a class="btn" href="toolbox/game-configuration/index.html">Open Game Configuration</a>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Table</th>
+                                                <th>Rows</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-game-design-table-counts></tbody>
+                                    </table>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
+                            <details class="vertical-accordion" open>
+                                <summary>Toolbox Progress Handoff</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Project Progress: <span data-game-design-project-progress>No active project</span></p>
+                                    <p>Publishing Progress: <span data-game-design-publishing-progress>Blocked</span></p>
+                                    <p>Current Focus: <span data-game-design-current-focus>Open a project</span></p>
+                                    <p>Recommended Next Tool: <span data-game-design-recommended-tool>Project Workspace</span></p>
+                                    <ul data-game-design-handoff-checklist></ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
                                 <summary>Status Log</summary>
                                 <div class="accordion-body">
-                                    <p>Static log for design review. No runtime save/load behavior is implemented.</p>
-                                    <div class="status" role="status">Last check: two required design fields are missing.</div>
+                                    <div class="status" role="status" data-game-design-log>Game Design mock repository ready.</div>
                                 </div>
                             </details>
                         </div>
@@ -128,6 +162,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/game-design/game-design.js"></script>
 </body>
 
 </html>

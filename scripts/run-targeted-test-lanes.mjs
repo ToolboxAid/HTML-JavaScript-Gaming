@@ -142,6 +142,27 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Project Workspace rebuild slice validates mock users/projects/project_members data actions, project lifecycle controls, and project-driven Progress/Build Path copy without exercising unrelated toolbox routes."
   },
+  "game-design": {
+    affectedSurface: "Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff",
+    commands: [
+      playwrightCommand("tests/playwright/tools/GameDesignMockRepository.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/GameDesignMockRepository.spec.mjs"
+    ],
+    fixtures: [
+      "repo-served Game Design page",
+      "repo-served Toolbox Progress and Build Path views",
+      "in-memory SQL-shaped Game Design mock repository",
+      "Project Workspace mock project context"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Game Design rebuild slice validates the active project context, design save/update, actionable validation, capability demo authoring, and Toolbox progress handoff without exercising unrelated toolbox routes."
+  },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [

@@ -1,6 +1,6 @@
 # Playwright Structure Audit
 
-Generated: 2026-06-04T15:40:53.196Z
+Generated: 2026-06-04T23:06:53.944Z
 Status: PASS
 
 ## Lane Directories
@@ -10,7 +10,7 @@ Status: PASS
 | tests/playwright/engine | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 | tests/playwright/games | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 | tests/playwright/integration | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
-| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/RootToolsFutureState.spec.mjs. |
+| tests/playwright/tools | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 
 ## Blocking Findings
 
@@ -35,7 +35,7 @@ No blocking structural findings.
 
 | File | Status | Missing Relative Imports |
 | --- | --- | --- |
-| tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | none |
+| tests/playwright/tools/GameDesignMockRepository.spec.mjs | PASS | none |
 | tests/helpers/playwrightRepoServer.mjs | PASS | none |
 | tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
 | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |
