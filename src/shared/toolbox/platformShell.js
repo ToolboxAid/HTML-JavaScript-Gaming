@@ -12,10 +12,10 @@ import { createWorkspaceSystemController } from "./projectSystem.js";
 import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.js";
 import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } from "./uiSafeUtils.js";
 import { escapeHtml } from "../string/strings.js";
-import Logger from "../../src/engine/logging/Logger.js";
-import LocalStorageService from '../../src/engine/persistence/LocalStorageService.js';
-import SessionStorageService from '../../src/engine/persistence/SessionStorageService.js';
-import { createRuntimeMonitoringHooks } from '../../src/engine/runtime/RuntimeMonitoringHooks.js';
+import Logger from "../../engine/logging/Logger.js";
+import LocalStorageService from '../../engine/persistence/LocalStorageService.js';
+import SessionStorageService from '../../engine/persistence/SessionStorageService.js';
+import { createRuntimeMonitoringHooks } from '../../engine/runtime/RuntimeMonitoringHooks.js';
 import { logToolUiControlReady, logToolUiFinalReady, logToolUiLifecycle } from "./toolLoadDiagnostics.js";
 
 let workspaceController = null;

@@ -1,5 +1,5 @@
 import { getToolById } from "../../../toolbox/toolRegistry.js";
-import { downloadTextFile, readFileText } from '../../src/engine/persistence/FilePersistenceService.js';
+import { downloadTextFile, readFileText } from '../../engine/persistence/FilePersistenceService.js';
 import {
   ACTIVE_PROJECT_STORAGE_KEY,
   captureSharedReferenceSnapshot,

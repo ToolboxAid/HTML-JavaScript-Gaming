@@ -2,8 +2,8 @@ import {
   getSampleToolLaunchDefinition,
   validateLaunchDefinitionAccess
 } from "./toolLaunchSSoTData.js";
-import LocalStorageService from '../../src/engine/persistence/LocalStorageService.js';
-import SessionStorageService from '../../src/engine/persistence/SessionStorageService.js';
+import LocalStorageService from '../../engine/persistence/LocalStorageService.js';
+import SessionStorageService from '../../engine/persistence/SessionStorageService.js';
 import { normalizeText } from "../string/strings.js";
 
 const TOOLBOXAID_STORAGE_KEY_PREFIX = "toolboxaid.";

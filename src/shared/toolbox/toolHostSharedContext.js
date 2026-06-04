@@ -1,5 +1,5 @@
-import LocalStorageService from '../../src/engine/persistence/LocalStorageService.js';
-import SessionStorageService from '../../src/engine/persistence/SessionStorageService.js';
+import LocalStorageService from '../../engine/persistence/LocalStorageService.js';
+import SessionStorageService from '../../engine/persistence/SessionStorageService.js';
 
 const TOOL_HOST_CONTEXT_KEY_PREFIX = "toolboxaid.toolHost.context.";
 
