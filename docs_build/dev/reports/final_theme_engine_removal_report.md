@@ -5,10 +5,10 @@ Task: `PR_26154_016-final-theme-engine-removal-and-active-structure-cleanup`
 ## Scope
 
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- Audited active references excluding docs, tests, reports, `old-tools/`, `old_games/`, `old_samples/`, and `start_of_day/`.
+- Audited active references excluding docs, tests, reports, `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, and `start_of_day/`.
 - Removed remaining `assets/theme/v1/` content after moving the last active image to Theme V2.
 - Removed remaining `src/engine/theme/` content after removing active dependencies.
-- Did not modify `start_of_day/`, `old-tools/`, `old_games/`, or `old_samples/`.
+- Did not modify `start_of_day/`, `archive/v1-v2/tools/`, `archive/v1-v2/games/`, or `archive/v1-v2/samples/`.
 
 ## Theme Cleanup
 
@@ -45,7 +45,7 @@ Historical references may remain in docs, reports, tests, or deprecated folders 
 - PASS: `node --check toolbox/dev/checkStyleSystemGuard.mjs`.
 - PASS: Static validation for 7 changed HTML/JS/CSS/JSON/Markdown files, including `.mjs`.
 - PASS: `git diff --check`.
-- PASS: `git status --short -- start_of_day old-tools old_games old_samples` returned no output.
+- PASS: `git status --short -- start_of_day archive/v1-v2/tools archive/v1-v2/games archive/v1-v2/samples` returned no output.
 - SKIPPED: `npm run test:workspace-v2`; active Workspace V2 launch/navigation behavior was not changed.
 - SKIPPED: old tools, old games, old samples, and full samples smoke tests per request.
 

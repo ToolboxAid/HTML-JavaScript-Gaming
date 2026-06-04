@@ -5,7 +5,7 @@
 - `src/advanced/`: composable advanced architecture layer
 - `toolbox/`: editor and pipeline tooling
 - `samples/`: demonstration consumers
-- `old_games/`: deprecated playable reference games
+- `archive/v1-v2/games/`: deprecated playable reference games
 - `tests/`: automated validation
 
 ## Documentation Layers

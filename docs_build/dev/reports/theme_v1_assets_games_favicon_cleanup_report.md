@@ -46,7 +46,7 @@ Updated surfaces:
 - Root groups: `account/`, `admin/`, `community/`, `company/`, `docs/`, `learn/`, `legal/`, `marketplace/`
 - Games pages: `games/index.html`, `games/action/index.html`, `games/adventure/index.html`, `games/arcade/index.html`, `games/puzzle/index.html`, `games/racing/index.html`, `games/retro/index.html`, `games/strategy/index.html`
 - Tool pages: `toolbox/index.html`, active tool `index.html` files, `toolbox/_tool_template-v2/index.html`
-- Deprecated old tool reference touched only for favicon canonicalization: `old-tools/old_localization-studio/index.html`
+- Deprecated old tool reference touched only for favicon canonicalization: `archive/v1-v2/tools/old_localization-studio/index.html`
 
 ## Games Asset Move
 
@@ -71,7 +71,7 @@ Updated references in:
 - `games/retro/index.html`
 - `games/strategy/index.html`
 
-Deprecated `old_games/` assets were not moved or modified.
+Deprecated `archive/v1-v2/games/` assets were not moved or modified.
 
 ## Theme V1 Static Asset Move
 
@@ -142,7 +142,7 @@ Targeted static/path validation:
   - `src/engine/theme/fontawesome`
   - `src/engine/theme/toolboxaid-header.png`
 - PASS V1 static assets resolve from `assets/theme/v1`.
-- PASS `old_games/`, `old_samples/`, and `start_of_day/` have no changes.
+- PASS `archive/v1-v2/games/`, `archive/v1-v2/samples/`, and `start_of_day/` have no changes.
 
 HTTP path validation:
 - PASS `/favicon.ico` -> `200 image/x-icon`
@@ -159,5 +159,5 @@ Static validation:
 
 Skipped:
 - `npm run test:workspace-v2` was not run because active Workspace V2 launch/navigation behavior was not changed.
-- Tests against `old_games` and `old_samples` were not run.
+- Tests against `archive/v1-v2/games` and `archive/v1-v2/samples` were not run.
 - Full samples smoke test was not run.

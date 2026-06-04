@@ -2,7 +2,7 @@
 
 ## Scope
 
-This PR continues the root migration cleanup without modifying `start_of_day/`, `old-tools/`, `old_games/`, or `old_samples/`.
+This PR continues the root migration cleanup without modifying `start_of_day/`, `archive/v1-v2/tools/`, `archive/v1-v2/games/`, or `archive/v1-v2/samples/`.
 
 Changed:
 
@@ -10,7 +10,7 @@ Changed:
 - Expanded `Build · Play · Share` guidance in `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 - Removed deprecated-only old game/sample script commands from root `package.json`.
 - Removed deprecated-only old game/sample generator, audit, presentation, and skip-wrapper scripts.
-- Removed old game template contract test wiring retained only for deprecated `old_games/` coverage.
+- Removed old game template contract test wiring retained only for deprecated `archive/v1-v2/games/` coverage.
 - Removed unreferenced duplicate `assets/theme/v2/js/tools-page-accordions.js`.
 
 ## Games Index
@@ -140,4 +140,4 @@ Skipped:
 
 - `npm run test:workspace-v2`: skipped because active Workspace V2 launch/navigation behavior was not changed.
 - Full samples smoke test: skipped per request.
-- Tests against `old-tools/`, `old_games/`, and `old_samples`: skipped per request.
+- Tests against `archive/v1-v2/tools/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples`: skipped per request.

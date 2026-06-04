@@ -14,10 +14,10 @@ No `start_of_day/` folders were modified.
 | --- | --- | --- |
 | `assets/` | active | Public/root static asset ownership. Contains `assets/theme/v1/` legacy static assets and `assets/theme/v2/` public Theme V2 CSS, JS, partials, and imagery. |
 | `toolbox/` | active | Active public tool pages plus active tool support surfaces, including `toolbox/shared/`, `toolbox/dev/`, and `toolbox/schemas/`. |
-| `old-tools/` | deprecated | Deprecated legacy tool references. Kept for reference/playable legacy behavior where applicable; not an active future-state tool surface. |
+| `archive/v1-v2/tools/` | deprecated | Deprecated legacy tool references. Kept for reference/playable legacy behavior where applicable; not an active future-state tool surface. |
 | `games/` | active | Current public games surface, game-type pages, arcade entry, and `games/assets/images/`. |
-| `old_games/` | deprecated | Deprecated playable reference games. Kept playable, but excluded from active validation. |
-| `old_samples/` | deprecated | Deprecated reference samples. Excluded from active validation. |
+| `archive/v1-v2/games/` | deprecated | Deprecated playable reference games. Kept playable, but excluded from active validation. |
+| `archive/v1-v2/samples/` | deprecated | Deprecated reference samples. Excluded from active validation. |
 | `docs/` | active public docs | User-facing documentation only: `index.html`, `faq.html`, `reference.html`, `support.html`, and `README.md`. |
 | `docs_build/` | development docs | Development, build, PR, governance, workflow, audit, report, release, security, and archived documentation. |
 | `schemas/` | absent | No root `schemas/` folder currently exists. Active schema ownership is under `toolbox/schemas/`; historical schema docs live under `docs_build/schemas/`. |
@@ -29,10 +29,10 @@ No `start_of_day/` folders were modified.
 | --- | ---: | ---: |
 | `assets/` | 150 | 19 |
 | `toolbox/` | 201 | 48 |
-| `old-tools/` | 356 | 123 |
+| `archive/v1-v2/tools/` | 356 | 123 |
 | `games/` | 12 | 9 |
-| `old_games/` | 311 | 132 |
-| `old_samples/` | 1580 | 858 |
+| `archive/v1-v2/games/` | 311 | 132 |
+| `archive/v1-v2/samples/` | 1580 | 858 |
 | `docs/` | 5 | 0 |
 | `docs_build/` | 4478 | 316 |
 | `schemas/` | missing | missing |
@@ -52,7 +52,7 @@ No `start_of_day/` folders were modified.
 No files were moved for these candidates in this PR.
 
 - Review whether `toolbox/_tool_template-v2/` is still an active template surface or should be deprecated after a future template replacement.
-- Review whether `old-tools/codex/` and `old-tools/common/` are still needed as deprecated references.
+- Review whether `archive/v1-v2/tools/codex/` and `archive/v1-v2/tools/common/` are still needed as deprecated references.
 - Regenerate or retire stale generated validation artifacts that reference removed paths, such as `tests/validation/samples.shared.boundaries.report.json`.
 - Decide whether root-level branding assets should move out of `assets/theme/v2/images/` in a future root-branding PR.
 - Decide whether root `schemas/` should remain absent permanently or receive an explicit redirect/documentation marker pointing to `toolbox/schemas/`.
@@ -63,4 +63,4 @@ No files were moved for these candidates in this PR.
 - PASS: required ownership paths were inventoried.
 - PASS: `schemas/` absence was confirmed.
 - PASS: no root structure moves were performed in this closeout PR.
-- PASS: `start_of_day/`, `old_games/`, and `old_samples/` were not modified.
+- PASS: `start_of_day/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples/` were not modified.

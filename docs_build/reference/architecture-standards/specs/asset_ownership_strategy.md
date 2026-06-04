@@ -3,7 +3,7 @@
 ## Decision
 - Local-first ownership is the default strategy.
 - Assets stay with the owning surface:
-  - deprecated reference games: `old_games/<gameId>/assets/...`
+  - deprecated reference games: `archive/v1-v2/games/<gameId>/assets/...`
   - samples: `samples/<phase>/<sampleId>/assets/...`
   - tool demos: `toolbox/.../assets/...`
 - Shared ownership is promotion-by-rule only.

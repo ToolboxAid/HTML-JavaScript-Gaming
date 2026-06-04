@@ -601,7 +601,7 @@ Remove old location after apply:
 | `docs_build/archive/tools/SpriteEditor_old_keep/` policy | yes | yes | `keep` | Legacy-hidden runtime registry entry in `toolbox/toolRegistry.js`; referenced in specs, roadmap, and reports. | none in this PR | Separate legacy policy PR to define exact retirement criteria and transition gates. |
 | `legacy class-retention policy marker` policy target | no | yes (docs-only) | `needs-manual-review` | Path not present on disk; only planning references found in roadmap/targets/build spec docs. | none in this PR | Clarify whether this is a historical placeholder, rename candidate, or retired concept before any cleanup execution. |
 | `docs_build/archive/` archived-notes policy | yes | yes | `keep` | Archive destination is actively documented across docs structure/readme/paths files; policy item still planned in roadmap. | none in this PR | Policy-definition PR to formalize retention + move criteria for archived notes. |
-| Legacy path imports (`/engine/`, `../engine/`, `./engine/`) | pattern check | no (active code) | `future-delete-candidate` | No matches for inspected old-engine import patterns in toolbox/src/old_games/samples. | none in this PR | Add guard/reporting checks in future cleanup PR to prevent regressions and retire stale legacy-import guidance. |
+| Legacy path imports (`/engine/`, `../engine/`, `./engine/`) | pattern check | no (active code) | `future-delete-candidate` | No matches for inspected old-engine import patterns in toolbox/src/archive/v1-v2/games/samples. | none in this PR | Add guard/reporting checks in future cleanup PR to prevent regressions and retire stale legacy-import guidance. |
 | Eventual legacy-retirement candidates list | yes | yes (planning) | `migrate-later` | Explicitly tracked in roadmap + cleanup target docs and referenced by this BUILD spec. | none in this PR | Convert candidates into exact, dependency-ordered cleanup BUILDs after reference-safe verification. |
 
 ## Notes
@@ -723,7 +723,7 @@ Generated: 2026-04-12
 
 ## Runtime Impact Check
 - Runtime wiring files were not modified.
-- Runtime import/require/dynamic-import scan for SpriteEditor_old_keep in toolbox/src/old_games/samples/tests: no matches.
+- Runtime import/require/dynamic-import scan for SpriteEditor_old_keep in toolbox/src/archive/v1-v2/games/samples/tests: no matches.
 - Active tools launch smoke:
   - Command: npm run test:launch-smoke -- --tools
   - Result: PASS 11/11 tools, FAIL 0

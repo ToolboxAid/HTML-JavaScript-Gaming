@@ -47,7 +47,7 @@ Both display-mode image requests no longer 404.
 
 ## Targeted Reference Checks
 
-Results excluding `start_of_day/`, `old_samples/`, `old_games/`, `old-tools/`, `tmp/`, and generated PR reports:
+Results excluding `start_of_day/`, `archive/v1-v2/samples/`, `archive/v1-v2/games/`, `archive/v1-v2/tools/`, `tmp/`, and generated PR reports:
 
 - `assets/theme/v2/images` references remaining: 151
 - `src/engine/theme` references remaining: 431
@@ -95,6 +95,6 @@ Passed:
 
 Skipped:
 
-- No tests against `old_games` or `old_samples`
+- No tests against `archive/v1-v2/games` or `archive/v1-v2/samples`
 - No full samples smoke test
 - `npm run test:workspace-v2`, because this PR changed image resolution only and did not change tool launch or navigation behavior

@@ -47,7 +47,7 @@ Actions:
 - Removed the `styles.css` link from `toolbox/localization/index.html` as shared reference cleanup from the PR024 rebuilt template.
 - Confirmed zero active HTML references remain to `assets/theme/v2/css/styles.css`.
 
-`assets/theme/v2/css/styles.css` was retained. It has no active consumers, but deprecated `old-tools/` pages and historical reports still reference it. Keeping it avoids breaking deprecated/reference surfaces in this PR while removing it from active runtime/page/template/tool consumption.
+`assets/theme/v2/css/styles.css` was retained. It has no active consumers, but deprecated `archive/v1-v2/tools/` pages and historical reports still reference it. Keeping it avoids breaking deprecated/reference surfaces in this PR while removing it from active runtime/page/template/tool consumption.
 
 ## Reusable Theme V2 CSS Promotion
 
@@ -84,5 +84,5 @@ Remaining active toolbox mismatches:
 - PASS: `npm run test:workspace-v2`.
 - PASS: static validation for changed HTML, CSS, JSON, JavaScript, and Markdown files.
 - PASS: `git diff --check`.
-- SKIPPED: tests against `old-tools/`, `old_games/`, and `old_samples` per request.
+- SKIPPED: tests against `archive/v1-v2/tools/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples` per request.
 - SKIPPED: full samples smoke test per request.

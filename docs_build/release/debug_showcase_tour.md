@@ -6,10 +6,10 @@ debug_showcase_tour.md
 # Debug Showcase Tour
 
 ## Start Here
-- Asteroids Play: `/old_games/Asteroids/index.html`
-- Asteroids Debug: `/old_games/Asteroids/index.html?debug=1`
-- Breakout Play: `/old_games/Breakout/index.html`
-- Breakout Debug: `/old_games/Breakout/index.html?debug=1`
+- Asteroids Play: `/archive/v1-v2/games/Asteroids/index.html`
+- Asteroids Debug: `/archive/v1-v2/games/Asteroids/index.html?debug=1`
+- Breakout Play: `/archive/v1-v2/games/Breakout/index.html`
+- Breakout Debug: `/archive/v1-v2/games/Breakout/index.html?debug=1`
 
 ## Key Validation Steps
 1. Open Play mode first and confirm baseline behavior.

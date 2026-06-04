@@ -2,7 +2,7 @@
 
 - Asteroids demo verified as vector-only at runtime.
 - `sprite.asteroids-demo` is not an active packaged/runtime dependency.
-- Asteroids runtime handoff remains `old_games/Asteroids/main.js#bootAsteroids`.
+- Asteroids runtime handoff remains `archive/v1-v2/games/Asteroids/main.js#bootAsteroids`.
 - Asteroids validation, packaging, runtime, debug, profiler, export, and publishing are ready.
 - Standalone vector-native template sample validates/packages/runs without sprite fallback.
 - Deterministic geometry runtime repeated-run equality is verified.

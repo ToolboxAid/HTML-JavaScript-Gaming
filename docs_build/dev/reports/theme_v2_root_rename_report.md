@@ -73,9 +73,9 @@ All checked Theme V2 CSS `@import` and `url(...)` targets resolve under the new 
 Remaining `assets/theme/v2` references are intentionally isolated to:
 
 - historical reports under `docs_build/dev/reports/`
-- deprecated old-tools pages:
-  - `old-tools/old_localization-studio/index.html`
-  - `old-tools/localization_pre_template_rebuild/index.html`
+- deprecated archive/v1-v2/tools pages:
+  - `archive/v1-v2/tools/old_localization-studio/index.html`
+  - `archive/v1-v2/tools/localization_pre_template_rebuild/index.html`
 
 Those deprecated folders were not modified per PR scope.
 
@@ -89,4 +89,4 @@ Required validation for this PR:
 - `npm run test:workspace-v2`
 - `git diff --check`
 
-Full samples smoke test skipped by request. Tests against `old-tools/`, `old_games/`, and `old_samples/` skipped by request.
+Full samples smoke test skipped by request. Tests against `archive/v1-v2/tools/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples/` skipped by request.

@@ -16,10 +16,10 @@ Status: PASS
 | --- | --- | --- | --- | --- | --- |
 | workspace-contract | Yes | PASS | none | Root tools future-state navigation and Tool Template V2 contract | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
 | tool-runtime | No | SKIP | none | First-class tool runtime behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
-| game-runtime | No | SKIP | none | Deprecated old_games reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| game-runtime | No | SKIP | none | Deprecated archive/v1-v2/games reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | integration | No | SKIP | none | Workspace, tool, game index, and manifest handoff behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | engine-src | No | SKIP | none | src/ engine and shared runtime capability behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
-| samples | No | SKIP | none | Deprecated old_samples reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| samples | No | SKIP | none | Deprecated archive/v1-v2/samples reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 
 ## Dependency Failures Caught Pre-Runtime
 

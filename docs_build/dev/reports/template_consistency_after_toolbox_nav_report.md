@@ -25,9 +25,9 @@ Active toolbox pages were checked for:
 
 The audit excludes:
 
-- `old-tools/`
-- `old_games/`
-- `old_samples/`
+- `archive/v1-v2/tools/`
+- `archive/v1-v2/games/`
+- `archive/v1-v2/samples/`
 - `start_of_day/`
 - generated reports
 - template source files when counting active pages

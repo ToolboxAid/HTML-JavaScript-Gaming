@@ -11,7 +11,7 @@ Define the architecture and design rules for the engine.
 The engine must behave like a reusable framework, not a specific game.
 
 - No game-specific logic in `src/engine/`
-- `old_games/` contains deprecated playable reference consumers; `samples/` contains active demonstrations
+- `archive/v1-v2/games/` contains deprecated playable reference consumers; `samples/` contains active demonstrations
 
 ### 2. Clear boundaries
 
@@ -58,7 +58,7 @@ Preferred direction:
 
 Avoid:
 
-- subsystem dependence on deprecated `old_games/`
+- subsystem dependence on deprecated `archive/v1-v2/games/`
 - circular dependencies
 - deep cross-system reach-through
 

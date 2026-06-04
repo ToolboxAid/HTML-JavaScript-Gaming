@@ -11,7 +11,7 @@ asteroids_showcase_maintainer_notes.md
 - Reuse public debug APIs from `toolbox/dev/devConsoleIntegration.js`.
 
 ## Asteroids-Specific Debug Module
-- `old_games/Asteroids/debug/asteroidsShowcaseDebug.js`
+- `archive/v1-v2/games/Asteroids/debug/asteroidsShowcaseDebug.js`
 
 Responsibilities:
 - register Asteroids showcase panels

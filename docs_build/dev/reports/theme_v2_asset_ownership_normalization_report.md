@@ -79,5 +79,5 @@ Passed:
 Skipped:
 
 - `npm run test:workspace-v2`, because this PR changed image asset ownership/pathing only and did not change active tool launch or navigation behavior.
-- Tests against `old_games` and `old_samples`, per request.
+- Tests against `archive/v1-v2/games` and `archive/v1-v2/samples`, per request.
 - Full samples smoke test, per request.

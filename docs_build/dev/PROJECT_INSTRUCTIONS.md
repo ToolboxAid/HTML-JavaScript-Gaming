@@ -116,7 +116,7 @@ New rules should extend existing authoritative sections whenever possible.
 Avoid introducing parallel governance systems or duplicate rule sets.
 
 Anti-drift governance:
-- avoid capability drift across `src/`, deprecated `old_games/`, deprecated `old_samples/`, and `toolbox/`
+- avoid capability drift across `src/`, deprecated `archive/v1-v2/tools/`, deprecated `archive/v1-v2/games/`, deprecated `archive/v1-v2/samples/`, and `toolbox/`
 - avoid workflow drift across overlapping sections
 - avoid validation drift between engine, tool, and integration lanes
 - avoid UI/UX drift from Workspace V2 ecosystem contracts
@@ -131,6 +131,21 @@ Future guidance:
 - future governance PRs should remain small and execution-backed
 - implementation, runtime, and tool work should now take priority over additional governance expansion unless a real gap is discovered
 - governance additions should solve demonstrated operational problems rather than hypothetical future issues
+
+## ARCHIVED V1/V2 REFERENCE MATERIAL
+
+Deprecated V1/V2 reference material lives under:
+
+- `archive/v1-v2/tools/`
+- `archive/v1-v2/games/`
+- `archive/v1-v2/samples/`
+
+Rules:
+- Archive material is retained for reference and traceability, not active app ownership.
+- Active app navigation must not point users into `archive/v1-v2/`.
+- Active validation must not run tests against `archive/v1-v2/` unless a later PR explicitly reclassifies a target.
+- New toolbox, game, sample, engine, and Theme V2 work must not use archived material as the implementation source of truth.
+- Cleanup and governance docs should refer to archived V1/V2 reference material through `archive/v1-v2/`.
 
 ## GAMEFOUNDRYSTUDIO NORTH STAR
 
@@ -717,11 +732,11 @@ Boundary rules:
 Authoritative `src/` boundary rules:
 - `src/` is the authoritative reusable implementation surface
 - reusable logic should converge into `src/` over time
-- `old_games/`, `old_samples/`, and `toolbox/` are consumers or extensions of `src/`, not alternate engine layers
-- `old_games/`, `old_samples/`, and `toolbox/` must not become parallel runtime frameworks
+- `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, and `toolbox/` are consumers or extensions of `src/`, not alternate engine layers
+- `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, and `toolbox/` must not become parallel runtime frameworks
 
 Mandatory capability discovery rule:
-- before Codex writes new behavior into deprecated `old_games/`, deprecated `old_samples/`, or `toolbox/`, Codex must check whether equivalent or reusable capability already exists in `src/`
+- before Codex writes new behavior into deprecated `archive/v1-v2/tools/`, deprecated `archive/v1-v2/games/`, deprecated `archive/v1-v2/samples/`, or `toolbox/`, Codex must check whether equivalent or reusable capability already exists in `src/`
 - Codex must reuse or extend existing `src/` capability when appropriate
 - if capability belongs in `src/` but does not exist, Codex must state that and either add or update `src/` when PR scope authorizes it, or document the required `src/` follow-up instead of creating a local workaround
 

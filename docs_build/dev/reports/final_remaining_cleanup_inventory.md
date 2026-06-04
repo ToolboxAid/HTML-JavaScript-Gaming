@@ -7,14 +7,14 @@
   - Tool Builder
   - Tool Creator
 - Confirmed all 20 active toolbox pages are header-wired, index-wired, and template-marker complete.
-- Moved deprecated preview-generator support from `toolbox/shared/preview/` to `old-tools/shared-preview/`.
+- Moved deprecated preview-generator support from `toolbox/shared/preview/` to `archive/v1-v2/tools/shared-preview/`.
 - Confirmed active Theme V2 references resolve and no active `styles.css` dependency remains.
 
 ## Remaining Cleanup Candidates
 
 | Candidate | Classification | Recommended Follow-Up |
 | --- | --- | --- |
-| `toolbox/toolRegistry.js` | Ambiguous active/legacy bridge | Split active registry from legacy registry, then move legacy entries to `old-tools` ownership. |
+| `toolbox/toolRegistry.js` | Ambiguous active/legacy bridge | Split active registry from legacy registry, then move legacy entries to `archive/v1-v2/tools` ownership. |
 | `toolbox/renderToolsIndex.js` | Ambiguous legacy renderer | Decide whether it remains an active validation target or moves with legacy registry/rendering support. |
 | `assets/theme-v2/css/styles.css` | Unwired aggregate | Remove in a dedicated Theme V2 CSS residue PR if no external consumer exists. |
 | `assets/theme-v2/css/site-colors.css`, `site-controls.css`, `gamefoundrystudio.css`, `pages.css`, `tokens.css` | Unwired or aggregate-era residue | Confirm whether any are intended design-system modules, then delete or wire intentionally. |
@@ -29,9 +29,9 @@
 ## Current Active Structure Confirmation
 
 - `toolbox/`: active toolbox pages, active toolbox index, template source, schemas, and shared/validation support.
-- `old-tools/`: deprecated tools and legacy support, now including `shared-preview/`.
+- `archive/v1-v2/tools/`: deprecated tools and legacy support, now including `shared-preview/`.
 - `games/`: active public game discovery/type pages.
-- `old_games/`: deprecated playable reference games.
-- `old_samples/`: deprecated reference samples.
+- `archive/v1-v2/games/`: deprecated playable reference games.
+- `archive/v1-v2/samples/`: deprecated reference samples.
 - `scripts/`: active validation and artifact tooling.
 - `tests/`: active and ambiguous validation inventory, with deprecated-only tests already pruned in prior stack.

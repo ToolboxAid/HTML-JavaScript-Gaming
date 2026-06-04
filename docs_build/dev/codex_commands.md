@@ -2,56 +2,48 @@
 
 Task:
 
-- `PR_26154_034-toolbox-inventory-convergence`
-- `PR_26154_035-theme-v2-asset-wiring-closeout`
-- `PR_26154_036-legacy-ownership-final-audit`
+- `PR_26154_037-archive-v1-v2-reference-material`
 
 Changes:
 
 - Read `.codex/skills/repo-build/SKILL.md`.
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- Used `PR_26154_031-033-template-test-root-polish` as the current baseline.
-- Inventoried all 20 active `toolbox/[toolname]/index.html` pages.
-- Added missing active toolbox index entries for Configuration Admin, Tool Builder, and Tool Creator.
-- Confirmed active toolbox pages are header-wired, index-wired, and template-marker complete.
-- Audited `assets/theme-v2` CSS, fonts, images, JS, and partials.
-- Confirmed Font Awesome is wired through `assets/theme-v2/fonts/fontawesome`.
-- Moved deprecated preview-generator support from `toolbox/shared/preview/` to `old-tools/shared-preview/`.
-- Classified toolbox, old-tools, games, old_games, old_samples, scripts, and tests ownership.
+- Created `archive/v1-v2/`.
+- Moved `old-tools/` to `archive/v1-v2/tools/`.
+- Moved `old_games/` to `archive/v1-v2/games/`.
+- Moved `old_samples/` to `archive/v1-v2/samples/`.
+- Updated `docs_build/` references to the archive paths.
+- Added archive ownership governance to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Confirmed active shared header/footer/toolbox navigation was not updated to point into the archive.
+- Reported remaining root folders and ambiguous old-path references outside `docs_build/`.
 - Did not modify `start_of_day/`.
 
 Validation:
 
-- Ran targeted active toolbox inventory checks.
-- Ran targeted Theme V2 reference resolution checks.
-- Ran targeted retired path checks for `assets/theme/v2`, `assets/theme-v2/assets`, `assets/theme-v2/css/styles.css`, `favicon.ico`, and `GameFoundryStudio/`.
-- Ran active reference check for `toolbox/shared/preview/` after moving it.
-- Ran `node --check toolbox/tools-page-accordions.js`.
-- Ran `npm run test:playwright:static`.
-- Ran `npm run test:workspace-v2`.
+- Ran targeted reference checks for `old-tools`, `old_games`, `old_samples`, `archive/v1-v2`, and `tmp`.
+- Ran active navigation checks for `archive/v1-v2` links.
+- Ran static validation for changed Markdown, JSON, HTML, JS, and CSS paths.
 - Ran `git diff --check`.
 - Regenerated required Codex review artifacts.
 - Packaged repo-structured ZIP:
-  - `tmp/PR_26154_034-036-toolbox-theme-legacy-audit_delta.zip`
+  - `tmp/PR_26154_037-archive-v1-v2-reference-material_delta.zip`
 
 Required reports:
 
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
-- `docs_build/dev/reports/toolbox_inventory_convergence_report.md`
-- `docs_build/dev/reports/theme_v2_asset_wiring_closeout_report.md`
-- `docs_build/dev/reports/legacy_ownership_final_audit_report.md`
-- `docs_build/dev/reports/final_remaining_cleanup_inventory.md`
+- `docs_build/dev/reports/archive_v1_v2_reference_material_report.md`
+- `docs_build/dev/reports/root_tree_cleanup_review_report.md`
 
 Validation summary:
 
-- PASS active toolbox inventory: `20/20` header-wired, `20/20` index-wired, `20/20` template-marker complete.
-- PASS toolbox index group order and in-group tool order are alphabetical.
-- PASS active Theme V2 file references resolve on disk.
-- PASS no active dependency on `assets/theme-v2/css/styles.css`.
-- PASS no active imports of `toolbox/shared/preview/` remain after the move.
-- PASS `npm run test:playwright:static`.
-- PASS `npm run test:workspace-v2` with `2 passed`.
-- PASS `git diff --check`.
-- SKIPPED tests against `old-tools/`, `old_games/`, and `old_samples/` per request.
+- PASS: `old-tools/`, `old_games/`, and `old_samples/` no longer exist at repository root.
+- PASS: `archive/v1-v2/tools/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples/` exist.
+- PASS: archive counts are 363 tool files, 311 game files, and 1,580 sample files.
+- PASS: `docs_build/` folder references now point to `archive/v1-v2/`; outside this PR's new report and handoff files, remaining old-name hits are historical `old_samples.js` filenames.
+- PASS: active app navigation does not point into `archive/v1-v2/`.
+- WARN: old-path strings remain outside `docs_build/` in active/ambiguous scripts, tests, toolbox, and engine/shared files; reported without changing runtime behavior.
+- PASS: `git diff --check`.
+- SKIPPED tests against `archive/v1-v2/` per request.
 - SKIPPED full samples smoke test per request.
+- SKIPPED `npm run test:workspace-v2` because active toolbox navigation did not change.

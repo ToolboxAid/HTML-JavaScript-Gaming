@@ -10,13 +10,13 @@ No other active toolbox page was modified.
 
 Before deleting the active Localization folder, the current implementation was copied to:
 
-- `old-tools/localization_pre_template_rebuild/`
+- `archive/v1-v2/tools/localization_pre_template_rebuild/`
 
 The preserved backup contains:
 
-- `old-tools/localization_pre_template_rebuild/index.html`
-- `old-tools/localization_pre_template_rebuild/css/localization-studio.css`
-- `old-tools/localization_pre_template_rebuild/js/localization-studio.js`
+- `archive/v1-v2/tools/localization_pre_template_rebuild/index.html`
+- `archive/v1-v2/tools/localization_pre_template_rebuild/css/localization-studio.css`
+- `archive/v1-v2/tools/localization_pre_template_rebuild/js/localization-studio.js`
 
 ## Active Rebuild
 
@@ -71,15 +71,15 @@ No active toolbox registration or launch path was changed.
 
 ## Validation
 
-- PASS: required files exist under `toolbox/localization/`, `old-tools/localization_pre_template_rebuild/`, and `toolbox/_tool_template-v2/`.
+- PASS: required files exist under `toolbox/localization/`, `archive/v1-v2/tools/localization_pre_template_rebuild/`, and `toolbox/_tool_template-v2/`.
 - PASS: active `toolbox/localization/` has no local `css/` or `js/` folders.
 - PASS: active Localization page contains the expected template wiring, shared CSS, shared partial loader, ToolDisplayMode script, and `localization-studio` display-mode slug.
 - PASS: active Localization page has no references to `css/localization-studio.css`, `js/localization-studio.js`, `localization-workspace`, or `localization-status-grid`.
 - PASS: active Localization link remains present in `toolbox/tools-page-accordions.js`.
 - PASS: static path and encoding validation for the rebuilt active HTML.
-- PASS: static path and encoding validation for the preserved old-tools backup HTML/CSS.
-- PASS: `node --check old-tools/localization_pre_template_rebuild/js/localization-studio.js`.
+- PASS: static path and encoding validation for the preserved archive/v1-v2/tools backup HTML/CSS.
+- PASS: `node --check archive/v1-v2/tools/localization_pre_template_rebuild/js/localization-studio.js`.
 - PASS: `git diff --check`.
 - SKIPPED: `npm run test:workspace-v2` because active toolbox registration and launch behavior were not changed.
-- SKIPPED: tests against `old-tools/`, `old_games/`, and `old_samples` per request.
+- SKIPPED: tests against `archive/v1-v2/tools/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples` per request.
 - SKIPPED: full samples smoke test per request.

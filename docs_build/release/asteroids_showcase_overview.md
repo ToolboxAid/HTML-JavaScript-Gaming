@@ -6,7 +6,7 @@ asteroids_showcase_overview.md
 # Asteroids Debug Showcase Overview
 
 ## Canonical Showcase
-`old_games/Asteroids/` is the canonical productization showcase for the debug platform.
+`archive/v1-v2/games/Asteroids/` is the canonical productization showcase for the debug platform.
 
 It demonstrates:
 - classic Asteroids gameplay expectations
@@ -15,9 +15,9 @@ It demonstrates:
 - concrete debug visibility for ship, bullets, asteroids, score, lives, and waves
 
 ## Entry Point
-- Game launch: `old_games/Asteroids/index.html`
-- Runtime boot: `old_games/Asteroids/main.js`
-- Showcase scene: `old_games/Asteroids/game/AsteroidsGameScene.js`
+- Game launch: `archive/v1-v2/games/Asteroids/index.html`
+- Runtime boot: `archive/v1-v2/games/Asteroids/main.js`
+- Showcase scene: `archive/v1-v2/games/Asteroids/game/AsteroidsGameScene.js`
 
 ## Debug Surface Coverage
 - Session panel: mode, wave, active player, score, lives, high score, pause state

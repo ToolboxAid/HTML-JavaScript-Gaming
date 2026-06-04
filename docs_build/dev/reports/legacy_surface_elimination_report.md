@@ -20,7 +20,7 @@ Reason: `tests/theme.test.js` imported `src/engine/theme/Theme.js` and `src/engi
 
 The following files remain because active references or ambiguous ownership still exist:
 
-- `toolbox/toolRegistry.js`: legacy-heavy registry with many `old-tools/` entries, but still imported by `toolbox/shared/toolLaunchSSoTData.js` and tests.
+- `toolbox/toolRegistry.js`: legacy-heavy registry with many `archive/v1-v2/tools/` entries, but still imported by `toolbox/shared/toolLaunchSSoTData.js` and tests.
 - `toolbox/renderToolsIndex.js`: not used by the current `toolbox/index.html`, but still referenced by docs/tests and depends on `toolbox/toolRegistry.js`.
 - `toolbox/shared/`: still imported by active tests and shared tool-support modules.
 - `toolbox/dev/`: still wired from root package scripts such as `pretest` and guard commands.
@@ -58,9 +58,9 @@ Active:
 
 Legacy or deprecated:
 
-- `old-tools/`.
-- `old_games/`.
-- `old_samples/`.
+- `archive/v1-v2/tools/`.
+- `archive/v1-v2/games/`.
+- `archive/v1-v2/samples/`.
 - Deprecated-only references to `assets/theme/v2/css/styles.css`.
 - Historical docs/reports mentioning `src/engine/theme`.
 

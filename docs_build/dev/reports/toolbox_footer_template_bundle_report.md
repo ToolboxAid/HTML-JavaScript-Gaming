@@ -19,7 +19,7 @@ Confirmed:
 - Deprecated-only scripts/tests removed in PR_26154_021 were not restored.
 - Removed Arcade tooling entries were not restored in `toolbox/index.html` or `toolbox/tools-page-accordions.js`.
 - `package.json` remains at repository root.
-- `old-tools/`, `old_games/`, and `old_samples/` were not used as active validation targets.
+- `archive/v1-v2/tools/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples/` were not used as active validation targets.
 
 ## Template Rename
 
@@ -40,7 +40,7 @@ Completed:
 - Active header, footer, home, toolbox index, script, schema, test, and Workspace/tool launch references were updated from the removed public `tools/` path to `toolbox/`.
 - `assets/theme/v2/js/gamefoundry-partials.js` now uses the `toolbox` route key and root segment for shared nav highlighting.
 - `scripts/validate-active-tools-surface.mjs`, `scripts/validate-tool-registry.mjs`, `toolbox/dev/checkSharedExtractionGuard.mjs`, and active route tests now point at `toolbox/`.
-- `old-tools/` was not renamed or moved.
+- `archive/v1-v2/tools/` was not renamed or moved.
 
 Notes:
 - Remaining `tools` path segments that are not stale active-root references are category namespaces such as `tests/tools/`, `tests/playwright/tools/`, `toolbox/schemas/tools/`, `assets/theme/v2/images/tools/`, `assets/theme/v2/css/tools/`, `src/shared/contracts/tools/`, and `src/tools/common/`.
@@ -93,5 +93,5 @@ PASS:
 - Focused Playwright marketplace nested-menu visibility check.
 
 Skipped per request:
-- No tests against `old-tools/`, `old_games/`, or `old_samples/`.
+- No tests against `archive/v1-v2/tools/`, `archive/v1-v2/games/`, or `archive/v1-v2/samples/`.
 - No full samples smoke test.

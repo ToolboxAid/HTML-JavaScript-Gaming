@@ -5,11 +5,11 @@ Task: `PR_26154_015-theme-v1-removal-fontawesome-v2`
 ## Scope
 
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- Audited active references to `assets/theme/v1` excluding docs, tests, reports, `old-tools/`, `old_games/`, `old_samples/`, and `start_of_day/`.
+- Audited active references to `assets/theme/v1` excluding docs, tests, reports, `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, and `start_of_day/`.
 - Moved Font Awesome from Theme V1 assets to Theme V2 fonts.
 - Updated the active runtime import that consumed Font Awesome.
 - Checked `src/engine/theme/CapturePreviewRuntime.js` and `src/engine/theme/`.
-- Did not modify `start_of_day/`, `old_games/`, `old_samples/`, or `old-tools/`.
+- Did not modify `start_of_day/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, or `archive/v1-v2/tools/`.
 
 ## Changes
 
@@ -59,6 +59,6 @@ Moved files:
 - PASS: `src/engine/theme/` remains non-empty with runtime-owned files.
 - PASS: Static validation for changed HTML, JS, CSS, JSON, and Markdown files.
 - PASS: `git diff --check`.
-- PASS: `git status --short -- start_of_day old_games old_samples old-tools` returned no output.
+- PASS: `git status --short -- start_of_day archive/v1-v2/games archive/v1-v2/samples archive/v1-v2/tools` returned no output.
 - SKIPPED: `npm run test:workspace-v2`; active Workspace V2 launch/navigation behavior was not changed.
 - SKIPPED: old games, old samples, old tools, and full samples smoke tests per request.

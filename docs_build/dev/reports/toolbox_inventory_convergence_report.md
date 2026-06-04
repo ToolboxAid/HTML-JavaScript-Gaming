@@ -65,7 +65,7 @@ Template marker criteria:
 - PASS group order is alphabetical: AI, Assets, Audio, Colors, Input, Objects, Tooling, Worlds.
 - PASS tools inside every group are alphabetized by visible tool title.
 
-## Tools That Should Move To old-tools
+## Tools That Should Move To archive/v1-v2/tools
 
-- No active `toolbox/[toolname]/index.html` pages should move to `old-tools`.
-- Deprecated non-page preview-generator support was handled under `PR_26154_036` and moved from `toolbox/shared/preview/` to `old-tools/shared-preview/`.
+- No active `toolbox/[toolname]/index.html` pages should move to `archive/v1-v2/tools`.
+- Deprecated non-page preview-generator support was handled under `PR_26154_036` and moved from `toolbox/shared/preview/` to `archive/v1-v2/tools/shared-preview/`.

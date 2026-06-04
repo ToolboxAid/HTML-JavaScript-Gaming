@@ -13,7 +13,7 @@ These items were identified during closeout but intentionally not moved in this 
 | `toolbox/renderToolsIndex.js` and `toolbox/toolRegistry.js` | Active root-level tool support files. Consolidation would require a separate import/launcher audit. |
 | `games/assets/` | Active game support assets, not a game category page. No move recommended without a new assets ownership PR. |
 | `docs_build/` historical archives and reports | Historical records still mention old paths by design; not active runtime references. |
-| `old-tools/`, `old_games/`, `old_samples/` | Deprecated reference/playable areas preserved by request. |
+| `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/` | Deprecated reference/playable areas preserved by request. |
 
 ## Confirmed Closed
 
@@ -27,5 +27,5 @@ These items were identified during closeout but intentionally not moved in this 
 
 ## Notes
 
-- `old_samples/` references remain where they preserve deprecated sample access or validation routing.
+- `archive/v1-v2/samples/` references remain where they preserve deprecated sample access or validation routing.
 - `toolbox/shared/samples/` and `toolbox/schemas/samples/` are active support/schema namespaces, not deprecated root sample paths.

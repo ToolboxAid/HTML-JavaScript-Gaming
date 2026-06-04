@@ -124,7 +124,7 @@
 - [x] Do the same thing for games, but use Workspace Manager.
 - [x] 100% of the game data needs to be generated from Workspace Manager
 - [x] No Tool should be used independently
-- [x] Add `Tool` filter to `old_games/index.html` and prepopulate from `?tool=<toolId>`.
+- [x] Add `Tool` filter to `archive/v1-v2/games/index.html` and prepopulate from `?tool=<toolId>`.
 - [x] Render metadata-driven game-to-tool roundtrip links from `games[].toolHints`.
 - [x] Pass game launch context in roundtrip links (`gameId`, `gameTitle`, `gameHref`, `workspaceHref`, `returnTo`).
 - [x] Render game return line in tools header when launched from game roundtrip links.

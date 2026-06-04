@@ -6,7 +6,7 @@ Task: `PR_26154_012-root-asset-reference-cleanup`
 
 - Audited active public/root pages, active tools, games, public docs, assets, scripts, and source helpers for stale asset/root paths.
 - Fixed one stale runtime-theme documentation reference in `src/engine/theme/README.md`.
-- Did not modify `old_games/` or `old_samples/`.
+- Did not modify `archive/v1-v2/games/` or `archive/v1-v2/samples/`.
 - Did not rewrite historical `docs_build/dev/reports/**` content.
 
 ## Fixed References
@@ -52,9 +52,9 @@ Included active roots:
 Excluded:
 
 - `start_of_day/`
-- `old_games/`
-- `old_samples/`
-- `old-tools/`
+- `archive/v1-v2/games/`
+- `archive/v1-v2/samples/`
+- `archive/v1-v2/tools/`
 - `node_modules/`
 - `tmp/`
 - `tests/results/`

@@ -1,8 +1,7 @@
-Converge toolbox inventory, audit Theme V2 wiring, and move deprecated preview support - PR_26154_034-036
+Archive deprecated V1/V2 reference material - PR_26154_037
 
-- Add missing active toolbox index entries for Configuration Admin, Tool Builder, and Tool Creator.
-- Confirm all 20 active toolbox pages are header-wired, index-wired, and template-marker complete.
-- Audit Theme V2 CSS, fonts, images, JS, and partials, including Font Awesome wiring and unwired residue.
-- Move deprecated old-samples preview-generator support from toolbox/shared/preview to old-tools/shared-preview.
-- Classify remaining toolbox, legacy, scripts, and tests ownership and document remaining cleanup candidates.
-- Validate static checks, Workspace V2, targeted path scans, diff hygiene, and repo-structured delta packaging.
+- Move deprecated tools, games, and samples into archive/v1-v2 ownership.
+- Update docs_build references and governance to point at archive/v1-v2 paths.
+- Keep active app navigation from linking into archived material.
+- Report remaining ambiguous root folders and old-path references outside docs_build.
+- Validate targeted references, static changed files, diff hygiene, and repo-structured delta packaging.

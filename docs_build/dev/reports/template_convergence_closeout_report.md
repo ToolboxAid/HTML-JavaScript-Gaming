@@ -59,5 +59,5 @@ Active toolbox checks:
 ## Validation Notes
 
 - Full samples smoke test skipped by request.
-- Tests against `old-tools/`, `old_games/`, and `old_samples/` skipped by request.
+- Tests against `archive/v1-v2/tools/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples/` skipped by request.
 - `npm run test:workspace-v2` is required for this stack because active toolbox display-mode wiring changed.

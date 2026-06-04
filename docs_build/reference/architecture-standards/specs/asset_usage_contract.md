@@ -58,7 +58,7 @@ Normalized shape:
 {
   "assetId": "asset-vector-player",
   "assetType": "vector",
-  "sourcePath": "../../old_games/Asteroids/assets/vectors/asteroids-ship.vector.json",
+  "sourcePath": "../../archive/v1-v2/games/Asteroids/assets/vectors/asteroids-ship.vector.json",
   "displayName": "Asteroids Ship Vector",
   "tags": ["Vector Assets"],
   "metadata": {

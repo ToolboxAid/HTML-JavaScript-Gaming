@@ -2,7 +2,7 @@
 
 ## Scope and Safety
 - Change set is docs-only for this PR
-- No src/engine/tools/samples/old_games/tests/runtime code modified
+- No src/engine/tools/samples/archive/v1-v2/games/tests/runtime code modified
 - `docs_build/pr/` history remains intact
 
 ## Dev Surface

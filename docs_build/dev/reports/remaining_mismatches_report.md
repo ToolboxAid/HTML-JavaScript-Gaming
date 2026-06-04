@@ -28,9 +28,9 @@ No remaining template-critical mismatches were found for:
 
 The audit intentionally excludes:
 
-- `old-tools/`.
-- `old_games/`.
-- `old_samples/`.
+- `archive/v1-v2/tools/`.
+- `archive/v1-v2/games/`.
+- `archive/v1-v2/samples/`.
 - `start_of_day/`.
 - Generated reports.
 - The template source files themselves when counting active pages.

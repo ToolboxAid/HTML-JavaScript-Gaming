@@ -14,7 +14,7 @@ asteroids_showcase_controls_and_flags.md
 - `Enter`: continue from game-over prompt
 
 ## Debug Flags
-Build/config defaults in `old_games/Asteroids/main.js`:
+Build/config defaults in `archive/v1-v2/games/Asteroids/main.js`:
 - `BUILD_DEBUG_MODE`
 - `BUILD_DEBUG_ENABLED`
 

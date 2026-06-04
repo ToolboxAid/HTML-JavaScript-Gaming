@@ -24,5 +24,5 @@ README.md
 - `src/engine/`: stable foundational runtime systems
 - `src/advanced/`: composable advanced architecture layer
 - `samples/`: usage demonstrations
-- `old_games/`: deprecated playable reference games
+- `archive/v1-v2/games/`: deprecated playable reference games
 - `toolbox/`: editor and pipeline tooling

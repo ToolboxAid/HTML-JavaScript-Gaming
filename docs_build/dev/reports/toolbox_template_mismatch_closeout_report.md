@@ -24,7 +24,7 @@ Audit criteria:
 
 - Public/root pages: `assets/theme-v2/css/theme.css`, no active `assets/theme/v2`, no active `assets/theme-v2/css/styles.css`, and `page-title` on non-home public/root pages.
 - Active toolbox pages: `assets/theme-v2/css/theme.css`, `data-tool-display-mode`, `data-tool-slug`, `tool-display-mode.js`, `tool-workspace`, at least two `tool-column` markers, and `tool-center-panel`.
-- Excluded `old-tools/`, `old_games/`, `old_samples/`, `start_of_day/`, generated reports, and template source files when counting active pages.
+- Excluded `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, `start_of_day/`, generated reports, and template source files when counting active pages.
 
 | Surface | Before | After | Remaining Mismatches |
 | --- | ---: | ---: | ---: |

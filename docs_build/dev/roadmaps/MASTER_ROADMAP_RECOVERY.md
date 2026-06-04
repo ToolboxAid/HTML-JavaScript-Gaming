@@ -8,7 +8,7 @@
 - [x] Remove anti-pattern drift through constrained replay PRs
 - [x] Enforce SSoT for tool launch across games and samples
 - [x] Enforce external-launch memory reset without fallback behavior
-- [x] Validate Workspace Manager launch flow from `old_games/index.html`
+- [x] Validate Workspace Manager launch flow from `archive/v1-v2/games/index.html`
 - [x] Re-verify codex rule enforcement on recovery lane
 - [x] Resume normal roadmap progression after recovery gate passes
 

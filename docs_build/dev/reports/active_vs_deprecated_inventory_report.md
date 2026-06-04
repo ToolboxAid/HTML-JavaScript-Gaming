@@ -52,15 +52,15 @@ Active tool support areas/files:
 
 | Area | Ownership | Verification |
 | --- | --- | --- |
-| `old-tools/` | Deprecated tool references. | Contains deprecated `old_*` tools plus deprecated/common support folders. |
-| `old_games/` | Deprecated playable games. | Contains legacy playable game folders and support/metadata files. |
-| `old_samples/` | Deprecated samples. | Contains legacy phase sample folders and support/metadata files. |
+| `archive/v1-v2/tools/` | Deprecated tool references. | Contains deprecated `old_*` tools plus deprecated/common support folders. |
+| `archive/v1-v2/games/` | Deprecated playable games. | Contains legacy playable game folders and support/metadata files. |
+| `archive/v1-v2/samples/` | Deprecated samples. | Contains legacy phase sample folders and support/metadata files. |
 
 ## Remaining Cleanup Candidates
 
 These were identified but not moved in this PR:
 
-- `toolbox/_tool_template-v2/` still exists under `toolbox/` with an `index.html`; confirm whether it is an active template surface or should join deprecated template content under `old-tools/`.
+- `toolbox/_tool_template-v2/` still exists under `toolbox/` with an `index.html`; confirm whether it is an active template surface or should join deprecated template content under `archive/v1-v2/tools/`.
 - `toolbox/dev/`, `toolbox/schemas/`, and `toolbox/shared/` are support folders under `toolbox/`, not user-facing tool surfaces. Future structure cleanup could document this exception or move support code if a new owner is approved.
 - `toolbox/renderToolsIndex.js` and `toolbox/toolRegistry.js` remain root-level tool support files; future cleanup could consolidate them only if active imports are mapped first.
 - `games/assets/` is a support folder under `games/`, not a game category page.
@@ -69,5 +69,5 @@ These were identified but not moved in this PR:
 ## Validation
 
 - PASS: Active stale-reference validation for `GameFoundryStudio/`, `src/engine/theme/`, `assets/theme/v1/`, and `favicon.ico`.
-- PASS: Active structure inventory completed for `toolbox/`, `old-tools/`, `games/`, `old_games/`, `old_samples/`, `docs/`, and `docs_build/`.
+- PASS: Active structure inventory completed for `toolbox/`, `archive/v1-v2/tools/`, `games/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, `docs/`, and `docs_build/`.
 - PASS: Deprecated areas were not modified.

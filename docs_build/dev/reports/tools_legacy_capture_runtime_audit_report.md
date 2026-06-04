@@ -15,7 +15,7 @@ Classification: `obsolete`.
 
 Evidence:
 
-- Active reference search excluding docs, tests, reports, `old-tools/`, `old_games/`, `old_samples/`, `start_of_day/`, and `tmp/` found no imports or calls for:
+- Active reference search excluding docs, tests, reports, `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, `start_of_day/`, and `tmp/` found no imports or calls for:
   - `toolbox/shared/tooling/CapturePreviewRuntime.js`
   - `CapturePreviewRuntime.js`
   - `bootCapturePreview`
@@ -40,7 +40,7 @@ Change:
 | `toolbox/builder/` | Ambiguous standalone tool page | Not moved; no proof in this PR that direct access is deprecated. |
 | `toolbox/creator/` | Ambiguous standalone tool page | Not moved; no proof in this PR that direct access is deprecated. |
 
-No folders were moved from `toolbox/` to `old-tools/` in this PR because the remaining legacy-looking folders were either actively referenced or ambiguous.
+No folders were moved from `toolbox/` to `archive/v1-v2/tools/` in this PR because the remaining legacy-looking folders were either actively referenced or ambiguous.
 
 ## Scripts Audit
 
@@ -50,7 +50,7 @@ No folders were moved from `toolbox/` to `old-tools/` in this PR because the rem
 | `scripts/skip-deprecated-sample-tests.mjs` | Test-related deprecated-samples skip shim still used by package scripts | Moved to `tests/validation/skip-deprecated-sample-tests.mjs`. |
 | `scripts/generate-sample-manifest.mjs` | Active package script | Kept. |
 | `scripts/normalize-games-presentation.mjs` | Active package script | Kept. |
-| Other scripts mentioning `old_samples` or `old_games` | Current deprecated-reference support | Kept; not V1 theme cleanup scripts. |
+| Other scripts mentioning `archive/v1-v2/samples` or `archive/v1-v2/games` | Current deprecated-reference support | Kept; not V1 theme cleanup scripts. |
 
 No obsolete V1 theme cleanup scripts were found with enough evidence to remove.
 

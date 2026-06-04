@@ -4,8 +4,8 @@
 
 Implemented `PR_26154_003-deprecated-games-docs-tools-normalize` as a path, documentation, and registration normalization pass.
 
-- Renamed `games/` to `old_games/`.
-- Kept `old_games/` playable as deprecated reference games.
+- Renamed `games/` to `archive/v1-v2/games/`.
+- Kept `archive/v1-v2/games/` playable as deprecated reference games.
 - Excluded deprecated game validation from active automated game test scripts.
 - Moved public-site implementation docs out of `/docs/` and into `/docs_build/`.
 - Moved root tool pages into `toolbox/<toolname>/index.html`.
@@ -17,7 +17,7 @@ Implemented `PR_26154_003-deprecated-games-docs-tools-normalize` as a path, docu
 
 | Source | Destination | Status |
 | --- | --- | --- |
-| `games/` | `old_games/` | moved |
+| `games/` | `archive/v1-v2/games/` | moved |
 | `docs/design/` | `docs_build/design/` | moved |
 | `docs/reference/` | `docs_build/reference/` | moved |
 | `docs/release/` | `docs_build/release/` | moved |
@@ -59,7 +59,7 @@ The `toolbox/` root now retains only `toolbox/index.html` as a root HTML page.
 - Updated Theme V2 route mapping in `assets/theme/v2/js/gamefoundry-partials.js`.
 - Updated shared Theme V2 header/footer partial links for moved tool pages.
 - Corrected public Reference route from `docs_build/reference.html` to `docs/reference.html`.
-- Kept public Games navigation on `arcade/index.html`; deprecated playable reference games live under `old_games/` and are not the active public games hub.
+- Kept public Games navigation on `arcade/index.html`; deprecated playable reference games live under `archive/v1-v2/games/` and are not the active public games hub.
 
 ### Tool Index and Registration
 
@@ -70,7 +70,7 @@ The `toolbox/` root now retains only `toolbox/index.html` as a root HTML page.
 
 ### Deprecated Games
 
-- Updated active helpers and tests that manage path contracts to use `old_games/` where they intentionally refer to deprecated playable references.
+- Updated active helpers and tests that manage path contracts to use `archive/v1-v2/games/` where they intentionally refer to deprecated playable references.
 - Updated asset pipeline helpers, manifest path helpers, vector template helpers, and launch SSoT helpers to avoid assuming active `games/`.
 - Updated package scripts so game validation commands call `scripts/skip-deprecated-game-tests.mjs`.
 - Removed active `tests/games` imports from `tests/run-tests.mjs`.
@@ -91,7 +91,7 @@ The `toolbox/` root now retains only `toolbox/index.html` as a root HTML page.
 | Command | Result | Notes |
 | --- | --- | --- |
 | `npm run test:workspace-v2` | PASS | 2 Playwright tests passed for root tools surface and Tool Template V2 root Theme V2 loading. |
-| `npm run test:workspace-manager:games` | PASS | Command reports SKIP because deprecated `old_games` are excluded from active automated tests. |
+| `npm run test:workspace-manager:games` | PASS | Command reports SKIP because deprecated `archive/v1-v2/games` are excluded from active automated tests. |
 | Active changed-file static validation | PASS | 49 JS/MJS files syntax-checked, 10 JSON files parsed, 25 active HTML files checked. |
 | `node toolbox/dev/checkSharedExtractionGuard.mjs` | PASS | Baseline matched: 1273 files scanned, 759 expected violations. |
 | Targeted path/reference validation | PASS with WARN | Required moved folders, public docs, tool routes, start_of_day status, and deprecated game test exclusion passed. |
@@ -100,7 +100,7 @@ The `toolbox/` root now retains only `toolbox/index.html` as a root HTML page.
 ## Warnings
 
 - Historical generated reports under `docs_build/reports/` still contain `games/` prose from earlier PR evidence.
-- Retired game tests under `tests/games/` and old Playwright game/tool specs still contain legacy `games/` imports and fixture references. They are excluded from active validation and were not migrated into `old_games` tests.
+- Retired game tests under `tests/games/` and old Playwright game/tool specs still contain legacy `games/` imports and fixture references. They are excluded from active validation and were not migrated into `archive/v1-v2/games` tests.
 - Deprecated `toolbox/old_*` folders retain legacy `games/` assumptions by design. Their runtime code was not modified except for the companion path adjustment needed by `toolbox/old_localization-studio/index.html`.
 - Legacy PowerShell scaffolding helpers retain old `games/` assumptions and were not part of the requested Node/JS validation route.
 
@@ -112,5 +112,5 @@ Full samples smoke test was skipped per request. This PR changes root IA, deprec
 
 1. Open `toolbox/index.html` and confirm each root tool card opens its `toolbox/<toolname>/index.html` destination.
 2. Open `toolbox/_tool_template-v2/index.html` and confirm Theme V2 CSS, partials, favicon, and scripts load from root paths.
-3. Open `old_games/index.html` and confirm the deprecated games index remains reachable.
+3. Open `archive/v1-v2/games/index.html` and confirm the deprecated games index remains reachable.
 4. Open `docs/index.html`, `docs/faq.html`, `docs/reference.html`, and `docs/support.html` and confirm `/docs/` remains user-facing only.

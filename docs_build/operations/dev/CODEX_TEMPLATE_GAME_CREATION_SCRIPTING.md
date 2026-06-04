@@ -1,6 +1,6 @@
 # Codex Template Game Creation Scripting
 
-Use `scripts/PS/New-Game-from-Template.ps1` to create a new game scaffold from `old_games/_template` with the standardized asset/data and tool-project contract.
+Use `scripts/PS/New-Game-from-Template.ps1` to create a new game scaffold from `archive/v1-v2/games/_template` with the standardized asset/data and tool-project contract.
 
 ## Script
 - `scripts/PS/New-Game-from-Template.ps1`
@@ -11,14 +11,14 @@ Use `scripts/PS/New-Game-from-Template.ps1` to create a new game scaffold from `
 ```
 
 ## Generated Structure
-- `old_games/<game>/` copied from `old_games/_template/`
-- `old_games/<game>/assets/<domain>/` and `old_games/<game>/assets/<domain>/data/` for:
+- `archive/v1-v2/games/<game>/` copied from `archive/v1-v2/games/_template/`
+- `archive/v1-v2/games/<game>/assets/<domain>/` and `archive/v1-v2/games/<game>/assets/<domain>/data/` for:
   - `sprites`
   - `tilemaps`
   - `parallax`
   - `vectors`
-- `old_games/<game>/assets/tools.manifest.json` (manifest scaffold)
-- `old_games/<game>/config/<game>.project.json` (tool project scaffold)
+- `archive/v1-v2/games/<game>/assets/tools.manifest.json` (manifest scaffold)
+- `archive/v1-v2/games/<game>/config/<game>.project.json` (tool project scaffold)
 
 ## Guardrails
 - Script normalizes `-GameId` to slug format for deterministic paths.

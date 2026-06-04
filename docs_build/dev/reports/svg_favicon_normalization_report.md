@@ -10,7 +10,7 @@ Task: `PR_26154_010-svg-favicon-normalization`
 - Updated active HTML favicon links to `/favicon.svg`.
 - Updated the default website deployment include list from `favicon.ico` to `favicon.svg`.
 - Found no active manifest icon references to update.
-- Did not modify `start_of_day/`, `old_games/`, or `old_samples/`.
+- Did not modify `start_of_day/`, `archive/v1-v2/games/`, or `archive/v1-v2/samples/`.
 
 ## File Move
 
@@ -30,7 +30,7 @@ Updated surfaces:
 - Root groups: `account/`, `admin/`, `community/`, `company/`, `docs/`, `learn/`, `legal/`, `marketplace/`
 - Games pages: `games/index.html`, `games/action/index.html`, `games/adventure/index.html`, `games/arcade/index.html`, `games/puzzle/index.html`, `games/racing/index.html`, `games/retro/index.html`, `games/strategy/index.html`
 - Tool pages: `toolbox/index.html`, active tool `index.html` files, `toolbox/_tool_template-v2/index.html`
-- Deprecated old tool reference touched only for favicon normalization: `old-tools/old_localization-studio/index.html`
+- Deprecated old tool reference touched only for favicon normalization: `archive/v1-v2/tools/old_localization-studio/index.html`
 
 Theme V2 references:
 - Removed the public favicon from `assets/theme/v2/images/`.
@@ -79,7 +79,7 @@ Targeted reference checks:
 - PASS no active references remain to `favicon.ico` outside current PR notes/reports before report generation.
 - PASS changed active HTML icon links point to `/favicon.svg`.
 - PASS no active manifest icon references were found.
-- PASS `start_of_day/`, `old_games/`, and `old_samples/` have no changes.
+- PASS `start_of_day/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples/` have no changes.
 
 HTTP path validation:
 - PASS `/favicon.svg` -> `200 image/svg+xml`
@@ -90,5 +90,5 @@ Static validation:
 
 Skipped:
 - `npm run test:workspace-v2` was not run because active Workspace V2 launch/navigation behavior was not changed.
-- Tests against `old_games` and `old_samples` were not run.
+- Tests against `archive/v1-v2/games` and `archive/v1-v2/samples` were not run.
 - Full samples smoke test was not run.

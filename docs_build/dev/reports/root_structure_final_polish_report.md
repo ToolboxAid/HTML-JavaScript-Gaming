@@ -19,7 +19,7 @@ Baseline used: latest applied root/theme/toolbox migration state after `PR_26154
 
 ## Active Stale Reference Audit
 
-Tracked active files were checked excluding `old-tools/`, `old_games/`, `old_samples/`, `start_of_day/`, `docs_build/`, and `tmp/`.
+Tracked active files were checked excluding `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, `start_of_day/`, `docs_build/`, and `tmp/`.
 
 | Path / Token | Active Runtime/Page References | Notes |
 | --- | ---: | --- |

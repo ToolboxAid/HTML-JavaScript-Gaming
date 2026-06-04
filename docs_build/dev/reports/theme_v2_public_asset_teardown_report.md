@@ -75,5 +75,5 @@ Passed:
 Skipped by scope:
 
 - `npm run test:workspace-v2`, unless active tool launch/navigation behavior changes
-- tests against `old_games` or `old_samples`
+- tests against `archive/v1-v2/games` or `archive/v1-v2/samples`
 - full samples smoke test

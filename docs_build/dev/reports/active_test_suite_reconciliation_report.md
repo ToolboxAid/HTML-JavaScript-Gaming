@@ -5,7 +5,7 @@ Baseline used: latest applied root/theme/toolbox migration state after `PR_26154
 ## Scope
 
 - Classified active test entry points, fixtures, helpers, and Playwright folders.
-- Removed tests that only targeted deprecated `old-tools`, `old_games`, `old_samples`, removed `tools/`, removed `samples/`, or removed legacy V2 tool folders.
+- Removed tests that only targeted deprecated `archive/v1-v2/tools`, `archive/v1-v2/games`, `archive/v1-v2/samples`, removed `tools/`, removed `samples/`, or removed legacy V2 tool folders.
 - Rewired active test lane metadata only where the intended active target was clear.
 - Kept root `package.json` in place.
 
@@ -97,7 +97,7 @@ Removed `61` deprecated-only test files:
 
 ## Ambiguous / Retained
 
-- `tests/final/ReleaseReadinessSystems.test.mjs` retains `old_samples/shared/theme.css` as a string fixture for packager deduplication behavior; it is not a deprecated sample runtime test.
+- `tests/final/ReleaseReadinessSystems.test.mjs` retains `archive/v1-v2/samples/shared/theme.css` as a string fixture for packager deduplication behavior; it is not a deprecated sample runtime test.
 - Active contract tests that assert paths are not `samples/` or `GameFoundryStudio/` were retained because they enforce current boundaries.
 - `tests/validation/samples.*.json` remains as historical validation fixture data. It is not invoked by the removed samples tests.
 - `tests/fixtures/v2-tools/` remains as ambiguous fixture inventory because this PR only deleted deprecated-only tests, not fixture archives.
@@ -109,4 +109,4 @@ Removed `61` deprecated-only test files:
 - PASS changed JavaScript syntax checks.
 - PASS `npm run test:playwright:static`.
 - PASS `npm run test:workspace-v2`.
-- SKIPPED tests against `old-tools/`, `old_games`, and `old_samples` per request.
+- SKIPPED tests against `archive/v1-v2/tools/`, `archive/v1-v2/games`, and `archive/v1-v2/samples` per request.

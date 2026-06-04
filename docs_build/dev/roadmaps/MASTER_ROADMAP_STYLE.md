@@ -43,7 +43,7 @@ Behavior only:
 - Four main entry pages stay visually very close:
   - `/index.html`
   - `/samples/index.html`
-  - `/old_games/index.html`
+  - `/archive/v1-v2/games/index.html`
   - `/toolbox/index.html`
 - Shared header + shared page intro/title area.
 - Header image stretches side-to-side while preserving aspect ratio.
@@ -163,7 +163,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 [x] Keep page visually very close to `/index.html`.
 [x] Use `samples.css` only for content-specific differences.
 
-### C3. Reset `/old_games/index.html`
+### C3. Reset `/archive/v1-v2/games/index.html`
 [x] Apply same shell and shared header.
 [x] Keep page visually very close to `/index.html`.
 [x] Use `games.css` only for content-specific differences.
@@ -260,7 +260,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 ## Suggested Execution Order
 [x] STYLE_01 — Reset `/index.html` using Toolbox Aid-derived base.
 [x] STYLE_02 — Reset `/samples/index.html`.
-[x] STYLE_03 — Reset `/old_games/index.html`.
+[x] STYLE_03 — Reset `/archive/v1-v2/games/index.html`.
 [x] STYLE_04 — Reset `/toolbox/index.html`.
 [x] STYLE_05 — Add `.is-collapsible` shared accordion behavior.
 [x] STYLE_06 — Establish shared tool shell and migrate one tool.

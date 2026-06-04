@@ -11,7 +11,7 @@ Launch Asteroids with:
 - optional mode override: `&debugMode=qa`
 
 Example:
-- `old_games/Asteroids/index.html?debug=1&debugMode=qa`
+- `archive/v1-v2/games/Asteroids/index.html?debug=1&debugMode=qa`
 
 ## Keyboard Toggles
 - `Shift + \``: toggle console

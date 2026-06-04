@@ -5,11 +5,11 @@ Define enforceable structure and shell behavior for games that opt into the vali
 
 ## Applicability
 This contract applies to:
-- `old_games/_template/`
-- any `old_games/*_next/` migration lane
+- `archive/v1-v2/games/_template/`
+- any `archive/v1-v2/games/*_next/` migration lane
 - canonical games currently migrated through the validated pipeline:
-  - `old_games/PacmanLite/`
-  - `old_games/SpaceInvaders/`
+  - `archive/v1-v2/games/PacmanLite/`
+  - `archive/v1-v2/games/SpaceInvaders/`
 
 Games outside this scope are not blocked by this contract until they are migrated through the same validated pipeline.
 
@@ -30,7 +30,7 @@ Each contract-managed game directory must include:
 
 ## Prohibited
 - DOM-first gameplay rendering as the primary runtime surface
-- imports or executable references to other games under `/old_games/<OtherGame>/`
+- imports or executable references to other games under `/archive/v1-v2/games/<OtherGame>/`
 - hardcoded executable paths into other game directories
 
 ## Enforcement

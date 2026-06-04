@@ -8,7 +8,7 @@ Task: `PR_26154_014-tools-index-sort-cleanup`
 - Kept `toolbox/index.html` layout and markup unchanged.
 - Updated the active Tools index data source: `toolbox/tools-page-accordions.js`.
 - Preserved existing group assignments and tool names.
-- Did not touch `old_games/`, `old_samples/`, or `start_of_day/`.
+- Did not touch `archive/v1-v2/games/`, `archive/v1-v2/samples/`, or `start_of_day/`.
 - Did not run full samples smoke validation.
 
 ## Ordering Changes
@@ -54,7 +54,7 @@ No tool hrefs were renamed or reassigned.
 - PASS: Targeted stale reference check found no `GameFoundryStudio/`, `src/engine/theme/`, `assets/theme/v2/assets/`, `assets/theme/v2/images/games/`, or `favicon.ico` references in the active Tools index files.
 - PASS: Static validation covered changed HTML/JS/CSS/JSON/Markdown paths.
 - PASS: `git diff --check`.
-- PASS: `git status --short -- start_of_day old_games old_samples` returned no output.
+- PASS: `git status --short -- start_of_day archive/v1-v2/games archive/v1-v2/samples` returned no output.
 - SKIPPED: `npm run test:workspace-v2`; active Workspace V2 launch/navigation behavior was not changed.
 - SKIPPED: old games, old samples, and full samples smoke tests per request.
 

@@ -23,7 +23,7 @@ This document captures the durable operating model for how this repository is or
 - `src/engine/` owns foundational reusable runtime systems.
 - `src/advanced/` owns composable higher-level architecture patterns.
 - `samples/` demonstrates usage patterns and should not become the source of reusable runtime logic.
-- `old_games/` contains deprecated playable reference games; they should not drive new engine boundaries.
+- `archive/v1-v2/games/` contains deprecated playable reference games; they should not drive new engine boundaries.
 - `toolbox/` contains editor and workflow tooling and should not modify engine internals directly unless explicitly scoped.
 
 ## Scene and Runtime Expectations

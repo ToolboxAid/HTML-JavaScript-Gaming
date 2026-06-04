@@ -12,7 +12,7 @@ This PR updates only shared active Theme V2/toolbox surfaces:
 - `assets/theme-v2/js/gamefoundry-partials.js`
 - `toolbox/tools-page-accordions.js`
 
-No `old-tools/`, `old_games/`, `old_samples/`, or `start_of_day/` files were modified.
+No `archive/v1-v2/tools/`, `archive/v1-v2/games/`, `archive/v1-v2/samples/`, or `start_of_day/` files were modified.
 
 ## Tool Display Character Sizing
 
@@ -66,7 +66,7 @@ Marketplace remains available as a product/capability destination:
 ## Targeted Checks
 
 - PASS: all active `toolbox/[toolname]/index.html` pages are represented in `assets/theme-v2/partials/header-nav.html`.
-- PASS: no deprecated `old-tools/`, `old_games/`, or `old_samples/` paths are present in the shared header.
+- PASS: no deprecated `archive/v1-v2/tools/`, `archive/v1-v2/games/`, or `archive/v1-v2/samples/` paths are present in the shared header.
 - PASS: `toolbox/index.html` and `toolbox/tools-page-accordions.js` contain no Marketplace tile/link entry.
 - PASS: `assets/theme-v2/partials/footer.html` still contains the Marketplace Product-column link.
 - PASS: zero active references remain to the retired `assets/theme/v2` path.
@@ -82,4 +82,4 @@ Marketplace remains available as a product/capability destination:
 - Changed JavaScript syntax validation: PASS.
 - `git diff --check`: PASS with line-ending warnings only.
 
-Full samples smoke test was skipped by request. Tests against `old-tools/`, `old_games/`, and `old_samples/` were skipped by request.
+Full samples smoke test was skipped by request. Tests against `archive/v1-v2/tools/`, `archive/v1-v2/games/`, and `archive/v1-v2/samples/` were skipped by request.

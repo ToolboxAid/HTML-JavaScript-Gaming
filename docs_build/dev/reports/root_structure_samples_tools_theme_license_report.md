@@ -4,18 +4,18 @@
 
 Completed the scoped root-structure cleanup for `PR_26154_004-root-structure-samples-tools-theme-license`.
 
-- Renamed `samples/` to `old_samples/` and marked it as deprecated reference content.
+- Renamed `samples/` to `archive/v1-v2/samples/` and marked it as deprecated reference content.
 - Created the new `games/` surface and moved `arcade/` to `games/arcade/`.
 - Added `games/index.html` plus concise placeholder game-type pages for `action`, `adventure`, `puzzle`, `racing`, `retro`, and `strategy`.
 - Moved `cloud/` to `toolbox/cloud/`.
-- Moved confirmed legacy tool folders/files into `old-tools/`.
+- Moved confirmed legacy tool folders/files into `archive/v1-v2/tools/`.
 - Preserved active tool infrastructure in `toolbox/` when required by current scripts, tests, or first-class tool surfaces.
 - Created `assets/theme/v1/` as the legacy Theme V1 location marker.
 - Replaced the permissive `LICENSE` with a restrictive proprietary notice and changed `package.json` license metadata to `UNLICENSED`.
 
 ## Moved Public Surfaces
 
-- `samples/` -> `old_samples/`
+- `samples/` -> `archive/v1-v2/samples/`
 - `arcade/` -> `games/arcade/`
 - `cloud/` -> `toolbox/cloud/`
 
@@ -37,7 +37,7 @@ Added:
 
 ## Deprecated Tools Moved
 
-Moved to `old-tools/` after active-reference review:
+Moved to `archive/v1-v2/tools/` after active-reference review:
 
 - `toolbox/old_3D Asset Viewer/`
 - `toolbox/old_3D Camera Path Editor/`
@@ -75,7 +75,7 @@ The following listed items remain in `toolbox/` because they are still active:
 - `toolbox/dev/`: active guard and validation scripts are invoked from `package.json`.
 - `toolbox/shared/`: active shared tool runtime helpers and preview utilities.
 - `toolbox/renderToolsIndex.js`: active tools index generation/runtime helper.
-- `toolbox/toolRegistry.js`: active registry file; paths were rewired to point deprecated entries at `old-tools/`.
+- `toolbox/toolRegistry.js`: active registry file; paths were rewired to point deprecated entries at `archive/v1-v2/tools/`.
 
 ## Path Rewrites
 
@@ -84,9 +84,9 @@ Updated active references for the moved surfaces:
 - Root home links now target `games/index.html` instead of `arcade/index.html`.
 - Theme V2 route map, root segment detection, header, footer, and tools-page accordion links now use `games/...` and `toolbox/cloud/...`.
 - `toolbox/cloud/index.html` and `games/arcade/index.html` use the correct deeper relative Theme V2 asset/script paths.
-- Active old sample consumers now point to `old_samples/...`.
-- Deprecated legacy tool registry entries now point to `../old-tools/...`.
-- Runtime/sample helper scripts route old sample references to `old_samples/...`.
+- Active old sample consumers now point to `archive/v1-v2/samples/...`.
+- Deprecated legacy tool registry entries now point to `../archive/v1-v2/tools/...`.
+- Runtime/sample helper scripts route old sample references to `archive/v1-v2/samples/...`.
 - Node test aliases no longer expose `/samples/`.
 - Active sample lanes/tests were retired from automated execution.
 
@@ -109,10 +109,10 @@ Recommended follow-up: split or explicitly document public Theme V2 SSoT versus 
 
 ## Deprecated Test Handling
 
-- `old_samples/` remains playable reference content.
+- `archive/v1-v2/samples/` remains playable reference content.
 - `samples` lane now compiles with no targets and no commands.
-- `npm run test:lane:samples` confirms `old_samples` is excluded from active automated validation with zero browser launches.
-- Existing `old_games` skip behavior remains unchanged.
+- `npm run test:lane:samples` confirms `archive/v1-v2/samples` is excluded from active automated validation with zero browser launches.
+- Existing `archive/v1-v2/games` skip behavior remains unchanged.
 
 ## Validation
 
@@ -129,7 +129,7 @@ Passed:
 
 Warnings:
 
-- Historical docs under `docs_build/`, protected `start_of_day` material, retired tests, and deprecated `old-tools/` content still contain old `samples/` or legacy tool-path text as preserved history/reference content.
+- Historical docs under `docs_build/`, protected `start_of_day` material, retired tests, and deprecated `archive/v1-v2/tools/` content still contain old `samples/` or legacy tool-path text as preserved history/reference content.
 - `toolbox/_tool_template-v2/`, `toolbox/dev/`, `toolbox/shared/`, `toolbox/renderToolsIndex.js`, and `toolbox/toolRegistry.js` were intentionally not moved because active references still require them.
 - A non-required `checkPhase24CloseoutExecutionGuard` run reported roadmap hash drift in `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`; there is no working-tree diff for that roadmap file in this PR.
 

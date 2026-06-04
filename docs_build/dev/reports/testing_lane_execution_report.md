@@ -107,10 +107,10 @@ Prevented Workspace lane reruns: 0
 | --- | --- | --- | --- | --- | --- | --- |
 | workspace-contract | PASS | 10.64s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | First-class tool runtime behavior | tool-specific mocked repo/file picker inputs; explicit manifest/toolState launch contexts |
-| game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated old_games reference coverage |  |
+| game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/games reference coverage |  |
 | integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Workspace, tool, game index, and manifest handoff behavior | repo game manifests; manifest preview asset roles; repo-served browser pages |
 | engine-src | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | src/ engine and shared runtime capability behavior | explicit node unit fixtures; fresh in-memory localStorage/sessionStorage mocks per file |
-| samples | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated old_samples reference coverage |  |
+| samples | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/samples reference coverage |  |
 
 ## Slowest Tests
 
