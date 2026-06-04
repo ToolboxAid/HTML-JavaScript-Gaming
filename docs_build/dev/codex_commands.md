@@ -92,7 +92,7 @@ Changes:
 - Added Build Path view rendering as visual path groups using existing tool tiles.
 - Kept Arcade out of Toolbox content.
 - Kept forbidden `Studio` wording out of Toolbox dynamic tool labels except brand usage.
-- Updated active validation scripts and Workspace V2 Playwright assertions for the corrected view-mode contract.
+- Updated active validation scripts and Project Workspace Playwright assertions for the corrected view-mode contract.
 - Added validation and manual test notes.
 - Generated local review artifacts.
 - Created the repo-structured delta ZIP at `tmp/PR_26154_053-toolbox-wireframe-rebuild-rule_view-mode-correction_delta.zip`.
@@ -110,3 +110,34 @@ Required reports:
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/toolbox_wireframe_rebuild_rule_report.md`
+
+## PR_26155_001
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Added targeted independent validation guidance to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Added tools database planning governance requiring tool metadata, category, route, status, readiness, requirements, progress checklist, and deferred flags to come from a declared registry/data source before runtime DB behavior.
+- Added game debug configuration governance for visible creator testing settings and public/playable release rejection or disablement.
+- Added Project Workspace naming guidance; `npm run test:workspace-v2` is treated as legacy test-command naming only.
+- Reviewed `toolbox/index.html` and confirmed Order, Group, Progress, and Build Path remain page modes for the same Toolbox surface.
+- Confirmed Progress and Build Path are not represented as standalone tool tiles or extra accordions.
+- Kept Arcade out of Toolbox content.
+- Kept forbidden `Studio` wording out of Toolbox dynamic tool labels except brand usage.
+- Added targeted validation notes, skipped broad-lane rationale, Project Workspace naming note, and manual test notes.
+- Generated local review artifacts.
+- Created the repo-structured delta ZIP at `tmp/PR_26155_001-project-workspace-governance-toolbox-modes_delta.zip`.
+
+Validation:
+- `node scripts/validate-active-tools-surface.mjs`
+- `node scripts/validate-tool-registry.mjs`
+- Toolbox source checks for view controls, Progress readiness labels, Build Path path groups, absence of extra Progress/Build Path wireframe sections, Arcade absence, forbidden `Studio` label absence, and no inline CSS/JS/event handlers.
+- `npm run test:workspace-v2` (legacy command name for the Project Workspace test lane)
+- `git diff --check`
+- `node --check` for changed JS/MJS files.
+- No new CSS added.
+- Full samples smoke test skipped because samples are not in scope and no shared sample runtime behavior changed.
+
+Required reports:
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/project_workspace_governance_toolbox_modes_report.md`

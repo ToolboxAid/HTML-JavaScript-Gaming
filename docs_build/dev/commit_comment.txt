@@ -1,1 +1,1 @@
-Correct Toolbox wireframe view modes on shared tool surface - PR_26154_053-toolbox-wireframe-rebuild-rule
+Add Project Workspace governance and confirm Toolbox page modes - PR_26155_001-project-workspace-governance-toolbox-modes

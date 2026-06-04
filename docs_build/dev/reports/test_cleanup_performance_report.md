@@ -1,29 +1,29 @@
 # Test Cleanup Performance Report
 
-Generated: 2026-06-04T03:43:38.895Z
+Generated: 2026-06-04T03:52:43.267Z
 Status: PASS
 
 ## Cost Summary
 
-Total measured lane elapsed time: 10.14s
+Total measured lane elapsed time: 8.33s
 Actual browser launch count: 1
 Scheduled browser launch count: 1
 Baseline browser launch count: 1
 Skipped lanes: 5
-Reused manifests: 0
-Reused snapshots: 0
+Reused manifests: 1
+Reused snapshots: 1
 Cached validations reused: 18
 Prevented broad execution: 2
 Prevented reruns: 0
 Prevented redundant browser launches: 0
-Prevented graph rebuilds: 0
-Prevented redundant dependency traversal: 0
+Prevented graph rebuilds: 1
+Prevented redundant dependency traversal: 1
 
 ## Lane Elapsed Time
 
 | Lane | Status | Elapsed | Browser Launches | Reason |
 | --- | --- | --- | --- | --- |
-| workspace-contract | PASS | 10.14s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+| workspace-contract | PASS | 8.33s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
@@ -34,8 +34,8 @@ Prevented redundant dependency traversal: 0
 
 | Lane | Duration | Test | Command |
 | --- | --- | --- | --- |
-| workspace-contract | 2.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:85:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 955ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:85:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
 
 ## Prevented Broad Execution
 

@@ -1477,3 +1477,55 @@ Rules:
 - If existing Theme V2 cannot support a required Toolbox pattern, document the gap before adding an approved reusable Theme V2 pattern.
 - Reusable Theme V2 patterns must live under `assets/theme-v2/css/` and must not reintroduce legacy/V1 styling.
 - Wireframe-only Toolbox rebuilds must not add implementation logic.
+
+## Targeted Independent Validation Guidance
+
+Tool, page, and `src/` changes must use the narrowest affected validation lane that proves the changed behavior.
+
+Rules:
+- Small scoped tool changes validate the affected tool/page and directly touched shared dependencies only.
+- Small scoped page changes validate the affected page and directly touched shared page dependencies only.
+- Small scoped `src/` changes validate the affected module and directly dependent runtime/tool surface only.
+- Do not trigger broad validation for small scoped changes unless shared runtime behavior, cross-tool launch behavior, engine behavior, or public navigation behavior changed.
+- Do not run full samples validation unless samples are explicitly in scope or the changed shared runtime behavior directly affects samples.
+- Reports must identify lanes run, broad lanes skipped, and the reason broad validation was not required.
+
+## Tool Registry Planning Governance
+
+Runtime database behavior for tools must not be introduced until tool planning metadata has a declared registry or data source.
+
+The declared tool registry/data source must own:
+- tool metadata
+- category
+- route
+- status
+- readiness
+- requirements
+- progress checklist
+- deferred flags
+
+Rules:
+- Toolbox wireframes may show planning metadata as static text only.
+- Future runtime database work must consume the declared data source rather than duplicating tool metadata in page-local code.
+- Tool status, readiness, requirements, progress checklist, and deferred flags must be traceable to the declared registry/data source before database-backed behavior ships.
+
+## Game Debug Configuration Governance
+
+Game debug settings may exist for creator testing and development diagnostics.
+
+Rules:
+- Debug settings must be visible and configurable for creators/testers.
+- Debug settings must not be hidden defaults.
+- Debug settings must be disabled, stripped, or rejected when a game is promoted to playable/public release.
+- Release validation must fail visibly when public/playable promotion includes enabled debug-only settings.
+- Reports for affected game release or publish flows must state whether debug settings were present and how public release gating handled them.
+
+## Project Workspace Naming Guidance
+
+Use `Project Workspace` for user-facing copy and new test/report prose.
+
+Rules:
+- Do not introduce new user-facing `Workspace V2` wording.
+- Do not introduce new report/test prose that describes the current user-facing experience as `Workspace V2`.
+- Existing package scripts such as `npm run test:workspace-v2`, legacy lane identifiers, and historical test suite names may remain until renamed by a dedicated cleanup PR.
+- When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Project Workspace`.
