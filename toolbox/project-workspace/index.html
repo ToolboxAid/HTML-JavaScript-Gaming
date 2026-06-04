@@ -34,8 +34,10 @@
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack content-stack--compact" data-project-form>
                                         <label for="projectNameInput">Project Name <input id="projectNameInput" type="text" placeholder="Untitled game project" data-project-name-input></label>
+                                        <label for="projectPurposeInput">Project Purpose <select id="projectPurposeInput" data-project-purpose-input></select></label>
                                         <button class="btn" type="submit">Create Project</button>
                                     </form>
+                                    <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
                                     <button class="btn" type="button" data-project-delete-active>Delete Open Project</button>
                                 </div>
                             </details>
@@ -60,7 +62,9 @@
                                 </div>
                                 <div class="grid cols-3" aria-label="Active project summary">
                                     <article class="mini-stat"><strong data-active-project-status>Under Construction</strong>Project Status</article>
+                                    <article class="mini-stat"><strong data-active-project-purpose>Game Project</strong>Project Purpose</article>
                                     <article class="mini-stat"><strong data-active-project-owner>Creator User</strong>Owner</article>
+                                    <article class="mini-stat"><strong data-current-user-role>Owner</strong>Current User Role</article>
                                     <article class="mini-stat"><strong data-recommended-next-tool>Game Configuration</strong>Recommended Next Tool</article>
                                 </div>
                             </div>
@@ -114,8 +118,8 @@
                                             </thead>
                                             <tbody data-project-table-counts>
                                                 <tr><td>users</td><td>3</td></tr>
-                                                <tr><td>projects</td><td>1</td></tr>
-                                                <tr><td>project_members</td><td>3</td></tr>
+                                                <tr><td>projects</td><td>4</td></tr>
+                                                <tr><td>project_members</td><td>12</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -128,10 +132,10 @@
                                         <table class="data-table">
                                             <caption>Open project members</caption>
                                             <thead>
-                                                <tr><th scope="col">User</th><th scope="col">User ID</th><th scope="col">Permission</th></tr>
+                                                <tr><th scope="col">User</th><th scope="col">User ID</th><th scope="col">Role</th><th scope="col">Permission</th></tr>
                                             </thead>
                                             <tbody data-project-members-table>
-                                                <tr><td>Creator User</td><td>creator-user</td><td>Owner</td></tr>
+                                                <tr><td>Creator User</td><td>creator-user</td><td>Owner</td><td>Owner</td></tr>
                                             </tbody>
                                         </table>
                                     </div>

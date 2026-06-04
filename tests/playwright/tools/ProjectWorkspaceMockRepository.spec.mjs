@@ -55,7 +55,12 @@ test("Project Workspace creates, opens, and deletes mock projects", async ({ pag
     await expect(page.getByRole("button", { name: "Create Project" })).toHaveClass("btn");
     await expect(page.getByRole("button", { name: "Delete Open Project" })).toHaveClass("btn");
     await expect(page.locator("[data-active-project-name]")).toHaveText("Demo Project");
+    await expect(page.locator("[data-active-project-purpose]")).toHaveText("Game Project");
+    await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
     await expect(page.locator("[data-project-list]")).toContainText("Demo Project");
+    await expect(page.locator("[data-project-list]")).toContainText("Gravity Demo");
+    await expect(page.locator("[data-project-list]")).toContainText("Collision Demo");
+    await expect(page.locator("[data-project-list]")).toContainText("Camera Follow Demo");
     const demoProjectRow = page.locator("[data-project-row='demo-project']");
     await expect(demoProjectRow.locator("> .status")).toHaveCount(0);
     await expect(demoProjectRow.getByRole("button", { name: "Open Demo Project (Active)" })).toHaveClass(/primary/);
@@ -81,6 +86,54 @@ test("Project Workspace creates, opens, and deletes mock projects", async ({ pag
     await expect(page.locator("[data-active-project-name]")).not.toHaveText("Launch Test Project");
     await expect(page.locator("[data-project-list]")).not.toContainText("Launch Test Project");
     await expect(page.locator("[data-project-workspace-log]")).toHaveText("Deleted Launch Test Project.");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Project Workspace displays and edits project purpose and member role", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+
+  try {
+    await expect(page.locator("#projectPurposeInput option")).toHaveText([
+      "Game Project",
+      "Capability Demo",
+      "Learning Project",
+      "Template Project"
+    ]);
+    await expect(page.locator("#currentUserRoleInput option")).toHaveText([
+      "Owner",
+      "Designer",
+      "World Builder",
+      "Artist",
+      "Audio Creator",
+      "Translator",
+      "Tester",
+      "Publisher",
+      "Viewer"
+    ]);
+    await expect(page.getByLabel("Project Purpose")).toHaveValue("Game Project");
+    await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
+    await expect(page.locator("[data-project-members-table]")).toContainText("Owner");
+
+    await page.getByLabel("Project Purpose").selectOption("Learning Project");
+    await expect(page.locator("[data-active-project-purpose]")).toHaveText("Learning Project");
+    await expect(page.locator("[data-project-workspace-log]")).toHaveText("Updated Demo Project purpose to Learning Project.");
+
+    await page.getByLabel("Current User Role").selectOption("Designer");
+    await expect(page.locator("[data-current-user-role]")).toHaveText("Designer");
+    await expect(page.locator("[data-project-members-table]")).toContainText("Designer");
+    await expect(page.locator("[data-project-workspace-log]")).toHaveText("Updated current user role to Designer.");
+
+    await page.getByLabel("Project Purpose").selectOption("Capability Demo");
+    await page.getByLabel("Project Name").fill("Purpose Review Project");
+    await page.getByRole("button", { name: "Create Project" }).click();
+    await expect(page.locator("[data-active-project-name]")).toHaveText("Purpose Review Project");
+    await expect(page.locator("[data-active-project-purpose]")).toHaveText("Capability Demo");
+    await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
+    await expect(page.locator("[data-project-list]")).toContainText("Purpose Review Project");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -125,7 +178,7 @@ test("Project Workspace progress panels update from mock project state", async (
     await expect(page.locator("[data-project-status]")).toHaveText("Under Construction");
     await expect(page.locator("[data-project-progress]")).toHaveText("Progress Review Project identity ready");
     await expect(page.locator("[data-table-counts], [data-project-table-counts]")).toContainText("projects");
-    await expect(page.locator("[data-project-table-counts]")).toContainText("2");
+    await expect(page.locator("[data-project-table-counts]")).toContainText("5");
     await expect(page.locator("[data-project-members-table]")).toContainText("Owner");
 
     await page.getByRole("button", { name: "Delete Open Project" }).click();
@@ -293,7 +346,7 @@ test("Toolbox Project Data controls are admin-only and drive mock Progress and B
     await expect(page.getByText(/Active mock project: none/)).toBeVisible();
 
     await page.getByRole("button", { name: "Seed Demo Project" }).click();
-    await expect(page.locator("[data-project-data-status]")).toHaveText("Demo Project seeded. Active project: Demo Project.");
+    await expect(page.locator("[data-project-data-status]")).toHaveText("Demo projects seeded. Active project: Demo Project.");
     await expect(page.getByText(/Active mock project: Demo Project/)).toBeVisible();
 
     await page.getByRole("button", { name: "Progress" }).click();
@@ -303,6 +356,47 @@ test("Toolbox Project Data controls are admin-only and drive mock Progress and B
     await page.getByRole("button", { name: "Reset Project Data" }).click();
     await expect(page.locator("[data-project-data-status]")).toHaveText("Project Data reset. Active project: Demo Project.");
     await expect(page.getByText("Active Project: Demo Project", { exact: true })).toBeVisible();
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Toolbox member-role filters focus tools without exposing admin-only controls", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
+
+  try {
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/37");
+    await expect(page.locator("[data-toolbox-role-focus]")).toHaveCount(0);
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Testing$/ }) })).toBeVisible();
+
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Designer`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-toolbox-role-focus='Designer']")).toBeVisible();
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 8/37");
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Objects$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Audio$/ }) })).toHaveCount(0);
+    await expect(page.getByText("Unavailable tools are hidden by role focus, not by security enforcement.")).toBeVisible();
+
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Audio%20Creator`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-toolbox-role-focus='Audio Creator']")).toBeVisible();
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 8/37");
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Audio$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^MIDI$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toHaveCount(0);
+
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Viewer`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-toolbox-role-focus='Viewer']")).toBeVisible();
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/37");
+    await expect(page.getByText("Viewer focus shows preview-safe read-only tiles only.")).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Debug$/ }) })).toHaveCount(0);
+    await expect(page.locator("[data-project-data-menu]")).toBeHidden();
+
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 37/37");
+    await expect(page.locator("[data-project-data-menu]")).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Cloud$/ }) })).toBeVisible();
 
     await expectNoPageFailures(failures);
   } finally {

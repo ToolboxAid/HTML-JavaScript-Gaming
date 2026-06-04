@@ -1,4 +1,7 @@
-import { createProjectWorkspaceMockRepository } from "./project-workspace/project-workspace-mock-repository.js";
+import {
+    PROJECT_WORKSPACE_MEMBER_ROLES,
+    createProjectWorkspaceMockRepository
+} from "./project-workspace/project-workspace-mock-repository.js";
 
 (function () {
     const list = document.querySelector("[data-tools-accordion-list]");
@@ -18,6 +21,11 @@ import { createProjectWorkspaceMockRepository } from "./project-workspace/projec
     const toolboxRole = urlRole === "admin" ? "admin" : urlRole === "user" ? "creator" : "guest";
     const projectWorkspaceRepository = createProjectWorkspaceMockRepository();
     projectWorkspaceRepository.resetProjectData();
+    const urlMemberRole = new URLSearchParams(window.location.search).get("memberRole");
+    const defaultProjectMemberRole = "Owner";
+    const projectMemberRole = PROJECT_WORKSPACE_MEMBER_ROLES.includes(urlMemberRole)
+        ? urlMemberRole
+        : defaultProjectMemberRole;
     let currentMode = "ascending";
     const toolboxStatusModel = Object.freeze(["Ready", "Wireframe", "Under Construction", "Planned", "Hidden", "Deprecated"]);
     const statusLabelMap = Object.freeze({
@@ -36,6 +44,17 @@ import { createProjectWorkspaceMockRepository } from "./project-workspace/projec
         Community: ["Publish"],
         Languages: ["Publish"],
         Cloud: ["Publish"]
+    });
+    const roleFocusTools = Object.freeze({
+        Owner: null,
+        Designer: ["Project Workspace", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"],
+        "World Builder": ["Worlds", "Objects", "Assets", "Colors", "Animations"],
+        Artist: ["Assets", "Colors", "Fonts", "Sprites", "Characters", "Objects", "Animations"],
+        "Audio Creator": ["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"],
+        Translator: ["Languages", "Voices", "Voice Capture", "Voice Output"],
+        Tester: ["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"],
+        Publisher: ["Publish", "Marketplace", "Community", "Cloud", "Languages"],
+        Viewer: ["Project Workspace", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]
     });
     const toolGroups = [
         {
@@ -1267,11 +1286,56 @@ import { createProjectWorkspaceMockRepository } from "./project-workspace/projec
         return statusLabelMap[tool.status] || tool.status || "Wireframe";
     }
 
+    function baseVisibleForCreator(tool) {
+        return tool.adminOnly !== true && tool.hidden !== true && tool.planned !== true;
+    }
+
+    function activeRoleFocus() {
+        if (toolboxRole === "admin") {
+            return "Owner";
+        }
+        return projectMemberRole;
+    }
+
+    function isFocusedRoleView() {
+        return toolboxRole !== "admin" && activeRoleFocus() !== "Owner";
+    }
+
     function isVisibleForRole(tool) {
         if (toolboxRole === "admin") {
             return true;
         }
-        return tool.adminOnly !== true && tool.hidden !== true && tool.planned !== true;
+
+        const focusedTools = roleFocusTools[activeRoleFocus()];
+
+        if (!focusedTools) {
+            return baseVisibleForCreator(tool);
+        }
+
+        if (!focusedTools.includes(tool.title)) {
+            return false;
+        }
+
+        if (activeRoleFocus() === "Viewer") {
+            return baseVisibleForCreator(tool);
+        }
+
+        return tool.adminOnly !== true;
+    }
+
+    function unavailableToolNamesForFocus() {
+        if (!isFocusedRoleView()) {
+            return [];
+        }
+
+        const visibleTitles = new Set(roleAwareTools().map((tool) => tool.title));
+        return toolGroups
+            .flatMap((group) => group.tools)
+            .filter((tool) => tool.adminOnly !== true)
+            .map((tool) => tool.title)
+            .filter((title, index, titles) => titles.indexOf(title) === index)
+            .filter((title) => !visibleTitles.has(title))
+            .sort((left, right) => left.localeCompare(right));
     }
 
     function visibleToolGroups() {
@@ -1338,7 +1402,7 @@ import { createProjectWorkspaceMockRepository } from "./project-workspace/projec
                 actionLabel = "Project Data reset";
             } else if (actionButton.dataset.projectDataAction === "seed") {
                 projectWorkspaceRepository.seedDemoProject();
-                actionLabel = "Demo Project seeded";
+                actionLabel = "Demo projects seeded";
             } else if (actionButton.dataset.projectDataAction === "clear") {
                 projectWorkspaceRepository.clearTestData();
                 actionLabel = "Test data cleared";
@@ -1450,6 +1514,38 @@ import { createProjectWorkspaceMockRepository } from "./project-workspace/projec
 
         article.append(title, activeProject, projectProgress, publishingProgress, currentFocus, nextTool);
         return article;
+    }
+
+    function createRoleFocusSummary() {
+        if (!isFocusedRoleView()) {
+            return null;
+        }
+
+        const unavailableTools = unavailableToolNamesForFocus();
+        const article = document.createElement("article");
+        article.className = "callout";
+        article.dataset.toolboxRoleFocus = activeRoleFocus();
+
+        const title = document.createElement("h3");
+        title.textContent = "Role Focus: " + activeRoleFocus();
+
+        const summary = document.createElement("p");
+        summary.textContent = activeRoleFocus() === "Viewer"
+            ? "Viewer focus shows preview-safe read-only tiles only."
+            : "This wireframe focuses the Toolbox on tools this project role can work on.";
+
+        const explanation = document.createElement("p");
+        explanation.textContent = unavailableTools.length
+            ? "Unavailable tools are hidden by role focus, not by security enforcement."
+            : "All tools for this role are visible.";
+
+        article.append(title, summary, explanation);
+        return article;
+    }
+
+    function renderWithRoleFocus(...children) {
+        const roleFocusSummary = createRoleFocusSummary();
+        list.replaceChildren(...(roleFocusSummary ? [roleFocusSummary, ...children] : children));
     }
 
     function updateToolCount() {
@@ -1626,15 +1722,15 @@ import { createProjectWorkspaceMockRepository } from "./project-workspace/projec
     function render(mode) {
         if (mode === "grouped") {
             const accordions = getGroupedTools().map((group, position) => createAccordion(group, position === 0));
-            list.replaceChildren(...accordions);
+            renderWithRoleFocus(...accordions);
         } else if (mode === "progress") {
             const accordions = getProgressGroups().map((group) => createAccordion(group, true, { showReadiness: true }));
-            list.replaceChildren(createProgressSummary(), ...accordions);
+            renderWithRoleFocus(createProgressSummary(), ...accordions);
         } else if (mode === "build-path") {
             const accordions = getBuildPathGroups().map((group) => createAccordion(group, true));
-            list.replaceChildren(...accordions);
+            renderWithRoleFocus(...accordions);
         } else {
-            list.replaceChildren(createToolGrid(getOrderedTools(mode)));
+            renderWithRoleFocus(createToolGrid(getOrderedTools(mode)));
         }
         currentMode = mode;
         setActiveButton(mode);

@@ -23,25 +23,105 @@ const DEMO_PROJECT = Object.freeze({
   id: "demo-project",
   ownerUserId: "creator-user",
   name: "Demo Project",
+  purpose: "Game Project",
   status: "Under Construction",
 });
+
+const CAPABILITY_DEMO_PROJECTS = Object.freeze([
+  {
+    id: "gravity-demo",
+    ownerUserId: "creator-user",
+    name: "Gravity Demo",
+    purpose: "Capability Demo",
+    status: "Wireframe",
+  },
+  {
+    id: "collision-demo",
+    ownerUserId: "creator-user",
+    name: "Collision Demo",
+    purpose: "Capability Demo",
+    status: "Wireframe",
+  },
+  {
+    id: "camera-follow-demo",
+    ownerUserId: "creator-user",
+    name: "Camera Follow Demo",
+    purpose: "Capability Demo",
+    status: "Wireframe",
+  },
+]);
 
 const DEMO_PROJECT_MEMBERS = Object.freeze([
   {
     projectId: "demo-project",
     userId: "creator-user",
     permission: "Owner",
+    role: "Owner",
   },
   {
     projectId: "demo-project",
     userId: "admin-user",
     permission: "Admin",
+    role: "Owner",
   },
   {
     projectId: "demo-project",
     userId: "guest-preview-user",
     permission: "Viewer",
+    role: "Viewer",
   },
+]);
+
+const CAPABILITY_DEMO_PROJECT_MEMBERS = Object.freeze(
+  CAPABILITY_DEMO_PROJECTS.flatMap((project) => [
+    {
+      projectId: project.id,
+      userId: "creator-user",
+      permission: "Owner",
+      role: "Owner",
+    },
+    {
+      projectId: project.id,
+      userId: "admin-user",
+      permission: "Admin",
+      role: "Owner",
+    },
+    {
+      projectId: project.id,
+      userId: "guest-preview-user",
+      permission: "Viewer",
+      role: "Viewer",
+    },
+  ]),
+);
+
+const SEED_PROJECTS = Object.freeze([
+  DEMO_PROJECT,
+  ...CAPABILITY_DEMO_PROJECTS,
+]);
+
+const SEED_PROJECT_MEMBERS = Object.freeze([
+  ...DEMO_PROJECT_MEMBERS,
+  ...CAPABILITY_DEMO_PROJECT_MEMBERS,
+]);
+
+export const PROJECT_WORKSPACE_PROJECT_PURPOSES = Object.freeze([
+  "Game Project",
+  "Capability Demo",
+  "Learning Project",
+  "Template Project",
+]);
+
+export const PROJECT_WORKSPACE_MEMBER_ROLES = Object.freeze([
+  "Owner",
+  "Designer",
+  "World Builder",
+  "Artist",
+  "Audio Creator",
+  "Translator",
+  "Tester",
+  "Publisher",
+  "Viewer",
 ]);
 
 export const PROJECT_WORKSPACE_TABLES = Object.freeze([
@@ -59,8 +139,8 @@ export const PROJECT_WORKSPACE_PERMISSIONS = Object.freeze([
 
 export const PROJECT_WORKSPACE_SCHEMA = Object.freeze({
   users: Object.freeze(["id", "displayName", "email", "role"]),
-  projects: Object.freeze(["id", "ownerUserId", "name", "status"]),
-  project_members: Object.freeze(["projectId", "userId", "permission"]),
+  projects: Object.freeze(["id", "ownerUserId", "name", "purpose", "status"]),
+  project_members: Object.freeze(["projectId", "userId", "permission", "role"]),
 });
 
 function cloneRows(rows) {
@@ -87,8 +167,8 @@ function slugifyProjectName(name) {
 function createSeedTables() {
   return {
     users: cloneRows(SEED_USERS),
-    projects: [{ ...DEMO_PROJECT }],
-    project_members: cloneRows(DEMO_PROJECT_MEMBERS),
+    projects: cloneRows(SEED_PROJECTS),
+    project_members: cloneRows(SEED_PROJECT_MEMBERS),
   };
 }
 
@@ -118,6 +198,8 @@ export function createProjectWorkspaceMockRepository() {
       .filter((member) => member.projectId === projectId)
       .map((member) => ({
         ...member,
+        permission: member.permission || member.role || "Viewer",
+        role: member.role || member.permission || "Viewer",
         displayName: getUserById(member.userId)?.displayName || member.userId,
       }));
   }
@@ -131,6 +213,7 @@ export function createProjectWorkspaceMockRepository() {
 
     return {
       ...project,
+      purpose: project.purpose || "Game Project",
       ownerDisplayName: owner?.displayName || project.ownerUserId,
       members: getProjectMembers(project.id),
     };
@@ -217,11 +300,13 @@ export function createProjectWorkspaceMockRepository() {
   function seedDemoProject() {
     ensureSeedUsers();
 
-    if (!getProjectById(DEMO_PROJECT.id)) {
-      tables.projects.push({ ...DEMO_PROJECT });
-    }
+    SEED_PROJECTS.forEach((seedProject) => {
+      if (!getProjectById(seedProject.id)) {
+        tables.projects.push({ ...seedProject });
+      }
+    });
 
-    DEMO_PROJECT_MEMBERS.forEach((seedMember) => {
+    SEED_PROJECT_MEMBERS.forEach((seedMember) => {
       const exists = tables.project_members.some(
         (member) =>
           member.projectId === seedMember.projectId &&
@@ -252,6 +337,9 @@ export function createProjectWorkspaceMockRepository() {
 
     const name = String(input.name || "").trim() || "Untitled Project";
     const ownerUserId = input.ownerUserId || "creator-user";
+    const purpose = PROJECT_WORKSPACE_PROJECT_PURPOSES.includes(input.purpose)
+      ? input.purpose
+      : "Game Project";
     const baseId = slugifyProjectName(name);
     let candidateId = `${baseId}-${projectCounter}`;
     projectCounter += 1;
@@ -265,6 +353,7 @@ export function createProjectWorkspaceMockRepository() {
       id: candidateId,
       ownerUserId,
       name,
+      purpose,
       status: input.status || "Under Construction",
     };
 
@@ -273,10 +362,41 @@ export function createProjectWorkspaceMockRepository() {
       projectId: project.id,
       userId: ownerUserId,
       permission: "Owner",
+      role: "Owner",
     });
 
     activeProjectId = project.id;
     return describeProject(project);
+  }
+
+  function updateProjectPurpose(projectId, purpose) {
+    const project = getProjectById(projectId);
+
+    if (!project || !PROJECT_WORKSPACE_PROJECT_PURPOSES.includes(purpose)) {
+      return describeProject(project);
+    }
+
+    project.purpose = purpose;
+    return describeProject(project);
+  }
+
+  function updateProjectMemberRole(projectId, userId, role) {
+    if (!PROJECT_WORKSPACE_MEMBER_ROLES.includes(role)) {
+      return getSnapshot();
+    }
+
+    const member = tables.project_members.find(
+      (item) => item.projectId === projectId && item.userId === userId,
+    );
+
+    if (member) {
+      member.role = role;
+      if (!member.permission) {
+        member.permission = role === "Owner" ? "Owner" : role === "Viewer" ? "Viewer" : "Editor";
+      }
+    }
+
+    return getSnapshot();
   }
 
   function openProject(projectId) {
@@ -321,5 +441,7 @@ export function createProjectWorkspaceMockRepository() {
     resetProjectData,
     seedDemoProject,
     clearTestData,
+    updateProjectMemberRole,
+    updateProjectPurpose,
   };
 }
