@@ -42,8 +42,8 @@ Results:
 Files with historical reference cleanup:
 
 - `docs_build/dev/reports/theme_v2_asset_ownership_normalization_report.md`
-- `docs_build/dev/reports/theme_v2_asset_ssot_inventory.md`
-- `docs_build/dev/reports/theme_v2_reference_rewire.md`
+- `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_asset_ssot_inventory.md`
+- `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_reference_rewire.md`
 - `docs_build/dev/reports/theme_v2_template_correction.md`
 - `docs_build/dev/reports/theme_v2_template_dependency_map.md`
 - `docs_build/dev/reports/theme_v2_template_foundation.md`

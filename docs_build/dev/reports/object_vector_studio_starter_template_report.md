@@ -9,7 +9,7 @@
 ## Result
 
 - Moved the unused template out of the active Object Vector Studio V2 tool path.
-- Archived location: `docs_build/dev/archive/object-vector-studio-v2/starter-project-template`.
+- Archived location: `archive/v1-v2/docs_build/dev/archive/object-vector-studio-v2/starter-project-template`.
 - The template was not deleted silently.
 
 ## Boundary Checks

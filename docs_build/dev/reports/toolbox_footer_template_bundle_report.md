@@ -63,7 +63,7 @@ Validation:
 
 ## Template Consistency Audit
 
-Report: `docs_build/dev/reports/template_consistency_audit_report.md`.
+Report: `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/template_consistency_audit_report.md`.
 
 Applied small obvious fix:
 - `marketplace/index.html` now loads `../assets/theme/v2/css/theme.css` after the existing aggregate stylesheet. This fixes shared Theme V2 nav/footer behavior while preserving existing page helper classes.

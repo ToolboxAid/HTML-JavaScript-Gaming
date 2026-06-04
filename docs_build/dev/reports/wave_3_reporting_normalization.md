@@ -12,11 +12,11 @@ Date: 2026-06-02
 
 ## Normalized Reports
 
-- `docs_build/dev/reports/wave_3_tool_contract_baseline.md`
-- `docs_build/dev/reports/wave_3_projectworkspace_integration.md`
-- `docs_build/dev/reports/wave_3_toolstate_boundary_validation.md`
+- `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/wave_3_tool_contract_baseline.md`
+- `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/wave_3_projectworkspace_integration.md`
+- `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/wave_3_toolstate_boundary_validation.md`
 - `docs_build/dev/reports/wave_3_reporting_normalization.md`
-- `docs_build/dev/reports/wave_3_migration_closeout.md`
+- `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/wave_3_migration_closeout.md`
 
 ## Results
 

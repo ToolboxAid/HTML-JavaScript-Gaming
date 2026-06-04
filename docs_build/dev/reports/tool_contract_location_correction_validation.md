@@ -75,7 +75,7 @@ Result: PASS, `41/41 targeted node test file(s) passed`.
 Static checks:
 
 ```powershell
-git diff --check -- src/shared/contracts tests/shared docs_build/dev/reports/tool_contract_coverage.md docs_build/dev/commit_comment.txt
+git diff --check -- src/shared/contracts tests/shared archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/tool_contract_coverage.md docs_build/dev/commit_comment.txt
 git diff --name-only -- '*.css' '*.html'
 # Targeted rg check for stale top-level tool behavior path and renamed V2 module filename patterns, scoped to source, tests, and the current coverage report.
 Get-ChildItem -Path src/shared/contracts -File | Select-Object -ExpandProperty Name | Sort-Object
@@ -88,7 +88,7 @@ Results:
 - PASS: no stale old tool behavior path or renamed V2 module references remain in source, tests, or the current coverage report.
 - PASS: top-level `src/shared/contracts/` contains platform/object contract files only.
 - PASS: shared tool behavior lives under `src/shared/contracts/tools/toolContract.js`.
-- PASS: every registered visible first-class tool still has matching coverage in `docs_build/dev/reports/tool_contract_coverage.md`.
+- PASS: every registered visible first-class tool still has matching coverage in `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/tool_contract_coverage.md`.
 
 ## Skipped
 

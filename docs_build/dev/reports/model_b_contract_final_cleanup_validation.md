@@ -62,14 +62,14 @@ Static checks:
 rg "assetContract\\.js|paletteContract\\.js|vectorAssetContract\\.js" -n src/shared/contracts tests/shared
 git diff --name-only -- '*.css' '*.html'
 Get-ChildItem -Path src/shared/contracts -File | Select-Object -ExpandProperty Name | Sort-Object
-git diff --check -- src/shared/contracts tests/shared docs_build/dev/reports/tool_contract_coverage.md docs_build/dev/reports/model_b_contract_final_cleanup_validation.md docs_build/dev/commit_comment.txt
+git diff --check -- src/shared/contracts tests/shared archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/tool_contract_coverage.md docs_build/dev/reports/model_b_contract_final_cleanup_validation.md docs_build/dev/commit_comment.txt
 ```
 
 Results:
 
 - PASS: no top-level asset, palette, or vector asset output contract modules remain.
 - PASS: no imports of removed output contract modules remain in `src/shared/contracts` or `tests/shared`.
-- PASS: every registered visible first-class tool still has matching coverage in `docs_build/dev/reports/tool_contract_coverage.md`.
+- PASS: every registered visible first-class tool still has matching coverage in `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/tool_contract_coverage.md`.
 - PASS: tool outputs are represented through per-tool declarations and validated by `ToolOutputDeclarationContract.test.mjs`.
 - PASS: no CSS or HTML files changed.
 - PASS: no whitespace errors from `git diff --check`.

@@ -22,7 +22,7 @@
 
 - PASS: Theme V2 Only CSS Rule exists in `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 - PASS: `docs_build/dev/reports/theme_v2_only_css_governance_validation.md` exists.
-- PASS: `docs_build/dev/reports/theme_v2_legacy_reference_inventory.md` exists.
+- PASS: `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_legacy_reference_inventory.md` exists.
 - PASS: Remaining V1/legacy CSS references are reported by page family.
 - PASS: Inventory classifications use only `not migrated yet` and `violation`.
 - PASS: No `.css`, `.html`, or `.js` files changed.

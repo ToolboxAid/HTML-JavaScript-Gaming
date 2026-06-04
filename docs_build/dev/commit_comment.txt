@@ -1,8 +1,8 @@
-Consolidate builder surfaces and move toolbox shared/dev ownership - PR_26154_039-041
+Close toolbox route hygiene and archive stale builder reports - PR_26154_042-044
 
-- Keep Game Design as the single active builder/design surface.
-- Archive duplicate Tool Builder and Game Builder reference material under archive/v1-v2/tools/game-builder-reference.
-- Move reusable toolbox shared code to src/shared/toolbox, schemas to src/shared/schemas, and dev guards to docs_build/dev/toolbox.
-- Remove retired builder links from header navigation, route maps, Toolbox index grouping, current docs references, and active contract fixtures.
-- Update active Toolbox validation to check current toolbox folders, nav coverage, route map coverage, and Marketplace/archive exclusion.
-- Validate changed-file static checks, shared extraction guard, active Toolbox surface, Workspace V2, diff hygiene, review artifacts, and repo-structured delta packaging.
+- Confirm active surfaces no longer reference retired Tool Builder or Game Builder routes.
+- Keep Game Design as the only active game design/build planning surface.
+- Move stale builder-route and legacy GameFoundryStudio report history under archive/v1-v2.
+- Move existing docs_build/dev/archive material under archive/v1-v2.
+- Verify all 18 active Toolbox pages satisfy template-critical markers, Theme V2 wiring, header/index coverage, and no local css/js folders.
+- Validate targeted route checks, active Toolbox surface, changed-file static checks, diff hygiene, review artifacts, and repo-structured delta packaging.

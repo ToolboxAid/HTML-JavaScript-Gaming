@@ -8,7 +8,7 @@ Date: 2026-06-02
 - Added reusable Tool Contract Bundle data under `src/shared/contracts/toolContractBundle.js`.
 - Added Tool Contract Bundle fixtures under `tests/fixtures/tools/tool-contract-bundle-scenarios.json`.
 - Added targeted contract tests under `tests/shared/ToolContractBundle.test.mjs`.
-- Added coverage report under `docs_build/dev/reports/tool_contract_coverage.md`.
+- Added coverage report under `archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/tool_contract_coverage.md`.
 - No database implementation was added.
 - No authentication implementation was added.
 - No UI/page/tool runtime behavior was changed.
