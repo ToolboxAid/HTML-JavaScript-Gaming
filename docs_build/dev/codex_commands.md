@@ -222,3 +222,28 @@ Required reports:
 - `docs_build/dev/reports/toolbox-runtime-ownership.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+## PR_26155_005
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Created `docs_build/dev/reports/toolbox-recovery-alignment.md`.
+- Summarized the executed Toolbox recovery sequence:
+  - `PR_26154_053` initially added the wireframe incorrectly as extra sections.
+  - The follow-up view-mode correction made Progress and Build Path page mode controls.
+  - `PR_26155_004` kept `toolbox/tools-page-accordions.js` because it still owns current Toolbox rendering.
+- Documented that `toolbox/index.html` is transitional and still depends on `toolbox/tools-page-accordions.js`.
+- Documented the next required architecture step: create a registry-driven Toolbox runtime for Order, Group, Progress, and Build Path before removing `tools-page-accordions.js`.
+- Added Project Workspace naming guidance in the report.
+- Added targeted validation guidance in the report.
+- Did not modify runtime behavior, `toolbox/index.html`, CSS, tools, or `toolbox/tools-page-accordions.js`.
+
+Validation:
+- `git diff --check`.
+- Verified the report names the current state and next architecture step clearly.
+- Playwright skipped because impacted is No and this PR is docs/report alignment only.
+
+Required reports:
+- `docs_build/dev/reports/toolbox-recovery-alignment.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
