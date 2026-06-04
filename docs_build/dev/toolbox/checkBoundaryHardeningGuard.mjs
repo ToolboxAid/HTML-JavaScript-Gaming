@@ -2,14 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const SCAN_ROOTS = ['src/engine', 'src/shared', 'tools'];
+const SCAN_ROOTS = ['src/engine', 'src/shared', 'toolbox'];
 const EXTENSIONS = new Set(['.js', '.mjs']);
 const IGNORED_DIR_NAMES = new Set(['node_modules', '.git', 'tmp']);
 
 function shouldIgnoreDirectory(directoryName) {
   return IGNORED_DIR_NAMES.has(directoryName)
-    || directoryName.startsWith('old_')
-    || directoryName === 'SpriteEditor_old_keep';
+    || directoryName.startsWith('old_');
 }
 
 const LAYER_BY_PREFIX = Object.freeze([

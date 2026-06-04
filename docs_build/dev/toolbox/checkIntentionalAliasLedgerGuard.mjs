@@ -3,7 +3,7 @@ import path from "node:path";
 
 const repoRoot = process.cwd();
 const ledgerPath = path.join(repoRoot, "docs_build/dev/toolbox/intentionalAliasLedger.json");
-const scanRoots = ["src", "tools", "tests", "samples"];
+const scanRoots = ["src", "toolbox", "tests"];
 const sourceExtensions = new Set([".js", ".mjs"]);
 const ignoredDirNames = new Set(["node_modules", ".git", "tmp", "results", "generated", "vendor"]);
 const ignoredPathFragments = [
@@ -14,8 +14,7 @@ const ignoredPathFragments = [
 
 function shouldIgnoreDirectory(directoryName) {
   return ignoredDirNames.has(directoryName)
-    || directoryName.startsWith("old_")
-    || directoryName === "SpriteEditor_old_keep";
+    || directoryName.startsWith("old_");
 }
 
 function toPosix(value) {

@@ -21,7 +21,7 @@ This folder is standardized on UAT documentation.
 - [3D Asset Viewer](./3d-asset-viewer/uat.md)
 - [3D Camera Path Editor](./3d-camera-path-editor/uat.md)
 - [Tool Host](./tool-host/uat.md)
-- [Tools Index And Registry](./tools-index-registry/uat.md)
+- [Tools Index And Registry](../../archive/v1-v2/docs_build/tools/tools-index-registry/uat.md)
 
 ## Primary Tool UAT Docs - V2
 - [Asset Manager V2](./asset-manager-v2/uat.md)

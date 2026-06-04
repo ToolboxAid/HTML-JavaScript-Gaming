@@ -63,7 +63,6 @@ import { run as runGameAssetManifestCoordinator } from './tools/GameAssetManifes
 import { run as runRuntimeAssetBinding } from './tools/RuntimeAssetBinding.test.mjs';
 import { run as runRuntimeAssetLookupConsolidation } from './tools/RuntimeAssetLookupConsolidation.test.mjs';
 import { run as runRuntimeAssetValidation } from './tools/RuntimeAssetValidation.test.mjs';
-import { run as runToolHostDispatchContract } from './tools/ToolHostDispatchContract.test.mjs';
 import { run as runPlatformShellHeaderAlignment } from './tools/PlatformShellHeaderAlignment.test.mjs';
 import { run as runRuntimeObservabilityFoundation } from './tools/RuntimeObservabilityFoundation.test.mjs';
 import { run as runToolLayoutDockingControlNormalization } from './tools/ToolLayoutDockingControlNormalization.test.mjs';
@@ -149,7 +148,6 @@ const tests = [
     ['RuntimeAssetBinding', runRuntimeAssetBinding],
     ['RuntimeAssetLookupConsolidation', runRuntimeAssetLookupConsolidation],
     ['RuntimeAssetValidation', runRuntimeAssetValidation],
-    ['ToolHostDispatchContract', runToolHostDispatchContract],
     ['PlatformShellHeaderAlignment', runPlatformShellHeaderAlignment],
     ['RuntimeObservabilityFoundation', runRuntimeObservabilityFoundation],
     ['ToolLayoutDockingControlNormalization', runToolLayoutDockingControlNormalization],

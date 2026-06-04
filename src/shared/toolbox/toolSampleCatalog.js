@@ -8,13 +8,13 @@ export function normalizeToolSamplePath(pathValue) {
     return null;
   }
 
-  if (trimmed.startsWith("./old_samples/")) {
+  if (trimmed.startsWith("./archive/v1-v2/samples/")) {
     return trimmed;
   }
-  if (trimmed.startsWith("old_samples/")) {
+  if (trimmed.startsWith("archive/v1-v2/samples/")) {
     return `./${trimmed}`;
   }
-  return `./old_samples/${trimmed}`;
+  return `./archive/v1-v2/samples/${trimmed}`;
 }
 
 export function toToolSampleLabel(pathValue) {

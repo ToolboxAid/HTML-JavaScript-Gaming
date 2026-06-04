@@ -233,7 +233,7 @@ function createRuntimeAssetSources(registry) {
       kind: "tilemap",
       file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
       runtimeEntry: {
-        modulePath: "old_games/Asteroids/main.js",
+        modulePath: "archive/v1-v2/games/Asteroids/main.js",
         exportName: "bootAsteroids",
         canvasId: "game"
       },

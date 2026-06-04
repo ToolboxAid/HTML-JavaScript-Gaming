@@ -13,7 +13,7 @@ function normalizeSamplePresetPath(value) {
   if (!normalized || normalized.includes("..")) {
     return "";
   }
-  if (normalized.startsWith("/old_samples/") || normalized.startsWith("/old_games/")) {
+  if (normalized.startsWith("/archive/v1-v2/samples/") || normalized.startsWith("/archive/v1-v2/games/")) {
     return normalized;
   }
   return "";

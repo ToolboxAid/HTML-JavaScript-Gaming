@@ -22,13 +22,13 @@ export function classifyGetStateVariantDomain(name) {
 
 export function classifyGetStateVariantLayer(filePath) {
   const normalized = String(filePath || "").replaceAll("\\", "/");
-  if (normalized.startsWith("old_samples/")) {
+  if (normalized.startsWith("archive/v1-v2/samples/")) {
     return "sample";
   }
   if (normalized.startsWith("toolbox/")) {
     return "tool";
   }
-  if (normalized.startsWith("src/") || normalized.startsWith("old_games/")) {
+  if (normalized.startsWith("src/") || normalized.startsWith("archive/v1-v2/games/")) {
     return "runtime";
   }
   return "other";

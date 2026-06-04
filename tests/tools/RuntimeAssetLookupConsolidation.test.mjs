@@ -10,11 +10,11 @@ export async function run() {
   const strictLookup = createRuntimeManifestAssetLookup({
     gameId: "Asteroids",
     runtimeAssetSources: {
-      "vector.ship": { file: "old_games/asteroids/assets/vectors/ship.vector.json", kind: "vector" },
-      "tilemap.main": { file: "old_games/asteroids/assets/tilemaps/main.tilemap.json", kind: "tilemap" },
-      "parallax.bg": { file: "old_games/asteroids/assets/parallax/background.parallax.json", kind: "parallaxLayer" },
-      "vector.bad": { file: "old_games/asteroids/assets/vectors/bad.vector.json" },
-      "vector.tool-only": { file: "old_games/asteroids/assets/vectors/data/tool-only.vector.json", kind: "vector" },
+      "vector.ship": { file: "archive/v1-v2/games/asteroids/assets/vectors/ship.vector.json", kind: "vector" },
+      "tilemap.main": { file: "archive/v1-v2/games/asteroids/assets/tilemaps/main.tilemap.json", kind: "tilemap" },
+      "parallax.bg": { file: "archive/v1-v2/games/asteroids/assets/parallax/background.parallax.json", kind: "parallaxLayer" },
+      "vector.bad": { file: "archive/v1-v2/games/asteroids/assets/vectors/bad.vector.json" },
+      "vector.tool-only": { file: "archive/v1-v2/games/asteroids/assets/vectors/data/tool-only.vector.json", kind: "vector" },
       "palette.hud": { kind: "palette", colors: ["#ffffffff"] }
     },
     missingBindingBehavior: "null"
@@ -30,8 +30,8 @@ export async function run() {
     true
   );
 
-  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "old_games/asteroids/assets/vectors/ship.vector.json");
-  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "old_games/asteroids/assets/vectors/ship.vector.json");
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "archive/v1-v2/games/asteroids/assets/vectors/ship.vector.json");
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "archive/v1-v2/games/asteroids/assets/vectors/ship.vector.json");
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.bad", type: "vector" }), null);
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.tool-only", type: "vector" }), null);
   assert.equal(strictLookup.resolvePackagedAsset({ id: "palette.hud", type: "palette" }).kind, "palette");

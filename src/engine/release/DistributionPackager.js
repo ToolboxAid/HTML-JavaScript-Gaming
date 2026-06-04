@@ -22,7 +22,7 @@ export default class DistributionPackager {
       fileCount: uniqueAssets.length + uniqueSamples.length,
       samples: uniqueSamples.map((sampleId) => ({
         sampleId,
-        entry: `old_samples/${sampleId}/index.html`,
+        entry: `archive/v1-v2/samples/${sampleId}/index.html`,
       })),
       assets: uniqueAssets,
       notes: [...notes],

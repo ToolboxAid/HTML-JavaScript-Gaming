@@ -17,7 +17,18 @@ Exercised tool entry points detected:
 (71%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) toolbox/renderToolsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/release/DistributionPackager.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/assetManifestLoader.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/assetPipelineTooling.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/runtimeAssetLookup.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/platformShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolLaunchSSoT.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolSampleCatalog.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vectorNativeTemplate.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vectorTemplateSampleGame.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (75%) toolbox/tools-page-accordions.js - executed lines 373/373; executed functions 15/20
 
@@ -27,10 +38,62 @@ Files with executed line/function counts where available:
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 179/179; executed functions 16/20
 
 Uncovered or low-coverage changed JS files:
-(0%) toolbox/renderToolsIndex.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/release/DistributionPackager.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/runtime/gameImageConvention.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/state/getStateVariantClassification.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/pipeline/assetManifestLoader.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/pipeline/assetPipelineTooling.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/pipeline/runtimeAssetLookup.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/platformShell.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/toolLaunchSSoT.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/toolSampleCatalog.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/vectorNativeTemplate.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/vectorTemplateSampleGame.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) toolbox/toolRegistry.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/assets/samples/old_samples.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/main.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/app.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appActions.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appCommands.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appExport.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appHistory.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appInput.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appIO.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appLayers.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appMenus.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appPalette.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appPopups.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appRender.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appShell.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appTimeline.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/appViewTools.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/constants.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurface.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceBottomPanel.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceBuild.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceCommandPalette.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceDraw.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceInput.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceLayout.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceLeftPanel.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceMenus.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceRightPanel.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/controlSurfaceTopBar.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/document.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/events/eventBus.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/events/eventDispatch.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/events/eventTypes.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/integration/integrationContracts.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/integration/integrationRegistry.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/integration/systemIntegration.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/modules/viewport.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/shared/getPaletteSignature.js - changed JS file not collected as browser runtime coverage
+(0%) archive/v1-v2/tools/SpriteEditor_old_keep/shared/scoreCommandItem.js - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/toolbox/checkBoundaryHardeningGuard.mjs - changed JS file not collected as browser runtime coverage
+(0%) docs_build/dev/toolbox/checkIntentionalAliasLedgerGuard.mjs - changed JS file not collected as browser runtime coverage
 (0%) docs_build/dev/toolbox/checkInternalBarrelGuard.mjs - changed JS file not collected as browser runtime coverage
 (0%) docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs - changed JS file not collected as browser runtime coverage
 (0%) docs_build/dev/toolbox/checkSharedExtractionGuard.mjs - changed JS file not collected as browser runtime coverage
@@ -39,7 +102,32 @@ Changed JS files considered:
 (0%) scripts/validate-active-tools-surface.mjs - changed JS file not collected as browser runtime coverage
 (0%) scripts/validate-asset-ownership-strategy.mjs - changed JS file not collected as browser runtime coverage
 (0%) scripts/validate-json-contracts.mjs - changed JS file not collected as browser runtime coverage
-(0%) toolbox/renderToolsIndex.js - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-tool-registry.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/engine/release/DistributionPackager.js - changed JS file not collected as browser runtime coverage
+(0%) src/engine/runtime/gameImageConvention.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/state/getStateVariantClassification.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/pipeline/assetManifestLoader.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/pipeline/assetPipelineTooling.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/pipeline/runtimeAssetLookup.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/platformShell.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/toolLaunchSSoT.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/toolSampleCatalog.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/vectorNativeTemplate.js - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/vectorTemplateSampleGame.js - changed JS file not collected as browser runtime coverage
+(0%) tests/core/BackgroundImageAndFullscreenBezel.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/engine/ManifestRuntimeParser.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/final/ReleaseReadinessSystems.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/run-tests.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/shared/GetStateVariantClassification.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/AssetPipelineTooling.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/AssetUsageIntegration.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/GameAssetManifestCoordinator.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/RuntimeAssetBinding.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/RuntimeAssetLookupConsolidation.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/RuntimeAssetValidation.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/VectorAssetSystem.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/tools/VectorGeometryRuntime.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) toolbox/toolRegistry.js - changed JS file not collected as browser runtime coverage
 (75%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
 (80%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage

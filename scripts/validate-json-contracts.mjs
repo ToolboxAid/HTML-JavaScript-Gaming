@@ -619,7 +619,7 @@ function resolveManifestAssetPath(manifestPath, assetPath) {
   if (normalized.startsWith("/")) {
     return path.join(ROOT, normalized.slice(1));
   }
-  if (normalized.startsWith("archive/v1-v2/games/") || normalized.startsWith("old_games/")) {
+  if (normalized.startsWith("archive/v1-v2/games/")) {
     return path.join(ROOT, normalized);
   }
   return path.join(path.dirname(manifestPath), normalized);

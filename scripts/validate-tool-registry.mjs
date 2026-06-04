@@ -6,25 +6,10 @@ import { getToolRegistry, getVisibleActiveToolRegistry } from "../toolbox/toolRe
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
-const toolsRoot = path.join(repoRoot, "toolbox");
+const toolboxRoot = path.join(repoRoot, "toolbox");
 const reportPath = path.join(repoRoot, "docs_build", "dev", "reports", "tool_registry_validation.txt");
 
-const EXPECTED_LEGACY_NAMES = [
-  "SpriteEditor_old_keep"
-];
-
-const IGNORED_DIRECTORIES = new Set([
-  "shared",
-  "Tool Host",
-  "codex",
-  "common",
-  "dev",
-  "preview",
-  "schemas",
-  "_tool_template-v2",
-  "templates-v2",
-  "templates"
-]);
+const IGNORED_DIRECTORIES = new Set(["_tool_template-v2"]);
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -57,8 +42,8 @@ function collectDuplicates(values, label) {
   return duplicates;
 }
 
-async function listToolDirectories() {
-  const entries = await fs.readdir(toolsRoot, { withFileTypes: true });
+async function listActiveToolDirectories() {
+  const entries = await fs.readdir(toolboxRoot, { withFileTypes: true });
   return entries
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
@@ -78,43 +63,49 @@ async function main() {
   const notes = [];
   const registryEntries = getToolRegistry();
   const visibleActiveEntries = getVisibleActiveToolRegistry();
-  const toolDirectories = await listToolDirectories();
-  const registryPaths = registryEntries.map((entry) => normalizeText(entry.path || entry.folderName));
-  const activeEntries = registryEntries.filter((entry) => entry.active === true && entry.visibleInToolsList === true);
-  const activeNames = activeEntries.map((entry) => normalizeText(entry.name || entry.displayName));
-  const legacyEntries = registryEntries.filter((entry) => entry.legacy === true);
+  const activeToolDirectories = await listActiveToolDirectories();
+  const registryFolders = registryEntries.map((entry) => normalizeText(entry.folderName || entry.path));
+  const activeToolboxIndexSource = await fs.readFile(path.join(toolboxRoot, "tools-page-accordions.js"), "utf8");
 
   issues.push(...collectDuplicates(registryEntries.map((entry) => entry.id), "id"));
   issues.push(...collectDuplicates(registryEntries.map((entry) => entry.name || entry.displayName), "name"));
-  issues.push(...collectDuplicates(registryPaths, "path"));
+  issues.push(...collectDuplicates(registryFolders, "folder"));
+
+  if (registryEntries.some((entry) => entry.legacy === true || entry.active !== true || entry.visibleInToolsList !== true)) {
+    issues.push("toolRegistry.js must contain active visible toolbox entries only.");
+  }
+  if (registryEntries.some((entry) => normalizeText(entry.path || entry.entryPoint).includes("archive/v1-v2"))) {
+    issues.push("toolRegistry.js must not contain archive/v1-v2 paths.");
+  }
 
   for (const entry of registryEntries) {
-    const folderName = normalizeText(entry.path || entry.folderName);
+    const folderName = normalizeText(entry.folderName || entry.path);
     const entryPoint = normalizeText(entry.entryPoint);
-    const isVisibleActive = entry.active === true && entry.visibleInToolsList === true;
+    if (!entry.id) {
+      issues.push("Registry entry is missing id.");
+    }
+    if (!entry.displayName) {
+      issues.push(`Registry entry ${entry.id || "(missing id)"} is missing displayName.`);
+    }
     if (!folderName) {
-      issues.push(`Registry entry ${entry.id} is missing a folder path.`);
+      issues.push(`Registry entry ${entry.id || "(missing id)"} is missing folderName.`);
       continue;
     }
-    if (!(await pathExists(path.join(toolsRoot, folderName)))) {
-      if (isVisibleActive) {
-        issues.push(`Registry entry ${entry.id} points to missing folder toolbox/${folderName}`);
-      } else {
-        notes.push(`Legacy/inactive entry ${entry.id} points to missing folder toolbox/${folderName} (allowed).`);
-      }
+    if (entryPoint !== `${folderName}/index.html`) {
+      issues.push(`Registry entry ${entry.id} entryPoint must be ${folderName}/index.html.`);
     }
-    if (entryPoint && !(await pathExists(path.join(toolsRoot, entryPoint)))) {
-      if (isVisibleActive) {
-        issues.push(`Registry entry ${entry.id} points to missing entry file toolbox/${entryPoint}`);
-      } else {
-        notes.push(`Legacy/inactive entry ${entry.id} points to missing entry file toolbox/${entryPoint} (allowed).`);
-      }
+    if (!(await pathExists(path.join(toolboxRoot, folderName, "index.html")))) {
+      issues.push(`Registry entry ${entry.id} points to missing toolbox/${folderName}/index.html.`);
+    }
+    const expectedIndexHref = `../toolbox/${folderName}/index.html`;
+    if (!activeToolboxIndexSource.includes(expectedIndexHref)) {
+      issues.push(`toolbox/tools-page-accordions.js is missing ${expectedIndexHref}.`);
     }
   }
 
-  for (const directory of toolDirectories) {
-    if (!registryPaths.includes(directory)) {
-      issues.push(`Filesystem directory toolbox/${directory} is missing from toolRegistry.js`);
+  for (const directory of activeToolDirectories) {
+    if (!registryFolders.includes(directory)) {
+      issues.push(`Filesystem directory toolbox/${directory} is missing from active toolRegistry.js.`);
     }
   }
 
@@ -122,62 +113,14 @@ async function main() {
     issues.push("Visible active tool registry is empty.");
   }
 
-  const spriteEditor = registryEntries.find((entry) => normalizeText(entry.name || entry.displayName) === "Sprite Editor");
-  if (!spriteEditor) {
-    issues.push("Sprite Editor is missing from toolRegistry.js");
-  } else {
-    if (spriteEditor.active !== true) {
-      issues.push("Sprite Editor must be active === true.");
-    }
-    if (spriteEditor.legacy === true) {
-      issues.push("Sprite Editor must not be legacy.");
-    }
-  }
-
-  const legacySprite = registryEntries.find((entry) => normalizeText(entry.path || entry.folderName) === "SpriteEditor_old_keep");
-  if (!legacySprite) {
-    issues.push("SpriteEditor_old_keep is missing from toolRegistry.js");
-  } else {
-    if (legacySprite.active === true) {
-      issues.push("SpriteEditor_old_keep must not be active.");
-    }
-    if (legacySprite.legacy !== true) {
-      issues.push("SpriteEditor_old_keep must be marked legacy === true.");
-    }
-  }
-
-  for (const expectedLegacyName of EXPECTED_LEGACY_NAMES) {
-    if (!legacyEntries.some((entry) => normalizeText(entry.name || entry.displayName) === expectedLegacyName)) {
-      issues.push(`Expected legacy tool missing or not marked legacy: ${expectedLegacyName}`);
-    }
-  }
-
-  if (activeEntries.some((entry) => normalizeText(entry.path || entry.folderName) === "SpriteEditor_old_keep")) {
-    issues.push("Active registry entries must not include SpriteEditor_old_keep.");
-  }
-
-  const toolsLandingPage = await fs.readFile(path.join(toolsRoot, "index.html"), "utf8");
-  const requiredGridHosts = [
-    "data-active-tools-workflow-grid",
-    "data-active-tools-editors-grid",
-    "data-active-tools-utilities-grid",
-    "data-active-tools-viewers-grid"
-  ];
-  for (const gridHost of requiredGridHosts) {
-    if (!toolsLandingPage.includes(gridHost)) {
-      issues.push(`Tools landing page must include the ${gridHost} host.`);
-    }
-  }
-
   const reportLines = [
     "TOOL_REGISTRY_VALIDATION",
     `status=${issues.length === 0 ? "PASS" : "FAIL"}`,
-    `active=${activeNames.join(", ")}`,
-    `legacy=${legacyEntries.map((entry) => normalizeText(entry.name || entry.displayName)).join(", ")}`,
-    formatSection("Filesystem Directories", toolDirectories),
-    formatSection("Registry Paths", registryPaths),
+    `active=${visibleActiveEntries.map((entry) => normalizeText(entry.displayName)).join(", ")}`,
+    formatSection("Filesystem Active Tool Directories", activeToolDirectories),
+    formatSection("Registry Folders", registryFolders),
     formatSection("Issues", issues.length > 0 ? issues : ["none"]),
-    formatSection("Notes", notes.length > 0 ? notes : ["registry and filesystem are aligned"])
+    formatSection("Notes", notes.length > 0 ? notes : ["registry, toolbox folders, and toolbox index routes are aligned"])
   ].join("\n");
 
   await fs.writeFile(reportPath, `${reportLines}\n`, "utf8");
@@ -190,7 +133,7 @@ async function main() {
   }
 
   console.log("TOOL_REGISTRY_VALID");
-  activeNames.forEach((name) => console.log(`- ACTIVE ${name}`));
+  visibleActiveEntries.forEach((entry) => console.log(`- ACTIVE ${entry.displayName}`));
   console.log(`- REPORT docs_build/dev/reports/${path.basename(reportPath)}`);
 }
 

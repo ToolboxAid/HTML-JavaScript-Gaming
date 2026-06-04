@@ -1,56 +1,41 @@
 TOOL_REGISTRY_VALIDATION
 status=PASS
-active=Vector Map Editor, World Vector Studio V2, Object Vector Studio V2, SVG Asset Studio, Tilemap Studio, Parallax Scene Studio, Sprite Editor, Asset Manager V2, Workspace Manager V2, Palette Manager V2, Preview Generator V2, Text to Speech V2, Collision Inspector V2, Storage Inspector V2, State Inspector, Replay Visualizer, Performance Profiler, Physics Sandbox, Asset Pipeline, 3D JSON Payload, 3D Asset Viewer, 3D Camera Path Editor
-legacy=Vector Map Editor, SpriteEditor_old_keep
-Filesystem Directories
-- 3D Asset Viewer
-- 3D Camera Path Editor
-- 3D JSON Payload
-- Asset Pipeline
-- Parallax Scene Studio
-- Performance Profiler
-- Physics Sandbox
-- Replay Visualizer
-- SVG Asset Studio
-- Sprite Editor
-- State Inspector
-- Tilemap Studio
-- Vector Map Editor
-- asset-manager-v2
-- collision-inspector-v2
-- object-vector-studio-v2
-- palette-manager-v2
-- preview-generator-v2
-- storage-inspector-v2
-- text2speech-V2
-- workspace-manager-v2
-- world-vector-studio-v2
-Registry Paths
-- Vector Map Editor
-- world-vector-studio-v2
-- object-vector-studio-v2
-- SVG Asset Studio
-- Tilemap Studio
-- Parallax Scene Studio
-- Sprite Editor
-- asset-manager-v2
-- workspace-manager-v2
-- palette-manager-v2
-- preview-generator-v2
-- text2speech-V2
-- collision-inspector-v2
-- storage-inspector-v2
-- State Inspector
-- Replay Visualizer
-- Performance Profiler
-- Physics Sandbox
-- Asset Pipeline
-- 3D JSON Payload
-- 3D Asset Viewer
-- 3D Camera Path Editor
-- SpriteEditor_old_keep
+active=AI Assistant, Animation, Assets, Cloud, Custom Extensions, Game Design, Input, Localization, MIDI, Object Vector, Palette Manager, Particles, Publish, Sound, Storage Inspector, World Vector
+Filesystem Active Tool Directories
+- ai-assistant
+- animation
+- assets
+- cloud
+- code
+- game-design
+- input
+- localization
+- midi
+- object-vector
+- palette
+- particles
+- publish
+- sound
+- storage
+- world-vector
+Registry Folders
+- ai-assistant
+- animation
+- assets
+- cloud
+- code
+- game-design
+- input
+- localization
+- midi
+- object-vector
+- palette
+- particles
+- publish
+- sound
+- storage
+- world-vector
 Issues
 - none
 Notes
-- Legacy/inactive entry sprite-editor-old-keep points to missing folder toolbox/SpriteEditor_old_keep (allowed).
-- Legacy/inactive entry sprite-editor-old-keep points to missing entry file toolbox/SpriteEditor_old_keep/index.html (allowed).
+- registry, toolbox folders, and toolbox index routes are aligned

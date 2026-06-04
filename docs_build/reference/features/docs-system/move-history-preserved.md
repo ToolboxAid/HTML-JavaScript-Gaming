@@ -598,7 +598,7 @@ Remove old location after apply:
 | Target | Exists? | Live References? | Proposed Classification | Evidence Summary | Action Now | Recommended Future PR Scope |
 | --- | --- | --- | --- | --- | --- | --- |
 | `templates/` | yes | yes | `needs-manual-review` | Active refs in `src/shared/toolbox/vectorNativeTemplate.js`, `src/shared/toolbox/vectorTemplateSampleGame.js`, `tests/tools/VectorNativeTemplate.test.mjs`, and docs/planning surfaces. | none in this PR | Dedicated cleanup/build lane to classify keep vs migrate-later with dependency verification. |
-| `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` policy | yes | yes | `keep` | Legacy-hidden runtime registry entry in `toolbox/toolRegistry.js`; referenced in specs, roadmap, and reports. | none in this PR | Separate legacy policy PR to define exact retirement criteria and transition gates. |
+| `archive/v1-v2/tools/SpriteEditor_old_keep/` policy | yes | yes | `keep` | Archived tool reference material kept outside active registry metadata; referenced in specs, roadmap, and reports. | none in this PR | Separate legacy policy PR to define exact retirement criteria and transition gates. |
 | `legacy class-retention policy marker` policy target | no | yes (docs-only) | `needs-manual-review` | Path not present on disk; only planning references found in roadmap/targets/build spec docs. | none in this PR | Clarify whether this is a historical placeholder, rename candidate, or retired concept before any cleanup execution. |
 | `archive/v1-v2/docs_build/archive/` archived-notes policy | yes | yes | `keep` | Archive destination is actively documented across docs structure/readme/paths files; policy item still planned in roadmap. | none in this PR | Policy-definition PR to formalize retention + move criteria for archived notes. |
 | Legacy path imports (`/engine/`, `../engine/`, `./engine/`) | pattern check | no (active code) | `future-delete-candidate` | No matches for inspected old-engine import patterns in toolbox/src/archive/v1-v2/games/samples. | none in this PR | Add guard/reporting checks in future cleanup PR to prevent regressions and retire stale legacy-import guidance. |
@@ -689,7 +689,7 @@ Generated: 2026-04-12
 
 ## Move Summary
 - Source: toolbox/SpriteEditor_old_keep/
-- Destination: archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/
+- Destination: archive/v1-v2/tools/SpriteEditor_old_keep/
 - Files moved: 44
 - Source path exists after move: no
 - Destination path exists after move: yes
@@ -732,10 +732,10 @@ Generated: 2026-04-12
 - Old path no longer exists: PASS
 - New archive path exists: PASS
 - Docs non-archive path references were updated where needed for active reports/specs.
-- Remaining non-doc references to SpriteEditor_old_keep exist in legacy metadata/baseline files and runtime registry metadata by design under the no-runtime-wiring constraint.
+- Remaining non-doc references to SpriteEditor_old_keep exist in legacy metadata/baseline files by design under the no-runtime-wiring constraint.
 
 ## Commands Used
-- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep
+- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination archive/v1-v2/tools/SpriteEditor_old_keep
 - rg -n -P (?<!archive/v1-v2/docs_build/archive/)tools/SpriteEditor_old_keep docs --glob !archive/v1-v2/docs_build/archive/**
 - rg import/require patterns for SpriteEditor_old_keep across tools src games samples tests
 - npm run test:launch-smoke -- --tools
@@ -753,7 +753,7 @@ Generated: 2026-04-12
 - Result: PASS (path missing)
 
 ## Step 2: New Archive Path Exists With Identical Structure
-- Check: archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/
+- Check: archive/v1-v2/tools/SpriteEditor_old_keep/
 - New path exists: yes
 - New path file count: 44
 - New path directory count: 8
@@ -770,7 +770,7 @@ Generated: 2026-04-12
 ### Non-Archive Matches (Exact)
 - .\docs_build\dev\codex_commands.md:6:tools/SpriteEditor_old_keep/
 - .\docs_build\dev\reports\spriteeditor_archive_move_report.md:6:- Source: toolbox/SpriteEditor_old_keep/
-- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:53:- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep
+- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:53:- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination archive/v1-v2/tools/SpriteEditor_old_keep
 - .\docs_build\dev\reports\spriteeditor_archive_move_report.md:54:- rg -n -P (?<!archive/v1-v2/docs_build/archive/)tools/SpriteEditor_old_keep docs --glob !archive/v1-v2/docs_build/archive/**
 - .\tools\shared\find-duplicate-methods\found_dupes_called_count.txt:110:   -> Line 12: \tools\SpriteEditor_old_keep\modules\integration\integrationRegistry.js
 - .\tools\shared\find-duplicate-methods\found_dupes_called_count.txt:111:   -> Line 11: \tools\SpriteEditor_old_keep\modules\integration\systemIntegration.js
@@ -782,7 +782,7 @@ Generated: 2026-04-12
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:149:   -> Line 16: \tools\SpriteEditor_old_keep\modules\integration\integrationContracts.js
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:500:   -> Line 12: \tools\SpriteEditor_old_keep\modules\integration\integrationRegistry.js
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:501:   -> Line 11: \tools\SpriteEditor_old_keep\modules\integration\systemIntegration.js
-- .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:4:Move `toolbox/SpriteEditor_old_keep/` to `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` as a non-executable reference artifact.
+- .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:4:Move `toolbox/SpriteEditor_old_keep/` to `archive/v1-v2/tools/SpriteEditor_old_keep/` as a non-executable reference artifact.
 - .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:22:tools/SpriteEditor_old_keep/
 - .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:29:  toolbox/SpriteEditor_old_keep/
 - .\tools\dev\checkSharedExtractionGuard.baseline.json:1725:      "file": "toolbox/SpriteEditor_old_keep/modules/appCommands.js",

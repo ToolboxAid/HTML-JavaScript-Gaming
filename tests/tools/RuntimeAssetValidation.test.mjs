@@ -5,10 +5,10 @@ export async function run() {
   const validVector = validateRuntimeResolvedAsset({
     domain: "vectors",
     assetId: "vector.ship",
-    runtimePath: "old_games/asteroids/assets/vectors/ship.vector.json",
+    runtimePath: "archive/v1-v2/games/asteroids/assets/vectors/ship.vector.json",
     source: {
       kind: "vector",
-      file: "old_games/asteroids/assets/vectors/ship.vector.json",
+      file: "archive/v1-v2/games/asteroids/assets/vectors/ship.vector.json",
       runtimeKind: "vector-geometry"
     }
   });
@@ -17,10 +17,10 @@ export async function run() {
   const dataPathBlocked = validateRuntimeResolvedAsset({
     domain: "vectors",
     assetId: "vector.tool-only",
-    runtimePath: "old_games/asteroids/assets/vectors/data/tool-only.vector.json",
+    runtimePath: "archive/v1-v2/games/asteroids/assets/vectors/data/tool-only.vector.json",
     source: {
       kind: "vector",
-      file: "old_games/asteroids/assets/vectors/data/tool-only.vector.json"
+      file: "archive/v1-v2/games/asteroids/assets/vectors/data/tool-only.vector.json"
     }
   });
   assert.equal(dataPathBlocked.valid, false);
@@ -30,9 +30,9 @@ export async function run() {
   const invalidTilemap = validateRuntimeResolvedAsset({
     domain: "tilemaps",
     assetId: "tilemap.main",
-    runtimePath: "old_games/asteroids/assets/tilemaps/main.tilemap.json",
+    runtimePath: "archive/v1-v2/games/asteroids/assets/tilemaps/main.tilemap.json",
     source: {
-      file: "old_games/asteroids/assets/tilemaps/main.tilemap.json"
+      file: "archive/v1-v2/games/asteroids/assets/tilemaps/main.tilemap.json"
     }
   });
   assert.equal(invalidTilemap.valid, false);

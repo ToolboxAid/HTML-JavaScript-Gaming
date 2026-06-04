@@ -69,7 +69,7 @@ export async function run() {
     version: '1.2.3',
     profile: profiles.resolve('production'),
     samples: ['sample141-settings-system'],
-    assets: ['old_samples/shared/theme.css', 'old_samples/shared/theme.css'],
+    assets: ['archive/v1-v2/samples/shared/theme.css', 'archive/v1-v2/samples/shared/theme.css'],
   });
   assert.equal(pkg.fileCount, 2);
 

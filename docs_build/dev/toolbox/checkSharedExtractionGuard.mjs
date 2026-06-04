@@ -11,8 +11,7 @@ const BASELINE_RELATIVE_PATH = "docs_build/dev/toolbox/checkSharedExtractionGuar
 
 function shouldIgnoreDirectory(directoryName) {
   return IGNORED_DIRS.has(directoryName)
-    || directoryName.startsWith("old_")
-    || directoryName === "SpriteEditor_old_keep";
+    || directoryName.startsWith("old_");
 }
 
 const LOCAL_HELPER_RULES = [

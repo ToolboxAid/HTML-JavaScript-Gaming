@@ -38,9 +38,7 @@ function classifyDuplicateGroup(files) {
   const touchesRuntime = normalized.some((value) => value.startsWith("src/")
     || value.startsWith("toolbox/")
     || value.startsWith("archive/v1-v2/games/")
-    || value.startsWith("archive/v1-v2/samples/")
-    || value.startsWith("old_games/")
-    || value.startsWith("old_samples/"));
+    || value.startsWith("archive/v1-v2/samples/"));
   const inTestsOnly = normalized.every((value) => value.startsWith("tests/"));
   const extensionSet = new Set(files.map((value) => getExtension(value)));
   const allJson = extensionSet.size === 1 && extensionSet.has(".json");

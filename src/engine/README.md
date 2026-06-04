@@ -1,6 +1,6 @@
 # Engine
 
-Shared framework used by deprecated `old_samples/` and deprecated `old_games/`. All modules are ES modules and browser-ready; no build step is required.
+Shared framework used by deprecated `archive/v1-v2/samples/` and deprecated `archive/v1-v2/games/`. All modules are ES modules and browser-ready; no build step is required.
 
 ## Import Policy
 - Bootstrap via `src/engine/core/index.js` (or `src/engine/core/Engine.js` for legacy direct imports).

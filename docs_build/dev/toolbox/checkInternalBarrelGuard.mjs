@@ -15,8 +15,7 @@ const baselineRelativePath = "docs_build/dev/toolbox/checkInternalBarrelGuard.ba
 
 function shouldIgnoreDirectory(directoryName) {
   return ignoredDirNames.has(directoryName)
-    || directoryName.startsWith("old_")
-    || directoryName === "SpriteEditor_old_keep";
+    || directoryName.startsWith("old_");
 }
 
 function toPosix(value) {

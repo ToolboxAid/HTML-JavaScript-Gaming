@@ -624,8 +624,7 @@ function routeLanesForChangedFiles(changedFiles) {
       routed.add("integration");
     } else if (normalized.startsWith("tests/playwright/games/")
       || normalized.startsWith("games/")
-      || normalized.startsWith("archive/v1-v2/games/")
-      || normalized.startsWith("old_games/")) {
+      || normalized.startsWith("archive/v1-v2/games/")) {
       continue;
     } else if (normalized.startsWith("tests/playwright/tools/") || normalized.startsWith("toolbox/")) {
       routed.add("tool-runtime");
@@ -637,7 +636,6 @@ function routeLanesForChangedFiles(changedFiles) {
       || normalized.startsWith("tests/render/")) {
       routed.add("engine-src");
     } else if (normalized.startsWith("archive/v1-v2/samples/")
-      || normalized.startsWith("old_samples/")
       || normalized.startsWith("tests/samples/")) {
       continue;
     }
@@ -1313,14 +1311,12 @@ function referencedFixturePaths(content) {
   const patterns = [
     /\btests\/fixtures\/[A-Za-z0-9_./-]+/g,
     /\barchive\/v1-v2\/games\/[A-Za-z0-9_-]+\/game\.manifest\.json\b/g,
-    /\/archive\/v1-v2\/games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g,
-    /\bold_games\/[A-Za-z0-9_-]+\/game\.manifest\.json\b/g,
-    /\/old_games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g
+    /\/archive\/v1-v2\/games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g
   ];
   for (const pattern of patterns) {
     let match = pattern.exec(content);
     while (match) {
-      if (match[0].startsWith("/old_games/") || match[0].startsWith("/archive/v1-v2/games/")) {
+      if (match[0].startsWith("/archive/v1-v2/games/")) {
         fixtures.add(match[0].slice(1));
       } else {
         fixtures.add(match[0]);

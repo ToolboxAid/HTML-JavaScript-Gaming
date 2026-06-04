@@ -1,8 +1,1 @@
-Reduce active Toolbox surface and finalize V1/V2 archive references - PR_26154_045-047
-
-- Archive Configuration Admin and Tool Creator under archive/v1-v2/tools/toolbox-reduction-reference.
-- Remove those retired pages from active Toolbox navigation, route aliases, and Toolbox index grouping.
-- Keep 16 active end-user Toolbox tools plus toolbox/_tool_template-v2 as the active template.
-- Rewire hidden legacy registry/sample references and docs_build guards from removed old roots to archive/v1-v2 paths.
-- Confirm archive/v1-v2/tools, archive/v1-v2/games, and archive/v1-v2/samples are the deprecated reference roots.
-- Validate active Toolbox surface, template markers, changed-file syntax/JSON, Workspace V2, diff hygiene, review artifacts, and repo-structured delta packaging.
+Finalize active toolbox registry, archive SpriteEditor reference material, and remove legacy root aliases - PR_26154_048-050-toolbox-registry-archive-alias-closeout

@@ -97,13 +97,13 @@ function normalizeForwardedLaunchParam(key, value) {
     return "";
   }
   if (key === "gameHref") {
-    return normalizeLocalHref(normalizedValue, ["/old_games/"]);
+    return normalizeLocalHref(normalizedValue, ["/archive/v1-v2/games/"]);
   }
   if (key === "workspaceHref") {
     return "";
   }
   if (key === "returnTo") {
-    return normalizeLocalHref(normalizedValue, ["/old_games/", "/old_samples/"]);
+    return normalizeLocalHref(normalizedValue, ["/archive/v1-v2/games/", "/archive/v1-v2/samples/"]);
   }
   if (key === "samplePresetPath") {
     return normalizeSamplePresetPath(normalizedValue);
@@ -442,7 +442,7 @@ function buildWorkspaceHrefFromGameId() {
 }
 
 function normalizeSamplePresetPath(value) {
-  return normalizeLocalHref(value, ["/old_samples/", "/old_games/"]);
+  return normalizeLocalHref(value, ["/archive/v1-v2/samples/", "/archive/v1-v2/games/"]);
 }
 
 function normalizeFetchRequestPath(input) {
@@ -741,7 +741,7 @@ function readLaunchPayloadSignature(searchParams) {
     return "";
   }
   const gameId = normalizeTextValue(searchParams.get("gameId") || searchParams.get("game"));
-  const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/old_games/"]);
+  const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/archive/v1-v2/games/"]);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath"));
   const parts = [];
   if (gameId) {
@@ -851,7 +851,7 @@ function readGameLaunchContext() {
   const searchParams = new URLSearchParams(window.location.search);
   const gameId = normalizeTextValue(searchParams.get("gameId") || searchParams.get("game"));
   const gameTitle = normalizeTextValue(searchParams.get("gameTitle"));
-  const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/old_games/"]);
+  const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/archive/v1-v2/games/"]);
   const workspaceHref = buildWorkspaceHrefFromGameId(gameId);
   if (!gameId && !gameTitle && !gameHref && !workspaceHref) {
     return null;
@@ -870,19 +870,19 @@ function deriveGameManifestPaths(context) {
   if (gameHref.endsWith("/index.html")) {
     const base = gameHref.slice(0, -"/index.html".length);
     candidates.add(`${base}/game.manifest.json`);
-    const lowerCasedBase = base.replace(/^\/old_games\/([^/]+)/i, (_, folderName) => `/old_games/${folderName.toLowerCase()}`);
+    const lowerCasedBase = base.replace(/^\/archive\/v1-v2\/games\/([^/]+)/i, (_, folderName) => `/archive/v1-v2/games/${folderName.toLowerCase()}`);
     candidates.add(`${lowerCasedBase}/game.manifest.json`);
   } else if (gameHref.endsWith("/")) {
     const base = gameHref.slice(0, -1);
     candidates.add(`${base}/game.manifest.json`);
-    const lowerCasedBase = base.replace(/^\/old_games\/([^/]+)/i, (_, folderName) => `/old_games/${folderName.toLowerCase()}`);
+    const lowerCasedBase = base.replace(/^\/archive\/v1-v2\/games\/([^/]+)/i, (_, folderName) => `/archive/v1-v2/games/${folderName.toLowerCase()}`);
     candidates.add(`${lowerCasedBase}/game.manifest.json`);
   }
 
   const gameId = normalizeTextValue(context?.gameId);
   if (gameId) {
-    candidates.add(`/old_games/${encodeURIComponent(gameId)}/game.manifest.json`);
-    candidates.add(`/old_games/${encodeURIComponent(gameId.toLowerCase())}/game.manifest.json`);
+    candidates.add(`/archive/v1-v2/games/${encodeURIComponent(gameId)}/game.manifest.json`);
+    candidates.add(`/archive/v1-v2/games/${encodeURIComponent(gameId.toLowerCase())}/game.manifest.json`);
   }
 
   return Array.from(candidates).filter(Boolean);
@@ -904,7 +904,7 @@ function normalizeManifestAssetPath(value, assetsPath) {
   if (!baseAssetsPath) {
     return raw;
   }
-  if (raw.startsWith("old_games/") || raw.startsWith(`${baseAssetsPath}/`)) {
+  if (raw.startsWith("archive/v1-v2/games/") || raw.startsWith(`${baseAssetsPath}/`)) {
     return raw.startsWith("/") ? raw : `/${raw}`;
   }
   const relativePath = raw.startsWith("assets/")
@@ -930,7 +930,7 @@ function readManifestAssetEntries(manifestPayload) {
     ? assetManager.assets
     : {};
   const gameFolder = normalizeTextValue(source.game?.folder);
-  const assetsPath = normalizeAssetsPath(workspaceBlock.assetsPath || source.assetsPath || (gameFolder ? `old_games/${gameFolder}/assets` : ""));
+  const assetsPath = normalizeAssetsPath(workspaceBlock.assetsPath || source.assetsPath || (gameFolder ? `archive/v1-v2/games/${gameFolder}/assets` : ""));
   return Object.entries(entries)
     .map(([assetId, rawEntry]) => {
       const safeAssetId = normalizeTextValue(assetId);
