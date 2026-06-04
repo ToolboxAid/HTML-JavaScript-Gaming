@@ -31,3 +31,26 @@ Required reports:
 - `docs_build/dev/reports/archive_policy_final_alignment_report.md`
 - `docs_build/dev/reports/legacy_alias_removal_closeout_report.md`
 - `docs_build/dev/reports/migration_done_status_report.md`
+
+## PR_26154_051
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Ran final active-path checks for `tools/`, `samples/`, `old-tools`, `old_games`, `old_samples`, `assets/theme/v2`, `src/engine/theme`, `favicon.ico`, and `styles.css`.
+- Ignored `archive/v1-v2/`, `tmp/`, and generated review artifacts for active stale-path classification.
+- Fixed the remaining active README reference from `old_samples/index.html` to `archive/v1-v2/samples/index.html`.
+- Generated local review artifacts when possible and documented their handling.
+- Created the repo-structured delta ZIP at `tmp/PR_26154_051-final-done-check-no-review-artifact-blocker_delta.zip`.
+
+Validation:
+- Targeted active-path reference checks.
+- `git diff --check`
+- `node --check playwright.config.cjs`
+- UTF-8/read validation for changed Markdown, text, and JS/CJS files.
+- `npm run test:workspace-v2` skipped because active toolbox launch/navigation/runtime behavior did not change.
+- Full samples smoke test skipped per request.
+- Tests against `archive/v1-v2/` skipped per request.
+
+Required reports:
+- `docs_build/dev/reports/final_done_check_report.md`
+- `docs_build/dev/reports/review_artifact_handling_report.md`

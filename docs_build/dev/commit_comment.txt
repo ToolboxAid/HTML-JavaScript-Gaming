@@ -1,1 +1,1 @@
-Finalize active toolbox registry, archive SpriteEditor reference material, and remove legacy root aliases - PR_26154_048-050-toolbox-registry-archive-alias-closeout
+Run final stale-path done check and document non-blocking review artifact handling - PR_26154_051-final-done-check-no-review-artifact-blocker

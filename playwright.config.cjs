@@ -21,7 +21,7 @@ module.exports = {
   use: {
     headless: false,
     launchOptions: {
-      slowMo: 50
+      slowMo: 5
     },
     trace: "on"
   }
