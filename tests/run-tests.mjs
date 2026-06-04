@@ -63,8 +63,6 @@ import { run as runGameAssetManifestCoordinator } from './tools/GameAssetManifes
 import { run as runRuntimeAssetBinding } from './tools/RuntimeAssetBinding.test.mjs';
 import { run as runRuntimeAssetLookupConsolidation } from './tools/RuntimeAssetLookupConsolidation.test.mjs';
 import { run as runRuntimeAssetValidation } from './tools/RuntimeAssetValidation.test.mjs';
-import { run as runToolEntryLaunchContract } from './tools/ToolEntryLaunchContract.test.mjs';
-import { run as runToolsIndexRegistrySmoke } from './tools/ToolsIndexRegistrySmoke.test.mjs';
 import { run as runToolHostDispatchContract } from './tools/ToolHostDispatchContract.test.mjs';
 import { run as runPlatformShellHeaderAlignment } from './tools/PlatformShellHeaderAlignment.test.mjs';
 import { run as runRuntimeObservabilityFoundation } from './tools/RuntimeObservabilityFoundation.test.mjs';
@@ -95,7 +93,6 @@ import { run as runRenderPipelineContractAll4Tools } from './tools/RenderPipelin
 import { run as runRuntimeSceneLoaderHotReload } from './tools/RuntimeSceneLoaderHotReload.test.mjs';
 import { run as runVectorAssetSystem } from './tools/VectorAssetSystem.test.mjs';
 import { run as runVectorNativeTemplate } from './tools/VectorNativeTemplate.test.mjs';
-import { run as runVectorTemplateSampleGame } from './tools/VectorTemplateSampleGame.test.mjs';
 import { run as runVectorGeometryRuntime } from './tools/VectorGeometryRuntime.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
@@ -152,8 +149,6 @@ const tests = [
     ['RuntimeAssetBinding', runRuntimeAssetBinding],
     ['RuntimeAssetLookupConsolidation', runRuntimeAssetLookupConsolidation],
     ['RuntimeAssetValidation', runRuntimeAssetValidation],
-    ['ToolEntryLaunchContract', runToolEntryLaunchContract],
-    ['ToolsIndexRegistrySmoke', runToolsIndexRegistrySmoke],
     ['ToolHostDispatchContract', runToolHostDispatchContract],
     ['PlatformShellHeaderAlignment', runPlatformShellHeaderAlignment],
     ['RuntimeObservabilityFoundation', runRuntimeObservabilityFoundation],
@@ -184,7 +179,6 @@ const tests = [
     ['RuntimeSceneLoaderHotReload', runRuntimeSceneLoaderHotReload],
     ['VectorAssetSystem', runVectorAssetSystem],
     ['VectorNativeTemplate', runVectorNativeTemplate],
-    ['VectorTemplateSampleGame', runVectorTemplateSampleGame],
     ['VectorGeometryRuntime', runVectorGeometryRuntime],
     ['ReplaySystem', runReplaySystem],
     ['ReplayTimeline', runReplayTimeline],

@@ -1,6 +1,8 @@
-Close out toolbox nav coverage and ToolDisplayMode character sizing - PR_26154_030-toolbox-nav-character-closeout
+Close out toolbox templates, reconcile active tests, and polish root paths - PR_26154_031-033
 
-- Set shared Theme V2 `.tool-display-mode__character` rendering to 150px by 150px with 15px adjacent spacing.
-- Add all active toolbox tools to the shared header Toolbox navigation, including grouped Audio, Assets, Objects, Tooling, and Worlds submenus.
-- Remove Marketplace from the active toolbox index data while preserving Marketplace as a product/footer destination.
-- Validate active toolbox nav coverage, template consistency, Workspace V2, static changed files, diff hygiene, and review artifacts.
+- Confirm active public/root and toolbox template consistency remains clean at 43/43 and 20/20.
+- Fix stale Theme V2 grouping CSS path copy in active admin/docs pages.
+- Remove deprecated-only tests for old games, old samples, removed V2 tools, old template baselines, and removed integration surfaces.
+- Rewire active test lanes and coverage labels to current toolbox and assets/theme-v2 paths.
+- Confirm Marketplace stays outside toolbox index while remaining in product header/footer navigation.
+- Validate static checks, Workspace V2, targeted stale-path scans, diff hygiene, and repo-structured delta packaging.

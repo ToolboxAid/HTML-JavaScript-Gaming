@@ -2,53 +2,63 @@
 
 Task:
 
-- `PR_26154_030-toolbox-nav-character-closeout`
+- `PR_26154_031-toolbox-template-mismatch-closeout`
+- `PR_26154_032-active-test-suite-reconciliation`
+- `PR_26154_033-root-structure-final-polish`
 
 Changes:
 
 - Read `.codex/skills/repo-build/SKILL.md`.
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- Used `PR_26154_029-theme-v2-root-rename` as the current baseline.
-- Updated shared Theme V2/toolbox character styling in `assets/theme-v2/css/panels.css`.
-- Kept the character image on the left by preserving the existing ToolDisplayMode DOM order.
-- Confirmed 15px character-to-content spacing through the existing `--space-15` token.
-- Updated the stale aggregate Theme V2 selector in `assets/theme-v2/css/gamefoundrystudio.css`.
-- Updated `assets/theme-v2/partials/header-nav.html` so all active toolbox tool pages appear in the Toolbox navigation.
-- Added Toolbox nav submenus for multi-tool groups, including Audio with MIDI and Sound.
-- Added route-map entries for Tool Builder and Tool Creator in `assets/theme-v2/js/gamefoundry-partials.js`.
-- Removed Marketplace from the active toolbox index data in `toolbox/tools-page-accordions.js`.
-- Kept Marketplace in the header and footer as a product/capability destination outside Toolbox.
+- Used the latest applied PR state as the baseline.
+- Re-ran template consistency checks for active public/root pages and active toolbox pages.
+- Updated stale grouping CSS copy in `admin/grouping-colors.html` and `docs_build/account/grouping-colors.html`.
+- Removed deprecated-only tests for old games, old samples, removed V2 tool pages, removed integration surfaces, and old template/tool registries.
+- Rewired active test lane metadata to `tests/playwright/tools/RootToolsFutureState.spec.mjs`.
+- Updated Playwright structure ownership metadata and V8 coverage entry-point labels for `toolbox/` and `assets/theme-v2/`.
+- Confirmed Marketplace is absent from `toolbox/index.html` and `toolbox/tools-page-accordions.js`.
+- Confirmed shared header/footer still keep Marketplace as a product destination.
 - Did not modify `old-tools/`, `old_games/`, `old_samples/`, or `start_of_day/`.
 
 Validation:
 
-- Ran targeted reference checks for `toolbox/index.html`, `toolbox/tools-page-accordions.js`, shared header nav, Marketplace entries, `.tool-display-mode__character`, and `assets/theme-v2` paths.
-- Ran template consistency audit after the Toolbox nav update.
-- Ran static validation for changed HTML, JS, CSS, JSON, and Markdown files.
-- Ran changed JavaScript syntax checks.
+- Ran changed JavaScript syntax checks:
+  - `node --check scripts/run-targeted-test-lanes.mjs`
+  - `node --check scripts/audit-playwright-test-locations.mjs`
+  - `node --check tests/run-tests.mjs`
+  - `node --check tests/helpers/playwrightV8CoverageReporter.mjs`
+- Ran template consistency audit:
+  - Public/root pages: `43/43`
+  - Active toolbox pages: `20/20`
+- Ran targeted stale reference checks for `toolbox`, `assets/theme-v2`, footer/header links, `styles.css`, `favicon.ico`, `assets/theme/v2`, `GameFoundryStudio/`, `src/engine/theme`, removed `tools/` routes, and removed `samples/` routes.
+- Ran active toolbox index ordering and header coverage checks.
+- Ran direct removed-samples import/route scan in active tests.
+- Ran `npm run test:playwright:static`.
 - Ran `npm run test:workspace-v2`.
 - Ran `git diff --check`.
-- Ran `npm run codex:review-artifacts`.
+- Regenerated required Codex review artifacts.
 - Packaged repo-structured ZIP:
-  - `tmp/PR_26154_030-toolbox-nav-character-closeout_delta.zip`
+  - `tmp/PR_26154_031-033-template-test-root-polish_delta.zip`
 
 Required reports:
 
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
-- `docs_build/dev/reports/toolbox_nav_character_closeout_report.md`
-- `docs_build/dev/reports/template_consistency_after_toolbox_nav_report.md`
+- `docs_build/dev/reports/toolbox_template_mismatch_closeout_report.md`
+- `docs_build/dev/reports/active_test_suite_reconciliation_report.md`
+- `docs_build/dev/reports/root_structure_final_polish_report.md`
+- `docs_build/dev/reports/remaining_cleanup_report.md`
 
 Validation summary:
 
+- PASS template audit: public/root pages `43/43`.
+- PASS template audit: active toolbox pages `20/20`.
 - PASS active toolbox header coverage: `20/20`.
-- PASS Marketplace removed from `toolbox/index.html` rendered data.
-- PASS Marketplace remains in footer Product column.
-- PASS `.tool-display-mode__character` is 150px by 150px in shared Theme V2 styling.
-- PASS 15px character spacing is present through `--space-15`.
-- PASS zero active references remain to the retired Theme V2 root path.
-- PASS post-change template audit: public/root pages `43/43`, active toolbox pages `20/20`.
-- PASS `npm run test:workspace-v2`.
+- PASS Marketplace is absent from active toolbox index data.
+- PASS active public pages do not use `assets/theme-v2/css/styles.css`.
+- PASS zero active public `tools/` route references remain.
+- PASS `npm run test:playwright:static`.
+- PASS `npm run test:workspace-v2` with `2 passed`.
 - PASS `git diff --check`.
-- SKIPPED tests against `old-tools/`, `old_games/`, and `old_samples/` per request.
+- SKIPPED tests against `old-tools/`, `old_games/`, and `old_samples` per request.
 - SKIPPED full samples smoke test per request.

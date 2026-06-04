@@ -325,13 +325,9 @@ export class PlaywrightV8CoverageReporter {
 
   formatToolEntryPoints(coverageByPath) {
     const toolEntryPoints = [
-      { name: "Preview Generator V2", prefix: "toolbox/preview-generator-v2/" },
-      { name: "Asset Manager V2", prefix: "toolbox/asset-manager-v2/" },
-      { name: "Collision Inspector V2", prefix: "toolbox/collision-inspector-v2/" },
-      { name: "Palette Manager V2", prefix: "toolbox/palette-manager-v2/" },
-      { name: "Tool Template V2", prefix: "toolbox/templates-v2/" },
-      { name: "Workspace Manager V2", prefix: "toolbox/workspace-manager-v2/" },
-      { name: "Workspace Manager", prefix: "toolbox/workspace-manager/" }
+      { name: "Toolbox Index", prefix: "toolbox/" },
+      { name: "Tool Template V2", prefix: "toolbox/_tool_template-v2/" },
+      { name: "Theme V2 Shared JS", prefix: "assets/theme-v2/js/" }
     ];
     return toolEntryPoints.map(({ name, prefix }) => {
       const records = [...coverageByPath.values()].filter((record) => record.repoPath.startsWith(prefix));

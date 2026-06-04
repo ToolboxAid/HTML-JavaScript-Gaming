@@ -24,17 +24,7 @@ const laneDirs = Object.freeze({
   tools: "tests/playwright/tools"
 });
 const toolOwnershipNames = Object.freeze([
-  "AssetManagerV2",
-  "AudioSfxPlaygroundV2",
-  "CollisionInspectorV2",
-  "InputMappingV2",
-  "ObjectVectorStudioV2",
-  "PaletteManagerV2",
-  "PreviewGeneratorV2",
-  "StorageInspectorV2",
-  "TextToSpeechV2",
-  "WorkspaceManagerV2",
-  "WorldVectorStudioV2"
+  "RootToolsFutureState"
 ].map((name) => ({ name, normalized: normalizeName(name) })));
 const integrationOwnershipMarkers = Object.freeze([
   "GameIndex",
@@ -43,16 +33,9 @@ const integrationOwnershipMarkers = Object.freeze([
   "WorkspaceIntegration"
 ].map((name) => ({ name, normalized: normalizeName(name) })));
 
-const documentedToolGameFixtures = new Map([
-  ["AssetManagerV2.spec.mjs", "Tool runtime validation uses repo/game manifests as explicit asset payload fixtures."],
-  ["CollisionInspectorV2.spec.mjs", "Tool runtime validation uses game manifests as explicit collision payload fixtures."],
-  ["PreviewGeneratorV2Baseline.spec.mjs", "Tool runtime validation uses repo game paths as explicit preview output fixtures."],
-  ["WorkspaceManagerV2.spec.mjs", "Workspace contract validation uses game manifests as explicit launch/toolState fixtures."]
-]);
+const documentedToolGameFixtures = new Map();
 
-const documentedIntegrationGameFixtures = new Map([
-  ["GameIndexPreviewManifestResolution.spec.mjs", "Integration validation uses Pong as an explicit cross-surface manifest handoff fixture."]
-]);
+const documentedIntegrationGameFixtures = new Map();
 
 const expectedPlacementCorrections = [
   {
@@ -74,11 +57,6 @@ const expectedPlacementCorrections = [
     from: "tests/playwright/tools/AsteroidsShipStateVisuals.spec.mjs",
     reason: "Asteroids ship visual runtime behavior is game-owned.",
     to: "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
-  },
-  {
-    from: "tests/playwright/games/GameIndexPreviewManifestResolution.spec.mjs",
-    reason: "Game index and page manifest handoff is integration-owned.",
-    to: "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"
   }
 ];
 

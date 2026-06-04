@@ -123,37 +123,24 @@ const laneDefinitions = Object.freeze({
     reason: "Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes."
   },
   "tool-runtime": {
-    affectedSurface: "First-class tool runtime behavior",
+    affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [
-      playwrightCommand(
-        "tests/playwright/tools/AssetManagerV2.spec.mjs",
-        "--grep",
-        "launch guard|temporary UAT context|rejects non-Workspace"
-      ),
-      playwrightCommand(
-        "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs",
-        "tests/playwright/tools/CollisionInspectorV2.spec.mjs",
-        "tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs",
-        "tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs"
-      )
+      playwrightCommand("tests/playwright/tools/RootToolsFutureState.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/AssetManagerV2.spec.mjs",
-      "tests/playwright/tools/CollisionInspectorV2.spec.mjs",
-      "tests/playwright/tools/PaletteManagerV2Coverage.spec.mjs",
-      "tests/playwright/tools/ToolTemplateV2Baseline.spec.mjs",
-      "tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs"
+      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
     ],
     fixtures: [
-      "tool-specific mocked repo/file picker inputs",
-      "explicit manifest/toolState launch contexts"
+      "repo-served root toolbox page",
+      "Tool Template V2 public page",
+      "Theme V2 shared partials and assets"
     ],
     fixturePaths: [],
     ownership: "tools",
     playwrightDir: "tests/playwright/tools",
     requiresPreflight: true,
-    reason: "Tool runtime lane validates focused tool behavior without treating unrelated stale product assertions as blockers."
+    reason: "Tool runtime lane now validates the active public toolbox/template surface and excludes removed V2 tool routes."
   },
   "game-runtime": {
     affectedSurface: "Deprecated old_games reference coverage",
@@ -168,28 +155,18 @@ const laneDefinitions = Object.freeze({
     reason: "old_games are deprecated playable references and are excluded from active automated runtime validation."
   },
   integration: {
-    affectedSurface: "Workspace, tool, game index, and manifest handoff behavior",
-    commands: [
-      playwrightCommand(
-        "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs",
-        "tests/playwright/integration/ToolsIndexFirstClassToolRegistration.spec.mjs"
-      )
-    ],
+    affectedSurface: "Integration handoff behavior",
+    commands: [],
     dependencies: [],
-    discoveryTargets: [
-      "tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs",
-      "tests/playwright/integration/ToolsIndexFirstClassToolRegistration.spec.mjs"
-    ],
+    discoveryTargets: [],
     fixtures: [
-      "repo game manifests",
-      "manifest preview asset roles",
-      "repo-served browser pages"
+      "No active integration Playwright specs after removal of stale V2 tool and removed game manifest routes."
     ],
     fixturePaths: [],
     ownership: "integration",
     playwrightDir: "tests/playwright/integration",
-    requiresPreflight: true,
-    reason: "Integration lane validates explicit cross-surface handoffs only; broad all-game thumbnail coverage is outside the default targeted lane."
+    requiresPreflight: false,
+    reason: "Removed integration specs targeted deleted V2 tool routes or removed game manifest pages; future active integration specs should be added when a current handoff contract exists."
   },
   "engine-src": {
     affectedSurface: "src/ engine and shared runtime capability behavior",
@@ -270,10 +247,10 @@ const representativeRoutingCases = Object.freeze([
     reason: "Reusable src/ capability changes route to engine-src validation first."
   },
   {
-    caseName: "integration change",
-    changedFiles: ["tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs"],
-    expectedLanes: ["integration"],
-    reason: "Cross-surface handoff coverage routes to the integration lane only."
+    caseName: "active toolbox Playwright change",
+    changedFiles: ["tests/playwright/tools/RootToolsFutureState.spec.mjs"],
+    expectedLanes: ["tool-runtime"],
+    reason: "Active toolbox Playwright coverage routes to the tool-runtime lane only."
   }
 ]);
 
@@ -823,7 +800,7 @@ function buildMonolithTriggerRemoval({ fullSamplesSmoke, options, results, runti
     },
     {
       after: "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
-      before: "direct playwright test WorkspaceManagerV2.spec.mjs",
+      before: "direct deprecated Workspace Manager V2 Playwright spec",
       trigger: "npm run test:workspace-v2",
       status: "REDIRECTED"
     },
