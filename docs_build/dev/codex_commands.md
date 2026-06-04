@@ -199,3 +199,26 @@ Follow-up:
 - Sorted shared header and footer Account menus to match the Account sidebar order:
   Account Home, Achievements, Preferences, Profile, Security.
 - Extended targeted Achievements Playwright coverage to verify header and footer Account menu order.
+
+## PR_26155_004
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Audited `toolbox/index.html`.
+- Audited `toolbox/tools-page-accordions.js`.
+- Documented the current behavior provided by `tools-page-accordions.js`.
+- Decided KEEP for `toolbox/tools-page-accordions.js`.
+- Kept `toolbox/tools-page-accordions.js` unchanged because it still owns current Toolbox card rendering, view switching, Progress readiness rendering, and Build Path rendering.
+- Did not remove the script reference from `toolbox/index.html`.
+- Did not add replacement architecture, CSS, or tools.
+
+Validation:
+- `npm run test:workspace-v2`.
+- `node --check toolbox/tools-page-accordions.js`.
+- Browser validation for `toolbox/index.html`: rendered 16 Toolbox cards, no console errors, no failed requests, `Order A-Z`, `Group`, `Progress`, and `Build Path` visible, and no `Arcade` in Toolbox `main` content.
+- `git diff --check`.
+
+Required reports:
+- `docs_build/dev/reports/toolbox-runtime-ownership.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

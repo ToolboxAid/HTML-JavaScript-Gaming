@@ -1,6 +1,6 @@
 # Lane Warm-Start Report
 
-Generated: 2026-06-04T03:52:34.901Z
+Generated: 2026-06-04T15:06:23.798Z
 Status: PASS
 Warm-start directory: docs_build/dev/reports/lane_warm_starts
 

@@ -12,21 +12,21 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(0%) Toolbox Index - not exercised by this Playwright run
+(88%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(85%) Theme V2 Shared JS - exercised 2 runtime JS files
+(71%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
 (100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
+(55%) assets/theme-v2/js/tool-display-mode.js - executed lines 113/113; executed functions 6/11
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 180/180; executed functions 16/20
-(100%) assets/theme-v2/js/account-achievements.js - executed lines 25/25; executed functions 7/7
+(88%) toolbox/tools-page-accordions.js - executed lines 466/466; executed functions 30/34
 
 Uncovered or low-coverage changed JS files:
 (100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
+(0%) assets/theme-v2/js/account-achievements.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-(80%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(100%) assets/theme-v2/js/account-achievements.js - changed JS file with browser V8 coverage
