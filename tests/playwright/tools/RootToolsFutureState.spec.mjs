@@ -38,6 +38,18 @@ async function openRepoPage(page, pathName) {
   return { failedRequests, pageErrors, server };
 }
 
+function normalizeMenuText(text) {
+  return text.replace(/[▾▸]/g, "").trim();
+}
+
+function sortedCopy(labels) {
+  return [...labels].sort((left, right) => left.localeCompare(right));
+}
+
+function expectAlphabetical(labels) {
+  expect(labels).toEqual(sortedCopy(labels));
+}
+
 test("root tools surface links current tool pages without old_* routes", async ({ page }) => {
   const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html");
 
@@ -57,6 +69,32 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(1);
     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
+    const topNavigationLabels = (await page.locator("nav.nav-links > a, nav.nav-links > .nav-item > a").evaluateAll((links) => (
+      links.map((link) => link.textContent.trim())
+    ))).map(normalizeMenuText);
+    expectAlphabetical(topNavigationLabels);
+    const toolboxMenuGroups = (await page.locator("[data-toolbox-menu] [data-toolbox-menu-group-label]").evaluateAll((links) => (
+      links.map((link) => link.textContent.trim())
+    ))).map(normalizeMenuText);
+    expectAlphabetical(toolboxMenuGroups);
+    const toolboxNestedMenus = await page.locator("[data-toolbox-submenu]").evaluateAll((menus) => (
+      menus.map((menu) => Array.from(menu.querySelectorAll(":scope > a[data-toolbox-menu-item]")).map((link) => link.textContent.trim()))
+    ));
+    for (const menuLabels of toolboxNestedMenus) {
+      expectAlphabetical(menuLabels);
+    }
+    for (const route of ["account", "admin", "games"]) {
+      const menuLabels = await page.locator(`nav.nav-links > .nav-item:has(> a[data-route='${route}']) > .sub-menu > a`).evaluateAll((links) => (
+        links.map((link) => link.textContent.trim())
+      ));
+      expectAlphabetical(menuLabels);
+    }
+    const footerMenus = await page.locator("footer .footer__links").evaluateAll((menus) => (
+      menus.map((menu) => Array.from(menu.querySelectorAll(":scope > a")).map((link) => link.textContent.trim()))
+    ));
+    for (const menuLabels of footerMenus) {
+      expectAlphabetical(menuLabels);
+    }
     await expect(page.locator("[data-toolbox-menu] a[href='toolbox/learn/index.html']")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-menu]").getByText("Admin", { exact: true })).toHaveCount(0);
     await expect(page.getByText("Progress Wireframe")).toHaveCount(0);
@@ -99,7 +137,7 @@ test("root tools surface links current tool pages without old_* routes", async (
       "Maps"
     ];
     expect(defaultToolLabels.filter((label) => oldStandaloneLabels.includes(label))).toEqual([]);
-    expect(defaultToolLabels.filter((label) => ["Vector", "Tilemap", "Isometric", "Hex"].includes(label))).toEqual([]);
+    expect(defaultToolLabels.filter((label) => ["Vector", "Tilemap", "Isometric", "Hex", "Sprite", "Character", "Enemy", "Interactive"].includes(label))).toEqual([]);
     expect(defaultToolLabels).not.toEqual(expect.arrayContaining([
       "Users",
       "Environments",
@@ -159,20 +197,21 @@ test("root tools surface links current tool pages without old_* routes", async (
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(guestGroupLabels).toEqual(["Create", "Build", "Content", "Media", "Test", "Share", "Account"]);
+    expect(guestGroupLabels).toEqual(["Account", "Build", "Content", "Create", "Media", "Share", "Test"]);
     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await page.getByRole("button", { name: "Progress" }).click();
-    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='locked']").first()).toBeVisible();
-    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='ready']").first()).toBeVisible();
-    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='in-progress']").first()).toBeVisible();
-    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='complete']").first()).toBeVisible();
+    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='Planned']").first()).toBeVisible();
+    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='Ready']").first()).toBeVisible();
+    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='Under Construction']").first()).toBeVisible();
+    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='Wireframe']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
-    await expect(page.getByText("Project Progress: Core path in-progress")).toBeVisible();
+    await expect(page.getByText("Project Progress: Core path under construction")).toBeVisible();
     await expect(page.getByText("Publishing Progress: Publish blocked until configuration and required assets are ready")).toBeVisible();
     await expect(page.getByText("Current Focus: Complete Game Configuration")).toBeVisible();
     await expect(page.getByText("Recommended Next Tool: Build Game")).toBeVisible();
     await expect(page.getByText(/requiredForTestable:/).first()).toBeVisible();
     await expect(page.getByText(/requiredForPublish:/).first()).toBeVisible();
+    await expect(page.getByText(/requires:/).first()).toBeVisible();
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-tools-accordion='Project Workspace']")).toBeVisible();
     await expect(page.locator("[data-tools-accordion='Game Design']")).toBeVisible();
@@ -223,7 +262,9 @@ test("root tools surface links current tool pages without old_* routes", async (
     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(adminGroupLabels).toEqual(["Create", "Build", "Content", "Media", "Test", "Share", "Account"]);
+    expect(adminGroupLabels).toEqual(["Account", "Build", "Content", "Create", "Media", "Share", "Test"]);
+    await page.getByRole("button", { name: "Progress" }).click();
+    await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='Hidden']").first()).toBeVisible();
     await page.locator("[data-toolbox-role-banner]").click();
     await page.waitForURL(/role=user/);
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
@@ -245,7 +286,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
   const learnPages = [
     {
       path: "/learn/index.html",
-      headings: ["Search documentation", "Browse by tool", "Tutorials", "Videos", "Examples", "FAQ"]
+      headings: ["Browse by tool", "Examples", "FAQ", "Search documentation", "Tutorials", "Videos"]
     },
     {
       path: "/learn/project-workspace/index.html",
@@ -294,6 +335,16 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
       await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
       for (const heading of learnPage.headings) {
         await expect(page.getByRole("heading", { name: heading }).first()).toBeVisible();
+      }
+      if (learnPage.path === "/learn/index.html") {
+        const learnCardHeadings = await page.locator("main .card-grid .control-card h2").evaluateAll((headings) => (
+          headings.map((heading) => heading.textContent.trim())
+        ));
+        expectAlphabetical(learnCardHeadings);
+        const learnToolLinks = await page.locator("main .content-cluster a.btn").evaluateAll((links) => (
+          links.map((link) => link.textContent.trim())
+        ));
+        expectAlphabetical(learnToolLinks);
       }
       await expect(page.locator("iframe, video")).toHaveCount(0);
       expect(failedRequests).toEqual([]);

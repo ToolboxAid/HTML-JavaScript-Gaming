@@ -13,6 +13,24 @@
     const urlRole = new URLSearchParams(window.location.search).get("role");
     const toolboxRole = urlRole === "admin" ? "admin" : urlRole === "user" ? "creator" : "guest";
     let currentMode = "ascending";
+    const toolboxStatusModel = Object.freeze(["Ready", "Wireframe", "Under Construction", "Planned", "Hidden", "Deprecated"]);
+    const statusLabelMap = Object.freeze({
+        complete: "Ready",
+        ready: "Wireframe",
+        "in-progress": "Under Construction",
+        locked: "Planned"
+    });
+    const progressRequirements = Object.freeze({
+        "Game Design": ["Project Workspace"],
+        "Game Configuration": ["Game Design"],
+        "Build Game": ["Game Configuration"],
+        "Game Testing": ["Build Game"],
+        Publish: ["Game Testing"],
+        Marketplace: ["Publish"],
+        Community: ["Publish"],
+        Languages: ["Publish"],
+        Cloud: ["Publish"]
+    });
     const toolGroups = [
         {
                 "group": "Create",
@@ -803,7 +821,7 @@
         progressChecklist: ["Review readiness"]
     };
     const projectProgressSummary = {
-        projectProgress: "Core path in-progress",
+        projectProgress: "Core path under construction",
         publishingProgress: "Publish blocked until configuration and required assets are ready",
         currentFocus: "Complete Game Configuration",
         recommendedNextTool: "Build Game"
@@ -1218,7 +1236,25 @@
                 ]
         }
 ];
-    const progressOrder = ["complete", "in-progress", "ready", "locked"];
+    const progressOrder = toolboxStatusModel;
+
+    function compareByTitle(left, right) {
+        return left.title.localeCompare(right.title);
+    }
+
+    function compareByGroup(left, right) {
+        return left.group.localeCompare(right.group);
+    }
+
+    function normalizeToolStatus(tool) {
+        if (tool.status === "Deprecated") {
+            return "Deprecated";
+        }
+        if (tool.hidden === true) {
+            return "Hidden";
+        }
+        return statusLabelMap[tool.status] || tool.status || "Wireframe";
+    }
 
     function isVisibleForRole(tool) {
         if (toolboxRole === "admin") {
@@ -1230,16 +1266,24 @@
     function visibleToolGroups() {
         return toolGroups.map((toolGroup) => ({
             ...toolGroup,
-            tools: toolGroup.tools.filter(isVisibleForRole)
-        })).filter((toolGroup) => toolGroup.tools.length > 0);
+            tools: toolGroup.tools.filter(isVisibleForRole).sort(compareByTitle)
+        })).filter((toolGroup) => toolGroup.tools.length > 0).sort(compareByGroup);
     }
 
     function roleAwareTools() {
-        return visibleToolGroups().flatMap((group) => group.tools.map((tool) => ({
-            ...tool,
-            group: group.group,
-            ...(progressModel[tool.title] || defaultProgress)
-        })));
+        return visibleToolGroups().flatMap((group) => group.tools.map((tool) => {
+            const progress = progressModel[tool.title] || defaultProgress;
+            const mergedTool = {
+                ...tool,
+                group: group.group,
+                ...progress
+            };
+            return {
+                ...mergedTool,
+                requires: progressRequirements[tool.title] || [],
+                status: normalizeToolStatus(mergedTool)
+            };
+        }));
     }
 
     function configureRoleBanner() {
@@ -1453,6 +1497,9 @@
             const requirements = document.createElement("p");
             requirements.textContent = `requiredForTestable: ${tool.requiredForTestable ? "yes" : "no"} | requiredForPublish: ${tool.requiredForPublish ? "yes" : "no"}`;
 
+            const requires = document.createElement("p");
+            requires.textContent = `requires: ${tool.requires.length ? tool.requires.join(", ") : "none"}`;
+
             const checklist = document.createElement("ul");
             tool.progressChecklist.forEach((item) => {
                 const entry = document.createElement("li");
@@ -1464,7 +1511,7 @@
             if (childCapabilities) {
                 progressParts.push(childCapabilities);
             }
-            progressParts.push(requirements, checklist, link, badgeCluster);
+            progressParts.push(requirements, requires, checklist, link, badgeCluster);
             body.append(...progressParts);
         } else {
             const cardParts = [title, description];

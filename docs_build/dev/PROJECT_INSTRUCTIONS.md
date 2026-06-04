@@ -132,6 +132,45 @@ Future guidance:
 - implementation, runtime, and tool work should now take priority over additional governance expansion unless a real gap is discovered
 - governance additions should solve demonstrated operational problems rather than hypothetical future issues
 
+## NAVIGATION, LIST, AND TOOLBOX MODEL GOVERNANCE
+
+Navigation menus, submenus, nested submenus, and user-facing lists must be alphabetically sorted when they are presented as browseable choices.
+
+Allowed intentional-order exceptions:
+- workflow paths
+- Build Path
+- dependency paths
+- Project Progress
+- Publishing Progress
+- guided creator steps
+
+Every intentional-order exception must be documented in the PR report that introduces or preserves it.
+
+Toolbox status values are:
+- Ready
+- Wireframe
+- Under Construction
+- Planned
+- Hidden
+- Deprecated
+
+Toolbox progress foundation fields are:
+- `requiredForTestable`
+- `requiredForPublish`
+- `requires`
+- `status`
+- `progressChecklist`
+
+Progress and Build Path views remain wireframe-only until a later implementation PR explicitly introduces a declared registry/data source and runtime behavior.
+
+Project Workspace is the next first real Toolbox rebuild target. Its contract owns:
+- Project Identity
+- Project Status
+- Project Progress
+- Publishing Progress
+
+Do not implement Project Workspace runtime behavior, persistence, database behavior, authentication, or save/load flows before the rebuild PR explicitly scopes those capabilities.
+
 ## ARCHIVED V1/V2 REFERENCE MATERIAL
 
 Deprecated V1/V2 reference material lives under:

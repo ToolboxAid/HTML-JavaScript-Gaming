@@ -185,10 +185,13 @@ async function main() {
   if (/title:\s*["'](?:Progress|Build Path)["']|data-tools-accordion=['"](?:Progress|Build Path)['"]/i.test(toolsAccordions)) {
     issues.push("Progress and Build Path must remain view modes, not active toolbox tools or accordion groups.");
   }
-  for (const readiness of ["locked", "ready", "in-progress", "complete"]) {
+  for (const readiness of ["Ready", "Wireframe", "Under Construction", "Planned", "Hidden", "Deprecated"]) {
     if (!toolsAccordions.includes(`"${readiness}"`)) {
-      issues.push(`Progress view is missing static readiness label: ${readiness}.`);
+      issues.push(`Progress view is missing Toolbox status model label: ${readiness}.`);
     }
+  }
+  if (!/progressRequirements/.test(toolsAccordions) || !/requires:/.test(toolsAccordions)) {
+    issues.push("Progress view must expose the static requires foundation field for visible tool tiles.");
   }
   if (!/dataset\.toolboxReadiness/.test(toolsAccordions)) {
     issues.push("Progress view must render readiness labels on the existing tool tiles.");

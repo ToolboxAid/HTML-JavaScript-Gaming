@@ -1,5 +1,22 @@
 const TOOL_NAME_SUFFIX_PATTERN = /(?:^|[\s_-])(v2|v3|new|final|copy)(?:$|[\s_-])/i;
 
+export const TOOLBOX_STATUS_MODEL = Object.freeze([
+  "Ready",
+  "Wireframe",
+  "Under Construction",
+  "Planned",
+  "Hidden",
+  "Deprecated"
+]);
+
+export const TOOLBOX_PROGRESS_FOUNDATION_FIELDS = Object.freeze([
+  "requiredForTestable",
+  "requiredForPublish",
+  "requires",
+  "status",
+  "progressChecklist"
+]);
+
 export const TOOL_REGISTRY = Object.freeze([
   {
     "id": "ai-assistant",
@@ -16,7 +33,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -43,7 +61,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "in-progress",
+    "requires": [],
+    "status": "Under Construction",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -70,7 +89,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "in-progress",
+    "requires": [
+      "project-workspace"
+    ],
+    "status": "Under Construction",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -97,7 +119,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [
+      "game-design"
+    ],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -124,7 +149,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "in-progress",
+    "requires": [],
+    "status": "Under Construction",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -151,7 +177,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "complete",
+    "requires": [],
+    "status": "Ready",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -178,7 +205,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -205,7 +233,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -232,7 +261,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -259,7 +289,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -286,7 +317,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "in-progress",
+    "requires": [],
+    "status": "Under Construction",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -313,7 +345,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": false,
-    "status": "in-progress",
+    "requires": [],
+    "status": "Under Construction",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -340,7 +373,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -367,7 +401,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -394,7 +429,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -421,7 +457,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -448,7 +485,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "locked",
+    "requires": [
+      "game-configuration"
+    ],
+    "status": "Planned",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -475,7 +515,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "locked",
+    "requires": [
+      "build-game"
+    ],
+    "status": "Planned",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -502,7 +545,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -529,7 +573,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -556,7 +601,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "complete",
+    "requires": [],
+    "status": "Ready",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -583,7 +629,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -610,7 +657,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -637,7 +685,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -664,7 +713,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": true,
-    "status": "locked",
+    "requires": [
+      "game-testing"
+    ],
+    "status": "Planned",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -691,7 +743,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [
+      "publish"
+    ],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -718,7 +773,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [
+      "publish"
+    ],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -745,7 +803,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [
+      "publish"
+    ],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -772,7 +833,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -799,7 +861,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "ready",
+    "requires": [],
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -826,7 +889,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "locked",
+    "requires": [
+      "publish"
+    ],
+    "status": "Hidden",
     "progressChecklist": [
       "Hidden planned capability",
       "Static wireframe text only"
@@ -853,7 +919,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "locked",
+    "requires": [],
+    "status": "Hidden",
     "progressChecklist": [
       "Hidden planned capability",
       "Static wireframe text only"
@@ -880,7 +947,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "locked",
+    "requires": [],
+    "status": "Hidden",
     "progressChecklist": [
       "Hidden planned capability",
       "Static wireframe text only"
@@ -907,7 +975,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "locked",
+    "requires": [],
+    "status": "Hidden",
     "progressChecklist": [
       "Hidden planned capability",
       "Static wireframe text only"
@@ -934,7 +1003,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "locked",
+    "requires": [],
+    "status": "Hidden",
     "progressChecklist": [
       "Hidden planned capability",
       "Static wireframe text only"
@@ -961,7 +1031,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "locked",
+    "requires": [],
+    "status": "Hidden",
     "progressChecklist": [
       "Hidden planned capability",
       "Static wireframe text only"
@@ -988,7 +1059,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
-    "status": "locked",
+    "requires": [],
+    "status": "Hidden",
     "progressChecklist": [
       "Hidden planned capability",
       "Static wireframe text only"
