@@ -49,12 +49,16 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Progress" })).not.toHaveAttribute("aria-disabled", "true");
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/37");
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=user/);
     await expect(page.locator("[aria-label='Toolbox role simulation']")).toHaveClass(/callout/);
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveAttribute("hidden", "");
+    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(1);
+    await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
+    await expect(page.locator("[data-toolbox-menu] a[href='toolbox/learn/index.html']")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-menu]").getByText("Admin", { exact: true })).toHaveCount(0);
     await expect(page.getByText("Progress Wireframe")).toHaveCount(0);
     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
@@ -108,7 +112,14 @@ test("root tools surface links current tool pages without old_* routes", async (
     const assetsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Assets$/ })
     }).first();
-    await expect(assetsCard.locator(".card-body > .content-cluster")).toContainText("Build");
+    await expect(assetsCard).toHaveClass(/tool-group-content-assets/);
+    const allCardsHaveGroupClass = await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
+      cards.every((card) => Array.from(card.classList).some((className) => className.startsWith("tool-group-")))
+    ));
+    expect(allCardsHaveGroupClass).toBe(true);
+    const assetsBorderColor = await assetsCard.evaluate((card) => getComputedStyle(card).borderColor);
+    expect(assetsBorderColor).not.toBe("rgba(0, 0, 0, 0)");
+    await expect(assetsCard.locator(".card-body > .content-cluster")).toContainText("Content");
     await expect(assetsCard.locator(".card-body > .content-cluster")).toHaveCount(1);
     const assetsBodyOrder = await assetsCard.locator(".card-body").evaluate((body) => (
       Array.from(body.children).map((child) => child.classList.contains("content-cluster") ? "content-cluster" : child.tagName.toLowerCase())
@@ -136,6 +147,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const worldsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Worlds$/ })
     }).first();
+    await expect(worldsCard).toHaveClass(/tool-group-build-create/);
     await expect(worldsCard).toContainText("Planned world types: Vector, Tilemap, Isometric, Hex");
     const objectsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Objects$/ })
@@ -145,7 +157,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(guestGroupLabels).toEqual(["Build", "Media", "Test", "Share", "Account"]);
+    expect(guestGroupLabels).toEqual(["Create", "Build", "Content", "Media", "Test", "Share", "Account"]);
     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await page.getByRole("button", { name: "Progress" }).click();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='locked']").first()).toBeVisible();
@@ -183,43 +195,111 @@ test("root tools surface links current tool pages without old_* routes", async (
     await page.waitForURL(/role=user/);
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
-    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveAttribute("hidden", "");
+    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await page.locator("[data-toolbox-role-banner]").click();
     await page.waitForURL(/role=admin/);
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("ADMIN VIEW • Planned tools visible • Switch to Creator View");
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/42");
-    await expect(page.locator("[data-toolbox-admin-nav-group]")).not.toHaveAttribute("hidden", "");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 37/37");
+    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(adminLabels).toEqual(expect.arrayContaining([
+      "Cloud",
+      "Custom Extensions",
+      "MIDI",
+      "Particles"
+    ]));
+    expect(adminLabels).not.toEqual(expect.arrayContaining([
       "Users",
       "Environments",
       "Game Migration",
-      "Platform Settings",
-      "Cloud",
-      "Custom Extensions"
+      "Platform Settings"
     ]));
     await page.getByRole("button", { name: "Group" }).click();
     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(adminGroupLabels).toEqual(["Build", "Media", "Test", "Share", "Account", "Admin"]);
+    expect(adminGroupLabels).toEqual(["Create", "Build", "Content", "Media", "Test", "Share", "Account"]);
     await page.locator("[data-toolbox-role-banner]").click();
     await page.waitForURL(/role=user/);
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
-    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveAttribute("hidden", "");
+    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await page.goto(`${server.baseUrl}/toolbox/index.html?role=guest`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+  }
+});
+
+test("learn wireframe pages load with shared Theme V2 structure", async ({ page }) => {
+  const learnPages = [
+    {
+      path: "/learn/index.html",
+      headings: ["Search documentation", "Browse by tool", "Tutorials", "Videos", "Examples", "FAQ"]
+    },
+    {
+      path: "/learn/project-workspace/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    },
+    {
+      path: "/learn/game-design/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    },
+    {
+      path: "/learn/game-configuration/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    },
+    {
+      path: "/learn/assets/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    },
+    {
+      path: "/learn/colors/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    },
+    {
+      path: "/learn/objects/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    },
+    {
+      path: "/learn/worlds/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    },
+    {
+      path: "/learn/audio/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    },
+    {
+      path: "/learn/publish/index.html",
+      headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+    }
+  ];
+
+  for (const learnPage of learnPages) {
+    const { failedRequests, pageErrors, server } = await openRepoPage(page, learnPage.path);
+
+    try {
+      await expect(page.locator("header.site-header")).toBeVisible();
+      await expect(page.locator("footer.footer")).toBeVisible();
+      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+      for (const heading of learnPage.headings) {
+        await expect(page.getByRole("heading", { name: heading }).first()).toBeVisible();
+      }
+      await expect(page.locator("iframe, video")).toHaveCount(0);
+      expect(failedRequests).toEqual([]);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
   }
 });
 

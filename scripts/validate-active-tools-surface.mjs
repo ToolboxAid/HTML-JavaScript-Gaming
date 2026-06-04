@@ -6,6 +6,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 const toolboxRoot = path.join(repoRoot, "toolbox");
+const NON_TOOLBOX_PAGE_FOLDERS = new Set([
+  "learn",
+  "users",
+  "environments",
+  "game-migration",
+  "platform-settings"
+]);
 
 const ACTIVE_NAV_TARGETS = [
   "assets/theme-v2/partials/header-nav.html",
@@ -43,7 +50,7 @@ async function activeToolFolders() {
   const entries = await fs.readdir(toolboxRoot, { withFileTypes: true });
   const folders = [];
   for (const entry of entries) {
-    if (!entry.isDirectory() || entry.name.startsWith("_")) {
+    if (!entry.isDirectory() || entry.name.startsWith("_") || NON_TOOLBOX_PAGE_FOLDERS.has(entry.name)) {
       continue;
     }
     const entryPoint = path.join(toolboxRoot, entry.name, "index.html");
@@ -125,16 +132,28 @@ async function main() {
   if (!/GUEST VIEW/.test(toolboxIndex + "\n" + toolsAccordions) || !/"guest"/.test(toolsAccordions)) {
     issues.push("Toolbox role simulation must support an explicit Guest view.");
   }
-  for (const groupName of ["Build", "Media", "Test", "Share", "Account", "Admin"]) {
+  for (const groupName of ["Create", "Build", "Content", "Media", "Test", "Share", "Account"]) {
     if (!toolsAccordions.includes(`"group": "${groupName}"`) || !headerNav.includes(`${groupName} &#9656;`)) {
       issues.push(`Toolbox creator-goal group is missing from active wiring: ${groupName}.`);
     }
   }
-  if (/"group": "(?:AI|Planning|Content|Media & Audio|Build & Test|Share & Community|Hidden Capability|Admin Tools)"/.test(toolsAccordions)) {
+  if (/"group": "(?:AI|Planning|Media & Audio|Build & Test|Share & Community|Hidden Capability|Admin Tools|Admin)"/.test(toolsAccordions)) {
     issues.push("Toolbox index must use creator-goal groups instead of legacy technical grouping labels.");
   }
-  if (!/data-toolbox-admin-nav-group hidden/.test(headerNav) || !/data-toolbox-admin-nav-group/.test(toolsAccordions)) {
-    issues.push("Toolbox Admin navigation group must be role-gated for the admin role view.");
+  if (/data-toolbox-admin-nav-group/.test(headerNav + "\n" + toolsAccordions) || /<a[^>]*data-toolbox-menu-group-label[^>]*>\s*Admin\s*&#9656;/.test(headerNav)) {
+    issues.push("Admin must not appear as a Toolbox group.");
+  }
+  if (!/<a[^>]+data-route="admin"[^>]+href="admin\/site-settings\.html"[^>]*>Admin &#9662;<\/a>/.test(headerNav)) {
+    issues.push("One top-level Admin navigation area must remain.");
+  }
+  if (!/<a[^>]+data-route="learn"[^>]+href="learn\/index\.html"[^>]*>Learn<\/a>/.test(headerNav)) {
+    issues.push("Learn must remain a top-level navigation item.");
+  }
+  if (/toolbox\/learn\/index\.html|data-route="tool-learn"|Creator Learning/.test(headerNav + "\n" + partials + "\n" + toolsAccordions)) {
+    issues.push("Learn must not be exposed as a Toolbox tool.");
+  }
+  if (!/"group": "Content"[\s\S]*"title": "Assets"/.test(toolsAccordions)) {
+    issues.push("Assets must belong to the Content Toolbox group.");
   }
   if (!/Planned world types/.test(toolsAccordions) || !/Vector/.test(toolsAccordions) || !/Tilemap/.test(toolsAccordions) || !/Isometric/.test(toolsAccordions) || !/Hex/.test(toolsAccordions)) {
     issues.push("Worlds must preserve planned world-type child capabilities: Vector, Tilemap, Isometric, and Hex.");

@@ -9,7 +9,14 @@ const repoRoot = path.resolve(__dirname, "..");
 const toolboxRoot = path.join(repoRoot, "toolbox");
 const reportPath = path.join(repoRoot, "docs_build", "dev", "reports", "tool_registry_validation.txt");
 
-const IGNORED_DIRECTORIES = new Set(["_tool_template-v2"]);
+const IGNORED_DIRECTORIES = new Set([
+  "_tool_template-v2",
+  "learn",
+  "users",
+  "environments",
+  "game-migration",
+  "platform-settings"
+]);
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";

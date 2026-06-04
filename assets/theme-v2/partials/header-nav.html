@@ -9,22 +9,32 @@
         <a data-nav-link data-route="toolbox" href="toolbox/index.html">Toolbox &#9662;</a>
         <div class="sub-menu sub-menu--toolbox" data-toolbox-menu aria-label="Toolbox menu">
           <div class="nav-item nav-popout-item" data-toolbox-menu-group>
+            <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Create &#9656;</a>
+            <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Create tools">
+              <a data-nav-link data-toolbox-menu-item data-route="objects" href="toolbox/objects/index.html">Objects</a>
+              <a data-nav-link data-toolbox-menu-item data-route="characters" href="toolbox/characters/index.html">Characters</a>
+              <a data-nav-link data-toolbox-menu-item data-route="worlds" href="toolbox/worlds/index.html">Worlds</a>
+              <a data-nav-link data-toolbox-menu-item data-route="animations" href="toolbox/animations/index.html">Animations</a>
+              <a data-nav-link data-toolbox-menu-item data-route="ai-assistant" href="toolbox/ai-assistant/index.html">AI Assistant</a>
+            </div>
+          </div>
+          <div class="nav-item nav-popout-item" data-toolbox-menu-group>
             <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Build &#9656;</a>
             <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Build tools">
-              <a data-nav-link data-toolbox-menu-item data-route="ai-assistant" href="toolbox/ai-assistant/index.html">AI Assistant</a>
               <a data-nav-link data-toolbox-menu-item data-route="project-workspace" href="toolbox/project-workspace/index.html">Project Workspace</a>
               <a data-nav-link data-toolbox-menu-item data-route="game-design" href="toolbox/game-design/index.html">Game Design</a>
               <a data-nav-link data-toolbox-menu-item data-route="game-configuration" href="toolbox/game-configuration/index.html">Game Configuration</a>
+              <a data-nav-link data-toolbox-menu-item data-route="build-game" href="toolbox/build-game/index.html">Build Game</a>
+              <a data-nav-link data-toolbox-menu-item data-route="code" href="toolbox/code/index.html">Custom Extensions</a>
+            </div>
+          </div>
+          <div class="nav-item nav-popout-item" data-toolbox-menu-group>
+            <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Content &#9656;</a>
+            <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Content tools">
               <a data-nav-link data-toolbox-menu-item data-route="tool-assets" href="toolbox/assets/index.html">Assets</a>
               <a data-nav-link data-toolbox-menu-item data-route="colors" href="toolbox/colors/index.html">Colors</a>
               <a data-nav-link data-toolbox-menu-item data-route="fonts" href="toolbox/fonts/index.html">Fonts</a>
               <a data-nav-link data-toolbox-menu-item data-route="sprites" href="toolbox/sprites/index.html">Sprites</a>
-              <a data-nav-link data-toolbox-menu-item data-route="characters" href="toolbox/characters/index.html">Characters</a>
-              <a data-nav-link data-toolbox-menu-item data-route="objects" href="toolbox/objects/index.html">Objects</a>
-              <a data-nav-link data-toolbox-menu-item data-route="worlds" href="toolbox/worlds/index.html">Worlds</a>
-              <a data-nav-link data-toolbox-menu-item data-route="animations" href="toolbox/animations/index.html">Animations</a>
-              <a data-nav-link data-toolbox-menu-item data-route="build-game" href="toolbox/build-game/index.html">Build Game</a>
-              <a data-nav-link data-toolbox-menu-item data-route="code" href="toolbox/code/index.html">Custom Extensions</a>
             </div>
           </div>
           <div class="nav-item nav-popout-item" data-toolbox-menu-group>
@@ -60,7 +70,6 @@
               <a data-nav-link data-toolbox-menu-item data-route="tool-community" href="toolbox/community/index.html">Community</a>
               <a data-nav-link data-toolbox-menu-item data-route="languages" href="toolbox/languages/index.html">Languages</a>
               <a data-nav-link data-toolbox-menu-item data-route="cloud" href="toolbox/cloud/index.html">Cloud</a>
-              <a data-nav-link data-toolbox-menu-item data-route="tool-learn" href="toolbox/learn/index.html">Creator Learning</a>
             </div>
           </div>
           <div class="nav-item nav-popout-item" data-toolbox-menu-group>
@@ -69,15 +78,6 @@
               <a data-nav-link data-toolbox-menu-item data-route="saved-data" href="toolbox/saved-data/index.html">Saved Data</a>
               <a data-nav-link data-toolbox-menu-item data-route="achievements" href="toolbox/achievements/index.html">Achievements</a>
               <a data-nav-link data-toolbox-menu-item data-route="ratings" href="toolbox/ratings/index.html">Ratings</a>
-            </div>
-          </div>
-          <div class="nav-item nav-popout-item" data-toolbox-menu-group data-toolbox-admin-nav-group hidden>
-            <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Admin &#9656;</a>
-            <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Admin tools">
-              <a data-nav-link data-toolbox-menu-item data-route="users" href="toolbox/users/index.html">Users</a>
-              <a data-nav-link data-toolbox-menu-item data-route="environments" href="toolbox/environments/index.html">Environments</a>
-              <a data-nav-link data-toolbox-menu-item data-route="game-migration" href="toolbox/game-migration/index.html">Game Migration</a>
-              <a data-nav-link data-toolbox-menu-item data-route="platform-settings" href="toolbox/platform-settings/index.html">Platform Settings</a>
             </div>
           </div>
         </div>
@@ -103,8 +103,11 @@
           <a data-nav-link data-route="admin-branding" href="admin/branding.html">Branding</a>
           <a data-nav-link data-route="admin-controls" href="admin/controls.html">Controls</a>
           <a data-nav-link data-route="admin-design-system" href="admin/design-system.html">Design System</a>
+          <a data-nav-link data-route="environments" href="toolbox/environments/index.html">Environments</a>
+          <a data-nav-link data-route="game-migration" href="toolbox/game-migration/index.html">Game Migration</a>
           <a data-nav-link data-route="admin-grouping-colors" href="admin/grouping-colors.html">Grouping Colors</a>
           <a data-nav-link data-route="admin-moderation" href="admin/moderation.html">Moderation</a>
+          <a data-nav-link data-route="platform-settings" href="toolbox/platform-settings/index.html">Platform Settings</a>
           <a data-nav-link data-route="admin-ratings" href="admin/ratings.html">Ratings</a>
           <a data-nav-link data-route="admin-roles" href="admin/roles.html">Roles</a>
           <a data-nav-link data-route="admin-site-settings" href="admin/site-settings.html">Site Settings</a>
