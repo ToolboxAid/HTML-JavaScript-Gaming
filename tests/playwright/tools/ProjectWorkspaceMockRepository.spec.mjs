@@ -54,11 +54,16 @@ test("Project Workspace creates, opens, and deletes mock projects", async ({ pag
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("[data-active-project-name]")).toHaveText("Demo Project");
     await expect(page.locator("[data-project-list]")).toContainText("Demo Project");
+    const demoProjectRow = page.locator("[data-project-row='demo-project']");
+    await expect(demoProjectRow.locator("> .status")).toHaveCount(0);
+    await expect(demoProjectRow.getByRole("button", { name: "Open Demo Project (Active)" })).toHaveClass(/primary/);
+    await expect(demoProjectRow.getByRole("button", { name: "Open Demo Project (Active)" })).toHaveAttribute("aria-current", "true");
 
     await page.getByLabel("Project Name").fill("Launch Test Project");
     await page.getByRole("button", { name: "Create Project" }).click();
     await expect(page.locator("[data-active-project-name]")).toHaveText("Launch Test Project");
     await expect(page.locator("[data-project-list]")).toContainText("Launch Test Project");
+    await expect(page.locator("[data-project-row='launch-test-project-1']").getByRole("button", { name: "Open Launch Test Project (Active)" })).toHaveClass(/primary/);
     await expect(page.locator("[data-project-workspace-log]")).toHaveText("Created and opened Launch Test Project.");
 
     await page.getByLabel("Project Name").fill("Archive Project");
@@ -67,6 +72,7 @@ test("Project Workspace creates, opens, and deletes mock projects", async ({ pag
 
     await page.getByRole("button", { name: "Open Launch Test Project" }).click();
     await expect(page.locator("[data-active-project-name]")).toHaveText("Launch Test Project");
+    await expect(page.locator("[data-project-row='launch-test-project-1']").getByRole("button", { name: "Open Launch Test Project (Active)" })).toHaveAttribute("data-project-active", "true");
     await expect(page.locator("[data-project-workspace-log]")).toHaveText("Opened Launch Test Project.");
 
     await page.getByRole("button", { name: "Delete Open Project" }).click();
@@ -90,6 +96,27 @@ test("Project Workspace progress panels update from mock project state", async (
     await expect(page.locator("[data-current-focus]")).toHaveText("Complete Game Configuration");
     await expect(page.locator("[data-recommended-next-tool]").first()).toHaveText("Game Configuration");
     await expect(page.locator("[data-project-progress-checklist]")).toContainText("Project identity: Complete");
+    await expect(page.locator("[data-project-output-panels] summary")).toHaveText([
+      "Readiness Output",
+      "Repository Tables",
+      "Project Members"
+    ]);
+    await expect(page.locator("aside.tool-column").last().getByText("Readiness Output")).toHaveCount(0);
+    await expect(page.locator("aside.tool-column").last().getByText("Repository Tables")).toHaveCount(0);
+    await expect(page.locator("aside.tool-column").last().getByText("Project Members")).toHaveCount(0);
+    const panelOrderIsCorrect = await page.locator(".tool-center-panel").evaluate((panel) => {
+      const staticOverlay = panel.querySelector("[data-static-overlay-wireframe]");
+      const outputPanels = panel.querySelector("[data-project-output-panels]");
+      const missingRequirements = panel.querySelector("[data-missing-requirements]");
+      return Boolean(
+        staticOverlay &&
+        outputPanels &&
+        missingRequirements &&
+        (staticOverlay.compareDocumentPosition(outputPanels) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+        (outputPanels.compareDocumentPosition(missingRequirements) & Node.DOCUMENT_POSITION_FOLLOWING)
+      );
+    });
+    expect(panelOrderIsCorrect).toBe(true);
 
     await page.getByLabel("Project Name").fill("Progress Review Project");
     await page.getByRole("button", { name: "Create Project" }).click();
@@ -125,6 +152,13 @@ test("Toolbox Project Data controls are admin-only and drive mock Progress and B
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText(/ADMIN VIEW.*Planned tools visible.*Switch to Creator View/);
     await expect(page.locator("[data-project-data-menu]")).toBeVisible();
+    await expect(page.locator("[aria-label='Toolbox role simulation']")).toHaveClass(/section-head/);
+    const roleBannerBox = await page.locator("[data-toolbox-role-banner]").boundingBox();
+    const projectDataBox = await page.locator("[data-project-data-menu] > summary").boundingBox();
+    expect(roleBannerBox).not.toBeNull();
+    expect(projectDataBox).not.toBeNull();
+    expect(Math.abs((roleBannerBox.y + roleBannerBox.height / 2) - (projectDataBox.y + projectDataBox.height / 2))).toBeLessThan(16);
+    expect(projectDataBox.x).toBeGreaterThan(roleBannerBox.x + roleBannerBox.width);
     await page.locator("[data-project-data-menu] summary").click();
 
     await page.getByRole("button", { name: "Clear Test Data" }).click();

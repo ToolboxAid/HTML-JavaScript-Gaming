@@ -74,10 +74,10 @@
                                 </div>
                             </div>
                         </article>
-                        <article class="card">
+                        <article class="card" data-static-overlay-wireframe>
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Progress Panels</div>
+                                    <div class="kicker">Static Overlay Wireframe</div>
                                     <h3>Project Progress</h3>
                                 </div>
                                 <div class="grid cols-3">
@@ -93,12 +93,25 @@
                                 <div class="status" role="status" data-project-workspace-log>Mock repository seeded with Demo Project.</div>
                             </div>
                         </article>
-                    </section>
-                    <aside class="tool-column tool-group-development-system">
-                        <div class="tool-column-header forge-gold">
-                            <h2>Inspector</h2>
-                        </div>
-                        <div class="accordion-stack">
+                        <div class="accordion-stack" data-project-output-panels>
+                            <details class="vertical-accordion" open>
+                                <summary>Readiness Output</summary>
+                                <div class="accordion-body">
+                                    <div class="table-wrapper">
+                                        <table class="data-table">
+                                            <caption>Mock readiness output</caption>
+                                            <thead>
+                                                <tr><th scope="col">Path</th><th scope="col">Status</th><th scope="col">Next Tool</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr><td>Plan</td><td>Under Construction</td><td>Game Configuration</td></tr>
+                                                <tr><td>Configure</td><td>Planned</td><td>Build Game</td></tr>
+                                                <tr><td>Release</td><td>Planned</td><td>Publish</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
                             <details class="vertical-accordion" open>
                                 <summary>Repository Tables</summary>
                                 <div class="accordion-body">
@@ -131,6 +144,35 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+                            </details>
+                        </div>
+                        <article class="card" role="dialog" aria-labelledby="project-workspace-missing-requirements-title" data-missing-requirements>
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Mock Requirements</div>
+                                    <h3 id="project-workspace-missing-requirements-title">Missing Requirements</h3>
+                                </div>
+                                <p>This card remains a static review surface for the next required tools. It does not block, save, or validate runtime state.</p>
+                                <div class="grid cols-3">
+                                    <article class="callout"><h3>Game Design</h3><p><span class="pill">Under Construction</span> Define win and lose conditions.</p></article>
+                                    <article class="callout"><h3>Game Configuration</h3><p><span class="pill">Planned</span> Choose release profile and debug policy.</p></article>
+                                    <article class="callout"><h3>Publish</h3><p><span class="pill">Planned</span> Prepare share metadata later.</p></article>
+                                </div>
+                                <div class="status" role="status">Mock-only: Project Workspace does not run real publish gating yet.</div>
+                            </div>
+                        </article>
+                    </section>
+                    <aside class="tool-column tool-group-development-system">
+                        <div class="tool-column-header forge-gold">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <p>Project Workspace operations report status in the center panel while the right column stays reserved for inspector status and diagnostics.</p>
+                                    <div class="status" role="status">Mock repository ready.</div>
                                 </div>
                             </details>
                         </div>

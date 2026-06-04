@@ -41,12 +41,16 @@ function setStatusLog(message) {
   setText(elements.statusLog, message);
 }
 
-function createProjectButton(project) {
+function createProjectButton(project, isActive) {
   const button = document.createElement("button");
-  button.className = "btn";
+  button.className = isActive ? "btn primary" : "btn";
   button.type = "button";
   button.dataset.projectOpen = project.id;
-  button.textContent = `Open ${project.name}`;
+  if (isActive) {
+    button.dataset.projectActive = "true";
+    button.setAttribute("aria-current", "true");
+  }
+  button.textContent = isActive ? `Open ${project.name} (Active)` : `Open ${project.name}`;
   return button;
 }
 
@@ -80,16 +84,10 @@ function renderProjectList() {
     meta.className = "eyebrow";
     meta.textContent = `${project.status} | ${project.ownerDisplayName}`;
 
-    const action = createProjectButton(project);
+    const isActive = activeProject?.id === project.id;
+    const action = createProjectButton(project, isActive);
 
-    if (activeProject?.id === project.id) {
-      const active = document.createElement("span");
-      active.className = "status";
-      active.textContent = "Open";
-      row.append(title, meta, active, action);
-    } else {
-      row.append(title, meta, action);
-    }
+    row.append(title, meta, action);
 
     elements.projectList.append(row);
   });
