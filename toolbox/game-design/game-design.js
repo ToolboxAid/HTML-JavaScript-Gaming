@@ -16,9 +16,6 @@ if (requestedProject === "missing") {
 }
 
 const elements = {
-  activeProjectName: document.querySelector("[data-game-design-active-project]"),
-  activeProjectPurpose: document.querySelector("[data-game-design-project-purpose]"),
-  activeProjectStatus: document.querySelector("[data-game-design-project-status]"),
   capabilityDemoList: document.querySelector("[data-game-design-capability-demos]"),
   capabilityDemoNotes: document.querySelector("[data-game-design-capability-notes]"),
   capabilityDemoPanel: document.querySelector("[data-game-design-capability-panel]"),
@@ -32,10 +29,14 @@ const elements = {
   handoffProgress: document.querySelector("[data-game-design-project-progress]"),
   handoffPublishing: document.querySelector("[data-game-design-publishing-progress]"),
   handoffRecommended: document.querySelector("[data-game-design-recommended-tool]"),
-  output: document.querySelector("[data-game-design-output]"),
+  outputCapability: document.querySelector("[data-game-design-output-capability]"),
+  outputMissing: document.querySelector("[data-game-design-output-missing]"),
+  outputNextStep: document.querySelector("[data-game-design-output-next-step]"),
+  outputSummary: document.querySelector("[data-game-design-output-summary]"),
+  outputValidation: document.querySelector("[data-game-design-output-validation]"),
   playStyle: document.querySelector("[data-game-design-play-style]"),
+  projectContext: document.querySelector("[data-game-design-project-context]"),
   projectOverlay: document.querySelector("[data-game-design-project-overlay]"),
-  projectSelect: document.querySelector("[data-game-design-project-select]"),
   statusLog: document.querySelector("[data-game-design-log]"),
   tableCounts: document.querySelector("[data-game-design-table-counts]"),
   validationList: document.querySelector("[data-game-design-validation-list]"),
@@ -126,34 +127,6 @@ function applyDesignToForm(design) {
   }
 }
 
-function renderProjectOptions(activeProject) {
-  if (!elements.projectSelect) {
-    return;
-  }
-
-  const projects = repository.listProjectContexts();
-  elements.projectSelect.replaceChildren();
-
-  if (projects.length === 0) {
-    const option = document.createElement("option");
-    option.value = "";
-    option.textContent = "No Project Workspace project";
-    elements.projectSelect.append(option);
-    return;
-  }
-
-  projects.forEach((project) => {
-    const option = document.createElement("option");
-    option.value = project.id;
-    option.textContent = `${project.name} - ${project.purpose}`;
-    elements.projectSelect.append(option);
-  });
-
-  if (activeProject) {
-    elements.projectSelect.value = activeProject.id;
-  }
-}
-
 function renderValidation(validation) {
   if (!elements.validationList || !elements.validationOverlay) {
     return;
@@ -228,20 +201,20 @@ function renderHandoff(handoff) {
 }
 
 function renderOutput(snapshot, validation) {
-  if (!elements.output) {
-    return;
-  }
+  const activeDesign = snapshot.activeDesign;
+  const activeProject = snapshot.activeProject;
+  const missingRequirements = validation.findings.map((finding) => finding.label).join(", ");
 
-  const payload = {
-    activeProjectId: snapshot.activeProject?.id || null,
-    projectPurpose: snapshot.activeProject?.purpose || null,
-    gameDesignDocument: snapshot.activeDesign,
-    validationStatus: validation.status,
-    missingRequirements: validation.findings.map((finding) => finding.label),
-    recommendedNextTool: snapshot.progressHandoff.recommendedNextTool
-  };
-
-  elements.output.textContent = JSON.stringify(payload, null, 2);
+  setText(elements.outputSummary, activeDesign?.designSummary || "No design summary saved yet.");
+  setText(elements.outputValidation, validation.status);
+  setText(elements.outputNextStep, snapshot.progressHandoff.recommendedNextTool);
+  setText(elements.outputMissing, missingRequirements || "None");
+  setText(
+    elements.outputCapability,
+    activeProject?.purpose === "Capability Demo"
+      ? `${activeProject.name} remains a Project Workspace project.`
+      : "Not a capability demo project."
+  );
 }
 
 function render() {
@@ -250,16 +223,16 @@ function render() {
   const activeDesign = snapshot.activeDesign;
   const validation = repository.validateDesign(activeDesign || readForm());
 
-  setText(elements.activeProjectName, activeProject?.name || "No Project Workspace project");
-  setText(elements.activeProjectPurpose, activeProject?.purpose || "No purpose");
-  setText(elements.activeProjectStatus, activeProject?.status || "No project status");
+  setText(
+    elements.projectContext,
+    activeProject ? `${activeProject.name} - ${activeProject.purpose}` : "No Project Workspace project"
+  );
   setText(elements.designStatus, activeDesign?.status || validation.status);
 
   if (elements.projectOverlay) {
     elements.projectOverlay.hidden = Boolean(activeProject);
   }
 
-  renderProjectOptions(activeProject);
   applyDesignToForm(activeDesign);
   renderValidation(validation);
   renderCapabilityDemos(snapshot);
@@ -273,18 +246,6 @@ function renderFormValidation() {
   renderValidation(validation);
   setText(elements.designStatus, validation.status);
 }
-
-elements.projectSelect?.addEventListener("change", () => {
-  const projectId = elements.projectSelect.value;
-  if (!projectId) {
-    return;
-  }
-
-  const result = repository.openProjectContext(projectId);
-  const projectName = result.snapshot.activeProject?.name || "No project";
-  setText(elements.statusLog, `Opened ${projectName} for Game Design.`);
-  render();
-});
 
 elements.form?.addEventListener("input", renderFormValidation);
 

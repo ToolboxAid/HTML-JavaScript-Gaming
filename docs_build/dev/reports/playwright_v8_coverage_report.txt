@@ -17,29 +17,24 @@ Exercised tool entry points detected:
 (71%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) toolbox/project-workspace/project-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(79%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 384/384; executed functions 26/33
 (89%) toolbox/tools-page-accordions.js - executed lines 1690/1690; executed functions 51/57
-(95%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 36/38
-(96%) toolbox/game-design/game-design.js - executed lines 255/255; executed functions 23/24
+(92%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 34/37
+(100%) toolbox/game-design/game-design.js - executed lines 224/224; executed functions 21/21
 
 Files with executed line/function counts where available:
 (55%) assets/theme-v2/js/tool-display-mode.js - executed lines 113/113; executed functions 6/11
 (79%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 384/384; executed functions 26/33
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 204/204; executed functions 16/20
 (89%) toolbox/tools-page-accordions.js - executed lines 1690/1690; executed functions 51/57
-(95%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 36/38
-(96%) toolbox/game-design/game-design.js - executed lines 255/255; executed functions 23/24
+(92%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 34/37
+(100%) toolbox/game-design/game-design.js - executed lines 224/224; executed functions 21/21
 
 Uncovered or low-coverage changed JS files:
-(0%) toolbox/project-workspace/project-workspace.js - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
 (0%) scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/GameDesignMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) toolbox/project-workspace/project-workspace.js - changed JS file not collected as browser runtime coverage
-(79%) toolbox/project-workspace/project-workspace-mock-repository.js - changed JS file with browser V8 coverage
 (89%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
-(95%) toolbox/game-design/game-design-mock-repository.js - changed JS file with browser V8 coverage
-(96%) toolbox/game-design/game-design.js - changed JS file with browser V8 coverage
+(92%) toolbox/game-design/game-design-mock-repository.js - changed JS file with browser V8 coverage
+(100%) toolbox/game-design/game-design.js - changed JS file with browser V8 coverage

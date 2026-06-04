@@ -32,12 +32,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Project Context</summary>
                                 <div class="accordion-body content-stack">
-                                    <label for="gameDesignProjectSelect">Project Context
-                                        <select id="gameDesignProjectSelect" data-game-design-project-select></select>
-                                    </label>
-                                    <p>Active Project: <span data-game-design-active-project>No Project Workspace project</span></p>
-                                    <p>Project Purpose: <span data-game-design-project-purpose>No purpose</span></p>
-                                    <p>Project Status: <span data-game-design-project-status>No project status</span></p>
+                                    <p data-game-design-project-context>No Project Workspace project</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -48,26 +43,12 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Design Fields</summary>
+                                <summary>Actions</summary>
                                 <div class="accordion-body">
-                                    <form class="content-stack" data-game-design-form>
-                                        <label for="gameDesignType">Game Type
-                                            <select id="gameDesignType" data-game-design-type></select>
-                                        </label>
-                                        <label for="gameDesignGenre">Genre
-                                            <select id="gameDesignGenre" data-game-design-genre></select>
-                                        </label>
-                                        <label for="gameDesignPlayStyle">Play Style
-                                            <select id="gameDesignPlayStyle" data-game-design-play-style></select>
-                                        </label>
-                                        <label for="gameDesignSummary">Design Summary
-                                            <textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the project promise, core loop, and player goal."></textarea>
-                                        </label>
-                                        <label for="gameDesignCapabilityNotes">Capability Demo Notes
-                                            <textarea id="gameDesignCapabilityNotes" rows="3" data-game-design-capability-notes placeholder="Optional notes when this project demonstrates a specific capability."></textarea>
-                                        </label>
-                                        <button class="btn" type="submit">Save Game Design</button>
-                                    </form>
+                                    <div class="content-stack">
+                                        <a class="btn" href="toolbox/project-workspace/index.html">Open Project Workspace</a>
+                                        <a class="btn" href="toolbox/game-configuration/index.html">Review Game Configuration</a>
+                                    </div>
                                 </div>
                             </details>
                         </div>
@@ -82,23 +63,30 @@
                             <article class="mini-stat"><strong data-game-design-recommended-tool>Game Design</strong>Next tool</article>
                             <article class="mini-stat"><strong>Mock</strong>Repository only</article>
                         </div>
-                        <article class="card" role="dialog" aria-labelledby="game-design-project-overlay-title" data-game-design-project-overlay hidden>
+                        <article class="card">
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Validation Overlay</div>
-                                    <h3 id="game-design-project-overlay-title">Missing Project Context</h3>
+                                    <div class="kicker">Design Fields</div>
+                                    <h3>Project Design</h3>
                                 </div>
-                                <p>Open or seed a Project Workspace project before saving Game Design.</p>
-                                <a class="btn" href="toolbox/project-workspace/index.html">Open Project Workspace</a>
-                            </div>
-                        </article>
-                        <article class="card" role="dialog" aria-labelledby="game-design-validation-title" data-game-design-validation-overlay hidden>
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Actionable Validation</div>
-                                    <h3 id="game-design-validation-title">Missing Requirements</h3>
-                                </div>
-                                <ul data-game-design-validation-list></ul>
+                                <form class="content-stack" data-game-design-form>
+                                    <label for="gameDesignType">Game Type
+                                        <select id="gameDesignType" data-game-design-type></select>
+                                    </label>
+                                    <label for="gameDesignGenre">Genre
+                                        <select id="gameDesignGenre" data-game-design-genre></select>
+                                    </label>
+                                    <label for="gameDesignPlayStyle">Play Style
+                                        <select id="gameDesignPlayStyle" data-game-design-play-style></select>
+                                    </label>
+                                    <label for="gameDesignSummary">Design Summary
+                                        <textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the project promise, core loop, and player goal."></textarea>
+                                    </label>
+                                    <label for="gameDesignCapabilityNotes">Capability Demo Notes
+                                        <textarea id="gameDesignCapabilityNotes" rows="3" data-game-design-capability-notes placeholder="Optional notes when this project demonstrates a specific capability."></textarea>
+                                    </label>
+                                    <button class="btn" type="submit">Save Game Design</button>
+                                </form>
                             </div>
                         </article>
                         <article class="card" data-game-design-capability-panel>
@@ -119,8 +107,36 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
-                                <div class="accordion-body">
-                                    <pre><code data-game-design-output>{}</code></pre>
+                                <div class="accordion-body content-stack" data-game-design-output>
+                                    <p>Design Summary: <span data-game-design-output-summary>No design summary yet.</span></p>
+                                    <p>Validation Status: <span data-game-design-output-validation>Needs Input</span></p>
+                                    <p>Next Step: <span data-game-design-output-next-step>Complete Game Design</span></p>
+                                    <p>Missing Requirements: <span data-game-design-output-missing>Review required fields.</span></p>
+                                    <p>Capability Demo: <span data-game-design-output-capability>Not a capability demo project.</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Validation</summary>
+                                <div class="accordion-body content-stack">
+                                    <article class="card" role="dialog" aria-labelledby="game-design-project-overlay-title" data-game-design-project-overlay hidden>
+                                        <div class="card-body content-stack">
+                                            <div>
+                                                <div class="kicker">Validation Overlay</div>
+                                                <h3 id="game-design-project-overlay-title">Missing Project</h3>
+                                            </div>
+                                            <p>Open or seed a Project Workspace project before saving Game Design.</p>
+                                            <a class="btn" href="toolbox/project-workspace/index.html">Open Project Workspace</a>
+                                        </div>
+                                    </article>
+                                    <article class="card" role="dialog" aria-labelledby="game-design-validation-title" data-game-design-validation-overlay hidden>
+                                        <div class="card-body content-stack">
+                                            <div>
+                                                <div class="kicker">Actionable Validation</div>
+                                                <h3 id="game-design-validation-title">Missing Requirements</h3>
+                                            </div>
+                                            <ul data-game-design-validation-list></ul>
+                                        </div>
+                                    </article>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
