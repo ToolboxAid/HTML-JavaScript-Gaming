@@ -125,8 +125,28 @@ async function main() {
   if (!/GUEST VIEW/.test(toolboxIndex + "\n" + toolsAccordions) || !/"guest"/.test(toolsAccordions)) {
     issues.push("Toolbox role simulation must support an explicit Guest view.");
   }
-  if (!/"group": "Content"/.test(toolsAccordions) || /"group": "Assets"/.test(toolsAccordions)) {
-    issues.push("Toolbox Content group must replace the old Assets group label while keeping the Assets tool label.");
+  for (const groupName of ["Build", "Media", "Test", "Share", "Account", "Admin"]) {
+    if (!toolsAccordions.includes(`"group": "${groupName}"`) || !headerNav.includes(`${groupName} &#9656;`)) {
+      issues.push(`Toolbox creator-goal group is missing from active wiring: ${groupName}.`);
+    }
+  }
+  if (/"group": "(?:AI|Planning|Content|Media & Audio|Build & Test|Share & Community|Hidden Capability|Admin Tools)"/.test(toolsAccordions)) {
+    issues.push("Toolbox index must use creator-goal groups instead of legacy technical grouping labels.");
+  }
+  if (!/data-toolbox-admin-nav-group hidden/.test(headerNav) || !/data-toolbox-admin-nav-group/.test(toolsAccordions)) {
+    issues.push("Toolbox Admin navigation group must be role-gated for the admin role view.");
+  }
+  if (!/Planned world types/.test(toolsAccordions) || !/Vector/.test(toolsAccordions) || !/Tilemap/.test(toolsAccordions) || !/Isometric/.test(toolsAccordions) || !/Hex/.test(toolsAccordions)) {
+    issues.push("Worlds must preserve planned world-type child capabilities: Vector, Tilemap, Isometric, and Hex.");
+  }
+  if (!/Planned object types/.test(toolsAccordions) || !/Character/.test(toolsAccordions) || !/Enemy/.test(toolsAccordions) || !/Decoration/.test(toolsAccordions) || !/Interactive/.test(toolsAccordions) || !/Vector Object/.test(toolsAccordions) || !/Sprite Object/.test(toolsAccordions)) {
+    issues.push("Objects must preserve planned object-type child capabilities.");
+  }
+  if (!/container callout/.test(toolboxIndex)) {
+    issues.push("Toolbox role banner container must use an existing Theme V2 background panel class.");
+  }
+  if (/Object Vector|World Vector|Input Mapping|Collision Inspector|Storage Inspector|Save Data/.test(toolsAccordions + "\n" + headerNav)) {
+    issues.push("Toolbox must use current creator-facing tool labels for Objects, Worlds, Controls, Hitboxes, and Saved Data.");
   }
   if (!/card-media-link/.test(toolsAccordions)) {
     issues.push("Toolbox preview images must be linked through the shared card media link pattern.");

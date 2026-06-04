@@ -52,6 +52,9 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=user/);
+    await expect(page.locator("[aria-label='Toolbox role simulation']")).toHaveClass(/callout/);
+    await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveAttribute("hidden", "");
     await expect(page.getByText("Progress Wireframe")).toHaveCount(0);
     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
@@ -67,9 +70,11 @@ test("root tools surface links current tool pages without old_* routes", async (
       "Colors",
       "Controls",
       "Fonts",
+      "Hitboxes",
       "Languages",
       "Marketplace",
       "Music",
+      "Objects",
       "Saved Data",
       "Voices",
       "Worlds"
@@ -84,9 +89,13 @@ test("root tools surface links current tool pages without old_* routes", async (
       ["Object", " Vector"].join(""),
       ["World", " Vector"].join(""),
       ["Music", " Library"].join(""),
-      ["Local", "ization"].join("")
+      ["Local", "ization"].join(""),
+      ["Collision", " Inspector"].join(""),
+      ["Save", " Data"].join(""),
+      "Maps"
     ];
     expect(defaultToolLabels.filter((label) => oldStandaloneLabels.includes(label))).toEqual([]);
+    expect(defaultToolLabels.filter((label) => ["Vector", "Tilemap", "Isometric", "Hex"].includes(label))).toEqual([]);
     expect(defaultToolLabels).not.toEqual(expect.arrayContaining([
       "Users",
       "Environments",
@@ -99,7 +108,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const assetsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Assets$/ })
     }).first();
-    await expect(assetsCard.locator(".card-body > .content-cluster")).toContainText("Content");
+    await expect(assetsCard.locator(".card-body > .content-cluster")).toContainText("Build");
     await expect(assetsCard.locator(".card-body > .content-cluster")).toHaveCount(1);
     const assetsBodyOrder = await assetsCard.locator(".card-body").evaluate((body) => (
       Array.from(body.children).map((child) => child.classList.contains("content-cluster") ? "content-cluster" : child.tagName.toLowerCase())
@@ -114,13 +123,30 @@ test("root tools surface links current tool pages without old_* routes", async (
     const transformAfterHover = await previewImage.evaluate((image) => getComputedStyle(image).transform);
     expect(transformAfterHover).not.toBe(transformBeforeHover);
     expect(transformAfterHover).not.toBe("none");
+    const previewOverflow = await assetsCard.evaluate((card) => {
+      const media = card.querySelector(".card-media");
+      const link = card.querySelector(".card-media-link");
+      return [card, media, link].map((element) => getComputedStyle(element).overflow);
+    });
+    expect(previewOverflow).toEqual(["visible", "visible", "visible"]);
     await assetsCard.locator(".card-media-link").click();
     await page.waitForURL(/\/toolbox\/assets\/index\.html$/);
     await page.goBack({ waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
+    const worldsCard = page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: /^Worlds$/ })
+    }).first();
+    await expect(worldsCard).toContainText("Planned world types: Vector, Tilemap, Isometric, Hex");
+    const objectsCard = page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: /^Objects$/ })
+    }).first();
+    await expect(objectsCard).toContainText("Planned object types: Character, Enemy, Decoration, Interactive, Vector Object, Sprite Object");
     await page.getByRole("button", { name: "Group" }).click();
-    await expect(page.locator("[data-tools-accordion='Content']")).toBeVisible();
-    await expect(page.locator("[data-tools-accordion='Assets']")).toHaveCount(0);
+    const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
+      groups.map((group) => group.dataset.toolsAccordion)
+    ));
+    expect(guestGroupLabels).toEqual(["Build", "Media", "Test", "Share", "Account"]);
+    await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await page.getByRole("button", { name: "Progress" }).click();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='locked']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='ready']").first()).toBeVisible();
@@ -156,12 +182,16 @@ test("root tools surface links current tool pages without old_* routes", async (
     await page.locator("[data-toolbox-role-banner]").click();
     await page.waitForURL(/role=user/);
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
+    await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveAttribute("hidden", "");
     await page.locator("[data-toolbox-role-banner]").click();
     await page.waitForURL(/role=admin/);
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("ADMIN VIEW • Planned tools visible • Switch to Creator View");
+    await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/42");
+    await expect(page.locator("[data-toolbox-admin-nav-group]")).not.toHaveAttribute("hidden", "");
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(adminLabels).toEqual(expect.arrayContaining([
       "Users",
@@ -171,12 +201,19 @@ test("root tools surface links current tool pages without old_* routes", async (
       "Cloud",
       "Custom Extensions"
     ]));
+    await page.getByRole("button", { name: "Group" }).click();
+    const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
+      groups.map((group) => group.dataset.toolsAccordion)
+    ));
+    expect(adminGroupLabels).toEqual(["Build", "Media", "Test", "Share", "Account", "Admin"]);
     await page.locator("[data-toolbox-role-banner]").click();
     await page.waitForURL(/role=user/);
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveAttribute("hidden", "");
     await page.goto(`${server.baseUrl}/toolbox/index.html?role=guest`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
+    await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
