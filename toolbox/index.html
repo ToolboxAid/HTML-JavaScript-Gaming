@@ -13,7 +13,7 @@
 <body>
     <div data-partial="header-nav"></div>
     <div class="container" aria-label="Toolbox role simulation">
-        <a class="status" href="toolbox/index.html?role=admin" data-toolbox-role-banner>CREATOR VIEW • Planned tools hidden • Switch to Admin View</a>
+        <a class="status" href="toolbox/index.html?role=user" data-toolbox-role-banner>GUEST VIEW • Preview only • Sign in to create</a>
     </div>
     <main>
         <section class="page-title">
@@ -29,6 +29,7 @@
                     <button class="btn" type="button" data-tools-sort="grouped" aria-pressed="false">Group</button>
                     <button class="btn" type="button" data-tools-view="progress" aria-pressed="false">Progress</button>
                     <button class="btn" type="button" data-tools-view="build-path" aria-pressed="false">Build Path</button>
+                    <span class="pill" data-tools-count>Tool Count: 0/0</span>
                 </div>
                 <div class="accordion-group" data-tools-accordion-list></div>
             </div>

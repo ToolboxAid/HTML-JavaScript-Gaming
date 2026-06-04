@@ -82,6 +82,23 @@
   object-fit: cover
 }
 
+.card-media-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit
+}
+
+.card-media-link img {
+  transition: transform var(--transition-duration-fast) ease
+}
+
+.card-media-link:hover img,
+.card-media-link:focus-visible img {
+  transform: scale(1.04) rotate(2deg)
+}
+
 .card img {
   width: 100%;
   display: block

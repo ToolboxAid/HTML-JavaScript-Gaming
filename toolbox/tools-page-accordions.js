@@ -9,8 +9,9 @@
     const progressButton = document.querySelector("[data-tools-view='progress']");
     const buildPathButton = document.querySelector("[data-tools-view='build-path']");
     const roleBanner = document.querySelector("[data-toolbox-role-banner]");
+    const toolCount = document.querySelector("[data-tools-count]");
     const urlRole = new URLSearchParams(window.location.search).get("role");
-    const toolboxRole = urlRole === "admin" ? "admin" : "creator";
+    const toolboxRole = urlRole === "admin" ? "admin" : urlRole === "user" ? "creator" : "guest";
     let currentMode = "ascending";
     const toolGroups = [
         {
@@ -100,7 +101,7 @@
                 ]
         },
         {
-                "group": "Assets",
+                "group": "Content",
                 "tools": [
                         {
                                 "title": "Assets",
@@ -867,7 +868,7 @@
     const groupClassMap = {
         "AI": "tool-group-ai-learning",
         "Planning": "tool-group-development-system",
-        "Assets": "tool-group-content-assets",
+        "Content": "tool-group-content-assets",
         "Media & Audio": "tool-group-media-audio",
         "Build & Test": "tool-group-development-system",
         "Share & Community": "tool-group-community-marketplace",
@@ -877,7 +878,7 @@
     const groupSwatchMap = {
         "AI": "swatch-purple",
         "Planning": "swatch-blue",
-        "Assets": "swatch-gold",
+        "Content": "swatch-gold",
         "Media & Audio": "swatch-red",
         "Build & Test": "swatch-gray",
         "Share & Community": "swatch-gold",
@@ -1382,13 +1383,17 @@
         if (!roleBanner) {
             return;
         }
-        const nextRole = toolboxRole === "admin" ? "user" : "admin";
+        const nextRole = toolboxRole === "admin" ? "user" : toolboxRole === "creator" ? "admin" : "user";
         const nextUrl = new URL(window.location.href);
         nextUrl.searchParams.set("role", nextRole);
         roleBanner.href = nextUrl.pathname + nextUrl.search + nextUrl.hash;
-        roleBanner.textContent = toolboxRole === "admin"
-            ? "ADMIN VIEW • Planned tools visible • Switch to Creator View"
-            : "CREATOR VIEW • Planned tools hidden • Switch to Admin View";
+        if (toolboxRole === "admin") {
+            roleBanner.textContent = "ADMIN VIEW • Planned tools visible • Switch to Creator View";
+        } else if (toolboxRole === "creator") {
+            roleBanner.textContent = "CREATOR VIEW • Project tools enabled • Switch to Admin View";
+        } else {
+            roleBanner.textContent = "GUEST VIEW • Preview only • Sign in to create";
+        }
     }
 
     function groupClass(groupName) {
@@ -1483,7 +1488,16 @@
         return article;
     }
 
-    function createGroupLabel(groupName) {
+    function updateToolCount() {
+        if (!toolCount) {
+            return;
+        }
+        const visibleCount = roleAwareTools().length;
+        const totalCount = toolGroups.flatMap((group) => group.tools).length;
+        toolCount.textContent = `Tool Count: ${visibleCount}/${totalCount}`;
+    }
+
+    function createGroupLabel(groupName, visibleText = groupName) {
         const label = document.createElement("span");
         label.className = "content-cluster";
 
@@ -1494,7 +1508,7 @@
         swatch.title = groupName + " color";
 
         const text = document.createElement("span");
-        text.textContent = groupName;
+        text.textContent = visibleText;
 
         label.append(swatch, text);
         return label;
@@ -1508,15 +1522,21 @@
 
         const media = document.createElement("div");
         media.className = "card-media";
+        const mediaLink = document.createElement("a");
+        mediaLink.className = "card-media-link";
+        mediaLink.href = tool.href;
+        mediaLink.setAttribute("aria-label", "Open " + tool.title);
         const image = document.createElement("img");
         image.src = tool.image;
         image.alt = tool.title + " preview";
-        media.append(image);
+        mediaLink.append(image);
+        media.append(mediaLink);
 
         const body = document.createElement("div");
         body.className = "card-body";
 
-        const badgeCluster = createGroupLabel(tool.group);
+        const categoryText = tool.subgroup ? `${tool.group} - ${tool.subgroup}` : tool.group;
+        const badgeCluster = createGroupLabel(tool.group, categoryText);
         const badge = document.createElement("object");
         badge.data = "../assets/theme-v2/images/badges/" + badgeName(tool) + ".png";
         badge.type = "image/png";
@@ -1525,10 +1545,6 @@
         badge.setAttribute("aria-label", tool.title + " badge");
         badge.textContent = tool.title + " badge";
         badgeCluster.append(badge);
-
-        const group = document.createElement("div");
-        group.className = "kicker";
-        group.textContent = tool.subgroup ? `${tool.group} - ${tool.subgroup}` : tool.group;
 
         const readiness = document.createElement("span");
         readiness.className = "pill";
@@ -1557,9 +1573,9 @@
                 checklist.append(entry);
             });
 
-            body.append(badgeCluster, group, readiness, title, description, requirements, checklist, link);
+            body.append(readiness, title, description, requirements, checklist, link, badgeCluster);
         } else {
-            body.append(badgeCluster, group, title, description, link);
+            body.append(title, description, link, badgeCluster);
         }
         article.append(media, body);
         return article;
@@ -1621,6 +1637,7 @@
         }
         currentMode = mode;
         setActiveButton(mode);
+        updateToolCount();
     }
 
     if (orderButton) {

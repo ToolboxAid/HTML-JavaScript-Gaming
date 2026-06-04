@@ -49,11 +49,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Progress" })).not.toHaveAttribute("aria-disabled", "true");
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Planned tools hidden • Switch to Admin View");
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=admin/);
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=user/);
     await expect(page.getByText("Progress Wireframe")).toHaveCount(0);
     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     const languagesCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: "Languages" })
     });
@@ -93,6 +95,32 @@ test("root tools surface links current tool pages without old_* routes", async (
       "Cloud",
       "Custom Extensions"
     ]));
+    await expect(page.locator("main .control-card .kicker")).toHaveCount(0);
+    const assetsCard = page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: /^Assets$/ })
+    }).first();
+    await expect(assetsCard.locator(".card-body > .content-cluster")).toContainText("Content");
+    await expect(assetsCard.locator(".card-body > .content-cluster")).toHaveCount(1);
+    const assetsBodyOrder = await assetsCard.locator(".card-body").evaluate((body) => (
+      Array.from(body.children).map((child) => child.classList.contains("content-cluster") ? "content-cluster" : child.tagName.toLowerCase())
+    ));
+    expect(assetsBodyOrder).toEqual(["h3", "p", "a", "content-cluster"]);
+    await expect(assetsCard.locator(".card-media-link")).toHaveAttribute("href", "../toolbox/assets/index.html");
+    await expect(assetsCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/assets/index.html");
+    const previewImage = assetsCard.locator(".card-media-link img");
+    const transformBeforeHover = await previewImage.evaluate((image) => getComputedStyle(image).transform);
+    await assetsCard.locator(".card-media-link").hover();
+    await page.waitForTimeout(100);
+    const transformAfterHover = await previewImage.evaluate((image) => getComputedStyle(image).transform);
+    expect(transformAfterHover).not.toBe(transformBeforeHover);
+    expect(transformAfterHover).not.toBe("none");
+    await assetsCard.locator(".card-media-link").click();
+    await page.waitForURL(/\/toolbox\/assets\/index\.html$/);
+    await page.goBack({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
+    await page.getByRole("button", { name: "Group" }).click();
+    await expect(page.locator("[data-tools-accordion='Content']")).toBeVisible();
+    await expect(page.locator("[data-tools-accordion='Assets']")).toHaveCount(0);
     await page.getByRole("button", { name: "Progress" }).click();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='locked']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='ready']").first()).toBeVisible();
@@ -124,11 +152,16 @@ test("root tools surface links current tool pages without old_* routes", async (
     const hrefs = await page.locator("a[href]").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     expect(hrefs.filter((href) => href && /(^|\/|\.\.\/)tools\/old_/.test(href))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
-    expect(pageErrors).toEqual([]);
 
+    await page.locator("[data-toolbox-role-banner]").click();
+    await page.waitForURL(/role=user/);
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
+    await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await page.locator("[data-toolbox-role-banner]").click();
     await page.waitForURL(/role=admin/);
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("ADMIN VIEW • Planned tools visible • Switch to Creator View");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/42");
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(adminLabels).toEqual(expect.arrayContaining([
       "Users",
@@ -140,8 +173,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     ]));
     await page.locator("[data-toolbox-role-banner]").click();
     await page.waitForURL(/role=user/);
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Planned tools hidden • Switch to Admin View");
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+    await page.goto(`${server.baseUrl}/toolbox/index.html?role=guest`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/42");
+    await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+    expect(pageErrors).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();

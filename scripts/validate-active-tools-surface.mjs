@@ -119,6 +119,21 @@ async function main() {
   if (!/<button[^>]+data-tools-view="build-path"[^>]*>\s*Build Path\s*<\/button>/i.test(toolboxIndex)) {
     issues.push("Toolbox index is missing the Build Path view mode control.");
   }
+  if (!/data-tools-count/.test(toolboxIndex) || !/Tool Count:/.test(toolboxIndex + "\n" + toolsAccordions)) {
+    issues.push("Toolbox index must expose a visible Tool Count control tied to current role filtering.");
+  }
+  if (!/GUEST VIEW/.test(toolboxIndex + "\n" + toolsAccordions) || !/"guest"/.test(toolsAccordions)) {
+    issues.push("Toolbox role simulation must support an explicit Guest view.");
+  }
+  if (!/"group": "Content"/.test(toolsAccordions) || /"group": "Assets"/.test(toolsAccordions)) {
+    issues.push("Toolbox Content group must replace the old Assets group label while keeping the Assets tool label.");
+  }
+  if (!/card-media-link/.test(toolsAccordions)) {
+    issues.push("Toolbox preview images must be linked through the shared card media link pattern.");
+  }
+  if (/group\.className = "kicker"/.test(toolsAccordions)) {
+    issues.push("Toolbox tool cards must not render a duplicate category kicker.");
+  }
   if (/data-tools-view="(?:progress|build-path)"[^>]*aria-disabled="true"/.test(toolboxIndex)) {
     issues.push("Progress and Build Path view mode controls must render as normal reviewable controls, not disabled controls.");
   }
