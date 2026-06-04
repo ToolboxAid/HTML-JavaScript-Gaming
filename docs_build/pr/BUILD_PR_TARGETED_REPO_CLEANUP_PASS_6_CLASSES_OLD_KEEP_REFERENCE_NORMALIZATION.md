@@ -11,7 +11,7 @@ Docs-only normalization. No structural or runtime changes.
    "legacy class-retention policy marker"
 2. Do NOT remove references
 3. Do NOT create folder
-4. Do NOT touch templates/, docs_build/archive/, or runtime code
+4. Do NOT touch templates/, archive/v1-v2/docs_build/archive/, or runtime code
 
 ## Deliverables
 - normalization_report.md

@@ -7,8 +7,8 @@
 
 ## Files Changed
 - `toolbox/workspace-v2/index.js`
-- `docs_build/pr/PR_11_325_WORKSPACE_V2_PALETTE_LAUNCH_CONTRACT_FIX/PLAN_PR.md`
-- `docs_build/pr/PR_11_325_WORKSPACE_V2_PALETTE_LAUNCH_CONTRACT_FIX/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_325_WORKSPACE_V2_PALETTE_LAUNCH_CONTRACT_FIX/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_325_WORKSPACE_V2_PALETTE_LAUNCH_CONTRACT_FIX/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_325_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

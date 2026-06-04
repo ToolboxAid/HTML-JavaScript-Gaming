@@ -10,7 +10,7 @@ Audit scope
 
 Deletion decisions
 1) source: docs_build/pr/APPLY_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md
-   destination: docs_build/archive/tools/SpriteEditor_old_keep/
+   destination: archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/
    reason: move-only acceptance record; no unique capability/spec content
    destination coverage verification:
    - destination path exists: yes

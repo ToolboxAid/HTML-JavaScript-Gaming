@@ -15,9 +15,9 @@ Compared Sources:
 | Target | Name Consistency | Path Consistency | Classification Consistency | Tracking Presence | Mismatch Found? |
 | --- | --- | --- | --- | --- | --- |
 | `templates/` | yes | yes | no | yes | yes |
-| `docs_build/archive/tools/SpriteEditor_old_keep/` policy target | yes (policy label vs path label both map to same target) | yes | yes | yes | no |
+| `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` policy target | yes (policy label vs path label both map to same target) | yes | yes | yes | no |
 | `legacy class-retention policy marker` policy target | yes | yes (as policy placeholder path) | yes | yes | no |
-| `docs_build/archive/` archived-notes policy target | yes | yes | yes | yes | no |
+| `archive/v1-v2/docs_build/archive/` archived-notes policy target | yes | yes | yes | yes | no |
 | Legacy import path patterns | yes | yes (pattern-based target) | yes | yes | no |
 | Eventual legacy-retirement planning target | yes | yes (planning-path target) | yes | yes | no |
 

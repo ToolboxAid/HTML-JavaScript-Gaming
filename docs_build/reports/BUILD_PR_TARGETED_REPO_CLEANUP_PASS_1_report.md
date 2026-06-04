@@ -15,9 +15,9 @@ Bundle type: execution-ready BUILD docs
 ## Enforcement-Map Summary
 - Formalized enforcement for exactly six approved cleanup targets:
   - `templates/`
-  - `docs_build/archive/tools/SpriteEditor_old_keep/` policy target
+  - `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` policy target
   - `legacy class-retention policy marker` policy target
-  - `docs_build/archive/` archived-notes policy target
+  - `archive/v1-v2/docs_build/archive/` archived-notes policy target
   - legacy import path patterns
   - eventual legacy-retirement planning target
 - Each target now has evidence-grounded allowed/forbidden actions, validation requirements, coupled surfaces, risk level, and recommended future PR type.

@@ -13,7 +13,7 @@ Apply a minimal tools theme reuse baseline as a docs-to-code follow-up to `PLAN_
   - `toolbox/Tilemap Studio/`
   - `toolbox/Vector Asset Studio/`
   - `toolbox/Vector Map Editor/`
-- Keep `docs_build/archive/tools/SpriteEditor_old_keep/` unchanged.
+- Keep `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` unchanged.
 - Do not refactor tool-specific behavior.
 - Do not rewrite roadmap wording.
 - Do not touch `docs_build/dev/start_of_day/*`.
@@ -49,7 +49,7 @@ Apply a minimal tools theme reuse baseline as a docs-to-code follow-up to `PLAN_
 ## Failure Conditions
 Stop and report if:
 - scope expands beyond the exact files listed above
-- `docs_build/archive/tools/SpriteEditor_old_keep/` requires edits
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` requires edits
 - start_of_day directories require edits
 - a touched tool cannot load after theme normalization
 

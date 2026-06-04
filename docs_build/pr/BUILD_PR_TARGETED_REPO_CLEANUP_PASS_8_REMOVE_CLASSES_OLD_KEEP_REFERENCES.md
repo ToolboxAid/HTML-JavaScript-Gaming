@@ -11,7 +11,7 @@ Docs-only removal. No structural/runtime changes.
 2) Remove or rewrite lines to eliminate the term
 3) Keep meaning intact where needed (no ambiguity introduced)
 4) Do NOT create any folder
-5) Do NOT touch templates/, docs_build/archive/, or start_of_day/*
+5) Do NOT touch templates/, archive/v1-v2/docs_build/archive/, or start_of_day/*
 
 ## Deliverables
 - removal_change_log.md

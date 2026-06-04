@@ -6,8 +6,8 @@
 
 ## Files Changed
 - `toolbox/workspace-v2/index.js`
-- `docs_build/pr/PR_11_309_WORKSPACE_V2_DEFAULT_ACTIVE_PALETTE_INIT/PLAN_PR.md`
-- `docs_build/pr/PR_11_309_WORKSPACE_V2_DEFAULT_ACTIVE_PALETTE_INIT/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_309_WORKSPACE_V2_DEFAULT_ACTIVE_PALETTE_INIT/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_309_WORKSPACE_V2_DEFAULT_ACTIVE_PALETTE_INIT/BUILD_PR.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`
 - `docs_build/dev/reports/PR_11_309_report.md`

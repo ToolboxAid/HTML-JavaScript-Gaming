@@ -6,8 +6,8 @@ Update Workspace V2 Playwright gate execution for installed Playwright command u
 ## Files Changed
 - `package.json`
 - `scripts/run-workspace-v2-playwright-gate.mjs`
-- `docs_build/pr/PR_11_320_WORKSPACE_V2_GATE_UPDATE/PLAN_PR.md`
-- `docs_build/pr/PR_11_320_WORKSPACE_V2_GATE_UPDATE/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_320_WORKSPACE_V2_GATE_UPDATE/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_320_WORKSPACE_V2_GATE_UPDATE/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_320_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

@@ -13,7 +13,7 @@ rg -n "templates/" tools src games samples tests
 
 2. Active docs/planning usage (exclude archives):
 ```powershell
-rg -n "templates/" docs --glob "!docs_build/archive/**"
+rg -n "templates/" docs --glob "!archive/v1-v2/docs_build/archive/**"
 ```
 
 3. Direct module import/require guard:

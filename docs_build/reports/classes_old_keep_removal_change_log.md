@@ -6,7 +6,7 @@ Lane: BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES
 ## Scope Executed
 - Searched `docs/**/*.md` and `docs/**/*.txt`
 - Excluded:
-  - `docs_build/archive/**`
+  - `archive/v1-v2/docs_build/archive/**`
   - `**/start_of_day/**`
 
 ## Rewrite Policy Applied
@@ -52,4 +52,4 @@ Lane: BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES
 ## Validation Snapshot
 - Remaining token matches in scoped docs content: `0`
 - Runtime code touched: `no`
-- Protected directories touched (`templates/`, `docs_build/archive/`, `start_of_day/*`): `no`
+- Protected directories touched (`templates/`, `archive/v1-v2/docs_build/archive/`, `start_of_day/*`): `no`

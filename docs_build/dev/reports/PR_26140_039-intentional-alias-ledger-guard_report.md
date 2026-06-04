@@ -39,7 +39,7 @@
 - PASS: `npx playwright test tests/playwright/tools/ObjectVectorStudioV2FirstClassToolStarter.spec.mjs --project=playwright --workers=1 --reporter=list`.
 - PASS: `npm run test:workspace-v2` (58 passed).
 - PASS: required alias search completed:
-  - `rg -n "^\s*import\b.*\bas\b|^\s*export\b.*\bas\b" src games tools tests samples -g "*.js" -g "*.mjs" -g "!**/node_modules/**" -g "!**/tests/results/**" -g "!docs_build/dev/reports/**" -g "!docs_build/archive/**" -g "!tools/Vector Map Editor/**" -g "!**/generated/**" -g "!**/vendor/**" -g "!**/*.min.js"`
+  - `rg -n "^\s*import\b.*\bas\b|^\s*export\b.*\bas\b" src games tools tests samples -g "*.js" -g "*.mjs" -g "!**/node_modules/**" -g "!**/tests/results/**" -g "!docs_build/dev/reports/**" -g "!archive/v1-v2/docs_build/archive/**" -g "!tools/Vector Map Editor/**" -g "!**/generated/**" -g "!**/vendor/**" -g "!**/*.min.js"`
   - Remaining line-level hits are intentional categories covered by the ledger.
 - PASS: `git diff --check` returned no whitespace errors; Git reported line-ending normalization warnings only.
 - PASS: changed-file guard found no modified node_modules, tests/results, docs_build/dev/reports snapshots, archived tools, generated bundles, vendor files, bundled files, or minified JS files.

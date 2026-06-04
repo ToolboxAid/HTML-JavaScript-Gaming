@@ -8,7 +8,7 @@ Lane: BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION
 - `legacy class-retention policy marker` treated as docs-only placeholder
 
 ## Step 1) Final Review Summary
-Reviewed normalized references in active docs (`docs/`, excluding `docs_build/archive/`):
+Reviewed normalized references in active docs (`docs/`, excluding `archive/v1-v2/docs_build/archive/`):
 - Canonical phrase matches:
   - `legacy class-retention policy marker` -> 60 matches
 - Residual raw-token matches (intentional/literal contexts + metadata/spec references):

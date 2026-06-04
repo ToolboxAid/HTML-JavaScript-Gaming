@@ -32,7 +32,7 @@ Active files are in `docs_build/dev/`:
 - `docs_build/pr/`: historical PR and architecture evolution
 - `docs_build/reference/architecture-standards/architecture/`: durable architecture and boundary docs
 - `docs_build/reference/architecture-standards/standards/`: standards and review docs
-- `docs_build/archive/`: archived dev-ops and generated-report artifacts
+- `archive/v1-v2/docs_build/archive/`: archived dev-ops and generated-report artifacts
 
 ## 5) Package Build/Apply Output
 Put delta ZIP outputs under:

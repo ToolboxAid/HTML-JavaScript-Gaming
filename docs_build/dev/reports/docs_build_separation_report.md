@@ -16,7 +16,7 @@ Task: PR_26154_002-docs-build-separation-teardown
 | --- | --- | --- |
 | `docs/dev/` | `docs_build/dev/` | Includes reports, governance, workflow docs, and `start_of_day`; `start_of_day` contents were not edited. |
 | `docs/pr/` | `docs_build/pr/` | PR history and build specs. |
-| `docs/archive/` | `docs_build/archive/` | Historical build/archive documentation. |
+| `docs/archive/` | `archive/v1-v2/docs_build/archive/` | Historical build/archive documentation. |
 | `docs/operations/` | `docs_build/operations/` | Operations/workflow documentation. |
 | `docs/reports/` | `docs_build/reports/` | Build/report documentation. |
 | `docs/account/` | `docs_build/account/` | Internal design-system account docs. |
@@ -47,7 +47,7 @@ The remaining `/docs/` surface is limited to public docs and user-facing documen
 - `docs/dev/PROJECT_INSTRUCTIONS.md` references now point to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 - `docs/dev/reports/` references now point to `docs_build/dev/reports/`.
 - `docs/pr/` references now point to `docs_build/pr/`.
-- Moved build-doc bucket references were updated for `docs_build/archive/`, `docs_build/operations/`, `docs_build/reports/`, `docs_build/account/`, and `docs_build/security/`.
+- Moved build-doc bucket references were updated for `archive/v1-v2/docs_build/archive/`, `docs_build/operations/`, `docs_build/reports/`, `docs_build/account/`, and `docs_build/security/`.
 - `toolbox/old_localization-studio/index.html` now uses `<base href="/">` and root-relative Theme V2 asset references.
 
 ## Validation
@@ -65,4 +65,4 @@ The remaining `/docs/` surface is limited to public docs and user-facing documen
 ## Notes
 
 - `docs_build/dev/start_of_day/**` still contains old path mentions by design because the folder was protected from content edits.
-- Historical reports under `docs_build/dev/reports/**` and `docs_build/archive/**` still contain old `GameFoundryStudio/` references as historical record.
+- Historical reports under `docs_build/dev/reports/**` and `archive/v1-v2/docs_build/archive/**` still contain old `GameFoundryStudio/` references as historical record.

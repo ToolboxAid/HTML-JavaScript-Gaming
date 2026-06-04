@@ -6,7 +6,7 @@ Generated: 2026-04-12
 Execute docs-only removal/neutralization of legacy marker token references based on the PASS_8 REMOVE direction.
 
 ## Execution Summary
-1. Searched all `docs/*.md` and `docs/*.txt` files (excluding `docs_build/archive/**` and `**/start_of_day/**`).
+1. Searched all `docs/*.md` and `docs/*.txt` files (excluding `archive/v1-v2/docs_build/archive/**` and `**/start_of_day/**`).
 2. Rewrote token mentions to neutral wording or removed direct mentions where safe.
 3. Preserved docs intent by retaining policy context while removing placeholder token usage.
 4. Wrote change-log and validation artifacts for this lane.
@@ -19,7 +19,7 @@ Execute docs-only removal/neutralization of legacy marker token references based
 ## Constraint Validation
 - No directory create/delete/move operations performed.
 - No edits under `templates/`.
-- No edits under `docs_build/archive/`.
+- No edits under `archive/v1-v2/docs_build/archive/`.
 - No edits under `start_of_day/*`.
 - No runtime code changes (`toolbox/`, `src/`, `games/`, `samples/`, `tests/` unchanged in this lane).
 

@@ -1,7 +1,8 @@
-Archive deprecated V1/V2 reference material - PR_26154_037
+Archive docs references and redirect test output - PR_26154_038
 
-- Move deprecated tools, games, and samples into archive/v1-v2 ownership.
-- Update docs_build references and governance to point at archive/v1-v2 paths.
-- Keep active app navigation from linking into archived material.
-- Report remaining ambiguous root folders and old-path references outside docs_build.
-- Validate targeted references, static changed files, diff hygiene, and repo-structured delta packaging.
+- Consolidate docs_build/archive, PR_10/PR_11 docs, and tool design references under archive/v1-v2.
+- Update current docs_build references to the new archive paths.
+- Move Playwright output configuration and generated artifacts from tests/results to tmp/test-results.
+- Keep node_modules at root and ignored; do not modify scripts/untracked.
+- Audit toolbox/shared, toolbox/dev, and toolbox/schemas without moving ambiguous active ownership.
+- Validate targeted references, static changed files, Workspace V2, diff hygiene, and repo-structured delta packaging.

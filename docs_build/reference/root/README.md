@@ -12,8 +12,8 @@ README.md
 - `docs_build/reference/architecture-standards/architecture/`: durable architecture and boundary documentation
 - `docs_build/reference/architecture-standards/standards/`: standards and review quality rules
 - `docs_build/release/`: release/readiness and showcase documentation sets
-- `docs_build/archive/dev-ops/`: archived operational notes and superseded workflow docs
-- `docs_build/archive/generated-reports/`: archived generated validation/report artifacts
+- `archive/v1-v2/docs_build/archive/dev-ops/`: archived operational notes and superseded workflow docs
+- `archive/v1-v2/docs_build/archive/generated-reports/`: archived generated validation/report artifacts
 
 ## Key Entry Points
 - [Docs Home](../../README.md)

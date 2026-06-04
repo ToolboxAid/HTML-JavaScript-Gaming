@@ -35,7 +35,7 @@ These rules are strict, precedence-ordered, and non-overlapping by first-match a
 - `PR_BUILD_TRACKING`: `docs_build/pr/**`
 - `RELEASE_ADOPTION`: `docs/release/**`
 - `GAME_DESIGN`: `docs/gdd/**`
-- `ARCHIVE_HISTORICAL`: `docs_build/archive/**`
+- `ARCHIVE_HISTORICAL`: `archive/v1-v2/docs_build/archive/**`
 - `ARCHITECTURE_AND_STANDARDS`: `docs/architecture/**`, `docs/specs/**`, `docs/standards/**`, `docs/decisions/**`
 - `DEV_OPERATIONS`: `docs_build/dev/**` excluding earlier `docs_build/dev/*` buckets
 - `ROOT_REFERENCE`: markdown files directly under `docs/`

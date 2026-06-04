@@ -44,7 +44,7 @@ Stop future cleanup execution if any of the following occur:
 - `legacy class-retention marker path` path is created implicitly without explicit lane approval.
 - runtime/code references are detected.
 - roadmap/docs synchronization set is incomplete.
-- changes expand into unrelated targets (`templates`, `docs_build/archive`, SpriteEditor archive surfaces).
+- changes expand into unrelated targets (`templates`, `archive/v1-v2/docs_build/archive`, SpriteEditor archive surfaces).
 - roadmap requires wording rewrite (non bracket-only) during a status-only lane.
 
 ## Guard Summary

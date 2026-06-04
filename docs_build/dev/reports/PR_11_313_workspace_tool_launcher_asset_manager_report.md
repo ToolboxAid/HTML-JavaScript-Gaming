@@ -10,8 +10,8 @@ Make Workspace V2 explicitly able to open tools via a visible tools menu and ren
 - `toolbox/asset-manager-v2/index.js`
 - `toolbox/index.html`
 - `tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs`
-- `docs_build/pr/PR_11_313_WORKSPACE_V2_TOOL_LAUNCHER_ASSET_MANAGER_UI/PLAN_PR.md`
-- `docs_build/pr/PR_11_313_WORKSPACE_V2_TOOL_LAUNCHER_ASSET_MANAGER_UI/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_313_WORKSPACE_V2_TOOL_LAUNCHER_ASSET_MANAGER_UI/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_313_WORKSPACE_V2_TOOL_LAUNCHER_ASSET_MANAGER_UI/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_313_workspace_tool_launcher_asset_manager_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

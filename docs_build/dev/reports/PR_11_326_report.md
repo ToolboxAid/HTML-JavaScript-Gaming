@@ -15,8 +15,8 @@
 
 ## Files Changed
 - `toolbox/asset-manager-v2/index.js`
-- `docs_build/pr/PR_11_326_ASSET_MANAGER_MUTATION_SCOPE_FIX/PLAN_PR.md`
-- `docs_build/pr/PR_11_326_ASSET_MANAGER_MUTATION_SCOPE_FIX/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_326_ASSET_MANAGER_MUTATION_SCOPE_FIX/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_326_ASSET_MANAGER_MUTATION_SCOPE_FIX/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_326_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

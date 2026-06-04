@@ -4,8 +4,8 @@
 Execute a non-destructive archive pass for legacy PR markdown files so the active `docs_build/pr/` surface only carries the current Level 11 working set.
 
 ## Exact Scope
-1. Create `docs_build/archive/pr/legacy-pr-history/` if missing.
-2. Move the exact files in `docs/reference/features/docs-system/move-history-preserved.md` from `docs_build/pr/` to `docs_build/archive/pr/legacy-pr-history/`.
+1. Create `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/` if missing.
+2. Move the exact files in `docs/reference/features/docs-system/move-history-preserved.md` from `docs_build/pr/` to `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/`.
 3. Leave the exact files in `docs/reference/features/docs-system/move-history-preserved.md` in place.
 4. Preserve `docs_build/pr/.keep`.
 5. Do not modify file contents while moving.
@@ -28,5 +28,5 @@ Execute a non-destructive archive pass for legacy PR markdown files so the activ
 - Count of moved PR markdown files: 414.
 - Count of retained active PR markdown files: 27.
 - `docs_build/pr/` after execution contains only the keep-manifest files plus `.keep`.
-- `docs_build/archive/pr/legacy-pr-history/` contains every moved manifest file.
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/` contains every moved manifest file.
 - Git diff should show path moves only for archived PR files and the new archive README/manifests/docs in this bundle.

@@ -20,7 +20,7 @@ Archive Rules
 - Legacy PR files move only by exact manifest
 - Active Level 11 PR files remain in docs_build/pr
 - docs_build/pr/.keep remains in place
-- Archive destination is docs_build/archive/pr/legacy-pr-history/
+- Archive destination is archive/v1-v2/docs_build/archive/pr/legacy-pr-history/
 
 Counts
 - PR markdown files to move: 414

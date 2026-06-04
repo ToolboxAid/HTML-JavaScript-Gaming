@@ -5,8 +5,8 @@
 
 ## Files Changed
 - `docs_build/dev/workspace_v2_playwright_gate.md`
-- `docs_build/pr/PR_11_321_WORKSPACE_V2_PLAYWRIGHT_GATE_DOCUMENTATION/PLAN_PR.md`
-- `docs_build/pr/PR_11_321_WORKSPACE_V2_PLAYWRIGHT_GATE_DOCUMENTATION/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_321_WORKSPACE_V2_PLAYWRIGHT_GATE_DOCUMENTATION/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_321_WORKSPACE_V2_PLAYWRIGHT_GATE_DOCUMENTATION/BUILD_PR.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`
 

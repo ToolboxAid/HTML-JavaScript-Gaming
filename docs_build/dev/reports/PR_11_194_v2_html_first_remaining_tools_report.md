@@ -17,7 +17,7 @@ Verify and complete the remaining Tool V2 HTML-first shell batch. Each scoped V2
 The five scoped V2 tool folders were audited and already satisfied the PR 11.194 HTML-first requirements at execution time. No additional implementation edits were required in those V2 files during this pass.
 
 Existing PR source doc was present in the worktree and included in the ZIP:
-- `docs_build/pr/PR_11_194_20260501_04.md`
+- `archive/v1-v2/docs_build/pr/PR_11_194_20260501_04.md`
 
 ## HTML-First Shell Result
 Passed for all five scoped V2 tools. Each `index.html` owns:

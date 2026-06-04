@@ -17,7 +17,7 @@
 ## Alias Search Results
 Non-default export alias search:
 
-`rg --pcre2 -n "^\\s*export\\s+\\{(?!\\s*default\\b).*\\bas\\b" games tools src -g "*.js" -g "*.mjs" -g "!**/node_modules/**" -g "!**/tests/results/**" -g "!docs_build/dev/reports/**" -g "!docs_build/archive/**"`
+`rg --pcre2 -n "^\\s*export\\s+\\{(?!\\s*default\\b).*\\bas\\b" games tools src -g "*.js" -g "*.mjs" -g "!**/node_modules/**" -g "!**/tests/results/**" -g "!docs_build/dev/reports/**" -g "!archive/v1-v2/docs_build/archive/**"`
 
 Result: no matches.
 

@@ -7,8 +7,8 @@
 
 ## Files Changed
 - `toolbox/palette-manager-v2/index.js`
-- `docs_build/pr/PR_11_327_PALETTE_MANAGER_LABEL_CONTRACT_ALIGNMENT/PLAN_PR.md`
-- `docs_build/pr/PR_11_327_PALETTE_MANAGER_LABEL_CONTRACT_ALIGNMENT/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_327_PALETTE_MANAGER_LABEL_CONTRACT_ALIGNMENT/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_327_PALETTE_MANAGER_LABEL_CONTRACT_ALIGNMENT/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_327_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

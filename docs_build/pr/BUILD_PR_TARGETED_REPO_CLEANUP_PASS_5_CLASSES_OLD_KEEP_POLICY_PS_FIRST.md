@@ -31,7 +31,7 @@ Codex may quote/summarize these results in the reports, but should not rerun bro
   - `docs_build/dev/start_of_day/codex/`
 - Do **not** create or move any `legacy class-retention marker path` directory.
 - Do **not** modify `templates/`.
-- Do **not** modify `docs_build/archive/`.
+- Do **not** modify `archive/v1-v2/docs_build/archive/`.
 - Do **not** modify `toolbox/SpriteEditor_old_keep/` or its archived successor.
 - Do **not** mix in runtime feature work or unrelated cleanup targets.
 - Do **not** rewrite roadmap wording, reorder roadmap items, collapse roadmap sections, or replace roadmap content.
@@ -118,7 +118,7 @@ Create `docs_build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEE
 - summary of any roadmap bracket changes actually applied
 - summary of unapplied planned delta, if any
 - explicit statement that no `legacy class-retention marker path` directory was created, moved, renamed, or deleted
-- explicit statement that `templates/`, `docs_build/archive/`, and SpriteEditor archive surfaces were untouched
+- explicit statement that `templates/`, `archive/v1-v2/docs_build/archive/`, and SpriteEditor archive surfaces were untouched
 - validation results
 
 ### 6) Validation checklist
@@ -126,7 +126,7 @@ Create `docs_build/reports/validation_checklist.txt` that records pass/fail for:
 - protected start_of_day directories untouched
 - no `legacy class-retention marker path` directory created/moved/deleted
 - `templates/` untouched
-- `docs_build/archive/` untouched
+- `archive/v1-v2/docs_build/archive/` untouched
 - legacy class-retention policy marker evidence reports created
 - no unrelated cleanup targets changed
 - roadmap wording preserved if roadmap changed
@@ -146,7 +146,7 @@ Avoid repeating broad repo discovery scans already completed by the user unless 
 - no archive move
 - no deletion of docs references
 - no changes to `templates/`
-- no changes to `docs_build/archive/`
+- no changes to `archive/v1-v2/docs_build/archive/`
 - no changes to SpriteEditor archive location
 - no runtime/code implementation
 

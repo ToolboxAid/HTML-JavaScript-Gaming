@@ -1,40 +1,40 @@
 ﻿# Archived Notes Policy Inventory
 
 Generated: 2026-04-12
-Scope: `docs_build/archive/` policy surface only (non-destructive, docs-only lane).
+Scope: `archive/v1-v2/docs_build/archive/` policy surface only (non-destructive, docs-only lane).
 
 ## Source-Of-Truth Baseline (Existing Cleanup Evidence)
 - `docs_build/reports/cleanup_live_reference_inventory.txt` (Target 4):
-  - Exact path: `docs_build/archive/`
+  - Exact path: `archive/v1-v2/docs_build/archive/`
   - Exists: yes
   - Assessment: `live-reference`
   - Notes: archive location is active/documented; policy item still incomplete.
 - `docs/reference/features/docs-system/move-history-preserved.md`:
-  - Target row: ``docs_build/archive/` archived-notes policy``
+  - Target row: ``archive/v1-v2/docs_build/archive/` archived-notes policy``
   - Proposed classification: `keep`
   - Recommended future scope: policy-definition PR.
 
 ## 1) Path Existence And Archive Contents
-- `docs_build/archive/` exists: **yes**
-- Recursive file count under `docs_build/archive/`: **446**
-- Recursive directory count under `docs_build/archive/`: **5**
+- `archive/v1-v2/docs_build/archive/` exists: **yes**
+- Recursive file count under `archive/v1-v2/docs_build/archive/`: **446**
+- Recursive directory count under `archive/v1-v2/docs_build/archive/`: **5**
 
-Exact directories under `docs_build/archive/`:
-- `docs_build/archive/dev-ops`
-- `docs_build/archive/generated-reports`
-- `docs_build/archive/pr`
-- `docs_build/archive/generated-reports/dev-reports`
-- `docs_build/archive/pr/legacy-pr-history`
+Exact directories under `archive/v1-v2/docs_build/archive/`:
+- `archive/v1-v2/docs_build/archive/dev-ops`
+- `archive/v1-v2/docs_build/archive/generated-reports`
+- `archive/v1-v2/docs_build/archive/pr`
+- `archive/v1-v2/docs_build/archive/generated-reports/dev-reports`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history`
 
 Exact file inventory command used:
 ```powershell
-rg --files docs_build/archive
+rg --files archive/v1-v2/docs_build/archive
 ```
 
-## 2) Active References To `docs_build/archive/`
+## 2) Active References To `archive/v1-v2/docs_build/archive/`
 Reference scan command used:
 ```powershell
-rg -n "docs_build/archive/" docs tools src games samples tests --glob "!docs_build/archive/**" --glob "!**/node_modules/**"
+rg -n "archive/v1-v2/docs_build/archive/" docs tools src games samples tests --glob "!archive/v1-v2/docs_build/archive/**" --glob "!**/node_modules/**"
 ```
 
 Unique active consumer files found:
@@ -86,7 +86,7 @@ Unique active consumer files found:
 ## 3) Required Separation
 
 ### Direct path references
-- Direct literal `docs_build/archive/` references are present and active in the unique consumer files listed above.
+- Direct literal `archive/v1-v2/docs_build/archive/` references are present and active in the unique consumer files listed above.
 
 ### Documentation/policy references
 - All current active references found by scan are documentation/policy/governance surfaces under `docs/`.
@@ -94,8 +94,8 @@ Unique active consumer files found:
 ### Test/config references
 Commands used:
 ```powershell
-rg -n "docs_build/archive/" tests --glob "!**/node_modules/**"
-rg -n "docs_build/archive/" --glob "*.json" --glob "*.yml" --glob "*.yaml" --glob "!**/node_modules/**"
+rg -n "archive/v1-v2/docs_build/archive/" tests --glob "!**/node_modules/**"
+rg -n "archive/v1-v2/docs_build/archive/" --glob "*.json" --glob "*.yml" --glob "*.yaml" --glob "!**/node_modules/**"
 ```
 Result:
 - No test references found.
@@ -103,14 +103,14 @@ Result:
 
 ## 4) Path Assumptions That Block Safe Move/Delete
 1. Documentation contracts currently encode specific archive destinations:
-   - `docs_build/archive/dev-ops/`
-   - `docs_build/archive/generated-reports/`
-   - `docs_build/archive/pr/legacy-pr-history/`
-2. Cleanup governance artifacts already track `docs_build/archive/` as a retained policy target.
+   - `archive/v1-v2/docs_build/archive/dev-ops/`
+   - `archive/v1-v2/docs_build/archive/generated-reports/`
+   - `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/`
+2. Cleanup governance artifacts already track `archive/v1-v2/docs_build/archive/` as a retained policy target.
 3. Existing archive-cleanup plan/build specs depend on the exact archive destination path for manifest-based movement and rollback.
 4. Moving/deleting archive paths would require synchronized updates across multiple docs governance surfaces to avoid broken navigation/policy references.
 
 ## 5) Inventory Conclusion
-- `docs_build/archive/` is an active policy/structure target with live documentation references.
+- `archive/v1-v2/docs_build/archive/` is an active policy/structure target with live documentation references.
 - Current evidence supports a conservative keep/defer posture in this lane.
 - No movement, deletion, or rewrite action is justified in this BUILD.

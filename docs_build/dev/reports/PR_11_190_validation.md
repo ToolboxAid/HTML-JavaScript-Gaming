@@ -65,7 +65,7 @@ Targeted syntax checks only were run, as requested.
 - `docs_build/dev/reports/PR_11_190_validation.md`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
-- `docs_build/pr/PR_11_190_V2_REENGINEER_NAMING_HEADER_GUARD.md`
+- `archive/v1-v2/docs_build/pr/PR_11_190_V2_REENGINEER_NAMING_HEADER_GUARD.md`
 
 ## Targeted Syntax Checks
 Commands:

@@ -9,7 +9,7 @@ The active master roadmap path is:
 - `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 Do not use superseded roadmap surfaces:
-- `docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md` for the active master roadmap
+- `archive/v1-v2/docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md` for the active master roadmap
 - any other duplicate roadmap location
 
 ### Active Dev Files
@@ -32,9 +32,9 @@ PR docs must live in:
 
 ### Archive
 Archived/generated/historical material should live in:
-- `docs_build/archive/dev-ops/`
-- `docs_build/archive/generated-reports/`
-- `docs_build/archive/pr/legacy-pr-history/`
+- `archive/v1-v2/docs_build/archive/dev-ops/`
+- `archive/v1-v2/docs_build/archive/generated-reports/`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/`
 
 ## Rules
 - Keep `docs_build/dev/` minimal and current.

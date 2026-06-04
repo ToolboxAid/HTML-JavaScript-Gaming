@@ -15,14 +15,14 @@ Finalize the remaining planning/definition work for roadmap section 1 and re-anc
   - `samples/phase-01` exists.
   - `samples/phase-13` exists.
   - `src/engine/render` and `src/engine/scenes` exist, while `src/engine/rendering` and `src/engine/scene` remain pending target names.
-  - legacy retention candidate still exists in archive path: `docs_build/archive/tools/SpriteEditor_old_keep/`.
+  - legacy retention candidate still exists in archive path: `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/`.
 
 ## Folder Inventory To Target Homes (Definition Closeout)
 - Root runtime/shared home: `src/`
 - Game ownership home: `games/`
 - Tool ownership home: `toolbox/`
 - Sample ownership home: `samples/`
-- Docs/archive retention home: `docs_build/archive/`
+- Docs/archive retention home: `archive/v1-v2/docs_build/archive/`
 
 ## Exact Move-Map Lanes (For Later Implementation PRs)
 1. `MOVE_MAP_L1_ENGINE_ALIAS_CONVERGENCE`
@@ -45,7 +45,7 @@ Finalize the remaining planning/definition work for roadmap section 1 and re-anc
 
 ## Legacy Migration Map (For Later Implementation PRs)
 1. `LEGACY_MAP_L1_ARCHIVE_BOUNDARY_CONFIRMATION`
-- Keep legacy tool snapshots under `docs_build/archive/` unless explicitly reactivated.
+- Keep legacy tool snapshots under `archive/v1-v2/docs_build/archive/` unless explicitly reactivated.
 2. `LEGACY_MAP_L1_IMPORT_AND_REFERENCE_QUARANTINE`
 - Ensure active paths do not depend on archive-only legacy paths.
 3. `LEGACY_MAP_L1_RETIREMENT_PREREQ_INDEX`
@@ -62,7 +62,7 @@ Finalize the remaining planning/definition work for roadmap section 1 and re-anc
 - No engine core API redesign.
 - No asset moves under `games/*/assets/**` in section-1 move-map PRs.
 - No runtime feature changes bundled with structure-only PRs.
-- No archive deletion from `docs_build/archive/**` during mapping/definition lanes.
+- No archive deletion from `archive/v1-v2/docs_build/archive/**` during mapping/definition lanes.
 
 ## Roadmap Status Marker Updates Applied
 - `current folder inventory mapped to target homes` -> `[x]`

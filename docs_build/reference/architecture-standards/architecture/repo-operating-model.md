@@ -45,5 +45,5 @@ Exception:
 - Durable architecture belongs in `docs_build/reference/architecture-standards/architecture/`.
 - Historical PR narrative belongs in `docs_build/pr/`.
 - Older operational notes and generated outputs live in:
-  - `docs_build/archive/dev-ops/`
-  - `docs_build/archive/generated-reports/`
+  - `archive/v1-v2/docs_build/archive/dev-ops/`
+  - `archive/v1-v2/docs_build/archive/generated-reports/`

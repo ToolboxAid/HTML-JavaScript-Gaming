@@ -45,7 +45,7 @@ Bundle type: execution-ready BUILD docs (wording normalization)
 - No file/folder move, rename, or delete executed.
 - No `legacy class-retention marker path` path was created.
 - `templates/` untouched.
-- `docs_build/archive/` untouched.
+- `archive/v1-v2/docs_build/archive/` untouched.
 - SpriteEditor archive surfaces untouched.
 - No runtime code/repo-structure changes.
 
@@ -55,9 +55,9 @@ Bundle type: execution-ready BUILD docs (wording normalization)
 2. Runtime/code surfaces unchanged:
    - `git diff --name-only -- tools src games samples tests` -> no entries
 3. Protected surfaces unchanged:
-   - `git diff --name-status -- templates docs_build/archive docs_build/archive/tools/SpriteEditor_old_keep` -> no entries
+   - `git diff --name-status -- templates archive/v1-v2/docs_build/archive archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep` -> no entries
 4. Protected start_of_day unchanged:
    - `git status --short -- docs_build/dev/start_of_day/chatGPT docs_build/dev/start_of_day/codex` -> no entries
 5. Canonical phrase presence:
-   - `rg -n "legacy class-retention policy marker \(docs-only placeholder, no on-disk path\)" docs --glob "!docs_build/archive/**"` -> 57 matches
+   - `rg -n "legacy class-retention policy marker \(docs-only placeholder, no on-disk path\)" docs --glob "!archive/v1-v2/docs_build/archive/**"` -> 57 matches
 

@@ -1,7 +1,7 @@
 ﻿# Archived Notes Policy Decision
 
 Generated: 2026-04-12
-Scope: Policy classification for archived notes target `docs_build/archive/`.
+Scope: Policy classification for archived notes target `archive/v1-v2/docs_build/archive/`.
 
 ## Classification Options Considered
 - `keep-in-place-for-now`
@@ -17,8 +17,8 @@ From cleanup source-of-truth artifacts:
 - `cleanup_keep_move_future_delete_matrix.md` classifies archived-notes policy target as `keep` with policy-definition follow-up.
 
 From current inventory scan:
-- `docs_build/archive/` exists with active docs references across structure/navigation/policy surfaces.
-- Explicit path destinations under `docs_build/archive/` are encoded in active docs contracts.
+- `archive/v1-v2/docs_build/archive/` exists with active docs references across structure/navigation/policy surfaces.
+- Explicit path destinations under `archive/v1-v2/docs_build/archive/` are encoded in active docs contracts.
 - No test/config references were found, but documentation coupling is broad and active.
 
 Given this coupling, move/delete/repath actions are unsafe without synchronized multi-doc updates and explicit migration sequencing.
@@ -26,15 +26,15 @@ Given this coupling, move/delete/repath actions are unsafe without synchronized 
 ## Allowed Now
 - Document archived-notes inventory, policy, and validation guard artifacts.
 - Keep policy tracking synchronized in cleanup reports/roadmap state (bracket-only if used).
-- Retain `docs_build/archive/` in place.
+- Retain `archive/v1-v2/docs_build/archive/` in place.
 
 ## Forbidden Now
-- Move, rename, delete, or rewrite any file/path under `docs_build/archive/` in this lane.
+- Move, rename, delete, or rewrite any file/path under `archive/v1-v2/docs_build/archive/` in this lane.
 - Structural cleanup mixed with unrelated targets (`templates`, `SpriteEditor_old_keep`, `legacy class-retention policy marker`, legacy import guard work).
 - Runtime or repo-structure edits under this policy-only BUILD.
 
 ## Exact Prerequisites For Future Migration/Removal Lane
-1. Refresh reference inventory and confirm all consumers of `docs_build/archive/`.
+1. Refresh reference inventory and confirm all consumers of `archive/v1-v2/docs_build/archive/`.
 2. Produce explicit source->destination path map for any archive movement.
 3. Prepare synchronized docs updates for all structure/navigation/policy references in the same PR.
 4. Define rollback plan with reversible path map.

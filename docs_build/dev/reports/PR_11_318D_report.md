@@ -5,8 +5,8 @@ Expand Workspace V2 UI automation into a full regression scenario for Asset Mana
 
 ## Files Changed
 - `tests/ui/workspace-v2.asset-manager.spec.js`
-- `docs_build/pr/PR_11_318D_WORKSPACE_V2_FULL_UI_REGRESSION/PLAN_PR.md`
-- `docs_build/pr/PR_11_318D_WORKSPACE_V2_FULL_UI_REGRESSION/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_318D_WORKSPACE_V2_FULL_UI_REGRESSION/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_318D_WORKSPACE_V2_FULL_UI_REGRESSION/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_318D_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

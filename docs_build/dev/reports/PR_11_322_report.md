@@ -5,8 +5,8 @@
 
 ## Files Changed
 - `.github/workflows/workspace-v2-playwright.yml`
-- `docs_build/pr/PR_11_322_WORKSPACE_V2_PLAYWRIGHT_CI_GATE/PLAN_PR.md`
-- `docs_build/pr/PR_11_322_WORKSPACE_V2_PLAYWRIGHT_CI_GATE/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_322_WORKSPACE_V2_PLAYWRIGHT_CI_GATE/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_322_WORKSPACE_V2_PLAYWRIGHT_CI_GATE/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_322_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

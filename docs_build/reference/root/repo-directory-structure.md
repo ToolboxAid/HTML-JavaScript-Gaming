@@ -14,8 +14,8 @@
 - `docs_build/dev/reports/`: active reports
 - `docs_build/reference/architecture-standards/architecture/`: durable architecture and boundary references
 - `docs_build/reference/architecture-standards/standards/`: standards and review references
-- `docs_build/archive/dev-ops/`: archived operational notes
-- `docs_build/archive/generated-reports/`: archived generated reports
+- `archive/v1-v2/docs_build/archive/dev-ops/`: archived operational notes
+- `archive/v1-v2/docs_build/archive/generated-reports/`: archived generated reports
 
 ## Packaging Output
 - `tmp/`: build/apply repo-structured delta ZIP outputs

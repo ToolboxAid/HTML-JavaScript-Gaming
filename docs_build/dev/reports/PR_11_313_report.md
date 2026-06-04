@@ -6,8 +6,8 @@ Complete Asset Browser V2 strict JSON behavior with explicit valid-empty handlin
 ## Files Changed
 - `toolbox/asset-manager-v2/index.js`
 - `tests/runtime/V2AssetBrowserStrictJson.test.mjs`
-- `docs_build/pr/PR_11_313_ASSET_BROWSER_V2_STRICT_JSON_BEHAVIOR/PLAN_PR.md`
-- `docs_build/pr/PR_11_313_ASSET_BROWSER_V2_STRICT_JSON_BEHAVIOR/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_313_ASSET_BROWSER_V2_STRICT_JSON_BEHAVIOR/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_313_ASSET_BROWSER_V2_STRICT_JSON_BEHAVIOR/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_313_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

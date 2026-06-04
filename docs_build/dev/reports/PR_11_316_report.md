@@ -6,8 +6,8 @@ Harden Asset Manager V2 add/remove behavior with explicit rejection paths while 
 ## Files Changed
 - `toolbox/asset-manager-v2/index.js`
 - `tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs`
-- `docs_build/pr/PR_11_316_ASSET_MANAGER_ADD_REMOVE_HARDENING/PLAN_PR.md`
-- `docs_build/pr/PR_11_316_ASSET_MANAGER_ADD_REMOVE_HARDENING/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_316_ASSET_MANAGER_ADD_REMOVE_HARDENING/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_316_ASSET_MANAGER_ADD_REMOVE_HARDENING/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_316_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

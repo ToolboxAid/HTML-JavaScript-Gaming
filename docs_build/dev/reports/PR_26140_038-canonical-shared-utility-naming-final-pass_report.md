@@ -36,7 +36,7 @@
 - PASS: `git diff --check` returned no whitespace errors; Git reported line-ending normalization warnings only.
 - PASS: `rg -n "workspaceV2CoverageReporter\s+as\s+coverageReporter|\bcoverageReporter\b" tests/playwright -g "*.mjs"` returned no matches.
 - PASS: repo-owned alias scan found only the intentional categories documented above:
-  - `rg -n "^\s*import\b.*\bas\b|^\s*export\b.*\bas\b" games tools src tests -g "*.js" -g "*.mjs" -g "!**/node_modules/**" -g "!**/tests/results/**" -g "!docs_build/dev/reports/**" -g "!docs_build/archive/**" -g "!tools/Vector Map Editor/**" -g "!**/generated/**" -g "!**/vendor/**" -g "!**/*.min.js"`
+  - `rg -n "^\s*import\b.*\bas\b|^\s*export\b.*\bas\b" games tools src tests -g "*.js" -g "*.mjs" -g "!**/node_modules/**" -g "!**/tests/results/**" -g "!docs_build/dev/reports/**" -g "!archive/v1-v2/docs_build/archive/**" -g "!tools/Vector Map Editor/**" -g "!**/generated/**" -g "!**/vendor/**" -g "!**/*.min.js"`
 - PASS: changed-file guard found no modified node_modules, tests/results, docs_build/dev/reports snapshots, archived tools, generated bundles, vendor files, bundled files, or minified JS files.
 
 ## Notes

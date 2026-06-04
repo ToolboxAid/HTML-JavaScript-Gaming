@@ -6,8 +6,8 @@ Clarify Workspace V2 Asset Manager launcher behavior so standalone/no-session st
 ## Files Changed
 - `toolbox/workspace-v2/index.html`
 - `toolbox/workspace-v2/index.js`
-- `docs_build/pr/PR_11_317_WORKSPACE_TOOL_LAUNCHER_SESSION_CLARITY/PLAN_PR.md`
-- `docs_build/pr/PR_11_317_WORKSPACE_TOOL_LAUNCHER_SESSION_CLARITY/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_317_WORKSPACE_TOOL_LAUNCHER_SESSION_CLARITY/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_317_WORKSPACE_TOOL_LAUNCHER_SESSION_CLARITY/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_317_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

@@ -6,8 +6,8 @@ Enable core add/remove asset actions in Asset Manager V2 with strict entry valid
 ## Files Changed
 - `toolbox/asset-manager-v2/index.html`
 - `toolbox/asset-manager-v2/index.js`
-- `docs_build/pr/PR_11_315_ASSET_MANAGER_CORE_ADD_REMOVE/PLAN_PR.md`
-- `docs_build/pr/PR_11_315_ASSET_MANAGER_CORE_ADD_REMOVE/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_315_ASSET_MANAGER_CORE_ADD_REMOVE/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_315_ASSET_MANAGER_CORE_ADD_REMOVE/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_315_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

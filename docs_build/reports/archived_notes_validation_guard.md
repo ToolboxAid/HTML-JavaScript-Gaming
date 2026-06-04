@@ -8,28 +8,28 @@ Run from repo root.
 
 1. Active reference scan for archived notes path usage:
 ```powershell
-rg -n "docs_build/archive/" docs tools src games samples tests --glob "!docs_build/archive/**" --glob "!**/node_modules/**"
+rg -n "archive/v1-v2/docs_build/archive/" docs tools src games samples tests --glob "!archive/v1-v2/docs_build/archive/**" --glob "!**/node_modules/**"
 ```
 
 2. Docs-only reference scan (non-archive surfaces):
 ```powershell
-rg -n "docs_build/archive/" docs --glob "!docs_build/archive/**"
+rg -n "archive/v1-v2/docs_build/archive/" docs --glob "!archive/v1-v2/docs_build/archive/**"
 ```
 
 3. Optional classification assist for consumer file list:
 ```powershell
-rg -l "docs_build/archive/" docs tools src games samples tests --glob "!docs_build/archive/**" --glob "!**/node_modules/**"
+rg -l "archive/v1-v2/docs_build/archive/" docs tools src games samples tests --glob "!archive/v1-v2/docs_build/archive/**" --glob "!**/node_modules/**"
 ```
 
 ## B) Structural Integrity Checks
 1. Confirm no accidental edits under archive tree in docs-only policy lanes:
 ```powershell
-git status --short -- docs_build/archive
+git status --short -- archive/v1-v2/docs_build/archive
 ```
 
 2. Confirm no archive move/rename/delete in PR scope:
 ```powershell
-git diff --name-status -- docs_build/archive
+git diff --name-status -- archive/v1-v2/docs_build/archive
 ```
 
 3. Confirm no protected start_of_day changes:
@@ -66,8 +66,8 @@ Accept only bracket-state changes on exact existing lines.
 
 ## E) Blocking Failure Conditions
 Stop cleanup execution immediately if:
-- unresolved `docs_build/archive/` references remain without synchronized updates;
-- `docs_build/archive/` has move/delete/rename entries without explicit destination and rollback map;
+- unresolved `archive/v1-v2/docs_build/archive/` references remain without synchronized updates;
+- `archive/v1-v2/docs_build/archive/` has move/delete/rename entries without explicit destination and rollback map;
 - protected start_of_day directories show any change;
 - roadmap requires wording rewrite (non bracket-only) to reflect status;
 - cleanup scope expands into unrelated targets (`templates`, `SpriteEditor_old_keep`, `legacy class-retention policy marker`, legacy import guard) in the same lane.

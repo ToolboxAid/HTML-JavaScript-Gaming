@@ -9,7 +9,7 @@ Normalize docs wording to the canonical phrase:
 This pass is wording-only and does not change cleanup meaning.
 
 ## Scope
-- Docs-only normalization across active docs (`docs/`, excluding `docs_build/archive/`).
+- Docs-only normalization across active docs (`docs/`, excluding `archive/v1-v2/docs_build/archive/`).
 - No runtime code changes.
 - No file/folder move/rename/delete operations.
 

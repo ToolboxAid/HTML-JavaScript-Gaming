@@ -1,7 +1,7 @@
 # PR 11.65 Palette JSON Reconstruction Report
 
 ## Scope
-- Executed `docs_build/pr/PR_11_65_PALETTE_JSON_RECONSTRUCTION.md`.
+- Executed `archive/v1-v2/docs_build/pr/PR_11_65_PALETTE_JSON_RECONSTRUCTION.md`.
 - Palette-related samples only.
 - No loader/framework/runtime refactor.
 - No fallback/default data added.

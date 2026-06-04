@@ -15,7 +15,7 @@ Conservative exact-cluster helper normalization for active tools, limited to sha
 - No editor-state extraction.
 - No render-pipeline rewrites.
 - No tool-host work.
-- Preserve `docs_build/archive/tools/SpriteEditor_old_keep`.
+- Preserve `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep`.
 - Keep changed-file count minimal.
 - Stop and report if helper semantics diverge too much.
 
@@ -42,7 +42,7 @@ Conservative exact-cluster helper normalization for active tools, limited to sha
 Stop and report if:
 - helper semantics differ enough to risk behavior change
 - extraction requires editor-state or render-pipeline refactor
-- `docs_build/archive/tools/SpriteEditor_old_keep` would need modification
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep` would need modification
 - scope expands beyond exact target files
 
 ## Required Output

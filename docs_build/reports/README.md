@@ -10,4 +10,4 @@ This folder contains only currently active report artifacts for the in-flight do
 - `file_tree.txt`
 - `validation_checklist.txt`
 
-Older generated reports are archived under `docs_build/archive/generated-reports/`.
+Older generated reports are archived under `archive/v1-v2/docs_build/archive/generated-reports/`.

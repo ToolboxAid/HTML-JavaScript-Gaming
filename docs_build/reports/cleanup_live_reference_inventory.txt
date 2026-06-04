@@ -20,7 +20,7 @@ Target 1: templates/
 - Notes: path is active for template-backed tooling and tests; cleanup decision must be deferred and reference-safe.
 
 Target 2: SpriteEditor_old_keep policy locations/references
-- Exact path: docs_build/archive/tools/SpriteEditor_old_keep/
+- Exact path: archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/
 - Exists: yes
 - Inbound references:
   - runtime/config refs:
@@ -48,7 +48,7 @@ Target 3: legacy class-retention policy marker policy locations/references
 - Notes: no runtime path currently exists; remains a planning placeholder requiring manual review before any action.
 
 Target 4: archived notes policy locations/references
-- Exact path: docs_build/archive/
+- Exact path: archive/v1-v2/docs_build/archive/
 - Exists: yes
 - Inbound references:
   - docs policy/location refs:
@@ -74,7 +74,7 @@ Target 5: imports/references pointing to legacy paths
 - Exists: pattern-based check
 - Inbound references:
   - old engine import patterns above: no matches in toolbox/src/games/samples
-  - legacy path docs references exist for docs_build/archive/tools/SpriteEditor_old_keep and templates/ (planning + archival context)
+  - legacy path docs references exist for archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep and templates/ (planning + archival context)
 - Assessment: mixed (code imports: zero-reference; docs/file refs: live-reference)
 - Notes: no direct legacy-engine import usage was found in active code for inspected patterns; legacy references persist in docs/planning surfaces.
 

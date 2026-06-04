@@ -12,7 +12,7 @@ Combined PLAN + BUILD bundle for one PR purpose only: docs archive cleanup.
 - Archiving legacy PR records preserves history without keeping the active PR directory noisy.
 
 ## In Scope
-- Create archive destination under `docs_build/archive/pr/legacy-pr-history/`.
+- Create archive destination under `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/`.
 - Move 414 legacy PR markdown files from `docs_build/pr/` into the archive destination.
 - Keep 27 active Level 11 files in `docs_build/pr/`.
 - Preserve `docs_build/pr/.keep`.
@@ -35,10 +35,10 @@ Keep these live in `docs_build/pr/`:
 
 ## Move Rules
 Archive every other markdown file currently under `docs_build/pr/` into:
-- `docs_build/archive/pr/legacy-pr-history/`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/`
 
 ## Acceptance Criteria
-- `docs_build/archive/pr/legacy-pr-history/` exists.
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/` exists.
 - Every file listed in `docs/reference/features/docs-system/move-history-preserved.md` is moved there.
 - Every file listed in `docs/reference/features/docs-system/move-history-preserved.md` remains in `docs_build/pr/`.
 - `docs_build/pr/.keep` remains.
@@ -47,4 +47,4 @@ Archive every other markdown file currently under `docs_build/pr/` into:
 - No deletions are performed.
 
 ## Rollback
-If needed, move the archived PR markdown files back from `docs_build/archive/pr/legacy-pr-history/` to `docs_build/pr/` using the same manifest in reverse.
+If needed, move the archived PR markdown files back from `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/` to `docs_build/pr/` using the same manifest in reverse.

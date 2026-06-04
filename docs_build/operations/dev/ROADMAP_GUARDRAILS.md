@@ -26,7 +26,7 @@ Active roadmap files must live in:
 - `docs_build/dev/roadmaps/`
 
 Never use:
-- `docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md` as the active master roadmap
+- `archive/v1-v2/docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md` as the active master roadmap
 - duplicate roadmap copies outside `docs_build/dev/roadmaps/`
 
 ## Validation Check

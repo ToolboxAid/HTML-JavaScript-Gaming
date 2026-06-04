@@ -111,7 +111,7 @@ Audit status before deletion: NO
 .\docs_build\dev\reports\PR_11_49_audit_before.txt:119:- samples\phase-02\0221\sample.0221.3d-json-payload-normalizer.json
 .\docs_build\dev\reports\PR_11_49_audit_after.txt:20:NO  - samples\phase-02\0221\sample.0221.3d-json-payload-normalizer.json
 .\docs_build\dev\reports\PR_11_49_audit_after.txt:117:- samples\phase-02\0221\sample.0221.3d-json-payload-normalizer.json
-.\docs_build\pr\PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:19:- `samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json`
+.\archive/v1-v2/docs_build/pr/PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:19:- `samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json`
 .\samples\metadata\samples.index.metadata.json:1957:          "presetPath": "/samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json"
 [relative path search]
 (no matches)
@@ -145,7 +145,7 @@ Audit status before deletion: NO
 .\docs_build\dev\reports\sample_json_js_reference_audit.pr_upgrade.csv:44:"samples\phase-05\0510","samples\phase-05\0510\sample.0510.asset-pipeline-tool.json","False","","",""
 .\docs_build\dev\reports\sample_json_js_reference_audit.pr11_46.csv:44:"samples\phase-05\0510","samples\phase-05\0510\sample.0510.asset-pipeline-tool.json","False","","",""
 .\docs_build\dev\reports\sample_json_js_reference_audit.csv:44:"samples\phase-05\0510","samples\phase-05\0510\sample.0510.asset-pipeline-tool.json","False","","",""
-.\docs_build\pr\PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:20:- `samples/phase-05/0510/sample.0510.asset-pipeline-tool.json`
+.\archive/v1-v2/docs_build/pr/PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:20:- `samples/phase-05/0510/sample.0510.asset-pipeline-tool.json`
 .\samples\metadata\samples.index.metadata.json:4359:          "presetPath": "/samples/phase-05/0510/sample.0510.asset-pipeline-tool.json"
 [relative path search]
 (no matches)
@@ -183,7 +183,7 @@ Audit status before deletion: NO
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:16:3. `samples/phase-05/0512/sample.0512.performance-profiler.json`
 .\docs_build\dev\reports\PR_11_46_cleanup_batch_3.md:24:| `samples/phase-05/0512/sample.0512.performance-profiler.json` | KEEP + WIRE | No code/data move. Verified explicit sample metadata wiring remains valid. | Sample metadata already maps `performance-profiler` to this JSON preset; sample-local ownership is clear. |
 .\docs_build\dev\reports\PR_11_41_sample_json_ownership_audit.md:96:| samples/phase-05/0512/sample.0512.performance-profiler.json | 0512 | performance-profiler | /toolbox/Performance Profiler/index.html | yes | yes | yes | KEEP + WIRE | filename/tool mapping aligns with executable sample mapping; actively wired to executable sample/tool flow |
-.\docs_build\pr\PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:21:- `samples/phase-05/0512/sample.0512.performance-profiler.json`
+.\archive/v1-v2/docs_build/pr/PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:21:- `samples/phase-05/0512/sample.0512.performance-profiler.json`
 [relative path search]
 (no matches)
 [sample-local JS search]
@@ -219,7 +219,7 @@ Audit status before deletion: NO
 .\docs_build\dev\reports\sample_json_js_reference_audit.csv:46:"samples\phase-07\0708","samples\phase-07\0708\sample.0708.replay-visualizer.json","False","","",""
 .\docs_build\dev\reports\sample_json_js_reference_audit.pr11_46.csv:46:"samples\phase-07\0708","samples\phase-07\0708\sample.0708.replay-visualizer.json","False","","",""
 .\docs_build\dev\reports\sample_json_js_reference_audit.pr_upgrade.csv:46:"samples\phase-07\0708","samples\phase-07\0708\sample.0708.replay-visualizer.json","False","","",""
-.\docs_build\pr\PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:22:- `samples/phase-07/0708/sample.0708.replay-visualizer.json`
+.\archive/v1-v2/docs_build/pr/PR_11_46_TARGETED_JSON_CLEANUP_BATCH_3_TOOL_PAYLOADS.md:22:- `samples/phase-07/0708/sample.0708.replay-visualizer.json`
 .\samples\metadata\samples.index.metadata.json:5262:          "presetPath": "/samples/phase-07/0708/sample.0708.replay-visualizer.json"
 [relative path search]
 (no matches)

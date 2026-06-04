@@ -40,7 +40,7 @@ Remaining hits are expected and fall into these categories:
 - Historical docs and prior reports/evidence artifacts:
   - `docs_build/dev/codex_commands.md`, `docs_build/dev/commit_comment.txt`, `docs_build/dev/next_command.txt`
   - `docs_build/dev/reports/level_10_6*`, `docs_build/dev/reports/PR_10_23_*`, `docs_build/dev/reports/PR_10_24_*`
-  - `docs_build/pr/PR_10_23_*`, `docs_build/pr/PR_10_24_*`
+  - `archive/v1-v2/docs_build/pr/PR_10_23_*`, `archive/v1-v2/docs_build/pr/PR_10_24_*`
   - These capture historical command text/evidence and are not active runtime/tool configuration contracts.
 
 Additional scope check:

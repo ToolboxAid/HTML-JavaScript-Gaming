@@ -478,15 +478,15 @@ KEEP WHERE IT IS
 - docs_build/operations/dev/ROADMAP_GUARDRAILS.md
 - docs_build/dev/reports/*
 - docs_build/pr/*
-- docs_build/archive/*
+- archive/v1-v2/docs_build/archive/*
 
 MOVE
-- docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md
+- archive/v1-v2/docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md
   -> move to docs_build/dev/roadmaps/BIG_PICTURE_ROADMAP.md if still needed as an active roadmap
-  -> otherwise archive to docs_build/archive/dev-ops/ if superseded
+  -> otherwise archive to archive/v1-v2/docs_build/archive/dev-ops/ if superseded
 
 - docs_build/reference/features/docs-system/move-history-preserved.md
-  -> move to docs_build/archive/dev-ops/roadmap_move_manifest.txt after the roadmap move is complete
+  -> move to archive/v1-v2/docs_build/archive/dev-ops/roadmap_move_manifest.txt after the roadmap move is complete
   -> it is a transitional operational artifact, not a permanent active report
 
 DELETE
@@ -598,9 +598,9 @@ Remove old location after apply:
 | Target | Exists? | Live References? | Proposed Classification | Evidence Summary | Action Now | Recommended Future PR Scope |
 | --- | --- | --- | --- | --- | --- | --- |
 | `templates/` | yes | yes | `needs-manual-review` | Active refs in `toolbox/shared/vectorNativeTemplate.js`, `toolbox/shared/vectorTemplateSampleGame.js`, `tests/tools/VectorNativeTemplate.test.mjs`, and docs/planning surfaces. | none in this PR | Dedicated cleanup/build lane to classify keep vs migrate-later with dependency verification. |
-| `docs_build/archive/tools/SpriteEditor_old_keep/` policy | yes | yes | `keep` | Legacy-hidden runtime registry entry in `toolbox/toolRegistry.js`; referenced in specs, roadmap, and reports. | none in this PR | Separate legacy policy PR to define exact retirement criteria and transition gates. |
+| `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` policy | yes | yes | `keep` | Legacy-hidden runtime registry entry in `toolbox/toolRegistry.js`; referenced in specs, roadmap, and reports. | none in this PR | Separate legacy policy PR to define exact retirement criteria and transition gates. |
 | `legacy class-retention policy marker` policy target | no | yes (docs-only) | `needs-manual-review` | Path not present on disk; only planning references found in roadmap/targets/build spec docs. | none in this PR | Clarify whether this is a historical placeholder, rename candidate, or retired concept before any cleanup execution. |
-| `docs_build/archive/` archived-notes policy | yes | yes | `keep` | Archive destination is actively documented across docs structure/readme/paths files; policy item still planned in roadmap. | none in this PR | Policy-definition PR to formalize retention + move criteria for archived notes. |
+| `archive/v1-v2/docs_build/archive/` archived-notes policy | yes | yes | `keep` | Archive destination is actively documented across docs structure/readme/paths files; policy item still planned in roadmap. | none in this PR | Policy-definition PR to formalize retention + move criteria for archived notes. |
 | Legacy path imports (`/engine/`, `../engine/`, `./engine/`) | pattern check | no (active code) | `future-delete-candidate` | No matches for inspected old-engine import patterns in toolbox/src/archive/v1-v2/games/samples. | none in this PR | Add guard/reporting checks in future cleanup PR to prevent regressions and retire stale legacy-import guidance. |
 | Eventual legacy-retirement candidates list | yes | yes (planning) | `migrate-later` | Explicitly tracked in roadmap + cleanup target docs and referenced by this BUILD spec. | none in this PR | Convert candidates into exact, dependency-ordered cleanup BUILDs after reference-safe verification. |
 
@@ -666,7 +666,7 @@ Lane: BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS
 - No changes under:
   - `docs_build/dev/start_of_day/chatGPT/`
   - `docs_build/dev/start_of_day/codex/`
-  - `docs_build/archive/`
+  - `archive/v1-v2/docs_build/archive/`
 
 ## Validation Summary
 - `toolbox/templates/starter-project-template/` exists: PASS
@@ -689,7 +689,7 @@ Generated: 2026-04-12
 
 ## Move Summary
 - Source: toolbox/SpriteEditor_old_keep/
-- Destination: docs_build/archive/tools/SpriteEditor_old_keep/
+- Destination: archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/
 - Files moved: 44
 - Source path exists after move: no
 - Destination path exists after move: yes
@@ -735,8 +735,8 @@ Generated: 2026-04-12
 - Remaining non-doc references to SpriteEditor_old_keep exist in legacy metadata/baseline files and runtime registry metadata by design under the no-runtime-wiring constraint.
 
 ## Commands Used
-- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination docs_build/archive/tools/SpriteEditor_old_keep
-- rg -n -P (?<!docs_build/archive/)tools/SpriteEditor_old_keep docs --glob !docs_build/archive/**
+- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep
+- rg -n -P (?<!archive/v1-v2/docs_build/archive/)tools/SpriteEditor_old_keep docs --glob !archive/v1-v2/docs_build/archive/**
 - rg import/require patterns for SpriteEditor_old_keep across tools src games samples tests
 - npm run test:launch-smoke -- --tools
 ```
@@ -753,7 +753,7 @@ Generated: 2026-04-12
 - Result: PASS (path missing)
 
 ## Step 2: New Archive Path Exists With Identical Structure
-- Check: docs_build/archive/tools/SpriteEditor_old_keep/
+- Check: archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/
 - New path exists: yes
 - New path file count: 44
 - New path directory count: 8
@@ -770,8 +770,8 @@ Generated: 2026-04-12
 ### Non-Archive Matches (Exact)
 - .\docs_build\dev\codex_commands.md:6:tools/SpriteEditor_old_keep/
 - .\docs_build\dev\reports\spriteeditor_archive_move_report.md:6:- Source: toolbox/SpriteEditor_old_keep/
-- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:53:- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination docs_build/archive/tools/SpriteEditor_old_keep
-- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:54:- rg -n -P (?<!docs_build/archive/)tools/SpriteEditor_old_keep docs --glob !docs_build/archive/**
+- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:53:- Move-Item -LiteralPath toolbox/SpriteEditor_old_keep -Destination archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep
+- .\docs_build\dev\reports\spriteeditor_archive_move_report.md:54:- rg -n -P (?<!archive/v1-v2/docs_build/archive/)tools/SpriteEditor_old_keep docs --glob !archive/v1-v2/docs_build/archive/**
 - .\tools\shared\find-duplicate-methods\found_dupes_called_count.txt:110:   -> Line 12: \tools\SpriteEditor_old_keep\modules\integration\integrationRegistry.js
 - .\tools\shared\find-duplicate-methods\found_dupes_called_count.txt:111:   -> Line 11: \tools\SpriteEditor_old_keep\modules\integration\systemIntegration.js
 - .\tools\shared\find-duplicate-methods\found_dupes_called_count.txt:351:   -> Line 16: \tools\SpriteEditor_old_keep\modules\integration\integrationContracts.js
@@ -782,7 +782,7 @@ Generated: 2026-04-12
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:149:   -> Line 16: \tools\SpriteEditor_old_keep\modules\integration\integrationContracts.js
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:500:   -> Line 12: \tools\SpriteEditor_old_keep\modules\integration\integrationRegistry.js
 - .\tools\shared\find-duplicate-methods\find_duples_called.txt:501:   -> Line 11: \tools\SpriteEditor_old_keep\modules\integration\systemIntegration.js
-- .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:4:Move `toolbox/SpriteEditor_old_keep/` to `docs_build/archive/tools/SpriteEditor_old_keep/` as a non-executable reference artifact.
+- .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:4:Move `toolbox/SpriteEditor_old_keep/` to `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` as a non-executable reference artifact.
 - .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:22:tools/SpriteEditor_old_keep/
 - .\docs_build\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md:29:  toolbox/SpriteEditor_old_keep/
 - .\tools\dev\checkSharedExtractionGuard.baseline.json:1725:      "file": "toolbox/SpriteEditor_old_keep/modules/appCommands.js",
@@ -794,27 +794,27 @@ Generated: 2026-04-12
 - .\tools\dev\checkSharedExtractionGuard.baseline.json:1755:      "file": "toolbox/SpriteEditor_old_keep/modules/integration/integrationContracts.js",
 
 ### Archive/Historical Match Files
-- docs_build/archive\dev-ops\QC_click_by_click_test_script.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1B_ENGINE_BOUNDARY_AND_DUPLICATE_HELPER_SCAN.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1D_SPRITE_EDITOR_POST_NORMALIZATION_EXTRACTION_GATE.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1E_SPRITE_EDITOR_EXTRACTION_PILOT.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1H_ENGINE_CONSOLIDATION_AND_EXPANSION.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOL_REGISTRY_VALIDATOR_AND_SPRITE_FIRST_CLASS.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOL_THEME_AND_SHARED_SWATCH_WORKFLOW.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOLS_AND_VECTOR_CONTRACT_COMBINED.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOLS_FOLDER_CONSOLIDATION.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH.md
-- docs_build/archive\pr\legacy-pr-history\BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md
-- docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1D_SPRITE_EDITOR_POST_NORMALIZATION_EXTRACTION_GATE.md
-- docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1E_SPRITE_EDITOR_EXTRACTION_PILOT.md
-- docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md
-- docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md
-- docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1H_ENGINE_CONSOLIDATION_AND_EXPANSION.md
-- docs_build/archive\pr\legacy-pr-history\PLAN_PR_TOOLS_CANONICAL_NAMING_AUDIT.md
+- archive/v1-v2/docs_build/archive\dev-ops\QC_click_by_click_test_script.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1B_ENGINE_BOUNDARY_AND_DUPLICATE_HELPER_SCAN.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1D_SPRITE_EDITOR_POST_NORMALIZATION_EXTRACTION_GATE.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1E_SPRITE_EDITOR_EXTRACTION_PILOT.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_REPO_CLEANUP_PHASE_1H_ENGINE_CONSOLIDATION_AND_EXPANSION.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOL_REGISTRY_VALIDATOR_AND_SPRITE_FIRST_CLASS.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOL_THEME_AND_SHARED_SWATCH_WORKFLOW.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOLS_AND_VECTOR_CONTRACT_COMBINED.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOLS_FOLDER_CONSOLIDATION.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1D_SPRITE_EDITOR_POST_NORMALIZATION_EXTRACTION_GATE.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1E_SPRITE_EDITOR_EXTRACTION_PILOT.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\PLAN_PR_REPO_CLEANUP_PHASE_1H_ENGINE_CONSOLIDATION_AND_EXPANSION.md
+- archive/v1-v2/docs_build/archive\pr\legacy-pr-history\PLAN_PR_TOOLS_CANONICAL_NAMING_AUDIT.md
 
 ## Step 4: Runtime Import References To Old Path
 - Scan scope: tools, src, games, samples, tests
@@ -864,7 +864,7 @@ to:
 - No changes under:
   - `docs_build/dev/start_of_day/chatGPT/`
   - `docs_build/dev/start_of_day/codex/`
-  - `docs_build/archive/`
+  - `archive/v1-v2/docs_build/archive/`
 
 ## Validation Summary
 - Legacy path references in the four target files (bare, non-`toolbox/`): `0`

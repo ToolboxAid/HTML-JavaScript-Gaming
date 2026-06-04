@@ -11,7 +11,7 @@ Final safe cleanup with template protection, roadmap rename, and explicit archiv
 - clean docs residue
 - rename roadmap file
 - archive:
-  - docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md
+  - archive/v1-v2/docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md
 - update all references/pointers that still target the archived big-picture roadmap
 - preserve working-tree integrity
 
@@ -30,10 +30,10 @@ Final safe cleanup with template protection, roadmap rename, and explicit archiv
    - docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
    -> docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 4. Archive:
-   - docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md
-   into an appropriate archive location under docs_build/archive/
+   - archive/v1-v2/docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md
+   into an appropriate archive location under archive/v1-v2/docs_build/archive/
 5. Update any pointers/references that still target:
-   - docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md
+   - archive/v1-v2/docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md
    so they resolve to the archived location or the authoritative current roadmap location, whichever is correct by context.
 6. Produce validation and mapping reports.
 

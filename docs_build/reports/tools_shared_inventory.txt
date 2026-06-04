@@ -5,7 +5,7 @@ Active tools discovered:
 - toolbox/Palette Browser
 - toolbox/Parallax Scene Studio
 - toolbox/Sprite Editor
-- docs_build/archive/tools/SpriteEditor_old_keep
+- archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep
 - toolbox/Tilemap Studio
 - toolbox/Vector Asset Studio
 - toolbox/Vector Map Editor

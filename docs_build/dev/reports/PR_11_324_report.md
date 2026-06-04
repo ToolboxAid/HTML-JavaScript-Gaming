@@ -9,8 +9,8 @@
 ## Files Changed
 - `docs_build/dev/reports/tool_completion_audit.md`
 - `docs_build/dev/reports/PR_11_324_report.md`
-- `docs_build/pr/PR_11_324_WORKSPACE_V2_TOOL_COMPLETION_AUDIT/PLAN_PR.md`
-- `docs_build/pr/PR_11_324_WORKSPACE_V2_TOOL_COMPLETION_AUDIT/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_324_WORKSPACE_V2_TOOL_COMPLETION_AUDIT/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_324_WORKSPACE_V2_TOOL_COMPLETION_AUDIT/BUILD_PR.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`
 

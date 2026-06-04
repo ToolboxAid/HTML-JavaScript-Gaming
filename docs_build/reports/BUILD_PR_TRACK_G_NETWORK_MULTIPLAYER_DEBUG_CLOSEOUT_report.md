@@ -8,9 +8,9 @@ Residue-only Track G closeout:
 
 ## Artifact Reconciliation (PLAN/BUILD/APPLY)
 Confirmed repo-history artifacts exist:
-- `docs_build/archive/pr/legacy-pr-history/PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md`
-- `docs_build/archive/pr/legacy-pr-history/BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md`
-- `docs_build/archive/pr/legacy-pr-history/APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md`
 
 These artifacts confirm completed PLAN/BUILD/APPLY lane execution for debug-surfaces network support.
 

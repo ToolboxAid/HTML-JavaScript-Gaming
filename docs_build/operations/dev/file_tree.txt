@@ -5,7 +5,7 @@ file_tree.txt
 
 HTML-JavaScript-Gaming-main/docs_build/pr/PLAN_PR_DOCS_ARCHIVE_CLEANUP.md
 HTML-JavaScript-Gaming-main/docs_build/pr/BUILD_PR_DOCS_ARCHIVE_CLEANUP.md
-HTML-JavaScript-Gaming-main/docs_build/archive/pr/README.md
+HTML-JavaScript-Gaming-main/archive/v1-v2/docs_build/archive/pr/README.md
 HTML-JavaScript-Gaming-main/docs_build/reference/features/docs-system/move-history-preserved.md
 HTML-JavaScript-Gaming-main/docs_build/reference/features/docs-system/move-history-preserved.md
 HTML-JavaScript-Gaming-main/docs_build/operations/dev/codex_commands.md

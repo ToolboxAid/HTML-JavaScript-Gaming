@@ -1,6 +1,6 @@
 # Playwright Structure Audit
 
-Generated: 2026-06-03T21:46:03.774Z
+Generated: 2026-06-04T00:46:26.623Z
 Status: PASS
 
 ## Lane Directories
@@ -24,7 +24,6 @@ No blocking structural findings.
 | tests/playwright/tools/AsteroidsBeatTiming.spec.mjs | tests/playwright/games/AsteroidsBeatTiming.spec.mjs | PASS | Asteroids beat cadence behavior is game-owned. |
 | tests/playwright/tools/AsteroidsGameSceneCleanup.spec.mjs | tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs | PASS | Asteroids scene diagnostics behavior is game-owned. |
 | tests/playwright/tools/AsteroidsShipStateVisuals.spec.mjs | tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | PASS | Asteroids ship visual runtime behavior is game-owned. |
-| tests/playwright/games/GameIndexPreviewManifestResolution.spec.mjs | tests/playwright/integration/GameIndexPreviewManifestResolution.spec.mjs | PASS | Game index and page manifest handoff is integration-owned. |
 
 ## Documented Game Fixtures
 

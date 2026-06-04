@@ -9,7 +9,7 @@ Align Palette Manager v2 with the root `/index.html` shared theme header mount w
 - `docs_build/dev/commit_comment.txt`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
-- `docs_build/pr/PR_11_188B_PALETTE_MANAGER_V2_HEADER_ALIGNMENT.md`
+- `archive/v1-v2/docs_build/pr/PR_11_188B_PALETTE_MANAGER_V2_HEADER_ALIGNMENT.md`
 
 ## Scope Guard
 No changes were made to:

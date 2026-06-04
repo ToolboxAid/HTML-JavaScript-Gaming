@@ -2,7 +2,7 @@
 
 Date: 2026-04-27
 PR: 10.6V
-Build Doc: `docs_build/pr/PR_10_6V_FINAL_DOD.md`
+Build Doc: `archive/v1-v2/docs_build/pr/PR_10_6V_FINAL_DOD.md`
 
 ## Scope Executed
 - Kept scope to Tool UI readiness enforcement only.

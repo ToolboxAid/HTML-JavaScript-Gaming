@@ -1,7 +1,7 @@
 # PR 11.90 Validation
 
 ## Scope
-Applied `docs_build/pr/PR_11_90_ASTEROIDS_ENGINE_OWNERSHIP_AND_FONT_MANIFEST.md` using the uploaded Asteroids.zip findings as the baseline evidence.
+Applied `archive/v1-v2/docs_build/pr/PR_11_90_ASTEROIDS_ENGINE_OWNERSHIP_AND_FONT_MANIFEST.md` using the uploaded Asteroids.zip findings as the baseline evidence.
 
 ## Files Changed
 - `games/Asteroids/game.manifest.json`

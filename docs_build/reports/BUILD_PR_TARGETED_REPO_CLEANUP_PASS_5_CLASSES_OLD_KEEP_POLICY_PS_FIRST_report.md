@@ -36,7 +36,7 @@ Bundle type: execution-ready BUILD docs (legacy class-retention policy marker po
 ## Structural Safety Assertions
 - No `legacy class-retention marker path` directory was created, moved, renamed, or deleted.
 - `templates/` was untouched.
-- `docs_build/archive/` was untouched.
+- `archive/v1-v2/docs_build/archive/` was untouched.
 - SpriteEditor archive surfaces were untouched.
 - No runtime code or repo-structure changes were made.
 

@@ -22,12 +22,12 @@ From `git diff --name-only HEAD` (tracked changes):
 - `docs_build/pr/BUILD_PR_LEVEL_11_159_FIX_ACTIVE_SHARED_ASSET_TILE_RENDERER.md`
 - `docs_build/pr/BUILD_PR_LEVEL_11_160_FIX_SHARED_SHELL_SVG_ASSET_BADGE_COMPATIBILITY.md`
 - `docs_build/pr/BUILD_PR_LEVEL_11_161_WIRE_SVG_PAYLOAD_TO_SHARED_ASSET_BADGE.md`
-- `docs_build/pr/PR_11_162.md`
+- `archive/v1-v2/docs_build/pr/PR_11_162.md`
 - `toolbox/shared/platformShell.js`
 
 Additional untracked files from `git status --short`:
 - `docs_build/dev/reports/pr_11_163_delivery_manifest.md`
-- `docs_build/pr/PR_11_163_FREEZE_BADGE_CHURN_AND_TRACE_HANDOFF.md`
+- `archive/v1-v2/docs_build/pr/PR_11_163_FREEZE_BADGE_CHURN_AND_TRACE_HANDOFF.md`
 
 ## Exact Renderer Emitting Visible `Asset: none`
 Primary owner path is shared shell (not SVG tool UI, not Workspace Manager tile component):

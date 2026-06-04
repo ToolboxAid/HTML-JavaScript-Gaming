@@ -46,9 +46,9 @@
 | `docs_build/pr/BUILD_PR_LEVEL_11_159_FIX_ACTIVE_SHARED_ASSET_TILE_RENDERER.md` | KEEP | Scope pivot from Workspace Manager to shared renderer lane. | Keep as process record. |
 | `docs_build/pr/BUILD_PR_LEVEL_11_160_FIX_SHARED_SHELL_SVG_ASSET_BADGE_COMPATIBILITY.md` | KEEP | Source-of-truth scope for shared-shell compatibility attempt. | Keep as process record. |
 | `docs_build/pr/BUILD_PR_LEVEL_11_161_WIRE_SVG_PAYLOAD_TO_SHARED_ASSET_BADGE.md` | KEEP | Source-of-truth scope for payload wiring attempt. | Keep as process record. |
-| `docs_build/pr/PR_11_162.md` | KEEP | Dead-wiring/report-focused scope doc for 11.162. | Keep as process record. |
-| `docs_build/pr/PR_11_163_FREEZE_BADGE_CHURN_AND_TRACE_HANDOFF.md` | KEEP | Freeze-and-trace scope doc for ownership stabilization. | Keep as process record. |
-| `docs_build/pr/PR_11_164_DEAD_CODE_LEDGER_AND_REVERT_MAP.md` | KEEP | Current controlling spec for this recovery PR. | Keep. |
+| `archive/v1-v2/docs_build/pr/PR_11_162.md` | KEEP | Dead-wiring/report-focused scope doc for 11.162. | Keep as process record. |
+| `archive/v1-v2/docs_build/pr/PR_11_163_FREEZE_BADGE_CHURN_AND_TRACE_HANDOFF.md` | KEEP | Freeze-and-trace scope doc for ownership stabilization. | Keep as process record. |
+| `archive/v1-v2/docs_build/pr/PR_11_164_DEAD_CODE_LEDGER_AND_REVERT_MAP.md` | KEEP | Current controlling spec for this recovery PR. | Keep. |
 
 ## Summary
 - Confirmed primary investigate owner: `toolbox/shared/platformShell.js`.

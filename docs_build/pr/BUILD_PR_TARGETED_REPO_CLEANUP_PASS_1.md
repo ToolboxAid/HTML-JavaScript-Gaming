@@ -71,9 +71,9 @@ For each approved cleanup target, capture:
 
 The target list is limited to:
 - `templates/`
-- `docs_build/archive/tools/SpriteEditor_old_keep/` policy target
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` policy target
 - `legacy class-retention policy marker` policy target
-- `docs_build/archive/` archived-notes policy target
+- `archive/v1-v2/docs_build/archive/` archived-notes policy target
 - legacy import path patterns
 - eventual legacy-retirement planning target
 

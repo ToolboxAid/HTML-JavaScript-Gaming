@@ -1,7 +1,7 @@
 # PR 11.92 Validation
 
 ## Contract
-Applied `docs_build/pr/PR_11_92_ASTEROIDS_ENGINE_RENDER_OVERRIDE_CLOSURE.md`.
+Applied `archive/v1-v2/docs_build/pr/PR_11_92_ASTEROIDS_ENGINE_RENDER_OVERRIDE_CLOSURE.md`.
 
 ## Files Changed
 - Deleted: `games/Asteroids/game/FullscreenBezelOverlay.js`

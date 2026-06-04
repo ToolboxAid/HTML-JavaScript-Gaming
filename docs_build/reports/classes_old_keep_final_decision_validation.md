@@ -25,7 +25,7 @@ Validate PASS_7 decision artifacts and structural constraints without applying f
   - `Test-Path legacy class-retention policy marker` -> `False` (PASS)
 - Changed paths under `templates/`:
   - none in current `git status --porcelain` (PASS)
-- Changed paths under `docs_build/archive/`:
+- Changed paths under `archive/v1-v2/docs_build/archive/`:
   - none in current `git status --porcelain` (PASS)
 - Changed paths under `start_of_day/*`:
   - none in current `git status --porcelain` path filter (PASS)

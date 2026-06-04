@@ -15,7 +15,7 @@ No engine/runtime/tool implementation files were changed.
 - ``legacy class-retention policy marker` policy defined`
   - Evidence: `docs_build/reports/classes_old_keep_policy_decision.md`
 - ``SpriteEditor_old_keep` policy defined`
-  - Evidence: `docs/reference/features/docs-system/move-history-preserved.md` (`docs_build/archive/tools/SpriteEditor_old_keep/` policy row)
+  - Evidence: `docs/reference/features/docs-system/move-history-preserved.md` (`archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` policy row)
 - `archived notes policy defined`
   - Evidence: `docs_build/reports/archived_notes_policy_decision.md`
 - `roadmap for eventual legacy retirement defined`

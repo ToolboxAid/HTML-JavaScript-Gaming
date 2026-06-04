@@ -1,7 +1,7 @@
 # PR 11.95 Validation
 
 ## Scope
-Applied `docs_build/pr/PR_11_95_FLATTEN_MANIFEST_ASSETS_AND_FIX_LOADERS.md`.
+Applied `archive/v1-v2/docs_build/pr/PR_11_95_FLATTEN_MANIFEST_ASSETS_AND_FIX_LOADERS.md`.
 Implemented flat `tools["asset-browser"].assets` contract as the single manifest source for asset kinds across runtime + game manifests + key consumers.
 
 ## Files Changed

@@ -46,7 +46,7 @@
   - classification: partially complete
   - evidence:
     - policy/inventory work is complete (Section 15 markers are complete)
-    - retained legacy surfaces still exist by design (`docs_build/archive/tools/SpriteEditor_old_keep`, docs-only placeholder policy artifacts)
+    - retained legacy surfaces still exist by design (`archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep`, docs-only placeholder policy artifacts)
   - blocker:
     - final reduction requires an explicit replacement-proven cleanup execution lane, not only status reconciliation
 

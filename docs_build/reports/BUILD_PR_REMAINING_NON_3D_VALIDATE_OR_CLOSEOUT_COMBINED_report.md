@@ -26,7 +26,7 @@
   - legacy inventory/policy groundwork is complete (Section 15 markers mostly closed in prior lanes)
   - replacement-proven final reduction execution is not complete yet
   - retained legacy surfaces remain by policy/traceability:
-    - `docs_build/archive/tools/SpriteEditor_old_keep/`
+    - `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/`
     - `docs_build/reports/classes_old_keep_policy_decision.md`
 - action in this PR:
   - left open (`[ ]`) by truth

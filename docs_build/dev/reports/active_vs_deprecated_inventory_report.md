@@ -64,7 +64,7 @@ These were identified but not moved in this PR:
 - `toolbox/dev/`, `toolbox/schemas/`, and `toolbox/shared/` are support folders under `toolbox/`, not user-facing tool surfaces. Future structure cleanup could document this exception or move support code if a new owner is approved.
 - `toolbox/renderToolsIndex.js` and `toolbox/toolRegistry.js` remain root-level tool support files; future cleanup could consolidate them only if active imports are mapped first.
 - `games/assets/` is a support folder under `games/`, not a game category page.
-- `docs_build/account/`, `docs_build/archive/`, `docs_build/operations/`, and related docs_build folders are build/governance documentation; keep out of public `/docs/`.
+- `docs_build/account/`, `archive/v1-v2/docs_build/archive/`, `docs_build/operations/`, and related docs_build folders are build/governance documentation; keep out of public `/docs/`.
 
 ## Validation
 

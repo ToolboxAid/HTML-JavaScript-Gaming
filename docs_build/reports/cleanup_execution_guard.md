@@ -37,7 +37,7 @@ Run from repo root.
 1. Reference scans:
 ```powershell
 rg -n "templates/" tools src games samples tests
-rg -n "SpriteEditor_old_keep|legacy class-retention policy marker|docs_build/archive/|legacy retirement|imports pointing to legacy paths" docs --glob "!docs_build/archive/**"
+rg -n "SpriteEditor_old_keep|legacy class-retention policy marker|archive/v1-v2/docs_build/archive/|legacy retirement|imports pointing to legacy paths" docs --glob "!archive/v1-v2/docs_build/archive/**"
 rg -n "from '/engine/|from '../engine/|from './engine/" tools src games samples tests
 ```
 

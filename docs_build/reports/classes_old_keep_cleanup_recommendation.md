@@ -19,7 +19,7 @@ Run a dedicated retirement lane only when all are true:
 4. Validation confirms:
    - no `legacy class-retention policy marker` directory on disk,
    - no runtime/code references,
-   - no collateral changes to `templates/`, `docs_build/archive/`, or SpriteEditor archive surfaces.
+   - no collateral changes to `templates/`, `archive/v1-v2/docs_build/archive/`, or SpriteEditor archive surfaces.
 
 ## Recommended Future Lane Shape
 - docs-only

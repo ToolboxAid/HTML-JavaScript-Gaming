@@ -1,7 +1,7 @@
 ﻿# BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE
 
 ## PR Purpose
-Move `toolbox/SpriteEditor_old_keep/` to `docs_build/archive/tools/SpriteEditor_old_keep/` as a non-executable reference artifact.
+Move `toolbox/SpriteEditor_old_keep/` to `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` as a non-executable reference artifact.
 
 ## Scope
 - Move directory ONLY
@@ -22,12 +22,12 @@ FROM:
 toolbox/SpriteEditor_old_keep/
 
 TO:
-docs_build/archive/tools/SpriteEditor_old_keep/
+archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/
 
 ### 2. Update references (docs-only)
 - Replace any path references pointing to:
   toolbox/SpriteEditor_old_keep/
-→ docs_build/archive/tools/SpriteEditor_old_keep/
+→ archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/
 
 ### 3. Validation report
 Create:

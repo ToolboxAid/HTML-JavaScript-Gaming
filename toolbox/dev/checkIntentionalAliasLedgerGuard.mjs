@@ -8,8 +8,8 @@ const sourceExtensions = new Set([".js", ".mjs"]);
 const ignoredDirNames = new Set(["node_modules", ".git", "tmp", "results", "generated", "vendor"]);
 const ignoredPathFragments = [
   "docs_build/dev/reports/",
-  "docs_build/archive/",
-  "tests/results/"
+  "archive/v1-v2/docs_build/archive/",
+  "tmp/test-results/"
 ];
 
 function shouldIgnoreDirectory(directoryName) {

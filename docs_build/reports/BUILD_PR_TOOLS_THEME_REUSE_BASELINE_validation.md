@@ -5,7 +5,7 @@ Branch: main
 
 ## Scope Checks
 - PASS: start_of_day directories unchanged (`git status --short -- docs_build/dev/start_of_day`)
-- PASS: `docs_build/archive/tools/SpriteEditor_old_keep` unchanged (`git status --short -- docs_build/archive/tools/SpriteEditor_old_keep`)
+- PASS: `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep` unchanged (`git status --short -- archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep`)
 - PASS: active tool targets limited to seven tool CSS files
 
 ## Static Contract Validation

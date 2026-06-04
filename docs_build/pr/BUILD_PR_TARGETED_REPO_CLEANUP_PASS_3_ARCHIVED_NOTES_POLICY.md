@@ -4,19 +4,19 @@
 Create one execution-ready, testable cleanup-policy lane for archived notes only.
 
 This PR must:
-1. document the live usage and policy surface for `docs_build/archive/`
+1. document the live usage and policy surface for `archive/v1-v2/docs_build/archive/`
 2. define an evidence-grounded keep/defer policy for archived notes
 3. add validation guards so future cleanup lanes do not move, delete, or rewrite archived notes without proof
 4. remain non-destructive and docs-only
 
 ## Why This BUILD Exists
-Prior cleanup evidence established that `docs_build/archive/` exists and is actively referenced in documentation structure and policy surfaces. This BUILD converts that evidence into an exact archived-notes policy lane so later cleanup work can stay surgical and non-guessing.
+Prior cleanup evidence established that `archive/v1-v2/docs_build/archive/` exists and is actively referenced in documentation structure and policy surfaces. This BUILD converts that evidence into an exact archived-notes policy lane so later cleanup work can stay surgical and non-guessing.
 
 ## Required Constraints
 - Do **not** create, modify, rename, delete, replace, or add any file in:
   - `docs_build/dev/start_of_day/chatGPT/`
   - `docs_build/dev/start_of_day/codex/`
-- Do **not** move, rename, delete, or rewrite any file under `docs_build/archive/`.
+- Do **not** move, rename, delete, or rewrite any file under `archive/v1-v2/docs_build/archive/`.
 - Do **not** modify `templates/`.
 - Do **not** mix in `SpriteEditor_old_keep`, `legacy class-retention policy marker`, legacy import guard work, or runtime feature work.
 - Do **not** rewrite roadmap wording, reorder roadmap items, collapse roadmap sections, or replace roadmap content.
@@ -41,9 +41,9 @@ Prior cleanup evidence established that `docs_build/archive/` exists and is acti
 Create `docs_build/reports/archived_notes_policy_inventory.md`.
 
 Capture, using exact repo searches:
-- exact `docs_build/archive/` path existence
-- files/folders under `docs_build/archive/` if present
-- every active reference to `docs_build/archive/` in docs, configs, or tests
+- exact `archive/v1-v2/docs_build/archive/` path existence
+- files/folders under `archive/v1-v2/docs_build/archive/` if present
+- every active reference to `archive/v1-v2/docs_build/archive/` in docs, configs, or tests
 - whether each reference is policy, structure, navigation, or historical
 - any path assumptions that would block future movement or deletion
 
@@ -67,7 +67,7 @@ This file must include:
 - exact signals that would justify reclassification later
 
 Expected outcome for this PR:
-- because `docs_build/archive/` is actively referenced, the policy should remain conservative unless contrary evidence is found
+- because `archive/v1-v2/docs_build/archive/` is actively referenced, the policy should remain conservative unless contrary evidence is found
 - no move/delete action is allowed in this PR
 
 ### 3) Archived notes validation guard
@@ -98,14 +98,14 @@ Create `docs_build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_
 - chosen policy classification
 - summary of any roadmap bracket changes actually applied
 - summary of unapplied planned delta, if any
-- explicit statement that `docs_build/archive/` was not moved, renamed, deleted, or modified
+- explicit statement that `archive/v1-v2/docs_build/archive/` was not moved, renamed, deleted, or modified
 - explicit statement that `templates/` was untouched
 - validation results
 
 ### 6) Validation checklist
 Create `docs_build/reports/validation_checklist.txt` that records pass/fail for:
 - protected start_of_day directories untouched
-- `docs_build/archive/` not moved/renamed/deleted
+- `archive/v1-v2/docs_build/archive/` not moved/renamed/deleted
 - `templates/` untouched
 - archived notes evidence reports created
 - no unrelated cleanup targets changed
@@ -114,14 +114,14 @@ Create `docs_build/reports/validation_checklist.txt` that records pass/fail for:
 
 ## Validation Commands Codex Must Run
 Codex must run and use the results in the report:
-1. Search for all references to `docs_build/archive/` and list exact consumer files.
-2. Confirm there are no file deletions, renames, or moves under `docs_build/archive/` in this PR.
+1. Search for all references to `archive/v1-v2/docs_build/archive/` and list exact consumer files.
+2. Confirm there are no file deletions, renames, or moves under `archive/v1-v2/docs_build/archive/` in this PR.
 3. Confirm no file changes under protected start_of_day directories.
 4. If roadmap changed, diff the roadmap file and verify only bracket-state changes occurred.
 
 ## Non-Goals
-- no movement of `docs_build/archive/`
-- no deletion under `docs_build/archive/`
+- no movement of `archive/v1-v2/docs_build/archive/`
+- no deletion under `archive/v1-v2/docs_build/archive/`
 - no changes to `templates/`
 - no work on `SpriteEditor_old_keep`
 - no work on `legacy class-retention policy marker`
@@ -129,7 +129,7 @@ Codex must run and use the results in the report:
 - no engine/tool/sample runtime implementation
 
 ## Acceptance Criteria
-- `docs_build/archive/` has an evidence-grounded usage inventory.
+- `archive/v1-v2/docs_build/archive/` has an evidence-grounded usage inventory.
 - archived notes have an explicit conservative policy decision suitable for later cleanup execution.
 - future cleanup validation guards are documented.
 - no archived-notes file or path is moved, deleted, or rewritten.

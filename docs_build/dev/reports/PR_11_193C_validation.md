@@ -19,7 +19,7 @@ Existing active V2 tools verified without additional implementation edits in thi
 - `toolbox/vector-map-editor-v2/index.js`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
-- `docs_build/pr/PR_11_193C_V2_HTML_FIRST_BATCH.md`
+- `archive/v1-v2/docs_build/pr/PR_11_193C_V2_HTML_FIRST_BATCH.md`
 
 ## Implementation Summary
 - Added `Tilemap Studio V2` as `toolbox/tilemap-studio-v2/`.

@@ -16,8 +16,8 @@
 - Engine boundary rules are updated in `docs_build/reference/architecture-standards/architecture/engine-api-boundary.md`
 
 ## Archive and Cleanup
-- Older operational files moved to `docs_build/archive/dev-ops/`
-- Older generated reports moved to `docs_build/archive/generated-reports/`
+- Older operational files moved to `archive/v1-v2/docs_build/archive/dev-ops/`
+- Older generated reports moved to `archive/v1-v2/docs_build/archive/generated-reports/`
 - Obvious no-value artifacts removed when safe
 
 ## Packaging

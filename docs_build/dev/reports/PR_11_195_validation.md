@@ -13,7 +13,7 @@ Continue the V2 re-engineer lane by tightening remaining V2 behavior modules tha
 - `docs_build/dev/reports/PR_11_195_validation.md`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
-- `docs_build/pr/PR_11_195_REMAINING_V2_HTML_SESSION_BATCH.md`
+- `archive/v1-v2/docs_build/pr/PR_11_195_REMAINING_V2_HTML_SESSION_BATCH.md`
 
 ## Implementation Summary
 - Palette Manager V2 no longer generates `Color N` display labels for palette entries. It renders explicit palette entry names when present, otherwise uses the explicit color value from session data.

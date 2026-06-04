@@ -1,6 +1,6 @@
 # Monolith Trigger Removal Report
 
-Generated: 2026-06-03T21:46:14.496Z
+Generated: 2026-06-04T00:46:36.916Z
 Status: PASS
 
 ## Removed Broad Execution Triggers
@@ -8,7 +8,7 @@ Status: PASS
 | Trigger | Status | Before | After |
 | --- | --- | --- | --- |
 | run-targeted-test-lanes.mjs with no --lane/--lanes/--all | REMOVED | no lane arguments selected all runtime lanes by default | safe no-lane mode; no runtime lanes execute |
-| npm run test:workspace-v2 | REDIRECTED | direct playwright test WorkspaceManagerV2.spec.mjs | node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract |
+| npm run test:workspace-v2 | REDIRECTED | direct deprecated Workspace Manager V2 Playwright spec | node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract |
 | nested Workspace lane startup | REMOVED | workspace-contract invoked npm run test:workspace-v2 | workspace-contract command uses the Node Playwright CLI directly |
 
 ## Remaining Broad Discovery Callers

@@ -22,7 +22,7 @@
 - `node_modules/**`
 - `.git/**`
 - `tmp/**`
-- `docs_build/archive/**`
+- `archive/v1-v2/docs_build/archive/**`
 - `docs_build/dev/reports/**`
 - `tests/results/**`
 - minified JavaScript files

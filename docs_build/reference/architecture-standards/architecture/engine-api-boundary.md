@@ -17,7 +17,7 @@ engine-api-boundary.md
 ## Docs and Process Boundary
 - Architecture decisions are documented in `docs_build/reference/architecture-standards/architecture/` and `docs_build/pr/`.
 - Active execution controls stay in `docs_build/dev/`.
-- Generated/stale outputs are moved to `docs_build/archive/` and not kept on active documentation surfaces.
+- Generated/stale outputs are moved to `archive/v1-v2/docs_build/archive/` and not kept on active documentation surfaces.
 
 ## Section-2 Baseline Public Homes
 - Core bootstrapping and frame services: `src/engine/core/index.js`

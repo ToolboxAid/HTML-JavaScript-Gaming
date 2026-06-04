@@ -5,8 +5,8 @@ Move Playwright outputs from defaults into `tests/results/**` via config-only ch
 
 ## Files Changed
 - `playwright.config.cjs`
-- `docs_build/pr/PR_11_318C_PLAYWRIGHT_OUTPUT_DIRS/PLAN_PR.md`
-- `docs_build/pr/PR_11_318C_PLAYWRIGHT_OUTPUT_DIRS/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_318C_PLAYWRIGHT_OUTPUT_DIRS/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_318C_PLAYWRIGHT_OUTPUT_DIRS/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_318C_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

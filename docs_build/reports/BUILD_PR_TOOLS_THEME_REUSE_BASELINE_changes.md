@@ -21,6 +21,6 @@ Date: 2026-04-11
 - Did not modify tool JavaScript behavior.
 
 ## Explicit Non-Changes
-- No edits in `docs_build/archive/tools/SpriteEditor_old_keep/`.
+- No edits in `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/`.
 - No edits in `docs_build/dev/start_of_day/`.
 - No roadmap wording changes.

@@ -10,9 +10,9 @@ Use this gate for repeatable local validation of Workspace Manager V2 UI behavio
 - Fails fast and returns a non-zero exit code on any test failure.
 
 ## Output Paths
-- Test artifacts are written under `tests/results/`.
-- Trace artifacts are written under `tests/results/**` (for example in artifacts folders).
-- HTML report is written under `tests/results/report`.
+- Test artifacts are written under `tmp/test-results/`.
+- Trace artifacts are written under `tmp/test-results/**` (for example in artifacts folders).
+- HTML report is written under `tmp/test-results/report`.
 - Reporter auto-open behavior is controlled by `playwright.config.cjs`.
 
 ## Pass/Fail Behavior

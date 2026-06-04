@@ -48,9 +48,9 @@ Keep these as chain-of-custody and execution evidence for the failed lane:
 - `docs_build/pr/BUILD_PR_LEVEL_11_159_FIX_ACTIVE_SHARED_ASSET_TILE_RENDERER.md`
 - `docs_build/pr/BUILD_PR_LEVEL_11_160_FIX_SHARED_SHELL_SVG_ASSET_BADGE_COMPATIBILITY.md`
 - `docs_build/pr/BUILD_PR_LEVEL_11_161_WIRE_SVG_PAYLOAD_TO_SHARED_ASSET_BADGE.md`
-- `docs_build/pr/PR_11_162.md`
-- `docs_build/pr/PR_11_163_FREEZE_BADGE_CHURN_AND_TRACE_HANDOFF.md`
-- `docs_build/pr/PR_11_164_DEAD_CODE_LEDGER_AND_REVERT_MAP.md`
+- `archive/v1-v2/docs_build/pr/PR_11_162.md`
+- `archive/v1-v2/docs_build/pr/PR_11_163_FREEZE_BADGE_CHURN_AND_TRACE_HANDOFF.md`
+- `archive/v1-v2/docs_build/pr/PR_11_164_DEAD_CODE_LEDGER_AND_REVERT_MAP.md`
 - `docs_build/dev/reports/svg_asset_none_trace_11_155.txt`
 - `docs_build/dev/reports/svg_card_render_source_11_156.txt`
 - `docs_build/dev/reports/workspace_tile_summary_display_model_11_157.txt`

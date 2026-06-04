@@ -7,7 +7,7 @@ Validation checks:
   - result: PASS
 - start_of_day untouched (`git status --short -- docs_build/dev/start_of_day`)
   - result: PASS
-- archived roadmap preserved (`docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md` exists)
+- archived roadmap preserved (`archive/v1-v2/docs_build/archive/dev-ops/BIG_PICTURE_ROADMAP.md` exists)
   - result: PASS
 - no broken old-path references in active/runtime-facing docs scope
   - result: PASS

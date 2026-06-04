@@ -8,7 +8,7 @@ Re-engineer Vector Map Editor V2 only as an isolated Tool V2 lane entry.
 - `docs_build/dev/reports/PR_11_191_VECTOR_MAP_EDITOR_V2_VALIDATION.md`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
-- `docs_build/pr/PR_11_191_VECTOR_MAP_EDITOR_V2_REENGINEER_PLAN.md`
+- `archive/v1-v2/docs_build/pr/PR_11_191_VECTOR_MAP_EDITOR_V2_REENGINEER_PLAN.md`
 
 ## Implementation Evidence
 - `[VECTOR_MAP_V2_ENTRY]` is logged at entry.

@@ -7,8 +7,8 @@ Persist valid Asset Manager V2 session payloads into Workspace V2 manifest expor
 - `toolbox/asset-manager-v2/index.js`
 - `toolbox/workspace-v2/index.js`
 - `tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs`
-- `docs_build/pr/PR_11_314_ASSET_MANAGER_WORKSPACE_PERSISTENCE/PLAN_PR.md`
-- `docs_build/pr/PR_11_314_ASSET_MANAGER_WORKSPACE_PERSISTENCE/BUILD_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_314_ASSET_MANAGER_WORKSPACE_PERSISTENCE/PLAN_PR.md`
+- `archive/v1-v2/docs_build/pr/PR_11_314_ASSET_MANAGER_WORKSPACE_PERSISTENCE/BUILD_PR.md`
 - `docs_build/dev/reports/PR_11_314_report.md`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`

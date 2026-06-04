@@ -18,22 +18,22 @@ Rewrote remaining literal references from `src/engine/utils/` and `/src/engine/u
 - No source reference can request `/src/engine/utils/invariant.js`.
 
 ## Files Updated
-- `docs_build/archive/pr/legacy-pr-history/BUILD_PR_REPO_CLEANUP_PHASE_1B_ENGINE_BOUNDARY_AND_DUPLICATE_HELPER_SCAN.md`
-- `docs_build/archive/pr/legacy-pr-history/BUILD_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md`
-- `docs_build/archive/pr/legacy-pr-history/BUILD_PR_REPO_CLEANUP_PHASE_1H_ENGINE_CONSOLIDATION_AND_EXPANSION.md`
-- `docs_build/archive/tools/SpriteEditor_old_keep/modules/appCommands.js`
-- `docs_build/archive/tools/SpriteEditor_old_keep/modules/appPopups.js`
-- `docs_build/archive/tools/SpriteEditor_old_keep/modules/appShell.js`
-- `docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceCommandPalette.js`
-- `docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceInput.js`
-- `docs_build/archive/tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/BUILD_PR_REPO_CLEANUP_PHASE_1B_ENGINE_BOUNDARY_AND_DUPLICATE_HELPER_SCAN.md`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/BUILD_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md`
+- `archive/v1-v2/docs_build/archive/pr/legacy-pr-history/BUILD_PR_REPO_CLEANUP_PHASE_1H_ENGINE_CONSOLIDATION_AND_EXPANSION.md`
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/modules/appCommands.js`
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/modules/appPopups.js`
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/modules/appShell.js`
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceCommandPalette.js`
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceInput.js`
+- `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
 - `docs_build/pr/BUILD_PR_LEVEL_11_74_UTILS_CONSOLIDATION_INVENTORY.md`
 - `docs_build/pr/BUILD_PR_LEVEL_11_78_ENGINE_UTILS_REFERENCE_CLOSURE.md`
 - `docs_build/pr/BUILD_PR_SHARED_EXTRACTION_28_CLAMP_CORE_BATCH.md`
 - `docs_build/pr/PLAN_PR_LEVEL_11_74_UTILS_CONSOLIDATION_INVENTORY.md`
-- `docs_build/pr/PR_11_75_UTILS_CONSOLIDATION.md`
-- `docs_build/pr/PR_11_76_ENGINE_UTILS_TO_SHARED_UTILS.md`
-- `docs_build/pr/PR_11_77_ENGINE_UTILS_IMPORT_REWIRE.md`
+- `archive/v1-v2/docs_build/pr/PR_11_75_UTILS_CONSOLIDATION.md`
+- `archive/v1-v2/docs_build/pr/PR_11_76_ENGINE_UTILS_TO_SHARED_UTILS.md`
+- `archive/v1-v2/docs_build/pr/PR_11_77_ENGINE_UTILS_IMPORT_REWIRE.md`
 - `tests/validation/samples.shared.boundaries.report.json`
 - `docs_build/dev/reports/BUILD_PR_LEVEL_23_4_SAMPLE_SYSTEM_VALIDATION_AND_FIXES_FIXES_APPLIED.md`
 - `docs_build/dev/reports/PR_11_75_expected_report.md`

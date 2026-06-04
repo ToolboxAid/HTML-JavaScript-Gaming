@@ -16,6 +16,7 @@ NEXT_COMMAND.txt
 # Ignore the tests results and temporary files
 node_modules/
 tests/results/
+tmp/test-results/
 tmp/
 scripts/untracked/
 
@@ -34,5 +35,3 @@ docs/dev/reports/playwright_v8_coverage_report.txt
 
 *.mp4
 *.mkv
-
-

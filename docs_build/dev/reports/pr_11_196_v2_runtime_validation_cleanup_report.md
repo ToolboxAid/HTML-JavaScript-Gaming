@@ -15,7 +15,7 @@ Validate and clean up the completed V2 re-engineer lane after PR_11_195. The tar
 - `docs_build/dev/reports/README_PR_11_196.md`
 
 Existing PR source doc was present in the worktree and included in the ZIP:
-- `docs_build/pr/PR_11_196_V2_RUNTIME_VALIDATION_CLEANUP.md`
+- `archive/v1-v2/docs_build/pr/PR_11_196_V2_RUNTIME_VALIDATION_CLEANUP.md`
 
 ## Implementation Result
 No target V2 implementation file required changes during this pass. The five target tools already satisfied the PR_11_196 runtime structure requirements at execution time. Codex verified the implementation instead of introducing unnecessary churn.
