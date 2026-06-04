@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const SCAN_ROOTS = ["src", "old_samples", "toolbox"];
+const SCAN_ROOTS = ["src", "archive/v1-v2/samples", "toolbox"];
 const ALLOWED_EXTENSIONS = new Set([".js", ".mjs"]);
 const IGNORED_DIRS = new Set(["node_modules", ".git", "tmp"]);
 // Selftest intentionally contains violating fixtures and should not affect repo guard status.

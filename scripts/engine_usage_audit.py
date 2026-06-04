@@ -62,8 +62,11 @@ def main():
         if p.suffix.lower() in JS_EXT and p.is_file():
             rel = p.relative_to(root)
             parts = rel.parts
-            if len(parts) >= 2 and parts[0] in ("old_samples", "old_games"):
-                key = "/".join(parts[:2])  # old_samples/<phase> or old_games/<name>
+            if len(parts) >= 4 and parts[:3] == ("archive", "v1-v2", "games"):
+                key = "/".join(parts[:4])  # archive/v1-v2/games/<name>
+                buckets[key] |= scan_file(p)
+            elif len(parts) >= 5 and parts[:3] == ("archive", "v1-v2", "samples"):
+                key = "/".join(parts[:5])  # archive/v1-v2/samples/<phase>/<sample>
                 buckets[key] |= scan_file(p)
 
     # Print report

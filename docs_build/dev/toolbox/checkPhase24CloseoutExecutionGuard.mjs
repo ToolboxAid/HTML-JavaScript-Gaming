@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "../..");
+const repoRoot = path.resolve(__dirname, "../../..");
 const baselinePath = path.join(__dirname, "checkPhase24CloseoutExecutionGuard.baseline.json");
 
 const SOURCE_EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".html", ".json"]);
@@ -74,7 +74,7 @@ function runGuard() {
     }
   }
 
-  const samplesRoot = path.join(repoRoot, "old_samples");
+  const samplesRoot = path.join(repoRoot, "archive/v1-v2/samples");
   const allowedRoot = path.join(repoRoot, baseline.fullscreenAllowedRoot);
   const patterns = (baseline.fullscreenPatterns || []).map((token) => ({ token, re: new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g") }));
   const hitsOutsideAllowed = [];

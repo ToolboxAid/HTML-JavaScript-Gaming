@@ -1,6 +1,6 @@
 # Test Cleanup Routing Report
 
-Generated: 2026-06-04T01:23:26.760Z
+Generated: 2026-06-04T02:14:35.588Z
 Status: PASS
 
 ## Representative Routing Cases
@@ -9,7 +9,7 @@ Status: PASS
 | --- | --- | --- | --- | --- | --- |
 | docs-only change | docs_build/dev/PROJECT_INSTRUCTIONS.md | none | none | PASS | Docs/workflow-only changes use static review evidence; runtime lanes, Workspace V2, and samples stay explicit/on-request. |
 | tool change | toolbox/audio-sfx-playground-v2/index.js | tool-runtime | tool-runtime | PASS | Tool-owned runtime/UI changes route to the affected tool-runtime lane only. |
-| deprecated game change | old_games/asteroids/asteroids.js | none | none | PASS | Deprecated old_games changes do not route to active runtime test lanes. |
+| deprecated game change | archive/v1-v2/games/asteroids/asteroids.js | none | none | PASS | Deprecated archive/v1-v2/games changes do not route to active runtime test lanes. |
 | src change | src/input/InputMap.js | engine-src | engine-src | PASS | Reusable src/ capability changes route to engine-src validation first. |
 | active toolbox Playwright change | tests/playwright/tools/RootToolsFutureState.spec.mjs | tool-runtime | tool-runtime | PASS | Active toolbox Playwright coverage routes to the tool-runtime lane only. |
 

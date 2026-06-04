@@ -1,8 +1,8 @@
 ﻿import { getToolRegistry } from "./toolRegistry.js";
 import { escapeHtml } from "../src/shared/string/strings.js";
 
-const SAMPLES_INDEX_PATH = "/old_samples/index.html";
-const SAMPLES_METADATA_PATH = "/old_samples/metadata/samples.index.metadata.json";
+const SAMPLES_INDEX_PATH = "/archive/v1-v2/samples/index.html";
+const SAMPLES_METADATA_PATH = "/archive/v1-v2/samples/metadata/samples.index.metadata.json";
 
 function toStandaloneHref(entryPoint) {
   const normalized = String(entryPoint || "").replace(/^\.?\/*/, "");

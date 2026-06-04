@@ -14,9 +14,9 @@ const REGISTRY_PATH_CANDIDATES = [
   "docs_build/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
   "docs/specs/shared_asset_promotion_registry.json"
 ];
-const ASTEROIDS_MANIFEST_PATH = "old_games/Asteroids/game.manifest.json";
-const TEMPLATE_MANIFEST_PATH = "old_games/_template/assets/tools.manifest.json";
-const SAMPLE_ASSET_BROWSER_SCENE_PATH = "old_samples/phase-15/1505/AssetBrowserScene.js";
+const ASTEROIDS_MANIFEST_PATH = "archive/v1-v2/games/Asteroids/game.manifest.json";
+const TEMPLATE_MANIFEST_PATH = "archive/v1-v2/games/_template/assets/tools.manifest.json";
+const SAMPLE_ASSET_BROWSER_SCENE_PATH = "archive/v1-v2/samples/phase-15/1505/AssetBrowserScene.js";
 const TOOL_DEMO_PROJECT_ASSETS_PATH = "src/shared/toolbox/samples/project-asset-registry-demo/project.assets.json";
 const REPORT_PATH = "docs_build/dev/reports/asset_ownership_strategy_validation.txt";
 
@@ -57,11 +57,11 @@ function ownerPrefixForPath(repoPath) {
   if (segments.length < 2) {
     return "";
   }
-  if (segments[0] === "old_games" && segments.length >= 2) {
-    return `old_games/${segments[1]}`;
+  if (segments[0] === "archive" && segments[1] === "v1-v2" && segments[2] === "games" && segments.length >= 4) {
+    return `archive/v1-v2/games/${segments[3]}`;
   }
-  if (segments[0] === "old_samples" && segments.length >= 3) {
-    return `old_samples/${segments[1]}/${segments[2]}`;
+  if (segments[0] === "archive" && segments[1] === "v1-v2" && segments[2] === "samples" && segments.length >= 5) {
+    return `archive/v1-v2/samples/${segments[3]}/${segments[4]}`;
   }
   if (segments[0] === "tools" && segments.length >= 2) {
     // keep demo ownership under the tool/demo root path depth
@@ -121,10 +121,10 @@ function validateAsteroidsManifest(asteroidsManifest, issues) {
     for (const entry of entries) {
       const runtimePath = toRepoPath(entry?.runtimePath || "");
       const toolDataPath = toRepoPath(entry?.toolDataPath || "");
-      if (!runtimePath.startsWith("old_games/Asteroids/game.manifest.json#")) {
+      if (!runtimePath.startsWith("archive/v1-v2/games/Asteroids/game.manifest.json#")) {
         issues.push(`Asteroids runtime path is not game-local: ${runtimePath}`);
       }
-      if (!toolDataPath.startsWith("old_games/Asteroids/game.manifest.json#")) {
+      if (!toolDataPath.startsWith("archive/v1-v2/games/Asteroids/game.manifest.json#")) {
         issues.push(`Asteroids tool-data path is not game-local: ${toolDataPath}`);
       }
       if (runtimePath.includes("/data/")) {
@@ -183,7 +183,7 @@ export async function validateAssetOwnershipStrategy({ emitLogs = true } = {}) {
 
   const sampleSource = await fs.readFile(toAbsolutePath(SAMPLE_ASSET_BROWSER_SCENE_PATH), "utf8");
   const sampleAssetPaths = collectSampleAssetPaths(sampleSource);
-  const sampleOwnerPrefix = "old_samples/phase-15/1505";
+  const sampleOwnerPrefix = "archive/v1-v2/samples/phase-15/1505";
   if (sampleAssetPaths.length === 0) {
     issues.push(`No sample asset paths detected in ${SAMPLE_ASSET_BROWSER_SCENE_PATH}`);
   }

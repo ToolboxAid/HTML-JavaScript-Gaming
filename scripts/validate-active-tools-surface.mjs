@@ -21,6 +21,7 @@ const RETIRED_ACTIVE_PATTERNS = [
   /\bGame Builder\b/,
   /\bTool Builder\b/,
   /archive\/v1-v2\//i,
+  /toolbox\/(?:configuration-admin|creator)(?:\/|$)/i,
   /toolbox\/(?:shared|dev|schemas)(?:\/|$)/i,
   /toolbox\\(?:shared|dev|schemas)(?:\\|$)/i
 ];
@@ -69,7 +70,7 @@ async function main() {
     issues.push("Active toolbox folders must not be empty.");
   }
 
-  for (const retiredFolder of ["builder", "game-builder", "shared", "dev", "schemas"]) {
+  for (const retiredFolder of ["builder", "game-builder", "configuration-admin", "creator", "shared", "dev", "schemas"]) {
     if (await pathExists(path.join(toolboxRoot, retiredFolder))) {
       issues.push(`Retired toolbox folder still present in active toolbox: toolbox/${retiredFolder}`);
     }

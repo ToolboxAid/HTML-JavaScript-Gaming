@@ -3,8 +3,8 @@ import path from "node:path";
 
 const repoRoot = process.cwd();
 const sourceExtensions = new Set([".js", ".mjs"]);
-const passThroughScanRoots = ["src", "old_samples/shared", "tools"];
-const importScanRoots = ["src", "samples", "tools", "tests"];
+const passThroughScanRoots = ["src", "archive/v1-v2/samples/shared", "toolbox"];
+const importScanRoots = ["src", "archive/v1-v2/samples", "toolbox", "tests"];
 const ignoredDirNames = new Set(["node_modules", ".git", "tmp"]);
 const ignoredPathPrefixes = [
   "archive/v1-v2/docs_build/archive/",
@@ -151,15 +151,15 @@ function getImportSpecifiers(statement) {
 }
 
 function isGameEntryIndex(relativePath) {
-  return /^old_games\/[^/]+\/index\.js$/.test(relativePath);
+  return /^archive\/v1-v2\/games\/[^/]+\/index\.js$/.test(relativePath);
 }
 
 function isSampleEntryIndex(relativePath) {
-  return /^old_samples\/phase-\d{2}\/\d{4}\/index\.js$/.test(relativePath);
+  return /^archive\/v1-v2\/samples\/phase-\d{2}\/\d{4}\/index\.js$/.test(relativePath);
 }
 
 function isToolEntryIndex(relativePath, fullPath) {
-  if (!/^tools\/.+\/index\.js$/.test(relativePath)) return false;
+  if (!/^toolbox\/.+\/index\.js$/.test(relativePath)) return false;
   if (!fs.existsSync(fullPath)) return true;
   return !isPassThroughBarrelSource(fs.readFileSync(fullPath, "utf8"));
 }

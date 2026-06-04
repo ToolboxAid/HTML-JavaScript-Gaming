@@ -143,7 +143,7 @@ const laneDefinitions = Object.freeze({
     reason: "Tool runtime lane now validates the active public toolbox/template surface and excludes removed V2 tool routes."
   },
   "game-runtime": {
-    affectedSurface: "Deprecated old_games reference coverage",
+    affectedSurface: "Deprecated archive/v1-v2/games reference coverage",
     commands: [],
     dependencies: [],
     discoveryTargets: [],
@@ -152,7 +152,7 @@ const laneDefinitions = Object.freeze({
     ownership: "games",
     playwrightDir: "",
     requiresPreflight: false,
-    reason: "old_games are deprecated playable references and are excluded from active automated runtime validation."
+    reason: "archive/v1-v2/games are deprecated playable references and are excluded from active automated runtime validation."
   },
   integration: {
     affectedSurface: "Integration handoff behavior",
@@ -209,14 +209,14 @@ const laneDefinitions = Object.freeze({
     reason: "Engine/src lane validates reusable runtime surfaces through targeted node tests."
   },
   samples: {
-    affectedSurface: "Deprecated old_samples reference coverage",
+    affectedSurface: "Deprecated archive/v1-v2/samples reference coverage",
     commands: [],
     dependencies: [],
     discoveryTargets: [],
     fixtures: [],
     fixturePaths: [],
     ownership: "samples",
-    reason: "old_samples are deprecated playable references and are excluded from active automated validation.",
+    reason: "archive/v1-v2/samples are deprecated playable references and are excluded from active automated validation.",
     requiresPreflight: false
   }
 });
@@ -236,9 +236,9 @@ const representativeRoutingCases = Object.freeze([
   },
   {
     caseName: "deprecated game change",
-    changedFiles: ["old_games/asteroids/asteroids.js"],
+    changedFiles: ["archive/v1-v2/games/asteroids/asteroids.js"],
     expectedLanes: [],
-    reason: "Deprecated old_games changes do not route to active runtime test lanes."
+    reason: "Deprecated archive/v1-v2/games changes do not route to active runtime test lanes."
   },
   {
     caseName: "src change",
@@ -622,7 +622,10 @@ function routeLanesForChangedFiles(changedFiles) {
     }
     if (normalized.startsWith("tests/playwright/integration/")) {
       routed.add("integration");
-    } else if (normalized.startsWith("tests/playwright/games/") || normalized.startsWith("games/") || normalized.startsWith("old_games/")) {
+    } else if (normalized.startsWith("tests/playwright/games/")
+      || normalized.startsWith("games/")
+      || normalized.startsWith("archive/v1-v2/games/")
+      || normalized.startsWith("old_games/")) {
       continue;
     } else if (normalized.startsWith("tests/playwright/tools/") || normalized.startsWith("toolbox/")) {
       routed.add("tool-runtime");
@@ -633,7 +636,9 @@ function routeLanesForChangedFiles(changedFiles) {
       || normalized.startsWith("tests/input/")
       || normalized.startsWith("tests/render/")) {
       routed.add("engine-src");
-    } else if (normalized.startsWith("old_samples/") || normalized.startsWith("tests/samples/")) {
+    } else if (normalized.startsWith("archive/v1-v2/samples/")
+      || normalized.startsWith("old_samples/")
+      || normalized.startsWith("tests/samples/")) {
       continue;
     }
   }
@@ -1307,13 +1312,15 @@ function referencedFixturePaths(content) {
   const fixtures = new Set();
   const patterns = [
     /\btests\/fixtures\/[A-Za-z0-9_./-]+/g,
+    /\barchive\/v1-v2\/games\/[A-Za-z0-9_-]+\/game\.manifest\.json\b/g,
+    /\/archive\/v1-v2\/games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g,
     /\bold_games\/[A-Za-z0-9_-]+\/game\.manifest\.json\b/g,
     /\/old_games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g
   ];
   for (const pattern of patterns) {
     let match = pattern.exec(content);
     while (match) {
-      if (match[0].startsWith("/old_games/")) {
+      if (match[0].startsWith("/old_games/") || match[0].startsWith("/archive/v1-v2/games/")) {
         fixtures.add(match[0].slice(1));
       } else {
         fixtures.add(match[0]);

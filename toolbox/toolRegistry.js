@@ -7,9 +7,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "World Vector Studio V2",
     shortDescription: "Place assets, maps, layers, parallax, and scene/world layout.",
     shortLabel: "World",
-    path: "../old-tools/old_world-vector-studio-v2",
+    path: "../archive/v1-v2/tools/old_world-vector-studio-v2",
     folderName: "old_world-vector-studio-v2",
-    entryPoint: "../old-tools/old_world-vector-studio-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_world-vector-studio-v2/index.html",
     description: "Place assets, maps, layers, parallax, and scene/world layout for terrain, environments, camera/spawn zones, and world composition.",
     showcaseTag: "World Vectors",
     showcaseStatus: "Template Copied",
@@ -19,7 +19,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_world-vector-studio-v2/README.md"
+        path: "../archive/v1-v2/tools/old_world-vector-studio-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -30,9 +30,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Object Vector Studio V2",
     shortDescription: "Build vector assets for ships, enemies, pickups, actors, UI elements, and reusable game objects.",
     shortLabel: "Object",
-    path: "../old-tools/old_object-vector-studio-v2",
+    path: "../archive/v1-v2/tools/old_object-vector-studio-v2",
     folderName: "old_object-vector-studio-v2",
-    entryPoint: "../old-tools/old_object-vector-studio-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_object-vector-studio-v2/index.html",
     description: "Build vector assets for ships, enemies, pickups, actors, UI elements, and reusable game objects.",
     showcaseTag: "Object Vectors",
     showcaseStatus: "Template Copied",
@@ -42,7 +42,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_object-vector-studio-v2/README.md"
+        path: "../archive/v1-v2/tools/old_object-vector-studio-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -52,9 +52,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "Tilemap Studio",
     displayName: "Tilemap Studio",
     shortLabel: "Tile",
-    path: "../old-tools/old_Tilemap Studio",
+    path: "../archive/v1-v2/tools/old_Tilemap Studio",
     folderName: "old_Tilemap Studio",
-    entryPoint: "../old-tools/old_Tilemap Studio/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_Tilemap Studio/index.html",
     description: "Tile map layout studio for layered map authoring, sample playback, simulation, and packaging flows.",
     showcaseTag: "Tile Maps",
     showcaseStatus: "Sample Loading Ready",
@@ -64,23 +64,23 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "How To Use",
-        path: "../old-tools/old_Tilemap Studio/how_to_use.html"
+        path: "../archive/v1-v2/tools/old_Tilemap Studio/how_to_use.html"
       },
       {
         label: "Sample 1208 - Tool Formatted Tiles Parallax",
-        path: "../old_samples/phase-12/1208/index.html"
+        path: "../archive/v1-v2/samples/phase-12/1208/index.html"
       },
       {
         label: "Sample 1209 - Tilemap Basic Layout Preset",
-        path: "../old_samples/phase-12/1209/index.html"
+        path: "../archive/v1-v2/samples/phase-12/1209/index.html"
       },
       {
         label: "Sample 1210 - Tilemap Objective Layout Preset",
-        path: "../old_samples/phase-12/1210/index.html"
+        path: "../archive/v1-v2/samples/phase-12/1210/index.html"
       },
       {
         label: "Sample 1211 - Tilemap Mario Learning Layout Preset",
-        path: "../old_samples/phase-12/1211/index.html"
+        path: "../archive/v1-v2/samples/phase-12/1211/index.html"
       }
     ],
     visibleInToolsList: false
@@ -91,9 +91,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Parallax Scene Studio",
     shortDescription: "Layered Scene & Depth Composition",
     shortLabel: "Parallax",
-    path: "../old-tools/old_Parallax Scene Studio",
+    path: "../archive/v1-v2/tools/old_Parallax Scene Studio",
     folderName: "old_Parallax Scene Studio",
-    entryPoint: "../old-tools/old_Parallax Scene Studio/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_Parallax Scene Studio/index.html",
     description: "Parallax Scene Studio: compose layered backgrounds, midgrounds, and foreground scene depth.",
     showcaseTag: "Parallax",
     showcaseStatus: "Scene Preview Ready",
@@ -103,11 +103,11 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "Sample Manifest",
-        path: "../old-tools/old_Parallax Scene Studio/samples/sample-manifest.json"
+        path: "../archive/v1-v2/tools/old_Parallax Scene Studio/samples/sample-manifest.json"
       },
       {
         label: "Sample 1208 - Tool Formatted Tiles Parallax",
-        path: "../old_samples/phase-12/1208/index.html"
+        path: "../archive/v1-v2/samples/phase-12/1208/index.html"
       }
     ],
     visibleInToolsList: false
@@ -118,9 +118,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Sprite Editor",
     shortDescription: "Palette-locked sprite and frame editing",
     shortLabel: "Sprite",
-    path: "../old-tools/old_Sprite Editor",
+    path: "../archive/v1-v2/tools/old_Sprite Editor",
     folderName: "old_Sprite Editor",
-    entryPoint: "../old-tools/old_Sprite Editor/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_Sprite Editor/index.html",
     description: "Pixel-art authoring workspace for palette-locked sprite sheets, animation frames, and registry-aware sprite projects.",
     showcaseTag: "Sprites",
     showcaseStatus: "First-Class Workspace",
@@ -130,7 +130,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_Sprite Editor/README.md"
+        path: "../archive/v1-v2/tools/old_Sprite Editor/README.md"
       }
     ],
     visibleInToolsList: false
@@ -141,9 +141,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Asset Manager V2",
     shortDescription: "Asset-only manager for validated audio, color, data, font, image, localization, shader, and video entries.",
     shortLabel: "Assets",
-    path: "../old-tools/old_asset-manager-v2",
+    path: "../archive/v1-v2/tools/old_asset-manager-v2",
     folderName: "old_asset-manager-v2",
-    entryPoint: "../old-tools/old_asset-manager-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_asset-manager-v2/index.html",
     description: "First-Class Tool V2 surface for validating Asset Manager V2 entries from Workspace Manager V2 launch context.",
     showcaseTag: "Assets",
     showcaseStatus: "Schema Validated",
@@ -153,7 +153,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_asset-manager-v2/README.md"
+        path: "../archive/v1-v2/tools/old_asset-manager-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -164,9 +164,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Workspace Manager V2",
     shortDescription: "Owns active game, palette, asset registry, and Asset Manager V2 launch context.",
     shortLabel: "Workspace",
-    path: "../old-tools/old_workspace-manager-v2",
+    path: "../archive/v1-v2/tools/old_workspace-manager-v2",
     folderName: "old_workspace-manager-v2",
-    entryPoint: "../old-tools/old_workspace-manager-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_workspace-manager-v2/index.html",
     description: "First-Class Tool V2 workspace surface for games-only context selection and Asset Manager V2 session launch.",
     showcaseTag: "Workspace",
     showcaseStatus: "Context Bootstrap",
@@ -176,7 +176,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_workspace-manager-v2/README.md"
+        path: "../archive/v1-v2/tools/old_workspace-manager-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -186,9 +186,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "Palette Manager V2",
     displayName: "Palette Manager V2",
     shortLabel: "Palette",
-    path: "../old-tools/old_palette-manager-v2",
+    path: "../archive/v1-v2/tools/old_palette-manager-v2",
     folderName: "old_palette-manager-v2",
-    entryPoint: "../old-tools/old_palette-manager-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_palette-manager-v2/index.html",
     description: "Global Palette Manager V2 surface for user swatches and browse-only source palette pinning.",
     showcaseTag: "Palettes",
     showcaseStatus: "Global Palette Ready",
@@ -198,7 +198,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_palette-manager-v2/README.md"
+        path: "../archive/v1-v2/tools/old_palette-manager-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -209,9 +209,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Preview Generator V2",
     shortDescription: "Generate preview.svg assets for samples, games, and tools.",
     shortLabel: "Preview",
-    path: "../old-tools/old_preview-generator-v2",
+    path: "../archive/v1-v2/tools/old_preview-generator-v2",
     folderName: "old_preview-generator-v2",
-    entryPoint: "../old-tools/old_preview-generator-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_preview-generator-v2/index.html",
     description: "Cold-copied preview.svg generator for samples, games, and tools.",
     showcaseTag: "Preview",
     showcaseStatus: "Cold Copy",
@@ -227,9 +227,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Text to Speech V2",
     shortDescription: "Preview browser text-to-speech lines for narration, prompts, and menu feedback.",
     shortLabel: "Speech",
-    path: "../old-tools/old_text2speech-V2",
+    path: "../archive/v1-v2/tools/old_text2speech-V2",
     folderName: "old_text2speech-V2",
-    entryPoint: "../old-tools/old_text2speech-V2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_text2speech-V2/index.html",
     description: "First-Class Tool V2 for browser speech synthesis using shared engine audio text-to-speech defaults.",
     showcaseTag: "Audio",
     showcaseStatus: "Speech Baseline",
@@ -239,7 +239,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_text2speech-V2/README.md"
+        path: "../archive/v1-v2/tools/old_text2speech-V2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -250,9 +250,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Audio / SFX Playground V2",
     shortDescription: "Tune and audition browser-generated game SFX payloads.",
     shortLabel: "SFX",
-    path: "../old-tools/old_audio-sfx-playground-v2",
+    path: "../archive/v1-v2/tools/old_audio-sfx-playground-v2",
     folderName: "old_audio-sfx-playground-v2",
-    entryPoint: "../old-tools/old_audio-sfx-playground-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_audio-sfx-playground-v2/index.html",
     description: "First-Class Tool V2 for shaping oscillator and noise-based game sound effects with toolState export.",
     showcaseTag: "Audio",
     showcaseStatus: "SFX Playground",
@@ -262,7 +262,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_audio-sfx-playground-v2/README.md"
+        path: "../archive/v1-v2/tools/old_audio-sfx-playground-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -273,9 +273,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "MIDI Studio V2",
     shortDescription: "Inspect manifest-owned MIDI songs, rendered targets, and Game Music Director metadata.",
     shortLabel: "MIDI",
-    path: "../old-tools/old_midi-studio-v2",
+    path: "../archive/v1-v2/tools/old_midi-studio-v2",
     folderName: "old_midi-studio-v2",
-    entryPoint: "../old-tools/old_midi-studio-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_midi-studio-v2/index.html",
     description: "First-Class Tool V2 for multi-song MIDI metadata, source preview, rendered WAV/MP3/OGG targets, and non-composer music direction.",
     showcaseTag: "Audio",
     showcaseStatus: "MIDI Baseline",
@@ -285,7 +285,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_midi-studio-v2/README.md"
+        path: "../archive/v1-v2/tools/old_midi-studio-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -296,9 +296,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Collision Inspector V2",
     shortDescription: "Engine-aligned collision visualization for bounds, vector, pixel/sprite, and hybrid checks.",
     shortLabel: "Collision",
-    path: "../old-tools/old_collision-inspector-v2",
+    path: "../archive/v1-v2/tools/old_collision-inspector-v2",
     folderName: "old_collision-inspector-v2",
-    entryPoint: "../old-tools/old_collision-inspector-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_collision-inspector-v2/index.html",
     description: "Engine-aligned collision visualization for Object Vector V2 game objects with live bounds, vector, pixel/sprite, and hybrid checks.",
     showcaseTag: "Debug",
     showcaseStatus: "Manifest Driven",
@@ -308,7 +308,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_collision-inspector-v2/README.md"
+        path: "../archive/v1-v2/tools/old_collision-inspector-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -319,9 +319,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Storage Inspector V2",
     shortDescription: "Current-origin browser storage inspection with explicit cleanup controls.",
     shortLabel: "Storage",
-    path: "../old-tools/old_storage-inspector-v2",
+    path: "../archive/v1-v2/tools/old_storage-inspector-v2",
     folderName: "old_storage-inspector-v2",
-    entryPoint: "../old-tools/old_storage-inspector-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_storage-inspector-v2/index.html",
     description: "First-class V2 tool for inspecting and explicitly clearing current-origin sessionStorage and localStorage values without cross-tool handoff writes.",
     showcaseTag: "Debug",
     showcaseStatus: "Storage Cleanup",
@@ -332,7 +332,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_storage-inspector-v2/README.md"
+        path: "../archive/v1-v2/tools/old_storage-inspector-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -343,9 +343,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "Input Mapping V2",
     shortDescription: "Keyboard and gamepad mapping diagnostics for games, tools, and samples.",
     shortLabel: "Input",
-    path: "../old-tools/old_input-mapping-v2",
+    path: "../archive/v1-v2/tools/old_input-mapping-v2",
     folderName: "old_input-mapping-v2",
-    entryPoint: "../old-tools/old_input-mapping-v2/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_input-mapping-v2/index.html",
     description: "Generic V2 tool for mapping keyboard and gamepad inputs across games, tools, and samples.",
     showcaseTag: "Input",
     showcaseStatus: "Mapping Ready",
@@ -356,7 +356,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "../old-tools/old_input-mapping-v2/README.md"
+        path: "../archive/v1-v2/tools/old_input-mapping-v2/README.md"
       }
     ],
     visibleInToolsList: false
@@ -367,9 +367,9 @@ export const TOOL_REGISTRY = Object.freeze([
     displayName: "State Inspector",
     shortDescription: "Host/runtime state snapshot inspection",
     shortLabel: "Inspect",
-    path: "../old-tools/old_State Inspector",
+    path: "../archive/v1-v2/tools/old_State Inspector",
     folderName: "old_State Inspector",
-    entryPoint: "../old-tools/old_State Inspector/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_State Inspector/index.html",
     description: "Read-only state visibility tool for host context, storage snapshots, and structured runtime payload inspection.",
     showcaseTag: "Debug",
     showcaseStatus: "Inspector Baseline",
@@ -384,9 +384,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "Replay Visualizer",
     displayName: "Replay Visualizer",
     shortLabel: "Replay",
-    path: "../old-tools/old_Replay Visualizer",
+    path: "../archive/v1-v2/tools/old_Replay Visualizer",
     folderName: "old_Replay Visualizer",
-    entryPoint: "../old-tools/old_Replay Visualizer/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_Replay Visualizer/index.html",
     description: "Event replay timeline viewer for stepping, autoplay, and frame inspection of runtime event streams.",
     showcaseTag: "Debug",
     showcaseStatus: "Replay Baseline",
@@ -401,9 +401,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "Performance Profiler",
     displayName: "Performance Profiler",
     shortLabel: "Perf",
-    path: "../old-tools/old_Performance Profiler",
+    path: "../archive/v1-v2/tools/old_Performance Profiler",
     folderName: "old_Performance Profiler",
-    entryPoint: "../old-tools/old_Performance Profiler/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_Performance Profiler/index.html",
     description: "Baseline performance profiler for frame cadence and deterministic workload timing summaries.",
     showcaseTag: "Debug",
     showcaseStatus: "Profiler Baseline",
@@ -418,9 +418,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "Physics Sandbox",
     displayName: "Physics Sandbox",
     shortLabel: "Physics",
-    path: "../old-tools/old_Physics Sandbox",
+    path: "../archive/v1-v2/tools/old_Physics Sandbox",
     folderName: "old_Physics Sandbox",
-    entryPoint: "../old-tools/old_Physics Sandbox/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_Physics Sandbox/index.html",
     description: "Minimal reusable physics helper sandbox for acceleration, drag, and integration previews.",
     showcaseTag: "Debug",
     showcaseStatus: "Physics Baseline",
@@ -435,9 +435,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "Asset Pipeline",
     displayName: "Asset Pipeline",
     shortLabel: "Pipeline",
-    path: "../old-tools/old_Asset Pipeline",
+    path: "../archive/v1-v2/tools/old_Asset Pipeline",
     folderName: "old_Asset Pipeline",
-    entryPoint: "../old-tools/old_Asset Pipeline/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_Asset Pipeline/index.html",
     description: "Launchable shared pipeline surface for load, validate, normalize, and emit contract checks.",
     showcaseTag: "Pipeline",
     showcaseStatus: "Pipeline Baseline",
@@ -452,9 +452,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "3D JSON Payload",
     displayName: "3D JSON Payload",
     shortLabel: "3D JSON",
-    path: "../old-tools/old_3D JSON Payload",
+    path: "../archive/v1-v2/tools/old_3D JSON Payload",
     folderName: "old_3D JSON Payload",
-    entryPoint: "../old-tools/old_3D JSON Payload/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_3D JSON Payload/index.html",
     description: "3D payload normalization utility for point/segment JSON documents with deterministic sanitized output.",
     showcaseTag: "3D",
     showcaseStatus: "3D Baseline",
@@ -469,9 +469,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "3D Asset Viewer",
     displayName: "3D Asset Viewer",
     shortLabel: "3D View",
-    path: "../old-tools/old_3D Asset Viewer",
+    path: "../archive/v1-v2/tools/old_3D Asset Viewer",
     folderName: "old_3D Asset Viewer",
-    entryPoint: "../old-tools/old_3D Asset Viewer/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_3D Asset Viewer/index.html",
     description: "Baseline 3D asset metadata viewer for vertices, bounds, and normalized runtime payload inspection.",
     showcaseTag: "3D",
     showcaseStatus: "3D Baseline",
@@ -487,9 +487,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "3D Camera Path Editor",
     displayName: "3D Camera Path Editor",
     shortLabel: "3D Cam",
-    path: "../old-tools/old_3D Camera Path Editor",
+    path: "../archive/v1-v2/tools/old_3D Camera Path Editor",
     folderName: "old_3D Camera Path Editor",
-    entryPoint: "../old-tools/old_3D Camera Path Editor/index.html",
+    entryPoint: "../archive/v1-v2/tools/old_3D Camera Path Editor/index.html",
     description: "Baseline 3D camera path editor for waypoint timeline authoring and deterministic JSON export.",
     showcaseTag: "3D",
     showcaseStatus: "3D Baseline",
@@ -504,9 +504,9 @@ export const TOOL_REGISTRY = Object.freeze([
     name: "SpriteEditor_old_keep",
     displayName: "SpriteEditor_old_keep",
     shortLabel: "Legacy",
-    path: "SpriteEditor_old_keep",
+    path: "../archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep",
     folderName: "SpriteEditor_old_keep",
-    entryPoint: "SpriteEditor_old_keep/index.html",
+    entryPoint: "../archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/index.html",
     description: "Preserved historical sprite editor kept on disk for legacy reference only.",
     active: false,
     legacy: true,

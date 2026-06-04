@@ -160,29 +160,6 @@
             ]
         },
         {
-            group: "Tooling",
-            tools: [
-                {
-                    title: "Configuration Admin",
-                    href: "../toolbox/configuration-admin/index.html",
-                    image: "../assets/theme-v2/images/tools/settings-studio.png",
-                    description: "Review settings, storage, cloud state, documentation, and account-level administration.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
-                {
-                    title: "Tool Creator",
-                    href: "../toolbox/creator/index.html",
-                    image: "../assets/theme-v2/images/tools/game-design-studio.png",
-                    description: "Draft creator-facing tool pages from the shared toolbox template structure.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                }
-            ]
-        },
-        {
             group: "Worlds",
             tools: [
                 {
