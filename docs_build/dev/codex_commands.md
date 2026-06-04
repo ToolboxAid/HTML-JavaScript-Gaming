@@ -79,3 +79,34 @@ Validation:
 Required reports:
 - `docs_build/dev/reports/theme_css_entrypoint_closeout_report.md`
 - `docs_build/dev/reports/migration_final_status_report.md`
+
+## PR_26154_053
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Added a targeted Toolbox rebuild rule to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Corrected `toolbox/index.html` so Order, Group, Progress, and Build Path are view controls for the same Toolbox surface.
+- Removed the extra Progress Wireframe and Build Path Wireframe accordion/card content.
+- Preserved existing active tool tile data and `tools-page-accordions.js` page wiring.
+- Added Progress view rendering with static `locked`, `ready`, `in-progress`, and `complete` readiness labels on existing tool tiles.
+- Added Build Path view rendering as visual path groups using existing tool tiles.
+- Kept Arcade out of Toolbox content.
+- Kept forbidden `Studio` wording out of Toolbox dynamic tool labels except brand usage.
+- Updated active validation scripts and Workspace V2 Playwright assertions for the corrected view-mode contract.
+- Added validation and manual test notes.
+- Generated local review artifacts.
+- Created the repo-structured delta ZIP at `tmp/PR_26154_053-toolbox-wireframe-rebuild-rule_view-mode-correction_delta.zip`.
+
+Validation:
+- `node scripts/validate-active-tools-surface.mjs`
+- `node scripts/validate-tool-registry.mjs`
+- Toolbox source checks for view controls, Progress readiness labels, Build Path path groups, absence of extra Progress/Build Path wireframe sections, Arcade absence, forbidden `Studio` label absence, and no inline CSS/JS/event handlers.
+- `npm run test:workspace-v2`
+- `git diff --check`
+- `node --check` for changed JS/MJS files.
+- No new CSS added.
+
+Required reports:
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/toolbox_wireframe_rebuild_rule_report.md`

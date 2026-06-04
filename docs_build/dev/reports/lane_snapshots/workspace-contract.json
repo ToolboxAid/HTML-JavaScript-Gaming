@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "37a0b0722df16a80",
-  "executionGraphHash": "99a754ff31ffa25d",
+  "executionGraphHash": "d71814dbea6e33fd",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -39,7 +39,7 @@
     ]
   },
   "helperGraphHash": "751729a1e113a4de",
-  "inputHash": "8853245a40442c6e",
+  "inputHash": "f3af26104c151303",
   "lane": "workspace-contract",
   "laneCompilationStatus": "PASS",
   "laneDefinitionHash": "252b6139dcd3044f",
@@ -49,7 +49,7 @@
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "1d25b935b1094f0f"
+      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "d9a143916d329d62"
     },
     "fixtures": [],
     "helpers": [
@@ -64,14 +64,14 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "12a297b310379516",
+    "manifestHash": "dbc170269ad7062b",
     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
     "source": "generated",
     "tests": [
       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
     ]
   },
-  "manifestHash": "12a297b310379516",
+  "manifestHash": "dbc170269ad7062b",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
@@ -98,8 +98,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "c99c4343771f1683",
-  "snapshotHash": "02f6583ae5b6b5f2",
+  "snapshotHash": "a0229d8aabd92c52",
   "version": 1,
-  "warmStartHash": "537690070f26841e",
-  "generatedAt": "2026-06-04T00:46:26.660Z"
+  "warmStartHash": "03ac5c420b76a529",
+  "generatedAt": "2026-06-04T03:43:28.718Z"
 }

@@ -1,19 +1,19 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-04T02:37:41.130Z
+Generated: 2026-06-04T03:43:38.896Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 9.81s
+Current measured lane elapsed time: 10.14s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
-Reused dependency hydration: 1
-Reused snapshots: 1
+Reused dependency hydration: 0
+Reused snapshots: 0
 Validation cache hits: 18
 
 ## Slow Paths Optimized
@@ -31,8 +31,8 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes |
-| current targeted run | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:60:1 > tool template future-state page loads from root Theme V2 paths |
+| current targeted run | workspace-contract | 2.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes |
+| current targeted run | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:85:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Guardrails
 

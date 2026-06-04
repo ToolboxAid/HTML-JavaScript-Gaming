@@ -6,32 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) src/engine/release/DistributionPackager.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/pipeline/assetManifestLoader.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/pipeline/assetPipelineTooling.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/pipeline/runtimeAssetLookup.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/platformShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/toolLaunchSSoT.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/toolSampleCatalog.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/vectorNativeTemplate.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/vectorTemplateSampleGame.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(75%) toolbox/tools-page-accordions.js - executed lines 373/373; executed functions 15/20
+(88%) toolbox/tools-page-accordions.js - executed lines 466/466; executed functions 30/34
 
 Guardrail warnings:
-(0%) src/engine/release/DistributionPackager.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/runtime/gameImageConvention.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/state/getStateVariantClassification.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/pipeline/assetManifestLoader.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/pipeline/assetPipelineTooling.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/pipeline/runtimeAssetLookup.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/platformShell.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/toolLaunchSSoT.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/toolSampleCatalog.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/vectorNativeTemplate.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/vectorTemplateSampleGame.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(100%) none - no changed runtime JS coverage warnings

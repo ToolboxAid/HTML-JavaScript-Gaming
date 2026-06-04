@@ -6,6 +6,8 @@
 
     const orderButton = document.querySelector("[data-tools-order]");
     const groupedButton = document.querySelector("[data-tools-sort='grouped']");
+    const progressButton = document.querySelector("[data-tools-view='progress']");
+    const buildPathButton = document.querySelector("[data-tools-view='build-path']");
     let currentMode = "ascending";
     const toolGroups = [
         {
@@ -218,9 +220,56 @@
     const badgeMap = {
         "Publish": "publish-studio"
     };
+    const readinessMap = {
+        "AI Assistant": "ready",
+        "Animation": "in-progress",
+        "Assets": "in-progress",
+        "Cloud": "locked",
+        "Custom Extensions": "locked",
+        "Game Design": "in-progress",
+        "Input": "ready",
+        "Localization": "locked",
+        "MIDI": "ready",
+        "Object Vector": "ready",
+        "Palette Manager": "complete",
+        "Particles": "locked",
+        "Publish": "locked",
+        "Sound": "ready",
+        "Storage Inspector": "complete",
+        "World Vector": "in-progress"
+    };
+    const buildPathGroups = [
+        {
+            title: "Plan",
+            groupClass: "tool-group-ai-learning",
+            tools: ["AI Assistant", "Game Design", "Palette Manager", "Input"]
+        },
+        {
+            title: "Create",
+            groupClass: "tool-group-build-create",
+            tools: ["Assets", "Object Vector", "World Vector", "Animation", "Particles"]
+        },
+        {
+            title: "Audio",
+            groupClass: "tool-group-media-audio",
+            tools: ["MIDI", "Sound"]
+        },
+        {
+            title: "Verify",
+            groupClass: "tool-group-development-system",
+            tools: ["Storage Inspector", "Custom Extensions"]
+        },
+        {
+            title: "Release",
+            groupClass: "tool-group-community-marketplace",
+            tools: ["Cloud", "Localization", "Publish"]
+        }
+    ];
+    const progressOrder = ["complete", "in-progress", "ready", "locked"];
     const allTools = toolGroups.flatMap((group) => group.tools.map((tool) => ({
         ...tool,
-        group: group.group
+        group: group.group,
+        readiness: readinessMap[tool.title] || "ready"
     })));
 
     function groupClass(groupName) {
@@ -240,11 +289,17 @@
 
     function setActiveButton(mode) {
         if (orderButton) {
-            orderButton.setAttribute("aria-pressed", String(mode !== "grouped"));
+            orderButton.setAttribute("aria-pressed", String(mode === "ascending" || mode === "descending"));
             orderButton.textContent = `Order ${orderButton.dataset.toolsOrder === "ascending" ? "A-Z" : "Z-A"}`;
         }
         if (groupedButton) {
             groupedButton.setAttribute("aria-pressed", String(mode === "grouped"));
+        }
+        if (progressButton) {
+            progressButton.setAttribute("aria-pressed", String(mode === "progress"));
+        }
+        if (buildPathButton) {
+            buildPathButton.setAttribute("aria-pressed", String(mode === "build-path"));
         }
     }
 
@@ -278,6 +333,22 @@
         return groups;
     }
 
+    function getProgressGroups() {
+        return progressOrder.map((readiness) => ({
+            title: readiness,
+            tools: getOrderedTools("ascending").filter((tool) => tool.readiness === readiness),
+            groupClass: "tool-group-development-system"
+        })).filter((group) => group.tools.length > 0);
+    }
+
+    function getBuildPathGroups() {
+        return buildPathGroups.map((group) => ({
+            title: group.title,
+            tools: group.tools.map((title) => allTools.find((tool) => tool.title === title)).filter(Boolean),
+            groupClass: group.groupClass
+        })).filter((group) => group.tools.length > 0);
+    }
+
     function createGroupLabel(groupName) {
         const label = document.createElement("span");
         label.className = "content-cluster";
@@ -295,7 +366,7 @@
         return label;
     }
 
-    function createToolCard(tool) {
+    function createToolCard(tool, options = {}) {
         const article = document.createElement("article");
         article.className = `control-card ${groupClass(tool.group)}`;
         article.dataset.mascot = tool.mascot;
@@ -324,6 +395,11 @@
         group.className = "kicker";
         group.textContent = tool.subgroup ? `${tool.group} - ${tool.subgroup}` : tool.group;
 
+        const readiness = document.createElement("span");
+        readiness.className = "pill";
+        readiness.dataset.toolboxReadiness = tool.readiness;
+        readiness.textContent = tool.readiness;
+
         const title = document.createElement("h3");
         title.textContent = tool.title;
 
@@ -335,12 +411,16 @@
         link.href = tool.href;
         link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
 
-        body.append(badgeCluster, group, title, description, link);
+        if (options.showReadiness) {
+            body.append(badgeCluster, group, readiness, title, description, link);
+        } else {
+            body.append(badgeCluster, group, title, description, link);
+        }
         article.append(media, body);
         return article;
     }
 
-    function createAccordion(group, isOpen) {
+    function createAccordion(group, isOpen, options = {}) {
         const details = document.createElement("details");
         details.className = `vertical-accordion ${group.groupClass}`;
         details.dataset.toolsAccordion = group.title;
@@ -356,7 +436,7 @@
         grid.className = "card-grid";
 
         group.tools.forEach((tool) => {
-            grid.append(createToolCard(tool));
+            grid.append(createToolCard(tool, options));
         });
 
         body.append(grid);
@@ -376,6 +456,12 @@
     function render(mode) {
         if (mode === "grouped") {
             const accordions = getGroupedTools().map((group, position) => createAccordion(group, position === 0));
+            list.replaceChildren(...accordions);
+        } else if (mode === "progress") {
+            const accordions = getProgressGroups().map((group) => createAccordion(group, true, { showReadiness: true }));
+            list.replaceChildren(...accordions);
+        } else if (mode === "build-path") {
+            const accordions = getBuildPathGroups().map((group) => createAccordion(group, true));
             list.replaceChildren(...accordions);
         } else {
             list.replaceChildren(createToolGrid(getOrderedTools(mode)));
@@ -397,6 +483,18 @@
     if (groupedButton) {
         groupedButton.addEventListener("click", () => {
             render("grouped");
+        });
+    }
+
+    if (progressButton) {
+        progressButton.addEventListener("click", () => {
+            render("progress");
+        });
+    }
+
+    if (buildPathButton) {
+        buildPathButton.addEventListener("click", () => {
+            render("build-path");
         });
     }
 

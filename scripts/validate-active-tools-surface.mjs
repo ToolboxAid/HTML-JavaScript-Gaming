@@ -113,6 +113,37 @@ async function main() {
     issues.push("Marketplace must not appear as an active toolbox tile or toolbox index link.");
   }
 
+  if (/>\s*Arcade\s*</i.test(toolboxIndex) || /title:\s*["']Arcade["']/i.test(toolsAccordions)) {
+    issues.push("Arcade must not appear as an active toolbox tile or toolbox index label.");
+  }
+
+  if (!/<button[^>]+data-tools-view="progress"[^>]*>\s*Progress\s*<\/button>/i.test(toolboxIndex)) {
+    issues.push("Toolbox index is missing the Progress view mode control.");
+  }
+  if (!/<button[^>]+data-tools-view="build-path"[^>]*>\s*Build Path\s*<\/button>/i.test(toolboxIndex)) {
+    issues.push("Toolbox index is missing the Build Path view mode control.");
+  }
+  if (/data-tools-view="(?:progress|build-path)"[^>]*aria-disabled="true"/.test(toolboxIndex)) {
+    issues.push("Progress and Build Path view mode controls must render as normal reviewable controls, not disabled controls.");
+  }
+  if (/data-toolbox-wireframe|Progress Wireframe|Build Path Wireframe|id="(?:progress|build-path)-wireframe"/.test(toolboxIndex + "\n" + toolsAccordions)) {
+    issues.push("Progress and Build Path must not be represented as extra wireframe sections, tool cards, or accordions.");
+  }
+  if (/title:\s*["'](?:Progress|Build Path)["']|data-tools-accordion=['"](?:Progress|Build Path)['"]/i.test(toolsAccordions)) {
+    issues.push("Progress and Build Path must remain view modes, not active toolbox tools or accordion groups.");
+  }
+  for (const readiness of ["locked", "ready", "in-progress", "complete"]) {
+    if (!toolsAccordions.includes(`"${readiness}"`)) {
+      issues.push(`Progress view is missing static readiness label: ${readiness}.`);
+    }
+  }
+  if (!/dataset\.toolboxReadiness/.test(toolsAccordions)) {
+    issues.push("Progress view must render readiness labels on the existing tool tiles.");
+  }
+  if (!/const buildPathGroups = \[/.test(toolsAccordions) || !/function getBuildPathGroups/.test(toolsAccordions)) {
+    issues.push("Build Path view must use the existing toolbox renderer and existing tool tile data.");
+  }
+
   if (issues.length > 0) {
     console.error("ACTIVE_TOOLS_SURFACE_INVALID");
     issues.forEach((issue) => console.error(`- ${issue}`));

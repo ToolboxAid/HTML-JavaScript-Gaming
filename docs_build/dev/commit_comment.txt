@@ -1,1 +1,1 @@
-Remove inactive Theme V2 styles aggregate and confirm final migration paths - PR_26154_052-theme-css-entrypoint-closeout
+Correct Toolbox wireframe view modes on shared tool surface - PR_26154_053-toolbox-wireframe-rebuild-rule

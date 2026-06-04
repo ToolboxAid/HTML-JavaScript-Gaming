@@ -1465,3 +1465,15 @@ Use the V2 naming consistently:
 - First-Class Tool Starter V2
 - First-Class Tools Surface V2
 - First-Class Tool V2
+
+## Targeted Toolbox Rebuild Rule
+
+Targeted Toolbox rebuilds must use existing Theme V2 structure and styling first.
+
+Rules:
+- Do not add new CSS unless it is absolutely required for a documented Theme V2 gap.
+- Do not create page-local CSS, tool-local CSS, inline styles, or script-generated styling for Toolbox rebuilds.
+- Use existing Theme V2 layout, panel, accordion, button, card, status, and typography classes before requesting new styling.
+- If existing Theme V2 cannot support a required Toolbox pattern, document the gap before adding an approved reusable Theme V2 pattern.
+- Reusable Theme V2 patterns must live under `assets/theme-v2/css/` and must not reintroduce legacy/V1 styling.
+- Wireframe-only Toolbox rebuilds must not add implementation logic.

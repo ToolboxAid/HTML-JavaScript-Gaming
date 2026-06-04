@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-04T02:37:41.159Z
+Generated: 2026-06-04T03:43:38.919Z
 Dry run: No
 
 ## Summary
@@ -9,7 +9,7 @@ PASS: 1
 WARN: 0
 FAIL: 0
 SKIP: 5
-Total lane elapsed time: 9.81s
+Total lane elapsed time: 10.14s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
 Status: PASS
 Scheduled lane order: workspace-contract
 Reused runtime sessions: 0
-Reused lane snapshots: 1
-Reused warm-start lanes: 1
-Reused dependency hydration: 1
-Prevented graph rebuilds: 1
-Prevented redundant initialization: 1
+Reused lane snapshots: 0
+Reused warm-start lanes: 0
+Reused dependency hydration: 0
+Prevented graph rebuilds: 0
+Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
 Prevented redundant lane execution: 5
 
@@ -64,7 +64,7 @@ Status: PASS
 Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
 Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
 Required fixtures: none
-Targeted file/helper reads: 0
+Targeted file/helper reads: 5
 Cached discovery reuse: Yes
 Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
 
@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
 Status: PASS
 Generated manifests: workspace-contract:PASS
 Prevented discovery expansion: Yes
-Prevented redundant scans: 0
-Persistent manifest events: workspace-contract:REUSED
+Prevented redundant scans: 4
+Persistent manifest events: workspace-contract:INVALIDATED
 
 ## Warm-Start Reuse
 
 Status: PASS
-Warm-start events: workspace-contract:REUSED
-Dependency hydration events: workspace-contract:REUSED
-Prevented redundant initialization: 1
-Prevented helper resolution passes: 4
+Warm-start events: workspace-contract:INVALIDATED
+Dependency hydration events: workspace-contract:INVALIDATED
+Prevented redundant initialization: 0
+Prevented helper resolution passes: 0
 Prevented fixture ownership traversal: 0
 
 ## Lane Snapshots
 
 Status: PASS
-Snapshot events: workspace-contract:REUSED
-Reused snapshots: 1
-Invalidated snapshots: 0
-Prevented graph rebuilds: 1
-Prevented redundant dependency traversal: 1
-Prevented fixture/helper graph assembly: 4
+Snapshot events: workspace-contract:INVALIDATED
+Reused snapshots: 0
+Invalidated snapshots: 1
+Prevented graph rebuilds: 0
+Prevented redundant dependency traversal: 0
+Prevented fixture/helper graph assembly: 0
 
 ## Lane Deduplication
 
@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | PASS | 9.81s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+| workspace-contract | PASS | 10.14s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Active public toolbox and Tool Template V2 contract | repo-served root toolbox page; Tool Template V2 public page; Theme V2 shared partials and assets |
 | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/games reference coverage |  |
 | integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Integration handoff behavior | No active integration Playwright specs after removal of stale V2 tool and removed game manifest routes. |
@@ -116,13 +116,13 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes |
-| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:60:1 > tool template future-state page loads from root Theme V2 paths |
+| workspace-contract | 2.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes |
+| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:85:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Commands
 
 ### workspace-contract
-- PASS 9.81s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+- PASS 10.14s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### tool-runtime
 - SKIP
