@@ -91,7 +91,7 @@ Changes:
 - Added Progress view rendering with static `locked`, `ready`, `in-progress`, and `complete` readiness labels on existing tool tiles.
 - Added Build Path view rendering as visual path groups using existing tool tiles.
 - Kept Arcade out of Toolbox content.
-- Kept forbidden `Studio` wording out of Toolbox dynamic tool labels except brand usage.
+- Kept forbidden legacy naming out of Toolbox dynamic tool labels except product ID usage.
 - Updated active validation scripts and Project Workspace Playwright assertions for the corrected view-mode contract.
 - Added validation and manual test notes.
 - Generated local review artifacts.
@@ -100,7 +100,7 @@ Changes:
 Validation:
 - `node scripts/validate-active-tools-surface.mjs`
 - `node scripts/validate-tool-registry.mjs`
-- Toolbox source checks for view controls, Progress readiness labels, Build Path path groups, absence of extra Progress/Build Path wireframe sections, Arcade absence, forbidden `Studio` label absence, and no inline CSS/JS/event handlers.
+- Toolbox source checks for view controls, Progress readiness labels, Build Path path groups, absence of extra Progress/Build Path wireframe sections, Arcade absence, forbidden legacy label absence, and no inline CSS/JS/event handlers.
 - `npm run test:workspace-v2`
 - `git diff --check`
 - `node --check` for changed JS/MJS files.
@@ -122,7 +122,7 @@ Changes:
 - Reviewed `toolbox/index.html` and confirmed Order, Group, Progress, and Build Path remain page modes for the same Toolbox surface.
 - Confirmed Progress and Build Path are not represented as standalone tool tiles or extra accordions.
 - Kept Arcade out of Toolbox content.
-- Kept forbidden `Studio` wording out of Toolbox dynamic tool labels except brand usage.
+- Kept forbidden legacy naming out of Toolbox dynamic tool labels except product ID usage.
 - Added targeted validation notes, skipped broad-lane rationale, Project Workspace naming note, and manual test notes.
 - Generated local review artifacts.
 - Created the repo-structured delta ZIP at `tmp/PR_26155_001-project-workspace-governance-toolbox-modes_delta.zip`.
@@ -130,7 +130,7 @@ Changes:
 Validation:
 - `node scripts/validate-active-tools-surface.mjs`
 - `node scripts/validate-tool-registry.mjs`
-- Toolbox source checks for view controls, Progress readiness labels, Build Path path groups, absence of extra Progress/Build Path wireframe sections, Arcade absence, forbidden `Studio` label absence, and no inline CSS/JS/event handlers.
+- Toolbox source checks for view controls, Progress readiness labels, Build Path path groups, absence of extra Progress/Build Path wireframe sections, Arcade absence, forbidden legacy label absence, and no inline CSS/JS/event handlers.
 - `npm run test:workspace-v2` (legacy command name for the Project Workspace test lane)
 - `git diff --check`
 - `node --check` for changed JS/MJS files.
@@ -316,7 +316,7 @@ Changes:
   - `PR_26155_013-studio-vocabulary-cleanup`
   - `PR_26155_014-project-progress-model`
   - `PR_26155_015-toolbox-build-path-model`
-- Normalized active Toolbox tool ids, route keys, tool display slugs, labels, and active Playwright assertions away from old tool identity wording while keeping `GameFoundryStudio`.
+- Normalized active Toolbox tool ids, route keys, tool display slugs, labels, and active Playwright assertions away from old tool identity wording while keeping the product ID.
 - Updated the active Toolbox registry and shared header route map.
 - Added static Project Progress model support to the existing transitional Toolbox renderer.
 - Added static Build Path model support to the existing transitional Toolbox renderer.
@@ -330,7 +330,7 @@ Validation:
 - `node --check assets/theme-v2/js/tool-display-mode.js`.
 - `node scripts/validate-active-tools-surface.mjs`.
 - `node scripts/validate-tool-registry.mjs`.
-- Focused active Toolbox vocabulary scan allowing only `GameFoundryStudio`.
+- Focused active Toolbox vocabulary scan allowing only the product ID.
 - Confirmed no CSS files in the diff.
 - Targeted affected-page browser check for `toolbox/index.html`, `toolbox/project-workspace/index.html`, `toolbox/game-design/index.html`, and `toolbox/game-configuration/index.html`.
 - `npm run test:workspace-v2` (legacy command name for the Project Workspace test lane).
@@ -351,8 +351,8 @@ Changes:
   - `PR_26155_016-toolbox-final-name-cleanup`
   - `PR_26155_017-planned-tool-shells`
   - `PR_26155_018-ready-for-first-tool-rebuild`
-- Applied final active Toolbox labels: Palette / Colors, Storage, Audio, and Input Mapping.
-- Updated safe active ids/routes for Palette / Colors and Storage.
+- Applied the prior interim active Toolbox labels that were superseded by the current concise-name cleanup.
+- Updated safe interim active ids/routes that were superseded by the current concise-name cleanup.
 - Added planned Toolbox shell folders and `index.html` pages from `toolbox/_tool_template-v2`.
 - Added planned Media & Audio shells and planned Support shells to the active registry, header navigation, route map, and Toolbox index renderer.
 - Kept `toolbox/tools-page-accordions.js` as the current transitional renderer.
@@ -373,5 +373,41 @@ Required reports:
 - `docs_build/dev/reports/toolbox-final-name-cleanup.md`
 - `docs_build/dev/reports/planned-tool-shells.md`
 - `docs_build/dev/reports/ready-for-first-tool-rebuild.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+## PR_26155_019-021
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Created stacked Toolbox role/name cleanup bundle:
+  - `PR_26155_019-admin-creator-view-banner`
+  - `PR_26155_020-deep-tool-name-cleanup`
+  - `PR_26155_021-toolbox-role-filter-wireframe`
+- Added temporary `?role=admin` and `?role=user` role simulation to `toolbox/index.html`.
+- Added the clickable role banner using existing Theme V2 classes only.
+- Renamed active Toolbox folders and routes to concise labels such as Colors, Controls, Saved Data, Objects, Worlds, Animations, Music, Voices, and Languages.
+- Added missing planned/admin shell pages from `toolbox/_tool_template-v2`.
+- Updated the active Toolbox registry, shared header navigation, shared route map, transitional Toolbox renderer, and active Playwright checks.
+- Kept `toolbox/tools-page-accordions.js` as the current transitional renderer.
+- Did not add CSS, auth, database behavior, persistence, save/load behavior, real tool behavior, or Arcade.
+
+Validation:
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`.
+- `node --check toolbox/tools-page-accordions.js`.
+- `node --check toolbox/toolRegistry.js`.
+- `node --check scripts/validate-active-tools-surface.mjs`.
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
+- `node scripts/validate-active-tools-surface.mjs`.
+- `node scripts/validate-tool-registry.mjs`.
+- Focused active Toolbox vocabulary scan allowing only the product ID.
+- `git diff --name-only -- '*.css'` confirmed no CSS files changed.
+- `npm run test:workspace-v2` (legacy command name for the Project Workspace test lane).
+- Targeted browser sweep for Toolbox default/admin/user views and every new/renamed shell route.
+
+Required reports:
+- `docs_build/dev/reports/admin-creator-view-banner.md`
+- `docs_build/dev/reports/deep-tool-name-cleanup.md`
+- `docs_build/dev/reports/toolbox-role-filter-wireframe.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`

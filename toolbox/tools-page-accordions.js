@@ -8,333 +8,882 @@
     const groupedButton = document.querySelector("[data-tools-sort='grouped']");
     const progressButton = document.querySelector("[data-tools-view='progress']");
     const buildPathButton = document.querySelector("[data-tools-view='build-path']");
+    const roleBanner = document.querySelector("[data-toolbox-role-banner]");
+    const urlRole = new URLSearchParams(window.location.search).get("role");
+    const toolboxRole = urlRole === "admin" ? "admin" : "creator";
     let currentMode = "ascending";
     const toolGroups = [
         {
-            group: "AI",
-            tools: [
-                {
-                    title: "AI Assistant",
-                    href: "../toolbox/ai-assistant/index.html",
-                    image: "../assets/theme-v2/images/tools/ai-assistant.png",
-                    description: "Get guided technical help for game creation workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                }
-            ]
+                "group": "AI",
+                "tools": [
+                        {
+                                "title": "AI Assistant",
+                                "href": "../toolbox/ai-assistant/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Get guided technical help for game creation workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        }
+                ]
         },
         {
-            group: "Planning",
-            tools: [
-                {
-                    title: "Project Workspace",
-                    href: "../toolbox/project-workspace/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Coordinate Build, Play, and Share readiness for one game project.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
-                {
-                    title: "Game Design",
-                    subgroup: "Design Contract",
-                    href: "../toolbox/game-design/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Design gameplay, systems, rules, and player experience.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
-                {
-                    title: "Game Configuration",
-                    subgroup: "Playable Gate",
-                    href: "../toolbox/game-configuration/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan release profile, debug visibility, and playable readiness gates.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                }
-            ]
+                "group": "Planning",
+                "tools": [
+                        {
+                                "title": "Project Workspace",
+                                "href": "../toolbox/project-workspace/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Coordinate Build, Play, and Share readiness for one game project.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "in-progress",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Game Design",
+                                "href": "../toolbox/game-design/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan gameplay, systems, rules, and player experience.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "in-progress",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Game Configuration",
+                                "href": "../toolbox/game-configuration/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan release profile, debug visibility, and playable readiness gates.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        }
+                ]
         },
         {
-            group: "Assets",
-            tools: [
-                {
-                    title: "Cloud",
-                    href: "../toolbox/cloud/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Manage connected storage, sync, and publishing support.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
-                {
-                    title: "Localization",
-                    href: "../toolbox/localization/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan game translation, language coverage, and contributor review workflows.",
-                    role: "Community / Media",
-                    mascot: "localization",
-                    theme: "bot"
-                },
-                {
-                    title: "Publish",
-                    href: "../toolbox/publish/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Prepare publishing workflows and release-ready game packages.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
-                {
-                    title: "Storage",
-                    href: "../toolbox/storage/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Inspect local storage, saved state, and tool data.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                }
-            ]
+                "group": "Assets",
+                "tools": [
+                        {
+                                "title": "Assets",
+                                "href": "../toolbox/assets/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Create sprites, animations, vectors, and palettes.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "in-progress",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Colors",
+                                "href": "../toolbox/colors/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Craft and manage color palettes for your games.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "complete",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Fonts",
+                                "href": "../toolbox/fonts/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan game typography, font loading, and readable text choices.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Sprites",
+                                "href": "../toolbox/sprites/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan sprite creation, review, and game-ready export workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Characters",
+                                "href": "../toolbox/characters/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan player, NPC, and character asset workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Objects",
+                                "href": "../toolbox/objects/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Design reusable game objects and object-ready assets.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Worlds",
+                                "href": "../toolbox/worlds/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Shape world layouts, maps, terrain, and scene geometry.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "in-progress",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Animations",
+                                "href": "../toolbox/animations/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan character and object animation states.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": false,
+                                "status": "in-progress",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        }
+                ]
         },
         {
-            group: "Media & Audio",
-            tools: [
-                {
-                    title: "MIDI",
-                    href: "../toolbox/midi/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Build MIDI-driven audio and music interaction flows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Audio",
-                    href: "../toolbox/sound/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Prepare audio and game sound workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Music Library",
-                    href: "../toolbox/music-library/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan reusable music library and soundtrack workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Sound Effects",
-                    href: "../toolbox/sound-effects/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan reusable game effect audio workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Speech to Text",
-                    href: "../toolbox/speech-to-text/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan spoken input and transcription workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Text to Speech",
-                    href: "../toolbox/text-to-speech/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan generated narration and spoken output workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Voice",
-                    href: "../toolbox/voice/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan character voice, capture, and review workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                }
-            ]
+                "group": "Media & Audio",
+                "tools": [
+                        {
+                                "title": "Audio",
+                                "href": "../toolbox/audio/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan game audio, effects, and playback readiness.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "bot",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Music",
+                                "href": "../toolbox/music/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan reusable music and soundtrack workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "bot",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Voices",
+                                "href": "../toolbox/voices/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan character voice, spoken output, and voice review workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "bot",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Videos",
+                                "href": "../toolbox/videos/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan trailer, cutscene, and video asset workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "bot",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        }
+                ]
         },
         {
-            group: "Colors",
-            tools: [
-                {
-                    title: "Palette / Colors",
-                    href: "../toolbox/palette/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Craft and manage color palettes for your games.",
-                    role: "Pixel Smith",
-                    mascot: "pixel-smith",
-                    theme: "pixel"
-                }
-            ]
+                "group": "Build & Test",
+                "tools": [
+                        {
+                                "title": "Build Game",
+                                "href": "../toolbox/build-game/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan build packaging and playable output readiness.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Game Testing",
+                                "href": "../toolbox/game-testing/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan test passes, release checks, and playable validation.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Controls",
+                                "href": "../toolbox/controls/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Map keyboard, mouse, gamepad, and touch controls.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Hitboxes",
+                                "href": "../toolbox/hitboxes/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan collision, hurtbox, and interaction region workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Saved Data",
+                                "href": "../toolbox/saved-data/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Inspect and manage saves, local storage, and game data.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "complete",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Debug",
+                                "href": "../toolbox/debug/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan visible creator debug settings and release gating.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Performance",
+                                "href": "../toolbox/performance/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan performance budgets, diagnostics, and readiness checks.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Events",
+                                "href": "../toolbox/events/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan gameplay events, triggers, and state transitions.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": true,
+                                "requiredForPublish": true,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        }
+                ]
         },
         {
-            group: "Input Mapping",
-            tools: [
-                {
-                    title: "Input Mapping",
-                    href: "../toolbox/input/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Map player controls and configure input workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                }
-            ]
+                "group": "Share & Community",
+                "tools": [
+                        {
+                                "title": "Publish",
+                                "href": "../toolbox/publish/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Prepare publishing workflows and release-ready game packages.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": true,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Marketplace",
+                                "href": "../toolbox/marketplace/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan marketplace listing, asset, and discovery workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Community",
+                                "href": "../toolbox/community/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan creator community, tutorials, sharing, and feedback workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Languages",
+                                "href": "../toolbox/languages/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan game language coverage and translation review workflows.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Achievements",
+                                "href": "../toolbox/achievements/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan achievement definitions and creator-facing unlock review.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Ratings",
+                                "href": "../toolbox/ratings/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Plan player ratings, review signals, and quality feedback.",
+                                "role": "Foundry Bot",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "adminOnly": false,
+                                "hidden": false,
+                                "planned": false,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "ready",
+                                "progressChecklist": [
+                                        "Review readiness",
+                                        "Static wireframe text only"
+                                ]
+                        }
+                ]
         },
         {
-            group: "Support",
-            tools: [
-                {
-                    title: "Fonts",
-                    href: "../toolbox/fonts/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan game typography, font loading, and readable text choices.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Learn",
-                    href: "../toolbox/learn/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan tutorials, guidance, and learning resources for creators.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Marketplace",
-                    href: "../toolbox/marketplace/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan marketplace listing, asset, and discovery workflows.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Settings",
-                    href: "../toolbox/settings/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Plan visible creator settings for future configurable tool behavior.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                }
-            ]
+                "group": "Hidden Capability",
+                "tools": [
+                        {
+                                "title": "Cloud",
+                                "href": "../toolbox/cloud/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Hidden capability shell for connected storage, sync, and publishing support.",
+                                "role": "Hidden Preview",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "subgroup": "Hidden planned",
+                                "adminOnly": false,
+                                "hidden": true,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Hidden planned capability",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Custom Extensions",
+                                "href": "../toolbox/code/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Hidden capability shell for approved extension hooks and creator-private custom logic.",
+                                "role": "Hidden Preview",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "subgroup": "Hidden planned",
+                                "adminOnly": false,
+                                "hidden": true,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Hidden planned capability",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Creator Learning",
+                                "href": "../toolbox/learn/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Hidden capability shell for tutorials and creator learning workflows.",
+                                "role": "Hidden Preview",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "subgroup": "Hidden planned",
+                                "adminOnly": false,
+                                "hidden": true,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Hidden planned capability",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "MIDI",
+                                "href": "../toolbox/midi/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Hidden capability shell for MIDI-driven audio and music interaction flows.",
+                                "role": "Hidden Preview",
+                                "mascot": "foundry-bot",
+                                "theme": "bot",
+                                "subgroup": "Hidden planned",
+                                "adminOnly": false,
+                                "hidden": true,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Hidden planned capability",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Particles",
+                                "href": "../toolbox/particles/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Hidden capability shell for visual effects and particle workflows.",
+                                "role": "Hidden Preview",
+                                "mascot": "foundry-bot",
+                                "theme": "forge",
+                                "subgroup": "Hidden planned",
+                                "adminOnly": false,
+                                "hidden": true,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Hidden planned capability",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Audio Effects",
+                                "href": "../toolbox/audio-effects/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Hidden capability shell for reusable game effect audio workflows.",
+                                "role": "Hidden Preview",
+                                "mascot": "foundry-bot",
+                                "theme": "bot",
+                                "subgroup": "Hidden planned",
+                                "adminOnly": false,
+                                "hidden": true,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Hidden planned capability",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Voice Capture",
+                                "href": "../toolbox/speech-to-text/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Hidden capability shell for spoken input and transcription workflows.",
+                                "role": "Hidden Preview",
+                                "mascot": "foundry-bot",
+                                "theme": "bot",
+                                "subgroup": "Hidden planned",
+                                "adminOnly": false,
+                                "hidden": true,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Hidden planned capability",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Voice Output",
+                                "href": "../toolbox/text-to-speech/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Hidden capability shell for generated narration and spoken output workflows.",
+                                "role": "Hidden Preview",
+                                "mascot": "foundry-bot",
+                                "theme": "bot",
+                                "subgroup": "Hidden planned",
+                                "adminOnly": false,
+                                "hidden": true,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Hidden planned capability",
+                                        "Static wireframe text only"
+                                ]
+                        }
+                ]
         },
         {
-            group: "Objects",
-            tools: [
-                {
-                    title: "Animation",
-                    subgroup: "Animated Sprite",
-                    href: "../toolbox/animation/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Create timing, animation states, and motion workflows.",
-                    role: "Spark",
-                    mascot: "spark",
-                    theme: "pixel"
-                },
-                {
-                    title: "Assets",
-                    subgroup: "Sprite",
-                    href: "../toolbox/assets/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Create sprites, animations, vectors and palettes.",
-                    role: "Pixel Smith",
-                    mascot: "pixel-smith",
-                    theme: "pixel"
-                },
-                {
-                    title: "Custom Extensions",
-                    subgroup: "Custom Extensions",
-                    href: "../toolbox/code/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Register approved Engine V2 extension hooks and creator-private custom logic.",
-                    role: "Foundry Bot",
-                    mascot: "foundry-bot",
-                    theme: "bot"
-                },
-                {
-                    title: "Object Vector",
-                    subgroup: "Vector",
-                    href: "../toolbox/object-vector/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Create object-ready vector assets and reusable scene pieces.",
-                    role: "Pixel Smith",
-                    mascot: "pixel-smith",
-                    theme: "pixel"
-                }
-            ]
-        },
-        {
-            group: "Worlds",
-            tools: [
-                {
-                    title: "Particles",
-                    subgroup: "Isometric",
-                    href: "../toolbox/particles/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Author visual effects, emitters, and particle looks.",
-                    role: "Spark",
-                    mascot: "spark",
-                    theme: "pixel"
-                },
-                {
-                    title: "World Vector",
-                    subgroup: "Vector",
-                    href: "../toolbox/world-vector/index.html",
-                    image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Shape world layouts, maps, terrain, and scene geometry.",
-                    role: "Pixel Smith",
-                    mascot: "pixel-smith",
-                    theme: "pixel"
-                }
-            ]
+                "group": "Admin Tools",
+                "tools": [
+                        {
+                                "title": "Users",
+                                "href": "../toolbox/users/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Admin-only planned shell for user management workflows.",
+                                "role": "Admin Preview",
+                                "mascot": "forgebot",
+                                "theme": "forge",
+                                "subgroup": "Admin-only planned",
+                                "adminOnly": true,
+                                "hidden": false,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Admin-only planned tool",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Environments",
+                                "href": "../toolbox/environments/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Admin-only planned shell for environment and deployment controls.",
+                                "role": "Admin Preview",
+                                "mascot": "forgebot",
+                                "theme": "forge",
+                                "subgroup": "Admin-only planned",
+                                "adminOnly": true,
+                                "hidden": false,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Admin-only planned tool",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Game Migration",
+                                "href": "../toolbox/game-migration/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Admin-only planned shell for migration review and game data movement.",
+                                "role": "Admin Preview",
+                                "mascot": "forgebot",
+                                "theme": "forge",
+                                "subgroup": "Admin-only planned",
+                                "adminOnly": true,
+                                "hidden": false,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Admin-only planned tool",
+                                        "Static wireframe text only"
+                                ]
+                        },
+                        {
+                                "title": "Platform Settings",
+                                "href": "../toolbox/platform-settings/index.html",
+                                "image": "../assets/theme-v2/images/image-missing.svg",
+                                "description": "Admin-only planned shell for platform configuration workflows.",
+                                "role": "Admin Preview",
+                                "mascot": "forgebot",
+                                "theme": "forge",
+                                "subgroup": "Admin-only planned",
+                                "adminOnly": true,
+                                "hidden": false,
+                                "planned": true,
+                                "requiredForTestable": false,
+                                "requiredForPublish": false,
+                                "status": "locked",
+                                "progressChecklist": [
+                                        "Admin-only planned tool",
+                                        "Static wireframe text only"
+                                ]
+                        }
+                ]
         }
-    ];
+];
     const groupClassMap = {
         "AI": "tool-group-ai-learning",
-        "Assets": "tool-group-community-marketplace",
-        "Audio": "tool-group-media-audio",
-        "Colors": "tool-group-platform-cloud",
-        "Input": "tool-group-development-system",
-        "Input Mapping": "tool-group-development-system",
-        "Media & Audio": "tool-group-media-audio",
-        "Objects": "tool-group-build-create",
         "Planning": "tool-group-development-system",
-        "Support": "tool-group-ai-learning",
-        "Tooling": "tool-group-development-system",
-        "Worlds": "tool-group-content-assets"
-    };
+        "Assets": "tool-group-content-assets",
+        "Media & Audio": "tool-group-media-audio",
+        "Build & Test": "tool-group-development-system",
+        "Share & Community": "tool-group-community-marketplace",
+        "Hidden Capability": "tool-group-platform-cloud",
+        "Admin Tools": "tool-group-platform-cloud"
+};
     const groupSwatchMap = {
         "AI": "swatch-purple",
-        "Assets": "swatch-gold",
-        "Audio": "swatch-red",
-        "Colors": "swatch-blue",
-        "Input": "swatch-gray",
-        "Input Mapping": "swatch-gray",
-        "Media & Audio": "swatch-red",
-        "Objects": "swatch-pink",
         "Planning": "swatch-blue",
-        "Support": "swatch-purple",
-        "Tooling": "swatch-gray",
-        "Worlds": "swatch-orange"
-    };
+        "Assets": "swatch-gold",
+        "Media & Audio": "swatch-red",
+        "Build & Test": "swatch-gray",
+        "Share & Community": "swatch-gold",
+        "Hidden Capability": "swatch-blue",
+        "Admin Tools": "swatch-blue"
+};
     const badgeMap = {
         "AI Assistant": "ai-assistant"
     };
@@ -348,222 +897,499 @@
         projectProgress: "Core path in-progress",
         publishingProgress: "Publish blocked until configuration and required assets are ready",
         currentFocus: "Complete Game Configuration",
-        recommendedNextTool: "Game Configuration"
+        recommendedNextTool: "Build Game"
     };
     const progressModel = {
         "AI Assistant": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "ready",
-            progressChecklist: ["Use for guidance", "Keep side/capability status"]
-        },
-        "Animation": {
-            requiredForTestable: true,
-            requiredForPublish: false,
-            status: "in-progress",
-            progressChecklist: ["Draft animation states", "Confirm playable timing"]
-        },
-        "Assets": {
-            requiredForTestable: true,
-            requiredForPublish: true,
-            status: "in-progress",
-            progressChecklist: ["Create required sprites", "Attach release-safe previews"]
-        },
-        "Cloud": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Side/capability tool", "Enable only when project sync is required"]
-        },
-        "Custom Extensions": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Side/capability tool", "Review extension contract before use"]
-        },
-        "Game Configuration": {
-            requiredForTestable: true,
-            requiredForPublish: true,
-            status: "locked",
-            progressChecklist: ["Choose release profile", "Disable public debug settings", "Confirm playable gate"]
-        },
-        "Game Design": {
-            requiredForTestable: true,
-            requiredForPublish: true,
-            status: "in-progress",
-            progressChecklist: ["Define win condition", "Document core loop", "List required content"]
-        },
-        "Input Mapping": {
-            requiredForTestable: true,
-            requiredForPublish: true,
-            status: "ready",
-            progressChecklist: ["Map controls", "Verify keyboard/gamepad path"]
-        },
-        "Localization": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Side/capability tool", "Use when translation is required"]
-        },
-        "MIDI": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "ready",
-            progressChecklist: ["Optional audio path", "Attach music only if required"]
-        },
-        "Music Library": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned media tool", "Use when reusable music sourcing is required"]
-        },
-        "Object Vector": {
-            requiredForTestable: true,
-            requiredForPublish: true,
-            status: "ready",
-            progressChecklist: ["Create object geometry", "Confirm collision-ready export"]
-        },
-        "Palette / Colors": {
-            requiredForTestable: true,
-            requiredForPublish: true,
-            status: "complete",
-            progressChecklist: ["Choose palette", "Confirm accessible contrast"]
-        },
-        "Particles": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Optional effects path", "Use when visual effects are required"]
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
         "Project Workspace": {
-            requiredForTestable: true,
-            requiredForPublish: true,
-            status: "in-progress",
-            progressChecklist: ["Create project", "Confirm current focus", "Pick next required tool"]
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "in-progress",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
-        "Publish": {
-            requiredForTestable: false,
-            requiredForPublish: true,
-            status: "locked",
-            progressChecklist: ["Prepare release package", "Confirm share metadata", "Review public readiness"]
+        "Game Design": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "in-progress",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
-        "Audio": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "ready",
-            progressChecklist: ["Optional sound path", "Attach effects only if required"]
+        "Game Configuration": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
-        "Sound Effects": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned media tool", "Use when reusable sound effect sourcing is required"]
+        "Assets": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "in-progress",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
-        "Speech to Text": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned media tool", "Use when spoken input is required"]
-        },
-        "Storage": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "complete",
-            progressChecklist: ["Side/capability tool", "Inspect saves without blocking build path"]
-        },
-        "Text to Speech": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned media tool", "Use when generated speech is required"]
-        },
-        "Voice": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned media tool", "Use when character voice planning is required"]
-        },
-        "World Vector": {
-            requiredForTestable: true,
-            requiredForPublish: true,
-            status: "in-progress",
-            progressChecklist: ["Draft world layout", "Confirm map bounds"]
+        "Colors": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "complete",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
         "Fonts": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned support tool", "Use when custom typography is required"]
+                "requiredForTestable": false,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
-        "Learn": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned support tool", "Use when creator guidance is required"]
+        "Sprites": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Characters": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Objects": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Worlds": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "in-progress",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Animations": {
+                "requiredForTestable": true,
+                "requiredForPublish": false,
+                "status": "in-progress",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Audio": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Music": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Voices": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Videos": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Build Game": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "locked",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Game Testing": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "locked",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Controls": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Hitboxes": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Saved Data": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "complete",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Debug": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Performance": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Events": {
+                "requiredForTestable": true,
+                "requiredForPublish": true,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Publish": {
+                "requiredForTestable": false,
+                "requiredForPublish": true,
+                "status": "locked",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
         "Marketplace": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned support tool", "Use when marketplace listing work is required"]
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
         },
-        "Settings": {
-            requiredForTestable: false,
-            requiredForPublish: false,
-            status: "locked",
-            progressChecklist: ["Planned support tool", "Use when configurable settings are required"]
+        "Community": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Languages": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Achievements": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Ratings": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "ready",
+                "progressChecklist": [
+                        "Review readiness",
+                        "Static wireframe text only"
+                ]
+        },
+        "Cloud": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Hidden planned capability",
+                        "Static wireframe text only"
+                ]
+        },
+        "Custom Extensions": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Hidden planned capability",
+                        "Static wireframe text only"
+                ]
+        },
+        "Creator Learning": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Hidden planned capability",
+                        "Static wireframe text only"
+                ]
+        },
+        "MIDI": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Hidden planned capability",
+                        "Static wireframe text only"
+                ]
+        },
+        "Particles": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Hidden planned capability",
+                        "Static wireframe text only"
+                ]
+        },
+        "Audio Effects": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Hidden planned capability",
+                        "Static wireframe text only"
+                ]
+        },
+        "Voice Capture": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Hidden planned capability",
+                        "Static wireframe text only"
+                ]
+        },
+        "Voice Output": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Hidden planned capability",
+                        "Static wireframe text only"
+                ]
+        },
+        "Users": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Admin-only planned tool",
+                        "Static wireframe text only"
+                ]
+        },
+        "Environments": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Admin-only planned tool",
+                        "Static wireframe text only"
+                ]
+        },
+        "Game Migration": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Admin-only planned tool",
+                        "Static wireframe text only"
+                ]
+        },
+        "Platform Settings": {
+                "requiredForTestable": false,
+                "requiredForPublish": false,
+                "status": "locked",
+                "progressChecklist": [
+                        "Admin-only planned tool",
+                        "Static wireframe text only"
+                ]
         }
-    };
+};
     const buildPathGroups = [
         {
-            title: "Project Workspace",
-            groupClass: "tool-group-ai-learning",
-            note: "Start with the single project surface that coordinates current focus, readiness, and recommended next tool.",
-            tools: ["Project Workspace"]
+                "title": "Project Workspace",
+                "groupClass": "tool-group-ai-learning",
+                "note": "Start with the single project surface that coordinates current focus, readiness, and recommended next tool.",
+                "tools": [
+                        "Project Workspace"
+                ]
         },
         {
-            title: "Game Design",
-            groupClass: "tool-group-development-system",
-            note: "Define gameplay, rules, player experience, and the requirements that shape the build path.",
-            tools: ["Game Design"]
+                "title": "Game Design",
+                "groupClass": "tool-group-development-system",
+                "note": "Define gameplay, rules, player experience, and the requirements that shape the build path.",
+                "tools": [
+                        "Game Design"
+                ]
         },
         {
-            title: "Game Configuration",
-            groupClass: "tool-group-development-system",
-            note: "Set the release profile, debug policy, and playable gate before the required tool path is treated as ready.",
-            tools: ["Game Configuration"]
+                "title": "Game Configuration",
+                "groupClass": "tool-group-development-system",
+                "note": "Set the release profile, debug policy, and playable gate before the required tool path is treated as ready.",
+                "tools": [
+                        "Game Configuration"
+                ]
         },
         {
-            title: "Required Tool Path",
-            groupClass: "tool-group-build-create",
-            note: "Use the registry fields requiredForTestable and requiredForPublish to identify blockers.",
-            tools: ["Palette / Colors", "Input Mapping", "Assets", "Object Vector", "World Vector", "Animation"]
+                "title": "Required Tool Path",
+                "groupClass": "tool-group-build-create",
+                "note": "Use readiness fields to identify creator-facing blockers before a playable build.",
+                "tools": [
+                        "Colors",
+                        "Controls",
+                        "Assets",
+                        "Sprites",
+                        "Characters",
+                        "Objects",
+                        "Worlds",
+                        "Animations",
+                        "Audio"
+                ]
         },
         {
-            title: "Build Game",
-            groupClass: "tool-group-media-audio",
-            note: "Build Game is a path milestone in this wireframe, not a separate Toolbox tool.",
-            tools: []
+                "title": "Build Game",
+                "groupClass": "tool-group-development-system",
+                "note": "Build Game is the package and playable-output checkpoint for this wireframe.",
+                "tools": [
+                        "Build Game"
+                ]
         },
         {
-            title: "Game Testing",
-            groupClass: "tool-group-development-system",
-            note: "Game Testing is a readiness milestone; Storage remains a side/capability tool unless a future registry rule requires it.",
-            tools: []
+                "title": "Game Testing",
+                "groupClass": "tool-group-development-system",
+                "note": "Game Testing collects test readiness, hitboxes, debug policy, performance checks, and event review.",
+                "tools": [
+                        "Game Testing",
+                        "Hitboxes",
+                        "Debug",
+                        "Performance",
+                        "Events"
+                ]
         },
         {
-            title: "Publish",
-            groupClass: "tool-group-community-marketplace",
-            note: "Publish is required for public release; Cloud, Marketplace, Learn, AI Assistant, Settings, and Storage remain side/capability surfaces by default.",
-            tools: ["Publish"]
+                "title": "Publish",
+                "groupClass": "tool-group-community-marketplace",
+                "note": "Publish is required for public release; Marketplace, Community, Languages, Achievements, and Ratings support Share readiness.",
+                "tools": [
+                        "Publish",
+                        "Marketplace",
+                        "Community",
+                        "Languages",
+                        "Achievements",
+                        "Ratings"
+                ]
         }
-    ];
+];
     const progressOrder = ["complete", "in-progress", "ready", "locked"];
-    const allTools = toolGroups.flatMap((group) => group.tools.map((tool) => ({
-        ...tool,
-        group: group.group,
-        ...(progressModel[tool.title] || defaultProgress)
-    })));
+
+    function isVisibleForRole(tool) {
+        if (toolboxRole === "admin") {
+            return true;
+        }
+        return tool.adminOnly !== true && tool.hidden !== true && tool.planned !== true;
+    }
+
+    function visibleToolGroups() {
+        return toolGroups.map((toolGroup) => ({
+            ...toolGroup,
+            tools: toolGroup.tools.filter(isVisibleForRole)
+        })).filter((toolGroup) => toolGroup.tools.length > 0);
+    }
+
+    function roleAwareTools() {
+        return visibleToolGroups().flatMap((group) => group.tools.map((tool) => ({
+            ...tool,
+            group: group.group,
+            ...(progressModel[tool.title] || defaultProgress)
+        })));
+    }
+
+    function configureRoleBanner() {
+        if (!roleBanner) {
+            return;
+        }
+        const nextRole = toolboxRole === "admin" ? "user" : "admin";
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set("role", nextRole);
+        roleBanner.href = nextUrl.pathname + nextUrl.search + nextUrl.hash;
+        roleBanner.textContent = toolboxRole === "admin"
+            ? "ADMIN VIEW • Planned tools visible • Switch to Creator View"
+            : "CREATOR VIEW • Planned tools hidden • Switch to Admin View";
+    }
 
     function groupClass(groupName) {
         return groupClassMap[groupName] || "";
@@ -597,7 +1423,7 @@
     }
 
     function getOrderedTools(mode) {
-        const tools = allTools.slice();
+        const tools = roleAwareTools();
         tools.sort((left, right) => left.title.localeCompare(right.title));
         if (mode === "descending") {
             tools.reverse();
@@ -606,24 +1432,14 @@
     }
 
     function getGroupedTools() {
-        const groups = [];
-        toolGroups.forEach((toolGroup) => {
-            const group = groups.find((entry) => entry.title === toolGroup.group);
-            const tools = toolGroup.tools.map((tool) => ({
+        return visibleToolGroups().map((toolGroup) => ({
+            title: toolGroup.group,
+            tools: toolGroup.tools.map((tool) => ({
                 ...tool,
                 group: toolGroup.group
-            }));
-            if (group) {
-                group.tools.push(...tools);
-                return;
-            }
-            groups.push({
-                title: toolGroup.group,
-                tools,
-                groupClass: groupClass(toolGroup.group)
-            });
-        });
-        return groups;
+            })),
+            groupClass: groupClass(toolGroup.group)
+        }));
     }
 
     function getProgressGroups() {
@@ -635,9 +1451,10 @@
     }
 
     function getBuildPathGroups() {
+        const availableTools = roleAwareTools();
         return buildPathGroups.map((group) => ({
             title: group.title,
-            tools: group.tools.map((title) => allTools.find((tool) => tool.title === title)).filter(Boolean),
+            tools: group.tools.map((title) => availableTools.find((tool) => tool.title === title)).filter(Boolean),
             groupClass: group.groupClass,
             note: group.note
         }));
@@ -687,6 +1504,7 @@
         const article = document.createElement("article");
         article.className = `control-card ${groupClass(tool.group)}`;
         article.dataset.mascot = tool.mascot;
+        article.dataset.toolboxRole = tool.adminOnly ? "admin" : tool.hidden ? "hidden" : tool.planned ? "planned" : "creator";
 
         const media = document.createElement("div");
         media.className = "card-media";
@@ -833,5 +1651,6 @@
         });
     }
 
+    configureRoleBanner();
     render("ascending");
 }());

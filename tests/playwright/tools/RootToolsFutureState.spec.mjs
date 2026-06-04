@@ -49,36 +49,50 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Progress" })).not.toHaveAttribute("aria-disabled", "true");
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Planned tools hidden • Switch to Admin View");
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=admin/);
     await expect(page.getByText("Progress Wireframe")).toHaveCount(0);
     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
-    const localizationCard = page.locator(".control-card").filter({
-      has: page.locator("h3", { hasText: "Localization" })
+    const languagesCard = page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: "Languages" })
     });
-    await expect(localizationCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/localization/index.html");
-    const defaultToolLabels = await page.locator("[data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+    await expect(languagesCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/languages/index.html");
+    const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(defaultToolLabels).toEqual(expect.arrayContaining([
       "Audio",
+      "Build Game",
+      "Colors",
+      "Controls",
       "Fonts",
-      "Input Mapping",
-      "Learn",
+      "Languages",
       "Marketplace",
-      "Music Library",
-      "Palette / Colors",
-      "Settings",
-      "Sound Effects",
-      "Speech to Text",
-      "Storage",
-      "Text to Speech",
-      "Voice"
+      "Music",
+      "Saved Data",
+      "Voices",
+      "Worlds"
     ]));
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
-      ["Storage", "Inspector"].join(" "),
+      ["Stor", "age", " ", "Inspector"].join(""),
       ["So", "und"].join(""),
-      ["In", "put"].join("")
+      ["In", "put"].join(""),
+      ["Palette", " / ", "Colors"].join(""),
+      ["In", "put", " Mapping"].join(""),
+      ["Object", " Vector"].join(""),
+      ["World", " Vector"].join(""),
+      ["Music", " Library"].join(""),
+      ["Local", "ization"].join("")
     ];
     expect(defaultToolLabels.filter((label) => oldStandaloneLabels.includes(label))).toEqual([]);
+    expect(defaultToolLabels).not.toEqual(expect.arrayContaining([
+      "Users",
+      "Environments",
+      "Game Migration",
+      "Platform Settings",
+      "Cloud",
+      "Custom Extensions"
+    ]));
     await page.getByRole("button", { name: "Progress" }).click();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='locked']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='ready']").first()).toBeVisible();
@@ -88,7 +102,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByText("Project Progress: Core path in-progress")).toBeVisible();
     await expect(page.getByText("Publishing Progress: Publish blocked until configuration and required assets are ready")).toBeVisible();
     await expect(page.getByText("Current Focus: Complete Game Configuration")).toBeVisible();
-    await expect(page.getByText("Recommended Next Tool: Game Configuration")).toBeVisible();
+    await expect(page.getByText("Recommended Next Tool: Build Game")).toBeVisible();
     await expect(page.getByText(/requiredForTestable:/).first()).toBeVisible();
     await expect(page.getByText(/requiredForPublish:/).first()).toBeVisible();
     await page.getByRole("button", { name: "Build Path" }).click();
@@ -99,8 +113,8 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-tools-accordion='Build Game']")).toBeVisible();
     await expect(page.locator("[data-tools-accordion='Game Testing']")).toBeVisible();
     await expect(page.locator("[data-tools-accordion='Publish']")).toBeVisible();
-    await expect(page.getByText("Build Game is a path milestone in this wireframe, not a separate Toolbox tool.")).toBeVisible();
-    await expect(page.getByText("Game Testing is a readiness milestone; Storage remains a side/capability tool unless a future registry rule requires it.")).toBeVisible();
+    await expect(page.getByText("Build Game is the package and playable-output checkpoint for this wireframe.")).toBeVisible();
+    await expect(page.getByText("Game Testing collects test readiness, hitboxes, debug policy, performance checks, and event review.")).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Build Path$/ })).toHaveCount(0);
     await expect(page.locator("main").getByText("Arcade", { exact: true })).toHaveCount(0);
     const toolLabels = await page.locator("[data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
@@ -111,6 +125,23 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(hrefs.filter((href) => href && /(^|\/|\.\.\/)tools\/old_/.test(href))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
     expect(pageErrors).toEqual([]);
+
+    await page.locator("[data-toolbox-role-banner]").click();
+    await page.waitForURL(/role=admin/);
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("ADMIN VIEW • Planned tools visible • Switch to Creator View");
+    const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+    expect(adminLabels).toEqual(expect.arrayContaining([
+      "Users",
+      "Environments",
+      "Game Migration",
+      "Platform Settings",
+      "Cloud",
+      "Custom Extensions"
+    ]));
+    await page.locator("[data-toolbox-role-banner]").click();
+    await page.waitForURL(/role=user/);
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Planned tools hidden • Switch to Admin View");
+    await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
