@@ -67,7 +67,7 @@ function renderProjectList() {
   if (projects.length === 0) {
     const emptyState = document.createElement("p");
     emptyState.className = "status";
-    emptyState.textContent = "No mock projects. Create or seed a project to continue.";
+    emptyState.textContent = "No projects. Create or seed a project to continue.";
     elements.projectList.append(emptyState);
     return;
   }

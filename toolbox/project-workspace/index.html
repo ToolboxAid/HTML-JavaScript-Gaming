@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Project Workspace - GameFoundryStudio</title>
-    <meta name="description" content="Project Workspace Toolbox mock repository for project identity, progress, and publish readiness without real database or persistence behavior.">
+    <meta name="description" content="Project Workspace Toolbox page for project identity, progress, and publish readiness.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Project Workspace</div>
                 <h1>Project Workspace</h1>
-                <p class="lede">Create, open, and delete mock projects against an in-memory SQL-shaped repository while preserving the multi-user-ready table contract.</p>
+                <p class="lede">Create, open, and delete projects while reviewing progress and publish readiness.</p>
             </div>
         </section>
         <section class="section">
@@ -34,7 +34,7 @@
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack content-stack--compact" data-project-form>
                                         <label for="projectNameInput">Project Name <input id="projectNameInput" type="text" placeholder="Untitled game project" data-project-name-input></label>
-                                        <button class="btn primary" type="submit">Create Project</button>
+                                        <button class="btn" type="submit">Create Project</button>
                                     </form>
                                     <button class="btn" type="button" data-project-delete-active>Delete Open Project</button>
                                 </div>
@@ -42,16 +42,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Open Projects</summary>
                                 <div class="accordion-body">
-                                    <div class="content-stack content-stack--compact" aria-label="Mock projects" data-project-list></div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion">
-                                <summary>Mock Repository Contract</summary>
-                                <div class="accordion-body">
-                                    <p><span class="pill">users</span> id, displayName, email, role.</p>
-                                    <p><span class="pill">projects</span> id, ownerUserId, name, status.</p>
-                                    <p><span class="pill">project_members</span> projectId, userId, permission.</p>
-                                    <p><span class="pill">Permissions</span> Owner, Editor, Viewer, Admin.</p>
+                                    <div class="content-stack content-stack--compact" aria-label="Projects" data-project-list></div>
                                 </div>
                             </details>
                         </div>
@@ -60,7 +51,7 @@
                     <section class="tool-center-panel">
                         <img src="assets/theme-v2/images/image-missing.svg" alt="Project Workspace preview">
                         <h2>Workspace Overview</h2>
-                        <p>Project Workspace now runs against the in-memory mock repository approved for the first real rebuild slice. It does not persist data or connect to a real database.</p>
+                        <p>Project Workspace now manages the local project list for the first real rebuild slice. It does not persist data or connect to external services.</p>
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
@@ -90,7 +81,7 @@
                                     <article class="callout"><h3>Recommended Next Tool</h3><p data-recommended-next-tool>Game Configuration</p></article>
                                     <article class="callout"><h3>Checklist</h3><ul data-project-progress-checklist><li>Project identity: Complete</li></ul></article>
                                 </div>
-                                <div class="status" role="status" data-project-workspace-log>Mock repository seeded with Demo Project.</div>
+                                <div class="status" role="status" data-project-workspace-log>Demo Project seeded.</div>
                             </div>
                         </article>
                         <div class="accordion-stack" data-project-output-panels>
@@ -99,7 +90,7 @@
                                 <div class="accordion-body">
                                     <div class="table-wrapper">
                                         <table class="data-table">
-                                            <caption>Mock readiness output</caption>
+                                            <caption>Readiness output</caption>
                                             <thead>
                                                 <tr><th scope="col">Path</th><th scope="col">Status</th><th scope="col">Next Tool</th></tr>
                                             </thead>
@@ -117,7 +108,7 @@
                                 <div class="accordion-body">
                                     <div class="table-wrapper">
                                         <table class="data-table">
-                                            <caption>Mock repository row counts</caption>
+                                            <caption>Project data row counts</caption>
                                             <thead>
                                                 <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
                                             </thead>
@@ -150,7 +141,7 @@
                         <article class="card" role="dialog" aria-labelledby="project-workspace-missing-requirements-title" data-missing-requirements>
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Mock Requirements</div>
+                                    <div class="kicker">Requirements</div>
                                     <h3 id="project-workspace-missing-requirements-title">Missing Requirements</h3>
                                 </div>
                                 <p>This card remains a static review surface for the next required tools. It does not block, save, or validate runtime state.</p>
@@ -159,7 +150,7 @@
                                     <article class="callout"><h3>Game Configuration</h3><p><span class="pill">Planned</span> Choose release profile and debug policy.</p></article>
                                     <article class="callout"><h3>Publish</h3><p><span class="pill">Planned</span> Prepare share metadata later.</p></article>
                                 </div>
-                                <div class="status" role="status">Mock-only: Project Workspace does not run real publish gating yet.</div>
+                                <div class="status" role="status">Project Workspace does not run real publish gating yet.</div>
                             </div>
                         </article>
                     </section>
@@ -172,7 +163,7 @@
                                 <summary>Status Log</summary>
                                 <div class="accordion-body">
                                     <p>Project Workspace operations report status in the center panel while the right column stays reserved for inspector status and diagnostics.</p>
-                                    <div class="status" role="status">Mock repository ready.</div>
+                                    <div class="status" role="status">Project data ready.</div>
                                 </div>
                             </details>
                         </div>

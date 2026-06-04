@@ -52,6 +52,8 @@ test("Project Workspace creates, opens, and deletes mock projects", async ({ pag
   try {
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Create Project" })).toHaveClass("btn");
+    await expect(page.getByRole("button", { name: "Delete Open Project" })).toHaveClass("btn");
     await expect(page.locator("[data-active-project-name]")).toHaveText("Demo Project");
     await expect(page.locator("[data-project-list]")).toContainText("Demo Project");
     const demoProjectRow = page.locator("[data-project-row='demo-project']");
