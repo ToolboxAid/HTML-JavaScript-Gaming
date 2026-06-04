@@ -190,6 +190,51 @@ test("Project Workspace uses the wide Theme V2 tool layout at desktop widths", a
   }
 });
 
+test("representative Toolbox tool pages use the wide Theme V2 layout", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  const failures = await openRepoPage(page, "/toolbox/objects/index.html");
+  const representativeToolPages = [
+    { group: "Create", path: "/toolbox/objects/index.html" },
+    { group: "Build", path: "/toolbox/game-design/index.html" },
+    { group: "Content", path: "/toolbox/assets/index.html" },
+    { group: "Media", path: "/toolbox/audio/index.html" },
+    { group: "Test", path: "/toolbox/controls/index.html" },
+    { group: "Share", path: "/toolbox/publish/index.html" },
+    { group: "Account", path: "/toolbox/saved-data/index.html" }
+  ];
+
+  try {
+    for (const toolPage of representativeToolPages) {
+      await page.goto(`${failures.server.baseUrl}${toolPage.path}`, { waitUntil: "networkidle" });
+      await expect(page.locator(".container--tool-wide")).toBeVisible();
+      await expect(page.locator(".tool-workspace--wide")).toBeVisible();
+      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+      const layout = await page.locator(".tool-workspace--wide").evaluate((workspace) => {
+        const container = workspace.closest(".container--tool-wide");
+        const columns = getComputedStyle(workspace).gridTemplateColumns
+          .split(" ")
+          .map((value) => Number.parseFloat(value));
+        const [left, center, right] = columns;
+        return {
+          center,
+          containerWidth: container.getBoundingClientRect().width,
+          left,
+          right,
+          viewportWidth: window.innerWidth
+        };
+      });
+      expect(layout.containerWidth, `${toolPage.group} page uses wide container`).toBeGreaterThan(1300);
+      expect(layout.containerWidth / layout.viewportWidth, `${toolPage.group} page reduces side margins`).toBeGreaterThan(0.95);
+      expect(Math.abs(layout.left - layout.right), `${toolPage.group} side panels are balanced`).toBeLessThan(2);
+      expect(layout.center, `${toolPage.group} center panel is dominant`).toBeGreaterThan(layout.left);
+    }
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
 test("Learn Getting Started documents screen and layout guidance", async ({ page }) => {
   const failures = await openRepoPage(page, "/learn/index.html");
 
