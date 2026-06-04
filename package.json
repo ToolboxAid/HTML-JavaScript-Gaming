@@ -10,6 +10,7 @@
     "test:lanes": "node ./scripts/run-targeted-test-lanes.mjs",
     "test:lanes:preflight": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
     "test:lane:workspace-contract": "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
+    "test:lane:project-workspace": "node ./scripts/run-targeted-test-lanes.mjs --lane project-workspace",
     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
     "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",

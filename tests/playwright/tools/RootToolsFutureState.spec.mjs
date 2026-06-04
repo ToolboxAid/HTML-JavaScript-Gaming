@@ -227,10 +227,11 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='Under Construction']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='Wireframe']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
-    await expect(page.getByText("Project Progress: Core path under construction")).toBeVisible();
+    await expect(page.getByText("Active Project: Demo Project")).toBeVisible();
+    await expect(page.getByText("Project Progress: Demo Project identity ready")).toBeVisible();
     await expect(page.getByText("Publishing Progress: Publish blocked until configuration and required assets are ready")).toBeVisible();
     await expect(page.getByText("Current Focus: Complete Game Configuration")).toBeVisible();
-    await expect(page.getByText("Recommended Next Tool: Build Game")).toBeVisible();
+    await expect(page.getByText("Recommended Next Tool: Game Configuration")).toBeVisible();
     await expect(page.getByText(/requiredForTestable:/).first()).toBeVisible();
     await expect(page.getByText(/requiredForPublish:/).first()).toBeVisible();
     await expect(page.getByText(/requires:/).first()).toBeVisible();

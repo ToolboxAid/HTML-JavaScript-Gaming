@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Project Workspace - GameFoundryStudio</title>
-    <meta name="description" content="Project Workspace Toolbox wireframe for planning Build, Play and Share readiness without persistence or database behavior.">
+    <meta name="description" content="Project Workspace Toolbox mock repository for project identity, progress, and publish readiness without real database or persistence behavior.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Project Workspace</div>
                 <h1>Project Workspace</h1>
-                <p class="lede">Wireframe the Build, Play and Share workspace for one game project without adding save, load, persistence, or database behavior.</p>
+                <p class="lede">Create, open, and delete mock projects against an in-memory SQL-shaped repository while preserving the multi-user-ready table contract.</p>
             </div>
         </section>
         <section class="section">
@@ -31,41 +31,27 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Project Setup</summary>
-                                <div class="accordion-body">
-                                    <form>
-                                        <label>Project Name <input type="text" placeholder="Untitled game project"></label>
-                                        <label>Project Type <input type="text" placeholder="Prototype, vertical slice, release"></label>
-                                        <label>Target Audience <input type="text" placeholder="Players, makers, classroom, community"></label>
-                                        <label>Current Goal <textarea rows="3" placeholder="What this project needs next"></textarea></label>
+                                <div class="accordion-body content-stack">
+                                    <form class="content-stack content-stack--compact" data-project-form>
+                                        <label for="projectNameInput">Project Name <input id="projectNameInput" type="text" placeholder="Untitled game project" data-project-name-input></label>
+                                        <button class="btn primary" type="submit">Create Project</button>
                                     </form>
+                                    <button class="btn" type="button" data-project-delete-active>Delete Open Project</button>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Open Projects</summary>
+                                <div class="accordion-body">
+                                    <div class="content-stack content-stack--compact" aria-label="Mock projects" data-project-list></div>
                                 </div>
                             </details>
                             <details class="vertical-accordion">
-                                <summary>Build Play Share</summary>
+                                <summary>Mock Repository Contract</summary>
                                 <div class="accordion-body">
-                                    <p><span class="pill">Build</span> Define design, configuration, assets, input, world, and release requirements.</p>
-                                    <p><span class="pill">Play</span> Review playable readiness, test path, progress gates, and release blockers.</p>
-                                    <p><span class="pill">Share</span> Prepare publishing, profile, analytics, marketplace, and community surfaces.</p>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion">
-                                <summary>Project Progress Model</summary>
-                                <div class="accordion-body">
-                                    <p><span class="pill">Project Progress</span> Core path in-progress.</p>
-                                    <p><span class="pill">Publishing Progress</span> Publish blocked until configuration and required assets are ready.</p>
-                                    <p><span class="pill">Current Focus</span> Complete Game Configuration.</p>
-                                    <p><span class="pill">Recommended Next Tool</span> Game Configuration.</p>
-                                    <p><span class="pill">requiredForTestable</span> Project Workspace, Game Design, Game Configuration, Colors, Controls, Assets, Objects, Worlds, Animations.</p>
-                                    <p><span class="pill">requiredForPublish</span> Required testable path plus Publish.</p>
-                                    <p><span class="pill">status</span> locked, ready, in-progress, or complete.</p>
-                                    <p><span class="pill">progressChecklist</span> Static checklist text only; no persistence is implemented.</p>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion">
-                                <summary>Requirement Gate</summary>
-                                <div class="accordion-body">
-                                    <p>Static wireframe gate for required playable checks. No project state is saved.</p>
-                                    <button class="btn" type="button">Review requirements</button>
+                                    <p><span class="pill">users</span> id, displayName, email, role.</p>
+                                    <p><span class="pill">projects</span> id, ownerUserId, name, status.</p>
+                                    <p><span class="pill">project_members</span> projectId, userId, permission.</p>
+                                    <p><span class="pill">Permissions</span> Owner, Editor, Viewer, Admin.</p>
                                 </div>
                             </details>
                         </div>
@@ -74,25 +60,37 @@
                     <section class="tool-center-panel">
                         <img src="assets/theme-v2/images/image-missing.svg" alt="Project Workspace preview">
                         <h2>Workspace Overview</h2>
-                        <p>Project Workspace is the static planning surface that coordinates which tools are ready, blocked, or deferred before a game moves toward playable release.</p>
-                        <div class="grid cols-3" aria-label="Project Workspace readiness summary">
-                            <article class="mini-stat"><strong>3</strong>Required tools ready</article>
-                            <article class="mini-stat"><strong>4</strong>Missing requirements</article>
-                            <article class="mini-stat"><strong>2</strong>Deferred share tasks</article>
-                        </div>
-                        <article class="card" role="dialog" aria-labelledby="project-workspace-missing-requirements-title">
+                        <p>Project Workspace now runs against the in-memory mock repository approved for the first real rebuild slice. It does not persist data or connect to a real database.</p>
+                        <article class="card">
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Static Overlay Wireframe</div>
-                                    <h3 id="project-workspace-missing-requirements-title">Missing Requirements</h3>
+                                    <div class="kicker">Open Project</div>
+                                    <h3 data-active-project-name>Demo Project</h3>
                                 </div>
-                                <p>This static card represents the missing-requirements overlay using existing Theme V2 card, pill, and status classes.</p>
+                                <div class="grid cols-3" aria-label="Active project summary">
+                                    <article class="mini-stat"><strong data-active-project-status>Under Construction</strong>Project Status</article>
+                                    <article class="mini-stat"><strong data-active-project-owner>Creator User</strong>Owner</article>
+                                    <article class="mini-stat"><strong data-recommended-next-tool>Game Configuration</strong>Recommended Next Tool</article>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Progress Panels</div>
+                                    <h3>Project Progress</h3>
+                                </div>
                                 <div class="grid cols-3">
-                                    <article class="callout"><h3>Game Design</h3><p><span class="pill">in-progress</span> Define win and lose conditions.</p></article>
-                                    <article class="callout"><h3>Game Configuration</h3><p><span class="pill">locked</span> Choose release profile and debug policy.</p></article>
-                                    <article class="callout"><h3>Publish</h3><p><span class="pill">deferred</span> Prepare share metadata later.</p></article>
+                                    <article class="callout"><h3>Project Status</h3><p data-project-status>Under Construction</p></article>
+                                    <article class="callout"><h3>Project Progress</h3><p data-project-progress>Demo Project identity ready</p></article>
+                                    <article class="callout"><h3>Publishing Progress</h3><p data-publishing-progress>Publish blocked until configuration and required assets are ready</p></article>
                                 </div>
-                                <div class="status" role="status">Wireframe only: this overlay does not block, save, or validate runtime state.</div>
+                                <div class="grid cols-3">
+                                    <article class="callout"><h3>Current Focus</h3><p data-current-focus>Complete Game Configuration</p></article>
+                                    <article class="callout"><h3>Recommended Next Tool</h3><p data-recommended-next-tool>Game Configuration</p></article>
+                                    <article class="callout"><h3>Checklist</h3><ul data-project-progress-checklist><li>Project identity: Complete</li></ul></article>
+                                </div>
+                                <div class="status" role="status" data-project-workspace-log>Mock repository seeded with Demo Project.</div>
                             </div>
                         </article>
                     </section>
@@ -102,28 +100,37 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Readiness Output</summary>
+                                <summary>Repository Tables</summary>
                                 <div class="accordion-body">
                                     <div class="table-wrapper">
                                         <table class="data-table">
-                                            <caption>Static readiness wireframe</caption>
+                                            <caption>Mock repository row counts</caption>
                                             <thead>
-                                                <tr><th scope="col">Path</th><th scope="col">Status</th><th scope="col">Next Tool</th></tr>
+                                                <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
                                             </thead>
-                                            <tbody>
-                                                <tr><td>Plan</td><td>in-progress</td><td>Game Design</td></tr>
-                                                <tr><td>Configure</td><td>locked</td><td>Game Configuration</td></tr>
-                                                <tr><td>Release</td><td>deferred</td><td>Publish</td></tr>
+                                            <tbody data-project-table-counts>
+                                                <tr><td>users</td><td>3</td></tr>
+                                                <tr><td>projects</td><td>1</td></tr>
+                                                <tr><td>project_members</td><td>3</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
-                                <summary>Status Log</summary>
+                            <details class="vertical-accordion" open>
+                                <summary>Project Members</summary>
                                 <div class="accordion-body">
-                                    <p>Static log text for Project Workspace review. No runtime logging is implemented.</p>
-                                    <div class="status" role="status">Last check: requirements overlay wireframe visible.</div>
+                                    <div class="table-wrapper">
+                                        <table class="data-table">
+                                            <caption>Open project members</caption>
+                                            <thead>
+                                                <tr><th scope="col">User</th><th scope="col">User ID</th><th scope="col">Permission</th></tr>
+                                            </thead>
+                                            <tbody data-project-members-table>
+                                                <tr><td>Creator User</td><td>creator-user</td><td>Owner</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </details>
                         </div>
@@ -135,6 +142,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/project-workspace/project-workspace.js"></script>
 </body>
 
 </html>

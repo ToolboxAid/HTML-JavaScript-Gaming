@@ -122,6 +122,26 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes."
   },
+  "project-workspace": {
+    affectedSurface: "Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge",
+    commands: [
+      playwrightCommand("tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs"
+    ],
+    fixtures: [
+      "repo-served Project Workspace page",
+      "repo-served Toolbox page with role simulation",
+      "in-memory SQL-shaped mock project repository"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Project Workspace rebuild slice validates mock users/projects/project_members data actions, project lifecycle controls, and project-driven Progress/Build Path copy without exercising unrelated toolbox routes."
+  },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [

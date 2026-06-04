@@ -1,3 +1,5 @@
+import { createProjectWorkspaceMockRepository } from "./project-workspace/project-workspace-mock-repository.js";
+
 (function () {
     const list = document.querySelector("[data-tools-accordion-list]");
     if (!list) {
@@ -10,9 +12,12 @@
     const buildPathButton = document.querySelector("[data-tools-view='build-path']");
     const roleBanner = document.querySelector("[data-toolbox-role-banner]");
     const projectDataMenu = document.querySelector("[data-project-data-menu]");
+    const projectDataStatus = document.querySelector("[data-project-data-status]");
     const toolCount = document.querySelector("[data-tools-count]");
     const urlRole = new URLSearchParams(window.location.search).get("role");
     const toolboxRole = urlRole === "admin" ? "admin" : urlRole === "user" ? "creator" : "guest";
+    const projectWorkspaceRepository = createProjectWorkspaceMockRepository();
+    projectWorkspaceRepository.resetProjectData();
     let currentMode = "ascending";
     const toolboxStatusModel = Object.freeze(["Ready", "Wireframe", "Under Construction", "Planned", "Hidden", "Deprecated"]);
     const statusLabelMap = Object.freeze({
@@ -821,12 +826,17 @@
         status: "ready",
         progressChecklist: ["Review readiness"]
     };
-    const projectProgressSummary = {
-        projectProgress: "Core path under construction",
-        publishingProgress: "Publish blocked until configuration and required assets are ready",
-        currentFocus: "Complete Game Configuration",
-        recommendedNextTool: "Build Game"
-    };
+    function getProjectProgressSummary() {
+        const activeProject = projectWorkspaceRepository.getActiveProject();
+        const progress = projectWorkspaceRepository.getProjectProgress();
+        return {
+            activeProjectName: activeProject?.name || "No active project",
+            projectProgress: progress.projectProgress,
+            publishingProgress: progress.publishingProgress,
+            currentFocus: progress.currentFocus,
+            recommendedNextTool: progress.recommendedNextTool
+        };
+    }
     const progressModel = {
         "AI Assistant": {
                 "requiredForTestable": false,
@@ -1310,6 +1320,39 @@
         }
     }
 
+    function configureProjectDataActions() {
+        if (!projectDataMenu || toolboxRole !== "admin") {
+            return;
+        }
+
+        projectDataMenu.addEventListener("click", (event) => {
+            const actionButton = event.target.closest("[data-project-data-action]");
+            if (!actionButton) {
+                return;
+            }
+
+            let actionLabel = "Project Data updated";
+
+            if (actionButton.dataset.projectDataAction === "reset") {
+                projectWorkspaceRepository.resetProjectData();
+                actionLabel = "Project Data reset";
+            } else if (actionButton.dataset.projectDataAction === "seed") {
+                projectWorkspaceRepository.seedDemoProject();
+                actionLabel = "Demo Project seeded";
+            } else if (actionButton.dataset.projectDataAction === "clear") {
+                projectWorkspaceRepository.clearTestData();
+                actionLabel = "Test data cleared";
+            }
+
+            if (projectDataStatus) {
+                const activeProject = projectWorkspaceRepository.getActiveProject();
+                projectDataStatus.textContent = `${actionLabel}. Active project: ${activeProject?.name || "none"}.`;
+            }
+
+            render(currentMode);
+        });
+    }
+
     function groupClass(groupName) {
         return groupClassMap[groupName] || "";
     }
@@ -1371,20 +1414,27 @@
 
     function getBuildPathGroups() {
         const availableTools = roleAwareTools();
+        const activeProject = projectWorkspaceRepository.getActiveProject();
         return buildPathGroups.map((group) => ({
             title: group.title,
             tools: group.tools.map((title) => availableTools.find((tool) => tool.title === title)).filter(Boolean),
             groupClass: group.groupClass,
-            note: group.note
+            note: group.title === "Project Workspace"
+                ? `${group.note} Active mock project: ${activeProject?.name || "none"}.`
+                : group.note
         }));
     }
 
     function createProgressSummary() {
+        const projectProgressSummary = getProjectProgressSummary();
         const article = document.createElement("article");
         article.className = "callout";
 
         const title = document.createElement("h3");
         title.textContent = "Project Progress";
+
+        const activeProject = document.createElement("p");
+        activeProject.textContent = "Active Project: " + projectProgressSummary.activeProjectName;
 
         const projectProgress = document.createElement("p");
         projectProgress.textContent = "Project Progress: " + projectProgressSummary.projectProgress;
@@ -1398,7 +1448,7 @@
         const nextTool = document.createElement("p");
         nextTool.textContent = "Recommended Next Tool: " + projectProgressSummary.recommendedNextTool;
 
-        article.append(title, projectProgress, publishingProgress, currentFocus, nextTool);
+        article.append(title, activeProject, projectProgress, publishingProgress, currentFocus, nextTool);
         return article;
     }
 
@@ -1620,5 +1670,6 @@
     }
 
     configureRoleBanner();
+    configureProjectDataActions();
     render("ascending");
 }());
