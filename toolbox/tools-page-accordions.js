@@ -160,6 +160,38 @@
             ]
         },
         {
+            group: "Tooling",
+            tools: [
+                {
+                    title: "Configuration Admin",
+                    href: "../toolbox/configuration-admin/index.html",
+                    image: "../assets/theme-v2/images/tools/settings-studio.png",
+                    description: "Review settings, storage, cloud state, documentation, and account-level administration.",
+                    role: "ForgeBot",
+                    mascot: "forgebot",
+                    theme: "forge"
+                },
+                {
+                    title: "Tool Builder",
+                    href: "../toolbox/builder/index.html",
+                    image: "../assets/theme-v2/images/tools/game-builder.png",
+                    description: "Prepare reusable tool shell layouts for future Game Foundry Studio tools.",
+                    role: "ForgeBot",
+                    mascot: "forgebot",
+                    theme: "forge"
+                },
+                {
+                    title: "Tool Creator",
+                    href: "../toolbox/creator/index.html",
+                    image: "../assets/theme-v2/images/tools/game-design-studio.png",
+                    description: "Draft creator-facing tool pages from the shared toolbox template structure.",
+                    role: "ForgeBot",
+                    mascot: "forgebot",
+                    theme: "forge"
+                }
+            ]
+        },
+        {
             group: "Worlds",
             tools: [
                 {
@@ -212,6 +244,7 @@
         "Colors": "tool-group-platform-cloud",
         "Input": "tool-group-development-system",
         "Objects": "tool-group-build-create",
+        "Tooling": "tool-group-development-system",
         "Worlds": "tool-group-content-assets"
     };
     const groupSwatchMap = {
@@ -221,6 +254,7 @@
         "Colors": "swatch-blue",
         "Input": "swatch-gray",
         "Objects": "swatch-pink",
+        "Tooling": "swatch-gray",
         "Worlds": "swatch-orange"
     };
     const badgeMap = {
