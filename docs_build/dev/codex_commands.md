@@ -141,3 +141,30 @@ Required reports:
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/project_workspace_governance_toolbox_modes_report.md`
+
+## PR_26155_002
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Created `account/achievements.html` as an active Theme V2 wireframe page.
+- Added external JavaScript in `assets/theme-v2/js/account-achievements.js` only for Build, Play and Share tab switching.
+- Added Achievements to Account navigation where account links are listed.
+- Used existing Theme V2 buttons, cards, tables, panels, status, and layout classes only.
+- Avoided page-local CSS, inline styles, script blocks, style blocks, and inline event handlers.
+- Added Build tab content for created games, stats, ratings, and quick actions.
+- Added Play tab content for played games, favorite/share actions, progress, and ratings.
+- Added Share tab content for creator share analytics and games I shared.
+- Added targeted Playwright coverage for the Achievements page only.
+
+Validation:
+- Targeted Playwright: `npx playwright test tests/playwright/account/AchievementsPage.spec.mjs --project=playwright --workers=1 --reporter=list`.
+- Static validation for inline script/style/event handlers.
+- `node --check assets/theme-v2/js/account-achievements.js`.
+- `node --check tests/playwright/account/AchievementsPage.spec.mjs`.
+- `git diff --check`.
+- Full samples smoke test skipped because samples are not in scope.
+
+Required reports:
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/account_achievements_wireframe_report.md`

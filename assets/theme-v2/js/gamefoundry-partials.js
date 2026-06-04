@@ -62,6 +62,7 @@
         "account-profile": "account/profile.html",
         "account-preferences": "account/preferences.html",
         "account-security": "account/security.html",
+        "account-achievements": "account/achievements.html",
         branding: "admin/branding.html",
         controls: "admin/controls.html",
         "design-system": "admin/design-system.html",

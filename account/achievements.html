@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Achievements - Game Foundry Studio</title>
+    <meta name="description" content="Review Build, Play and Share achievements for Game Foundry Studio accounts.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+</head>
+
+<body>
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Account</div>
+                <h1>Achievements</h1>
+                <p class="lede">A wireframe account view for creator activity, play history and sharing milestones.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container account-panel">
+                <aside class="side-menu" aria-label="Account pages">
+                    <a href="index.html">Account Home</a>
+                    <a href="profile.html">Profile</a>
+                    <a href="preferences.html">Preferences</a>
+                    <a href="security.html">Security</a>
+                    <a class="active" href="achievements.html">Achievements</a>
+                </aside>
+                <div class="content-stack">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="kicker">Status = Wireframe</div>
+                            <h2>Build, Play and Share progress</h2>
+                            <p class="lede">Use the account achievements modes to review game creation, play activity and share reach without adding live account behavior.</p>
+                            <div class="hero-actions" aria-label="Achievement views">
+                                <button class="btn primary" type="button" data-achievements-tab="build" aria-pressed="true">Build</button>
+                                <button class="btn" type="button" data-achievements-tab="play" aria-pressed="false">Play</button>
+                                <button class="btn" type="button" data-achievements-tab="share" aria-pressed="false">Share</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section data-achievements-panel="build" aria-labelledby="build-achievements-title">
+                        <div class="content-stack">
+                            <div class="grid cols-4" aria-label="Build stats">
+                                <article class="mini-stat"><strong>12</strong>Created games</article>
+                                <article class="mini-stat"><strong>8</strong>Playable builds</article>
+                                <article class="mini-stat"><strong>4.7</strong>Average creator rating</article>
+                                <article class="mini-stat"><strong>3</strong>Ready to publish</article>
+                            </div>
+                            <div class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Build</div>
+                                    <h2 id="build-achievements-title">Created games</h2>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table">
+                                        <caption>Build achievements and ratings</caption>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Game</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Stats</th>
+                                                <th scope="col">Rating</th>
+                                                <th scope="col">Quick actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Sky Forge Sprint</td>
+                                                <td>Playable</td>
+                                                <td>18 builds, 6 releases</td>
+                                                <td>4.8</td>
+                                                <td><button class="btn" type="button">Open build</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Crystal Circuit</td>
+                                                <td>Draft</td>
+                                                <td>9 builds, 2 release checks</td>
+                                                <td>4.5</td>
+                                                <td><button class="btn" type="button">Review stats</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Moonlit Maze</td>
+                                                <td>Ready</td>
+                                                <td>21 builds, 8 ratings</td>
+                                                <td>4.9</td>
+                                                <td><button class="btn" type="button">Prepare publish</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="status" role="status">Build wireframe only: quick actions are enabled placeholders for future account workflows.</div>
+                            </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section data-achievements-panel="play" aria-labelledby="play-achievements-title" hidden>
+                        <div class="content-stack">
+                            <div class="grid cols-4" aria-label="Play stats">
+                                <article class="mini-stat"><strong>36</strong>Played games</article>
+                                <article class="mini-stat"><strong>14</strong>Favorites</article>
+                                <article class="mini-stat"><strong>72%</strong>Average progress</article>
+                                <article class="mini-stat"><strong>4.6</strong>Average player rating</article>
+                            </div>
+                            <div class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Play</div>
+                                    <h2 id="play-achievements-title">Played games</h2>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table">
+                                        <caption>Play progress and favorite actions</caption>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Game</th>
+                                                <th scope="col">Progress</th>
+                                                <th scope="col">Rating</th>
+                                                <th scope="col">Favorite/share actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Arc Nova Run</td>
+                                                <td>84%</td>
+                                                <td>5.0</td>
+                                                <td><button class="btn" type="button">Favorite</button> <button class="btn" type="button">Share</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Garden Grid</td>
+                                                <td>61%</td>
+                                                <td>4.4</td>
+                                                <td><button class="btn" type="button">Favorite</button> <button class="btn" type="button">Share</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Nova Keys</td>
+                                                <td>100%</td>
+                                                <td>4.9</td>
+                                                <td><button class="btn" type="button">Favorite</button> <button class="btn" type="button">Share</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="status" role="status">Play wireframe only: favorite, share, progress and rating controls are enabled placeholders.</div>
+                            </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section data-achievements-panel="share" aria-labelledby="share-achievements-title" hidden>
+                        <div class="content-stack">
+                            <div class="grid cols-4" aria-label="Share analytics">
+                                <article class="mini-stat"><strong>9.4K</strong>Share views</article>
+                                <article class="mini-stat"><strong>1.8K</strong>Launches from shares</article>
+                                <article class="mini-stat"><strong>428</strong>Profile follows</article>
+                                <article class="mini-stat"><strong>16</strong>Games shared</article>
+                            </div>
+                            <div class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Share</div>
+                                    <h2 id="share-achievements-title">Creator share analytics</h2>
+                                </div>
+                                <div class="grid cols-3">
+                                    <article class="callout">
+                                        <h3>Top share source</h3>
+                                        <p>Creator profile links drive the strongest launch rate for shared games.</p>
+                                    </article>
+                                    <article class="callout">
+                                        <h3>Best shared game</h3>
+                                        <p>Sky Forge Sprint leads shared launches and profile follows this month.</p>
+                                    </article>
+                                    <article class="callout">
+                                        <h3>Next milestone</h3>
+                                        <p>Reach 10K share views to unlock the next creator visibility marker.</p>
+                                    </article>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table">
+                                        <caption>Games I shared</caption>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Game</th>
+                                                <th scope="col">Views</th>
+                                                <th scope="col">Launches</th>
+                                                <th scope="col">Rating lift</th>
+                                                <th scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Sky Forge Sprint</td>
+                                                <td>4.2K</td>
+                                                <td>840</td>
+                                                <td>+0.4</td>
+                                                <td><button class="btn" type="button">Copy share link</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Moonlit Maze</td>
+                                                <td>2.7K</td>
+                                                <td>510</td>
+                                                <td>+0.3</td>
+                                                <td><button class="btn" type="button">View analytics</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Crystal Circuit</td>
+                                                <td>1.5K</td>
+                                                <td>320</td>
+                                                <td>+0.2</td>
+                                                <td><button class="btn" type="button">Share again</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="status" role="status">Share wireframe only: analytics and share actions are enabled placeholders.</div>
+                            </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="../assets/theme-v2/js/account-achievements.js" defer></script>
+</body>
+
+</html>
