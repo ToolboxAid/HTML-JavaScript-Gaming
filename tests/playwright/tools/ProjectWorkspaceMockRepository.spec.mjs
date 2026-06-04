@@ -136,6 +136,82 @@ test("Project Workspace progress panels update from mock project state", async (
   }
 });
 
+test("Project Workspace uses the wide Theme V2 tool layout at desktop widths", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+
+  try {
+    await expect(page.locator(".container--tool-wide")).toBeVisible();
+    await expect(page.locator(".tool-workspace--wide")).toBeVisible();
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    const desktopLayout = await page.locator(".tool-workspace--wide").evaluate((workspace) => {
+      const container = workspace.closest(".container--tool-wide");
+      const columns = getComputedStyle(workspace).gridTemplateColumns
+        .split(" ")
+        .map((value) => Number.parseFloat(value));
+      const [left, center, right] = columns;
+      return {
+        center,
+        containerWidth: container.getBoundingClientRect().width,
+        left,
+        right,
+        viewportWidth: window.innerWidth
+      };
+    });
+    expect(desktopLayout.containerWidth).toBeGreaterThan(1300);
+    expect(desktopLayout.containerWidth / desktopLayout.viewportWidth).toBeGreaterThan(0.95);
+    expect(Math.abs(desktopLayout.left - desktopLayout.right)).toBeLessThan(2);
+    expect(desktopLayout.center).toBeGreaterThan(desktopLayout.left);
+
+    await page.setViewportSize({ width: 1920, height: 1100 });
+    await page.reload({ waitUntil: "networkidle" });
+    const idealLayout = await page.locator(".tool-workspace--wide").evaluate((workspace) => {
+      const container = workspace.closest(".container--tool-wide");
+      const columns = getComputedStyle(workspace).gridTemplateColumns
+        .split(" ")
+        .map((value) => Number.parseFloat(value));
+      const [left, center, right] = columns;
+      return {
+        center,
+        containerWidth: container.getBoundingClientRect().width,
+        left,
+        right,
+        viewportWidth: window.innerWidth
+      };
+    });
+    expect(idealLayout.containerWidth).toBeGreaterThan(1800);
+    expect(idealLayout.containerWidth / idealLayout.viewportWidth).toBeGreaterThan(0.95);
+    expect(Math.abs(idealLayout.left - idealLayout.right)).toBeLessThan(2);
+    expect(idealLayout.center).toBeGreaterThan(idealLayout.left);
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Learn Getting Started documents screen and layout guidance", async ({ page }) => {
+  const failures = await openRepoPage(page, "/learn/index.html");
+
+  try {
+    await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Getting Started" })).toHaveAttribute("href", "getting-started/index.html");
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    await page.goto(`${failures.server.baseUrl}/learn/getting-started/index.html`, { waitUntil: "networkidle" });
+    await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
+    await expect(page.getByText("Tools are built for 1440px and larger desktop workspaces.")).toBeVisible();
+    await expect(page.getByText("1440px is the minimum comfortable desktop width")).toBeVisible();
+    await expect(page.getByText("1920px is the ideal desktop width")).toBeVisible();
+    await expect(page.getByText("Smaller screens may use stacked or collapsed panels later.")).toBeVisible();
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
 test("Toolbox Project Data controls are admin-only and drive mock Progress and Build Path views", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html?role=guest");
 

@@ -1547,6 +1547,29 @@ Rules:
 - Reusable Theme V2 patterns must live under `assets/theme-v2/css/` and must not reintroduce legacy/V1 styling.
 - Wireframe-only Toolbox rebuilds must not add implementation logic.
 
+## Tool Layout Width Standard
+
+Theme V2 tool pages are designed for 1440px and larger desktop workspaces.
+
+Desktop targets:
+- 1440px minimum comfortable desktop width.
+- 1920px ideal desktop width.
+
+Tool page layout is:
+- left margin
+- left panel
+- center panel
+- right panel
+- right margin
+
+Rules:
+- Use percentage-based responsive layout for wide tool pages.
+- Do not hardcode per-tool widths.
+- Keep left and right panels balanced.
+- Keep the center panel dominant.
+- Use reusable Theme V2 layout tokens/classes before adding new layout behavior.
+- If additional CSS is required, add only reusable Theme V2 layout patterns under `assets/theme-v2/css/` and document the design-system gap.
+
 ## Targeted Independent Validation Guidance
 
 Tool, page, and `src/` changes must use the narrowest affected validation lane that proves the changed behavior.

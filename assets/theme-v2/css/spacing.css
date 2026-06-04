@@ -39,6 +39,8 @@
   --container-max: 1180px;
   --container-gutter: var(--space-36);
   --container-width: min(var(--container-max), calc(100% - var(--container-gutter)));
+  --tool-wide-container-max: 1920px;
+  --tool-wide-container-width: min(var(--tool-wide-container-max), calc(100% - var(--container-gutter)));
   --measure-md: 560px;
   --measure-lg: 760px;
   --measure-about-title: 720px;
@@ -56,6 +58,10 @@
   --tool-workspace-left-collapsed-columns: var(--tool-column-collapsed-width) minmax(0, 1fr) var(--tool-column-width);
   --tool-workspace-right-collapsed-columns: var(--tool-column-width) minmax(0, 1fr) var(--tool-column-collapsed-width);
   --tool-workspace-both-collapsed-columns: var(--tool-column-collapsed-width) minmax(0, 1fr) var(--tool-column-collapsed-width);
+  --tool-wide-workspace-columns: minmax(16%, 20%) minmax(0, 1fr) minmax(16%, 20%);
+  --tool-wide-workspace-left-collapsed-columns: var(--tool-column-collapsed-width) minmax(0, 1fr) minmax(16%, 20%);
+  --tool-wide-workspace-right-collapsed-columns: minmax(16%, 20%) minmax(0, 1fr) var(--tool-column-collapsed-width);
+  --tool-wide-workspace-both-collapsed-columns: var(--tool-column-collapsed-width) minmax(0, 1fr) var(--tool-column-collapsed-width);
   --tool-center-image-max: 260px;
   --tool-center-copy-max: 540px;
   --tool-display-media-size: 42px;

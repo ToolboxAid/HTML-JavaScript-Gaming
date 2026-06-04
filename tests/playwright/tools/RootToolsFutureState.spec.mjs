@@ -416,7 +416,11 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
   const learnPages = [
     {
       path: "/learn/index.html",
-      headings: ["Browse by tool", "Examples", "FAQ", "Search documentation", "Tutorials", "Videos"]
+      headings: ["Browse by tool", "Examples", "FAQ", "Getting Started", "Search documentation", "Tutorials", "Videos"]
+    },
+    {
+      path: "/learn/getting-started/index.html",
+      headings: ["Desktop Target", "Ideal Width", "Minimum Comfortable Width", "Panel Layout", "Smaller Screens", "Wireframe Status"]
     },
     {
       path: "/learn/project-workspace/index.html",
