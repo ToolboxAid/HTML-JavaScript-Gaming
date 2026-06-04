@@ -37,12 +37,11 @@
                                 ],
                                 "capabilityLabel": "Planned object types",
                                 "childCapabilities": [
+                                        "Vector",
+                                        "Sprite",
                                         "Character",
                                         "Enemy",
-                                        "Decoration",
-                                        "Interactive",
-                                        "Vector Object",
-                                        "Sprite Object"
+                                        "Interactive"
                                 ]
                         },
                         {
@@ -777,13 +776,13 @@
         }
 ];
     const groupClassMap = {
-        "Create": "tool-group-build-create",
-        "Build": "tool-group-development-system",
-        "Content": "tool-group-content-assets",
-        "Media": "tool-group-media-audio",
-        "Test": "tool-group-platform-cloud",
-        "Share": "tool-group-community-marketplace",
-        "Account": "tool-group-platform-cloud"
+        "Create": "tool-group-create",
+        "Build": "tool-group-build",
+        "Content": "tool-group-content",
+        "Media": "tool-group-media",
+        "Test": "tool-group-test",
+        "Share": "tool-group-share",
+        "Account": "tool-group-account"
 };
     const groupSwatchMap = {
         "Create": "swatch-pink",
@@ -1147,7 +1146,7 @@
     const buildPathGroups = [
         {
                 "title": "Project Workspace",
-                "groupClass": "tool-group-ai-learning",
+                "groupClass": "tool-group-build",
                 "note": "Start with the single project surface that coordinates current focus, readiness, and recommended next tool.",
                 "tools": [
                         "Project Workspace"
@@ -1155,7 +1154,7 @@
         },
         {
                 "title": "Game Design",
-                "groupClass": "tool-group-development-system",
+                "groupClass": "tool-group-build",
                 "note": "Define gameplay, rules, player experience, and the requirements that shape the build path.",
                 "tools": [
                         "Game Design"
@@ -1163,7 +1162,7 @@
         },
         {
                 "title": "Game Configuration",
-                "groupClass": "tool-group-development-system",
+                "groupClass": "tool-group-build",
                 "note": "Set the release profile, debug policy, and playable gate before the required tool path is treated as ready.",
                 "tools": [
                         "Game Configuration"
@@ -1171,7 +1170,7 @@
         },
         {
                 "title": "Required Tool Path",
-                "groupClass": "tool-group-build-create",
+                "groupClass": "tool-group-create",
                 "note": "Use readiness fields to identify creator-facing blockers before a playable build.",
                 "tools": [
                         "Colors",
@@ -1187,7 +1186,7 @@
         },
         {
                 "title": "Build Game",
-                "groupClass": "tool-group-development-system",
+                "groupClass": "tool-group-build",
                 "note": "Build Game is the package and playable-output checkpoint for this wireframe.",
                 "tools": [
                         "Build Game"
@@ -1195,7 +1194,7 @@
         },
         {
                 "title": "Game Testing",
-                "groupClass": "tool-group-development-system",
+                "groupClass": "tool-group-test",
                 "note": "Game Testing collects test readiness, hitboxes, debug policy, performance checks, and event review.",
                 "tools": [
                         "Game Testing",
@@ -1207,7 +1206,7 @@
         },
         {
                 "title": "Publish",
-                "groupClass": "tool-group-community-marketplace",
+                "groupClass": "tool-group-share",
                 "note": "Publish is required for public release; Marketplace, Community, Languages, Achievements, and Ratings support Share readiness.",
                 "tools": [
                         "Publish",
@@ -1315,7 +1314,7 @@
         return progressOrder.map((status) => ({
             title: status,
             tools: getOrderedTools("ascending").filter((tool) => tool.status === status),
-            groupClass: "tool-group-development-system"
+            groupClass: "tool-group-build"
         })).filter((group) => group.tools.length > 0);
     }
 
@@ -1382,8 +1381,22 @@
         if (!Array.isArray(tool.childCapabilities) || tool.childCapabilities.length === 0) {
             return null;
         }
-        const capabilities = document.createElement("p");
-        capabilities.textContent = `${tool.capabilityLabel || "Planned child capabilities"}: ${tool.childCapabilities.join(", ")}`;
+        const capabilities = document.createElement("div");
+        capabilities.className = "content-stack content-stack--compact";
+        capabilities.dataset.childCapabilities = tool.title;
+
+        const label = document.createElement("p");
+        label.textContent = tool.capabilityLabel || "Planned child capabilities";
+
+        const list = document.createElement("ul");
+        list.setAttribute("aria-label", tool.title + " child capabilities");
+        tool.childCapabilities.forEach((capability) => {
+            const item = document.createElement("li");
+            item.textContent = capability;
+            list.append(item);
+        });
+
+        capabilities.append(label, list);
         return capabilities;
     }
 

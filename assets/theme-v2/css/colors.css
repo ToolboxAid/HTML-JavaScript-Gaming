@@ -148,16 +148,19 @@
   --accent: var(--pink)
 }
 
+.tool-group-create,
 .tool-group-build-create {
   --tool-group-color: var(--pink);
   --tool-group-accent: var(--pink)
 }
 
+.tool-group-content,
 .tool-group-content-assets {
   --tool-group-color: var(--orange);
   --tool-group-accent: var(--orange)
 }
 
+.tool-group-media,
 .tool-group-media-audio {
   --tool-group-color: var(--red);
   --tool-group-accent: var(--red)
@@ -168,16 +171,20 @@
   --tool-group-accent: var(--purple)
 }
 
+.tool-group-test,
+.tool-group-account,
 .tool-group-platform-cloud {
   --tool-group-color: var(--electric-blue);
   --tool-group-accent: var(--electric-blue)
 }
 
+.tool-group-build,
 .tool-group-development-system {
   --tool-group-color: var(--steel-gray);
   --tool-group-accent: var(--steel-gray)
 }
 
+.tool-group-share,
 .tool-group-community-marketplace {
   --tool-group-color: var(--gold);
   --tool-group-accent: var(--gold)

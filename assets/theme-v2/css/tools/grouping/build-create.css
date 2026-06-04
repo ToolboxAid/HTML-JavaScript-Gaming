@@ -1,3 +1,4 @@
+.tool-group-create,
 .tool-group-build-create {
   --tool-group-color: var(--pink);
   --tool-group-accent: var(--pink)

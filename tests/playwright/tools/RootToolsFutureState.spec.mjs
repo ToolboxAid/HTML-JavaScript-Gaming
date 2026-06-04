@@ -112,7 +112,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const assetsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Assets$/ })
     }).first();
-    await expect(assetsCard).toHaveClass(/tool-group-content-assets/);
+    await expect(assetsCard).toHaveClass(/(^|\s)tool-group-content(\s|$)/);
     const allCardsHaveGroupClass = await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
       cards.every((card) => Array.from(card.classList).some((className) => className.startsWith("tool-group-")))
     ));
@@ -147,12 +147,14 @@ test("root tools surface links current tool pages without old_* routes", async (
     const worldsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Worlds$/ })
     }).first();
-    await expect(worldsCard).toHaveClass(/tool-group-build-create/);
-    await expect(worldsCard).toContainText("Planned world types: Vector, Tilemap, Isometric, Hex");
+    await expect(worldsCard).toHaveClass(/(^|\s)tool-group-create(\s|$)/);
+    await expect(worldsCard).toContainText("Planned world types");
+    await expect(worldsCard.locator("[data-child-capabilities='Worlds'] li")).toHaveText(["Vector", "Tilemap", "Isometric", "Hex"]);
     const objectsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Objects$/ })
     }).first();
-    await expect(objectsCard).toContainText("Planned object types: Character, Enemy, Decoration, Interactive, Vector Object, Sprite Object");
+    await expect(objectsCard).toContainText("Planned object types");
+    await expect(objectsCard.locator("[data-child-capabilities='Objects'] li")).toHaveText(["Vector", "Sprite", "Character", "Enemy", "Interactive"]);
     await page.getByRole("button", { name: "Group" }).click();
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)

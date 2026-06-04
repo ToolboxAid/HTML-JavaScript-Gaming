@@ -158,8 +158,11 @@ async function main() {
   if (!/Planned world types/.test(toolsAccordions) || !/Vector/.test(toolsAccordions) || !/Tilemap/.test(toolsAccordions) || !/Isometric/.test(toolsAccordions) || !/Hex/.test(toolsAccordions)) {
     issues.push("Worlds must preserve planned world-type child capabilities: Vector, Tilemap, Isometric, and Hex.");
   }
-  if (!/Planned object types/.test(toolsAccordions) || !/Character/.test(toolsAccordions) || !/Enemy/.test(toolsAccordions) || !/Decoration/.test(toolsAccordions) || !/Interactive/.test(toolsAccordions) || !/Vector Object/.test(toolsAccordions) || !/Sprite Object/.test(toolsAccordions)) {
-    issues.push("Objects must preserve planned object-type child capabilities.");
+  if (!/Planned object types/.test(toolsAccordions) || !/Vector/.test(toolsAccordions) || !/Sprite/.test(toolsAccordions) || !/Character/.test(toolsAccordions) || !/Enemy/.test(toolsAccordions) || !/Interactive/.test(toolsAccordions)) {
+    issues.push("Objects must preserve planned object-type child capabilities: Vector, Sprite, Character, Enemy, and Interactive.");
+  }
+  if (!/dataset\.childCapabilities/.test(toolsAccordions) || !/createElement\("ul"\)/.test(toolsAccordions)) {
+    issues.push("Toolbox child capabilities must render as visible child lists under their parent tool tiles.");
   }
   if (!/container callout/.test(toolboxIndex)) {
     issues.push("Toolbox role banner container must use an existing Theme V2 background panel class.");
