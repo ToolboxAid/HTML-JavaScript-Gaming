@@ -24,10 +24,10 @@
             <div class="container account-panel">
                 <aside class="side-menu" aria-label="Account pages">
                     <a href="index.html">Account Home</a>
-                    <a href="profile.html">Profile</a>
-                    <a href="preferences.html">Preferences</a>
-                    <a href="security.html">Security</a>
                     <a class="active" href="achievements.html">Achievements</a>
+                    <a href="preferences.html">Preferences</a>
+                    <a href="profile.html">Profile</a>
+                    <a href="security.html">Security</a>
                 </aside>
                 <div class="content-stack">
                     <div class="card">
@@ -36,14 +36,14 @@
                             <h2>Build, Play and Share progress</h2>
                             <p class="lede">Use the account achievements modes to review game creation, play activity and share reach without adding live account behavior.</p>
                             <div class="hero-actions" aria-label="Achievement views">
-                                <button class="btn primary" type="button" data-achievements-tab="build" aria-pressed="true">Build</button>
-                                <button class="btn" type="button" data-achievements-tab="play" aria-pressed="false">Play</button>
-                                <button class="btn" type="button" data-achievements-tab="share" aria-pressed="false">Share</button>
+                                <button class="btn primary" type="button" data-achievements-tab="build" aria-controls="build-achievements-panel" aria-pressed="true">Build</button>
+                                <button class="btn" type="button" data-achievements-tab="play" aria-controls="play-achievements-panel" aria-pressed="false">Play</button>
+                                <button class="btn" type="button" data-achievements-tab="share" aria-controls="share-achievements-panel" aria-pressed="false">Share</button>
                             </div>
                         </div>
                     </div>
 
-                    <section data-achievements-panel="build" aria-labelledby="build-achievements-title">
+                    <section id="build-achievements-panel" data-achievements-panel="build" aria-labelledby="build-achievements-title" aria-hidden="false">
                         <div class="content-stack">
                             <div class="grid cols-4" aria-label="Build stats">
                                 <article class="mini-stat"><strong>12</strong>Created games</article>
@@ -100,7 +100,7 @@
                         </div>
                     </section>
 
-                    <section data-achievements-panel="play" aria-labelledby="play-achievements-title" hidden>
+                    <section id="play-achievements-panel" data-achievements-panel="play" aria-labelledby="play-achievements-title" aria-hidden="true" hidden>
                         <div class="content-stack">
                             <div class="grid cols-4" aria-label="Play stats">
                                 <article class="mini-stat"><strong>36</strong>Played games</article>
@@ -153,7 +153,7 @@
                         </div>
                     </section>
 
-                    <section data-achievements-panel="share" aria-labelledby="share-achievements-title" hidden>
+                    <section id="share-achievements-panel" data-achievements-panel="share" aria-labelledby="share-achievements-title" aria-hidden="true" hidden>
                         <div class="content-stack">
                             <div class="grid cols-4" aria-label="Share analytics">
                                 <article class="mini-stat"><strong>9.4K</strong>Share views</article>

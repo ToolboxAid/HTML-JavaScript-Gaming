@@ -168,3 +168,34 @@ Required reports:
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/account_achievements_wireframe_report.md`
+
+## PR_26155_003
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Kept `account/achievements.html` defaulted to the Build view.
+- Made the Build default show only Build / Created games content.
+- Kept Played games and shared content hidden until their matching buttons are selected.
+- Added explicit `aria-controls`, panel IDs, and `aria-hidden` state for Achievements tabs and panels.
+- Updated external tab switching in `assets/theme-v2/js/account-achievements.js` to keep `hidden` and `aria-hidden` synchronized.
+- Sorted the short Account sidebar alphabetically across account pages.
+- Updated targeted Achievements Playwright coverage for the default visible content, selected content switching, and sidebar order.
+- No CSS added or modified.
+
+Validation:
+- `node --check assets/theme-v2/js/account-achievements.js`.
+- `node --check tests/playwright/account/AchievementsPage.spec.mjs`.
+- Static validation for inline script/style/event handlers.
+- `npx playwright test tests/playwright/account/AchievementsPage.spec.mjs --project=playwright --workers=1 --reporter=list`.
+- `git diff --check`.
+- Full samples smoke test skipped because samples are not in scope.
+
+Required reports:
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/account_achievements_tab_sidebar_fix_report.md`
+
+Follow-up:
+- Sorted shared header and footer Account menus to match the Account sidebar order:
+  Account Home, Achievements, Preferences, Profile, Security.
+- Extended targeted Achievements Playwright coverage to verify header and footer Account menu order.

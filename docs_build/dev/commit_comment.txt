@@ -1,1 +1,1 @@
-Add account achievements wireframe with Build Play Share tabs - PR_26155_002-account-achievements-wireframe
+Fix account achievements tab visibility and sidebar sorting - PR_26155_003-account-achievements-tab-sidebar-fix

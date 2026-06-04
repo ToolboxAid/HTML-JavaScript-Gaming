@@ -21,7 +21,7 @@ Changed runtime JS files covered:
 
 Files with executed line/function counts where available:
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 180/180; executed functions 16/20
-(100%) assets/theme-v2/js/account-achievements.js - executed lines 23/23; executed functions 7/7
+(100%) assets/theme-v2/js/account-achievements.js - executed lines 25/25; executed functions 7/7
 
 Uncovered or low-coverage changed JS files:
 (100%) none changed - no changed runtime JS files

@@ -13,7 +13,9 @@
         });
 
         panels.forEach((panel) => {
-            panel.hidden = panel.dataset.achievementsPanel !== tabName;
+            const isActive = panel.dataset.achievementsPanel === tabName;
+            panel.hidden = !isActive;
+            panel.setAttribute("aria-hidden", String(!isActive));
         });
     }
 

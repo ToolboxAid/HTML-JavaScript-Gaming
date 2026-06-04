@@ -41,24 +41,54 @@ test("account achievements page switches Build Play Share views", async ({ page 
     await expect(page.locator(".side-menu").getByRole("link", { name: "Achievements" })).toBeVisible();
     await expect(page.locator("header.site-header a[data-route='account-achievements']")).toHaveAttribute("href", "../account/achievements.html");
     await expect(page.locator("footer.footer").getByRole("link", { name: "Achievements" })).toBeVisible();
+    await expect(page.locator(".side-menu a")).toHaveText([
+      "Account Home",
+      "Achievements",
+      "Preferences",
+      "Profile",
+      "Security",
+    ]);
+    await expect(page.locator("header.site-header .nav-item").filter({ has: page.locator("> a[data-route='account']") }).locator(".sub-menu a")).toHaveText([
+      "Account Home",
+      "Achievements",
+      "Preferences",
+      "Profile",
+      "Security",
+    ]);
+    await expect(page.locator("footer.footer .footer__group").filter({ has: page.locator("#footer-account") }).locator(".footer__links a")).toHaveText([
+      "Account Home",
+      "Achievements",
+      "Preferences",
+      "Profile",
+      "Security",
+    ]);
 
     await expect(page.locator("[data-achievements-panel='build']")).toBeVisible();
+    await expect(page.locator("[data-achievements-panel='build']")).toHaveAttribute("aria-hidden", "false");
     await expect(page.locator("[data-achievements-panel='play']")).toBeHidden();
+    await expect(page.locator("[data-achievements-panel='play']")).toHaveAttribute("aria-hidden", "true");
     await expect(page.locator("[data-achievements-panel='share']")).toBeHidden();
+    await expect(page.locator("[data-achievements-panel='share']")).toHaveAttribute("aria-hidden", "true");
     await expect(page.getByRole("heading", { name: "Created games" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Played games" })).toBeHidden();
+    await expect(page.getByText("Games I shared")).toBeHidden();
     await expect(page.getByRole("button", { name: "Open build" })).toBeVisible();
 
     await page.locator("[data-achievements-tab='play']").click();
     await expect(page.locator("[data-achievements-panel='build']")).toBeHidden();
     await expect(page.locator("[data-achievements-panel='play']")).toBeVisible();
     await expect(page.locator("[data-achievements-panel='share']")).toBeHidden();
+    await expect(page.getByRole("heading", { name: "Created games" })).toBeHidden();
     await expect(page.getByRole("heading", { name: "Played games" })).toBeVisible();
+    await expect(page.getByText("Games I shared")).toBeHidden();
     await expect(page.getByRole("button", { name: "Favorite" }).first()).toBeVisible();
 
     await page.locator("[data-achievements-tab='share']").click();
     await expect(page.locator("[data-achievements-panel='build']")).toBeHidden();
     await expect(page.locator("[data-achievements-panel='play']")).toBeHidden();
     await expect(page.locator("[data-achievements-panel='share']")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Created games" })).toBeHidden();
+    await expect(page.getByRole("heading", { name: "Played games" })).toBeHidden();
     await expect(page.getByRole("heading", { name: "Creator share analytics" })).toBeVisible();
     await expect(page.getByText("Games I shared")).toBeVisible();
     await expect(page.getByRole("button", { name: "Copy share link" })).toBeVisible();
