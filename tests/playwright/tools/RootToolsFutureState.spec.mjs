@@ -3,6 +3,8 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
+const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Account", "Admin"];
+
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "workspace-contract",
@@ -50,6 +52,12 @@ function expectAlphabetical(labels) {
   expect(labels).toEqual(sortedCopy(labels));
 }
 
+async function primaryNavigationLabels(page) {
+  return (await page.locator("nav.nav-links > a, nav.nav-links > .nav-item > a").evaluateAll((links) => (
+    links.map((link) => link.textContent.trim())
+  ))).map(normalizeMenuText);
+}
+
 test("root tools surface links current tool pages without old_* routes", async ({ page }) => {
   const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html");
 
@@ -66,13 +74,17 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=user/);
     await expect(page.locator("[aria-label='Toolbox role simulation']")).toHaveClass(/callout/);
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(page.locator("[data-toolbox-role-banner]")).toHaveClass(/status/);
+    const roleBannerIsFinalHeaderRow = await page.locator("[aria-label='Toolbox role simulation']").evaluate((row) => (
+      (row.previousElementSibling?.matches("header.site-header") === true || row.previousElementSibling?.querySelector(":scope > header.site-header") !== null)
+      && row.nextElementSibling?.tagName.toLowerCase() === "main"
+    ));
+    expect(roleBannerIsFinalHeaderRow).toBe(true);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(1);
     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
-    const topNavigationLabels = (await page.locator("nav.nav-links > a, nav.nav-links > .nav-item > a").evaluateAll((links) => (
-      links.map((link) => link.textContent.trim())
-    ))).map(normalizeMenuText);
-    expectAlphabetical(topNavigationLabels);
+    const topNavigationLabels = await primaryNavigationLabels(page);
+    expect(topNavigationLabels).toEqual(PRIMARY_NAVIGATION_ORDER);
     const toolboxMenuGroups = (await page.locator("[data-toolbox-menu] [data-toolbox-menu-group-label]").evaluateAll((links) => (
       links.map((link) => link.textContent.trim())
     ))).map(normalizeMenuText);
@@ -276,6 +288,91 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 30/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("common header renders primary navigation order across active pages", async ({ page }) => {
+  const server = await startRepoServer();
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+  const commonHeaderPages = [
+    "/index.html",
+    "/toolbox/index.html",
+    "/games/index.html",
+    "/marketplace/index.html",
+    "/learn/index.html",
+    "/account/index.html",
+    "/admin/site-settings.html"
+  ];
+
+  page.on("pageerror", (error) => {
+    pageErrors.push(error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      consoleErrors.push(message.text());
+    }
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+
+  await workspaceV2CoverageReporter.start(page);
+
+  try {
+    for (const pagePath of commonHeaderPages) {
+      await page.goto(`${server.baseUrl}${pagePath}`, { waitUntil: "networkidle" });
+      await expect(page.locator("header.site-header")).toBeVisible();
+      expect(await primaryNavigationLabels(page)).toEqual(PRIMARY_NAVIGATION_ORDER);
+
+      for (const route of ["account", "admin", "games"]) {
+        const menuLabels = await page.locator(`nav.nav-links > .nav-item:has(> a[data-route='${route}']) > .sub-menu > a`).evaluateAll((links) => (
+          links.map((link) => link.textContent.trim())
+        ));
+        expectAlphabetical(menuLabels);
+      }
+
+      const toolboxMenuGroups = (await page.locator("[data-toolbox-menu] [data-toolbox-menu-group-label]").evaluateAll((links) => (
+        links.map((link) => link.textContent.trim())
+      ))).map(normalizeMenuText);
+      expectAlphabetical(toolboxMenuGroups);
+
+      const toolboxNestedMenus = await page.locator("[data-toolbox-submenu]").evaluateAll((menus) => (
+        menus.map((menu) => Array.from(menu.querySelectorAll(":scope > a[data-toolbox-menu-item]")).map((link) => link.textContent.trim()))
+      ));
+      for (const menuLabels of toolboxNestedMenus) {
+        expectAlphabetical(menuLabels);
+      }
+
+      await expect(page.locator("[data-toolbox-menu]").getByText("Admin", { exact: true })).toHaveCount(0);
+
+      const bodyText = await page.locator("body").innerText();
+      expect(bodyText.replace(/GameFoundryStudio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
+
+      if (pagePath === "/toolbox/index.html") {
+        await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
+        await expect(page.locator("[data-toolbox-role-banner]")).toHaveClass(/status/);
+        await expect(page.locator("[aria-label='Toolbox role simulation']")).toHaveClass(/callout/);
+        const roleBannerIsFinalHeaderRow = await page.locator("[aria-label='Toolbox role simulation']").evaluate((row) => (
+          (row.previousElementSibling?.matches("header.site-header") === true || row.previousElementSibling?.querySelector(":scope > header.site-header") !== null)
+          && row.nextElementSibling?.tagName.toLowerCase() === "main"
+        ));
+        expect(roleBannerIsFinalHeaderRow).toBe(true);
+      }
+    }
+
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();

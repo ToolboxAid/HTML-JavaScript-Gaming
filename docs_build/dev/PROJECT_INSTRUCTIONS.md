@@ -136,7 +136,16 @@ Future guidance:
 
 Navigation menus, submenus, nested submenus, and user-facing lists must be alphabetically sorted when they are presented as browseable choices.
 
+Primary top-level header navigation is an explicit product IA exception and must remain:
+- Games
+- Toolbox
+- Marketplace
+- Learn
+- Account
+- Admin
+
 Allowed intentional-order exceptions:
+- primary top-level header navigation
 - workflow paths
 - Build Path
 - dependency paths

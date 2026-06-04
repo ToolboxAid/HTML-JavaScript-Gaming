@@ -5,7 +5,6 @@
 Added governance requiring navigation menus, submenus, nested submenus, and browseable user-facing lists to sort alphabetically.
 
 Normalized safe active surfaces:
-- Header top-level navigation.
 - Header Games submenu.
 - Header Toolbox group order.
 - Header Toolbox nested tool submenus.
@@ -17,6 +16,7 @@ Normalized safe active surfaces:
 ## Sorting Exceptions
 
 Documented intentional-order exceptions:
+- Header top-level navigation is intentionally ordered by product IA: Games, Toolbox, Marketplace, Learn, Account, Admin.
 - Build Path remains dependency ordered: Project Workspace, Game Design, Game Configuration, Required Tool Path, Build Game, Game Testing, Publish.
 - Project Progress and Publishing Progress remain progress/workflow ordered.
 - Individual Learn tool page section order remains a guided documentation sequence: Overview, Quick Start, Common Tasks, Related Documentation, Related Videos, Examples.
