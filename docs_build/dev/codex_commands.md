@@ -247,3 +247,23 @@ Required reports:
 - `docs_build/dev/reports/toolbox-recovery-alignment.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+## PR_26155_006
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Created `docs_build/dev/reports/toolbox-registry-contract.md`.
+- Defined the minimal Toolbox registry contract for Order, Group, Progress, and Build Path.
+- Included required fields: `id`, `label`, `category`, `colorGroup`, `route`, `requiredForPlayable`, `requires`, `deferred`, `progressChecklist`, and `status`.
+- Stated this PR is contract-only and keeps current `toolbox/tools-page-accordions.js` rendering unchanged.
+- Stated the next implementation PR starts Project Workspace tooling with a registry-driven Toolbox runtime.
+- Did not modify runtime behavior, CSS, tools, or database implementation.
+
+Validation:
+- `git diff --check`.
+- Playwright skipped because impacted is No and this PR is docs/contract only.
+
+Required reports:
+- `docs_build/dev/reports/toolbox-registry-contract.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
