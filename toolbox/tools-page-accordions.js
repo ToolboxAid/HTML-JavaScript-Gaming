@@ -9,6 +9,7 @@
     const progressButton = document.querySelector("[data-tools-view='progress']");
     const buildPathButton = document.querySelector("[data-tools-view='build-path']");
     const roleBanner = document.querySelector("[data-toolbox-role-banner]");
+    const projectDataMenu = document.querySelector("[data-project-data-menu]");
     const toolCount = document.querySelector("[data-tools-count]");
     const urlRole = new URLSearchParams(window.location.search).get("role");
     const toolboxRole = urlRole === "admin" ? "admin" : urlRole === "user" ? "creator" : "guest";
@@ -1294,6 +1295,12 @@
         const nextUrl = new URL(window.location.href);
         nextUrl.searchParams.set("role", nextRole);
         roleBanner.href = nextUrl.pathname + nextUrl.search + nextUrl.hash;
+        if (projectDataMenu) {
+            projectDataMenu.hidden = toolboxRole !== "admin";
+            if (toolboxRole !== "admin") {
+                projectDataMenu.removeAttribute("open");
+            }
+        }
         if (toolboxRole === "admin") {
             roleBanner.textContent = "ADMIN VIEW • Planned tools visible • Switch to Creator View";
         } else if (toolboxRole === "creator") {

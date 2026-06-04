@@ -180,6 +180,27 @@ Project Workspace is the next first real Toolbox rebuild target. Its contract ow
 
 Do not implement Project Workspace runtime behavior, persistence, database behavior, authentication, or save/load flows before the rebuild PR explicitly scopes those capabilities.
 
+## TARGETED MSJ VALIDATION GOVERNANCE
+
+Every tool, page, or `src/` change must declare its impacted MSJ/test lane.
+
+Run only the affected MSJ/test lane by default.
+
+Do not run the full suite for small scoped changes unless one of these shared surfaces changes:
+- shared runtime behavior
+- shared parser behavior
+- shared DB behavior
+- shared Theme V2 behavior
+- cross-tool integration behavior
+
+If a shared source file changes, name the affected dependent lanes and run only those targeted lanes unless the dependency impact proves broader validation is required.
+
+Reports must state:
+- impacted lane
+- skipped lanes
+- why skipped lanes were safe to skip
+- when the full suite is required
+
 ## ARCHIVED V1/V2 REFERENCE MATERIAL
 
 Deprecated V1/V2 reference material lives under:
