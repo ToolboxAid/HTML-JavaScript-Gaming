@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game Configuration - Game Foundry Studio</title>
+    <meta name="description" content="Game Configuration Toolbox wireframe for public release settings, debug visibility, and playable readiness gates.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Toolbox / Game Configuration</div>
+                <h1>Game Configuration</h1>
+                <p class="lede">Wireframe release profile, debug settings, playable gates, and configuration readiness without adding persistence or database behavior.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <div class="tool-workspace">
+                    <aside class="tool-column tool-group-development-system">
+                        <div class="tool-column-header molten-orange">
+                            <h2>Game Configuration</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Release Profile</summary>
+                                <div class="accordion-body">
+                                    <form>
+                                        <label>Build Channel <input type="text" placeholder="Creator test, private preview, public playable"></label>
+                                        <label>Target Platform <input type="text" placeholder="Web, embedded, marketplace page"></label>
+                                        <label>Content Rating <input type="text" placeholder="Everyone, teen, mature review"></label>
+                                        <label>Release Notes <textarea rows="3" placeholder="Public-facing change summary"></textarea></label>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Debug Settings</summary>
+                                <div class="accordion-body">
+                                    <p><span class="pill">creator only</span> Debug settings may exist for testing.</p>
+                                    <p><span class="pill">public rejected</span> Debug settings must be disabled or rejected before playable release.</p>
+                                    <button class="btn" type="button">Review debug policy</button>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Playable Gate</summary>
+                                <div class="accordion-body">
+                                    <p>Static gate checklist for configuration requirements. No live release validation is implemented.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="settings-studio" data-tool-icon-src="assets/theme-v2/images/badges/settings-studio.png" data-tool-character-src="assets/theme-v2/images/characters/settings-studio.png"></div>
+                    <section class="tool-center-panel">
+                        <img src="assets/theme-v2/images/tools/settings-studio.png" alt="Game Configuration preview">
+                        <h2>Configuration Workspace</h2>
+                        <p>Game Configuration is a static wireframe for release settings, playable gating, and debug controls that must be visible to creators before a public release.</p>
+                        <div class="grid cols-3" aria-label="Game Configuration readiness summary">
+                            <article class="mini-stat"><strong>2</strong>Release settings drafted</article>
+                            <article class="mini-stat"><strong>3</strong>Playable gates pending</article>
+                            <article class="mini-stat"><strong>1</strong>Debug policy blocker</article>
+                        </div>
+                        <article class="card" role="dialog" aria-labelledby="game-configuration-missing-requirements-title">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Static Overlay Wireframe</div>
+                                    <h3 id="game-configuration-missing-requirements-title">Missing Requirements</h3>
+                                </div>
+                                <p>This static overlay card calls out release blockers using existing Theme V2 classes only.</p>
+                                <div class="grid cols-3">
+                                    <article class="callout"><h3>Debug Mode</h3><p><span class="pill">blocked</span> Must be disabled for public playable release.</p></article>
+                                    <article class="callout"><h3>Content Rating</h3><p><span class="pill">missing</span> Public rating selection is incomplete.</p></article>
+                                    <article class="callout"><h3>Share Metadata</h3><p><span class="pill">deferred</span> Share copy can be completed later.</p></article>
+                                </div>
+                                <div class="status" role="status">Wireframe only: no configuration is persisted or promoted.</div>
+                            </div>
+                        </article>
+                    </section>
+                    <aside class="tool-column tool-group-development-system">
+                        <div class="tool-column-header forge-gold">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Output</summary>
+                                <div class="accordion-body">
+                                    <pre><code>{
+  "releaseProfile": "creator-test",
+  "debugSettingsVisible": true,
+  "publicDebugAllowed": false,
+  "playableGate": "blocked"
+}</code></pre>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <p>Static log for configuration review. No runtime save/load behavior is implemented.</p>
+                                    <div class="status" role="status">Last check: debug settings must be rejected before public playable release.</div>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+</body>
+
+</html>

@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="utf-8">
+    <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Game Design — Game Foundry Studio</title>
-    <meta name="description" content="Game Foundry Studio: Build. Play. Share.">
+    <title>Game Design - Game Foundry Studio</title>
+    <meta name="description" content="Game Design Toolbox wireframe for defining game purpose, rules, systems, and requirements before configuration.">
     <link rel="icon" href="/favicon.svg">
-    <link rel="stylesheet" href="../../assets/theme-v2/css/theme.css">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
 
 <body class="meaning-molten-orange">
@@ -15,9 +16,9 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Spark</div>
+                <div class="kicker">Toolbox / Game Design</div>
                 <h1>Game Design</h1>
-                <p class="lede">What game are we building?</p>
+                <p class="lede">Wireframe the game concept, rules, playable requirements, and handoff to configuration without adding runtime save behavior.</p>
             </div>
         </section>
         <section class="section">
@@ -25,62 +26,67 @@
                 <div class="tool-workspace">
                     <aside class="tool-column tool-group-build-create">
                         <div class="tool-column-header molten-orange">
-                            <h2>Toolbox</h2>
+                            <h2>Game Design</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Purpose</summary>
                                 <div class="accordion-body">
                                     <form>
-                                        <label>Genre <input type="text" placeholder="Platformer, puzzle, arcade"></label>
+                                        <label>Genre <input type="text" placeholder="Platformer, puzzle, adventure"></label>
                                         <label>Players <input type="text" placeholder="Single player, co-op, versus"></label>
-                                        <label>Story <textarea rows="3" placeholder="World, premise, and tone"></textarea></label>
-                                        <label>Objectives <textarea rows="3" placeholder="What the player is trying to do"></textarea></label>
-                                        <label>Win Conditions <textarea rows="3" placeholder="How the player succeeds"></textarea></label>
-                                        <label>Lose Conditions <textarea rows="3" placeholder="How the player fails"></textarea></label>
+                                        <label>Audience <input type="text" placeholder="Who this game is for"></label>
+                                        <label>Pitch <textarea rows="3" placeholder="One-paragraph game promise"></textarea></label>
                                     </form>
                                 </div>
                             </details>
                             <details class="vertical-accordion">
-                                <summary>Systems</summary>
+                                <summary>Rules And Systems</summary>
                                 <div class="accordion-body">
                                     <form>
-                                        <label>Rules <textarea rows="3" placeholder="Core constraints and play rules"></textarea></label>
-                                        <label>Characters <textarea rows="3" placeholder="Heroes, enemies, NPCs, and roles"></textarea></label>
-                                        <label>Progression <textarea rows="3" placeholder="Levels, unlocks, pacing, and difficulty"></textarea></label>
-                                        <label>Economy <textarea rows="3" placeholder="Currencies, rewards, resources"></textarea></label>
-                                        <label>Monetization <textarea rows="3" placeholder="Purchase model, ads, DLC, cosmetics"></textarea></label>
+                                        <label>Core Rules <textarea rows="3" placeholder="What the player can and cannot do"></textarea></label>
+                                        <label>Win Conditions <textarea rows="3" placeholder="How the player succeeds"></textarea></label>
+                                        <label>Lose Conditions <textarea rows="3" placeholder="How the player fails"></textarea></label>
+                                        <label>Progression <textarea rows="3" placeholder="Levels, unlocks, pacing, difficulty"></textarea></label>
                                     </form>
                                 </div>
                             </details>
                             <details class="vertical-accordion">
                                 <summary>Requirements</summary>
                                 <div class="accordion-body">
-                                    <form>
-                                        <label>Asset Requirements <textarea rows="3" placeholder="Sprites, UI, tiles, effects, objects"></textarea></label>
-                                        <label>Sound Requirements <textarea rows="3" placeholder="Music, sound effects, ambience, UI sounds"></textarea></label>
-                                    </form>
+                                    <p>Static design requirements for playable release planning.</p>
+                                    <p><span class="pill">required</span> Win and lose conditions</p>
+                                    <p><span class="pill">required</span> Control expectations</p>
+                                    <p><span class="pill">deferred</span> Share copy and marketing notes</p>
                                 </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="../../assets/theme-v2/images" data-tool-slug="game-design-studio" data-tool-icon-src="../../assets/theme-v2/images/badges/game-design-studio.png" data-tool-character-src="../../assets/theme-v2/images/characters/game-design-studio.png"></div>
-                    <section class="tool-center-panel"><img src="../../assets/theme-v2/images/forge-bot-single.png" alt="ForgeBot">
-                        <h2>Workspace</h2>
-                        <p>Game Design turns an idea into a design blueprint. The workflow starts with AI-assisted discovery, then organizes the answers into a Game Design Document.</p>
-                        <details class="vertical-accordion" open>
-                            <summary>AI -> GDD Workflow</summary>
-                            <div class="accordion-body">
-                                <p>The AI interview asks what kind of game you want to build, clarifies the audience and rules, then produces a structured design plan for the next tool.</p>
-                                <p>The output is the design contract: <code>game.gdd.json</code>.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-design-studio" data-tool-icon-src="assets/theme-v2/images/badges/game-design-studio.png" data-tool-character-src="assets/theme-v2/images/characters/game-design-studio.png"></div>
+                    <section class="tool-center-panel">
+                        <img src="assets/theme-v2/images/tools/game-design-studio.png" alt="Game Design preview">
+                        <h2>Design Workspace</h2>
+                        <p>Game Design turns an idea into the static design contract for Project Workspace and Game Configuration review.</p>
+                        <div class="grid cols-3" aria-label="Game Design readiness summary">
+                            <article class="mini-stat"><strong>5</strong>Design fields drafted</article>
+                            <article class="mini-stat"><strong>2</strong>Playable blockers</article>
+                            <article class="mini-stat"><strong>1</strong>Configuration handoff</article>
+                        </div>
+                        <article class="card" role="dialog" aria-labelledby="game-design-missing-requirements-title">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Static Overlay Wireframe</div>
+                                    <h3 id="game-design-missing-requirements-title">Missing Requirements</h3>
+                                </div>
+                                <p>This static card represents the missing-requirements overlay before the design can move into configuration.</p>
+                                <div class="grid cols-3">
+                                    <article class="callout"><h3>Win Conditions</h3><p><span class="pill">missing</span> Define how players succeed.</p></article>
+                                    <article class="callout"><h3>Lose Conditions</h3><p><span class="pill">missing</span> Define failure and retry rules.</p></article>
+                                    <article class="callout"><h3>Input Needs</h3><p><span class="pill">ready</span> Controls can move to Input next.</p></article>
+                                </div>
+                                <div class="status" role="status">Wireframe only: design fields are not persisted.</div>
                             </div>
-                        </details>
-                        <details class="vertical-accordion">
-                            <summary>Architect / Blueprint</summary>
-                            <div class="accordion-body">
-                                <p>Game Design is the architect. It does not build the house. It decides what the house is, who it serves, how it should feel, and what must be true before construction begins.</p>
-                            </div>
-                        </details>
+                        </article>
                     </section>
                     <aside class="tool-column tool-group-build-create">
                         <div class="tool-column-header forge-gold">
@@ -90,28 +96,27 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body">
-                                    <p><strong>game.gdd.json</strong></p>
                                     <pre><code>{
   "genre": "",
   "players": "",
-  "objectives": [],
   "winConditions": [],
   "loseConditions": [],
-  "assetRequirements": [],
-  "soundRequirements": []
+  "requirementsReady": false
 }</code></pre>
                                 </div>
                             </details>
                             <details class="vertical-accordion">
                                 <summary>Next Step</summary>
                                 <div class="accordion-body">
-                                    <p>Use <code>game.gdd.json</code> as the source design contract for implementation planning.</p>
+                                    <p>Send the completed design contract to Game Configuration when required design fields are complete.</p>
+                                    <a class="btn" href="toolbox/game-configuration/index.html">Open Game Configuration</a>
                                 </div>
                             </details>
                             <details class="vertical-accordion">
-                                <summary>Review Notes</summary>
+                                <summary>Status Log</summary>
                                 <div class="accordion-body">
-                                    <p>Check that the GDD answers what is being built before moving into assembly.</p>
+                                    <p>Static log for design review. No runtime save/load behavior is implemented.</p>
+                                    <div class="status" role="status">Last check: two required design fields are missing.</div>
                                 </div>
                             </details>
                         </div>
@@ -121,8 +126,8 @@
         </section>
     </main>
     <div data-partial="footer"></div>
-    <script src="../../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-    <script src="../../assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
 </body>
 
 </html>

@@ -86,6 +86,20 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "game-configuration",
+    name: "Game Configuration",
+    displayName: "Game Configuration",
+    shortDescription: "Plan release profile, debug visibility, and playable readiness gates.",
+    shortLabel: "Config",
+    path: "game-configuration",
+    folderName: "game-configuration",
+    entryPoint: "game-configuration/index.html",
+    description: "Plan release profile, debug visibility, and playable readiness gates.",
+    active: true,
+    order: 17,
+    visibleInToolsList: true
+  },
+  {
     id: "input-studio",
     name: "Input",
     displayName: "Input",
@@ -181,6 +195,20 @@ export const TOOL_REGISTRY = Object.freeze([
     description: "Prepare publishing workflows and release-ready game packages.",
     active: true,
     order: 13,
+    visibleInToolsList: true
+  },
+  {
+    id: "project-workspace",
+    name: "Project Workspace",
+    displayName: "Project Workspace",
+    shortDescription: "Coordinate Build, Play, and Share readiness for one game project.",
+    shortLabel: "Workspace",
+    path: "project-workspace",
+    folderName: "project-workspace",
+    entryPoint: "project-workspace/index.html",
+    description: "Coordinate Build, Play, and Share readiness for one game project.",
+    active: true,
+    order: 18,
     visibleInToolsList: true
   },
   {

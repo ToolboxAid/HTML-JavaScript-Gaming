@@ -1,12 +1,13 @@
 TOOL_REGISTRY_VALIDATION
 status=PASS
-active=AI Assistant, Animation, Assets, Cloud, Custom Extensions, Game Design, Input, Localization, MIDI, Object Vector, Palette Manager, Particles, Publish, Sound, Storage Inspector, World Vector
+active=AI Assistant, Animation, Assets, Cloud, Custom Extensions, Game Design, Input, Localization, MIDI, Object Vector, Palette Manager, Particles, Publish, Sound, Storage Inspector, World Vector, Game Configuration, Project Workspace
 Filesystem Active Tool Directories
 - ai-assistant
 - animation
 - assets
 - cloud
 - code
+- game-configuration
 - game-design
 - input
 - localization
@@ -14,6 +15,7 @@ Filesystem Active Tool Directories
 - object-vector
 - palette
 - particles
+- project-workspace
 - publish
 - sound
 - storage
@@ -25,6 +27,7 @@ Registry Folders
 - cloud
 - code
 - game-design
+- game-configuration
 - input
 - localization
 - midi
@@ -32,6 +35,7 @@ Registry Folders
 - palette
 - particles
 - publish
+- project-workspace
 - sound
 - storage
 - world-vector

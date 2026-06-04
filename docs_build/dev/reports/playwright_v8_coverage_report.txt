@@ -17,16 +17,18 @@ Exercised tool entry points detected:
 (71%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(100%) none changed - no changed runtime JS files
+(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(88%) toolbox/tools-page-accordions.js - executed lines 494/494; executed functions 30/34
 
 Files with executed line/function counts where available:
 (55%) assets/theme-v2/js/tool-display-mode.js - executed lines 113/113; executed functions 6/11
-(80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 180/180; executed functions 16/20
-(88%) toolbox/tools-page-accordions.js - executed lines 466/466; executed functions 30/34
+(80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 182/182; executed functions 16/20
+(88%) toolbox/tools-page-accordions.js - executed lines 494/494; executed functions 30/34
 
 Uncovered or low-coverage changed JS files:
-(100%) none changed - no changed runtime JS files
+(0%) toolbox/toolRegistry.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) assets/theme-v2/js/account-achievements.js - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) toolbox/toolRegistry.js - changed JS file not collected as browser runtime coverage
+(80%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(88%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage

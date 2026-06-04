@@ -25,6 +25,40 @@
             ]
         },
         {
+            group: "Planning",
+            tools: [
+                {
+                    title: "Project Workspace",
+                    href: "../toolbox/project-workspace/index.html",
+                    image: "../assets/theme-v2/images/tools/learn-studio.png",
+                    description: "Coordinate Build, Play, and Share readiness for one game project.",
+                    role: "ForgeBot",
+                    mascot: "forgebot",
+                    theme: "forge"
+                },
+                {
+                    title: "Game Design",
+                    subgroup: "Design Contract",
+                    href: "../toolbox/game-design/index.html",
+                    image: "../assets/theme-v2/images/tools/game-design-studio.png",
+                    description: "Design gameplay, systems, rules, and player experience.",
+                    role: "ForgeBot",
+                    mascot: "forgebot",
+                    theme: "forge"
+                },
+                {
+                    title: "Game Configuration",
+                    subgroup: "Playable Gate",
+                    href: "../toolbox/game-configuration/index.html",
+                    image: "../assets/theme-v2/images/tools/settings-studio.png",
+                    description: "Plan release profile, debug visibility, and playable readiness gates.",
+                    role: "ForgeBot",
+                    mascot: "forgebot",
+                    theme: "forge"
+                }
+            ]
+        },
+        {
             group: "Assets",
             tools: [
                 {
@@ -165,16 +199,6 @@
             group: "Worlds",
             tools: [
                 {
-                    title: "Game Design",
-                    subgroup: "Hybrid",
-                    href: "../toolbox/game-design/index.html",
-                    image: "../assets/theme-v2/images/tools/game-design-studio.png",
-                    description: "Design gameplay, systems, rules, and player experience.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
-                {
                     title: "Particles",
                     subgroup: "Isometric",
                     href: "../toolbox/particles/index.html",
@@ -204,6 +228,7 @@
         "Colors": "tool-group-platform-cloud",
         "Input": "tool-group-development-system",
         "Objects": "tool-group-build-create",
+        "Planning": "tool-group-development-system",
         "Tooling": "tool-group-development-system",
         "Worlds": "tool-group-content-assets"
     };
@@ -214,6 +239,7 @@
         "Colors": "swatch-blue",
         "Input": "swatch-gray",
         "Objects": "swatch-pink",
+        "Planning": "swatch-blue",
         "Tooling": "swatch-gray",
         "Worlds": "swatch-orange"
     };
@@ -226,6 +252,7 @@
         "Assets": "in-progress",
         "Cloud": "locked",
         "Custom Extensions": "locked",
+        "Game Configuration": "locked",
         "Game Design": "in-progress",
         "Input": "ready",
         "Localization": "locked",
@@ -233,6 +260,7 @@
         "Object Vector": "ready",
         "Palette Manager": "complete",
         "Particles": "locked",
+        "Project Workspace": "in-progress",
         "Publish": "locked",
         "Sound": "ready",
         "Storage Inspector": "complete",
@@ -242,7 +270,7 @@
         {
             title: "Plan",
             groupClass: "tool-group-ai-learning",
-            tools: ["AI Assistant", "Game Design", "Palette Manager", "Input"]
+            tools: ["Project Workspace", "AI Assistant", "Game Design", "Game Configuration", "Palette Manager", "Input"]
         },
         {
             title: "Create",

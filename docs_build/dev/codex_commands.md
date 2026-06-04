@@ -267,3 +267,43 @@ Required reports:
 - `docs_build/dev/reports/toolbox-registry-contract.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+## PR_26155_007-012
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Created stacked Toolbox wireframe bundle:
+  - `PR_26155_007-project-workspace-wireframe`
+  - `PR_26155_008-game-design-wireframe`
+  - `PR_26155_009-game-configuration-wireframe`
+  - `PR_26155_010-toolbox-build-path-view`
+  - `PR_26155_011-toolbox-progress-view`
+  - `PR_26155_012-tool-requirement-overlay-wireframe`
+- Created `toolbox/project-workspace/index.html` from the active tool template structure and adapted wireframe content.
+- Updated `toolbox/game-design/index.html` wireframe content while preserving the tool template shell.
+- Created `toolbox/game-configuration/index.html` from the active tool template structure and adapted wireframe content.
+- Added static missing-requirements cards using existing Theme V2 classes only.
+- Updated active Toolbox wiring in:
+  - `assets/theme-v2/partials/header-nav.html`
+  - `assets/theme-v2/js/gamefoundry-partials.js`
+  - `toolbox/toolRegistry.js`
+  - `toolbox/tools-page-accordions.js`
+- Kept `toolbox/tools-page-accordions.js` because it still owns current Toolbox rendering.
+- Did not add CSS, tools beyond the requested wireframe surfaces, database behavior, persistence, or real runtime save/load.
+
+Validation:
+- `node --check toolbox/tools-page-accordions.js`.
+- `node --check toolbox/toolRegistry.js`.
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`.
+- `node scripts/validate-active-tools-surface.mjs`.
+- `node scripts/validate-tool-registry.mjs`.
+- No inline style/script/event-handler matches in the three tool wireframes.
+- `npm run test:workspace-v2` (legacy command name for the Project Workspace test lane).
+- Targeted Playwright page checks for `toolbox/index.html`, `toolbox/project-workspace/index.html`, `toolbox/game-design/index.html`, and `toolbox/game-configuration/index.html`.
+- `git diff --check`.
+- No CSS added or modified.
+
+Required reports:
+- `docs_build/dev/reports/stack-toolbox-wireframes.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

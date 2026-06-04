@@ -1,1 +1,1 @@
-Add Toolbox registry contract report - PR_26155_006-toolbox-registry-contract
+Add stacked Toolbox wireframes and current view wiring - PR_26155_007-012-toolbox-wireframes
