@@ -1,0 +1,413 @@
+import { getToolById } from "../../../toolbox/toolRegistry.js";
+import { downloadTextFile, readFileText } from '../../src/engine/persistence/FilePersistenceService.js';
+import {
+  ACTIVE_PROJECT_STORAGE_KEY,
+  captureSharedReferenceSnapshot,
+  createEmptyProjectManifest,
+  migrateProjectManifest,
+  normalizeProjectFileName,
+  serializeProjectManifest,
+  validateProjectManifest
+} from "./projectManifestContract.js";
+import { clearSharedAssetHandoff, clearSharedPaletteHandoff } from "./assetUsageIntegration.js";
+import { detectWorkspaceDocument, getDocumentMode } from "./documentModeGuards.js";
+import { getProjectAdapter } from "./projectSystemAdapters.js";
+import { cloneValue, safeString } from "./projectSystemValueUtils.js";
+import {
+  buildProjectToolIntegration,
+  normalizeToolStateForProjectManifest,
+  unwrapToolStateForAdapter
+} from "./projectToolIntegration.js";
+
+function readStorage() {
+  try {
+    const raw = localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+    return validateProjectManifest(JSON.parse(raw)).manifest;
+  } catch {
+    return null;
+  }
+}
+
+function writeStorage(manifest) {
+  localStorage.setItem(ACTIVE_PROJECT_STORAGE_KEY, serializeProjectManifest(manifest));
+}
+
+function clearStorage() {
+  localStorage.removeItem(ACTIVE_PROJECT_STORAGE_KEY);
+}
+
+function buildStatusSummary(validation) {
+  if (validation.valid) {
+    const warningCount = validation.warnings.length;
+    return warningCount > 0
+      ? `Workspace opened with ${warningCount} warning${warningCount === 1 ? "" : "s"}.`
+      : "Workspace ready.";
+  }
+  return `Workspace invalid: ${validation.issues.join(" ")}`;
+}
+
+export function createWorkspaceSystemController(options = {}) {
+  const toolId = safeString(options.toolId, "");
+  const toolEntry = getToolById(toolId);
+  const isReadOnlyTool = toolEntry?.readOnly === true;
+  const skipInitialToolStateApply = options.skipInitialToolStateApply === true;
+  const launchHasSourcePreset = options.launchHasSourcePreset === true;
+  const launchContext = options.launchContext && typeof options.launchContext === "object"
+    ? options.launchContext
+    : {};
+  const launchGameId = safeString(launchContext.gameId, "");
+  const launchGameTitle = safeString(launchContext.gameTitle, launchGameId);
+  const strictLaunchMode = Boolean(launchGameId);
+  const onChange = typeof options.onChange === "function" ? options.onChange : () => {};
+  const onStatus = typeof options.onStatus === "function" ? options.onStatus : () => {};
+  const adapter = () => getProjectAdapter(toolId);
+
+  const state = {
+    manifest: readStorage(),
+    baselineHash: "",
+    lastObservedHash: "",
+    adapterReady: false,
+    appliedInitialState: skipInitialToolStateApply,
+    launchContextHydrated: false,
+    toolStateSourceValidated: strictLaunchMode ? launchHasSourcePreset : true
+  };
+
+  function isGenericWorkspaceName(name) {
+    const normalized = safeString(name, "").toLowerCase();
+    if (!normalized) {
+      return true;
+    }
+    if (normalized === "untitled project" || normalized === "untitled workspace" || normalized === "no active workspace") {
+      return true;
+    }
+    const toolDisplayName = safeString(toolEntry?.displayName, "").toLowerCase();
+    return Boolean(toolDisplayName) && normalized === toolDisplayName;
+  }
+
+  function serializeForDirtyComparison(manifest) {
+    const normalized = cloneValue(manifest);
+    normalized.dirty = false;
+    return serializeProjectManifest(normalized);
+  }
+
+  function computeObservedManifest() {
+    const toolAdapter = adapter();
+    let currentManifest = state.manifest
+      ? cloneValue(state.manifest)
+      : createEmptyProjectManifest({
+        name: toolAdapter.getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Workspace",
+        toolId
+      });
+
+    if (launchGameId) {
+      if (!state.launchContextHydrated) {
+        clearSharedAssetHandoff();
+        clearSharedPaletteHandoff();
+        currentManifest = createEmptyProjectManifest({
+          name: launchGameTitle || launchGameId,
+          toolId
+        });
+        state.manifest = cloneValue(currentManifest);
+      }
+      currentManifest.workspace = currentManifest.workspace && typeof currentManifest.workspace === "object"
+        ? currentManifest.workspace
+        : {};
+      if (safeString(currentManifest.workspace.notes, "") === "closed") {
+        currentManifest.workspace.notes = "";
+      }
+      if (isGenericWorkspaceName(currentManifest.name)) {
+        currentManifest.name = launchGameTitle || launchGameId;
+      }
+      state.launchContextHydrated = true;
+    }
+
+    currentManifest.activeToolId = toolId;
+    currentManifest.workspace.lastOpenTool = toolId;
+    currentManifest.updatedAt = safeString(currentManifest.updatedAt, new Date().toISOString());
+    currentManifest.sharedReferences = captureSharedReferenceSnapshot();
+    currentManifest.tools = currentManifest.tools && typeof currentManifest.tools === "object"
+      ? currentManifest.tools
+      : {};
+
+    if (toolAdapter.ready && (!strictLaunchMode || state.toolStateSourceValidated)) {
+      currentManifest.tools[toolId] = normalizeToolStateForProjectManifest(
+        toolId,
+        toolAdapter.captureState()
+      );
+      const adapterName = safeString(toolAdapter.getProjectName?.(), "");
+      const manifestName = safeString(currentManifest.name, "");
+      const defaultManifestName = safeString(
+        getToolById(toolId)?.displayName || "Untitled Workspace",
+        "Untitled Workspace"
+      );
+      if (adapterName && (!manifestName || manifestName === defaultManifestName)) {
+        currentManifest.name = adapterName;
+      }
+    } else if (strictLaunchMode && !state.toolStateSourceValidated && currentManifest.tools?.[toolId]) {
+      delete currentManifest.tools[toolId];
+    }
+
+    currentManifest.toolIntegration = buildProjectToolIntegration(currentManifest.tools);
+
+    return migrateProjectManifest(currentManifest);
+  }
+
+  function updateDirtyState(reason = "") {
+    const observed = computeObservedManifest();
+    const observedHash = serializeForDirtyComparison(observed);
+    state.manifest = observed;
+    state.lastObservedHash = observedHash;
+    state.adapterReady = adapter().ready;
+    state.manifest.dirty = Boolean(state.baselineHash) && observedHash !== state.baselineHash;
+    writeStorage(state.manifest);
+    onChange({
+      manifest: cloneValue(state.manifest),
+      dirty: state.manifest.dirty === true,
+      ready: state.adapterReady,
+      reason
+    });
+    return state.manifest;
+  }
+
+  function markSaved(reason = "") {
+    const observed = computeObservedManifest();
+    observed.updatedAt = new Date().toISOString();
+    observed.dirty = false;
+    const serialized = serializeForDirtyComparison(observed);
+    state.manifest = observed;
+    state.baselineHash = serialized;
+    state.lastObservedHash = serialized;
+    state.manifest.dirty = false;
+    writeStorage(state.manifest);
+    onChange({
+      manifest: cloneValue(state.manifest),
+      dirty: false,
+      ready: adapter().ready,
+      reason
+    });
+    return state.manifest;
+  }
+
+  function ensureWorkspaceManifest() {
+    if (!state.manifest) {
+      state.manifest = createEmptyProjectManifest({
+        name: adapter().getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Workspace",
+        toolId
+      });
+    }
+    return state.manifest;
+  }
+
+  function maybeApplyInitialToolState() {
+    if (state.appliedInitialState) {
+      return;
+    }
+
+    const toolAdapter = adapter();
+    if (!toolAdapter.ready) {
+      return;
+    }
+
+    const manifest = ensureWorkspaceManifest();
+    const toolState = manifest.tools?.[toolId];
+    if (toolState) {
+      toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, toolState)));
+      state.toolStateSourceValidated = true;
+      onStatus(buildStatusSummary(validateProjectManifest(manifest)));
+    } else if (strictLaunchMode) {
+      onStatus(`Workspace launched for ${launchGameTitle || launchGameId}. Waiting for source tool JSON for ${toolId}.`);
+    }
+    state.appliedInitialState = true;
+    markSaved("initial-apply");
+  }
+
+  async function handleNewWorkspace() {
+    const toolAdapter = adapter();
+    const suggestedName = toolAdapter.getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Workspace";
+    const nextName = safeString(window.prompt("Workspace name", suggestedName), suggestedName);
+    const nextManifest = createEmptyProjectManifest({
+      name: nextName,
+      toolId
+    });
+    nextManifest.tools = {};
+    nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
+    clearSharedAssetHandoff();
+    clearSharedPaletteHandoff();
+    state.manifest = nextManifest;
+    state.appliedInitialState = true;
+    state.toolStateSourceValidated = !strictLaunchMode;
+    markSaved("new-project");
+    onStatus(`Started ${nextName}.`);
+  }
+
+  async function handleOpenWorkspace(file) {
+    const text = await readFileText(file, { errorMessage: "Unable to read selected project file." });
+    const parsed = JSON.parse(text);
+    if (!detectWorkspaceDocument(parsed)) {
+      throw new Error("Selected file is not a Workspace manifest. Open tool documents inside their matching standalone tool.");
+    }
+    const mode = getDocumentMode(parsed);
+    if (mode && mode !== "workspace") {
+      throw new Error(`Selected file is marked for ${mode} mode. Use a workspace-mode manifest.`);
+    }
+    const validation = validateProjectManifest(parsed);
+    if (!validation.valid) {
+      throw new Error(validation.issues.join(" "));
+    }
+
+    const nextManifest = validation.manifest;
+    state.manifest = nextManifest;
+    const toolAdapter = adapter();
+    if (toolAdapter.ready) {
+      if (!nextManifest.tools?.[toolId]) {
+        throw new Error(`Workspace manifest is missing required state for ${toolId}.`);
+      }
+      const nextToolState = normalizeToolStateForProjectManifest(toolId, nextManifest.tools[toolId]);
+      toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, nextToolState)));
+      nextManifest.tools[toolId] = cloneValue(nextToolState);
+      nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
+      state.toolStateSourceValidated = true;
+    }
+    state.appliedInitialState = true;
+    markSaved("open-project");
+    onStatus(`${nextManifest.name} opened. ${buildStatusSummary(validation)}`);
+  }
+
+  function handleSaveWorkspace() {
+    const manifest = markSaved("save-project");
+    downloadTextFile(`${serializeProjectManifest(manifest)}\n`, normalizeProjectFileName(manifest.name));
+    onStatus(`Saved ${normalizeProjectFileName(manifest.name)}.`);
+  }
+
+  function handleSaveWorkspaceAs() {
+    const manifest = ensureWorkspaceManifest();
+    const nextName = safeString(window.prompt("Save workspace as", manifest.name), manifest.name);
+    manifest.name = nextName;
+    const saved = markSaved("save-project-as");
+    downloadTextFile(`${serializeProjectManifest(saved)}\n`, normalizeProjectFileName(saved.name));
+    onStatus(`Saved ${normalizeProjectFileName(saved.name)}.`);
+  }
+
+  function handleCloseWorkspace() {
+    const fallbackName = "No Active Workspace";
+    const nextManifest = createEmptyProjectManifest({
+      name: fallbackName,
+      toolId
+    });
+    nextManifest.workspace.notes = "closed";
+    nextManifest.tools = {};
+    nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
+    state.manifest = nextManifest;
+    state.appliedInitialState = true;
+    state.toolStateSourceValidated = !strictLaunchMode;
+    state.baselineHash = "";
+    state.lastObservedHash = "";
+    clearStorage();
+    clearSharedAssetHandoff();
+    clearSharedPaletteHandoff();
+    onChange({
+      manifest: cloneValue(state.manifest),
+      dirty: false,
+      ready: adapter().ready,
+      reason: "close-project"
+    });
+    onStatus("Workspace closed.");
+  }
+
+  function shouldConfirmDiscard(message) {
+    updateDirtyState("confirm-check");
+    if (state.manifest?.dirty !== true || isReadOnlyTool) {
+      return true;
+    }
+    return typeof window.confirm === "function"
+      ? window.confirm(message)
+      : false;
+  }
+
+  function startWatching() {
+    maybeApplyInitialToolState();
+    updateDirtyState("watch-start");
+    const intervalId = window.setInterval(() => {
+      maybeApplyInitialToolState();
+      updateDirtyState("watch-tick");
+    }, 1000);
+
+    window.addEventListener("beforeunload", (event) => {
+      updateDirtyState("beforeunload");
+      if (state.manifest?.dirty === true && !isReadOnlyTool) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    });
+
+    return () => window.clearInterval(intervalId);
+  }
+
+  function applyExternalToolState(payload = {}) {
+    const toolAdapter = adapter();
+    const stateInput = Object.prototype.hasOwnProperty.call(payload, "state")
+      ? payload.state
+      : payload;
+    const normalizedState = normalizeToolStateForProjectManifest(toolId, cloneValue(stateInput));
+    const manifest = ensureWorkspaceManifest();
+    manifest.tools[toolId] = cloneValue(normalizedState);
+    manifest.toolIntegration = buildProjectToolIntegration(manifest.tools);
+    state.manifest = manifest;
+
+    let applied = false;
+    if (toolAdapter.ready) {
+      try {
+        applied = toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, normalizedState))) === true;
+      } catch {
+        applied = false;
+      }
+    }
+
+    state.appliedInitialState = true;
+    state.toolStateSourceValidated = true;
+    markSaved("external-preset");
+    const label = safeString(payload.label, "external preset");
+    if (applied) {
+      onStatus(`Preset applied: ${label}.`);
+    } else {
+      onStatus(`Preset staged: ${label}.`);
+    }
+
+    return {
+      applied,
+      adapterReady: toolAdapter.ready === true,
+      toolId
+    };
+  }
+
+    return {
+    getManifest() {
+      return cloneValue(ensureWorkspaceManifest());
+    },
+    isDirty() {
+      updateDirtyState("is-dirty");
+      return state.manifest?.dirty === true;
+    },
+    shouldConfirmDiscard,
+    handleNewWorkspace,
+    handleOpenWorkspace,
+    handleSaveWorkspace,
+    handleSaveWorkspaceAs,
+    handleCloseWorkspace,
+    // Backward-compatible aliases for older call-sites.
+    handleNewProject: handleNewWorkspace,
+    handleOpenProject: handleOpenWorkspace,
+    handleSaveProject: handleSaveWorkspace,
+    handleSaveProjectAs: handleSaveWorkspaceAs,
+    handleCloseProject: handleCloseWorkspace,
+    updateDirtyState,
+    startWatching,
+    applyExternalToolState
+  };
+}
+
+// Backward-compatible export alias for older imports.
+export const createProjectSystemController = createWorkspaceSystemController;

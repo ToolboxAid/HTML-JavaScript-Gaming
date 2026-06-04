@@ -120,12 +120,12 @@ Codex must package all changed files into:
   - added owned sample assets:
     - `samples/phase-15/1505/assets/images/hero.png`
     - `samples/phase-15/1505/assets/audio/menu.mp3`
-- Normalized tool demo ownership path (`toolbox/shared/samples/project-asset-registry-demo`):
+- Normalized tool demo ownership path (`src/shared/toolbox/samples/project-asset-registry-demo`):
   - moved demo authored files under local demo `assets/` tree
   - updated project/demo references to explicit tool-demo-local ownership paths
   - added owned demo assets:
-    - `toolbox/shared/samples/project-asset-registry-demo/assets/images/clouds-layer.svg`
-    - `toolbox/shared/samples/project-asset-registry-demo/assets/tiles/overworld-main.png`
+    - `src/shared/toolbox/samples/project-asset-registry-demo/assets/images/clouds-layer.svg`
+    - `src/shared/toolbox/samples/project-asset-registry-demo/assets/tiles/overworld-main.png`
 - Reduced unnecessary duplication in touched scope:
   - `parallaxSources[].path` now points to local parallax source JSON instead of duplicating the image file path
   - removed ambiguous root-level placement for demo authored asset JSON files
@@ -137,7 +137,7 @@ Codex must package all changed files into:
 - Sample:
   - `samples/phase-15/1505` validated for local ownership pathing and existence
 - Tool demo:
-  - `toolbox/shared/samples/project-asset-registry-demo/project.assets.json` validated for local ownership, existence, and dedupe guard
+  - `src/shared/toolbox/samples/project-asset-registry-demo/project.assets.json` validated for local ownership, existence, and dedupe guard
 - Shared runtime regressions (from prior Level 10 lane):
   - Asteroids bezel/background behavior still validated
   - `_template` contract checks still validated
@@ -157,7 +157,7 @@ Codex must package all changed files into:
 - `node --check tests/tools/AssetOwnershipStrategyCloseout.test.mjs` PASS
 - `node --check samples/phase-15/1505/AssetBrowserScene.js` PASS
 - `node --check tests/run-tests.mjs` PASS
-- `node --check toolbox/shared/projectAssetRegistry.js` PASS
+- `node --check src/shared/toolbox/projectAssetRegistry.js` PASS
 - `validateAssetOwnershipStrategy` focused run PASS
 - `AssetOwnershipStrategyCloseout` test PASS
 - `BackgroundImageAndFullscreenBezel` focused run PASS

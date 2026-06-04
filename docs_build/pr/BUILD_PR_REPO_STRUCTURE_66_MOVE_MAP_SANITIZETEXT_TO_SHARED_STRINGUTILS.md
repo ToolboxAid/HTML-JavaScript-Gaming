@@ -6,10 +6,10 @@ Continue the shared ↔ tools boundary cleanup by moving the reusable `sanitizeT
 ## Exact Target Files
 - `src/engine/debug/inspectors/shared/inspectorUtils.js`
 - `src/shared/utils/stringUtils.js`
-- `toolbox/dev/commandPacks/groupCommandPack.js`
-- `toolbox/dev/commandPacks/overlayCommandPack.js`
-- `toolbox/dev/commandPacks/inspectorCommandPack.js`
-- `toolbox/dev/presets/debugPresetApplier.js`
+- `docs_build/dev/toolbox/commandPacks/groupCommandPack.js`
+- `docs_build/dev/toolbox/commandPacks/overlayCommandPack.js`
+- `docs_build/dev/toolbox/commandPacks/inspectorCommandPack.js`
+- `docs_build/dev/toolbox/presets/debugPresetApplier.js`
 
 ## Required Code Changes
 1. In `src/shared/utils/stringUtils.js`

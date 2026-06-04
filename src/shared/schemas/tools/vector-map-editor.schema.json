@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "src/shared/schemas/tools/vector-map-editor.schema.json",
+  "title": "Vector Map Editor Payload (Deprecated)",
+  "description": "Deprecated tool payload schema. Do not select Vector Map Editor for new manifest vector work; use Object Vector Studio V2 objects[].tags and objects[].shapes for current game-owned object geometry.",
+  "deprecated": true,
+  "type": "object",
+  "required": [
+    "vectorMapDocument"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "vectorMapDocument": {
+      "description": "Deprecated legacy Vector Map Editor document. Current game-owned object geometry should live under Object Vector Studio V2 objects[].tags and objects[].shapes.",
+      "deprecated": true,
+      "$ref": "#/$defs/jsonValue"
+    }
+  },
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "propertyNames": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "$schema": "toolbox/schemas/game.manifest.schema.json",
+  "$schema": "src/shared/schemas/game.manifest.schema.json",
   "schema": "html-js-gaming.game-manifest",
   "version": 1,
   "game": {
@@ -14,7 +14,7 @@
   },
   "tools": {
     "palette-manager-v2": {
-      "$schema": "toolbox/schemas/tools/palette-manager-v2.schema.json",
+      "$schema": "src/shared/schemas/tools/palette-manager-v2.schema.json",
       "schema": "html-js-gaming.palette",
       "version": 1,
       "id": "workspace-manager-v2-uat-sample",
@@ -56,7 +56,7 @@
       ]
     },
     "asset-manager-v2": {
-      "$schema": "toolbox/schemas/tools/asset-manager-v2.schema.json",
+      "$schema": "src/shared/schemas/tools/asset-manager-v2.schema.json",
       "schema": "html-js-gaming.asset-manager-v2",
       "version": 1,
       "id": "asset-manager-v2.uat.registry",

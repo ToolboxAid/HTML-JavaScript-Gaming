@@ -22,9 +22,9 @@
 
 ### Deletion / Cleanup Questions
 13. Can delete `toolbox/codex/sample_maaping_example.json`?
-14. Can delete `toolbox/dev/checkPhase24*` and `toolbox/dev/checkSharedExt*.json`?
+14. Can delete `docs_build/dev/toolbox/checkPhase24*` and `docs_build/dev/toolbox/checkSharedExt*.json`?
 15. Can delete `toolbox/samples/*`?
-16. Can delete `toolbox/shared/samples/*`?
+16. Can delete `src/shared/toolbox/samples/*`?
 17. Audit the rest of `toolbox/` and any unused JSON files; delete only if not used.
 18. Remove all sample dropdown/select support in tools. Samples should only live under `/samples`.
 19. If a sample only lives inside a tool folder, migrate it to the correct `/samples/phase-*` folder.
@@ -114,10 +114,10 @@ Normalize palette swatch hex:
 ### F. Deletion Candidate Audit
 Audit and report before deletion:
 - `toolbox/codex/sample_maaping_example.json`
-- `toolbox/dev/checkPhase24*`
-- `toolbox/dev/checkSharedExt*.json`
+- `docs_build/dev/toolbox/checkPhase24*`
+- `docs_build/dev/toolbox/checkSharedExt*.json`
 - `toolbox/samples/*`
-- `toolbox/shared/samples/*`
+- `src/shared/toolbox/samples/*`
 - any other JSON in `toolbox/` not used by samples, games, tools, docs, or tests
 
 Delete only if:

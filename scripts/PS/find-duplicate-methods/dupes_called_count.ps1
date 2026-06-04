@@ -7,7 +7,7 @@
 # .\find_dupes_called.ps1 > found_dupes_called.txt
 # .\find_dupes_called.ps1 | Out-File -FilePath "found_dupes_called.txt" -Encoding utf8
 
-# Goes up 3 levels to reach HTML-JavaScript-Gaming from toolbox\shared\powerShell\
+# Goes up 3 levels to reach HTML-JavaScript-Gaming from src\shared\toolbox\powerShell\
 # Get the root path (3 levels up)
 $rootPath = Resolve-Path "$PSScriptRoot\..\..\..\"
 

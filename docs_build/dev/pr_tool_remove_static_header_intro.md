@@ -97,8 +97,8 @@ Target shared tool pages only.
 Likely files:
 
 - `toolbox/*/index.html`
-- `toolbox/shared/platformShell.js`
-- `toolbox/shared/platformShell.css`
+- `src/shared/toolbox/platformShell.js`
+- `src/shared/toolbox/platformShell.css`
 - `toolbox/toolRegistry.js`
 
 Do not modify:
@@ -131,7 +131,7 @@ Do not run long sample suites.
 Run:
 
 ```powershell
-node --check toolbox/shared/platformShell.js
+node --check src/shared/toolbox/platformShell.js
 node --check toolbox/toolRegistry.js
 ```
 

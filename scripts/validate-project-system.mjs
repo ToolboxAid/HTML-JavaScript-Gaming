@@ -31,9 +31,9 @@ const REQUIRED_ACTIVE_TOOL_NAMES = [
 ];
 
 const REQUIRED_SHARED_FILES = [
-  "toolbox/shared/projectManifestContract.js",
-  "toolbox/shared/projectSystem.js",
-  "toolbox/shared/projectSystemAdapters.js",
+  "src/shared/toolbox/projectManifestContract.js",
+  "src/shared/toolbox/projectSystem.js",
+  "src/shared/toolbox/projectSystemAdapters.js",
   "docs/specs/project_manifest_contract.md"
 ];
 
@@ -112,7 +112,7 @@ async function main() {
     notes.push("SpriteEditor_old_keep remains hidden legacy");
   }
 
-  const platformShellText = await readText("toolbox/shared/platformShell.js");
+  const platformShellText = await readText("src/shared/toolbox/platformShell.js");
   for (const label of REQUIRED_SHELL_LABELS) {
     if (!platformShellText.includes(label)) {
       issues.push(`Shared shell is missing project action label: ${label}`);

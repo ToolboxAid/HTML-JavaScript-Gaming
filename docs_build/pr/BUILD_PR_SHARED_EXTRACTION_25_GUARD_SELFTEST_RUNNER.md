@@ -6,21 +6,21 @@ Add a narrow self-test runner for the shared-extraction guard so the guard logic
 ## Single PR Purpose
 Create one new self-test runner:
 
-- `toolbox/dev/checkSharedExtractionGuard.selftest.mjs`
+- `docs_build/dev/toolbox/checkSharedExtractionGuard.selftest.mjs`
 
 This BUILD does not change the guard script itself unless a tiny export is already present and needed. Default expectation: create the self-test runner only.
 
 ## Exact Files Allowed
 Edit only these files:
 
-1. `toolbox/dev/checkSharedExtractionGuard.selftest.mjs` **(new file)**
-2. `toolbox/dev/checkSharedExtractionGuard.mjs` **only if a minimal export is strictly required to support the self-test runner**
+1. `docs_build/dev/toolbox/checkSharedExtractionGuard.selftest.mjs` **(new file)**
+2. `docs_build/dev/toolbox/checkSharedExtractionGuard.mjs` **only if a minimal export is strictly required to support the self-test runner**
 
 Do not edit any other file.
 
 ## Fail-Fast Gate
 Before editing:
-1. confirm `toolbox/dev/checkSharedExtractionGuard.mjs` exists
+1. confirm `docs_build/dev/toolbox/checkSharedExtractionGuard.mjs` exists
 
 If not:
 - stop
@@ -30,7 +30,7 @@ If not:
 ## Exact New File
 Create:
 
-`toolbox/dev/checkSharedExtractionGuard.selftest.mjs`
+`docs_build/dev/toolbox/checkSharedExtractionGuard.selftest.mjs`
 
 ## Exact Self-Test Requirements
 
@@ -85,7 +85,7 @@ Preferred:
 - call the existing guard script as a child process
 
 Allowed fallback only if strictly necessary:
-- make the minimum export change in `toolbox/dev/checkSharedExtractionGuard.mjs` to support invocation from the self-test runner
+- make the minimum export change in `docs_build/dev/toolbox/checkSharedExtractionGuard.mjs` to support invocation from the self-test runner
 
 If fallback is used:
 - do not change detection rules

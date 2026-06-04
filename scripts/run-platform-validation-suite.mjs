@@ -1,5 +1,5 @@
-import { runPlatformValidationSuite } from "../toolbox/shared/platformValidationSuite.js";
-import { runCiValidationPipeline } from "../toolbox/shared/ciValidationPipeline.js";
+import { runPlatformValidationSuite } from "../src/shared/toolbox/platformValidationSuite.js";
+import { runCiValidationPipeline } from "../src/shared/toolbox/ciValidationPipeline.js";
 
 const suiteResult = await runPlatformValidationSuite();
 const ciResult = await runCiValidationPipeline({

@@ -5,7 +5,7 @@ Add optional swatch tags to Palette Manager V2 and the palette swatch schema, th
 
 ## Scope
 - `toolbox/palette-manager-v2/*`
-- `toolbox/schemas/tools/palette-browser.schema.json`
+- `src/shared/schemas/tools/palette-browser.schema.json`
 - Workflow docs_build/reports required by `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 
 ## Boundaries

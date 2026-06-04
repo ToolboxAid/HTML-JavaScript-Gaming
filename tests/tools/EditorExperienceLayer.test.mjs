@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../../toolbox/shared/editorExperienceLayer.js";
+import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../../src/shared/toolbox/editorExperienceLayer.js";
 
 export async function run() {
   const result = buildEditorExperienceLayer({

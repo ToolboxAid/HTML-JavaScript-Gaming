@@ -16,7 +16,7 @@ The current schema set has drift:
 - sample 1902 can pass with copied garbage payloads instead of schema-valid Workspace data
 
 ## Scope
-- Correct schemas under `toolbox/schemas/`
+- Correct schemas under `src/shared/schemas/`
 - Use each tool schema as the payload SSoT via `$ref`
 - Tighten Workspace manifest validation
 - Rebuild/validate only sample 1902 against corrected schemas

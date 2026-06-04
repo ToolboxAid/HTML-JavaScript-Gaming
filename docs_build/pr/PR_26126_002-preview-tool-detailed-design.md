@@ -7,7 +7,7 @@ Current repo state note: `toolbox/preview/index.html` is not present. The curren
 
 ## Source Inspected
 - `toolbox/preview/preview_svg_generator.html`
-- Current support dependency declared by that file: `toolbox/shared/preview/preview-pages.css`
+- Current support dependency declared by that file: `src/shared/toolbox/preview/preview-pages.css`
 - Current external runtime dependency declared by that file: `https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js`
 
 No sample JSON, sample launch code, games, workspace, or runtime implementation files were modified for this design PR.
@@ -33,7 +33,7 @@ Create a first-class Preview Generator V2 tool at `toolbox/preview/index.html` t
 
 Preview Generator V2 should remain a file-generation utility plus a destination-aware asset registration helper. It must not own game/sample JSON, workspace state, toolState, `tools.*` published JSON, or a dedicated Preview Generator V2 schema.
 
-No file named `toolbox/schemas/tools/preview-generator-v2.schema.json` is required or allowed by this design. Preview Generator V2 validates only the selected destination contract after the user chooses a target type.
+No file named `src/shared/schemas/tools/preview-generator-v2.schema.json` is required or allowed by this design. Preview Generator V2 validates only the selected destination contract after the user chooses a target type.
 
 ## UI Regions
 
@@ -72,7 +72,7 @@ Target behavior:
 - Sample mode resolves `0107` and `samples/phase-01/0107/index.html`.
 - Game mode resolves `Bouncing-ball` and `games/Bouncing-ball/index.html`.
 - Tool mode resolves `Vector Map Editor` and `toolbox/Vector Map Editor/index.html`.
-- Game mode selects `toolbox/schemas/tools/asset-browser.schema.json` as the destination schema for preview asset registration.
+- Game mode selects `src/shared/schemas/tools/asset-browser.schema.json` as the destination schema for preview asset registration.
 - Game mode updates the asset-browser-compatible preview field/entry for the generated game preview image.
 - If no `group1` radio is selected, validation, render, export, and destination JSON update actions are blocked with no fallback target mode.
 
@@ -330,7 +330,7 @@ Failure fallback output produces:
 ```
 
 ### JSON Output
-Preview Generator V2 does not own an independent JSON output contract and must not create or require `toolbox/schemas/tools/preview-generator-v2.schema.json`.
+Preview Generator V2 does not own an independent JSON output contract and must not create or require `src/shared/schemas/tools/preview-generator-v2.schema.json`.
 
 Preview Generator V2 must not publish:
 - `tools.preview`
@@ -342,11 +342,11 @@ Preview Generator V2 must not publish:
 Destination JSON is selected by target radio after launch. Until the user selects a target type, there is no destination purpose and no destination JSON validation.
 
 Game radio behavior:
-- Selecting the native `input[type=radio][name=group1][value=game]` sets the destination contract to `toolbox/schemas/tools/asset-browser.schema.json`.
+- Selecting the native `input[type=radio][name=group1][value=game]` sets the destination contract to `src/shared/schemas/tools/asset-browser.schema.json`.
 - The user must provide or select an existing asset-browser-compatible JSON payload before JSON update/export.
-- Preview Generator V2 validates the existing destination JSON against `toolbox/schemas/tools/asset-browser.schema.json` before any mutation.
+- Preview Generator V2 validates the existing destination JSON against `src/shared/schemas/tools/asset-browser.schema.json` before any mutation.
 - After a game preview image is generated, the tool adds or updates exactly one asset-browser-compatible preview field/entry for that game's preview image.
-- The destination JSON must validate against `toolbox/schemas/tools/asset-browser.schema.json` again after the update and before save.
+- The destination JSON must validate against `src/shared/schemas/tools/asset-browser.schema.json` again after the update and before save.
 - If either validation pass fails, the JSON update is rejected and the generated SVG file state is reported separately.
 
 Game preview asset entry shape:
@@ -391,7 +391,7 @@ Expected UI:
 - Invalid or missing base URL.
 - Missing expected target directory.
 - Missing Game destination asset JSON when Game export requests JSON registration.
-- Destination asset JSON does not validate against `toolbox/schemas/tools/asset-browser.schema.json`.
+- Destination asset JSON does not validate against `src/shared/schemas/tools/asset-browser.schema.json`.
 
 Expected UI:
 - Keep batch alive where possible.
@@ -491,10 +491,10 @@ Action: Adds or updates the generated game preview asset in the selected destina
 
 Output effect:
 - Reads the existing asset-browser-compatible JSON.
-- Validates it against `toolbox/schemas/tools/asset-browser.schema.json`.
+- Validates it against `src/shared/schemas/tools/asset-browser.schema.json`.
 - Adds or replaces `assets["image.<normalized-game-id>.preview"]`, the schema-compatible preview field/entry for that game.
 - Uses `kind: "image"` and `source: "asset-browser"` to remain schema-compatible.
-- Validates the updated JSON against `toolbox/schemas/tools/asset-browser.schema.json`.
+- Validates the updated JSON against `src/shared/schemas/tools/asset-browser.schema.json`.
 - Saves only if the updated destination JSON is valid.
 
 ## Security And Browser Constraints
@@ -526,7 +526,7 @@ The log should receive the most vertical space. Configuration controls should re
 - Stop preserves current-target integrity.
 - Errors are visible and included in the final summary.
 - No sample JSON or workspace/toolState JSON is touched.
-- Game mode validates existing and updated destination JSON against `toolbox/schemas/tools/asset-browser.schema.json` before saving preview asset registration.
+- Game mode validates existing and updated destination JSON against `src/shared/schemas/tools/asset-browser.schema.json` before saving preview asset registration.
 - No silent fallback data is used for runtime contracts.
 
 ## Playwright Expectations
@@ -562,7 +562,7 @@ Manual implementation validation should include:
 ## Known Gaps To Resolve During Implementation
 - Current `toolbox/preview/index.html` entrypoint is missing.
 - Current implementation is a single large HTML file with inline script.
-- Current implementation depends on `toolbox/shared/preview/preview-pages.css`.
+- Current implementation depends on `src/shared/toolbox/preview/preview-pages.css`.
 - Current implementation loads `html2canvas` from CDN.
 - File System Access behavior needs a clean test seam.
 - Runtime mode and interactive mode are coupled in one script.

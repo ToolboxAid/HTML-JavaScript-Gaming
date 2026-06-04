@@ -20,7 +20,7 @@ The shared asset handoff is legacy/global state and must not be required for hos
 ## Root Cause
 SVG Asset Studio successfully loads the hosted payload from `readToolHostSharedContextFromLocation(window.location)`.
 
-The badge still shows `Asset: none` because `toolbox/shared/platformShell.js` badge rendering still prefers/depends on `readSharedAssetHandoff()` instead of reading the hosted session context payload.
+The badge still shows `Asset: none` because `src/shared/toolbox/platformShell.js` badge rendering still prefers/depends on `readSharedAssetHandoff()` instead of reading the hosted session context payload.
 
 This means:
 - Data load path works.
@@ -33,7 +33,7 @@ One purpose only:
 - Hosted shell badge reads direct hosted session payload first.
 
 ## Implementation Requirements
-1. Update `toolbox/shared/platformShell.js`.
+1. Update `src/shared/toolbox/platformShell.js`.
 2. Import/use `readToolHostSharedContextFromLocation` if not already available.
 3. When current URL has `hosted=1` and `hostContextId`, read hosted context.
 4. For `hostToolId=svg-asset-studio`, if `sharedContext.payloadJson.vectorAssetDocument.sourceName` exists, badge label must use it.
@@ -54,7 +54,7 @@ or the exact `vectorAssetDocument.sourceName` from the hosted payload.
 
 ## Validation
 Run targeted checks:
-- `node --check toolbox/shared/platformShell.js`
+- `node --check src/shared/toolbox/platformShell.js`
 - `node --check "toolbox/Workspace Manager/main.js"`
 - `node --check "toolbox/SVG Asset Studio/main.js"`
 

@@ -1,5 +1,5 @@
 ﻿const TEXT_TO_SPEECH_TOOL_ID = "text2speech-V2";
-const TEXT_TO_SPEECH_SCHEMA_ID = "toolbox/schemas/tools/text2speech-V2.schema.json";
+const TEXT_TO_SPEECH_SCHEMA_ID = "src/shared/schemas/tools/text2speech-V2.schema.json";
 const TEXT_TO_SPEECH_DISPLAY_NAME = "Text to Speech V2";
 
 const TEXT_TO_SPEECH_LANGUAGE_OPTIONS = Object.freeze([

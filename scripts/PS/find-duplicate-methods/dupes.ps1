@@ -6,7 +6,7 @@
 # .\find_dupes.ps1 > found_dupes.txt
 # .\find_dupes.ps1 | Out-File -FilePath "found_dupes.txt" -Encoding utf8
 
-# Goes up 3 levels to reach HTML-JavaScript-Gaming from toolbox\shared\powerShell\
+# Goes up 3 levels to reach HTML-JavaScript-Gaming from src\shared\toolbox\powerShell\
 Get-ChildItem -Path "$PSScriptRoot\..\..\..\" -Recurse -Filter *.js |
     Select-String -Pattern "function\s+[a-zA-Z0-9_]*\(", "[a-zA-Z0-9_]*\s*=\s*function", "[a-zA-Z0-9_]*:\s*function" |
     Group-Object Line |

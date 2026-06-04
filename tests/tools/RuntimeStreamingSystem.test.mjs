@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildRuntimeStreamingManifest, loadRuntimeStreamingChunks, summarizeRuntimeStreaming } from "../../toolbox/shared/runtimeStreaming.js";
+import { buildRuntimeStreamingManifest, loadRuntimeStreamingChunks, summarizeRuntimeStreaming } from "../../src/shared/toolbox/runtimeStreaming.js";
 
 export async function run() {
   const packageManifest = {

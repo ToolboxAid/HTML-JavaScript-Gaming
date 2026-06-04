@@ -5,11 +5,11 @@ Implement one scoped Palette Manager V2 update: optional swatch tags, selected/d
 
 ## Scope
 - `toolbox/palette-manager-v2/*`
-- `toolbox/schemas/tools/palette-browser.schema.json`
+- `src/shared/schemas/tools/palette-browser.schema.json`
 - PR workflow docs and required review artifacts only.
 
 ## Implementation
-1. Update `toolbox/schemas/tools/palette-browser.schema.json`:
+1. Update `src/shared/schemas/tools/palette-browser.schema.json`:
    - `tags` is optional,
    - `tags` is an array of strings,
    - each tag item is a non-empty string,

@@ -11,8 +11,8 @@ After strict schema file changes, verify runtime actually respects schema bounda
 
 ## ALLOWED FILES
 
-- toolbox/schemas/workspace.manifest.schema.json
-- toolbox/schemas/tools/palette-browser.schema.json
+- src/shared/schemas/workspace.manifest.schema.json
+- src/shared/schemas/tools/palette-browser.schema.json
 - workspace manager routing file(s) (read-only unless violation found)
 
 ## ALLOWED CHANGES

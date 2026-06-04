@@ -1,8 +1,8 @@
-Archive docs references and redirect test output - PR_26154_038
+Consolidate builder surfaces and move toolbox shared/dev ownership - PR_26154_039-041
 
-- Consolidate docs_build/archive, PR_10/PR_11 docs, and tool design references under archive/v1-v2.
-- Update current docs_build references to the new archive paths.
-- Move Playwright output configuration and generated artifacts from tests/results to tmp/test-results.
-- Keep node_modules at root and ignored; do not modify scripts/untracked.
-- Audit toolbox/shared, toolbox/dev, and toolbox/schemas without moving ambiguous active ownership.
-- Validate targeted references, static changed files, Workspace V2, diff hygiene, and repo-structured delta packaging.
+- Keep Game Design as the single active builder/design surface.
+- Archive duplicate Tool Builder and Game Builder reference material under archive/v1-v2/tools/game-builder-reference.
+- Move reusable toolbox shared code to src/shared/toolbox, schemas to src/shared/schemas, and dev guards to docs_build/dev/toolbox.
+- Remove retired builder links from header navigation, route maps, Toolbox index grouping, current docs references, and active contract fixtures.
+- Update active Toolbox validation to check current toolbox folders, nav coverage, route map coverage, and Marketplace/archive exclusion.
+- Validate changed-file static checks, shared extraction guard, active Toolbox surface, Workspace V2, diff hygiene, review artifacts, and repo-structured delta packaging.

@@ -33,7 +33,6 @@ const scenariosPath = fileURLToPath(
 
 export const WAVE_3_TOOL_IDS = Object.freeze([
   "asset-studio",
-  "game-builder",
   "game-design-studio",
   "publish-studio",
   "animation-studio",

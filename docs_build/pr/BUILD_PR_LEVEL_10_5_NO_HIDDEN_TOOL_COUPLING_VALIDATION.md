@@ -54,7 +54,7 @@ Scan all tools for:
 - `.json`
 - `/assets/`
 - `/samples/`
-- `/toolbox/shared/samples`
+- `/src/shared/toolbox/samples`
 - hardcoded game asset paths
 
 ## Required Test

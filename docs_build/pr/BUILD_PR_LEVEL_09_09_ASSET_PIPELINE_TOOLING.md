@@ -51,12 +51,12 @@ Games consume clean runtime assets.
 
 ## Architectural Target
 Preferred shared structure:
-- `toolbox/shared/pipeline/`
-- `toolbox/shared/pipeline/loaders/`
-- `toolbox/shared/pipeline/normalizers/`
-- `toolbox/shared/pipeline/emitters/`
-- `toolbox/shared/pipeline/contracts/` (only if needed as a pipeline-facing layer)
-- `toolbox/shared/pipeline/validation/` (only if needed by the pipeline surface)
+- `src/shared/toolbox/pipeline/`
+- `src/shared/toolbox/pipeline/loaders/`
+- `src/shared/toolbox/pipeline/normalizers/`
+- `src/shared/toolbox/pipeline/emitters/`
+- `src/shared/toolbox/pipeline/contracts/` (only if needed as a pipeline-facing layer)
+- `src/shared/toolbox/pipeline/validation/` (only if needed by the pipeline surface)
 
 Exact names may vary, but the pipeline must remain clearly separated from:
 - tool UI code

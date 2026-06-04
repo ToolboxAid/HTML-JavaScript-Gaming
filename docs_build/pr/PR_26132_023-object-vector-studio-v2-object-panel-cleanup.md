@@ -28,7 +28,7 @@ Commands run:
 - `node --check src/engine/rendering/ObjectVectorRuntimeAssetService.js`
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - `node --check toolbox/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs`
-- `node -e "const fs=require('fs'); for (const file of ['toolbox/schemas/tools/object-vector-studio-v2.schema.json','games/Asteroids/game.manifest.json']) { JSON.parse(fs.readFileSync(file,'utf8')); console.log(file + ' OK'); }"`
+- `node -e "const fs=require('fs'); for (const file of ['src/shared/schemas/tools/object-vector-studio-v2.schema.json','games/Asteroids/game.manifest.json']) { JSON.parse(fs.readFileSync(file,'utf8')); console.log(file + ' OK'); }"`
 - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "Object Vector Studio V2"`
 - `npx playwright test --config=toolbox/object-vector-studio-v2/playwright.config.mjs --workers=1 --reporter=list`
 - `npm run test:workspace-v2`

@@ -11,7 +11,7 @@ Run a full schema validation sweep to ensure all tool schemas correctly enforce 
 - no routing changes
 
 ## ALLOWED FILES
-- toolbox/schemas/**/*.json
+- src/shared/schemas/**/*.json
 
 ## ALLOWED CHANGES
 - fix ONLY schema violations found during validation

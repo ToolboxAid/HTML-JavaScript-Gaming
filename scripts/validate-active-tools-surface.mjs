@@ -1,34 +1,28 @@
-﻿import fs from "node:fs/promises";
+import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  TOOL_NAME_SUFFIX_PATTERN,
-  getToolRegistry,
-  getToolById,
-  getVisibleActiveToolRegistry
-} from "../toolbox/toolRegistry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 const toolboxRoot = path.join(repoRoot, "toolbox");
-const REQUIRED_SCAN_TARGETS = [
+
+const ACTIVE_NAV_TARGETS = [
+  "assets/theme-v2/partials/header-nav.html",
+  "assets/theme-v2/js/gamefoundry-partials.js",
   "toolbox/index.html",
-  "toolbox/renderToolsIndex.js",
-  "toolbox/shared/platformShell.js",
-  "toolbox/shared/platformShell.css",
-  "toolbox/shared/assetUsageIntegration.js"
-];
-const OPTIONAL_SCAN_TARGETS = [
-  "docs_build/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md",
-  "docs/specs/asset_usage_contract.md",
-  "docs_build/dev/commit_comment.txt",
-  "docs_build/dev/reports/tool_registry_validation.txt"
+  "toolbox/tools-page-accordions.js"
 ];
 
-const NAVIGATION_SURFACE_TARGETS = [
-  "toolbox/index.html",
-  "toolbox/renderToolsIndex.js"
+const RETIRED_ACTIVE_PATTERNS = [
+  /toolbox\/(?:builder|game-builder)\//i,
+  /\btool-builder\b/i,
+  /\bgame-builder\b/i,
+  /\bGame Builder\b/,
+  /\bTool Builder\b/,
+  /archive\/v1-v2\//i,
+  /toolbox\/(?:shared|dev|schemas)(?:\/|$)/i,
+  /toolbox\\(?:shared|dev|schemas)(?:\\|$)/i
 ];
 
 async function pathExists(targetPath) {
@@ -44,125 +38,78 @@ async function readText(targetPath) {
   return fs.readFile(path.join(repoRoot, targetPath), "utf8");
 }
 
+async function activeToolFolders() {
+  const entries = await fs.readdir(toolboxRoot, { withFileTypes: true });
+  const folders = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory() || entry.name.startsWith("_")) {
+      continue;
+    }
+    const entryPoint = path.join(toolboxRoot, entry.name, "index.html");
+    if (await pathExists(entryPoint)) {
+      folders.push(entry.name);
+    }
+  }
+  return folders.sort((left, right) => left.localeCompare(right));
+}
+
+function routeForTool(folderName) {
+  return `toolbox/${folderName}/index.html`;
+}
+
+function accordionRouteForTool(folderName) {
+  return `../toolbox/${folderName}/index.html`;
+}
+
 async function main() {
   const issues = [];
-  const toolRegistry = getToolRegistry();
-  const visibleActiveTools = getVisibleActiveToolRegistry();
-  const activeNames = visibleActiveTools.map((tool) => tool.displayName);
+  const activeTools = await activeToolFolders();
 
-  if (visibleActiveTools.length === 0) {
-    issues.push("Visible active tool registry must not be empty.");
+  if (!activeTools.length) {
+    issues.push("Active toolbox folders must not be empty.");
   }
 
-  for (const tool of visibleActiveTools) {
-    const folderPath = path.join(toolboxRoot, tool.folderName);
-    const entryPointPath = path.join(toolboxRoot, tool.entryPoint);
-    if (!(await pathExists(folderPath))) {
-      issues.push(`Missing active tool folder: toolbox/${tool.folderName}`);
-    }
-    if (!(await pathExists(entryPointPath))) {
-      issues.push(`Missing active tool entry point: toolbox/${tool.entryPoint}`);
-    }
-    const isAllowedNamedV2 = tool.id === "palette-manager-v2";
-    if (!isAllowedNamedV2 && (TOOL_NAME_SUFFIX_PATTERN.test(tool.displayName) || TOOL_NAME_SUFFIX_PATTERN.test(tool.folderName))) {
-      issues.push(`Disallowed active naming suffix detected for ${tool.displayName} (${tool.folderName}).`);
-    }
-    const sampleEntryPoints = Array.isArray(tool.sampleEntryPoints) ? tool.sampleEntryPoints : [];
-    for (const sampleEntry of sampleEntryPoints) {
-      const samplePath = path.resolve(toolboxRoot, sampleEntry.path);
-      if (!(await pathExists(samplePath))) {
-        issues.push(`Missing showcase sample/help entry point for ${tool.displayName}: ${sampleEntry.path}`);
-      }
+  for (const retiredFolder of ["builder", "game-builder", "shared", "dev", "schemas"]) {
+    if (await pathExists(path.join(toolboxRoot, retiredFolder))) {
+      issues.push(`Retired toolbox folder still present in active toolbox: toolbox/${retiredFolder}`);
     }
   }
 
-  const visibleLegacyTools = toolRegistry.filter((tool) => tool.legacy === true && tool.visibleInToolsList === true);
-  if (visibleLegacyTools.length > 0) {
-    issues.push(`Legacy tools appear in active navigation: ${visibleLegacyTools.map((tool) => tool.displayName).join(", ")}`);
-  }
+  const headerNav = await readText("assets/theme-v2/partials/header-nav.html");
+  const partials = await readText("assets/theme-v2/js/gamefoundry-partials.js");
+  const toolboxIndex = await readText("toolbox/index.html");
+  const toolsAccordions = await readText("toolbox/tools-page-accordions.js");
 
-  const preservedSpriteTool = getToolById("sprite-editor");
-  if (preservedSpriteTool?.active !== true || preservedSpriteTool?.visibleInToolsList !== true) {
-    issues.push("Sprite Editor must be active and visible in the first-class tool surface.");
-  }
-
-  const legacySpriteTool = getToolById("sprite-editor-old-keep");
-  if (legacySpriteTool?.active === true || legacySpriteTool?.visibleInToolsList === true) {
-    issues.push("SpriteEditor_old_keep must stay hidden from the first-class tool surface.");
-  }
-
-  for (const target of REQUIRED_SCAN_TARGETS) {
-    if (!(await pathExists(path.join(repoRoot, target)))) {
-      issues.push(`Missing required validation target: ${target}`);
-      continue;
+  for (const folderName of activeTools) {
+    const route = routeForTool(folderName);
+    const accordionRoute = accordionRouteForTool(folderName);
+    if (!headerNav.includes(route)) {
+      issues.push(`Active toolbox page missing from header navigation: ${route}`);
     }
-    const text = await readText(target);
-    if (/Sprite Editor V3|toolbox\/Sprite Editor V3|toolbox\\Sprite Editor V3/.test(text)) {
-      issues.push(`Stale Sprite Editor V3 reference detected in ${target}`);
+    if (!partials.includes(route)) {
+      issues.push(`Active toolbox page missing from partial route map: ${route}`);
     }
-  }
-  for (const target of OPTIONAL_SCAN_TARGETS) {
-    if (!(await pathExists(path.join(repoRoot, target)))) {
-      continue;
-    }
-    const text = await readText(target);
-    if (/Sprite Editor V3|toolbox\/Sprite Editor V3|toolbox\\Sprite Editor V3/.test(text)) {
-      issues.push(`Stale Sprite Editor V3 reference detected in optional target ${target}`);
+    if (!toolsAccordions.includes(accordionRoute) && !toolsAccordions.includes(route)) {
+      issues.push(`Active toolbox page missing from toolbox index grouping: ${route}`);
     }
   }
 
-  const assetUsageIntegration = await readText("toolbox/shared/assetUsageIntegration.js");
-  for (const label of ["Browse Assets", "Import Assets", "Browse Palettes", "Manage Palettes"]) {
-    if (!assetUsageIntegration.includes(label)) {
-      issues.push(`Shared asset usage action label missing from assetUsageIntegration.js: ${label}`);
-    }
-  }
-  if (!assetUsageIntegration.includes("toolboxaid.shared.assetHandoff")) {
-    issues.push("Shared asset handoff storage key missing from assetUsageIntegration.js");
-  }
-  if (!assetUsageIntegration.includes("toolboxaid.shared.paletteHandoff")) {
-    issues.push("Shared palette handoff storage key missing from assetUsageIntegration.js");
-  }
+  const activeNavigationText = [
+    headerNav,
+    partials,
+    toolboxIndex,
+    toolsAccordions
+  ].join("\n");
 
-  for (const target of NAVIGATION_SURFACE_TARGETS) {
-    const text = await readText(target);
-    if (/SpriteEditor_old_keep|Sprite Editor Legacy/.test(text)) {
-      issues.push(`Legacy tool appears in active navigation/report surface: ${target}`);
+  for (const pattern of RETIRED_ACTIVE_PATTERNS) {
+    const match = activeNavigationText.match(pattern);
+    if (match) {
+      issues.push(`Retired or archived surface exposed in active toolbox wiring: ${match[0]}`);
     }
   }
 
-  for (const tool of visibleActiveTools) {
-    const target = `toolbox/${tool.entryPoint}`;
-    const text = await readText(target);
-    if (!text.includes("../../src/engine/ui/hubCommon.css")) {
-      issues.push(`Engine theme stylesheet missing from active tool page: ${target}`);
-    }
-    if (!text.includes("../shared/platformShell.css")) {
-      issues.push(`Shared platform shell stylesheet missing from active tool page: ${target}`);
-    }
-    if (!text.includes("../shared/platformShell.js")) {
-      issues.push(`Shared platform shell module missing from active tool page: ${target}`);
-    }
-  }
-
-  const toolboxLandingPage = await readText("toolbox/index.html");
-  if (/Asset Browser \/ Import Helper/.test(toolboxLandingPage)) {
-    issues.push('Stale "Asset Browser / Import Helper" placeholder remains on toolbox landing page.');
-  }
-  if (/Palette Browser \/ Manager/.test(toolboxLandingPage)) {
-    issues.push('Palette Browser / Manager should not remain as a static placeholder card.');
-  }
-  if (/Asset Browser \/ Import Hub/.test(toolboxLandingPage)) {
-    issues.push('Asset Browser / Import Hub should be registry-rendered, not left behind as a static placeholder card.');
-  }
-  if (!toolboxLandingPage.includes("../src/engine/ui/hubCommon.css")) {
-    issues.push("Engine theme stylesheet missing from toolbox landing page.");
-  }
-  if (!toolboxLandingPage.includes("./shared/platformShell.css")) {
-    issues.push("Shared platform shell stylesheet missing from toolbox landing page.");
-  }
-  if (!toolboxLandingPage.includes("./shared/platformShell.js")) {
-    issues.push("Shared platform shell module missing from toolbox landing page.");
+  if (/title:\s*["']Marketplace["']|href:\s*["'][^"']*marketplace\/index\.html|>\s*Marketplace\s*</i.test(toolboxIndex + "\n" + toolsAccordions)) {
+    issues.push("Marketplace must not appear as an active toolbox tile or toolbox index link.");
   }
 
   if (issues.length > 0) {
@@ -173,8 +120,9 @@ async function main() {
   }
 
   console.log("ACTIVE_TOOLS_SURFACE_VALID");
-  visibleActiveTools.forEach((tool) => {
-    console.log(`- ${tool.displayName} -> toolbox/${tool.entryPoint}`);
+  console.log(`count=${activeTools.length}`);
+  activeTools.forEach((tool) => {
+    console.log(`- ${tool} -> ${routeForTool(tool)}`);
   });
 }
 

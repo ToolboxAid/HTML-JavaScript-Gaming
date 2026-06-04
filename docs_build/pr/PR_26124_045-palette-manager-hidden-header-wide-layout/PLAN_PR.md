@@ -4,7 +4,7 @@
 Update Palette Manager V2 layout only when the shared platform header/details area is hidden.
 
 ## Existing Platform State
-- `toolbox/shared/platformShell.js` already applies fullscreen/hidden-header state through `html:fullscreen`, `tools-platform-fullscreen-active`, and `data-tools-platform-fullscreen`.
+- `src/shared/toolbox/platformShell.js` already applies fullscreen/hidden-header state through `html:fullscreen`, `tools-platform-fullscreen-active`, and `data-tools-platform-fullscreen`.
 - Palette Manager will consume that existing state with CSS only.
 
 ## Scope

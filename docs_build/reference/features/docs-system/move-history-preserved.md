@@ -597,7 +597,7 @@ Remove old location after apply:
 
 | Target | Exists? | Live References? | Proposed Classification | Evidence Summary | Action Now | Recommended Future PR Scope |
 | --- | --- | --- | --- | --- | --- | --- |
-| `templates/` | yes | yes | `needs-manual-review` | Active refs in `toolbox/shared/vectorNativeTemplate.js`, `toolbox/shared/vectorTemplateSampleGame.js`, `tests/tools/VectorNativeTemplate.test.mjs`, and docs/planning surfaces. | none in this PR | Dedicated cleanup/build lane to classify keep vs migrate-later with dependency verification. |
+| `templates/` | yes | yes | `needs-manual-review` | Active refs in `src/shared/toolbox/vectorNativeTemplate.js`, `src/shared/toolbox/vectorTemplateSampleGame.js`, `tests/tools/VectorNativeTemplate.test.mjs`, and docs/planning surfaces. | none in this PR | Dedicated cleanup/build lane to classify keep vs migrate-later with dependency verification. |
 | `archive/v1-v2/docs_build/archive/tools/SpriteEditor_old_keep/` policy | yes | yes | `keep` | Legacy-hidden runtime registry entry in `toolbox/toolRegistry.js`; referenced in specs, roadmap, and reports. | none in this PR | Separate legacy policy PR to define exact retirement criteria and transition gates. |
 | `legacy class-retention policy marker` policy target | no | yes (docs-only) | `needs-manual-review` | Path not present on disk; only planning references found in roadmap/targets/build spec docs. | none in this PR | Clarify whether this is a historical placeholder, rename candidate, or retired concept before any cleanup execution. |
 | `archive/v1-v2/docs_build/archive/` archived-notes policy | yes | yes | `keep` | Archive destination is actively documented across docs structure/readme/paths files; policy item still planned in roadmap. | none in this PR | Policy-definition PR to formalize retention + move criteria for archived notes. |
@@ -840,8 +840,8 @@ Lane: BUILD_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION
    - `templates/vector-native-arcade/`
    - -> `toolbox/templates/vector-native-arcade/`
 2. Updated only the required four files:
-   - `toolbox/shared/vectorNativeTemplate.js`
-   - `toolbox/shared/vectorTemplateSampleGame.js`
+   - `src/shared/toolbox/vectorNativeTemplate.js`
+   - `src/shared/toolbox/vectorTemplateSampleGame.js`
    - `tests/tools/VectorNativeTemplate.test.mjs`
    - `games/vector-arcade-sample/README.md`
 3. Wrote required validation artifacts:
@@ -900,8 +900,8 @@ Validate prior relocation outcomes without making structural changes.
 
 4. Target files use `toolbox/templates/vector-native-arcade/`: **PASS**
    - Files checked:
-     - `toolbox/shared/vectorNativeTemplate.js`
-     - `toolbox/shared/vectorTemplateSampleGame.js`
+     - `src/shared/toolbox/vectorNativeTemplate.js`
+     - `src/shared/toolbox/vectorTemplateSampleGame.js`
      - `tests/tools/VectorNativeTemplate.test.mjs`
      - `games/vector-arcade-sample/README.md`
    - Evidence:

@@ -3,8 +3,8 @@ Objective:
 Generate a ZIP containing ALL schema and JSON files in repo.
 
 Include:
-- toolbox/schemas/**
-- toolbox/schemas/tools/**
+- src/shared/schemas/**
+- src/shared/schemas/tools/**
 - samples/**/sample.*.json
 - samples/**/sample.*.palette.json
 - workspace.manifest.json

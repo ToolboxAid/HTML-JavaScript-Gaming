@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildMultiTargetExport, summarizeMultiTargetExport } from "../../toolbox/shared/multiTargetExport.js";
+import { buildMultiTargetExport, summarizeMultiTargetExport } from "../../src/shared/toolbox/multiTargetExport.js";
 
 export async function run() {
   const registry = {

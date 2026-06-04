@@ -5,7 +5,7 @@ Realign the preview tool path contract after the samples path structure changed.
 
 ## Problem Statement
 The preview tool previously worked from:
-- `toolbox/shared/preview`
+- `src/shared/toolbox/preview`
 
 It now lives at:
 - `toolbox/preview`

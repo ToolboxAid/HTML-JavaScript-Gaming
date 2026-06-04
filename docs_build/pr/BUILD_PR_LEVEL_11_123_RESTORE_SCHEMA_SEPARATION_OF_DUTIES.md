@@ -50,7 +50,7 @@ If palette details are present in workspace manifest:
 
 ### 2. Palette Browser schema owns palette details
 
-`toolbox/schemas/tools/palette-browser.schema.json` must own:
+`src/shared/schemas/tools/palette-browser.schema.json` must own:
 - `schema: "html-js-gaming.palette"`
 - `version`
 - `id` optional
@@ -116,7 +116,7 @@ Codex must:
 
 Codex must review all tool schemas under:
 
-- `toolbox/schemas/tools/*.schema.json`
+- `src/shared/schemas/tools/*.schema.json`
 
 For each tool:
 - schema accepts only direct tool payload JSON

@@ -167,7 +167,7 @@ Run targeted validation only.
 
 Required:
 - `samples/phase-19/1902/sample.1902.workspace-all-tools.json` parses
-- workspace manifest validates against `toolbox/schemas/workspace.manifest.schema.json`
+- workspace manifest validates against `src/shared/schemas/workspace.manifest.schema.json`
 - every `tools.<tool-id>` entry validates against its referenced tool schema
 - no `tools.*.tool` wrapper keys remain
 - no `tools.*.payload` wrapper keys remain

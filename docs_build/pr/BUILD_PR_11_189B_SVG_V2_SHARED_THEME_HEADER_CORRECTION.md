@@ -12,7 +12,7 @@ Revise SVG Asset Studio v2 so its top header matches `/index.html` by using the 
 - games
 - Workspace Manager v1 files
 - `platformShell` files
-- `toolbox/shared/*`
+- `src/shared/toolbox/*`
 - legacy Palette Browser files
 - Palette Manager files
 - start_of_day folders

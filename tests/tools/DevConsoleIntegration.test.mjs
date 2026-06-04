@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   createSampleGameDevConsoleIntegration,
   summarizeSampleGameDevConsoleIntegration
-} from "../../toolbox/dev/devConsoleIntegration.js";
+} from "../../docs_build/dev/toolbox/devConsoleIntegration.js";
 
 class InputHarness {
   constructor() {

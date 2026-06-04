@@ -163,7 +163,7 @@ Do not run long sample suites.
 Run only relevant checks:
 
 ```powershell
-node --check toolbox/shared/platformShell.js
+node --check src/shared/toolbox/platformShell.js
 node --check toolbox/toolRegistry.js
 ```
 

@@ -13,7 +13,7 @@ import {
   getRenderPipelineStageOrder,
   runRenderContractRuntimePath,
   summarizeRenderContractRuntimePath
-} from "../../toolbox/shared/renderPipelineContract.js";
+} from "../../src/shared/toolbox/renderPipelineContract.js";
 
 function createAsset(id, type, path) {
   return {

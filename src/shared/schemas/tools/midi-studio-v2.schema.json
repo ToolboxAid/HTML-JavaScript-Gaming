@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "src/shared/schemas/tools/midi-studio-v2.schema.json",
+  "title": "MIDI Studio V2 Payload",
+  "$ref": "#/$defs/musicPayload",
+  "$defs": {
+    "directorMode": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "defaultIntensity": {
+          "type": "string"
+        }
+      }
+    },
+    "musicPayload": {
+      "type": "object",
+      "required": ["version", "songs"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "html-js-gaming.midi-studio-v2"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "toolId": {
+          "type": "string",
+          "const": "midi-studio-v2"
+        },
+        "runtimePreference": {
+          "type": "string",
+          "enum": ["rendered", "live-midi"]
+        },
+        "activeSongId": {
+          "type": "string"
+        },
+        "directorMode": {
+          "$ref": "#/$defs/directorMode"
+        },
+        "songs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/song"
+          }
+        }
+      }
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "song": {
+      "type": "object",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceMidi": {
+          "type": "string"
+        },
+        "instrumentSet": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" }
+              }
+            }
+          ]
+        },
+        "rendered": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "wav": { "type": "string" },
+            "mp3": { "type": "string" },
+            "ogg": { "type": "string" }
+          }
+        },
+        "defaultRuntimeFormat": {
+          "type": "string",
+          "enum": ["ogg", "mp3", "wav"]
+        },
+        "loop": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "startSeconds": { "type": "number", "minimum": 0 },
+            "endSeconds": { "type": "number", "minimum": 0 }
+          }
+        },
+        "director": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mood": { "type": "string" },
+            "intensity": { "type": "string" },
+            "usage": { "$ref": "#/$defs/stringList" },
+            "notes": { "type": "string" }
+          }
+        },
+        "tags": {
+          "$ref": "#/$defs/stringList"
+        },
+        "studioArrangement": {
+          "oneOf": [
+            { "$ref": "#/$defs/studioArrangement" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "studioArrangement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tempo": { "type": "string" },
+        "key": { "type": "string" },
+        "style": { "type": "string" },
+        "sections": { "type": "string" },
+        "beatsPerBar": { "type": "string" },
+        "subdivision": { "type": "string" },
+        "songSheet": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "intro": { "type": "string" },
+            "loop": { "type": "string" }
+          }
+        },
+        "lanes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "chords": { "type": "string" },
+            "bass": { "type": "string" },
+            "pad": { "type": "string" },
+            "lead": { "type": "string" },
+            "drums": { "type": "string" }
+          }
+        },
+        "previewInstruments": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "chords": { "type": "string" },
+            "bass": { "type": "string" },
+            "pad": { "type": "string" },
+            "lead": { "type": "string" },
+            "drums": { "type": "string" }
+          }
+        }
+      }
+    },
+    "toolPreferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "activeSongId": {
+          "type": "string"
+        },
+        "directorMode": {
+          "$ref": "#/$defs/directorMode"
+        }
+      }
+    }
+  }
+}

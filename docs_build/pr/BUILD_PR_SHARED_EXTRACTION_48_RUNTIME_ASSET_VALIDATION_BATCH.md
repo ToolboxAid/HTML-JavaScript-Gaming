@@ -12,11 +12,11 @@ Normalize ONLY these helpers:
 ## Exact Files Allowed
 
 ### New shared file
-1. `toolbox/shared/runtimeAssetValidationUtils.js`
+1. `src/shared/toolbox/runtimeAssetValidationUtils.js`
 
 ### Consumer files
-2. `toolbox/shared/runtimeAssetLoader.js`
-3. `toolbox/shared/runtimeStreaming.js`
+2. `src/shared/toolbox/runtimeAssetLoader.js`
+3. `src/shared/toolbox/runtimeStreaming.js`
 
 Do not edit any other file.
 
@@ -30,7 +30,7 @@ Only the 2 listed consumer files are in scope.
 ## Exact Shared Helper Creation
 Create:
 
-`toolbox/shared/runtimeAssetValidationUtils.js`
+`src/shared/toolbox/runtimeAssetValidationUtils.js`
 
 Export exactly:
 - `validatePackageManifest`
@@ -79,7 +79,7 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 3 listed files changed
-2. Confirm `toolbox/shared/runtimeAssetValidationUtils.js` exists and exports:
+2. Confirm `src/shared/toolbox/runtimeAssetValidationUtils.js` exists and exports:
    - `validatePackageManifest`
    - `createRegistryDefinition`
 3. Confirm local function definitions no longer exist in changed listed consumer files

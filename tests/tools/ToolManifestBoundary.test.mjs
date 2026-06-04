@@ -8,10 +8,10 @@ function readJson(relativePath) {
 export async function run() {
   const schemaFiles = [
     "tests/schemas/tool.manifest.schema.json",
-    "toolbox/schemas/tools/palette-browser.schema.json",
-    "toolbox/schemas/samples/sample.tool-payload.schema.json",
-    "toolbox/schemas/tools/svg-asset-studio.schema.json",
-    "toolbox/schemas/tools/sprite-editor.schema.json"
+    "src/shared/schemas/tools/palette-browser.schema.json",
+    "src/shared/schemas/samples/sample.tool-payload.schema.json",
+    "src/shared/schemas/tools/svg-asset-studio.schema.json",
+    "src/shared/schemas/tools/sprite-editor.schema.json"
   ];
   schemaFiles.forEach((relativePath) => {
     const schema = readJson(relativePath);
@@ -32,10 +32,10 @@ export async function run() {
 
   const removedValidationUtilities = [
     ["tools", "schemas", ["workspace", "manifest", "schema"].join(".") + ".json"].join("/"),
-    "toolbox/schemas/workspaceManifest.schema.js",
-    "toolbox/schemas/tools/cameraPathPayload.schema.js",
-    "toolbox/schemas/tools/mapPayload.schema.js",
-    "toolbox/schemas/tools/assetPayload.schema.js"
+    "src/shared/schemas/workspaceManifest.schema.js",
+    "src/shared/schemas/tools/cameraPathPayload.schema.js",
+    "src/shared/schemas/tools/mapPayload.schema.js",
+    "src/shared/schemas/tools/assetPayload.schema.js"
   ];
   removedValidationUtilities.forEach((relativePath) => {
     const absolutePath = new URL(`../../${relativePath}`, import.meta.url);

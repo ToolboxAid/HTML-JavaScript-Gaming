@@ -14,34 +14,34 @@ Normalize ONLY this helper:
 1. `src/shared/utils/jsonUtils.js`
 
 ### Consumer files
-2. `toolbox/dev/devConsoleIntegration.js`
-3. `toolbox/dev/advanced/debugMacroRegistry.js`
-4. `toolbox/dev/advanced/debugPanelGroupRegistry.js`
-5. `toolbox/dev/inspectors/inspectorStore.js`
-6. `toolbox/dev/plugins/debugPluginSystem.js`
-7. `toolbox/dev/presets/debugPresetApplier.js`
-8. `toolbox/dev/presets/debugPresetRegistry.js`
-9. `toolbox/shared/assetMarketplace.js`
-10. `toolbox/shared/asteroidsPlatformDemo.js`
-11. `toolbox/shared/cloudRuntime.js`
-12. `toolbox/shared/collaborationSystem.js`
-13. `toolbox/shared/contractVersioning.js`
-14. `toolbox/shared/devConsoleDebugOverlay.js`
-15. `toolbox/shared/hotReloadSystem.js`
-16. `toolbox/shared/multiTargetExport.js`
-17. `toolbox/shared/performanceBenchmarks.js`
-18. `toolbox/shared/platformValidationSuite.js`
-19. `toolbox/shared/pluginArchitecture.js`
-20. `toolbox/shared/renderPipelineContract.js`
-21. `toolbox/shared/runtimeAssetLoader.js`
-22. `toolbox/shared/runtimeSceneLoaderHotReload.js`
-23. `toolbox/shared/runtimeStreaming.js`
-24. `toolbox/shared/vectorAssetSystem.js`
-25. `toolbox/shared/vectorGeometryRuntime.js`
-26. `toolbox/shared/vectorNativeTemplate.js`
-27. `toolbox/shared/vectorTemplateSampleGame.js`
-28. `toolbox/shared/vector/vectorAssetContract.js`
-29. `toolbox/shared/vector/vectorRenderPrep.js`
+2. `docs_build/dev/toolbox/devConsoleIntegration.js`
+3. `docs_build/dev/toolbox/advanced/debugMacroRegistry.js`
+4. `docs_build/dev/toolbox/advanced/debugPanelGroupRegistry.js`
+5. `docs_build/dev/toolbox/inspectors/inspectorStore.js`
+6. `docs_build/dev/toolbox/plugins/debugPluginSystem.js`
+7. `docs_build/dev/toolbox/presets/debugPresetApplier.js`
+8. `docs_build/dev/toolbox/presets/debugPresetRegistry.js`
+9. `src/shared/toolbox/assetMarketplace.js`
+10. `src/shared/toolbox/asteroidsPlatformDemo.js`
+11. `src/shared/toolbox/cloudRuntime.js`
+12. `src/shared/toolbox/collaborationSystem.js`
+13. `src/shared/toolbox/contractVersioning.js`
+14. `src/shared/toolbox/devConsoleDebugOverlay.js`
+15. `src/shared/toolbox/hotReloadSystem.js`
+16. `src/shared/toolbox/multiTargetExport.js`
+17. `src/shared/toolbox/performanceBenchmarks.js`
+18. `src/shared/toolbox/platformValidationSuite.js`
+19. `src/shared/toolbox/pluginArchitecture.js`
+20. `src/shared/toolbox/renderPipelineContract.js`
+21. `src/shared/toolbox/runtimeAssetLoader.js`
+22. `src/shared/toolbox/runtimeSceneLoaderHotReload.js`
+23. `src/shared/toolbox/runtimeStreaming.js`
+24. `src/shared/toolbox/vectorAssetSystem.js`
+25. `src/shared/toolbox/vectorGeometryRuntime.js`
+26. `src/shared/toolbox/vectorNativeTemplate.js`
+27. `src/shared/toolbox/vectorTemplateSampleGame.js`
+28. `src/shared/toolbox/vector/vectorAssetContract.js`
+29. `src/shared/toolbox/vector/vectorRenderPrep.js`
 
 Do not edit any other file.
 

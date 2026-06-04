@@ -23,7 +23,7 @@ This BUILD intentionally treats alias usage as disallowed technical debt and pre
 ## Exact Files Allowed
 Edit only these 4 files:
 
-1. `toolbox/dev/checkSharedExtractionGuard.mjs` **(new file)**
+1. `docs_build/dev/toolbox/checkSharedExtractionGuard.mjs` **(new file)**
 2. `package.json` **only if a minimal script entry is needed**
 3. `docs_build/operations/dev/commit_comment.txt` **inside this BUILD bundle only**
 4. `docs_build/operations/dev/next_command.txt` **inside this BUILD bundle only**
@@ -34,7 +34,7 @@ Do not edit any other repo file.
 ## Exact New File
 Create:
 
-`toolbox/dev/checkSharedExtractionGuard.mjs`
+`docs_build/dev/toolbox/checkSharedExtractionGuard.mjs`
 
 ## Exact Script Requirements
 The script must:
@@ -90,7 +90,7 @@ Only if `package.json` already exists and already has a `scripts` section:
 
 Add exactly one script entry if missing:
 ```json
-"check:shared-extraction-guard": "node toolbox/dev/checkSharedExtractionGuard.mjs"
+"check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs"
 ```
 
 Rules:
@@ -113,7 +113,7 @@ Rules:
 
 ## Validation Checklist
 1. Confirm only the allowed files changed
-2. Confirm `toolbox/dev/checkSharedExtractionGuard.mjs` exists
+2. Confirm `docs_build/dev/toolbox/checkSharedExtractionGuard.mjs` exists
 3. Confirm the guard fails on:
    - local helper reintroduction
    - direct shared relative import strings

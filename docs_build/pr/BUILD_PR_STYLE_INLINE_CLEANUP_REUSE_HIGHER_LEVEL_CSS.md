@@ -21,8 +21,8 @@ If an inline `<style>` block matches or is close to rules already appropriate in
 - `tests/index.html`
 - `tests/testRunner.html`
 - `toolbox/preview/preview_svg_generator.html`
-- `toolbox/shared/preview/generate-list-previews.html`
-- `toolbox/shared/preview/generate-previews.html`
+- `src/shared/toolbox/preview/generate-list-previews.html`
+- `src/shared/toolbox/preview/generate-previews.html`
 
 ## Reuse-First CSS Destination Rules
 1. Reuse an existing higher-level CSS file when the inline styles are already represented or close enough to belong there.
@@ -42,7 +42,7 @@ If an inline `<style>` block matches or is close to rules already appropriate in
   - otherwise create one shared `tests/testBase.css`
 - preview generator styles:
   - reuse an existing shared preview CSS if appropriate
-  - otherwise create one shared preview CSS under `toolbox/shared/preview/`
+  - otherwise create one shared preview CSS under `src/shared/toolbox/preview/`
 - runtime preview capture styles:
   - reuse an existing sample/shared preview/runtime CSS if appropriate
   - otherwise create one shared runtime preview CSS under `samples/shared/`

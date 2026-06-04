@@ -22,7 +22,7 @@ The requested literal pattern `samples/**/palette.*.*.json` does not match files
 ## Implementation Plan
 1. Enumerate all `samples/**/*.palette.json` files.
 2. Parse each JSON file.
-3. Validate top-level palette document shape using the existing `toolbox/schemas/tools/palette-browser.schema.json` contract.
+3. Validate top-level palette document shape using the existing `src/shared/schemas/tools/palette-browser.schema.json` contract.
 4. For each swatch, keep only valid contract properties:
    - required `symbol`, `hex`, `name`;
    - optional `tags`.

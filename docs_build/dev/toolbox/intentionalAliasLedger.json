@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "description": "Intentional import/export alias ledger. Canonical helper names are the default; aliases must match one of these documented compatibility or validation patterns.",
+  "entries": [
+    {
+      "id": "engine-default-public-barrels",
+      "files": [
+        "src/engine/ai/index.js",
+        "src/engine/animation/index.js",
+        "src/engine/assets/index.js",
+        "src/engine/audio/index.js",
+        "src/engine/automation/index.js",
+        "src/engine/camera/index.js",
+        "src/engine/config/index.js",
+        "src/engine/core/index.js",
+        "src/engine/debug/index.js",
+        "src/engine/ecs/index.js",
+        "src/engine/entity/index.js",
+        "src/engine/events/index.js",
+        "src/engine/fx/index.js",
+        "src/engine/game/index.js",
+        "src/engine/input/index.js",
+        "src/engine/level/index.js",
+        "src/engine/localization/index.js",
+        "src/engine/logging/index.js",
+        "src/engine/memory/index.js",
+        "src/engine/network/index.js",
+        "src/engine/persistence/index.js",
+        "src/engine/release/index.js",
+        "src/engine/rendering/index.js",
+        "src/engine/replay/index.js",
+        "src/engine/runtime/index.js",
+        "src/engine/scene/index.js",
+        "src/engine/security/index.js",
+        "src/engine/state/index.js",
+        "src/engine/tilemap/index.js",
+        "src/engine/ui/index.js",
+        "src/engine/world/index.js"
+      ],
+      "statementRegex": "^export \\{ (?:[A-Za-z0-9_$]+, )*default as [A-Za-z0-9_$]+(?:, [A-Za-z0-9_$]+)*,? \\} from ['\"]\\./(?:[A-Za-z0-9_$.-]+/)*[A-Za-z0-9_$.-]+\\.js['\"];?$",
+      "reason": "Stable engine public barrel exports expose default module/class files as named public APIs."
+    },
+    {
+      "id": "tools-shared-default-public-barrels",
+      "files": [
+        "src/shared/toolbox/editor/index.js",
+        "src/shared/toolbox/pipeline/index.js",
+        "src/shared/toolbox/tooling/index.js"
+      ],
+      "statementRegex": "^export \\{ (?:[A-Za-z0-9_$]+, )*default as [A-Za-z0-9_$]+(?:, [A-Za-z0-9_$]+)*,? \\} from ['\"]\\./(?:[A-Za-z0-9_$.-]+/)*[A-Za-z0-9_$.-]+\\.js['\"];?$",
+      "reason": "Stable shared-tool public barrels expose default modules as named public APIs."
+    },
+    {
+      "id": "shared-top-level-family-namespaces",
+      "files": [
+        "src/shared/index.js"
+      ],
+      "statementRegex": "^export \\* as shared[A-Za-z0-9_$]+ from ['\"]\\./[a-z][a-z0-9-]*/index\\.js['\"];?$",
+      "reason": "Top-level shared namespace barrels intentionally group shared utility families."
+    },
+    {
+      "id": "node-test-runner-run-disambiguation",
+      "files": [
+        "tests/run-tests.mjs"
+      ],
+      "statementRegex": "^import \\{ run as run[A-Za-z0-9_$]+ \\} from ['\"]\\./(?:[A-Za-z0-9_$.-]+/)*[A-Za-z0-9_$.-]+\\.test\\.mjs['\"];?$",
+      "reason": "Aggregate Node test runner imports many modules that all export run; local names disambiguate each test entry."
+    },
+    {
+      "id": "engine-barrel-namespace-surface-tests",
+      "files": [
+        "tests/core/EngineCoreBoundaryBaseline.test.mjs"
+      ],
+      "statementRegex": "^import \\* as (?:core|scene|rendering|input|physics|audio|systems) from ['\"]\\.\\./\\.\\./src/engine/(?:core|scene|rendering|input|physics|audio|systems)/index\\.js['\"];?$",
+      "reason": "Boundary baseline tests intentionally inspect engine barrel surfaces as namespaces."
+    },
+    {
+      "id": "overlay-runtime-namespace-surface-test",
+      "files": [
+        "tests/runtime/Phase19OverlayExpansionFramework.test.mjs"
+      ],
+      "statements": [
+        "import * as overlayRuntimeModule from '../../old_samples/phase-17/shared/overlayGameplayRuntime.js';"
+      ],
+      "reason": "Overlay framework test intentionally validates the sampled runtime module surface as a namespace."
+    },
+    {
+      "id": "object-vector-studio-shared-transform-adapters",
+      "files": [
+        "toolbox/object-vector-studio-v2/js/ToolStarterApp.js"
+      ],
+      "statements": [
+        "import { CANONICAL_WORLD_TO_SCREEN_SCALE, combineObjectVectorBounds, inverseTransformObjectVectorShapePoint, normalizeObjectVectorOrigin, normalizeRotationDegrees as normalizeSharedRotationDegrees, objectVectorBoundsCornerPoints, objectVectorSvgTransformAttribute, rotatePointAround as rotateSharedPointAround, transformedObjectVectorShapeBounds, transformObjectVectorShapePoint, ObjectVectorRuntimeAssetService } from \"../../../src/engine/rendering/index.js\";"
+      ],
+      "reason": "Object Vector Studio V2 keeps local method names for editor actions while delegating to shared transform helpers."
+    }
+  ]
+}

@@ -11,12 +11,12 @@ Normalize ONLY this helper:
 ## Exact Files Allowed
 
 ### New shared file
-1. `toolbox/dev/commandPacks/commandPackResultUtils.js`
+1. `docs_build/dev/toolbox/commandPacks/commandPackResultUtils.js`
 
 ### Consumer files
-2. `toolbox/dev/commandPacks/groupCommandPack.js`
-3. `toolbox/dev/commandPacks/macroCommandPack.js`
-4. `toolbox/dev/commandPacks/toggleCommandPack.js`
+2. `docs_build/dev/toolbox/commandPacks/groupCommandPack.js`
+3. `docs_build/dev/toolbox/commandPacks/macroCommandPack.js`
+4. `docs_build/dev/toolbox/commandPacks/toggleCommandPack.js`
 
 Do not edit any other file.
 
@@ -30,7 +30,7 @@ Only the 3 listed consumer files are in scope.
 ## Exact Shared Helper Creation
 Create:
 
-`toolbox/dev/commandPacks/commandPackResultUtils.js`
+`docs_build/dev/toolbox/commandPacks/commandPackResultUtils.js`
 
 Export exactly:
 
@@ -82,7 +82,7 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 4 listed files changed
-2. Confirm `toolbox/dev/commandPacks/commandPackResultUtils.js` exists and exports `createResult`
+2. Confirm `docs_build/dev/toolbox/commandPacks/commandPackResultUtils.js` exists and exports `createResult`
 3. Confirm local `function createResult(...)` definitions no longer exist in changed listed consumer files
 4. Confirm changed consumer files import `createResult` from `./commandPackResultUtils.js`
 5. Confirm no unrelated files changed

@@ -145,7 +145,7 @@ Not acceptable:
 ## Validation
 Run:
 - `node --check "toolbox/Workspace Manager/main.js"`
-- `node --check toolbox/shared/toolRegistry.js`
+- `node --check src/shared/toolbox/toolRegistry.js`
 - `node --check "toolbox/SVG Asset Studio/main.js"`
 
 Full samples smoke:

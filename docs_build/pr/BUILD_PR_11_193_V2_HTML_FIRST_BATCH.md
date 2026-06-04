@@ -21,7 +21,7 @@ Only these folders may be modified if present:
 - Workspace Manager v1
 - legacy tools without `-v2`
 - `platformShell`
-- `toolbox/shared/*`
+- `src/shared/toolbox/*`
 - root `/index.html`
 - `/toolbox/index.html`
 

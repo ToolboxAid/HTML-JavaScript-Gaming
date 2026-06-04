@@ -16,7 +16,7 @@ This PR closes that enforcement gap.
 ## Source Baseline
 Treat these as the architectural baseline for this PR:
 - `docs/reference/architecture-standards/specs/asset_usage_contract.md`
-- `toolbox/shared/vectorAssetSystem.js`
+- `src/shared/toolbox/vectorAssetSystem.js`
 - `toolbox/Asset Browser/main.js`
 - `toolbox/templates/starter-project-template/config/starter.project.json`
 - `tests/tools/VectorAssetSystem.test.mjs`
@@ -114,7 +114,7 @@ If some tools already comply, keep edits surgical and only normalize the drift t
 
 ### Likely file targets
 Use only if needed; do not expand beyond proven necessity.
-- `toolbox/shared/...` shared launch/handoff helper(s)
+- `src/shared/toolbox/...` shared launch/handoff helper(s)
 - active tool entry scripts for the in-scope tools
 - `toolbox/Asset Browser/main.js`
 - palette browser/manager entry script if present and required

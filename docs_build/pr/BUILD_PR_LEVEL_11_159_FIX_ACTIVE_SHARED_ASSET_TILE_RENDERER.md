@@ -24,12 +24,12 @@ Codex may inspect these files:
 
 - toolbox/Workspace Manager/main.js
 - toolbox/workspace-manager/main.js
-- toolbox/shared/platformShell.js
-- toolbox/shared/toolRegistry.js
-- toolbox/shared/toolLaunchState.js
-- toolbox/shared/toolCard*.js
-- toolbox/shared/*card*.js
-- toolbox/shared/*tile*.js
+- src/shared/toolbox/platformShell.js
+- src/shared/toolbox/toolRegistry.js
+- src/shared/toolbox/toolLaunchState.js
+- src/shared/toolbox/toolCard*.js
+- src/shared/toolbox/*card*.js
+- src/shared/toolbox/*tile*.js
 - toolbox/index*.js
 - toolbox/index.html
 

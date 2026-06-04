@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildPluginArchitecture, summarizePluginArchitecture } from "../../toolbox/shared/pluginArchitecture.js";
+import { buildPluginArchitecture, summarizePluginArchitecture } from "../../src/shared/toolbox/pluginArchitecture.js";
 
 export async function run() {
   const hostPackageManifest = {

@@ -1,9 +1,9 @@
 # SHARED_EXTRACTION_GUARD_USAGE
 
 ## Run
-- `node toolbox/dev/checkSharedExtractionGuard.mjs`
+- `node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs`
 - `npm run check:shared-extraction-guard` (if present)
-- `./tools/dev/runSharedExtractionGuard.sh`
+- `./docs_build/dev/toolbox/runSharedExtractionGuard.sh`
 
 ## What It Checks
 - duplicate helpers (`asFiniteNumber`, `asPositiveInteger`, `isPlainObject`)

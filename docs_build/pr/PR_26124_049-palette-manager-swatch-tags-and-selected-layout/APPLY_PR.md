@@ -13,7 +13,7 @@
 - Preserved pin/unpin, sort, search, size, import/export, accordionV2, and shared/tool shell behavior.
 
 ## Files Changed
-- `toolbox/schemas/tools/palette-browser.schema.json`
+- `src/shared/schemas/tools/palette-browser.schema.json`
 - `toolbox/palette-manager-v2/index.html`
 - `toolbox/palette-manager-v2/README.md`
 - `toolbox/palette-manager-v2/how_to_use.html`

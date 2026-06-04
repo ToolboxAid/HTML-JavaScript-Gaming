@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildVectorNativeTemplate, createVectorNativeTemplateDefinition, summarizeVectorNativeTemplate } from "../../toolbox/shared/vectorNativeTemplate.js";
+import { buildVectorNativeTemplate, createVectorNativeTemplateDefinition, summarizeVectorNativeTemplate } from "../../src/shared/toolbox/vectorNativeTemplate.js";
 
 export async function run() {
   const definition = createVectorNativeTemplateDefinition();

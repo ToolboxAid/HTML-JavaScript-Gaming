@@ -12,7 +12,7 @@ A tool file must not contain a direct `palette` reference.
 ### Wrong
 ```json
 {
-  "$schema": "../../../toolbox/schemas/tools/sprite-editor.schema.json",
+  "$schema": "../../../src/shared/schemas/tools/sprite-editor.schema.json",
   "tool": "sprite-editor",
   "version": 1,
   "palette": "./sample.palette.json",
@@ -23,7 +23,7 @@ A tool file must not contain a direct `palette` reference.
 ### Correct
 ```json
 {
-  "$schema": "../../../toolbox/schemas/tools/sprite-editor.schema.json",
+  "$schema": "../../../src/shared/schemas/tools/sprite-editor.schema.json",
   "tool": "sprite-editor",
   "version": 1,
   "config": {}
@@ -60,7 +60,7 @@ Tool payload:
 
 ```json
 {
-  "$schema": "../../../toolbox/schemas/tools/sprite-editor.schema.json",
+  "$schema": "../../../src/shared/schemas/tools/sprite-editor.schema.json",
   "tool": "sprite-editor",
   "version": 1,
   "config": {}
@@ -71,7 +71,7 @@ Palette object:
 
 ```json
 {
-  "$schema": "../../../toolbox/schemas/palette.schema.json",
+  "$schema": "../../../src/shared/schemas/palette.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Sample 0207 Palette",

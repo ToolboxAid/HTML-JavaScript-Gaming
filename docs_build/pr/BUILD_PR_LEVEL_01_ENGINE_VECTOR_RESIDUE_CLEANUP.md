@@ -44,7 +44,7 @@ To:
 3. Normalized metadata/contract references to modern boundary:
 - updated `samples/metadata/samples.shared.boundaries.report.json`
 - updated `samples/metadata/samples.index.metadata.json`
-- updated `toolbox/shared/renderPipelineContract.js` (`vector-asset-studio` engine targets no longer include `engine/vector`)
+- updated `src/shared/toolbox/renderPipelineContract.js` (`vector-asset-studio` engine targets no longer include `engine/vector`)
 
 ## Validation
 Executed focused validation for this PR:

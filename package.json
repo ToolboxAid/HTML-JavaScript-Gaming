@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "pretest": "node toolbox/dev/checkSharedExtractionGuard.mjs",
+    "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
     "test": "node ./scripts/run-node-tests.mjs",
     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
@@ -15,11 +15,11 @@
     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
-    "check:shared-extraction-guard": "node toolbox/dev/checkSharedExtractionGuard.mjs",
-    "check:phase24-closeout-guard": "node toolbox/dev/checkPhase24CloseoutExecutionGuard.mjs",
-    "check:style-system-guard": "node toolbox/dev/checkStyleSystemGuard.mjs",
-    "check:intentional-alias-ledger": "node toolbox/dev/checkIntentionalAliasLedgerGuard.mjs",
-    "check:internal-barrel-guard": "node toolbox/dev/checkInternalBarrelGuard.mjs",
+    "check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+    "check:phase24-closeout-guard": "node docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",
+    "check:style-system-guard": "node docs_build/dev/toolbox/checkStyleSystemGuard.mjs",
+    "check:intentional-alias-ledger": "node docs_build/dev/toolbox/checkIntentionalAliasLedgerGuard.mjs",
+    "check:internal-barrel-guard": "node docs_build/dev/toolbox/checkInternalBarrelGuard.mjs",
     "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
     "test:workspace-v2": "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
     "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs"

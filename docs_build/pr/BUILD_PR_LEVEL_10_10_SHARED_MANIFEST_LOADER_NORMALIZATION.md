@@ -18,8 +18,8 @@ Normalize loader to be game-agnostic.
 
 ## Required Changes (Codex)
 - Rename:
-  toolbox/shared/pipeline/asteroidsAssetManifestLoader.js
-  → toolbox/shared/pipeline/assetManifestLoader.js
+  src/shared/toolbox/pipeline/asteroidsAssetManifestLoader.js
+  → src/shared/toolbox/pipeline/assetManifestLoader.js
 
 - Replace API:
   loadAsteroidsAssetManifest → loadAssetManifest(gameId, options?)

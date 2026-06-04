@@ -4,7 +4,7 @@
 Define and enforce normalized tool-state data contracts used by project save/open integration.
 
 This contract is enforced by:
-- `toolbox/shared/projectToolIntegration.js`
+- `src/shared/toolbox/projectToolIntegration.js`
 - `tests/tools/ProjectToolDataContracts.test.mjs`
 
 ## Contract Metadata

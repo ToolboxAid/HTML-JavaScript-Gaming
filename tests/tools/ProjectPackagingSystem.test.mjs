@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildProjectPackage, summarizeProjectPackaging } from "../../toolbox/shared/projectPackaging.js";
+import { buildProjectPackage, summarizeProjectPackaging } from "../../src/shared/toolbox/projectPackaging.js";
 
 export async function run() {
   const registry = {

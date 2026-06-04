@@ -6,7 +6,7 @@ Enforce manifest-only Workspace V2 export/import so exported JSON is workspace m
 ## Scope
 - toolbox/workspace-v2/index.html
 - toolbox/workspace-v2/index.js
-- toolbox/schemas/workspace.manifest.schema.json (minimal Workspace V2 session field support only)
+- src/shared/schemas/workspace.manifest.schema.json (minimal Workspace V2 session field support only)
 - tests/runtime/V2CurrentSessionExport.test.mjs
 - docs_build/dev/reports/PR_11_277_workspace_v2_manifest_only_export_enforcement_report.md
 

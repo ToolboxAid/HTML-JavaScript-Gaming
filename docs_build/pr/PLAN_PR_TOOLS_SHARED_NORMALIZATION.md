@@ -19,10 +19,10 @@ Without a boundary-normalization pass, tool duplication and style drift will con
 
 ## Current Repo Signals Anchoring This Plan
 Existing shared/tooling surface:
-- `toolbox/shared/platformShell.js`
-- `toolbox/shared/platformShell.css`
-- vector helpers under `toolbox/shared/vector/*`
-- project/runtime helper modules already under `toolbox/shared/*`
+- `src/shared/toolbox/platformShell.js`
+- `src/shared/toolbox/platformShell.css`
+- vector helpers under `src/shared/toolbox/vector/*`
+- project/runtime helper modules already under `src/shared/toolbox/*`
 
 Existing engine theme/UI surface to prioritize:
 - `src/engine/theme/Theme.js`
@@ -61,7 +61,7 @@ Before any new tool-local stylesheet is introduced or expanded, the following re
 
 1. Reuse `src/engine/theme/*` tokens and theme contracts.
 2. Reuse `src/engine/ui/*` shared layout and UI primitives.
-3. Reuse `toolbox/shared/platformShell.css` only for tool-shell concerns not already handled by engine theme/UI.
+3. Reuse `src/shared/toolbox/platformShell.css` only for tool-shell concerns not already handled by engine theme/UI.
 4. Keep residual tool-local CSS only for truly tool-specific surfaces.
 
 ### Meaning In Practice
@@ -111,7 +111,7 @@ toolbox/<Tool Name>/
 
 Shared dependencies should trend toward:
 ```text
-toolbox/shared/
+src/shared/toolbox/
   platformShell.js
   platformShell.css
   vector/

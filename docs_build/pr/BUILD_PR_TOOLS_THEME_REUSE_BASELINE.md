@@ -4,7 +4,7 @@
 Apply a minimal tools theme reuse baseline as a docs-to-code follow-up to `PLAN_PR_TOOLS_SHARED_NORMALIZATION`, limited to shell/theme/layout normalization and stylesheet token alignment for active tools.
 
 ## Scope Guardrails
-- Prioritize reuse of existing engine UI/theme assets (`src/engine/ui/hubCommon.css`, `toolbox/shared/platformShell.css`) before any expansion of tool-local CSS.
+- Prioritize reuse of existing engine UI/theme assets (`src/engine/ui/hubCommon.css`, `src/shared/toolbox/platformShell.css`) before any expansion of tool-local CSS.
 - Touch active tools only:
   - `toolbox/Asset Browser/`
   - `toolbox/Palette Browser/`

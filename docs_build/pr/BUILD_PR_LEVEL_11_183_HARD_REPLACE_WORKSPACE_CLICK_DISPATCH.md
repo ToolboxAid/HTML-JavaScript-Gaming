@@ -135,7 +135,7 @@ Asset: sample-0901-ship.svg
 Run:
 - `node --check "toolbox/Workspace Manager/main.js"`
 - `node --check "toolbox/SVG Asset Studio/main.js"`
-- `node --check toolbox/shared/workspaceShell.js`
+- `node --check src/shared/toolbox/workspaceShell.js`
 
 Full samples smoke:
 - Skip.

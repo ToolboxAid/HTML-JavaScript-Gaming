@@ -4,7 +4,7 @@
 Verify workspace schema is workspace/game focused and does not contain sample-only concepts.
 
 ## Audit Targets
-- `toolbox/schemas/workspace.schema.json`
+- `src/shared/schemas/workspace.schema.json`
 - workspace/game manifest files, if present
 - roadmap status section
 

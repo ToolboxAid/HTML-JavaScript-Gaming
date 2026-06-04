@@ -32,7 +32,7 @@ Shared shell badge:
 
 ### ALLOWED FILES
 - toolbox/Workspace Manager/main.js
-- toolbox/shared/platformShell.js
+- src/shared/toolbox/platformShell.js
 - docs_build/dev/reports/svg_payload_to_shared_asset_badge_11_161.txt
 
 ### ALLOWED CHANGES
@@ -113,7 +113,7 @@ Codex must inspect both files:
   - SVG launch path
   - payload handoff object
 
-- `toolbox/shared/platformShell.js`
+- `src/shared/toolbox/platformShell.js`
   - shared context read
   - asset badge render
   - displayed `Asset: none` fallback
@@ -129,7 +129,7 @@ Run targeted validation only.
 
 Required:
 - `node --check "toolbox/Workspace Manager/main.js"`
-- `node --check toolbox/shared/platformShell.js`
+- `node --check src/shared/toolbox/platformShell.js`
 - Sample 1902 SVG launch context includes asset badge metadata
 - shared shell renders non-none asset badge for SVG Asset Studio
 - no schema/sample/SVG tool/runtime files changed

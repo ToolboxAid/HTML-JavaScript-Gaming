@@ -7,7 +7,7 @@ import {
   PROJECT_MANIFEST_VERSION,
   serializeProjectManifest,
   validateProjectManifest
-} from "../toolbox/shared/projectManifestContract.js";
+} from "../src/shared/toolbox/projectManifestContract.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

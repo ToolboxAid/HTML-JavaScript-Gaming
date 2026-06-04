@@ -28,7 +28,7 @@ Codex must not copy old v1 implementation blocks into the V2 tools. Use the exis
 - Use `<div id="shared-theme-header"></div>` in every V2 `index.html`.
 - Use `../../src/engine/theme/mount-shared-header.js` from every V2 `index.html`.
 - No `platformShell`.
-- No `toolbox/shared/*`.
+- No `src/shared/toolbox/*`.
 - No Workspace Manager v1 wiring.
 - No schema changes.
 - No sample changes.

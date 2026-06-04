@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
-import { loadPackagedProjectRuntime } from "../../toolbox/shared/runtimeAssetLoader.js";
+import { loadPackagedProjectRuntime } from "../../src/shared/toolbox/runtimeAssetLoader.js";
 import {
   inspectVectorGeometryRuntimeAsset,
   prepareVectorGeometryRuntimeAsset,
   summarizeVectorGeometryRuntime,
   VECTOR_GEOMETRY_RUNTIME_POLICY
-} from "../../toolbox/shared/vectorGeometryRuntime.js";
-import { normalizeSvgToVectorAsset } from "../../toolbox/shared/vector/vectorAssetBridge.js";
-import { VECTOR_ASSET_FORMAT } from "../../toolbox/shared/vector/vectorAssetContract.js";
+} from "../../src/shared/toolbox/vectorGeometryRuntime.js";
+import { normalizeSvgToVectorAsset } from "../../src/shared/toolbox/vector/vectorAssetBridge.js";
+import { VECTOR_ASSET_FORMAT } from "../../src/shared/toolbox/vector/vectorAssetContract.js";
 import {
   computeBoundsFromPoints,
   createPoint,
@@ -16,7 +16,7 @@ import {
   scalePoint,
   transformPoint,
   translatePoint
-} from "../../toolbox/shared/vector/vectorGeometryMath.js";
+} from "../../src/shared/toolbox/vector/vectorGeometryMath.js";
 
 function createContractAsset() {
   return {

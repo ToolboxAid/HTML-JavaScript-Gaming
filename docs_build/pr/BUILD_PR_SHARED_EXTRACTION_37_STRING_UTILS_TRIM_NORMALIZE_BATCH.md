@@ -15,11 +15,11 @@ Normalize ONLY:
 1. src/shared/utils/stringUtils.js
 
 ### Consumers (from dupes report)
-2. toolbox/dev/devConsoleIntegration.js
-3. toolbox/dev/commandPacks/packUtils.js
-4. toolbox/dev/presets/debugPresetRegistry.js
-5. toolbox/shared/runtimeAssetLoader.js
-6. toolbox/shared/vectorTemplateSampleGame.js
+2. docs_build/dev/toolbox/devConsoleIntegration.js
+3. docs_build/dev/toolbox/commandPacks/packUtils.js
+4. docs_build/dev/toolbox/presets/debugPresetRegistry.js
+5. src/shared/toolbox/runtimeAssetLoader.js
+6. src/shared/toolbox/vectorTemplateSampleGame.js
 
 ## Rules
 - remove local implementations

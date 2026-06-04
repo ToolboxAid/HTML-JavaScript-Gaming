@@ -1,7 +1,7 @@
 # APPLY_PR - PR_26124_071-palette-manager-remove-tools-shared-shell
 
 ## Summary
-Removed Palette Manager V2 dependency on `toolbox/shared/platformShell.css` and `toolbox/shared/platformShell.js` by moving the required visible shell behavior into Palette Manager V2-local files.
+Removed Palette Manager V2 dependency on `src/shared/toolbox/platformShell.css` and `src/shared/toolbox/platformShell.js` by moving the required visible shell behavior into Palette Manager V2-local files.
 
 ## Applied Changes
 - Removed the `../shared/platformShell.css` stylesheet import from `toolbox/palette-manager-v2/index.html`.

@@ -9,8 +9,8 @@ Normalize ONLY these helpers:
 - `roundNumber(value)`
 
 ## Exact Files Allowed
-1. `toolbox/shared/vector/vectorGeometryMath.js`
-2. `toolbox/shared/vector/vectorAssetContract.js`
+1. `src/shared/toolbox/vector/vectorGeometryMath.js`
+2. `src/shared/toolbox/vector/vectorAssetContract.js`
 
 Do not edit any other file.
 
@@ -19,23 +19,23 @@ Open both listed files first.
 
 Fail fast and stop with no code edits if any of the following is true:
 - either listed file does not exist
-- `toolbox/shared/vector/vectorAssetContract.js` does not contain local definitions and also does not need these imports
+- `src/shared/toolbox/vector/vectorAssetContract.js` does not contain local definitions and also does not need these imports
 - the shared file already exports the exact helpers and the consumer already imports and uses them correctly
 - completing the batch would require touching any file outside the exact 2-file list
 
 ## Shared Source Rule
-`toolbox/shared/vector/vectorGeometryMath.js` is the only allowed shared source for this batch.
+`src/shared/toolbox/vector/vectorGeometryMath.js` is the only allowed shared source for this batch.
 
 Allowed shared-file edits are limited to exactly one of these cases:
 1. **Export-only fix**: the helper implementation already exists in the file, but the helper is not exported correctly.
-2. **Missing-helper add**: copy only the missing helper implementation(s) from `toolbox/shared/vector/vectorAssetContract.js` into `toolbox/shared/vector/vectorGeometryMath.js` with no behavior change.
+2. **Missing-helper add**: copy only the missing helper implementation(s) from `src/shared/toolbox/vector/vectorAssetContract.js` into `src/shared/toolbox/vector/vectorGeometryMath.js` with no behavior change.
 
 Do not rewrite existing math helpers.
 Do not reorder unrelated exports.
 Do not perform cleanup outside these two helpers.
 
 ## Consumer Replacement Rule
-For `toolbox/shared/vector/vectorAssetContract.js`:
+For `src/shared/toolbox/vector/vectorAssetContract.js`:
 - remove only the local definitions of:
   - `toFiniteNumber(value, fallback = NaN)`
   - `roundNumber(value)`
@@ -48,7 +48,7 @@ For `toolbox/shared/vector/vectorAssetContract.js`:
 
 ## Dead-Code Prevention Rule
 This BUILD is valid only if at least one concrete consumer replacement occurs in:
-- `toolbox/shared/vector/vectorAssetContract.js`
+- `src/shared/toolbox/vector/vectorAssetContract.js`
 
 Do not add or export a shared helper unless the consumer file in this same PR is switched away from its local duplicate.
 
@@ -71,14 +71,14 @@ Do not introduce aliases.
 
 ## Validation Checklist
 1. Confirm only these 2 files changed:
-   - `toolbox/shared/vector/vectorGeometryMath.js`
-   - `toolbox/shared/vector/vectorAssetContract.js`
-2. Confirm `toolbox/shared/vector/vectorGeometryMath.js` exports:
+   - `src/shared/toolbox/vector/vectorGeometryMath.js`
+   - `src/shared/toolbox/vector/vectorAssetContract.js`
+2. Confirm `src/shared/toolbox/vector/vectorGeometryMath.js` exports:
    - `toFiniteNumber`
    - `roundNumber`
-3. Confirm `toolbox/shared/vector/vectorAssetContract.js` no longer contains local definitions for those helpers
-4. Confirm `toolbox/shared/vector/vectorAssetContract.js` imports the helpers from `./vectorGeometryMath.js`
-5. Confirm at least one real consumer replacement occurred in `toolbox/shared/vector/vectorAssetContract.js`
+3. Confirm `src/shared/toolbox/vector/vectorAssetContract.js` no longer contains local definitions for those helpers
+4. Confirm `src/shared/toolbox/vector/vectorAssetContract.js` imports the helpers from `./vectorGeometryMath.js`
+5. Confirm at least one real consumer replacement occurred in `src/shared/toolbox/vector/vectorAssetContract.js`
 6. Confirm no unrelated helpers or files changed
 7. Confirm no behavior changes were introduced
 

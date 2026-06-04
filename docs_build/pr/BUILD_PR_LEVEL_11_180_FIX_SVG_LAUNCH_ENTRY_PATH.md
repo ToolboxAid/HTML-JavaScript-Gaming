@@ -111,8 +111,8 @@ Expected UI:
 Run:
 - `node --check "toolbox/Workspace Manager/main.js"`
 - `node --check "toolbox/SVG Asset Studio/main.js"`
-- `node --check toolbox/shared/workspaceShell.js`
-- `node --check toolbox/shared/platformShell.js`
+- `node --check src/shared/toolbox/workspaceShell.js`
+- `node --check src/shared/toolbox/platformShell.js`
 
 Full samples smoke:
 - Skip.

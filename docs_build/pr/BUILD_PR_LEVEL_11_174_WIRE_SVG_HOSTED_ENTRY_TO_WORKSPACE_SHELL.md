@@ -54,14 +54,14 @@ In `toolbox/SVG Asset Studio/main.js`, detect hosted Workspace mode using URL pa
 When hosted SVG mode is true:
 
 - log `[SVG_HOSTED_WORKSPACE_ENTRY]`
-- initialize `toolbox/shared/workspaceShell.js`
+- initialize `src/shared/toolbox/workspaceShell.js`
 - pass or allow `workspaceShell.js` to read `window.location`
 - do not initialize platformShell badge rendering for this hosted SVG instance
 
 If the SVG tool still needs non-badge shell UI, keep it local to SVG or explicitly disable platformShell badge rendering. Do not route badge state through platformShell.
 
 ### 3. workspaceShell SVG contract
-Ensure `toolbox/shared/workspaceShell.js` supports the SVG contract:
+Ensure `src/shared/toolbox/workspaceShell.js` supports the SVG contract:
 
 Payload:
 - `payloadJson.vectorAssetDocument`
@@ -145,8 +145,8 @@ Not allowed:
 ## Validation
 Run:
 - `node --check "toolbox/SVG Asset Studio/main.js"`
-- `node --check toolbox/shared/workspaceShell.js`
-- `node --check toolbox/shared/platformShell.js`
+- `node --check src/shared/toolbox/workspaceShell.js`
+- `node --check src/shared/toolbox/platformShell.js`
 - `node --check "toolbox/Workspace Manager/main.js"`
 
 Full samples smoke:

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "src/shared/schemas/tools/asset-pipeline.schema.json",
+  "title": "asset-pipeline Payload",
+  "type": "object",
+  "required": [
+    "pipelinePayload"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "pipelinePayload": {
+      "$ref": "#/$defs/jsonValue"
+    }
+  },
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "propertyNames": {
+        "type": "string"
+      }
+    }
+  }
+}

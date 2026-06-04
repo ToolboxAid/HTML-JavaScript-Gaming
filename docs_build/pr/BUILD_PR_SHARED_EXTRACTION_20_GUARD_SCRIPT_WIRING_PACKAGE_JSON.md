@@ -5,7 +5,7 @@ Wire the existing shared-extraction guard into package.json for easy execution.
 
 ## Single PR Purpose
 Add a single script entry to package.json to run:
-toolbox/dev/checkSharedExtractionGuard.mjs
+docs_build/dev/toolbox/checkSharedExtractionGuard.mjs
 
 ## Exact Files Allowed
 1. package.json (only if it exists AND already has a scripts section)
@@ -16,7 +16,7 @@ Do not edit any other file.
 Before editing:
 1. Confirm package.json exists
 2. Confirm it has a "scripts" section
-3. Confirm toolbox/dev/checkSharedExtractionGuard.mjs exists
+3. Confirm docs_build/dev/toolbox/checkSharedExtractionGuard.mjs exists
 
 If any condition fails:
 - stop
@@ -28,7 +28,7 @@ If any condition fails:
 
 Add ONLY if missing:
 
-"check:shared-extraction-guard": "node toolbox/dev/checkSharedExtractionGuard.mjs"
+"check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs"
 
 Rules:
 - do not reorder file

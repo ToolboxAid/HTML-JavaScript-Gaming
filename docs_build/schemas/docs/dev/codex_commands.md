@@ -8,7 +8,7 @@ Apply PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT.
 Use the schema set as the contract source and correct it.
 
 Required:
-- Normalize `toolbox/schemas/workspace.manifest.schema.json`.
+- Normalize `src/shared/schemas/workspace.manifest.schema.json`.
 - Remove top-level `palettes`.
 - Make `tools.palette-browser` singular and required.
 - List all supported Workspace tool ids explicitly under `tools.properties`.

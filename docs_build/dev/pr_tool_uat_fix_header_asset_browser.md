@@ -168,7 +168,7 @@ Use targeted validation only.
 Recommended checks:
 
 ```powershell
-node --check toolbox/shared/platformShell.js
+node --check src/shared/toolbox/platformShell.js
 node --check toolbox/toolRegistry.js
 ```
 

@@ -35,7 +35,7 @@ Do not modify:
 - old Workspace Manager
 - Workspace Manager v1 wiring
 - legacy tools other than moving Palette Browser to `Palette Browser-v1`
-- `toolbox/shared/**`
+- `src/shared/toolbox/**`
 - `start_of_day/**`
 
 ## Visible Naming Rule
@@ -92,7 +92,7 @@ Do not:
 - auto-open Palette Manager from Workspace URL
 - bridge through legacy handoff code
 - use tool aliases
-- use `toolbox/shared/`
+- use `src/shared/toolbox/`
 - patch Workspace Manager v1 to support Palette Manager
 
 Workspace opens clean. The user manually selects Palette Manager from the clean Tool v2 flow once Tool v2 workspace selection exists. For this PR, Palette Manager must be directly testable through explicit session data only, without adding Workspace Manager v1 integration.
@@ -112,10 +112,10 @@ The rebuilt Palette Manager must include:
 - no old shared shell header
 - no legacy fullscreen header behavior
 
-The accordion must be owned by the new Tool v2 layout foundation under `toolbox/common/`, not by `toolbox/shared/`.
+The accordion must be owned by the new Tool v2 layout foundation under `toolbox/common/`, not by `src/shared/toolbox/`.
 
 ## Shared Foundation Rule
-Treat `toolbox/shared/` as deprecated for new Tool v2 work.
+Treat `src/shared/toolbox/` as deprecated for new Tool v2 work.
 
 Create new shared foundation under:
 
@@ -133,8 +133,8 @@ toolbox/common/toolContract.js
 
 Do not import from:
 
-- `toolbox/shared/platformShell.js`
-- `toolbox/shared/assetUsageIntegration.js`
+- `src/shared/toolbox/platformShell.js`
+- `src/shared/toolbox/assetUsageIntegration.js`
 - old shared handoff modules
 - tool alias registries
 
@@ -318,7 +318,7 @@ Do not run the full samples smoke test unless Codex can prove this PR modified s
 - Header follows the repo root `/index.html` pattern.
 - Header/details accordion can hide/show that region.
 - `toolbox/common/` is used for new Tool v2 foundation.
-- `toolbox/shared/` is not used by new Tool v2 files.
+- `src/shared/toolbox/` is not used by new Tool v2 files.
 - Workspace Manager v1 is not modified or wired to Palette Manager.
 - No schema, sample, or game files are changed.
 - No fallback/default palette data exists.

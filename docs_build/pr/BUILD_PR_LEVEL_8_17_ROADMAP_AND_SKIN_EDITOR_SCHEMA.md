@@ -16,7 +16,7 @@ If Level 8 schema-driven tool normalization section does not exist, append this 
 - [x] Canonical 17 first-class tool inventory documented.
 - [x] Tool folder paths verified for all 17 first-class tools.
 - [x] Explicit schema paths recorded for all 17 first-class tools.
-- [.] Close first-class schema gap by adding `toolbox/schemas/tools/skin-editor.schema.json`.
+- [.] Close first-class schema gap by adding `src/shared/schemas/tools/skin-editor.schema.json`.
 - [.] Define launcher pairing contract: pass tool payload object plus shared data objects.
 - [ ] Verify all 17 tools have exactly one schema.
 - [ ] Verify sample tool payload files match workspace/game `tools[]` item shape.
@@ -24,7 +24,7 @@ If Level 8 schema-driven tool normalization section does not exist, append this 
 - [ ] Verify workspace schema has no sample-only concepts.
 ```
 
-### 2. `toolbox/schemas/tools/skin-editor.schema.json`
+### 2. `src/shared/schemas/tools/skin-editor.schema.json`
 Add the missing first-class tool schema for `skin-editor`.
 
 Required shape:
@@ -51,6 +51,6 @@ Required report checks:
 ## Acceptance
 - Roadmap updated without deleting or rewriting existing roadmap content.
 - Roadmap status advances at least one item.
-- `toolbox/schemas/tools/skin-editor.schema.json` exists.
+- `src/shared/schemas/tools/skin-editor.schema.json` exists.
 - First-class schema coverage can advance from 16/17 to 17/17.
 - No runtime/start_of_day changes.

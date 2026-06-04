@@ -27,7 +27,7 @@ Reviewed `games/Asteroids/game.manifest.json` Object Vector Studio V2 payload:
 - `object.asteroids.ufo.large`
 - `object.asteroids.ufo.small`
 
-Schema check passed against `toolbox/schemas/tools/object-vector-studio-v2.schema.json` with 6 objects and no validation errors.
+Schema check passed against `src/shared/schemas/tools/object-vector-studio-v2.schema.json` with 6 objects and no validation errors.
 
 ## Validation
 

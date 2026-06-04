@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { loadPackagedProjectRuntime, summarizeRuntimeAssetLoader } from "../../toolbox/shared/runtimeAssetLoader.js";
+import { loadPackagedProjectRuntime, summarizeRuntimeAssetLoader } from "../../src/shared/toolbox/runtimeAssetLoader.js";
 
 export async function run() {
   const packageManifest = {

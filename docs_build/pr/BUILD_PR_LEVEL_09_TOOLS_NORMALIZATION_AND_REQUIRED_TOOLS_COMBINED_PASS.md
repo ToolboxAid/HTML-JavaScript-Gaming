@@ -58,7 +58,7 @@ Focused checks run:
   - `tests/tools/AssetPipelineTooling.test.mjs`
 
 Attempted additional check:
-- `tests/tools/PerformanceProfiler.test.mjs` currently fails due a pre-existing module-resolution issue in shared runtime loader dependencies (`toolbox/shared/runtimeAssetLoader.js` importing `C:/src/engine/assets/AssetRegistry.js`).
+- `tests/tools/PerformanceProfiler.test.mjs` currently fails due a pre-existing module-resolution issue in shared runtime loader dependencies (`src/shared/toolbox/runtimeAssetLoader.js` importing `C:/src/engine/assets/AssetRegistry.js`).
 
 ## Roadmap Status
 

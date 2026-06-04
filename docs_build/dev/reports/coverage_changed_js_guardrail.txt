@@ -6,9 +6,192 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) toolbox/dev/checkIntentionalAliasLedgerGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/dev/checkInternalBarrelGuard.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/audio/TextToSpeechDefaults.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/aiAuthoringAssistant.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/assetMarketplace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/assetPipelineConverters.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/assetPipelineFoundation.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/assetPipelineValidationOutput.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/assetUsageIntegration.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/ciValidationPipeline.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/cloudRuntime.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/collaborationSystem.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/contractVersioning.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/debugInspectorData.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/debugToolInteractionFlow.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/debugVisualizationLayer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/devConsoleDebugOverlay.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/documentModeGuards.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/editor/EntityPlacementEditor.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/editor/LevelEditor.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/editor/TileMapEditor.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/editor/TimelineEditor.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/editorExperienceLayer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/eventCommandUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/gameplaySystemLayer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/gameTemplates.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/hotReloadSystem.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/livePreviewSyncChannel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/multiTargetExport.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/paletteDocumentContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/performanceBenchmarks.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/performanceProfiler.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/assetErrorHandling.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/AssetImportPipeline.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/assetManifestLoader.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/assetPipelineTooling.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/AudioPreprocessPipeline.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/BuildAssetManifestSystem.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/ContentMigrationSystem.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/ContentValidationPipeline.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/gameAssetManifestDiscovery.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/runtimeAssetBinding.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/runtimeAssetLookup.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/runtimeAssetValidation.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pipeline/TexturePreprocessPipeline.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/platformShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/platformValidationSuite.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/pluginArchitecture.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectAssetRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectAssetRemediation.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectAssetValidation.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectManifestContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectPackaging.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectSystem.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectSystemAdapters.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectSystemValueUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectToolIntegration.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/projectVersioning.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/publishingPipeline.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/renderPipelineContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/runtimeAssetLoader.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/runtimeAssetSharedUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/runtimeAssetValidationUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/runtimeSceneLoaderHotReload.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/runtimeStreaming.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/schemaOnlyToolPresetValidation.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolBootContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolHostManifest.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolHostRuntime.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolHostSharedContext.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/tooling/AssetBrowser.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/tooling/DeveloperConsole.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/tooling/LiveTuningService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/tooling/PropertyEditor.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/tooling/RuntimeInspector.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/tooling/SceneGraphViewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolLaunchSSoT.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolLaunchSSoTData.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolLoadDiagnostics.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/toolSampleCatalog.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/uiSafeUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/unifiedToolUxContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorAssetBridge.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorAssetContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorGeometryMath.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorRenderPrep.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorSafeValueUtils.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vectorAssetSystem.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vectorGeometryRuntime.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vectorNativeTemplate.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/vectorTemplateSampleGame.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/workspaceShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(75%) toolbox/tools-page-accordions.js - executed lines 396/396; executed functions 15/20
 
 Guardrail warnings:
-(0%) toolbox/dev/checkIntentionalAliasLedgerGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/dev/checkInternalBarrelGuard.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/audio/TextToSpeechDefaults.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/aiAuthoringAssistant.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/assetMarketplace.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/assetPipelineConverters.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/assetPipelineFoundation.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/assetPipelineValidationOutput.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/assetUsageIntegration.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/ciValidationPipeline.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/cloudRuntime.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/collaborationSystem.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/contractVersioning.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/debugInspectorData.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/debugToolInteractionFlow.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/debugVisualizationLayer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/devConsoleDebugOverlay.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/documentModeGuards.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/editor/EntityPlacementEditor.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/editor/LevelEditor.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/editor/TileMapEditor.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/editor/TimelineEditor.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/editorExperienceLayer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/eventCommandUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/gameplaySystemLayer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/gameTemplates.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/hotReloadSystem.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/livePreviewSyncChannel.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/multiTargetExport.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/paletteDocumentContract.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/performanceBenchmarks.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/performanceProfiler.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/assetErrorHandling.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/AssetImportPipeline.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/assetManifestLoader.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/assetPipelineTooling.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/AudioPreprocessPipeline.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/BuildAssetManifestSystem.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/ContentMigrationSystem.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/ContentValidationPipeline.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/gameAssetManifestDiscovery.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/runtimeAssetBinding.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/runtimeAssetLookup.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/runtimeAssetValidation.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pipeline/TexturePreprocessPipeline.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/platformShell.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/platformValidationSuite.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/pluginArchitecture.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectAssetRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectAssetRemediation.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectAssetValidation.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectManifestContract.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectPackaging.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectSystem.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectSystemAdapters.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectSystemValueUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectToolIntegration.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/projectVersioning.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/publishingPipeline.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/renderPipelineContract.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/runtimeAssetLoader.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/runtimeAssetSharedUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/runtimeAssetValidationUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/runtimeSceneLoaderHotReload.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/runtimeStreaming.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/schemaOnlyToolPresetValidation.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/toolBootContract.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/toolHostManifest.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/toolHostRuntime.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/toolHostSharedContext.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/tooling/AssetBrowser.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/tooling/DeveloperConsole.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/tooling/LiveTuningService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/tooling/PropertyEditor.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/tooling/RuntimeInspector.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/tooling/SceneGraphViewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/toolLaunchSSoT.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/toolLaunchSSoTData.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/toolLoadDiagnostics.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/toolSampleCatalog.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/uiSafeUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/unifiedToolUxContract.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorAssetBridge.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorAssetContract.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorGeometryMath.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorRenderPrep.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vector/vectorSafeValueUtils.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vectorAssetSystem.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vectorGeometryRuntime.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vectorNativeTemplate.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/vectorTemplateSampleGame.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/workspaceShell.js - WARNING: changed runtime JS file missing from coverage; advisory only

@@ -32,7 +32,7 @@ Do not modify:
 - games
 - old Workspace Manager
 - legacy tools other than moving Palette Browser to `Palette Browser-v1`
-- `toolbox/shared/**`
+- `src/shared/toolbox/**`
 - `start_of_day/**`
 
 ## Naming Rules
@@ -52,7 +52,7 @@ toolbox/Palette Browser/
 ```
 
 ## Shared Foundation Rule
-Treat `toolbox/shared/` as deprecated for new Tool v2 work.
+Treat `src/shared/toolbox/` as deprecated for new Tool v2 work.
 
 Create new shared foundation under:
 
@@ -70,8 +70,8 @@ toolbox/common/toolContract.js
 
 Do not import from:
 
-- `toolbox/shared/platformShell.js`
-- `toolbox/shared/assetUsageIntegration.js`
+- `src/shared/toolbox/platformShell.js`
+- `src/shared/toolbox/assetUsageIntegration.js`
 - old shared handoff modules
 - tool alias registries
 
@@ -238,7 +238,7 @@ Done means:
 - malformed session shows error state
 - no fallback/default palette data exists
 - no `platformShell` usage in rebuilt Palette Browser
-- no `toolbox/shared/**` imports in rebuilt Palette Browser or new common files
+- no `src/shared/toolbox/**` imports in rebuilt Palette Browser or new common files
 - no schema/sample/game changes
 - reverse engineering report exists
 - targeted validation results are recorded

@@ -68,7 +68,7 @@ Required effect:
 - The console must not show `platformShell.js ... renderToolAssetBadge ... toolId: 'svg-asset-studio', label: 'none'` for hosted SVG.
 
 ### 2. workspaceShell active path
-Ensure `toolbox/shared/workspaceShell.js` is loaded and called by hosted SVG.
+Ensure `src/shared/toolbox/workspaceShell.js` is loaded and called by hosted SVG.
 
 It must log or report:
 - `[WORKSPACE_SHELL_STATE]`
@@ -145,8 +145,8 @@ Manual UAT on sample 1902:
 
 ## Validation
 Run:
-- `node --check toolbox/shared/workspaceShell.js`
-- `node --check toolbox/shared/platformShell.js`
+- `node --check src/shared/toolbox/workspaceShell.js`
+- `node --check src/shared/toolbox/platformShell.js`
 - `node --check "toolbox/Workspace Manager/main.js"`
 - `node --check "toolbox/SVG Asset Studio/main.js"`
 

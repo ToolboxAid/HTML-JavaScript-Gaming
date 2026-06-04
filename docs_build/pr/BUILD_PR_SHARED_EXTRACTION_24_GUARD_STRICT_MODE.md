@@ -6,10 +6,10 @@ Tighten the shared-extraction guard to catch edge cases and prevent bypass patte
 ## Single PR Purpose
 Enhance the existing guard script ONLY:
 
-toolbox/dev/checkSharedExtractionGuard.mjs
+docs_build/dev/toolbox/checkSharedExtractionGuard.mjs
 
 ## Exact Files Allowed
-1. toolbox/dev/checkSharedExtractionGuard.mjs
+1. docs_build/dev/toolbox/checkSharedExtractionGuard.mjs
 
 Do not edit any other file.
 

@@ -5,12 +5,12 @@ Conservative exact-cluster helper normalization for active tools, limited to sha
 
 ## Scope
 - Active tools only (shared helper surface consumed by active tools).
-- Reuse existing `toolbox/shared/*` modules first.
+- Reuse existing `src/shared/toolbox/*` modules first.
 - Target only:
   - project system helper normalization
   - runtime asset loader helper normalization
   - runtime asset validation helper normalization
-  - safe vector helper normalization already represented in `toolbox/shared/vector/*`
+  - safe vector helper normalization already represented in `src/shared/toolbox/vector/*`
 - No style/theme work.
 - No editor-state extraction.
 - No render-pipeline rewrites.
@@ -20,15 +20,15 @@ Conservative exact-cluster helper normalization for active tools, limited to sha
 - Stop and report if helper semantics diverge too much.
 
 ## Exact Target Files
-- `toolbox/shared/projectManifestContract.js`
-- `toolbox/shared/runtimeAssetLoader.js`
-- `toolbox/shared/runtimeAssetValidationUtils.js`
-- `toolbox/shared/runtimeStreaming.js`
-- `toolbox/shared/runtimeAssetSharedUtils.js`
-- `toolbox/shared/vector/vectorAssetBridge.js`
-- `toolbox/shared/vector/vectorAssetContract.js`
-- `toolbox/shared/vector/vectorRenderPrep.js`
-- `toolbox/shared/vector/vectorSafeValueUtils.js`
+- `src/shared/toolbox/projectManifestContract.js`
+- `src/shared/toolbox/runtimeAssetLoader.js`
+- `src/shared/toolbox/runtimeAssetValidationUtils.js`
+- `src/shared/toolbox/runtimeStreaming.js`
+- `src/shared/toolbox/runtimeAssetSharedUtils.js`
+- `src/shared/toolbox/vector/vectorAssetBridge.js`
+- `src/shared/toolbox/vector/vectorAssetContract.js`
+- `src/shared/toolbox/vector/vectorRenderPrep.js`
+- `src/shared/toolbox/vector/vectorSafeValueUtils.js`
 
 ## Validation
 - Run:

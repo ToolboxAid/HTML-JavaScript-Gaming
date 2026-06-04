@@ -6,7 +6,7 @@ ToolHostDispatchContract.test.mjs
 */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { createToolHostManifest, getToolHostEntryById } from "../../toolbox/shared/toolHostManifest.js";
+import { createToolHostManifest, getToolHostEntryById } from "../../src/shared/toolbox/toolHostManifest.js";
 import { getVisibleActiveToolRegistry } from "../../toolbox/toolRegistry.js";
 
 export async function run() {

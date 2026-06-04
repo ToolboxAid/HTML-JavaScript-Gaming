@@ -39,7 +39,7 @@ Do not migrate all tools.
 
 ### 1. Ensure workspaceShell has a public init
 File:
-`toolbox/shared/workspaceShell.js`
+`src/shared/toolbox/workspaceShell.js`
 
 Export a clear initializer, for example:
 `initWorkspaceShell()`
@@ -147,11 +147,11 @@ Expected no logs:
 
 ## Validation
 Run:
-- `node --check toolbox/shared/workspaceShell.js`
+- `node --check src/shared/toolbox/workspaceShell.js`
 - `node --check "toolbox/SVG Asset Studio/main.js"`
 - `node --check "toolbox/Workspace Manager/main.js"`
-- `node --check toolbox/shared/platformShell.js`
-- `node --check toolbox/shared/assetUsageIntegration.js`
+- `node --check src/shared/toolbox/platformShell.js`
+- `node --check src/shared/toolbox/assetUsageIntegration.js`
 
 Full samples smoke:
 - Skip.

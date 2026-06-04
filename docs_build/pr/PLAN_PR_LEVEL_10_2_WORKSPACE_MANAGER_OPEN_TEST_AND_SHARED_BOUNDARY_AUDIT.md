@@ -1,7 +1,7 @@
 # PLAN_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT
 
 ## Purpose
-Add a browser/runtime test that validates every game listed from `games/index.html` can use its "Open with Workspace Manager" action, and audit whether `toolbox/shared/asteroidsPlatformDemo.js` crosses tool/game boundaries.
+Add a browser/runtime test that validates every game listed from `games/index.html` can use its "Open with Workspace Manager" action, and audit whether `src/shared/toolbox/asteroidsPlatformDemo.js` crosses tool/game boundaries.
 
 ## Scope
 - Add a games index Workspace Manager open test.
@@ -9,7 +9,7 @@ Add a browser/runtime test that validates every game listed from `games/index.ht
   - `gameId=<id>`
   - `mount=game`
 - Confirm direct launch remains separate from Workspace Manager launch.
-- Audit `toolbox/shared/asteroidsPlatformDemo.js` boundary ownership.
+- Audit `src/shared/toolbox/asteroidsPlatformDemo.js` boundary ownership.
 - Advance roadmap status only.
 
 ## Non-Goals

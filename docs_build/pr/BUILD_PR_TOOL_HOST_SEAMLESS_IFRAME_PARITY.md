@@ -15,7 +15,7 @@ Refactor Tool Host so hosted tool presentation is nearly identical to direct-lau
 - `toolbox/Tool Host/index.html`
 - `toolbox/Tool Host/main.js`
 - `toolbox/Tool Host/toolHost.css` (new)
-- `toolbox/shared/toolHostRuntime.js`
+- `src/shared/toolbox/toolHostRuntime.js`
 - `docs_build/dev/codex_commands.md`
 - `docs_build/dev/commit_comment.txt`
 - `docs_build/dev/reports/validation_checklist.txt`
@@ -23,12 +23,12 @@ Refactor Tool Host so hosted tool presentation is nearly identical to direct-lau
 ## Implementation Status (Execution-Backed)
 - `[x]` Host controls moved into collapsible imported section in `toolbox/Tool Host/index.html`.
 - `[x]` Host workspace simplified to iframe mount surface with no panel wrapper chrome.
-- `[x]` Runtime iframe style injection removed from `toolbox/shared/toolHostRuntime.js`.
+- `[x]` Runtime iframe style injection removed from `src/shared/toolbox/toolHostRuntime.js`.
 - `[x]` Link disabled state moved from JS inline styles to CSS class in `toolbox/Tool Host/main.js` + `toolbox/Tool Host/toolHost.css`.
 - `[x]` No inline style attributes in Tool Host HTML target file.
 
 ## Validation Executed
-1. `rg -n "style\." "toolbox/Tool Host/main.js" "toolbox/shared/toolHostRuntime.js"`
+1. `rg -n "style\." "toolbox/Tool Host/main.js" "src/shared/toolbox/toolHostRuntime.js"`
    - Result: no matches.
 2. `rg -n "<style|style=" "toolbox/Tool Host/index.html"`
    - Result: no matches.

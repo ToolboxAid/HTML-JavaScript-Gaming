@@ -29,7 +29,7 @@ console.log("[SVG_TILE_WRITE]", {
 });
 
 ### 2. Trace workspaceShell output
-In `toolbox/shared/workspaceShell.js`:
+In `src/shared/toolbox/workspaceShell.js`:
 - After normalized state is created:
 
 console.log("[WORKSPACE_SHELL_STATE]", state);

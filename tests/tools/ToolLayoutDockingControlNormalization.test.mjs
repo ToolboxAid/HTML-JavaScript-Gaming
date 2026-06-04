@@ -17,7 +17,7 @@ function assertIncludesAll(relativePath, patterns) {
 }
 
 export async function run() {
-  assertIncludesAll("toolbox/shared/platformShell.css", [
+  assertIncludesAll("src/shared/toolbox/platformShell.css", [
     /\.tools-platform-layout-grid/,
     /\.tools-platform-control-cluster--primary/,
     /\.tools-platform-control-cluster--workflow/,

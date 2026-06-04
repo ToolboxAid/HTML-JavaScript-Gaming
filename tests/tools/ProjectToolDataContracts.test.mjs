@@ -4,7 +4,7 @@ import {
   TOOL_DATA_CONTRACT_VERSION,
   buildProjectToolIntegration,
   validateToolStateContract
-} from "../../toolbox/shared/projectToolIntegration.js";
+} from "../../src/shared/toolbox/projectToolIntegration.js";
 
 export async function run() {
   const validTileState = {

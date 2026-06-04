@@ -6,16 +6,16 @@ Provide a simple cross-platform way to execute the shared-extraction guard witho
 ## Single PR Purpose
 Create a single script:
 
-toolbox/dev/runSharedExtractionGuard.sh
+docs_build/dev/toolbox/runSharedExtractionGuard.sh
 
 ## Exact Files Allowed
-1. toolbox/dev/runSharedExtractionGuard.sh (new file)
+1. docs_build/dev/toolbox/runSharedExtractionGuard.sh (new file)
 
 ## Exact File Content
 
 ```bash
 #!/usr/bin/env bash
-node toolbox/dev/checkSharedExtractionGuard.mjs
+node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs
 ```
 
 ## Rules

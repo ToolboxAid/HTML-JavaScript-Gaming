@@ -69,7 +69,7 @@ export function run() {
   assert.equal(classifyGetStateVariantDomain("getState"), "other");
 
   assert.equal(classifyGetStateVariantLayer("old_samples/phase-01/test.js"), "sample");
-  assert.equal(classifyGetStateVariantLayer("toolbox/shared/test.js"), "tool");
+  assert.equal(classifyGetStateVariantLayer("src/shared/toolbox/test.js"), "tool");
   assert.equal(classifyGetStateVariantLayer("src/engine/test.js"), "runtime");
   assert.equal(classifyGetStateVariantLayer("old_games/Asteroids/test.js"), "runtime");
 

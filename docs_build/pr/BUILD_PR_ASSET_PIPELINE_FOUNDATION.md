@@ -47,11 +47,11 @@ The previous lane unified project-level tool integration. The next highest-lever
 
 ## Shared Reuse Priority
 Reuse current shared layers first:
-- toolbox/shared/projectSystem.js
-- toolbox/shared/projectSystemAdapters.js
-- toolbox/shared/projectSystemValueUtils.js
-- toolbox/shared/runtimeAssetLoader.js
-- toolbox/shared/runtimeAssetValidationUtils.js
+- src/shared/toolbox/projectSystem.js
+- src/shared/toolbox/projectSystemAdapters.js
+- src/shared/toolbox/projectSystemValueUtils.js
+- src/shared/toolbox/runtimeAssetLoader.js
+- src/shared/toolbox/runtimeAssetValidationUtils.js
 - any current toolbox/shared asset/registry helpers already proven in prior lanes
 
 ## Build Strategy

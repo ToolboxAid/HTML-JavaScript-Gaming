@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildProjectAssetRemediation, getPrimaryRemediationAction, summarizeProjectAssetRemediation } from "../../toolbox/shared/projectAssetRemediation.js";
+import { buildProjectAssetRemediation, getPrimaryRemediationAction, summarizeProjectAssetRemediation } from "../../src/shared/toolbox/projectAssetRemediation.js";
 
 export async function run() {
   const registry = {

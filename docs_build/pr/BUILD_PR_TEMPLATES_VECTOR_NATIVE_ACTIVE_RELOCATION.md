@@ -13,8 +13,8 @@ This PR is single-purpose:
 
 ## Exact Target Files
 ### Must modify
-- `toolbox/shared/vectorNativeTemplate.js`
-- `toolbox/shared/vectorTemplateSampleGame.js`
+- `src/shared/toolbox/vectorNativeTemplate.js`
+- `src/shared/toolbox/vectorTemplateSampleGame.js`
 - `tests/tools/VectorNativeTemplate.test.mjs`
 - `games/vector-arcade-sample/README.md`
 

@@ -11,11 +11,11 @@ If expected changes are not applied to real files → execution FAILS.
 
 Codex MUST modify these files:
 
-1. toolbox/schemas/workspace.manifest.schema.json
+1. src/shared/schemas/workspace.manifest.schema.json
    - REMOVE any palette payload structure
    - KEEP ONLY $ref to palette-browser schema
 
-2. toolbox/schemas/tools/palette-browser.schema.json
+2. src/shared/schemas/tools/palette-browser.schema.json
    - REMOVE:
      - oneOf
      - $defs.toolPayload

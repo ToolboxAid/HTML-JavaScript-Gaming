@@ -12,12 +12,12 @@ Normalize ONLY these helpers:
 ## Exact Files Allowed
 
 ### New shared file
-1. `toolbox/shared/projectSystemValueUtils.js`
+1. `src/shared/toolbox/projectSystemValueUtils.js`
 
 ### Consumer files
-2. `toolbox/shared/projectManifestContract.js`
-3. `toolbox/shared/projectSystem.js`
-4. `toolbox/shared/projectSystemAdapters.js`
+2. `src/shared/toolbox/projectManifestContract.js`
+3. `src/shared/toolbox/projectSystem.js`
+4. `src/shared/toolbox/projectSystemAdapters.js`
 
 Do not edit any other file.
 
@@ -31,7 +31,7 @@ Only the 3 listed consumer files are in scope.
 ## Exact Shared Helper Creation
 Create:
 
-`toolbox/shared/projectSystemValueUtils.js`
+`src/shared/toolbox/projectSystemValueUtils.js`
 
 Export exactly:
 - `cloneValue`
@@ -80,7 +80,7 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 4 listed files changed
-2. Confirm `toolbox/shared/projectSystemValueUtils.js` exists and exports:
+2. Confirm `src/shared/toolbox/projectSystemValueUtils.js` exists and exports:
    - `cloneValue`
    - `safeString`
 3. Confirm local function definitions no longer exist in changed listed consumer files

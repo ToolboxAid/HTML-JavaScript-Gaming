@@ -25,7 +25,7 @@ Wire Object Vector Studio V2 into Workspace Manager V2 launch/session flow and s
 Commands run:
 
 ```powershell
-node -e "const fs=require('fs'); for (const p of ['games/Asteroids/game.manifest.json','toolbox/schemas/workspace.manifest.schema.json']) { JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'')); } console.log('json ok')"
+node -e "const fs=require('fs'); for (const p of ['games/Asteroids/game.manifest.json','src/shared/schemas/workspace.manifest.schema.json']) { JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'')); } console.log('json ok')"
 @'
 const fs = require('fs');
 const path = require('path');

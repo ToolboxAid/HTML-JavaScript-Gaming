@@ -24,8 +24,8 @@ No new structural move in this PR.
    - `docs_build/reports/validation_checklist.txt`
 
 ## Validation Targets
-- `toolbox/shared/vectorNativeTemplate.js`
-- `toolbox/shared/vectorTemplateSampleGame.js`
+- `src/shared/toolbox/vectorNativeTemplate.js`
+- `src/shared/toolbox/vectorTemplateSampleGame.js`
 - `tests/tools/VectorNativeTemplate.test.mjs`
 - `games/vector-arcade-sample/README.md`
 

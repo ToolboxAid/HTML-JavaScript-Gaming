@@ -14,7 +14,7 @@ Completed the Palette Manager V2 final baseline hardening pass by removing concr
   - `.palette-manager-v2__swatch-name`
   - `.palette-manager-v2__swatch-meta`
 - Removed stale Import accordion `.palette-manager-v2__controls` override after JSON buttons moved to `menuSample`.
-- Preserved the shared platform header `details/summary` wrapper because it is consumed by `toolbox/shared/platformShell.js` and is not a Palette Manager accordion.
+- Preserved the shared platform header `details/summary` wrapper because it is consumed by `src/shared/toolbox/platformShell.js` and is not a Palette Manager accordion.
 
 ## Audit Findings
 - No Palette Manager app-level old `details`/`summary` accordion markup remains.

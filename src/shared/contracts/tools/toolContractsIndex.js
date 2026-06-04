@@ -80,9 +80,6 @@ import {
   ASSET_STUDIO_TOOL_CONTRACT,
 } from "./assetStudioContract.js";
 import {
-  GAME_BUILDER_TOOL_CONTRACT,
-} from "./gameBuilderContract.js";
-import {
   GAME_DESIGN_STUDIO_TOOL_CONTRACT,
 } from "./gameDesignStudioContract.js";
 import {
@@ -119,7 +116,6 @@ export {
   AUDIO_SFX_PLAYGROUND_V2_TOOL_CONTRACT,
   CODE_STUDIO_TOOL_CONTRACT,
   COLLISION_INSPECTOR_V2_TOOL_CONTRACT,
-  GAME_BUILDER_TOOL_CONTRACT,
   GAME_DESIGN_STUDIO_TOOL_CONTRACT,
   INPUT_MAPPING_V2_TOOL_CONTRACT,
   INPUT_STUDIO_TOOL_CONTRACT,
@@ -172,7 +168,6 @@ export const TOOL_CONTRACT_LIST = Object.freeze([
   THREE_D_ASSET_VIEWER_TOOL_CONTRACT,
   THREE_D_CAMERA_PATH_EDITOR_TOOL_CONTRACT,
   ASSET_STUDIO_TOOL_CONTRACT,
-  GAME_BUILDER_TOOL_CONTRACT,
   GAME_DESIGN_STUDIO_TOOL_CONTRACT,
   PUBLISH_STUDIO_TOOL_CONTRACT,
   ANIMATION_STUDIO_TOOL_CONTRACT,
@@ -189,7 +184,6 @@ export const TOOL_INDEX_ROOT_CARD_COVERAGE = Object.freeze([
   createRootCardCoverage("Object Vector", "object-vector-studio-v2", "mapped", "Root card links toolbox/object-vector/index.html; first-class contract is object-vector-studio-v2."),
   createRootCardCoverage("World Vector", "world-vector-studio-v2", "mapped", "Root card links toolbox/world-vector/index.html; first-class contract is world-vector-studio-v2."),
   createRootCardCoverage("Palette Manager", "palette-manager-v2", "mapped", "Root card links toolbox/palette/index.html; first-class contract is palette-manager-v2."),
-  createRootCardCoverage("Game Builder", "game-builder", "contracted", ""),
   createRootCardCoverage("Game Design", "game-design-studio", "contracted", ""),
   createRootCardCoverage("Publish", "publish-studio", "contracted", ""),
   createRootCardCoverage("Animation", "animation-studio", "contracted", ""),

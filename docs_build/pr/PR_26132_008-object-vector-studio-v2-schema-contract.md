@@ -6,7 +6,7 @@ Create the Object Vector Studio V2 JSON Schema contract and make it the runtime 
 
 ## Scope
 
-- Added `toolbox/schemas/tools/object-vector-studio-v2.schema.json`.
+- Added `src/shared/schemas/tools/object-vector-studio-v2.schema.json`.
 - Derived the schema shape from SVG Asset Studio palette/vector authoring state and Vector Map Editor object, point, style, and transform document contracts.
 - Schema covers Object Vector Studio V2 root payloads, palette swatches, objects, shapes, transform data, selection state, viewport state, and JSON export metadata.
 - Root payloads now reject unknown root properties.
@@ -39,7 +39,7 @@ node --check toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2Sch
 node --check toolbox/object-vector-studio-v2/js/ToolStarterApp.js
 node --check toolbox/object-vector-studio-v2/js/bootstrap.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-node -e "JSON.parse(require('fs').readFileSync('toolbox/schemas/tools/object-vector-studio-v2.schema.json','utf8')); console.log('schema json ok')"
+node -e "JSON.parse(require('fs').readFileSync('src/shared/schemas/tools/object-vector-studio-v2.schema.json','utf8')); console.log('schema json ok')"
 ```
 
 All checks passed.

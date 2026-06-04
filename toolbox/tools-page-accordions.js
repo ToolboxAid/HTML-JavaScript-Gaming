@@ -172,15 +172,6 @@
                     theme: "forge"
                 },
                 {
-                    title: "Tool Builder",
-                    href: "../toolbox/builder/index.html",
-                    image: "../assets/theme-v2/images/tools/game-builder.png",
-                    description: "Prepare reusable tool shell layouts for future Game Foundry Studio tools.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
-                {
                     title: "Tool Creator",
                     href: "../toolbox/creator/index.html",
                     image: "../assets/theme-v2/images/tools/game-design-studio.png",
@@ -194,16 +185,6 @@
         {
             group: "Worlds",
             tools: [
-                {
-                    title: "Game Builder",
-                    subgroup: "Tilemap",
-                    href: "../toolbox/game-builder/index.html",
-                    image: "../assets/theme-v2/images/tools/game-builder.png",
-                    description: "Assemble components and build your game from scratch.",
-                    role: "ForgeBot",
-                    mascot: "forgebot",
-                    theme: "forge"
-                },
                 {
                     title: "Game Design",
                     subgroup: "Hybrid",

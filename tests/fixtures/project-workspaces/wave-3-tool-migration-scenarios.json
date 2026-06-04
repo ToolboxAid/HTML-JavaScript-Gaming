@@ -19,18 +19,6 @@
       }
     },
     {
-      "toolId": "game-builder",
-      "displayName": "Game Builder",
-      "toolType": "studio",
-      "requiredInputs": ["game-design-json", "asset"],
-      "producedOutputs": ["game-manifest"],
-      "payloadRequiredField": "buildPlan",
-      "payloadExample": {
-        "manifestId": "manifest.wave3",
-        "assetRefs": ["asset.wave3.sprite"]
-      }
-    },
-    {
       "toolId": "game-design-studio",
       "displayName": "Game Design Studio",
       "toolType": "studio",
@@ -188,49 +176,6 @@
     }
   ],
   "manifestHandoffs": [
-    {
-      "name": "game-builder manifest handoff uses declared fields only",
-      "toolId": "game-builder",
-      "handoff": {
-        "projectWorkspace": {
-          "activeProjectId": "project.wave3",
-          "activeToolId": "game-builder",
-          "activeToolStateId": "tool-state.wave3.game-builder",
-          "flowState": "opening"
-        },
-        "manifest": {
-          "manifestId": "manifest.wave3",
-          "ownerId": "user.owner",
-          "projectId": "project.wave3",
-          "projectType": "game",
-          "sourceToolStates": [
-            {
-              "toolStateId": "tool-state.wave3.game-builder",
-              "toolType": "game-builder",
-              "version": 1
-            }
-          ],
-          "sourceAssets": [
-            {
-              "assetId": "asset.wave3.sprite",
-              "assetType": "image",
-              "version": 1
-            },
-            {
-              "assetId": "palette.wave3.primary",
-              "assetType": "palette",
-              "version": 1
-            }
-          ],
-          "visibility": "project",
-          "version": 1,
-          "status": "active",
-          "exportFormat": "game-manifest-json"
-        },
-        "declaredManifestFields": ["manifestId", "projectId", "projectType", "sourceToolStates", "sourceAssets", "visibility", "version", "status", "exportFormat"],
-        "downstreamUseFields": ["manifestId", "projectId", "sourceToolStates", "sourceAssets"]
-      }
-    },
     {
       "name": "publish-studio manifest handoff uses declared fields only",
       "toolId": "publish-studio",

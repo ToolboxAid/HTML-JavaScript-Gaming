@@ -80,11 +80,11 @@ Do not promote:
 
 ## Expected Implementation Shape
 Preferred shared homes:
-- `toolbox/shared/io/...`
-- `toolbox/shared/state/...`
-- `toolbox/shared/utils/...`
-- `toolbox/shared/contracts/...` (only if needed by proven reuse)
-- `toolbox/shared/validation/...` (only if needed by focused checks)
+- `src/shared/toolbox/io/...`
+- `src/shared/toolbox/state/...`
+- `src/shared/toolbox/utils/...`
+- `src/shared/toolbox/contracts/...` (only if needed by proven reuse)
+- `src/shared/toolbox/validation/...` (only if needed by focused checks)
 
 ## Required Deliverables
 Codex should produce a small surgical delta containing:

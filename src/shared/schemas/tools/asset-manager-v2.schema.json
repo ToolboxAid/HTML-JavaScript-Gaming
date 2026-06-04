@@ -1,0 +1,379 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "src/shared/schemas/tools/asset-manager-v2.schema.json",
+  "title": "Asset Manager V2 Payload",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "name",
+    "source",
+    "assets"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema": {
+      "type": "string",
+      "const": "html-js-gaming.asset-manager-v2"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^assets\\.color\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetEntry"
+            },
+            {
+              "required": [
+                "color"
+              ]
+            },
+            {
+              "not": {
+                "required": [
+                  "stretchOverride"
+                ]
+              }
+            }
+          ]
+        },
+        "^assets\\.image\\.background\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetEntry"
+            },
+            {
+              "not": {
+                "required": [
+                  "color"
+                ]
+              }
+            }
+          ]
+        },
+        "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetEntry"
+            },
+            {
+              "not": {
+                "required": [
+                  "color"
+                ]
+              }
+            }
+          ]
+        },
+        "^(?!assets\\.image\\.(background|bezel)\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetEntry"
+            },
+            {
+              "not": {
+                "required": [
+                  "stretchOverride"
+                ]
+              }
+            },
+            {
+              "not": {
+                "required": [
+                  "color"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "propertyNames": {
+        "anyOf": [
+          {
+            "pattern": "^assets\\.color\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+          },
+          {
+            "pattern": "^assets\\.image\\.background\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+          },
+          {
+            "pattern": "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+          },
+          {
+            "pattern": "^(?!assets\\.image\\.(background|bezel)\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "assetEntry": {
+      "type": "object",
+      "required": [
+        "path",
+        "type",
+        "kind",
+        "role",
+        "source"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "audio",
+            "color",
+            "data",
+            "font",
+            "image",
+            "localization",
+            "shader",
+            "video"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "png",
+            "jpg",
+            "jpeg",
+            "webp",
+            "gif",
+            "svg",
+            "mp3",
+            "wav",
+            "ogg",
+            "m4a",
+            "hex",
+            "woff",
+            "woff2",
+            "ttf",
+            "otf",
+            "mp4",
+            "webm",
+            "mov",
+            "glsl",
+            "vert",
+            "frag",
+            "wgsl",
+            "json",
+            "csv",
+            "txt",
+            "po",
+            "pot",
+            "xliff",
+            "xlf"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "sprite",
+            "background",
+            "bezel",
+            "preview",
+            "ui",
+            "sound",
+            "music",
+            "display",
+            "cutscene",
+            "loop",
+            "fragment",
+            "vertex",
+            "compute",
+            "config",
+            "table",
+            "strings",
+            "dialogue",
+            "hud",
+            "text",
+            "border",
+            "accent",
+            "warning",
+            "success",
+            "danger",
+            "shadow",
+            "highlight"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "workspace-manager-v2",
+            "asset-manager-v2",
+            "manifest"
+          ]
+        },
+        "color": {
+          "$ref": "#/$defs/colorEntry"
+        },
+        "stretchOverride": {
+          "type": "object",
+          "required": [
+            "uniformEdgeStretchPx"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "uniformEdgeStretchPx": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "assetRolesByType": {
+      "image": [
+        "sprite",
+        "background",
+        "bezel",
+        "preview",
+        "ui"
+      ],
+      "audio": [
+        "sound",
+        "music"
+      ],
+      "color": [
+        "hud",
+        "text",
+        "background",
+        "border",
+        "accent",
+        "warning",
+        "success",
+        "danger",
+        "shadow",
+        "highlight"
+      ],
+      "font": [
+        "ui",
+        "display"
+      ],
+      "video": [
+        "cutscene",
+        "loop"
+      ],
+      "shader": [
+        "fragment",
+        "vertex",
+        "compute"
+      ],
+      "data": [
+        "config",
+        "table"
+      ],
+      "localization": [
+        "strings",
+        "dialogue"
+      ]
+    },
+    "assetKindsByType": {
+      "image": [
+        "png",
+        "jpg",
+        "jpeg",
+        "webp",
+        "gif",
+        "svg"
+      ],
+      "audio": [
+        "mp3",
+        "wav",
+        "ogg",
+        "m4a"
+      ],
+      "color": [
+        "hex"
+      ],
+      "font": [
+        "woff",
+        "woff2",
+        "ttf",
+        "otf"
+      ],
+      "video": [
+        "mp4",
+        "webm",
+        "mov"
+      ],
+      "shader": [
+        "glsl",
+        "vert",
+        "frag",
+        "wgsl"
+      ],
+      "data": [
+        "json",
+        "csv",
+        "txt"
+      ],
+      "localization": [
+        "json",
+        "po",
+        "pot",
+        "xliff",
+        "xlf"
+      ]
+    },
+    "colorEntry": {
+      "type": "object",
+      "required": [
+        "hex",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "hex": {
+          "type": "string",
+          "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "symbol": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
