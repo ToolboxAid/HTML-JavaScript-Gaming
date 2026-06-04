@@ -25,7 +25,7 @@ The current static path is:
 These remain side/capability tools and are not blockers unless a future registry rule explicitly requires them:
 
 - AI Assistant
-- Storage Inspector
+- Storage
 - Settings
 - Learn
 - Cloud

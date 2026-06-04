@@ -89,9 +89,9 @@
                     theme: "forge"
                 },
                 {
-                    title: "Storage Inspector",
+                    title: "Storage",
                     href: "../toolbox/storage/index.html",
-                    image: "../assets/theme-v2/images/tools/storage-inspector.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Inspect local storage, saved state, and tool data.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
@@ -100,7 +100,7 @@
             ]
         },
         {
-            group: "Audio",
+            group: "Media & Audio",
             tools: [
                 {
                     title: "MIDI",
@@ -112,10 +112,55 @@
                     theme: "bot"
                 },
                 {
-                    title: "Sound",
+                    title: "Audio",
                     href: "../toolbox/sound/index.html",
                     image: "../assets/theme-v2/images/image-missing.svg",
-                    description: "Prepare audio, sound effects, and game sound workflows.",
+                    description: "Prepare audio and game sound workflows.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
+                {
+                    title: "Music Library",
+                    href: "../toolbox/music-library/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan reusable music library and soundtrack workflows.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
+                {
+                    title: "Sound Effects",
+                    href: "../toolbox/sound-effects/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan reusable game effect audio workflows.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
+                {
+                    title: "Speech to Text",
+                    href: "../toolbox/speech-to-text/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan spoken input and transcription workflows.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
+                {
+                    title: "Text to Speech",
+                    href: "../toolbox/text-to-speech/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan generated narration and spoken output workflows.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
+                {
+                    title: "Voice",
+                    href: "../toolbox/voice/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan character voice, capture, and review workflows.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
                     theme: "bot"
@@ -126,9 +171,9 @@
             group: "Colors",
             tools: [
                 {
-                    title: "Palette Manager",
+                    title: "Palette / Colors",
                     href: "../toolbox/palette/index.html",
-                    image: "../assets/theme-v2/images/tools/palette-manager.png",
+                    image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Craft and manage color palettes for your games.",
                     role: "Pixel Smith",
                     mascot: "pixel-smith",
@@ -137,13 +182,54 @@
             ]
         },
         {
-            group: "Input",
+            group: "Input Mapping",
             tools: [
                 {
-                    title: "Input",
+                    title: "Input Mapping",
                     href: "../toolbox/input/index.html",
                     image: "../assets/theme-v2/images/image-missing.svg",
                     description: "Map player controls and configure input workflows.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                }
+            ]
+        },
+        {
+            group: "Support",
+            tools: [
+                {
+                    title: "Fonts",
+                    href: "../toolbox/fonts/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan game typography, font loading, and readable text choices.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
+                {
+                    title: "Learn",
+                    href: "../toolbox/learn/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan tutorials, guidance, and learning resources for creators.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
+                {
+                    title: "Marketplace",
+                    href: "../toolbox/marketplace/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan marketplace listing, asset, and discovery workflows.",
+                    role: "Foundry Bot",
+                    mascot: "foundry-bot",
+                    theme: "bot"
+                },
+                {
+                    title: "Settings",
+                    href: "../toolbox/settings/index.html",
+                    image: "../assets/theme-v2/images/image-missing.svg",
+                    description: "Plan visible creator settings for future configurable tool behavior.",
                     role: "Foundry Bot",
                     mascot: "foundry-bot",
                     theme: "bot"
@@ -227,8 +313,11 @@
         "Audio": "tool-group-media-audio",
         "Colors": "tool-group-platform-cloud",
         "Input": "tool-group-development-system",
+        "Input Mapping": "tool-group-development-system",
+        "Media & Audio": "tool-group-media-audio",
         "Objects": "tool-group-build-create",
         "Planning": "tool-group-development-system",
+        "Support": "tool-group-ai-learning",
         "Tooling": "tool-group-development-system",
         "Worlds": "tool-group-content-assets"
     };
@@ -238,15 +327,16 @@
         "Audio": "swatch-red",
         "Colors": "swatch-blue",
         "Input": "swatch-gray",
+        "Input Mapping": "swatch-gray",
+        "Media & Audio": "swatch-red",
         "Objects": "swatch-pink",
         "Planning": "swatch-blue",
+        "Support": "swatch-purple",
         "Tooling": "swatch-gray",
         "Worlds": "swatch-orange"
     };
     const badgeMap = {
-        "AI Assistant": "ai-assistant",
-        "Palette Manager": "palette-manager",
-        "Storage Inspector": "storage-inspector"
+        "AI Assistant": "ai-assistant"
     };
     const defaultProgress = {
         requiredForTestable: false,
@@ -303,7 +393,7 @@
             status: "in-progress",
             progressChecklist: ["Define win condition", "Document core loop", "List required content"]
         },
-        "Input": {
+        "Input Mapping": {
             requiredForTestable: true,
             requiredForPublish: true,
             status: "ready",
@@ -321,13 +411,19 @@
             status: "ready",
             progressChecklist: ["Optional audio path", "Attach music only if required"]
         },
+        "Music Library": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned media tool", "Use when reusable music sourcing is required"]
+        },
         "Object Vector": {
             requiredForTestable: true,
             requiredForPublish: true,
             status: "ready",
             progressChecklist: ["Create object geometry", "Confirm collision-ready export"]
         },
-        "Palette Manager": {
+        "Palette / Colors": {
             requiredForTestable: true,
             requiredForPublish: true,
             status: "complete",
@@ -351,23 +447,71 @@
             status: "locked",
             progressChecklist: ["Prepare release package", "Confirm share metadata", "Review public readiness"]
         },
-        "Sound": {
+        "Audio": {
             requiredForTestable: false,
             requiredForPublish: false,
             status: "ready",
             progressChecklist: ["Optional sound path", "Attach effects only if required"]
         },
-        "Storage Inspector": {
+        "Sound Effects": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned media tool", "Use when reusable sound effect sourcing is required"]
+        },
+        "Speech to Text": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned media tool", "Use when spoken input is required"]
+        },
+        "Storage": {
             requiredForTestable: false,
             requiredForPublish: false,
             status: "complete",
             progressChecklist: ["Side/capability tool", "Inspect saves without blocking build path"]
+        },
+        "Text to Speech": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned media tool", "Use when generated speech is required"]
+        },
+        "Voice": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned media tool", "Use when character voice planning is required"]
         },
         "World Vector": {
             requiredForTestable: true,
             requiredForPublish: true,
             status: "in-progress",
             progressChecklist: ["Draft world layout", "Confirm map bounds"]
+        },
+        "Fonts": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned support tool", "Use when custom typography is required"]
+        },
+        "Learn": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned support tool", "Use when creator guidance is required"]
+        },
+        "Marketplace": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned support tool", "Use when marketplace listing work is required"]
+        },
+        "Settings": {
+            requiredForTestable: false,
+            requiredForPublish: false,
+            status: "locked",
+            progressChecklist: ["Planned support tool", "Use when configurable settings are required"]
         }
     };
     const buildPathGroups = [
@@ -393,7 +537,7 @@
             title: "Required Tool Path",
             groupClass: "tool-group-build-create",
             note: "Use the registry fields requiredForTestable and requiredForPublish to identify blockers.",
-            tools: ["Palette Manager", "Input", "Assets", "Object Vector", "World Vector", "Animation"]
+            tools: ["Palette / Colors", "Input Mapping", "Assets", "Object Vector", "World Vector", "Animation"]
         },
         {
             title: "Build Game",

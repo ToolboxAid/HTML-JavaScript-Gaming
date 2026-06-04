@@ -109,10 +109,6 @@ async function main() {
     }
   }
 
-  if (/title:\s*["']Marketplace["']|href:\s*["'][^"']*marketplace\/index\.html|>\s*Marketplace\s*</i.test(toolboxIndex + "\n" + toolsAccordions)) {
-    issues.push("Marketplace must not appear as an active toolbox tile or toolbox index link.");
-  }
-
   if (/>\s*Arcade\s*</i.test(toolboxIndex) || /title:\s*["']Arcade["']/i.test(toolsAccordions)) {
     issues.push("Arcade must not appear as an active toolbox tile or toolbox index label.");
   }

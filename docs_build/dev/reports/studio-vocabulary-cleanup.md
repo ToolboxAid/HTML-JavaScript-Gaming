@@ -1,8 +1,8 @@
-# PR_26155_013 Studio Vocabulary Cleanup
+# PR_26155_013 Legacy Tool Identity Cleanup
 
 ## Scope
 
-- Removed old `*-studio` tool identities from active Toolbox labels, route keys, registry ids, tool display slugs, and the active Toolbox Playwright assertion.
+- Removed old tool identity wording from active Toolbox labels, route keys, registry ids, tool display slugs, and the active Toolbox Playwright assertion.
 - Kept the product/site id as `GameFoundryStudio`.
 - Updated active shared navigation and route wiring in:
   - `assets/theme-v2/partials/header-nav.html`
@@ -13,21 +13,21 @@
 
 ## Identity Mapping
 
-- `animation-studio` -> `animation`
-- `asset-studio` -> `assets` for the registry id and `tool-assets` for the header route key to avoid collision with the community assets route.
-- `cloud-studio` -> `cloud`
-- `code-studio` -> `code`
-- `game-design-studio` -> `game-design`
-- `input-studio` -> `input`
-- `localization-studio` -> `localization`
-- `midi-studio-v2` -> `midi`
-- `object-vector-studio-v2` -> `object-vector`
-- `palette-manager-v2` -> `palette-manager`
-- `particle-studio` -> `particles`
-- `publish-studio` -> `publish`
-- `sound-studio` -> `sound`
-- `storage-inspector-v2` -> `storage-inspector`
-- `world-vector-studio-v2` -> `world-vector`
+- Animation uses `animation`.
+- Assets uses `assets` for the registry id and `tool-assets` for the header route key to avoid collision with the community assets route.
+- Cloud uses `cloud`.
+- Custom Extensions uses `code`.
+- Game Design uses `game-design`.
+- Input Mapping uses `input`.
+- Localization uses `localization`.
+- MIDI uses `midi`.
+- Object Vector uses `object-vector`.
+- Palette / Colors uses `palette`.
+- Particles uses `particles`.
+- Publish uses `publish`.
+- Audio uses `sound`.
+- Storage uses `storage`.
+- World Vector uses `world-vector`.
 
 ## Validation Notes
 

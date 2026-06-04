@@ -56,6 +56,29 @@ test("root tools surface links current tool pages without old_* routes", async (
       has: page.locator("h3", { hasText: "Localization" })
     });
     await expect(localizationCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/localization/index.html");
+    const defaultToolLabels = await page.locator("[data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+    expect(defaultToolLabels).toEqual(expect.arrayContaining([
+      "Audio",
+      "Fonts",
+      "Input Mapping",
+      "Learn",
+      "Marketplace",
+      "Music Library",
+      "Palette / Colors",
+      "Settings",
+      "Sound Effects",
+      "Speech to Text",
+      "Storage",
+      "Text to Speech",
+      "Voice"
+    ]));
+    const oldStandaloneLabels = [
+      ["Palette", "Manager"].join(" "),
+      ["Storage", "Inspector"].join(" "),
+      ["So", "und"].join(""),
+      ["In", "put"].join("")
+    ];
+    expect(defaultToolLabels.filter((label) => oldStandaloneLabels.includes(label))).toEqual([]);
     await page.getByRole("button", { name: "Progress" }).click();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='locked']").first()).toBeVisible();
     await expect(page.locator("[data-tools-accordion-list] [data-toolbox-readiness='ready']").first()).toBeVisible();

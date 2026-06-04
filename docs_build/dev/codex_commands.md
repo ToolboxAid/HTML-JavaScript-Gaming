@@ -342,3 +342,36 @@ Required reports:
 - `docs_build/dev/reports/toolbox-build-path-model.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+## PR_26155_016-018
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Created stacked Toolbox closeout bundle:
+  - `PR_26155_016-toolbox-final-name-cleanup`
+  - `PR_26155_017-planned-tool-shells`
+  - `PR_26155_018-ready-for-first-tool-rebuild`
+- Applied final active Toolbox labels: Palette / Colors, Storage, Audio, and Input Mapping.
+- Updated safe active ids/routes for Palette / Colors and Storage.
+- Added planned Toolbox shell folders and `index.html` pages from `toolbox/_tool_template-v2`.
+- Added planned Media & Audio shells and planned Support shells to the active registry, header navigation, route map, and Toolbox index renderer.
+- Kept `toolbox/tools-page-accordions.js` as the current transitional renderer.
+- Did not add CSS, database behavior, persistence, save/load behavior, real tool behavior, or Arcade.
+
+Validation:
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`.
+- `node --check toolbox/tools-page-accordions.js`.
+- `node --check toolbox/toolRegistry.js`.
+- `node --check scripts/validate-active-tools-surface.mjs`.
+- `node scripts/validate-active-tools-surface.mjs`.
+- `node scripts/validate-tool-registry.mjs`.
+- Targeted browser page sweep for `toolbox/index.html` plus each new and renamed tool shell.
+- `npm run test:workspace-v2` (legacy command name for the Project Workspace test lane).
+- `git diff --check`.
+
+Required reports:
+- `docs_build/dev/reports/toolbox-final-name-cleanup.md`
+- `docs_build/dev/reports/planned-tool-shells.md`
+- `docs_build/dev/reports/ready-for-first-tool-rebuild.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
