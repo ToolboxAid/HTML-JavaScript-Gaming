@@ -1,6 +1,6 @@
 # Monolith Trigger Removal Report
 
-Generated: 2026-06-05T19:46:26.020Z
+Generated: 2026-06-05T20:51:42.768Z
 Status: PASS
 
 ## Removed Broad Execution Triggers
@@ -27,12 +27,12 @@ Status: PASS
 
 ## Execution Safeguards
 
-No-argument safe mode active for this invocation: No
-Scheduled runtime lanes: asset-tool
-Executed lanes: asset-tool
-Skipped lanes: workspace-contract, project-workspace, game-design, game-configuration, build-path, tools-progress, tool-navigation, tool-display-mode, tool-images, tool-runtime, game-runtime, integration, engine-src, samples
-Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
-Unaffected lane execution blocked: Yes
+No-argument safe mode active for this invocation: Yes
+Scheduled runtime lanes: none
+Executed lanes: none
+Skipped lanes: none
+Full samples smoke: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.
+Unaffected lane execution blocked: No
 
 ## Findings
 

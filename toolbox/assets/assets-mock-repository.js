@@ -1,4 +1,7 @@
 import { createGameConfigurationMockRepository } from "../game-configuration/game-configuration-mock-repository.js";
+import {
+  createProjectWorkspacePaletteRepository
+} from "../colors/palette-workspace-repository.js";
 
 export const ASSET_TOOL_TABLES = Object.freeze([
   "asset_role_definitions",
@@ -36,11 +39,11 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     extensions: [],
     mimeTypes: [],
     previewBehavior: "Swatch metadata preview",
-    uploadEnabled: false,
+    uploadEnabled: true,
     inputMode: "palette",
     maxSizeBytes: 1048576,
     usageRoles: ["hud", "text", "background", "border", "accent", "warning", "success", "danger", "shadow", "highlight"],
-    validationNeeds: ["Palette Tool required", "Palette color metadata must include hex and name"]
+    validationNeeds: ["Active Palette Tool swatch required", "Palette color metadata must include symbol, hex, name, and tags when present"]
   },
   {
     id: "data",
@@ -132,6 +135,7 @@ export const ASSET_TYPES = ASSET_ROLE_LABELS;
 
 const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
 const PROJECT_ASSET_STORAGE_ROOT = "projects";
+const COLOR_ASSET_MIME_TYPE = "application/x.gamefoundry.palette-color";
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 
 const REQUIRED_UPLOAD_FIELDS = Object.freeze([
@@ -245,12 +249,18 @@ function roleDefinitionForId(roleId) {
   return ASSET_ROLE_DEFINITIONS.find((role) => role.id === roleId) || null;
 }
 
-export function pickerDiagnosticForRole(role) {
+export function pickerDiagnosticForRole(role, paletteSnapshot = null) {
   if (!role) {
     return "Choose an approved asset role.";
   }
   if (role.inputMode === "palette") {
-    return "Palette Tool required.";
+    if (!paletteSnapshot?.activeProject) {
+      return "Palette Tool required / active project required.";
+    }
+    if (!Array.isArray(paletteSnapshot.swatches) || paletteSnapshot.swatches.length === 0) {
+      return "Palette Tool required / no swatches available.";
+    }
+    return "Palette swatch picker ready.";
   }
   if (role.id === "data") {
     return "Data/Table Tool required.";
@@ -338,6 +348,26 @@ function storagePathForProjectAsset(projectId, assetRole, usage, fileName) {
   return `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/${role.storageFolder}/${normalizedUsage}/${sanitizeFileName(fileName)}`;
 }
 
+function colorAssetFileName(swatch) {
+  if (!swatch) {
+    return "";
+  }
+  return `${slugify(`${swatch.symbol}-${swatch.name}`)}.color`;
+}
+
+function clonePaletteSwatch(swatch) {
+  if (!swatch) {
+    return null;
+  }
+  return {
+    hex: swatch.hex,
+    name: swatch.name,
+    source: swatch.source,
+    symbol: swatch.symbol,
+    tags: Array.isArray(swatch.tags) ? [...swatch.tags] : []
+  };
+}
+
 function projectFolderForProjectId(projectId) {
   const normalizedProjectId = normalizeProjectId(projectId);
   return normalizedProjectId ? `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/` : "";
@@ -420,6 +450,7 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
 
 export function createAssetToolMockRepository(options = {}) {
   const configurationRepository = options.configurationRepository || createReadyGameConfigurationRepository();
+  const paletteRepository = options.paletteRepository || createProjectWorkspacePaletteRepository();
   let tables = createEmptyTables();
   let selectedAssetId = "";
 
@@ -487,14 +518,32 @@ export function createAssetToolMockRepository(options = {}) {
     const activeProject = handoff.activeProject || null;
     const assetRole = normalizeRoleId(input.assetRole || input.type);
     const role = roleDefinitionForId(assetRole);
+    const paletteMode = role?.inputMode === "palette";
+    const paletteSnapshot = paletteRepository.getSnapshot();
+    const selectedPaletteSwatch = paletteMode
+      ? paletteRepository.findSwatch(input.paletteColor || input.paletteSwatchSymbol)
+      : null;
+    const filePickerMode = role?.inputMode === "file";
+    const fileName = filePickerMode
+      ? normalizeText(input.fileName || input.originalName)
+      : paletteMode
+        ? colorAssetFileName(selectedPaletteSwatch)
+        : "";
+    const mimeType = filePickerMode
+      ? normalizeText(input.mimeType).toLowerCase()
+      : paletteMode && selectedPaletteSwatch
+        ? COLOR_ASSET_MIME_TYPE
+        : "";
     const normalized = {
       assetRole,
-      fileName: normalizeText(input.fileName || input.originalName),
-      mimeType: normalizeText(input.mimeType).toLowerCase(),
+      fileName,
+      mimeType,
       name: normalizeText(input.name),
+      paletteColor: normalizeText(input.paletteColor || input.paletteSwatchSymbol),
+      paletteSwatch: clonePaletteSwatch(selectedPaletteSwatch),
       pickerMode: normalizeText(input.pickerMode),
       size: Number(input.size) || 0,
-      storedPath: storagePathForProjectAsset(activeProject?.id || "", assetRole, input.usage || input.role, input.fileName || input.originalName),
+      storedPath: storagePathForProjectAsset(activeProject?.id || "", assetRole, input.usage || input.role, fileName),
       usage: normalizeUsage(input.usage || input.role, assetRole)
     };
 
@@ -514,7 +563,6 @@ export function createAssetToolMockRepository(options = {}) {
       });
     }
 
-    const filePickerMode = role?.inputMode === "file";
     REQUIRED_UPLOAD_FIELDS.forEach((requirement) => {
       if (requirement.field === "fileName" && !filePickerMode) {
         return;
@@ -524,7 +572,35 @@ export function createAssetToolMockRepository(options = {}) {
       }
     });
 
-    if (role && !filePickerMode) {
+    if (paletteMode) {
+      if (!paletteSnapshot.activeProject) {
+        findings.push({
+          field: "palette",
+          label: "Palette Tool",
+          action: "Open Project Workspace before selecting a Palette Tool swatch."
+        });
+      } else if (paletteSnapshot.swatches.length === 0) {
+        findings.push({
+          field: "palette",
+          label: "Palette Tool",
+          action: "Palette Tool required / no swatches available."
+        });
+      }
+
+      if (!normalized.paletteColor) {
+        findings.push({
+          field: "paletteColor",
+          label: "Palette Color",
+          action: "Choose a swatch from the active project palette."
+        });
+      } else if (!selectedPaletteSwatch) {
+        findings.push({
+          field: "paletteColor",
+          label: "Palette Color",
+          action: "Selected palette swatch is not in the active project palette."
+        });
+      }
+    } else if (role && !filePickerMode) {
       findings.push({
         field: "assetRole",
         label: role.label,
@@ -629,6 +705,7 @@ export function createAssetToolMockRepository(options = {}) {
       originalName: storageObject.originalName,
       ownerProjectId: projectId,
       ownerUserId: project.ownerUserId,
+      paletteSwatch: clonePaletteSwatch(validation.asset.paletteSwatch),
       path: storageObject.storedPath,
       previewKind: previewKindForRole(role),
       projectId,
@@ -656,6 +733,13 @@ export function createAssetToolMockRepository(options = {}) {
       storedPath: asset.storedPath,
       type: asset.type
     });
+    if (role.inputMode === "palette" && asset.paletteSwatch) {
+      paletteRepository.recordSwatchUsage({
+        assetId: asset.id,
+        symbol: asset.paletteSwatch.symbol,
+        toolId: "assets"
+      });
+    }
     selectedAssetId = asset.id;
     replaceValidationRows(projectId, []);
 
@@ -776,7 +860,26 @@ export function createAssetToolMockRepository(options = {}) {
     const handoff = getConfigurationHandoff();
     const projectId = handoff.activeProject?.id || "";
     const assetRole = normalizeRoleId(input.assetRole || input.type);
-    return storagePathForProjectAsset(projectId, assetRole, input.usage || input.role, input.fileName || input.originalName);
+    const role = roleDefinitionForId(assetRole);
+    const swatch = role?.inputMode === "palette"
+      ? paletteRepository.findSwatch(input.paletteColor || input.paletteSwatchSymbol)
+      : null;
+    const fileName = role?.inputMode === "palette"
+      ? colorAssetFileName(swatch)
+      : input.fileName || input.originalName;
+    return storagePathForProjectAsset(projectId, assetRole, input.usage || input.role, fileName);
+  }
+
+  function getPaletteSnapshot() {
+    return paletteRepository.getSnapshot();
+  }
+
+  function listPaletteSwatches() {
+    return paletteRepository.listSwatches();
+  }
+
+  function seedActiveProjectPalette() {
+    return paletteRepository.seedActiveProjectPalette();
   }
 
   function getProgressHandoff() {
@@ -823,6 +926,7 @@ export function createAssetToolMockRepository(options = {}) {
       assets,
       handoff,
       metadataFields: uploadedAssetMetadataFields(),
+      palette: getPaletteSnapshot(),
       progressHandoff: getProgressHandoff(),
       roleDefinitions: ASSET_ROLE_DEFINITIONS.map((role) => ({ ...role })),
       roleDiagnostics: getRoleDiagnostics(),
@@ -847,18 +951,21 @@ export function createAssetToolMockRepository(options = {}) {
     ASSET_USAGE_BY_ROLE,
     clearAssetLibrary,
     getConfigurationHandoff,
+    getPaletteSnapshot,
     getProgressHandoff,
     getRoleDiagnostics,
     getSnapshot,
     getTables,
     importAsset,
     listAssets,
+    listPaletteSwatches,
     makeInvalidGameConfiguration,
     makeMissingGameConfiguration,
     makeReadyGameConfiguration,
     previewStoragePath,
     resetAssetLibrary,
     seedDemoAssets,
+    seedActiveProjectPalette,
     selectAsset,
     validateAssetInput
   };

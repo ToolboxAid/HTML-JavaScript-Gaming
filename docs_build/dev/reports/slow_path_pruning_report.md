@@ -1,20 +1,20 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T19:46:26.019Z
+Generated: 2026-06-05T20:51:42.768Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 22.71s
+Current measured lane elapsed time: 0ms
 PR_26146_038 actual browser launches: 4
-Current actual browser launches: 1
+Current actual browser launches: 0
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
 Reused dependency hydration: 0
 Reused snapshots: 0
-Validation cache hits: 18
+Validation cache hits: 1
 
 ## Slow Paths Optimized
 
@@ -31,15 +31,11 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | asset-tool | 4.60s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:200:1 > Asset Role changes update picker mode, usage options, and import form layout |
-| current targeted run | asset-tool | 4.40s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:368:1 > Asset upload failures are visible and project context is required |
-| current targeted run | asset-tool | 3.10s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:286:1 > Image, video, and audio uploads create project-owned metadata and previews |
-| current targeted run | asset-tool | 2.30s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:145:1 > Assets page lists all asset roles and starts from active project context |
-| current targeted run | asset-tool | 545ms | tests\playwright\tools\AssetToolMockRepository.spec.mjs:77:1 > Asset Tool repository exposes SQL-shaped role, storage, and metadata ownership |
+| current targeted run | none | 0ms | No runtime test-duration lines were emitted. |
 
 ## Guardrails
 
-Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+Full samples smoke: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.
 Runtime failures observed: 0
 Runtime schedule status: PASS
 

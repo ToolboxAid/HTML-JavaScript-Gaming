@@ -219,13 +219,17 @@ test("Asset Role changes update picker mode, usage options, and import form layo
         await expect(page.locator("[data-asset-tool-file-row]")).toBeHidden();
         await expect(page.locator("[data-asset-tool-file-name-row]")).toBeHidden();
         await expect(page.locator("[data-asset-tool-palette-row]")).toBeVisible();
+        await expect(page.locator("[data-asset-tool-palette-detail-row]")).toBeVisible();
         await expect(page.locator("[data-asset-tool-palette-color]")).toBeDisabled();
-        await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Palette Tool required.");
+        await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Palette Tool required / no swatches available.");
+        await expect(page.locator("[data-asset-tool-palette-selection]")).toContainText("Palette Tool required / no swatches available.");
+        await expect(page.locator("[data-asset-tool-palette-link]")).toHaveAttribute("href", "toolbox/colors/index.html");
         await expect(page.locator("[data-asset-tool-file]")).toHaveAttribute("accept", "");
       } else {
         await expect(page.locator("[data-asset-tool-file-row]")).toBeHidden();
         await expect(page.locator("[data-asset-tool-file-name-row]")).toBeHidden();
         await expect(page.locator("[data-asset-tool-palette-row]")).toBeHidden();
+        await expect(page.locator("[data-asset-tool-palette-detail-row]")).toBeHidden();
         await expect(page.locator("[data-asset-tool-file]")).toBeDisabled();
         await expect(page.locator("[data-asset-tool-file]")).toHaveAttribute("accept", "");
         await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText(
@@ -365,6 +369,46 @@ test("Image, video, and audio uploads create project-owned metadata and previews
   }
 });
 
+test("Color assets consume the active Project Workspace palette", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?palette=seed");
+
+  try {
+    await page.locator("[data-asset-tool-asset-role]").selectOption("color");
+    await expect(page.locator("[data-asset-tool-picker-mode]")).toHaveText("palette");
+    await expect(page.locator("[data-asset-tool-file-row]")).toBeHidden();
+    await expect(page.locator("[data-asset-tool-file-name-row]")).toBeHidden();
+    await expect(page.locator("[data-asset-tool-palette-row]")).toBeVisible();
+    await expect(page.locator("[data-asset-tool-palette-detail-row]")).toBeVisible();
+    await expect(page.locator("[data-asset-tool-palette-color]")).toBeEnabled();
+    await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Palette swatch picker ready.");
+
+    await page.locator("[data-asset-tool-palette-color]").selectOption("H");
+    await expect(page.locator("[data-asset-tool-palette-selection]")).toHaveText("Symbol: H Hex: #1F75FE Name: Hero Blue Tags: hero, ui");
+    await expect(page.getByLabel("Name")).toHaveValue("Hero Blue");
+    await expect(page.locator("[data-asset-tool-path]")).toHaveValue(`projects/${DEMO_ASSET_PROJECT_ID}/color/hud/h-hero-blue.color`);
+
+    await page.getByRole("button", { name: "Upload Asset" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Hero Blue to project asset storage.");
+    await expect(page.locator("[data-asset-tool-library]")).toContainText("Hero Blue");
+    await expect(page.locator("[data-asset-tool-library]")).toContainText("Color");
+    await expect(page.locator("[data-asset-tool-library]")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/color/hud/h-hero-blue.color`);
+    await expect(page.locator("[data-asset-tool-library]")).toContainText("H #1F75FE");
+    await expect(page.locator("[data-asset-tool-library]")).toContainText("Tags: hero, ui");
+    await expect(page.locator("[data-asset-tool-preview-title]")).toHaveText("Hero Blue Preview");
+    await expect(page.locator("[data-asset-tool-preview]")).toHaveText("Swatch metadata preview: H #1F75FE Hero Blue. Tags: hero, ui");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch symbol: H");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch hex: #1F75FE");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch name: Hero Blue");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch tags: hero, ui");
+    await expect(page.locator("[data-asset-tool-output-validation]")).toHaveText("Ready");
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Asset upload failures are visible and project context is required", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/assets/index.html");
 
@@ -390,11 +434,11 @@ test("Asset upload failures are visible and project context is required", async 
     await expect(page.locator("[data-asset-tool-file-row]")).toBeHidden();
     await expect(page.locator("[data-asset-tool-palette-row]")).toBeVisible();
     await expect(page.locator("[data-asset-tool-palette-color]")).toBeDisabled();
-    await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Palette Tool required.");
+    await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Palette Tool required / no swatches available.");
     await page.getByLabel("Name").fill("Palette Color");
     await page.getByRole("button", { name: "Upload Asset" }).click();
 
-    await expect(page.locator("[data-asset-tool-validation-list]")).toContainText("Palette Tool required.");
+    await expect(page.locator("[data-asset-tool-validation-list]")).toContainText("Palette Tool required / no swatches available.");
 
     await page.locator("[data-asset-tool-asset-role]").selectOption("data");
     await expect(page.locator("[data-asset-tool-picker-mode]")).toHaveText("managed-tool");

@@ -1,13 +1,13 @@
 # Static Validation Report
 
-Generated: 2026-06-05T19:46:03.258Z
+Generated: 2026-06-05T20:51:42.760Z
 Status: PASS
-Static only: No
+Static only: Yes
 Dry run: No
 
 ## Requested Lanes
 
-- asset-tool
+- none
 
 ## Prevented Launches
 
@@ -18,17 +18,17 @@ Reason: No deterministic static validation failure was found.
 
 | Check | Status | Details |
 | --- | --- | --- |
-| lane ownership and file placement | PASS | Playwright structure audit passed. |
-| invalid filename detection | PASS | Covered by Playwright structure audit. |
-| missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
+| lane ownership and file placement | SKIP | No selected lane requires Playwright structure audit. |
+| invalid filename detection | SKIP | Covered by Playwright structure audit. |
+| missing import detection | SKIP | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | asset-tool:2f179f3229386b61 |
-| persistent lane manifests | PASS | asset-tool:GENERATED |
-| lane warm-start reuse | PASS | asset-tool:GENERATED |
-| dependency hydration reuse | PASS | asset-tool:GENERATED |
+| targeted file manifests | PASS | No lane manifests generated. |
+| persistent lane manifests | PASS | No persistent manifest events. |
+| lane warm-start reuse | PASS | No warm-start events. |
+| dependency hydration reuse | PASS | No hydration events. |
 | lane input graph expansion | PASS | No inputs escaped manifest scope. |
-| scoped discovery targets | PASS | tests/playwright/tools/AssetToolMockRepository.spec.mjs |
-| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+| scoped discovery targets | PASS | No Playwright discovery targets selected. |
+| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
 | invalid lane target detection | PASS | No invalid lane target findings. |
 | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
 | duplicate lane registration detection | PASS | No duplicate lane registrations found. |

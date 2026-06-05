@@ -1,6 +1,6 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-06-05T19:46:03.265Z
+Generated: 2026-06-05T20:51:42.765Z
 Status: PASS
 
 ## Runtime Cost Summary
@@ -12,13 +12,13 @@ Reused dependency hydration: 0
 Prevented graph rebuilds: 0
 Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
-Prevented redundant lane execution: 14
-Baseline Playwright/browser launches: 1
-Scheduled Playwright/browser launches: 1
+Prevented redundant lane execution: 15
+Baseline Playwright/browser launches: 0
+Scheduled Playwright/browser launches: 0
 
 ## Scheduled Lane Order
 
-1. asset-tool
+No runtime lanes are eligible for scheduling.
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| asset-tool | GENERATED | GENERATED | GENERATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Asset Tool rebuild slice validates SQL-shaped asset tables, ready Game Configuration handoff, import/preview workflow, and visible validation errors without exercising unrelated toolbox routes. |
+| none | SKIP | SKIP | SKIP | 0 | 0 | none | No dependency-eligible targeted lanes were scheduled. |
 
 ## Runtime Savings Observations
 

@@ -1,6 +1,6 @@
 # Persistent Lane Manifest Report
 
-Generated: 2026-06-05T19:46:03.266Z
+Generated: 2026-06-05T20:51:42.766Z
 Status: PASS
 Manifest directory: docs_build/dev/reports/lane_manifests
 
@@ -8,20 +8,20 @@ Manifest directory: docs_build/dev/reports/lane_manifests
 
 Reused manifests: 0
 Invalidated manifests: 0
-Generated manifests: 1
+Generated manifests: 0
 Prevented discovery scans: 0
 
 ## Manifest Events
 
 | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- |
-| asset-tool | GENERATED | docs_build/dev/reports/lane_manifests/asset-tool.json | adeda3f3cc784a18 | 2f179f3229386b61 | No persisted manifest existed for this lane. |
+| none | SKIP | none | none | none | No persistent manifest events were recorded. |
 
 ## Persisted Manifest Files
 
 | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| asset-tool | tools | generated | tests/playwright/tools/AssetToolMockRepository.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 92cab6342b8c5dc0 | 2f179f3229386b61 |
+| none | none | none | none | none | none | none | none |
 
 ## Fast-Fail Enforcement
 

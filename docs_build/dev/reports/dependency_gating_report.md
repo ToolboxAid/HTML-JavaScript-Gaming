@@ -1,6 +1,6 @@
 # Dependency Gating Report
 
-Generated: 2026-06-05T19:46:03.264Z
+Generated: 2026-06-05T20:51:42.764Z
 Status: PASS
 
 ## Gate Order
@@ -18,7 +18,7 @@ Status: PASS
 | project-workspace | No | SKIP | none | Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | game-design | No | SKIP | none | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | game-configuration | No | SKIP | none | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
-| asset-tool | Yes | PASS | none | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
+| asset-tool | No | SKIP | none | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | build-path | No | SKIP | none | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | tools-progress | No | SKIP | none | Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | tool-navigation | No | SKIP | none | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | Lane was not selected, so dependency-gated runtime scheduling skipped it. |

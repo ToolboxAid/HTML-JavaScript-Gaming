@@ -1,13 +1,13 @@
 # Incremental Validation Report
 
-Generated: 2026-06-05T19:46:03.266Z
+Generated: 2026-06-05T20:51:42.766Z
 Status: PASS
 
 ## Reuse Summary
 
 Reused manifests: 0
 Invalidated manifests: 0
-Generated manifests: 1
+Generated manifests: 0
 Skipped manifests: 0
 Prevented lane regeneration: 0
 Prevented discovery scans: 0
@@ -18,7 +18,7 @@ Prevented fixture resolution passes: 0
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| asset-tool | GENERATED | No persisted manifest existed for this lane. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+| none | SKIP | none | No incremental validation decisions were recorded. |
 
 ## Invalidation Rules
 

@@ -18,6 +18,10 @@ if (handoffMode === "missing") {
   repository.makeReadyGameConfiguration();
 }
 
+if (params.get("palette") === "seed") {
+  repository.seedActiveProjectPalette();
+}
+
 const elements = {
   assetRole: document.querySelector("[data-asset-tool-asset-role]"),
   count: document.querySelector("[data-asset-tool-count]"),
@@ -39,7 +43,9 @@ const elements = {
   outputSummary: document.querySelector("[data-asset-tool-output-summary]"),
   outputValidation: document.querySelector("[data-asset-tool-output-validation]"),
   paletteColor: document.querySelector("[data-asset-tool-palette-color]"),
+  paletteDetailRow: document.querySelector("[data-asset-tool-palette-detail-row]"),
   paletteRow: document.querySelector("[data-asset-tool-palette-row]"),
+  paletteSelection: document.querySelector("[data-asset-tool-palette-selection]"),
   path: document.querySelector("[data-asset-tool-path]"),
   pickerMode: document.querySelector("[data-asset-tool-picker-mode]"),
   preview: document.querySelector("[data-asset-tool-preview]"),
@@ -123,11 +129,20 @@ function createListItem(text) {
 
 function createMetadataCell(asset) {
   const cell = document.createElement("td");
-  [
-    `${asset.originalName} ${asset.mimeType}`,
-    `${asset.size} bytes`,
-    asset.checksum
-  ].forEach((line) => {
+  const lines = asset.paletteSwatch
+    ? [
+        `${asset.paletteSwatch.symbol} ${asset.paletteSwatch.hex}`,
+        asset.paletteSwatch.name,
+        asset.paletteSwatch.tags.length ? `Tags: ${asset.paletteSwatch.tags.join(", ")}` : "Tags: None",
+        asset.checksum
+      ]
+    : [
+        `${asset.originalName} ${asset.mimeType}`,
+        `${asset.size} bytes`,
+        asset.checksum
+      ];
+
+  lines.forEach((line) => {
     const item = document.createElement("div");
     item.textContent = line;
     cell.append(item);
@@ -141,15 +156,16 @@ function currentFile() {
 
 function readAssetForm() {
   const file = currentFile();
+  const role = selectedRoleDefinition();
   return {
     assetRole: elements.assetRole?.value,
-    fileName: file?.name || "",
-    mimeType: file?.type || "",
+    fileName: role.inputMode === "file" ? file?.name || "" : "",
+    mimeType: role.inputMode === "file" ? file?.type || "" : "",
     name: elements.name?.value,
     paletteColor: elements.paletteColor?.value || "",
     path: elements.path?.value,
-    pickerMode: selectedRoleDefinition().inputMode,
-    size: file?.size || 0,
+    pickerMode: role.inputMode,
+    size: role.inputMode === "file" ? file?.size || 0 : 0,
     usage: elements.usage?.value
   };
 }
@@ -177,12 +193,77 @@ function updatePalettePicker() {
     return;
   }
 
+  const currentValue = elements.paletteColor.value;
+  const palette = repository.getPaletteSnapshot();
   elements.paletteColor.replaceChildren();
-  const option = document.createElement("option");
-  option.value = "";
-  option.textContent = "Palette Tool required";
-  elements.paletteColor.append(option);
-  elements.paletteColor.disabled = true;
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = palette.activeProject
+    ? "Choose palette swatch"
+    : "Palette Tool required";
+  elements.paletteColor.append(placeholder);
+
+  palette.swatches.forEach((swatch) => {
+    const option = document.createElement("option");
+    option.value = swatch.symbol;
+    option.textContent = `${swatch.symbol} ${swatch.hex} ${swatch.name}`;
+    elements.paletteColor.append(option);
+  });
+
+  if (currentValue && palette.swatches.some((swatch) => swatch.symbol === currentValue)) {
+    elements.paletteColor.value = currentValue;
+  }
+  elements.paletteColor.disabled = palette.swatches.length === 0;
+  updatePaletteSelectionDetails();
+}
+
+function selectedPaletteSwatch() {
+  const symbol = elements.paletteColor?.value || "";
+  return symbol ? repository.getPaletteSnapshot().swatches.find((swatch) => swatch.symbol === symbol) || null : null;
+}
+
+function setPaletteSelectionContent(message, includeLink = true) {
+  if (!elements.paletteSelection) {
+    return;
+  }
+
+  elements.paletteSelection.replaceChildren(document.createTextNode(message));
+  if (includeLink) {
+    elements.paletteSelection.append(document.createTextNode(" "));
+    const link = document.createElement("a");
+    link.href = "toolbox/colors/index.html";
+    link.textContent = "Open Palette Tool";
+    link.dataset.assetToolPaletteLink = "true";
+    elements.paletteSelection.append(link);
+  }
+}
+
+function updatePaletteSelectionDetails() {
+  const role = selectedRoleDefinition();
+  if (role.inputMode !== "palette") {
+    return;
+  }
+
+  const palette = repository.getPaletteSnapshot();
+  const swatch = selectedPaletteSwatch();
+  if (!palette.activeProject) {
+    setPaletteSelectionContent("Palette Tool required / active project required.");
+    return;
+  }
+  if (palette.swatches.length === 0) {
+    setPaletteSelectionContent("Palette Tool required / no swatches available.");
+    return;
+  }
+  if (!swatch) {
+    setPaletteSelectionContent("Choose a palette swatch for this Color asset.", false);
+    return;
+  }
+
+  const tags = swatch.tags.length ? ` Tags: ${swatch.tags.join(", ")}` : "";
+  if (elements.name && !elements.name.value.trim()) {
+    elements.name.value = swatch.name;
+  }
+  setPaletteSelectionContent(`Symbol: ${swatch.symbol} Hex: ${swatch.hex} Name: ${swatch.name}${tags}`, false);
 }
 
 function updateFileAccept() {
@@ -198,6 +279,7 @@ function updateFileAccept() {
   setHidden(elements.fileRow, !fileMode);
   setHidden(elements.fileNameRow, !fileMode);
   setHidden(elements.paletteRow, !paletteMode);
+  setHidden(elements.paletteDetailRow, !paletteMode);
 
   elements.file.accept = fileMode ? role.extensions.join(",") : "";
   elements.file.disabled = !fileMode;
@@ -206,12 +288,13 @@ function updateFileAccept() {
   }
   if (paletteMode) {
     updatePalettePicker();
+    updatePaletteSelectionDetails();
   }
 }
 
 function updateImportDiagnostic() {
   const role = selectedRoleDefinition();
-  setText(elements.importDiagnostic, pickerDiagnosticForRole(role));
+  setText(elements.importDiagnostic, pickerDiagnosticForRole(role, repository.getPaletteSnapshot()));
 }
 
 function updateStoragePathPreview() {
@@ -224,6 +307,7 @@ function updateStoragePathPreview() {
   elements.path.value = repository.previewStoragePath({
     assetRole: elements.assetRole?.value,
     fileName: role.inputMode === "file" ? file?.name || "" : "",
+    paletteColor: role.inputMode === "palette" ? elements.paletteColor?.value || "" : "",
     usage: elements.usage?.value
   });
 }
@@ -343,6 +427,11 @@ function renderPreview(snapshot) {
   }
 
   setText(elements.previewTitle, `${asset.name} Preview`);
+  if (asset.paletteSwatch) {
+    const tags = asset.paletteSwatch.tags.length ? ` Tags: ${asset.paletteSwatch.tags.join(", ")}` : "";
+    setText(elements.preview, `${asset.previewKind}: ${asset.paletteSwatch.symbol} ${asset.paletteSwatch.hex} ${asset.paletteSwatch.name}.${tags}`);
+    return;
+  }
   setText(elements.preview, `${asset.previewKind}: ${asset.storedPath} from ${asset.originalName}.`);
 }
 
@@ -377,8 +466,12 @@ function renderMetadata(snapshot) {
     asset.checksum,
     `Stored path: ${asset.storedPath}`,
     `Role: ${asset.assetRoleLabel}`,
-    `Owner project: ${asset.ownerProjectId}`
-  ].forEach((item) => elements.metadata.append(createListItem(item)));
+    `Owner project: ${asset.ownerProjectId}`,
+    asset.paletteSwatch ? `Swatch symbol: ${asset.paletteSwatch.symbol}` : "",
+    asset.paletteSwatch ? `Swatch hex: ${asset.paletteSwatch.hex}` : "",
+    asset.paletteSwatch ? `Swatch name: ${asset.paletteSwatch.name}` : "",
+    asset.paletteSwatch && asset.paletteSwatch.tags.length ? `Swatch tags: ${asset.paletteSwatch.tags.join(", ")}` : ""
+  ].filter(Boolean).forEach((item) => elements.metadata.append(createListItem(item)));
 }
 
 function renderOutput(snapshot) {
@@ -406,6 +499,7 @@ function render() {
   renderPreview(snapshot);
   renderTables(snapshot);
   renderMetadata(snapshot);
+  updatePalettePicker();
   renderOutput(snapshot);
   updateStoragePathPreview();
   updateSelectedFileName();
@@ -460,6 +554,12 @@ elements.file?.addEventListener("change", () => {
     elements.name.value = fileStem(file.name);
   }
   updateSelectedFileName();
+  updateStoragePathPreview();
+  validateCurrentForm();
+});
+
+elements.paletteColor?.addEventListener("change", () => {
+  updatePaletteSelectionDetails();
   updateStoragePathPreview();
   validateCurrentForm();
 });

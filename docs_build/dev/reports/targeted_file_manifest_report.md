@@ -1,19 +1,19 @@
 # Targeted File Manifest Report
 
-Generated: 2026-06-05T19:46:03.266Z
+Generated: 2026-06-05T20:51:42.766Z
 Status: PASS
 
 ## Manifest-Generated Lane Inputs
 
 | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| asset-tool | tools | PASS | generated | tests/playwright/tools/AssetToolMockRepository.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/assets/assets-mock-repository.js | 92cab6342b8c5dc0 | 2f179f3229386b61 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+| none | none | SKIP | none | none | none | none | none | none | none | No selected lanes produced manifests. |
 
 ## Discovery Expansion Control
 
 Prevented discovery expansion: Yes
-Prevented redundant scans: 4
-Targeted file/helper reads: 5
+Prevented redundant scans: 0
+Targeted file/helper reads: 0
 
 ## Runtime Savings Observations
 

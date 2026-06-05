@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Colors - GameFoundryStudio</title>
-    <meta name="description" content="Colors Toolbox wireframe. Craft and manage color palettes for your games.">
+    <title>Palette Tool - GameFoundryStudio</title>
+    <meta name="description" content="Palette Tool runtime for project-owned color swatches and Asset Tool color handoff.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -17,8 +17,8 @@
         <section class="page-title">
             <div class="container">
                 <div class="kicker">Toolbox / Colors</div>
-                <h1>Colors</h1>
-                <p class="lede">Craft and manage color palettes for your games. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+                <h1>Palette Tool</h1>
+                <p class="lede">Manage the active project palette at tools.palette-browser.swatches.</p>
             </div>
         </section>
         <section class="section">
@@ -26,18 +26,165 @@
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
-                            <h2>Colors</h2>
+                            <h2>Palette</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Project Workspace</summary>
+                                <div class="accordion-body content-stack">
+                                    <p data-palette-active-project>No active project.</p>
+                                    <p class="status" role="status" data-palette-project-diagnostic>Active project required.</p>
+                                    <a class="btn" href="toolbox/project-workspace/index.html">Open Project Workspace</a>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Swatch Editor</summary>
+                                <div class="accordion-body content-stack">
+                                    <form class="content-stack" data-palette-editor-form>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="Palette swatch editor fields">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteSymbolInput">Symbol</label></th>
+                                                        <td><input id="paletteSymbolInput" maxlength="2" type="text" data-palette-symbol></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteHexInput">Hex</label></th>
+                                                        <td><input id="paletteHexInput" type="text" placeholder="#1F75FE" data-palette-hex></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteNameInput">Name</label></th>
+                                                        <td><input id="paletteNameInput" type="text" placeholder="Hero Blue" data-palette-name></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteTagsInput">Tags</label></th>
+                                                        <td><input id="paletteTagsInput" type="text" placeholder="hero, ui" data-palette-tags></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" data-palette-editor-diagnostic>Ready for a project palette swatch.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="hero-actions">
+                                            <button class="btn primary" type="submit" data-palette-add>Add Swatch</button>
+                                            <button class="btn" type="button" data-palette-update>Update Selected</button>
+                                            <button class="btn" type="button" data-palette-remove>Remove Selected</button>
+                                            <button class="btn" type="button" data-palette-clear>Clear Form</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>History</summary>
+                                <div class="accordion-body content-stack">
+                                    <button class="btn" type="button" data-palette-undo>Undo</button>
+                                    <button class="btn" type="button" data-palette-redo>Redo</button>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="colors" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Craft and manage color palettes for your games. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="colors" data-tool-icon-src="assets/theme-v2/images/badges/colors.png" data-tool-character-src="assets/theme-v2/images/characters/palette-manager.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Active Project Palette</h2>
+                        <div class="grid cols-3" aria-label="Palette summary">
+                            <article class="mini-stat"><strong data-palette-count>0</strong>Swatches</article>
+                            <article class="mini-stat"><strong data-palette-selected-summary>None</strong>Selected</article>
+                            <article class="mini-stat"><strong data-palette-validation-status>Blocked</strong>Validation</article>
+                        </div>
+                        <article class="card" role="dialog" aria-labelledby="palette-tool-project-overlay-title" data-palette-project-overlay hidden>
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Missing Requirements</div>
+                                    <h3 id="palette-tool-project-overlay-title">Active Project Required</h3>
+                                </div>
+                                <p>Open Project Workspace before editing palette swatches.</p>
+                                <a class="btn" href="toolbox/project-workspace/index.html">Open Project Workspace</a>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Project Palette</div>
+                                    <h3>User Palette Swatches</h3>
+                                </div>
+                                <label for="paletteUserSort">Sort</label>
+                                <select id="paletteUserSort" data-palette-user-sort>
+                                    <option value="name">Name</option>
+                                    <option value="symbol">Symbol</option>
+                                    <option value="hex">Hex</option>
+                                    <option value="source">Source</option>
+                                    <option value="tag">Tag</option>
+                                </select>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Active project palette swatches">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Color</th>
+                                                <th scope="col">Symbol</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Hex</th>
+                                                <th scope="col">Source</th>
+                                                <th scope="col">Tags</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-palette-user-list>
+                                            <tr><td colspan="7">No project palette swatches yet.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Source Palette Browser</div>
+                                    <h3>Source Swatches</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table tool-form-table" aria-label="Source palette filters">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row"><label for="paletteSourceSelect">Source</label></th>
+                                                <td><select id="paletteSourceSelect" data-palette-source-select></select></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><label for="paletteSourceSearch">Search</label></th>
+                                                <td><input id="paletteSourceSearch" type="search" data-palette-source-search></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><label for="paletteSourceSort">Sort</label></th>
+                                                <td>
+                                                    <select id="paletteSourceSort" data-palette-source-sort>
+                                                        <option value="name">Name</option>
+                                                        <option value="symbol">Symbol</option>
+                                                        <option value="hex">Hex</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Source palette swatches">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Color</th>
+                                                <th scope="col">Symbol</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Hex</th>
+                                                <th scope="col">Source</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-palette-source-list>
+                                            <tr><td colspan="6">No source swatches available.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
                     </section>
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
@@ -45,8 +192,65 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Selected Swatch</summary>
+                                <div class="accordion-body content-stack">
+                                    <ul data-palette-selected-details>
+                                        <li>No selected swatch.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Tags</summary>
+                                <div class="accordion-body content-stack">
+                                    <ul data-palette-tags-list>
+                                        <li>No tags in active palette.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Harmony Suggestions</summary>
+                                <div class="accordion-body content-stack">
+                                    <ul data-palette-harmony-list>
+                                        <li>Select a swatch to view harmony suggestions.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Validation</summary>
+                                <div class="accordion-body content-stack">
+                                    <article class="card" role="dialog" aria-labelledby="palette-tool-validation-title" data-palette-validation-overlay hidden>
+                                        <div class="card-body content-stack">
+                                            <div>
+                                                <div class="kicker">Actionable Validation</div>
+                                                <h3 id="palette-tool-validation-title">Palette Validation</h3>
+                                            </div>
+                                            <ul data-palette-validation-list></ul>
+                                        </div>
+                                    </article>
+                                    <p class="status" role="status" data-palette-storage-path>tools.palette-browser.swatches</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Repository Tables</summary>
+                                <div class="accordion-body">
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Palette repository table counts">
+                                            <thead>
+                                                <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
+                                            </thead>
+                                            <tbody data-palette-table-counts>
+                                                <tr><td>project_workspace_palette_globals</td><td>0</td></tr>
+                                                <tr><td>palette_swatch_usages</td><td>0</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <div class="status" role="status" data-palette-log>Palette repository ready.</div>
+                                </div>
                             </details>
                         </div>
                     </aside>
@@ -57,6 +261,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/colors/colors.js"></script>
 </body>
 
 </html>
