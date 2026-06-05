@@ -1,23 +1,23 @@
 # Lane Warm-Start Report
 
-Generated: 2026-06-05T04:46:18.833Z
+Generated: 2026-06-05T12:10:07.498Z
 Status: PASS
 Warm-start directory: docs_build/dev/reports/lane_warm_starts
 
 ## Summary
 
-Reused warm-start lanes: 1
-Invalidated warm-start states: 0
+Reused warm-start lanes: 0
+Invalidated warm-start states: 1
 Generated warm-start states: 0
 Skipped warm-start states: 0
-Prevented redundant initialization: 1
-Prevented lane graph assembly: 1
+Prevented redundant initialization: 0
+Prevented lane graph assembly: 0
 
 ## Warm-Start Decisions
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| tool-images | REUSED | docs_build/dev/reports/lane_warm_starts/tool-images.json | 3995e406b66392a4 | ac6de6d59101bbcc | 0e7e6a30c3a7e460 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
+| tool-images | INVALIDATED | docs_build/dev/reports/lane_warm_starts/tool-images.json | 2c57bf85d09c8a7d | edf64024c99db3a4 | b3b85748c9818b68 | Warm-start dependencyGraphHash changed for tool-images.; Warm-start dependencyHydrationHash changed for tool-images.; Warm-start inputHash changed for tool-images.; Warm-start manifestHash changed for tool-images.; Warm-start warmStartHash changed for tool-images. |
 
 ## Fast-Fail Safeguards
 

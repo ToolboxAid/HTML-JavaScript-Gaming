@@ -1,19 +1,19 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T04:46:33.521Z
+Generated: 2026-06-05T12:10:24.669Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 14.65s
+Current measured lane elapsed time: 17.13s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
-Reused dependency hydration: 1
-Reused snapshots: 1
+Reused dependency hydration: 0
+Reused snapshots: 0
 Validation cache hits: 18
 
 ## Slow Paths Optimized
@@ -31,10 +31,10 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | tool-images | 4.30s | tests\playwright\tools\ToolImageRegistry.spec.mjs:126:1 > representative tool pages consume registry images in Tool Display Mode |
-| current targeted run | tool-images | 3.10s | tests\playwright\tools\ToolImageRegistry.spec.mjs:108:1 > Toolbox cards consume registry image sources |
-| current targeted run | tool-images | 628ms | tests\playwright\tools\ToolImageRegistry.spec.mjs:72:1 > registry defines approved badge and tool image fields for every active tool |
-| current targeted run | tool-images | 529ms | tests\playwright\tools\ToolImageRegistry.spec.mjs:88:1 > registry reports missing images and resolves them through the shared fallback |
+| current targeted run | tool-images | 4.40s | tests\playwright\tools\ToolImageRegistry.spec.mjs:130:1 > representative tool pages consume registry images in Tool Display Mode |
+| current targeted run | tool-images | 3.70s | tests\playwright\tools\ToolImageRegistry.spec.mjs:112:1 > Toolbox cards consume registry image sources |
+| current targeted run | tool-images | 669ms | tests\playwright\tools\ToolImageRegistry.spec.mjs:88:1 > registry coverage reports complete approved image assets |
+| current targeted run | tool-images | 633ms | tests\playwright\tools\ToolImageRegistry.spec.mjs:72:1 > registry defines approved badge and tool image fields for every active tool |
 
 ## Guardrails
 

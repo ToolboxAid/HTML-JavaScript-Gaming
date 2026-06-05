@@ -1,24 +1,24 @@
 # Incremental Validation Report
 
-Generated: 2026-06-05T04:46:18.834Z
+Generated: 2026-06-05T12:10:07.500Z
 Status: PASS
 
 ## Reuse Summary
 
-Reused manifests: 1
-Invalidated manifests: 0
+Reused manifests: 0
+Invalidated manifests: 1
 Generated manifests: 0
 Skipped manifests: 0
-Prevented lane regeneration: 1
-Prevented discovery scans: 1
-Prevented helper resolution passes: 4
+Prevented lane regeneration: 0
+Prevented discovery scans: 0
+Prevented helper resolution passes: 0
 Prevented fixture resolution passes: 0
 
 ## Incremental Decisions
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| tool-images | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
+| tool-images | INVALIDATED | Persistent manifest dependency graph hash changed for tool-images.; Persistent manifest input hash changed for tool-images.; Persistent manifest hash changed for tool-images. | Manifest was regenerated or skipped; no reuse savings for this lane. |
 
 ## Invalidation Rules
 

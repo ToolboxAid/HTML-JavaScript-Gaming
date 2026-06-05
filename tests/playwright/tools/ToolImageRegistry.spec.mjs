@@ -85,23 +85,27 @@ test("registry defines approved badge and tool image fields for every active too
   }
 });
 
-test("registry reports missing images and resolves them through the shared fallback", () => {
+test("registry coverage reports complete approved image assets", () => {
   const coverageRows = getToolImageCoverage();
   const coverageById = new Map(coverageRows.map((row) => [row.id, row]));
   const missingRows = coverageRows.filter((row) => row.badgeFallbackUsed || row.toolFallbackUsed);
 
   expect(coverageRows).toHaveLength(activeTools.length);
-  expect(missingRows.length).toBeGreaterThan(0);
+  expect(missingRows).toEqual([]);
 
   for (const tool of activeTools) {
     const coverage = coverageById.get(tool.id);
     expect(coverage).toBeTruthy();
     expect(coverage.badgePath).toBe(tool.badge);
     expect(coverage.toolPath).toBe(tool.tool);
-    expect(coverage.badgeFallbackUsed).toBe(!coverage.badgeExists);
-    expect(coverage.toolFallbackUsed).toBe(!coverage.toolExists);
-    expect(getToolImageSource(tool, "badge")).toBe(coverage.badgeExists ? tool.badge : TOOL_IMAGE_FALLBACK);
-    expect(getToolImageSource(tool, "tool")).toBe(coverage.toolExists ? tool.tool : TOOL_IMAGE_FALLBACK);
+    expect(coverage.badgeExists).toBe(true);
+    expect(coverage.toolExists).toBe(true);
+    expect(coverage.badgeFallbackUsed).toBe(false);
+    expect(coverage.toolFallbackUsed).toBe(false);
+    expect(getToolImageSource(tool, "badge")).toBe(tool.badge);
+    expect(getToolImageSource(tool, "tool")).toBe(tool.tool);
+    expect(getToolImageSource(tool, "badge")).not.toBe(TOOL_IMAGE_FALLBACK);
+    expect(getToolImageSource(tool, "tool")).not.toBe(TOOL_IMAGE_FALLBACK);
   }
 });
 

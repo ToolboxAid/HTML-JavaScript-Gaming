@@ -1,22 +1,22 @@
 # Execution Graph Reuse Report
 
-Generated: 2026-06-05T04:46:18.833Z
+Generated: 2026-06-05T12:10:07.499Z
 Status: PASS
 
 ## Summary
 
-Reused execution graphs: 1
-Prevented graph rebuilds: 1
-Prevented redundant dependency traversal: 1
-Prevented fixture/helper graph assembly: 4
-Prevented manifest traversal: 1
-Prevented targeted scheduling work: 1
+Reused execution graphs: 0
+Prevented graph rebuilds: 0
+Prevented redundant dependency traversal: 0
+Prevented fixture/helper graph assembly: 0
+Prevented manifest traversal: 0
+Prevented targeted scheduling work: 0
 
 ## Execution Graph Decisions
 
 | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
 | --- | --- | --- | --- | --- |
-| tool-images | REUSED | REUSED | 5947516c13a9befd | Lane snapshot is part of the selected targeted execution graph. |
+| tool-images | INVALIDATED | INVALIDATED | eb160af57e1ec65e | Lane snapshot is part of the selected targeted execution graph. |
 
 ## Safeguards
 

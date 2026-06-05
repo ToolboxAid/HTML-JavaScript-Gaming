@@ -17,8 +17,7 @@ Exercised tool entry points detected:
 (74%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(63%) toolbox/tools-page-accordions.js - executed lines 1825/1825; executed functions 36/57
-(83%) toolbox/toolRegistry.js - executed lines 1560/1560; executed functions 24/29
+(83%) toolbox/toolRegistry.js - executed lines 1574/1574; executed functions 24/29
 
 Files with executed line/function counts where available:
 (63%) toolbox/tools-page-accordions.js - executed lines 1825/1825; executed functions 36/57
@@ -28,7 +27,7 @@ Files with executed line/function counts where available:
 (74%) toolbox/project-workspace/project-workspace.js - executed lines 238/238; executed functions 17/23
 (78%) toolbox/game-configuration/game-configuration.js - executed lines 168/168; executed functions 14/18
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 205/205; executed functions 16/20
-(83%) toolbox/toolRegistry.js - executed lines 1560/1560; executed functions 24/29
+(83%) toolbox/toolRegistry.js - executed lines 1574/1574; executed functions 24/29
 (86%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 32/37
 (90%) toolbox/game-design/game-design.js - executed lines 224/224; executed functions 19/21
 
@@ -36,8 +35,5 @@ Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolImageRegistry.spec.mjs - changed JS file not collected as browser runtime coverage
-(63%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
-(67%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
 (83%) toolbox/toolRegistry.js - changed JS file with browser V8 coverage

@@ -537,3 +537,27 @@ Required reports:
 - `docs_build/dev/reports/tools-progress-targeted-msj-tests.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_110-113
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Closed the missing tool image coverage gaps from PR_26155_106-109.
+- Added approved no-size-suffix badge/tool assets under `assets/theme-v2/images/badges/` and `assets/theme-v2/images/tools/`.
+- Refreshed the Toolbox registry available-image surface so all active/planned tools resolve without fallback.
+- Updated the targeted Tool Image Playwright/MSJ test to require complete coverage.
+
+Validation:
+- `node --check toolbox/toolRegistry.js`
+- `node --check tests/playwright/tools/ToolImageRegistry.spec.mjs`
+- Registry assertion: no `-1024` registry paths and no missing/fallback image coverage rows.
+- `npm run test:lane:tool-images`
+- `git diff --check`
+- Full samples smoke: skipped; image asset closeout does not modify samples.
+
+Required reports:
+- `docs_build/dev/reports/tool-image-coverage-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
