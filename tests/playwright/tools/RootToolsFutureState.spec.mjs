@@ -76,7 +76,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 3/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=user/);
     await expect(page.locator("[data-project-data-menu]")).toBeHidden();
@@ -128,8 +128,8 @@ test("root tools surface links current tool pages without old_* routes", async (
     });
     await expect(readyProjectWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/project-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Game Configuration", "Game Design", "Project Workspace"]);
-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Ready", "Ready", "Ready"]);
+    expect(defaultToolLabels).toEqual(["Assets", "Game Configuration", "Game Design", "Project Workspace"]);
+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Ready", "Ready", "Ready", "Ready"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Assistant$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
@@ -234,7 +234,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-project-data-menu]")).toBeHidden();
     await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 3/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await page.locator("[data-toolbox-role-banner]").click();
@@ -279,6 +279,9 @@ test("root tools surface links current tool pages without old_* routes", async (
       has: page.locator("h3", { hasText: /^Game Configuration$/ })
     }).locator("[data-toolbox-readiness]")).toHaveText("Ready");
     await expect(page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: /^Assets$/ })
+    }).locator("[data-toolbox-readiness]")).toHaveText("Ready");
+    await expect(page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Build Game$/ })
     }).locator("[data-toolbox-readiness]")).toHaveText("Planned");
     await expect(page.locator("main .control-card").filter({
@@ -320,7 +323,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-project-data-menu]")).toBeHidden();
     await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 3/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
   } finally {

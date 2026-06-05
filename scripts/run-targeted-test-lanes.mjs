@@ -185,6 +185,27 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Game Configuration rebuild slice validates the valid Game Design handoff, blocked invalid handoffs, configuration save/update, actionable validation, user-facing output, and Toolbox progress handoff without exercising unrelated toolbox routes."
   },
+  "asset-tool": {
+    affectedSurface: "Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling",
+    commands: [
+      playwrightCommand("tests/playwright/tools/AssetToolMockRepository.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/AssetToolMockRepository.spec.mjs"
+    ],
+    fixtures: [
+      "repo-served Assets page",
+      "in-memory SQL-shaped Asset Tool mock repository",
+      "Game Configuration mock repository handoff",
+      "file-name/path-based import preview"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Asset Tool rebuild slice validates SQL-shaped asset tables, ready Game Configuration handoff, import/preview workflow, and visible validation errors without exercising unrelated toolbox routes."
+  },
   "build-path": {
     affectedSurface: "Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation",
     commands: [

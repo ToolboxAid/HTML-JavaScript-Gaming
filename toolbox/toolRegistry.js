@@ -192,11 +192,14 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPlayable": true,
     "requiredForTestable": true,
     "requiredForPublish": true,
-    "requires": [],
-    "status": "Planned",
+    "requires": [
+      "game-configuration"
+    ],
+    "status": "Ready",
     "progressChecklist": [
-      "Not implemented yet",
-      "Asset rebuild is planned after Game Configuration handoff"
+      "Game Configuration handoff checked",
+      "Mock asset library available",
+      "Import preview workflow validates path-based asset records"
     ],
     "deferred": false,
     "hidden": false,

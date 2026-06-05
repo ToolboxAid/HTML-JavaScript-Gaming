@@ -963,3 +963,44 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_136-141
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Audited `archive/v1-v2/tools/old_asset-manager-v2/index.html` as reference only for expected Asset Tool behavior.
+- Did not copy archive code and did not modify archived V1/V2 files.
+- Defined Asset Tool V2 active scope around Game Configuration handoff, asset library records, import preview, validation, and status output.
+- Added SQL-shaped mock repository tables in `toolbox/assets/assets-mock-repository.js`:
+  - `asset_library_items`
+  - `asset_import_events`
+  - `asset_validation_items`
+- Rebuilt `toolbox/assets/index.html` as a first-class Theme V2 tool shell using existing shared layout, form table, cards, tables, panels, status, and Tool Display Mode wiring.
+- Added `toolbox/assets/assets.js` runtime wiring for ready/missing Game Configuration handoff, library rendering, import, preview, visible validation errors, seed/reset actions, and readable output.
+- Updated `toolbox/toolRegistry.js` so Assets requires Game Configuration and reports Ready for this mock-runtime slice.
+- Added `asset-tool` targeted lane to `scripts/run-targeted-test-lanes.mjs`.
+- Added `tests/playwright/tools/AssetToolMockRepository.spec.mjs`.
+- Updated existing Toolbox/Tools Progress/Project Workspace test expectations for Assets becoming the fourth Ready normal-user tool.
+- Did not add CSS.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/assets/assets-mock-repository.js`
+- `node --check toolbox/assets/assets.js`
+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `node --check scripts/run-targeted-test-lanes.mjs`
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+- `node --check tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs`
+- `node --check tests/playwright/tools/ToolsProgressHydration.spec.mjs`
+- `node --check toolbox/toolRegistry.js`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane asset-tool --lane tools-progress --lane tool-runtime --lane build-path --lane project-workspace`
+- `node scripts/validate-tool-registry.mjs`
+- `node scripts/validate-active-tools-surface.mjs`
+- Full samples smoke: skipped by request and because samples were not changed.
+
+Required reports:
+- `docs_build/dev/reports/asset-tool-rebuild-stacked-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

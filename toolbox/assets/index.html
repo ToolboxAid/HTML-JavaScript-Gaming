@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="utf-8">
+    <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Assets — GameFoundryStudio</title>
-    <meta name="description" content="GameFoundryStudio: Build. Play. Share.">
+    <title>Assets - GameFoundryStudio</title>
+    <meta name="description" content="Assets Toolbox runtime for project-owned asset library records, imports, previews, and validation.">
     <link rel="icon" href="/favicon.svg">
-    <link rel="stylesheet" href="../../assets/theme-v2/css/theme.css">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
 
 <body class="meaning-molten-orange">
@@ -15,9 +16,9 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Pixel Smith</div>
+                <div class="kicker">Toolbox / Assets</div>
                 <h1>Assets</h1>
-                <p class="lede">Create sprites, animations, vectors and palettes.</p>
+                <p class="lede">Manage project asset records after Game Configuration is ready.</p>
             </div>
         </section>
         <section class="section">
@@ -25,19 +26,111 @@
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
-                            <h2>Toolbox</h2>
+                            <h2>Assets</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Configuration Handoff</summary>
+                                <div class="accordion-body content-stack">
+                                    <p data-asset-tool-handoff-context>No ready Game Configuration handoff</p>
+                                    <a class="btn" href="toolbox/game-configuration/index.html">Open Game Configuration</a>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Import Asset</summary>
+                                <div class="accordion-body content-stack">
+                                    <form class="content-stack" data-asset-tool-form>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="Asset import fields" data-asset-tool-form-table>
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="assetToolType">Type</label></th>
+                                                        <td><select id="assetToolType" data-asset-tool-type></select></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="assetToolRole">Role</label></th>
+                                                        <td><select id="assetToolRole" data-asset-tool-role></select></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="assetToolName">Name</label></th>
+                                                        <td><input id="assetToolName" type="text" placeholder="Player sprite" data-asset-tool-name></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="assetToolPath">Path</label></th>
+                                                        <td><input id="assetToolPath" type="text" placeholder="assets/images/player.png" data-asset-tool-path></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="assetToolFile">File</label></th>
+                                                        <td><input id="assetToolFile" type="file" data-asset-tool-file aria-describedby="assetToolFileHelp"><p id="assetToolFileHelp">File data is previewed only. Asset records store file names and paths, not image data URLs.</p></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <button class="btn" type="submit">Import Asset</button>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Library Actions</summary>
+                                <div class="accordion-body content-stack">
+                                    <button class="btn" type="button" data-asset-tool-seed>Seed Demo Assets</button>
+                                    <button class="btn" type="button" data-asset-tool-reset>Reset Asset Library</button>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="../../assets/theme-v2/images" data-tool-slug="assets" data-tool-icon-src="../../assets/theme-v2/images/badges/index.png" data-tool-character-src="../../assets/theme-v2/images/characters/index.png"></div>
-                    <section class="tool-center-panel"><img src="../../assets/theme-v2/images/forge-bot-single.png" alt="ForgeBot">
-                        <h2>Workspace</h2>
-                        <p>Assets: Create sprites, animations, vectors and palettes.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="assets" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Asset Library</h2>
+                        <p>Assets stores project-owned asset records in a SQL-shaped mock repository. Real database storage, cloud upload, binary file persistence, and export packaging are not implemented yet.</p>
+                        <div class="grid cols-3" aria-label="Asset readiness summary">
+                            <article class="mini-stat"><strong data-asset-tool-library-status>Needs Input</strong>Library Status</article>
+                            <article class="mini-stat"><strong data-asset-tool-count>0</strong>Assets</article>
+                            <article class="mini-stat"><strong data-asset-tool-next-step>Assets</strong>Next Step</article>
+                        </div>
+                        <article class="card" role="dialog" aria-labelledby="asset-tool-handoff-overlay-title" data-asset-tool-handoff-overlay hidden>
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Missing Requirements</div>
+                                    <h3 id="asset-tool-handoff-overlay-title">Game Configuration Required</h3>
+                                </div>
+                                <p>Complete a valid Game Configuration before importing Assets.</p>
+                                <a class="btn" href="toolbox/game-configuration/index.html">Open Game Configuration</a>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Project Assets</div>
+                                    <h3>Library Records</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Asset library records">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Asset</th>
+                                                <th scope="col">Type</th>
+                                                <th scope="col">Role</th>
+                                                <th scope="col">Path</th>
+                                                <th scope="col">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-asset-tool-library>
+                                            <tr><td colspan="5">No assets imported yet.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Preview</div>
+                                    <h3 data-asset-tool-preview-title>Selected Asset Preview</h3>
+                                </div>
+                                <p data-asset-tool-preview>Choose or import an asset to preview its project record.</p>
+                            </div>
+                        </article>
                     </section>
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
@@ -46,7 +139,49 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <div class="accordion-body content-stack" data-asset-tool-output>
+                                    <p>Library Summary: <span data-asset-tool-output-summary>No assets imported yet.</span></p>
+                                    <p>Validation Status: <span data-asset-tool-output-validation>Needs Input</span></p>
+                                    <p>Missing Items: <span data-asset-tool-output-missing>Import at least one asset.</span></p>
+                                    <p>Next Step: <span data-asset-tool-output-next-step>Assets</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Validation</summary>
+                                <div class="accordion-body content-stack">
+                                    <article class="card" role="dialog" aria-labelledby="asset-tool-validation-title" data-asset-tool-validation-overlay hidden>
+                                        <div class="card-body content-stack">
+                                            <div>
+                                                <div class="kicker">Actionable Validation</div>
+                                                <h3 id="asset-tool-validation-title">Missing Items</h3>
+                                            </div>
+                                            <ul data-asset-tool-validation-list></ul>
+                                        </div>
+                                    </article>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Repository Tables</summary>
+                                <div class="accordion-body">
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Asset repository table counts">
+                                            <thead>
+                                                <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
+                                            </thead>
+                                            <tbody data-asset-tool-table-counts>
+                                                <tr><td>asset_library_items</td><td>0</td></tr>
+                                                <tr><td>asset_import_events</td><td>0</td></tr>
+                                                <tr><td>asset_validation_items</td><td>0</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <div class="status" role="status" data-asset-tool-log>Asset repository ready.</div>
+                                </div>
                             </details>
                         </div>
                     </aside>
@@ -55,8 +190,9 @@
         </section>
     </main>
     <div data-partial="footer"></div>
-    <script src="../../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-    <script src="../../assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/assets/assets.js"></script>
 </body>
 
 </html>

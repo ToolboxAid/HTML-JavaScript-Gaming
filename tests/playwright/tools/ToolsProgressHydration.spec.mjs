@@ -142,8 +142,9 @@ test("Toolbox status cards consume Admin Tools Progress metadata", async ({ page
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
     const normalStatuses = await page.locator("[data-toolbox-readiness]").evaluateAll((statuses) => statuses.map((status) => status.textContent.trim()));
-    expect(normalStatuses).toEqual(["Ready", "Ready", "Ready"]);
+    expect(normalStatuses).toEqual(["Ready", "Ready", "Ready", "Ready"]);
     expect(normalStatuses.every((status) => status === "Ready")).toBe(true);
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toHaveCount(1);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toHaveCount(1);
     await expectNoPageFailures(failures);
   } finally {
