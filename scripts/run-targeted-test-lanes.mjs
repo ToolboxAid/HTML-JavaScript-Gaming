@@ -163,6 +163,28 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Game Design rebuild slice validates the active project context, design save/update, actionable validation, capability demo authoring, and Toolbox progress handoff without exercising unrelated toolbox routes."
   },
+  "game-configuration": {
+    affectedSurface: "Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff",
+    commands: [
+      playwrightCommand("tests/playwright/tools/GameConfigurationMockRepository.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/GameConfigurationMockRepository.spec.mjs"
+    ],
+    fixtures: [
+      "repo-served Game Configuration page",
+      "repo-served Game Design page for handoff checks",
+      "repo-served Toolbox Progress and Build Path views",
+      "in-memory SQL-shaped Game Configuration mock repository",
+      "Game Design mock repository handoff"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Game Configuration rebuild slice validates the valid Game Design handoff, blocked invalid handoffs, configuration save/update, actionable validation, user-facing output, and Toolbox progress handoff without exercising unrelated toolbox routes."
+  },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [

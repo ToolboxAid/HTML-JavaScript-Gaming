@@ -100,10 +100,11 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
+                                "status": "in-progress",
                                 "progressChecklist": [
-                                        "Review readiness",
-                                        "Static wireframe text only"
+                                        "Valid Game Design handoff required",
+                                        "Configuration sections required before Build Game",
+                                        "Ready configuration recommends Assets"
                                 ]
                         },
                         {
@@ -889,10 +890,11 @@ import {
         "Game Configuration": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
+                "status": "in-progress",
                 "progressChecklist": [
-                        "Review readiness",
-                        "Static wireframe text only"
+                        "Valid Game Design handoff required",
+                        "Configuration sections required before Build Game",
+                        "Ready configuration recommends Assets"
                 ]
         },
         "Assets": {
@@ -1213,7 +1215,7 @@ import {
         {
                 "title": "Game Configuration",
                 "groupClass": "tool-group-build",
-                "note": "Set the release profile, debug policy, and playable gate before the required tool path is treated as ready.",
+                "note": "Complete playable setup from a valid Game Design handoff before Assets and Build Game readiness.",
                 "tools": [
                         "Game Configuration"
                 ]

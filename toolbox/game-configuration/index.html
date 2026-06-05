@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Game Configuration - GameFoundryStudio</title>
-    <meta name="description" content="Game Configuration Toolbox wireframe for public release settings, debug visibility, and playable readiness gates.">
+    <meta name="description" content="Game Configuration Toolbox runtime for configuring playable readiness from a valid Game Design handoff.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,40 +18,34 @@
             <div class="container">
                 <div class="kicker">Toolbox / Game Configuration</div>
                 <h1>Game Configuration</h1>
-                <p class="lede">Wireframe release profile, debug settings, playable gates, and configuration readiness without adding persistence or database behavior.</p>
+                <p class="lede">Configure the playable setup from a valid Game Design handoff before Build Game and Assets readiness.</p>
             </div>
         </section>
         <section class="section">
             <div class="container container--tool-wide">
                 <div class="tool-workspace tool-workspace--wide">
-                    <aside class="tool-column tool-group-development-system">
+                    <aside class="tool-column tool-group-build">
                         <div class="tool-column-header molten-orange">
                             <h2>Game Configuration</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Release Profile</summary>
-                                <div class="accordion-body">
-                                    <form>
-                                        <label>Build Channel <input type="text" placeholder="Creator test, private preview, public playable"></label>
-                                        <label>Target Platform <input type="text" placeholder="Web, embedded, marketplace page"></label>
-                                        <label>Content Rating <input type="text" placeholder="Everyone, teen, mature review"></label>
-                                        <label>Release Notes <textarea rows="3" placeholder="Public-facing change summary"></textarea></label>
-                                    </form>
+                                <summary>Game Design Handoff</summary>
+                                <div class="accordion-body content-stack">
+                                    <p data-game-configuration-handoff-context>No valid Game Design handoff</p>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
-                                <summary>Debug Settings</summary>
-                                <div class="accordion-body">
-                                    <p><span class="pill">creator only</span> Debug settings may exist for testing.</p>
-                                    <p><span class="pill">public rejected</span> Debug settings must be disabled or rejected before playable release.</p>
-                                    <button class="btn" type="button">Review debug policy</button>
+                            <details class="vertical-accordion" open>
+                                <summary>Actions</summary>
+                                <div class="accordion-body content-stack">
+                                    <a class="btn" href="toolbox/game-design/index.html">Open Game Design</a>
+                                    <a class="btn" href="toolbox/assets/index.html">Open Assets</a>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
-                                <summary>Playable Gate</summary>
+                            <details class="vertical-accordion" open>
+                                <summary>Guidance</summary>
                                 <div class="accordion-body">
-                                    <p>Static gate checklist for configuration requirements. No live release validation is implemented.</p>
+                                    <p>Game Configuration is editable only after Game Design is valid. Invalid handoff data blocks Build Game readiness and exposes missing requirements.</p>
                                 </div>
                             </details>
                         </div>
@@ -60,49 +54,97 @@
                     <section class="tool-center-panel">
                         <img src="assets/theme-v2/images/image-missing.svg" alt="Game Configuration preview">
                         <h2>Configuration Workspace</h2>
-                        <p>Game Configuration is a static wireframe for release settings, playable gating, and debug controls that must be visible to creators before a public release.</p>
+                        <p>Game Configuration saves an in-memory playable setup for the active project. No database, auth, cloud, or persistence behavior is implemented.</p>
                         <div class="grid cols-3" aria-label="Game Configuration readiness summary">
-                            <article class="mini-stat"><strong>2</strong>Release settings drafted</article>
-                            <article class="mini-stat"><strong>3</strong>Playable gates pending</article>
-                            <article class="mini-stat"><strong>1</strong>Debug policy blocker</article>
+                            <article class="mini-stat"><strong data-game-configuration-status>Needs Input</strong>Readiness status</article>
+                            <article class="mini-stat"><strong data-game-configuration-recommended-tool>Game Configuration</strong>Next tool</article>
+                            <article class="mini-stat"><strong>Mock</strong>Repository only</article>
                         </div>
-                        <article class="card" role="dialog" aria-labelledby="game-configuration-missing-requirements-title">
+                        <article class="card" data-game-configuration-form-card hidden>
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Static Overlay Wireframe</div>
-                                    <h3 id="game-configuration-missing-requirements-title">Missing Requirements</h3>
+                                    <div class="kicker">Configuration Fields</div>
+                                    <h3>Playable Setup</h3>
                                 </div>
-                                <p>This static overlay card calls out release blockers using existing Theme V2 classes only.</p>
-                                <div class="grid cols-3">
-                                    <article class="callout"><h3>Debug Mode</h3><p><span class="pill">blocked</span> Must be disabled for public playable release.</p></article>
-                                    <article class="callout"><h3>Content Rating</h3><p><span class="pill">missing</span> Public rating selection is incomplete.</p></article>
-                                    <article class="callout"><h3>Share Metadata</h3><p><span class="pill">deferred</span> Share copy can be completed later.</p></article>
-                                </div>
-                                <div class="status" role="status">Wireframe only: no configuration is persisted or promoted.</div>
+                                <form class="content-stack" data-game-configuration-form>
+                                    <label for="gameConfigurationBasics">Game Basics
+                                        <textarea id="gameConfigurationBasics" rows="3" data-game-configuration-game-basics placeholder="Summarize the game setup players should understand first."></textarea>
+                                    </label>
+                                    <label for="gameConfigurationRules">Game Rules
+                                        <textarea id="gameConfigurationRules" rows="3" data-game-configuration-game-rules placeholder="Define the primary rules, win conditions, and fail conditions."></textarea>
+                                    </label>
+                                    <label for="gameConfigurationPlayers">Player Setup
+                                        <textarea id="gameConfigurationPlayers" rows="3" data-game-configuration-player-setup placeholder="Describe starting player count, controls expectations, and spawn setup."></textarea>
+                                    </label>
+                                    <label for="gameConfigurationWorld">World Setup
+                                        <textarea id="gameConfigurationWorld" rows="3" data-game-configuration-world-setup placeholder="Describe the first world, level, scene, or room setup."></textarea>
+                                    </label>
+                                    <label for="gameConfigurationObjects">Object Setup
+                                        <textarea id="gameConfigurationObjects" rows="3" data-game-configuration-object-setup placeholder="List required objects, hazards, goals, pickups, or interactables."></textarea>
+                                    </label>
+                                    <label for="gameConfigurationAudio">Audio Setup
+                                        <textarea id="gameConfigurationAudio" rows="3" data-game-configuration-audio-setup placeholder="Describe music, sound effects, voice, or silence requirements."></textarea>
+                                    </label>
+                                    <label for="gameConfigurationTest">Test Readiness
+                                        <textarea id="gameConfigurationTest" rows="3" data-game-configuration-test-readiness placeholder="Describe what must be checked before Build Game readiness."></textarea>
+                                    </label>
+                                    <button class="btn" type="submit">Save Game Configuration</button>
+                                </form>
                             </div>
                         </article>
                     </section>
-                    <aside class="tool-column tool-group-development-system">
+                    <aside class="tool-column tool-group-build">
                         <div class="tool-column-header forge-gold">
                             <h2>Inspector</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
-                                <div class="accordion-body">
-                                    <pre><code>{
-  "releaseProfile": "creator-test",
-  "debugSettingsVisible": true,
-  "publicDebugAllowed": false,
-  "playableGate": "blocked"
-}</code></pre>
+                                <div class="accordion-body content-stack" data-game-configuration-output>
+                                    <p>Configuration Summary: <span data-game-configuration-output-summary>No configuration summary saved yet.</span></p>
+                                    <p>Readiness Status: <span data-game-configuration-output-readiness>Needs Input</span></p>
+                                    <p>Missing Items: <span data-game-configuration-output-missing>Review required sections.</span></p>
+                                    <p>Next Step: <span data-game-configuration-output-next-step>Game Configuration</span></p>
+                                    <p>Capability Demo: <span data-game-configuration-output-capability>Standard game project configuration.</span></p>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
+                            <details class="vertical-accordion" open>
+                                <summary>Validation</summary>
+                                <div class="accordion-body content-stack">
+                                    <article class="card" role="dialog" aria-labelledby="game-configuration-handoff-overlay-title" data-game-configuration-handoff-overlay hidden>
+                                        <div class="card-body content-stack">
+                                            <div>
+                                                <div class="kicker">Missing Requirements</div>
+                                                <h3 id="game-configuration-handoff-overlay-title">Game Design Required</h3>
+                                            </div>
+                                            <p>Complete a valid Game Design before editing Game Configuration.</p>
+                                            <a class="btn" href="toolbox/game-design/index.html">Open Game Design</a>
+                                        </div>
+                                    </article>
+                                    <article class="card" role="dialog" aria-labelledby="game-configuration-validation-title" data-game-configuration-validation-overlay hidden>
+                                        <div class="card-body content-stack">
+                                            <div>
+                                                <div class="kicker">Actionable Validation</div>
+                                                <h3 id="game-configuration-validation-title">Missing Items</h3>
+                                            </div>
+                                            <ul data-game-configuration-validation-list></ul>
+                                        </div>
+                                    </article>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Toolbox Progress Handoff</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Project Progress: <span data-game-configuration-project-progress>Game Configuration needs input</span></p>
+                                    <p>Publishing Progress: <span data-game-configuration-publishing-progress>Build Game blocked</span></p>
+                                    <p>Current Focus: <span data-game-configuration-current-focus>Complete Game Configuration</span></p>
+                                    <p>Recommended Next Tool: <span data-game-configuration-recommended-tool>Game Configuration</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
                                 <summary>Status Log</summary>
                                 <div class="accordion-body">
-                                    <p>Static log for configuration review. No runtime save/load behavior is implemented.</p>
-                                    <div class="status" role="status">Last check: debug settings must be rejected before public playable release.</div>
+                                    <div class="status" role="status" data-game-configuration-log>Game Configuration mock repository ready.</div>
                                 </div>
                             </details>
                         </div>
@@ -114,6 +156,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/game-configuration/game-configuration.js"></script>
 </body>
 
 </html>
