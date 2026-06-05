@@ -13,6 +13,14 @@ const sourcePaletteRows = [
   { source: "reference", sourceLabel: "Reference", symbol: "G", hex: "#00FF00", name: "Reference Green", tags: ["cool"] }
 ];
 
+const requiredMockDbSourceOptions = [
+  { id: "palette-colors008", label: "8-color set", swatchCount: 8 },
+  { id: "palette-colors016", label: "16-color set", swatchCount: 16 },
+  { id: "palette-colors032", label: "32-color set", swatchCount: 32 },
+  { id: "w3c", label: "W3C", swatchCount: 139 },
+  { id: "javascript", label: "JavaScript", swatchCount: 140 }
+];
+
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "palette-tool",
@@ -148,10 +156,16 @@ test("Palette repository owns active project swatches without mutating invalid p
   expect(emptyRepository.listSourceSwatches()).toEqual([]);
 
   const mockDbRepository = createProjectWorkspacePaletteRepository();
-  expect(mockDbRepository.getTables().palette_source_swatches).toHaveLength(2);
-  expect(mockDbRepository.sourcePaletteOptions()).toEqual([
-    { id: "reference", label: "Reference", swatchCount: 2 }
-  ]);
+  expect(mockDbRepository.getTables().palette_source_swatches.length).toBeGreaterThan(800);
+  expect(mockDbRepository.sourcePaletteOptions()).toEqual(expect.arrayContaining(requiredMockDbSourceOptions));
+  expect(mockDbRepository.sourcePaletteOptions().map((source) => source.label)).toEqual(expect.arrayContaining([
+    "24-color set",
+    "48-color set",
+    "64-color set",
+    "96-color set",
+    "120-color set",
+    "150-color set"
+  ]));
 
   const repository = createProjectWorkspacePaletteRepository({ sourcePaletteRows });
   const baseline = repository.getSnapshot();
@@ -222,6 +236,9 @@ test("Palette repository owns active project swatches without mutating invalid p
   expect(pinResult.ok).toBe(true);
   expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", source: "reference" });
   expect(repository.listSwatches({ sortKey: "hue" }).map((swatch) => swatch.name)).toContain("Reference Red");
+  const duplicatePinResult = repository.pinSourceSwatch(sourceSwatch);
+  expect(duplicatePinResult.ok).toBe(true);
+  expect(duplicatePinResult.message).toBe("Source swatch already pinned.");
   const pinAllResult = repository.pinSourceSwatches(repository.listSourceSwatches({ sourceId: "reference", sortKey: "hue" }));
   expect(pinAllResult.ok).toBe(true);
   expect(pinAllResult.message).toContain("1 pinned, 1 already pinned");
@@ -234,6 +251,15 @@ test("Palette repository owns active project swatches without mutating invalid p
   expect(repeatPinAllResult.ok).toBe(true);
   expect(repeatPinAllResult.message).toContain("0 pinned, 2 already pinned");
   expect(repository.listSwatches().filter((swatch) => swatch.source === "reference")).toHaveLength(sourceCountAfterPinAll);
+  const sourceTableCount = repository.getTables().palette_source_swatches.length;
+  repository.selectSwatch("G");
+  const removePinnedResult = repository.removeSwatch("G");
+  expect(removePinnedResult.ok).toBe(true);
+  expect(removePinnedResult.message).toBe("Removed Reference Green from the active project palette.");
+  expect(repository.findSwatch("G")).toBeNull();
+  expect(repository.getTables().palette_colors.some((row) => row.symbol === "G")).toBe(false);
+  expect(repository.getTables().palette_source_swatches).toHaveLength(sourceTableCount);
+  expect(repository.getSnapshot().selectedSwatch).toBeNull();
   expect(repository.createHarmonySuggestions(repository.findSwatch("R"), {
     matchSource: "calculated",
     schemeId: "triadic"
@@ -282,9 +308,19 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expectControlGroupsShareLine(page, "[data-palette-user-sort]", "[data-palette-user-size]");
     await expectControlGroupsShareLine(page, "[data-palette-source-sort]", "[data-palette-source-size]");
     await expect(page.locator("[data-palette-source-select]")).toBeEnabled();
-    await expect(page.locator("[data-palette-source-select] option")).toHaveText(["Reference (2)"]);
+    const sourceOptionTexts = await page.locator("[data-palette-source-select] option").allTextContents();
+    expect(sourceOptionTexts).toEqual(expect.arrayContaining([
+      "8-color set (8)",
+      "16-color set (16)",
+      "32-color set (32)",
+      "120-color set (120)",
+      "150-color set (151)",
+      "W3C (139)",
+      "JavaScript (140)"
+    ]));
+    await page.locator("[data-palette-source-select]").selectOption("palette-colors008");
     await expect(page.locator("[data-palette-source-list]")).not.toContainText("No source palette");
-    await expect(page.locator("[data-palette-source-index]")).toHaveCount(2);
+    await expect(page.locator("[data-palette-source-index]")).toHaveCount(8);
     await expect(page.locator("[data-palette-source-pin-all]")).toBeEnabled();
     await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_source_swatches");
     await expect(page.locator("[data-palette-user-list]")).not.toContainText(/Symbol|Name|Hex|Source|Tags/);
@@ -300,21 +336,29 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await page.locator("[data-palette-source-size] [data-palette-size-key='medium']").click();
     const sourceMediumWidth = await expectSinglePreviewWidth(sourcePreviewTile, "medium");
     expect(sourceMediumWidth).toBeGreaterThan(sourceSmallWidth);
-    await page.locator("[data-palette-source-search]").fill("green");
+    await page.locator("[data-palette-source-search]").fill("black");
     await expect(page.locator("[data-palette-source-index]")).toHaveCount(1);
     await page.locator("[data-palette-source-pin-all]").click();
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
-    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Reference Green']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveAttribute("data-palette-selected", "true");
     await expect(page.locator("[data-palette-source-index]").first()).toHaveAttribute("data-palette-pinned", "true");
     await page.locator("[data-palette-source-pin-all]").click();
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
     await expect(page.locator("[data-palette-log]")).toContainText("0 pinned, 1 already pinned");
-    await page.locator("[data-palette-source-search]").fill("");
-    await expect(page.locator("[data-palette-source-index]")).toHaveCount(2);
     await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
     await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Complementary \d:/);
     await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("title", /^Scheme: Complementary\nLabel: Complementary 1\nHex: #[0-9A-F]{6}$/);
     await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("aria-label", /Complementary 1 #[0-9A-F]{6} from Complementary/);
+    await page.locator("[data-palette-user-list] [data-palette-swatch-name='Black'] [data-palette-pin-indicator]").click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("0");
+    await expect(page.locator("[data-palette-selected-summary]")).toHaveText("None");
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveCount(0);
+    await expect(page.locator("[data-palette-source-index]").first()).toHaveAttribute("data-palette-pinned", "false");
+    await expect(page.locator("[data-palette-log]")).toContainText("Removed Black from the active project palette.");
+    await page.locator("[data-palette-source-search]").fill("");
+    await expect(page.locator("[data-palette-source-index]")).toHaveCount(8);
+    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(0);
     await expect(page.locator("[data-palette-harmony-match] option")).toHaveText([
       "Calculated",
       "Source Palette Closest Match",
@@ -338,7 +382,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
       "Tetradic",
       "Triadic"
     ]);
-    await expect(page.locator("[data-palette-harmony-guidance]")).toContainText("Showing");
+    await expect(page.locator("[data-palette-harmony-guidance]")).toContainText("Select a project or source palette color");
 
     await page.getByRole("button", { name: "Add Swatch" }).click();
     await expect(page.locator("[data-palette-validation-overlay]")).toBeVisible();
@@ -351,7 +395,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await page.locator("[data-palette-name]").fill("Hero Blue");
     await page.locator("[data-palette-tags]").fill("Hero, UI, hero");
     await page.getByRole("button", { name: "Add Swatch" }).click();
-    await expect(page.locator("[data-palette-count]")).toHaveText("2");
+    await expect(page.locator("[data-palette-count]")).toHaveText("1");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-name", "Hero Blue");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-hex", "#123456AA");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("title", "Symbol: H\nHex: #123456AA\nName: Hero Blue\nTags: hero, ui");
@@ -361,9 +405,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-swatch-row='H']")).not.toHaveCSS("box-shadow", "none");
     await expect(page.locator("[data-palette-swatch-row='H'] [data-palette-selected-indicator]")).toHaveCount(0);
     await expect(page.locator("[data-palette-swatch-row='H'] [data-palette-pin-indicator]")).toHaveCount(1);
-    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Reference Green']")).toHaveAttribute("data-palette-pinned", "true");
-    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Reference Green']")).toHaveAttribute("data-palette-selected", "false");
-    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Reference Green'] [data-palette-selected-indicator]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveCount(0);
     await expect(page.locator("[data-palette-user-list]")).not.toContainText(/Hero Blue|#123456AA|hero, ui|Symbol|Name|Hex|Source|Tags/);
     await expect(page.locator("[data-palette-selected-details]")).toHaveCount(0);
     await expect(page.locator("[data-palette-project-accordion]")).not.toContainText(/Symbol:|Hex:|Name:|Source:|Tags:/);
@@ -473,6 +515,20 @@ test("Palette Tool rejects invalid payloads before render and blocks editing wit
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await emptySourceFailures.server.close();
+  }
+
+  const invalidSourceFailures = await openRepoPage(page, "/toolbox/colors/index.html?source=invalid");
+
+  try {
+    await expect(page.locator("[data-palette-source-select]")).toBeDisabled();
+    await expect(page.locator("[data-palette-source-select] option")).toHaveText(["Source palettes unavailable"]);
+    await expect(page.locator("[data-palette-source-list]")).toContainText("Source palette records exist, but the source dropdown is empty.");
+    await expect(page.locator("[data-palette-source-index]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-source-pin-all]")).toBeDisabled();
+    expectNoPageFailures(invalidSourceFailures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await invalidSourceFailures.server.close();
   }
 
   const missingProjectFailures = await openRepoPage(page, "/toolbox/colors/index.html?project=missing");

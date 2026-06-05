@@ -6,9 +6,24 @@ import {
 } from "./palette-workspace-repository.js";
 
 const params = new URLSearchParams(window.location.search);
-const repository = createProjectWorkspacePaletteRepository(params.get("source") === "empty"
-  ? { tables: { palette_source_swatches: [] } }
-  : {});
+
+function sourceRepositoryOptions() {
+  if (params.get("source") === "empty") {
+    return { tables: { palette_source_swatches: [] } };
+  }
+  if (params.get("source") === "invalid") {
+    return {
+      tables: {
+        palette_source_swatches: [
+          { id: "invalid-source-row", source: "broken-source", symbol: "AB", hex: "not-a-hex", name: "", tags: ["diagnostic"] }
+        ]
+      }
+    };
+  }
+  return {};
+}
+
+const repository = createProjectWorkspacePaletteRepository(sourceRepositoryOptions());
 
 const SORT_OPTIONS = Object.freeze([
   { key: "hue", label: "Hue" },
@@ -193,7 +208,6 @@ function createPinIndicator(pinned) {
   indicator.className = "palette-swatch-pin";
   indicator.dataset.palettePinIndicator = "";
   indicator.setAttribute("aria-hidden", "true");
-  indicator.title = pinned ? "Pinned" : "Not pinned";
   return indicator;
 }
 
@@ -358,7 +372,7 @@ function renderSourceOptions(snapshot) {
   if (!snapshot.sourcePaletteOptions.length) {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = "No source palette";
+    option.textContent = snapshot.sourcePaletteRecordCount ? "Source palettes unavailable" : "No source palette";
     elements.sourceSelect.append(option);
     elements.sourceSelect.value = "";
     elements.sourceSelect.disabled = true;
@@ -446,7 +460,13 @@ function renderUserPalette(snapshot) {
   });
 }
 
-function renderSourceSwatches() {
+function sourcePaletteDiagnostic(snapshot) {
+  return snapshot.sourcePaletteRecordCount > 0 && snapshot.sourcePaletteOptions.length === 0
+    ? "Source palette records exist, but the source dropdown is empty. Check palette_source_swatches mock-DB records for valid source, symbol, hex, and name fields."
+    : "";
+}
+
+function renderSourceSwatches(snapshot = repository.getSnapshot()) {
   if (!elements.sourceList) {
     return;
   }
@@ -464,9 +484,9 @@ function renderSourceSwatches() {
   if (sourceSwatchRows.length === 0) {
     const message = document.createElement("p");
     message.className = "status";
-    message.textContent = repository.sourcePaletteOptions().length
+    message.textContent = sourcePaletteDiagnostic(snapshot) || (snapshot.sourcePaletteOptions.length
       ? "No source colors match the current filter."
-      : "No source palette found. Add palette_source_swatches mock-DB records to browse source colors.";
+      : "No source palette found. Add palette_source_swatches mock-DB records to browse source colors.");
     elements.sourceList.append(message);
     return;
   }
@@ -602,7 +622,7 @@ function render() {
   renderSummary(snapshot);
   renderValidation(snapshot);
   renderUserPalette(snapshot);
-  renderSourceSwatches();
+  renderSourceSwatches(snapshot);
   renderTags(snapshot);
   renderHarmony(snapshot);
   renderTables(snapshot);
@@ -778,6 +798,18 @@ elements.harmonyAddAll?.addEventListener("click", () => {
 elements.userList?.addEventListener("click", (event) => {
   const tile = event.target.closest("[data-palette-swatch-row]");
   if (!tile) {
+    return;
+  }
+
+  const pin = event.target.closest("[data-palette-pin-indicator]");
+  if (pin) {
+    const deletingSelected = tile.dataset.paletteSelected === "true";
+    const result = repository.removeSwatch(tile.dataset.paletteSwatchRow);
+    selectedSourceSwatch = null;
+    if (deletingSelected || !result.snapshot.selectedSwatch) {
+      fillEditorForm(result.snapshot.selectedSwatch);
+    }
+    applyResult(result);
     return;
   }
 

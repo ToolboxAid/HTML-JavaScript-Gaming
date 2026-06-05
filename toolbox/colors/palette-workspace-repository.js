@@ -1,4 +1,5 @@
 import { createProjectWorkspaceMockRepository } from "../project-workspace/project-workspace-mock-repository.js";
+import { createPaletteSourceMockDbRows } from "./palette-source-mock-db.js";
 
 export const PALETTE_TOOL_KEY = "palette-browser";
 export const PALETTE_WORKSPACE_PATH = `tools.${PALETTE_TOOL_KEY}.swatches`;
@@ -44,10 +45,6 @@ const SOURCE_ID_RENAMES = Object.freeze({
   crayola: PALETTE_SOURCE_PALETTE_COLORS
 });
 const SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
-const PALETTE_SOURCE_SWATCH_MOCK_DB_ROWS = Object.freeze([
-  Object.freeze({ id: "reference-red", source: "reference", sourceLabel: "Reference", symbol: "R", hex: "#FF0000", name: "Reference Red", tags: Object.freeze(["warm"]) }),
-  Object.freeze({ id: "reference-green", source: "reference", sourceLabel: "Reference", symbol: "G", hex: "#00FF00", name: "Reference Green", tags: Object.freeze(["cool"]) })
-]);
 
 function cloneSwatch(swatch) {
   return {
@@ -70,7 +67,7 @@ export function createPaletteToolMockDbTables(tables = {}) {
   return {
     palette_source_swatches: Object.prototype.hasOwnProperty.call(tables, "palette_source_swatches")
       ? (Array.isArray(tables.palette_source_swatches) ? tables.palette_source_swatches : []).map(cloneSourcePaletteRow)
-      : PALETTE_SOURCE_SWATCH_MOCK_DB_ROWS.map(cloneSourcePaletteRow)
+      : createPaletteSourceMockDbRows().map(cloneSourcePaletteRow)
   };
 }
 
@@ -103,12 +100,15 @@ function normalizeSourceId(value) {
 function sourceLabel(sourceId, label = "") {
   const normalizedSourceId = normalizeSourceId(sourceId);
   const rawLabel = normalizeText(label);
+  if (rawLabel.toLowerCase().includes("crayola")) {
+    return rawLabel.replace(/crayola/gi, "Palette Colors");
+  }
+  if (rawLabel) {
+    return rawLabel;
+  }
   if (normalizedSourceId.startsWith(PALETTE_SOURCE_PALETTE_COLORS)) {
     const suffix = normalizedSourceId.slice(PALETTE_SOURCE_PALETTE_COLORS.length).replace(/^-+/, "");
     return suffix ? `Palette Colors ${suffix}` : "Palette Colors";
-  }
-  if (rawLabel.toLowerCase().includes("crayola")) {
-    return rawLabel.replace(/crayola/gi, "Palette Colors");
   }
   return rawLabel || normalizedSourceId;
 }
@@ -518,9 +518,11 @@ function createUsageId(projectId, swatchSymbol, assetId) {
 export function createProjectWorkspacePaletteRepository(options = {}) {
   const projectWorkspaceRepository = options.projectWorkspaceRepository || createProjectWorkspaceMockRepository();
   const mockDbTables = createPaletteToolMockDbTables(options.tables || {});
-  const sourcePaletteRows = normalizeSourcePaletteRows(Object.prototype.hasOwnProperty.call(options, "sourcePaletteRows")
+  const sourcePaletteInputRows = Object.prototype.hasOwnProperty.call(options, "sourcePaletteRows")
     ? options.sourcePaletteRows
-    : mockDbTables.palette_source_swatches);
+    : mockDbTables.palette_source_swatches;
+  const sourcePaletteRecordCount = Array.isArray(sourcePaletteInputRows) ? sourcePaletteInputRows.length : 0;
+  const sourcePaletteRows = normalizeSourcePaletteRows(sourcePaletteInputRows);
   const workspaceRecords = new Map();
   const paletteColorRows = [];
   const usageRows = [];
@@ -636,8 +638,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     replacePaletteColorRows(projectId, validation.normalized.tools[PALETTE_TOOL_KEY].swatches);
     syncWorkspaceRecordFromColors(projectId);
     const activeSwatches = swatchesFromColorRows(projectId);
-    if (!activeSwatches.some((swatch) => swatch.symbol === selectedSymbol)) {
-      selectedSymbol = activeSwatches[0]?.symbol || "";
+    if (optionsForReplace.selection === "clear") {
+      selectedSymbol = "";
+    } else if (!activeSwatches.some((swatch) => swatch.symbol === selectedSymbol)) {
+      selectedSymbol = optionsForReplace.selection === "preserve" ? "" : activeSwatches[0]?.symbol || "";
     }
 
     return {
@@ -717,10 +721,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     );
   }
 
-  function removeSelectedSwatch() {
+  function removeSwatch(symbol) {
     const projectId = activeProjectId();
-    const selectedSwatch = getSelectedSwatch();
-    if (!projectId || !selectedSwatch) {
+    const normalizedSymbol = normalizeText(symbol);
+    const swatchToRemove = getActiveSwatches().find((swatch) => swatch.symbol === normalizedSymbol);
+    if (!projectId || !swatchToRemove) {
       return {
         issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before removing.")],
         ok: false,
@@ -729,19 +734,38 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const usage = getSwatchUsage(selectedSwatch.symbol);
+    const usage = getSwatchUsage(swatchToRemove.symbol);
     if (usage.length) {
       return {
-        issues: [createIssue("dependentTools", "Dependent Tools", `${selectedSwatch.name} is used by ${usage.map((row) => row.toolId).join(", ")}.`)],
+        issues: [createIssue("dependentTools", "Dependent Tools", `${swatchToRemove.name} is used by ${usage.map((row) => row.toolId).join(", ")}.`)],
         ok: false,
         message: "Palette removal blocked: swatch is used by dependent tools.",
         snapshot: getSnapshot()
       };
     }
 
-    const nextSwatches = getActiveSwatches().filter((swatch) => swatch.symbol !== selectedSwatch.symbol);
-    selectedSymbol = nextSwatches[0]?.symbol || "";
-    return replaceSwatches(projectId, nextSwatches);
+    const nextSwatches = getActiveSwatches().filter((swatch) => swatch.symbol !== swatchToRemove.symbol);
+    const result = replaceSwatches(projectId, nextSwatches, {
+      selection: selectedSymbol === swatchToRemove.symbol ? "clear" : "preserve"
+    });
+    return {
+      ...result,
+      message: result.ok ? `Removed ${swatchToRemove.name} from the active project palette.` : result.message
+    };
+  }
+
+  function removeSelectedSwatch() {
+    const selectedSwatch = getSelectedSwatch();
+    if (!selectedSwatch) {
+      return {
+        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before removing.")],
+        ok: false,
+        message: "Palette removal blocked: no selected swatch.",
+        snapshot: getSnapshot()
+      };
+    }
+
+    return removeSwatch(selectedSwatch.symbol);
   }
 
   function selectSwatch(symbol) {
@@ -753,7 +777,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function getSelectedSwatch() {
-    return getActiveSwatches().find((swatch) => swatch.symbol === selectedSymbol) || getActiveSwatches()[0] || null;
+    return selectedSymbol ? getActiveSwatches().find((swatch) => swatch.symbol === selectedSymbol) || null : null;
   }
 
   function listSwatches(optionsForList = {}) {
@@ -771,7 +795,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       .sort((left, right) => {
         const leftLabel = sourceRowsForSource(left)[0]?.sourceLabel || left;
         const rightLabel = sourceRowsForSource(right)[0]?.sourceLabel || right;
-        return leftLabel.localeCompare(rightLabel);
+        return leftLabel.localeCompare(rightLabel, undefined, { numeric: true, sensitivity: "base" });
       })
       .map((sourceId) => ({
         id: sourceId,
@@ -805,6 +829,13 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function pinSourceSwatch(sourceSwatch = {}) {
+    if (findPinnedSourceSwatch(sourceSwatch)) {
+      return {
+        ok: true,
+        message: "Source swatch already pinned.",
+        snapshot: getSnapshot()
+      };
+    }
     return saveSwatch(sourceSwatch, {
       source: normalizeSource(sourceSwatch.source)
     });
@@ -885,8 +916,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   function toggleSourceSwatchPin(sourceSwatch = {}) {
     const pinnedSwatch = findPinnedSourceSwatch(sourceSwatch);
     if (pinnedSwatch) {
-      selectedSymbol = pinnedSwatch.symbol;
-      return removeSelectedSwatch();
+      return removeSwatch(pinnedSwatch.symbol);
     }
     return pinSourceSwatch(sourceSwatch);
   }
@@ -1160,6 +1190,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       projectRequired: !projectId,
       selectedSwatch: selectedSwatch ? cloneSwatch(selectedSwatch) : null,
       sourcePaletteOptions: sourcePaletteOptions(),
+      sourcePaletteRecordCount,
       swatches,
       tableCounts,
       tables: getTables(),
@@ -1188,6 +1219,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     pinSourceSwatches,
     recordSwatchUsage,
     redo,
+    removeSwatch,
     removeSelectedSwatch,
     resetProjectData,
     seedActiveProjectPalette,

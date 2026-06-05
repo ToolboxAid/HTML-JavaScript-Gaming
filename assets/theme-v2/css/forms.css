@@ -179,7 +179,8 @@ input[type="color"][data-palette-swatch-size="large"] {
   border-radius: var(--radius-pill);
   background: var(--red);
   box-shadow: var(--shadow-sm);
-  pointer-events: none
+  cursor: pointer;
+  pointer-events: auto
 }
 
 .palette-swatch-tile[data-palette-pinned="true"] .palette-swatch-pin {
