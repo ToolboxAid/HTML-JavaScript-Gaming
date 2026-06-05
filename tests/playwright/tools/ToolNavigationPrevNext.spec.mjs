@@ -119,14 +119,14 @@ test("Toolbox card names link to registered tool routes without duplicating laun
       await expect(nameLink).toHaveAttribute("data-registered-tool-route", route);
       await expect(nameLink).toHaveAttribute("href", "/" + route);
       await expect(card.locator(".card-media-link")).toHaveCount(1);
-      await expect(card.locator(".card-body > a.btn")).toHaveCount(1);
+      await expect(card.locator("[data-toolbox-tile-action-row] a.btn")).toHaveCount(1);
     }
 
     const gameDesignCard = cards.filter({
       has: page.getByRole("heading", { exact: true, name: "Game Design" })
     }).first();
     await expect(gameDesignCard.locator(".card-media-link")).toHaveAttribute("href", "../toolbox/game-design/index.html");
-    await expect(gameDesignCard.locator(".card-body > a.btn")).toHaveAttribute("href", "../toolbox/game-design/index.html");
+    await expect(gameDesignCard.locator("[data-toolbox-tile-action-row] a.btn")).toHaveAttribute("href", "../toolbox/game-design/index.html");
     await gameDesignCard.locator("h3 > a[data-toolbox-tool-name-link]").click();
     await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
     await expect(page.locator(".page-title h1")).toHaveText("Game Design");

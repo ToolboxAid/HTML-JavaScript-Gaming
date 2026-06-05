@@ -1,1 +1,1 @@
-Consolidate Toolbox group color SSoT - PR_26156_126-tool-group-color-ssot-consolidation
+Clean up Toolbox cards and status visibility - PR_26156_127-toolbox-card-and-status-cleanup

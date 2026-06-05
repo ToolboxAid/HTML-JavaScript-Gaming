@@ -4,10 +4,10 @@ import {
 } from "./project-workspace/project-workspace-mock-repository.js";
 import {
     TOOL_IMAGE_FALLBACK,
+    getActiveToolRegistry,
     getToolImageDiagnostics,
     getToolImageSource,
     getToolRoute,
-    getToolRegistry
 } from "./toolRegistry.js";
 
 (function () {
@@ -35,12 +35,6 @@ import {
         : defaultProjectMemberRole;
     let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
     let targetGroupSlug = currentMode === "grouped" ? groupSlug(searchParams.get("group")) : "";
-    const statusLabelMap = Object.freeze({
-        complete: "Ready",
-        ready: "Wireframe",
-        "in-progress": "Under Construction",
-        locked: "Planned"
-    });
     const buildPathStatusIndicators = Object.freeze({
         complete: "🟢 Complete",
         "in-progress": "🟡 In Progress",
@@ -77,7 +71,8 @@ import {
         Publisher: ["Publish", "Marketplace", "Community", "Cloud", "Languages"],
         Viewer: ["Project Workspace", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]
     });
-    const registryToolsByTitle = new Map(getToolRegistry().map((tool) => [tool.displayName || tool.name, tool]));
+    const registryTools = getActiveToolRegistry();
+    const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
     const toolGroups = [
         {
                 "group": "Create",
@@ -94,7 +89,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -120,7 +114,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "in-progress",
                                 "progressChecklist": [
                                         "Valid Game Design handoff required",
                                         "Configuration sections required before Build Game",
@@ -139,7 +132,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "in-progress",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -164,7 +156,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": false,
-                                "status": "in-progress",
                                 "progressChecklist": [
                                         "Project purpose context required",
                                         "Game type, genre, and play style required",
@@ -183,7 +174,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -206,7 +196,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "in-progress",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -224,7 +213,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "in-progress",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -242,7 +230,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -260,7 +247,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -279,7 +265,6 @@ import {
                                 "planned": true,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Hidden planned capability",
                                         "Static wireframe text only"
@@ -302,7 +287,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "in-progress",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -320,7 +304,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "complete",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -338,7 +321,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -356,7 +338,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -379,7 +360,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -397,7 +377,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -415,7 +394,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -433,7 +411,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -452,7 +429,6 @@ import {
                                 "planned": true,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Hidden planned capability",
                                         "Static wireframe text only"
@@ -471,7 +447,6 @@ import {
                                 "planned": true,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Hidden planned capability",
                                         "Static wireframe text only"
@@ -490,7 +465,6 @@ import {
                                 "planned": true,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Hidden planned capability",
                                         "Static wireframe text only"
@@ -509,7 +483,6 @@ import {
                                 "planned": true,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Hidden planned capability",
                                         "Static wireframe text only"
@@ -528,7 +501,6 @@ import {
                                 "planned": true,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Hidden planned capability",
                                         "Static wireframe text only"
@@ -551,7 +523,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -569,7 +540,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -587,7 +557,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -605,7 +574,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -623,7 +591,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -641,7 +608,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": true,
                                 "requiredForPublish": true,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -664,7 +630,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": true,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -682,7 +647,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -700,7 +664,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -718,7 +681,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -737,7 +699,6 @@ import {
                                 "planned": true,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "locked",
                                 "progressChecklist": [
                                         "Hidden planned capability",
                                         "Static wireframe text only"
@@ -760,7 +721,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "complete",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -778,7 +738,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -796,7 +755,6 @@ import {
                                 "planned": false,
                                 "requiredForTestable": false,
                                 "requiredForPublish": false,
-                                "status": "ready",
                                 "progressChecklist": [
                                         "Review readiness",
                                         "Static wireframe text only"
@@ -865,7 +823,6 @@ import {
     const defaultProgress = {
         requiredForTestable: false,
         requiredForPublish: false,
-        status: "ready",
         progressChecklist: ["Review readiness"]
     };
     function getProjectProgressSummary() {
@@ -883,7 +840,6 @@ import {
         "AI Assistant": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -892,7 +848,6 @@ import {
         "Project Workspace": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "in-progress",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -901,7 +856,6 @@ import {
         "Game Design": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "in-progress",
                 "progressChecklist": [
                         "Project purpose context required",
                         "Game type, genre, and play style required",
@@ -911,7 +865,6 @@ import {
         "Game Configuration": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "in-progress",
                 "progressChecklist": [
                         "Valid Game Design handoff required",
                         "Configuration sections required before Build Game",
@@ -921,7 +874,6 @@ import {
         "Assets": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "in-progress",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -930,7 +882,6 @@ import {
         "Colors": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "complete",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -939,7 +890,6 @@ import {
         "Fonts": {
                 "requiredForTestable": false,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -948,7 +898,6 @@ import {
         "Sprites": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -957,7 +906,6 @@ import {
         "Characters": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -966,7 +914,6 @@ import {
         "Objects": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -975,7 +922,6 @@ import {
         "Worlds": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "in-progress",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -984,7 +930,6 @@ import {
         "Animations": {
                 "requiredForTestable": true,
                 "requiredForPublish": false,
-                "status": "in-progress",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -993,7 +938,6 @@ import {
         "Audio": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1002,7 +946,6 @@ import {
         "Music": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1011,7 +954,6 @@ import {
         "Voices": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1020,7 +962,6 @@ import {
         "Videos": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1029,7 +970,6 @@ import {
         "Build Game": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "locked",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1038,7 +978,6 @@ import {
         "Game Testing": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "locked",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1047,7 +986,6 @@ import {
         "Controls": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1056,7 +994,6 @@ import {
         "Hitboxes": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1065,7 +1002,6 @@ import {
         "Saved Data": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "complete",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1074,7 +1010,6 @@ import {
         "Debug": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1083,7 +1018,6 @@ import {
         "Performance": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1092,7 +1026,6 @@ import {
         "Events": {
                 "requiredForTestable": true,
                 "requiredForPublish": true,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1101,7 +1034,6 @@ import {
         "Publish": {
                 "requiredForTestable": false,
                 "requiredForPublish": true,
-                "status": "locked",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1110,7 +1042,6 @@ import {
         "Marketplace": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1119,7 +1050,6 @@ import {
         "Community": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1128,7 +1058,6 @@ import {
         "Languages": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1137,7 +1066,6 @@ import {
         "Achievements": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1146,7 +1074,6 @@ import {
         "Ratings": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "ready",
                 "progressChecklist": [
                         "Review readiness",
                         "Static wireframe text only"
@@ -1155,7 +1082,6 @@ import {
         "Cloud": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "locked",
                 "progressChecklist": [
                         "Hidden planned capability",
                         "Static wireframe text only"
@@ -1164,7 +1090,6 @@ import {
         "Custom Extensions": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "locked",
                 "progressChecklist": [
                         "Hidden planned capability",
                         "Static wireframe text only"
@@ -1173,7 +1098,6 @@ import {
         "MIDI": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "locked",
                 "progressChecklist": [
                         "Hidden planned capability",
                         "Static wireframe text only"
@@ -1182,7 +1106,6 @@ import {
         "Particles": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "locked",
                 "progressChecklist": [
                         "Hidden planned capability",
                         "Static wireframe text only"
@@ -1191,7 +1114,6 @@ import {
         "Audio Effects": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "locked",
                 "progressChecklist": [
                         "Hidden planned capability",
                         "Static wireframe text only"
@@ -1200,7 +1122,6 @@ import {
         "Voice Capture": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "locked",
                 "progressChecklist": [
                         "Hidden planned capability",
                         "Static wireframe text only"
@@ -1209,7 +1130,6 @@ import {
         "Voice Output": {
                 "requiredForTestable": false,
                 "requiredForPublish": false,
-                "status": "locked",
                 "progressChecklist": [
                         "Hidden planned capability",
                         "Static wireframe text only"
@@ -1303,18 +1223,25 @@ import {
         return toolColorGroups[tool.title] || "Platform";
     }
 
-    function normalizeToolStatus(tool) {
-        if (tool.status === "Deprecated") {
-            return "Deprecated";
-        }
-        if (tool.hidden === true) {
-            return "Hidden";
-        }
-        return statusLabelMap[tool.status] || tool.status || "Wireframe";
+    function enrichTool(tool, groupName = colorGroupForTool(tool)) {
+        const registryTool = registryToolForCard(tool);
+        const progress = progressModel[tool.title] || defaultProgress;
+        return {
+            ...tool,
+            adminOnly: registryTool?.adminOnly === true,
+            group: groupName,
+            hidden: registryTool?.hidden === true,
+            planned: registryTool?.deferred === true || registryTool?.status === "Planned",
+            progressChecklist: registryTool?.progressChecklist || progress.progressChecklist || defaultProgress.progressChecklist,
+            requiredForPublish: registryTool?.requiredForPublish ?? progress.requiredForPublish ?? false,
+            requiredForTestable: registryTool?.requiredForTestable ?? progress.requiredForTestable ?? false,
+            requires: registryTool?.requires || progressRequirements[tool.title] || [],
+            status: registryTool?.status || "Wireframe"
+        };
     }
 
     function baseVisibleForCreator(tool) {
-        return tool.adminOnly !== true && tool.hidden !== true && tool.planned !== true;
+        return tool.adminOnly !== true && tool.status === "Ready";
     }
 
     function activeRoleFocus() {
@@ -1343,11 +1270,7 @@ import {
             return false;
         }
 
-        if (activeRoleFocus() === "Viewer") {
-            return baseVisibleForCreator(tool);
-        }
-
-        return tool.adminOnly !== true;
+        return baseVisibleForCreator(tool);
     }
 
     function unavailableToolNamesForFocus() {
@@ -1367,15 +1290,12 @@ import {
 
     function visibleToolGroups() {
         const groups = new Map();
-        toolGroups.flatMap((toolGroup) => toolGroup.tools).filter(isVisibleForRole).forEach((tool) => {
-            const groupName = colorGroupForTool(tool);
+        toolGroups.flatMap((toolGroup) => toolGroup.tools).map((tool) => enrichTool(tool)).filter(isVisibleForRole).forEach((tool) => {
+            const groupName = tool.group;
             if (!groups.has(groupName)) {
                 groups.set(groupName, []);
             }
-            groups.get(groupName).push({
-                ...tool,
-                group: groupName
-            });
+            groups.get(groupName).push(tool);
         });
         return Array.from(groups.entries()).map(([group, tools]) => ({
             group,
@@ -1384,19 +1304,7 @@ import {
     }
 
     function roleAwareTools() {
-        return visibleToolGroups().flatMap((group) => group.tools.map((tool) => {
-            const progress = progressModel[tool.title] || defaultProgress;
-            const mergedTool = {
-                ...tool,
-                group: group.group,
-                ...progress
-            };
-            return {
-                ...mergedTool,
-                requires: progressRequirements[tool.title] || [],
-                status: normalizeToolStatus(mergedTool)
-            };
-        }));
+        return visibleToolGroups().flatMap((group) => group.tools);
     }
 
     function configureRoleBanner() {
@@ -1508,17 +1416,7 @@ import {
         for (const group of toolGroups) {
             const tool = group.tools.find((candidate) => candidate.title === title);
             if (tool) {
-                const progress = progressModel[tool.title] || defaultProgress;
-                const mergedTool = {
-                    ...tool,
-                    group: colorGroupForTool(tool),
-                    ...progress
-                };
-                return {
-                    ...mergedTool,
-                    requires: progressRequirements[tool.title] || [],
-                    status: normalizeToolStatus(mergedTool)
-                };
+                return enrichTool(tool);
             }
         }
         return null;
@@ -1751,20 +1649,23 @@ import {
         toolCount.textContent = `Tool Count: ${visibleCount}/${totalCount}`;
     }
 
-    function createGroupLabel(groupName, visibleText = groupName) {
-        const label = document.createElement("span");
-        label.className = "content-cluster";
-
+    function createGroupSwatch(groupName) {
         const swatch = document.createElement("span");
         swatch.className = "brand-color-swatch " + groupSwatch(groupName);
         swatch.setAttribute("role", "img");
         swatch.setAttribute("aria-label", groupName + " group color");
         swatch.title = groupName + " color";
+        return swatch;
+    }
+
+    function createGroupLabel(groupName, visibleText = groupName) {
+        const label = document.createElement("span");
+        label.className = "content-cluster";
 
         const text = document.createElement("span");
         text.textContent = visibleText;
 
-        label.append(swatch, text);
+        label.append(createGroupSwatch(groupName), text);
         return label;
     }
 
@@ -1772,22 +1673,10 @@ import {
         if (!Array.isArray(tool.childCapabilities) || tool.childCapabilities.length === 0) {
             return null;
         }
-        const capabilities = document.createElement("div");
-        capabilities.className = "content-stack content-stack--compact";
+        const capabilities = document.createElement("p");
         capabilities.dataset.childCapabilities = tool.title;
-
-        const label = document.createElement("p");
-        label.textContent = tool.capabilityLabel || "Planned child capabilities";
-
-        const list = document.createElement("ul");
-        list.setAttribute("aria-label", tool.title + " child capabilities");
-        tool.childCapabilities.forEach((capability) => {
-            const item = document.createElement("li");
-            item.textContent = capability;
-            list.append(item);
-        });
-
-        capabilities.append(label, list);
+        capabilities.setAttribute("aria-label", tool.title + " child capabilities");
+        capabilities.textContent = `${tool.capabilityLabel || "Planned child capabilities"}: ${tool.childCapabilities.join(", ")}`;
         return capabilities;
     }
 
@@ -1865,6 +1754,60 @@ import {
         });
     }
 
+    function createToolActionRow(tool, registryTool, host) {
+        const row = document.createElement("div");
+        row.className = "content-cluster";
+        row.dataset.toolboxTileActionRow = tool.title;
+
+        const badge = document.createElement("img");
+        badge.src = registryImageSource(registryTool, "badge");
+        badge.alt = tool.title + " badge";
+        badge.width = 48;
+        badge.height = 48;
+        badge.dataset.toolImageKind = "badge";
+        badge.dataset.toolImageSource = registryTool ? "registry" : "fallback";
+        configureImageDiagnostic(badge, host, tool.title, "badge");
+
+        const link = document.createElement("a");
+        link.className = "btn";
+        link.href = tool.href;
+        link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
+
+        const readiness = document.createElement("span");
+        readiness.className = "pill";
+        readiness.dataset.toolboxReadiness = tool.status;
+        readiness.textContent = tool.status;
+
+        row.append(badge, link, createGroupSwatch(tool.group), readiness);
+        return row;
+    }
+
+    function createToolValues(tool, options = {}) {
+        const values = document.createElement("div");
+        values.className = "content-stack content-stack--compact";
+        values.dataset.toolboxTileValues = tool.title;
+
+        const childCapabilities = createChildCapabilities(tool);
+        if (childCapabilities) {
+            values.append(childCapabilities);
+        }
+
+        if (options.showReadiness) {
+            const requirements = document.createElement("p");
+            requirements.textContent = `Required: testable ${tool.requiredForTestable ? "yes" : "no"}, publish ${tool.requiredForPublish ? "yes" : "no"}`;
+
+            const requires = document.createElement("p");
+            requires.textContent = `Requires: ${tool.requires.length ? tool.requires.join(", ") : "none"}`;
+
+            const checklist = document.createElement("p");
+            checklist.textContent = `Checklist: ${tool.progressChecklist.join(", ")}`;
+
+            values.append(requirements, requires, checklist);
+        }
+
+        return values.childElementCount ? values : null;
+    }
+
     function createToolCard(tool, options = {}) {
         const registryTool = registryToolForCard(tool);
         const article = document.createElement("article");
@@ -1890,69 +1833,25 @@ import {
         mediaLink.append(image);
         media.append(mediaLink);
 
-        const categoryText = tool.subgroup ? `${tool.group} - ${tool.subgroup}` : tool.group;
-        const badgeCluster = createGroupLabel(tool.group, categoryText);
-        const badge = document.createElement("img");
-        badge.src = registryImageSource(registryTool, "badge");
-        badge.alt = tool.title + " badge";
-        badge.width = 48;
-        badge.height = 48;
-        badge.dataset.toolImageKind = "badge";
-        badge.dataset.toolImageSource = registryTool ? "registry" : "fallback";
-        configureImageDiagnostic(badge, body, tool.title, "badge");
-        badgeCluster.append(badge);
         const imageDiagnostic = createToolImageDiagnostic(tool.title, getToolImageDiagnostics(registryTool));
-
-        const readiness = document.createElement("span");
-        readiness.className = "pill";
-        readiness.dataset.toolboxReadiness = tool.status;
-        readiness.textContent = tool.status;
 
         const title = createToolNameHeading(tool, registryTool);
 
         const description = document.createElement("p");
         description.textContent = tool.description;
-        const childCapabilities = createChildCapabilities(tool);
+        const actionRow = createToolActionRow(tool, registryTool, body);
+        const values = createToolValues(tool, options);
 
-        const link = document.createElement("a");
-        link.className = "btn";
-        link.href = tool.href;
-        link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
-
-        if (options.showReadiness) {
-            const requirements = document.createElement("p");
-            requirements.textContent = `requiredForTestable: ${tool.requiredForTestable ? "yes" : "no"} | requiredForPublish: ${tool.requiredForPublish ? "yes" : "no"}`;
-
-            const requires = document.createElement("p");
-            requires.textContent = `requires: ${tool.requires.length ? tool.requires.join(", ") : "none"}`;
-
-            const checklist = document.createElement("ul");
-            tool.progressChecklist.forEach((item) => {
-                const entry = document.createElement("li");
-                entry.textContent = item;
-                checklist.append(entry);
-            });
-
-            const progressParts = [readiness, title, description];
-            if (imageDiagnostic) {
-                progressParts.push(imageDiagnostic);
-            }
-            if (childCapabilities) {
-                progressParts.push(childCapabilities);
-            }
-            progressParts.push(requirements, requires, checklist, link, badgeCluster);
-            body.append(...progressParts);
-        } else {
-            const cardParts = [title, description];
-            if (imageDiagnostic) {
-                cardParts.push(imageDiagnostic);
-            }
-            if (childCapabilities) {
-                cardParts.push(childCapabilities);
-            }
-            cardParts.push(link, badgeCluster);
-            body.append(...cardParts);
+        const cardParts = [title, description];
+        if (imageDiagnostic) {
+            cardParts.push(imageDiagnostic);
         }
+        cardParts.push(actionRow);
+        if (values) {
+            cardParts.push(values);
+        }
+
+        body.append(...cardParts);
         article.append(media, body);
         return article;
     }

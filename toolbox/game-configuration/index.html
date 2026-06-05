@@ -65,27 +65,40 @@
                                     <h3>Playable Setup</h3>
                                 </div>
                                 <form class="content-stack" data-game-configuration-form>
-                                    <label for="gameConfigurationBasics">Game Basics
-                                        <textarea id="gameConfigurationBasics" rows="3" data-game-configuration-game-basics placeholder="Summarize the game setup players should understand first."></textarea>
-                                    </label>
-                                    <label for="gameConfigurationRules">Game Rules
-                                        <textarea id="gameConfigurationRules" rows="3" data-game-configuration-game-rules placeholder="Define the primary rules, win conditions, and fail conditions."></textarea>
-                                    </label>
-                                    <label for="gameConfigurationPlayers">Player Setup
-                                        <textarea id="gameConfigurationPlayers" rows="3" data-game-configuration-player-setup placeholder="Describe starting player count, controls expectations, and spawn setup."></textarea>
-                                    </label>
-                                    <label for="gameConfigurationWorld">World Setup
-                                        <textarea id="gameConfigurationWorld" rows="3" data-game-configuration-world-setup placeholder="Describe the first world, level, scene, or room setup."></textarea>
-                                    </label>
-                                    <label for="gameConfigurationObjects">Object Setup
-                                        <textarea id="gameConfigurationObjects" rows="3" data-game-configuration-object-setup placeholder="List required objects, hazards, goals, pickups, or interactables."></textarea>
-                                    </label>
-                                    <label for="gameConfigurationAudio">Audio Setup
-                                        <textarea id="gameConfigurationAudio" rows="3" data-game-configuration-audio-setup placeholder="Describe music, sound effects, voice, or silence requirements."></textarea>
-                                    </label>
-                                    <label for="gameConfigurationTest">Test Readiness
-                                        <textarea id="gameConfigurationTest" rows="3" data-game-configuration-test-readiness placeholder="Describe what must be checked before Build Game readiness."></textarea>
-                                    </label>
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Playable Setup fields" data-game-configuration-playable-setup-table>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationBasics">Game Basics</label></th>
+                                                    <td><textarea id="gameConfigurationBasics" rows="4" data-game-configuration-game-basics placeholder="Summarize the game setup players should understand first."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationRules">Game Rules</label></th>
+                                                    <td><textarea id="gameConfigurationRules" rows="4" data-game-configuration-game-rules placeholder="Define the primary rules, win conditions, and fail conditions."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationPlayers">Player Setup</label></th>
+                                                    <td><textarea id="gameConfigurationPlayers" rows="4" data-game-configuration-player-setup placeholder="Describe starting player count, controls expectations, and spawn setup."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationWorld">World Setup</label></th>
+                                                    <td><textarea id="gameConfigurationWorld" rows="4" data-game-configuration-world-setup placeholder="Describe the first world, level, scene, or room setup."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationObjects">Object Setup</label></th>
+                                                    <td><textarea id="gameConfigurationObjects" rows="4" data-game-configuration-object-setup placeholder="List required objects, hazards, goals, pickups, or interactables."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationAudio">Audio Setup</label></th>
+                                                    <td><textarea id="gameConfigurationAudio" rows="4" data-game-configuration-audio-setup placeholder="Describe music, sound effects, voice, or silence requirements."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationTest">Test Readiness</label></th>
+                                                    <td><textarea id="gameConfigurationTest" rows="4" data-game-configuration-test-readiness placeholder="Describe what must be checked before Build Game readiness."></textarea></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                     <button class="btn" type="submit">Save Game Configuration</button>
                                 </form>
                             </div>

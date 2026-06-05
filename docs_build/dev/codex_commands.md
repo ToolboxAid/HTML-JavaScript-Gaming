@@ -859,3 +859,40 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_127
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Updated `toolbox/game-configuration/index.html` Playable Setup fields to use the reusable Theme V2 `table-wrapper`, `data-table`, and `tool-form-table` form table pattern.
+- Preserved Game Configuration field IDs, data hooks, form behavior, and submit behavior.
+- Set Game Configuration Playable Setup textareas to 4 rows.
+- Updated Toolbox card rendering in `toolbox/tools-page-accordions.js`.
+- Removed duplicate local Toolbox status ownership and enriched Toolbox cards from the active registry data used by Admin Tools Progress.
+- Updated normal role visibility so only Ready tools are visible outside Admin role.
+- Kept non-Ready tools visible in Admin role for planning/status review.
+- Converted Toolbox card bullet/list content to comma-separated bottom values.
+- Updated Toolbox tile action rows to one line with badge, Open Tool/Open Page link, brand color swatch, and status tag.
+- Updated targeted Playwright expectations for the changed Toolbox status/card rendering and Game Configuration table layout.
+- Did not add CSS.
+- Did not modify archived V1/V2 pages.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/tools-page-accordions.js`
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+- `node --check tests/playwright/tools/ToolsProgressHydration.spec.mjs`
+- `node --check tests/playwright/tools/ToolNavigationPrevNext.spec.mjs`
+- `node --check tests/playwright/tools/GameConfigurationMockRepository.spec.mjs`
+- `node --check tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime --lane tools-progress --lane game-configuration --lane tool-navigation`
+- `git diff --check`
+- Changed-file static validation for forbidden archive/start_of_day paths and inline style/script/event-handler additions.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/toolbox-card-and-status-cleanup-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

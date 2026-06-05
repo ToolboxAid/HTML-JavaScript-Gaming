@@ -107,6 +107,20 @@ test("Game Configuration saves and updates creator-facing sections with readable
     await expect(page.locator("[data-game-configuration-handoff-overlay]")).toBeHidden();
     await expect(page.locator("[data-game-configuration-form-card]")).toBeVisible();
     await expect(page.locator(".tool-center-panel [data-game-configuration-form]")).toBeVisible();
+    await expect(page.locator("[data-game-configuration-playable-setup-table]")).toBeVisible();
+    await expect(page.locator("[data-game-configuration-playable-setup-table] th")).toHaveText([
+      "Game Basics",
+      "Game Rules",
+      "Player Setup",
+      "World Setup",
+      "Object Setup",
+      "Audio Setup",
+      "Test Readiness"
+    ]);
+    await expect(page.locator("[data-game-configuration-playable-setup-table] textarea")).toHaveCount(7);
+    expect(await page.locator("[data-game-configuration-playable-setup-table] textarea").evaluateAll((textareas) => (
+      textareas.every((textarea) => textarea.getAttribute("rows") === "4")
+    ))).toBe(true);
     await expect(page.locator("[data-game-configuration-output] pre, [data-game-configuration-output] code")).toHaveCount(0);
     await expect(page.locator("[data-game-configuration-output]")).toContainText("Configuration Summary");
     await expect(page.locator("[data-game-configuration-output]")).toContainText("Readiness Status");
