@@ -788,3 +788,74 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_125
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Treated PR_26156_124 as incomplete because active tool page side-panel headers still used fixed color classes and the full side-panel visual treatment did not use the Toolbox group token.
+- Used `toolbox/index.html` Group tab mapping from `toolbox/tools-page-accordions.js` as the visual/source-of-truth mapping.
+- Updated shared Theme V2 panel styling in `assets/theme-v2/css/panels.css` so `tool-column` group classes drive panel borders, header background/border, accordion borders, and summary color through `--tool-group-color` and `--tool-group-accent`.
+- Removed fixed legacy color classes from active tool page `tool-column-header` elements.
+- Kept active tool page side columns aligned to the correct Toolbox group class.
+- Added targeted Playwright coverage comparing rendered Toolbox Group tab card color/classes to active tool page left/right side panels.
+- Did not modify `toolbox/index.html`.
+- Did not add raw color values in tool pages.
+- Did not add page-local CSS, tool-local CSS, inline styles, style blocks, script blocks, or inline event handlers.
+- Did not modify archived V1/V2 pages.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+- Before/after active tool page audit against Toolbox Group tab mapping.
+- `npm run test:lane:tool-runtime`
+- `git diff --check`
+- Changed-file static validation for forbidden archive/start_of_day paths and inline style/script/event-handler additions.
+- Confirmed no active tool `tool-column-header` retains fixed legacy color classes.
+- Confirmed `toolbox/index.html` has no diff.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/tool-group-color-correction-pass-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_126
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Used Toolbox Group definitions as the only authoritative group color source.
+- Removed legacy/alias group color classes from active Toolbox/Theme V2 usage.
+- Replaced active tool page and registry references with canonical SSoT classes:
+  - `tool-group-ai`
+  - `tool-group-audio`
+  - `tool-group-build`
+  - `tool-group-design`
+  - `tool-group-marketplace`
+  - `tool-group-platform`
+  - `tool-group-play`
+- Updated `toolbox/tools-page-accordions.js` group mapping to emit only canonical classes.
+- Updated active tool page side columns and template color classes where aliases remained.
+- Removed duplicate/dead grouping CSS files under `assets/theme-v2/css/tools/grouping/`.
+- Added targeted test coverage to deny active alias classes and verify Toolbox Group view/page panel SSoT alignment.
+- Did not hardcode colors.
+- Did not modify archived V1/V2 pages.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+- `node --check tests/playwright/tools/ToolsProgressHydration.spec.mjs`
+- `npm run test:lane:tool-runtime`
+- Targeted active alias reference scan for Toolbox and Theme V2 files.
+- Custom SSoT audit for all active registry tool pages, Toolbox Group mapping, and Theme V2 color selectors.
+- `git diff --check`
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/tool-group-color-ssot-consolidation-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

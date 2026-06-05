@@ -1,1 +1,1 @@
-Align active tool page side column group colors - PR_26156_124-tool-page-group-color-alignment
+Consolidate Toolbox group color SSoT - PR_26156_126-tool-group-color-ssot-consolidation

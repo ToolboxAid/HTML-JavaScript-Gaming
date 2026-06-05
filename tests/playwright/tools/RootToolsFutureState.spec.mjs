@@ -53,10 +53,6 @@ function expectAlphabetical(labels) {
   expect(labels).toEqual(sortedCopy(labels));
 }
 
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 async function primaryNavigationLabels(page) {
   return (await page.locator("nav.nav-links > a, nav.nav-links > .nav-item > a").evaluateAll((links) => (
     links.map((link) => link.textContent.trim())
@@ -513,32 +509,97 @@ test("active tool pages align center cleanup and registry group colors", async (
   const activeTools = getActiveToolRegistry()
     .map((tool) => ({ ...tool, route: getToolRoute(tool) }))
     .filter((tool) => Boolean(tool.route));
-  const { failedRequests, pageErrors, server } = await openRepoPage(page, `/${activeTools[0].route}`);
+  const legacyHeaderClasses = ["molten-orange", "forge-gold", "electric-blue", "arcade-cyan", "purple", "steel-gray"];
+  const legacyGroupClasses = [
+    "tool-group-ai-learning",
+    "tool-group-build-create",
+    "tool-group-community-marketplace",
+    "tool-group-content-assets",
+    "tool-group-media-audio",
+    "tool-group-media-audio-community",
+    "tool-group-platform-cloud",
+    "tool-group-dev-system",
+    "tool-group-development-system",
+    "tool-group-create",
+    "tool-group-content",
+    "tool-group-media",
+    "tool-group-share",
+    "tool-group-test",
+    "tool-group-account"
+  ];
+  const ssotGroupClasses = [
+    "tool-group-ai",
+    "tool-group-audio",
+    "tool-group-build",
+    "tool-group-design",
+    "tool-group-marketplace",
+    "tool-group-platform",
+    "tool-group-play"
+  ];
+  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?role=admin&view=group");
 
   try {
+    await page.getByRole("button", { name: "Group" }).click();
+    const toolboxGroupCardStyles = new Map(await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
+      cards.map((card) => {
+        const title = card.querySelector("h3")?.textContent?.trim() || "";
+        const groupClass = Array.from(card.classList).find((className) => className.startsWith("tool-group-")) || "";
+        return [
+          title,
+          {
+            borderColor: getComputedStyle(card).borderTopColor,
+            groupClass
+          }
+        ];
+      })
+    )));
+    const toolboxCardGroupClasses = [...toolboxGroupCardStyles.values()].map((styles) => styles.groupClass);
+    expect(toolboxCardGroupClasses.every((className) => ssotGroupClasses.includes(className))).toBe(true);
+    expect(toolboxCardGroupClasses.filter((className) => legacyGroupClasses.includes(className))).toEqual([]);
+
     for (const tool of activeTools) {
       await page.goto(`${server.baseUrl}/${tool.route}`, { waitUntil: "networkidle" });
       await expect(page.locator(".tool-center-panel")).toBeVisible();
       await expect(page.locator(".tool-center-panel > img[src$='image-missing.svg']")).toHaveCount(0);
       await expect(page.locator(".tool-center-panel h1, .tool-center-panel h2, .tool-center-panel h3").first()).toBeVisible();
 
+      const expectedFromToolboxGroup = toolboxGroupCardStyles.get(tool.displayName);
+      const expectedGroupClass = expectedFromToolboxGroup?.groupClass || tool.colorGroup;
+      expect(ssotGroupClasses).toContain(expectedGroupClass);
+      expect(legacyGroupClasses).not.toContain(expectedGroupClass);
       const sideColumns = page.locator(".tool-workspace > aside.tool-column");
       await expect(sideColumns).toHaveCount(2);
       const groupClassesByColumn = await sideColumns.evaluateAll((columns) => (
         columns.map((column) => Array.from(column.classList).filter((className) => className.startsWith("tool-group-")))
       ));
-      expect(groupClassesByColumn).toEqual([[tool.colorGroup], [tool.colorGroup]]);
-    }
+      expect(groupClassesByColumn).toEqual([[expectedGroupClass], [expectedGroupClass]]);
 
-    await page.goto(`${server.baseUrl}/toolbox/index.html?role=admin&view=group`, { waitUntil: "networkidle" });
-    await page.getByRole("button", { name: "Group" }).click();
-    const listedTools = activeTools.filter((tool) => tool.visibleInToolsList && !tool.adminOnly);
-    for (const tool of listedTools) {
-      const toolCard = page.locator("main [data-tools-accordion-list] .control-card").filter({
-        has: page.locator("h3", { hasText: new RegExp(`^${escapeRegExp(tool.displayName)}$`) })
-      }).first();
-      await expect(toolCard).toHaveCount(1);
-      await expect(toolCard).toHaveClass(new RegExp(`(^|\\s)${escapeRegExp(tool.colorGroup)}(\\s|$)`));
+      const sidePanelStyles = await sideColumns.evaluateAll((columns, staleHeaderClasses) => (
+        columns.map((column) => {
+          const header = column.querySelector(".tool-column-header");
+          const heading = header?.querySelector("h2, h3");
+          const headerClasses = Array.from(header?.classList || []);
+          return {
+            borderColor: getComputedStyle(column).borderTopColor,
+            headerBackgroundColor: header ? getComputedStyle(header).backgroundColor : "",
+            headerColor: heading ? getComputedStyle(heading).color : "",
+            staleHeaderClasses: headerClasses.filter((className) => staleHeaderClasses.includes(className))
+          };
+        })
+      ), legacyHeaderClasses);
+      expect(sidePanelStyles.every((styles) => styles.staleHeaderClasses.length === 0)).toBe(true);
+      expect(sidePanelStyles.every((styles) => styles.headerBackgroundColor !== "rgba(0, 0, 0, 0)")).toBe(true);
+
+      if (expectedFromToolboxGroup) {
+        expect(sidePanelStyles.map((styles) => styles.borderColor)).toEqual([
+          expectedFromToolboxGroup.borderColor,
+          expectedFromToolboxGroup.borderColor
+        ]);
+        expect(sidePanelStyles.map((styles) => styles.headerColor)).toEqual([
+          expectedFromToolboxGroup.borderColor,
+          expectedFromToolboxGroup.borderColor
+        ]);
+      }
     }
 
     expect(failedRequests).toEqual([]);

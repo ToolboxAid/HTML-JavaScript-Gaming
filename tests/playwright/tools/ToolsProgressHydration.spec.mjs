@@ -8,7 +8,7 @@ const RESTORED_GROUPS = ["AI", "Audio", "Build/Create", "Design", "Marketplace",
 const REPRESENTATIVE_GROUP_TOOLS = Object.freeze({
   "AI Assistant": ["AI", "tool-group-ai"],
   Audio: ["Audio", "tool-group-audio"],
-  "Project Workspace": ["Build/Create", "tool-group-build-create"],
+  "Project Workspace": ["Build/Create", "tool-group-build"],
   "Game Design": ["Design", "tool-group-design"],
   Marketplace: ["Marketplace", "tool-group-marketplace"],
   Controls: ["Platform", "tool-group-platform"],

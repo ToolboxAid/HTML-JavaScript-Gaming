@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-05T13:48:12.557Z
+Generated: 2026-06-05T14:21:16.547Z
 Dry run: No
 
 ## Summary
@@ -9,7 +9,7 @@ PASS: 1
 WARN: 0
 FAIL: 0
 SKIP: 13
-Total lane elapsed time: 97.25s
+Total lane elapsed time: 81.90s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -114,7 +114,7 @@ Prevented Workspace lane reruns: 0
 | tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Project Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
 | tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Project Workspace, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
 | tool-images | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | Toolbox registry badge/tool image contract; repo-served Toolbox page; repo-served representative Toolbox tool pages; shared registry image fallback |
-| tool-runtime | PASS | 97.25s | 1 | Tool runtime lane now validates the active public toolbox/template surface and excludes removed V2 tool routes. | Active public toolbox and Tool Template V2 contract | repo-served root toolbox page; Tool Template V2 public page; Theme V2 shared partials and assets |
+| tool-runtime | PASS | 81.90s | 1 | Tool runtime lane now validates the active public toolbox/template surface and excludes removed V2 tool routes. | Active public toolbox and Tool Template V2 contract | repo-served root toolbox page; Tool Template V2 public page; Theme V2 shared partials and assets |
 | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/games reference coverage |  |
 | integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Integration handoff behavior | No active integration Playwright specs after removal of stale V2 tool and removed game manifest routes. |
 | engine-src | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | src/ engine and shared runtime capability behavior | explicit node unit fixtures; fresh in-memory localStorage/sessionStorage mocks per file |
@@ -124,11 +124,11 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| tool-runtime | 39.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:512:1 > active tool pages align center cleanup and registry group colors |
-| tool-runtime | 20.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:73:1 > root tools surface links current tool pages without old_* routes |
-| tool-runtime | 12.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:327:1 > common header renders primary navigation order across active pages |
-| tool-runtime | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:412:1 > learn wireframe pages load with shared Theme V2 structure |
-| tool-runtime | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:490:1 > tool template future-state page loads from root Theme V2 paths |
+| tool-runtime | 38.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:508:1 > active tool pages align center cleanup and registry group colors |
+| tool-runtime | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:69:1 > root tools surface links current tool pages without old_* routes |
+| tool-runtime | 9.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:408:1 > learn wireframe pages load with shared Theme V2 structure |
+| tool-runtime | 8.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:323:1 > common header renders primary navigation order across active pages |
+| tool-runtime | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:486:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Commands
 
@@ -160,7 +160,7 @@ Prevented Workspace lane reruns: 0
 - SKIP
 
 ### tool-runtime
-- PASS 97.25s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+- PASS 81.89s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### game-runtime
 - SKIP

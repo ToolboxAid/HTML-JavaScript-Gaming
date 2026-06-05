@@ -117,6 +117,10 @@
   border-radius: var(--radius-xl)
 }
 
+.tool-column[class*="tool-group-"] {
+  border-color: var(--tool-group-accent)
+}
+
 .tool-column.is-collapsed {
   overflow: hidden
 }
@@ -133,6 +137,11 @@
   align-items: center;
   flex-direction: row;
   gap: var(--space-12)
+}
+
+.tool-column[class*="tool-group-"] .tool-column-header {
+  border-bottom-color: var(--tool-group-accent);
+  background: color-mix(in srgb, var(--tool-group-color) 16%, var(--panel))
 }
 
 .tool-column-header h2,
@@ -157,6 +166,14 @@
 
 .tool-column details.vertical-accordion summary {
   padding: var(--space-10) var(--space-12)
+}
+
+.tool-column[class*="tool-group-"] details.vertical-accordion {
+  border-color: color-mix(in srgb, var(--tool-group-accent) 64%, var(--line))
+}
+
+.tool-column[class*="tool-group-"] details.vertical-accordion summary {
+  color: var(--tool-group-color)
 }
 
 .tool-column .accordion-body {

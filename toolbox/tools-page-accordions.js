@@ -808,7 +808,7 @@ import {
     const groupClassMap = {
         "AI": "tool-group-ai",
         "Audio": "tool-group-audio",
-        "Build/Create": "tool-group-build-create",
+        "Build/Create": "tool-group-build",
         "Design": "tool-group-design",
         "Marketplace": "tool-group-marketplace",
         "Platform": "tool-group-platform",
@@ -1219,7 +1219,7 @@ import {
     const buildPathGroups = [
         {
                 "title": "Project Workspace",
-                "groupClass": "tool-group-build-create",
+                "groupClass": "tool-group-build",
                 "note": "Start with the single project surface that coordinates current focus, readiness, and recommended next tool.",
                 "tools": [
                         "Project Workspace"
@@ -1235,7 +1235,7 @@ import {
         },
         {
                 "title": "Game Configuration",
-                "groupClass": "tool-group-build-create",
+                "groupClass": "tool-group-build",
                 "note": "Complete playable setup from a valid Game Design handoff before Assets and Build Game readiness.",
                 "tools": [
                         "Game Configuration"
@@ -1259,7 +1259,7 @@ import {
         },
         {
                 "title": "Build Game",
-                "groupClass": "tool-group-build-create",
+                "groupClass": "tool-group-build",
                 "note": "Build Game is the package and playable-output checkpoint for this wireframe.",
                 "tools": [
                         "Build Game"
