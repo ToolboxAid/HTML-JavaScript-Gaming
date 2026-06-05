@@ -1101,3 +1101,104 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_154-158
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Read `archive/v1-v2/tools/old_asset-manager-v2/js/assetManagerMetadata.js` as functionality reference only.
+- Updated Asset Tool section order so Library Records is primary and Asset Roles is supporting information below it.
+- Kept singular `Asset Role` for the form field and plural `Asset Roles` for the all-roles list.
+- Updated Storage Path generation to `assets/projects/<projectId>/<assetRole>/<usage>/<filename>`.
+- Preserved project-owned upload storage only.
+- Restored file-based import behavior for Audio, Data, Font, Image, Localization, Shader, and Video.
+- Added Color palette-prep behavior with visible `Palette Tool required.` diagnostics.
+- Fixed Import Asset table layout through reusable Theme V2 table styling.
+- Rolled back selected row highlighting and highlighted only the selected record button.
+- Did not copy archive/reference code.
+- Did not modify archived V1/V2 files.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/assets/assets-mock-repository.js`
+- `node --check toolbox/assets/assets.js`
+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane asset-tool`
+- `rg --pcre2 -n "<style|style=|on(click|change|input|submit)=|<script(?![^>]*\\bsrc=)" toolbox/assets/index.html toolbox/assets/assets.js toolbox/assets/assets-mock-repository.js assets/theme-v2/css/tables.css tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `git diff --check`
+- Full samples smoke: skipped by request and because samples were not changed.
+
+Required reports:
+- `docs_build/dev/reports/asset-import-correction-stacked-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_159
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Updated Asset Tool simulated upload paths to `projects/<projectId>/<assetRole>/<usage>/<filename>`.
+- Resolved the Asset Tool demo project storage id to the ULID `01K8M3K0EX7V5A3W9Q2Y6R4T1B`.
+- Added `projects/` to `.gitignore`.
+- Updated Reset Asset Library so it clears active project mock file/storage rows and associated Asset Tool metadata.
+- Updated Reset Asset Library to fail visibly when no active project id exists.
+- Updated Reset Asset Library to report deleted simulated file/folder counts.
+- Preserved the browser-only/mock storage boundary; no real disk deletion was added.
+- Did not modify archived V1/V2 files.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/assets/assets-mock-repository.js`
+- `node --check toolbox/assets/assets.js`
+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane asset-tool`
+- `rg --pcre2 -n "<style|style=|on(click|change|input|submit)=|<script(?![^>]*\\bsrc=)" toolbox/assets/index.html toolbox/assets/assets.js toolbox/assets/assets-mock-repository.js assets/theme-v2/css/tables.css tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `rg -n "assets/projects" toolbox/assets tests/playwright/tools/AssetToolMockRepository.spec.mjs docs_build/dev/reports/asset-import-correction-stacked-report.md docs_build/dev/reports/asset-local-upload-reset-cleanup-report.md`
+- `git diff --check`
+- Full samples smoke: skipped by request and because samples were not changed.
+
+Required reports:
+- `docs_build/dev/reports/asset-local-upload-reset-cleanup-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_160-163
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Read archived Asset Manager V2 reference files only for functionality expectations:
+  - `archive/v1-v2/tools/old_asset-manager-v2/js/controls/AssetFormControl.js`
+  - `archive/v1-v2/tools/old_asset-manager-v2/js/assetManagerMetadata.js`
+  - `archive/v1-v2/tools/old_asset-manager-v2/js/services/WorkspaceBridge.js`
+- Added explicit Asset Tool picker modes: `file`, `palette`, `managed-tool`, and `advanced`.
+- Added visible Picker Mode and Palette Color rows to the Import Asset form.
+- Updated role switching so Usage options, file `accept`, picker visibility, storage path preview, and diagnostics update together.
+- Changed Color to palette mode with visible `Palette Tool required.` diagnostic.
+- Changed Data and Localization to managed-tool mode with visible tool-required diagnostics.
+- Changed Shader to advanced mode and hid it from normal users unless Admin/Advanced mode is active.
+- Kept Storage Path generated/read-only as `projects/<projectId>/<assetRole>/<usage>/<filename>`.
+- Updated targeted Asset Tool Playwright coverage for dynamic picker switching and advanced/admin-only Shader visibility.
+- Added no CSS.
+- Did not copy archived/reference code.
+- Did not modify archived V1/V2 files.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/assets/assets-mock-repository.js`
+- `node --check toolbox/assets/assets.js`
+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane asset-tool`
+- `Select-String -Path toolbox/assets/index.html,toolbox/assets/assets.js -Pattern '<style|style=|<script(?![^>]*\\bsrc=)|on(click|change|input|submit)=' -CaseSensitive:$false`
+- `git diff --check`
+- Full samples smoke: skipped by request and because samples were not changed.
+
+Required reports:
+- `docs_build/dev/reports/asset-dynamic-picker-model-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

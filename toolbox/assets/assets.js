@@ -1,11 +1,14 @@
 import {
   ASSET_ROLE_DEFINITIONS,
-  createAssetToolMockRepository
+  createAssetToolMockRepository,
+  pickerDiagnosticForRole
 } from "./assets-mock-repository.js";
 
 const repository = createAssetToolMockRepository();
 const params = new URLSearchParams(window.location.search);
 const handoffMode = params.get("handoff");
+const advancedPickerAllowed = params.get("role")?.toLowerCase() === "admin"
+  || params.get("advanced")?.toLowerCase() === "true";
 
 if (handoffMode === "missing") {
   repository.makeMissingGameConfiguration();
@@ -20,9 +23,12 @@ const elements = {
   count: document.querySelector("[data-asset-tool-count]"),
   file: document.querySelector("[data-asset-tool-file]"),
   fileName: document.querySelector("[data-asset-tool-file-name]"),
+  fileNameRow: document.querySelector("[data-asset-tool-file-name-row]"),
+  fileRow: document.querySelector("[data-asset-tool-file-row]"),
   form: document.querySelector("[data-asset-tool-form]"),
   handoffContext: document.querySelector("[data-asset-tool-handoff-context]"),
   handoffOverlay: document.querySelector("[data-asset-tool-handoff-overlay]"),
+  importDiagnostic: document.querySelector("[data-asset-tool-import-diagnostic]"),
   library: document.querySelector("[data-asset-tool-library]"),
   libraryStatus: document.querySelector("[data-asset-tool-library-status]"),
   log: document.querySelector("[data-asset-tool-log]"),
@@ -32,7 +38,10 @@ const elements = {
   outputMissing: document.querySelector("[data-asset-tool-output-missing]"),
   outputSummary: document.querySelector("[data-asset-tool-output-summary]"),
   outputValidation: document.querySelector("[data-asset-tool-output-validation]"),
+  paletteColor: document.querySelector("[data-asset-tool-palette-color]"),
+  paletteRow: document.querySelector("[data-asset-tool-palette-row]"),
   path: document.querySelector("[data-asset-tool-path]"),
+  pickerMode: document.querySelector("[data-asset-tool-picker-mode]"),
   preview: document.querySelector("[data-asset-tool-preview]"),
   previewTitle: document.querySelector("[data-asset-tool-preview-title]"),
   reset: document.querySelector("[data-asset-tool-reset]"),
@@ -54,6 +63,22 @@ function setText(target, value) {
   if (target) {
     target.textContent = value;
   }
+}
+
+function setHidden(target, hidden) {
+  if (target) {
+    target.hidden = hidden;
+  }
+}
+
+function visibleRoleDefinitions() {
+  return ASSET_ROLE_DEFINITIONS.filter((role) => (
+    role.inputMode !== "advanced" || advancedPickerAllowed
+  ));
+}
+
+function visibleRoleDefinitionForId(roleId) {
+  return visibleRoleDefinitions().find((role) => role.id === roleId) || visibleRoleDefinitions()[0];
 }
 
 function appendRoleOptions(select, definitions) {
@@ -121,7 +146,9 @@ function readAssetForm() {
     fileName: file?.name || "",
     mimeType: file?.type || "",
     name: elements.name?.value,
+    paletteColor: elements.paletteColor?.value || "",
     path: elements.path?.value,
+    pickerMode: selectedRoleDefinition().inputMode,
     size: file?.size || 0,
     usage: elements.usage?.value
   };
@@ -133,7 +160,7 @@ function fileStem(fileName) {
 
 function selectedRoleDefinition() {
   const roleId = elements.assetRole?.value || "image";
-  return ASSET_ROLE_DEFINITIONS.find((role) => role.id === roleId) || ASSET_ROLE_DEFINITIONS[0];
+  return visibleRoleDefinitionForId(roleId);
 }
 
 function updateUsageOptions() {
@@ -145,12 +172,46 @@ function updateUsageOptions() {
   }
 }
 
+function updatePalettePicker() {
+  if (!elements.paletteColor) {
+    return;
+  }
+
+  elements.paletteColor.replaceChildren();
+  const option = document.createElement("option");
+  option.value = "";
+  option.textContent = "Palette Tool required";
+  elements.paletteColor.append(option);
+  elements.paletteColor.disabled = true;
+}
+
 function updateFileAccept() {
   if (!elements.file) {
     return;
   }
 
-  elements.file.accept = selectedRoleDefinition().extensions.join(",");
+  const role = selectedRoleDefinition();
+  const fileMode = role.inputMode === "file";
+  const paletteMode = role.inputMode === "palette";
+
+  setText(elements.pickerMode, role.inputMode);
+  setHidden(elements.fileRow, !fileMode);
+  setHidden(elements.fileNameRow, !fileMode);
+  setHidden(elements.paletteRow, !paletteMode);
+
+  elements.file.accept = fileMode ? role.extensions.join(",") : "";
+  elements.file.disabled = !fileMode;
+  if (!fileMode) {
+    elements.file.value = "";
+  }
+  if (paletteMode) {
+    updatePalettePicker();
+  }
+}
+
+function updateImportDiagnostic() {
+  const role = selectedRoleDefinition();
+  setText(elements.importDiagnostic, pickerDiagnosticForRole(role));
 }
 
 function updateStoragePathPreview() {
@@ -158,10 +219,12 @@ function updateStoragePathPreview() {
     return;
   }
 
+  const role = selectedRoleDefinition();
   const file = currentFile();
   elements.path.value = repository.previewStoragePath({
     assetRole: elements.assetRole?.value,
-    fileName: file?.name || elements.path.value
+    fileName: role.inputMode === "file" ? file?.name || "" : "",
+    usage: elements.usage?.value
   });
 }
 
@@ -200,7 +263,7 @@ function renderRoleLibrary(snapshot) {
   }
 
   elements.roleLibrary.replaceChildren();
-  snapshot.roleDefinitions.forEach((role) => {
+  visibleRoleDefinitions().forEach((role) => {
     const row = document.createElement("tr");
     row.dataset.assetToolRoleRow = role.id;
     row.append(
@@ -220,9 +283,12 @@ function renderRoleDiagnostics(snapshot) {
   }
 
   elements.roleDiagnostics.replaceChildren();
-  snapshot.roleDiagnostics.forEach((diagnostic) => {
-    elements.roleDiagnostics.append(createListItem(`${diagnostic.label}: ${diagnostic.action}`));
-  });
+  const visibleRoleIds = new Set(visibleRoleDefinitions().map((role) => role.id));
+  snapshot.roleDiagnostics
+    .filter((diagnostic) => visibleRoleIds.has(diagnostic.id.replace(/-role-diagnostic$/, "")))
+    .forEach((diagnostic) => {
+      elements.roleDiagnostics.append(createListItem(`${diagnostic.label}: ${diagnostic.action}`));
+    });
 }
 
 function renderLibrary(snapshot) {
@@ -245,16 +311,10 @@ function renderLibrary(snapshot) {
   snapshot.assets.forEach((asset) => {
     const row = document.createElement("tr");
     row.dataset.assetToolRow = asset.id;
-    if (snapshot.selectedAsset?.id === asset.id) {
-      row.className = "is-selected";
-      row.setAttribute("aria-selected", "true");
-    } else {
-      row.setAttribute("aria-selected", "false");
-    }
 
     const nameCell = document.createElement("td");
     const select = document.createElement("button");
-    select.className = "btn";
+    select.className = snapshot.selectedAsset?.id === asset.id ? "btn primary" : "btn";
     select.type = "button";
     select.dataset.assetToolSelect = asset.id;
     select.setAttribute("aria-pressed", String(snapshot.selectedAsset?.id === asset.id));
@@ -349,6 +409,7 @@ function render() {
   renderOutput(snapshot);
   updateStoragePathPreview();
   updateSelectedFileName();
+  updateImportDiagnostic();
 }
 
 function updateSelectedFileName() {
@@ -370,13 +431,21 @@ function validateCurrentForm() {
   setText(elements.outputValidation, validation.status);
 }
 
-appendRoleOptions(elements.assetRole, ASSET_ROLE_DEFINITIONS);
+appendRoleOptions(elements.assetRole, visibleRoleDefinitions());
 updateUsageOptions();
 updateFileAccept();
+updateImportDiagnostic();
 
 elements.assetRole?.addEventListener("change", () => {
   updateUsageOptions();
   updateFileAccept();
+  updateImportDiagnostic();
+  updateSelectedFileName();
+  updateStoragePathPreview();
+  validateCurrentForm();
+});
+
+elements.usage?.addEventListener("change", () => {
   updateStoragePathPreview();
   validateCurrentForm();
 });
@@ -421,8 +490,8 @@ elements.seed?.addEventListener("click", () => {
 });
 
 elements.reset?.addEventListener("click", () => {
-  repository.resetAssetLibrary();
-  setText(elements.log, "Asset library reset.");
+  const result = repository.resetAssetLibrary();
+  setText(elements.log, result.message);
   render();
 });
 

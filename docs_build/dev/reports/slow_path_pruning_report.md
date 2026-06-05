@@ -1,13 +1,13 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T12:43:20.766Z
+Generated: 2026-06-05T19:46:26.019Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 25.73s
+Current measured lane elapsed time: 22.71s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
@@ -31,10 +31,11 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | build-path | 6.00s | tests\playwright\tools\BuildPathProgressSimplification.spec.mjs:139:1 > Build Path tool names link to registered routes and render badge images |
-| current targeted run | build-path | 4.30s | tests\playwright\tools\BuildPathProgressSimplification.spec.mjs:74:1 > Toolbox removes Progress view and renders Build Path workflow table |
-| current targeted run | build-path | 2.60s | tests\playwright\tools\BuildPathProgressSimplification.spec.mjs:114:1 > Build Path shows N/A only for non-required contributor-focused tools |
-| current targeted run | build-path | 2.20s | tests\playwright\tools\BuildPathProgressSimplification.spec.mjs:181:1 > Admin navigation exposes Tools Progress and removes Project Progress |
+| current targeted run | asset-tool | 4.60s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:200:1 > Asset Role changes update picker mode, usage options, and import form layout |
+| current targeted run | asset-tool | 4.40s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:368:1 > Asset upload failures are visible and project context is required |
+| current targeted run | asset-tool | 3.10s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:286:1 > Image, video, and audio uploads create project-owned metadata and previews |
+| current targeted run | asset-tool | 2.30s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:145:1 > Assets page lists all asset roles and starts from active project context |
+| current targeted run | asset-tool | 545ms | tests\playwright\tools\AssetToolMockRepository.spec.mjs:77:1 > Asset Tool repository exposes SQL-shaped role, storage, and metadata ownership |
 
 ## Guardrails
 

@@ -1,13 +1,13 @@
 # Static Validation Report
 
-Generated: 2026-06-05T12:42:54.998Z
+Generated: 2026-06-05T19:46:03.258Z
 Status: PASS
 Static only: No
 Dry run: No
 
 ## Requested Lanes
 
-- build-path
+- asset-tool
 
 ## Prevented Launches
 
@@ -22,12 +22,12 @@ Reason: No deterministic static validation failure was found.
 | invalid filename detection | PASS | Covered by Playwright structure audit. |
 | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | build-path:e55c4b6606b057c8 |
-| persistent lane manifests | PASS | build-path:INVALIDATED |
-| lane warm-start reuse | PASS | build-path:INVALIDATED |
-| dependency hydration reuse | PASS | build-path:INVALIDATED |
+| targeted file manifests | PASS | asset-tool:2f179f3229386b61 |
+| persistent lane manifests | PASS | asset-tool:GENERATED |
+| lane warm-start reuse | PASS | asset-tool:GENERATED |
+| dependency hydration reuse | PASS | asset-tool:GENERATED |
 | lane input graph expansion | PASS | No inputs escaped manifest scope. |
-| scoped discovery targets | PASS | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs |
+| scoped discovery targets | PASS | tests/playwright/tools/AssetToolMockRepository.spec.mjs |
 | broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
 | invalid lane target detection | PASS | No invalid lane target findings. |
 | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |

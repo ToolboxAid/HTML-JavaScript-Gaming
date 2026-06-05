@@ -1,27 +1,27 @@
 # Persistent Lane Manifest Report
 
-Generated: 2026-06-05T12:42:55.006Z
+Generated: 2026-06-05T19:46:03.266Z
 Status: PASS
 Manifest directory: docs_build/dev/reports/lane_manifests
 
 ## Summary
 
 Reused manifests: 0
-Invalidated manifests: 1
-Generated manifests: 0
+Invalidated manifests: 0
+Generated manifests: 1
 Prevented discovery scans: 0
 
 ## Manifest Events
 
 | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- |
-| build-path | INVALIDATED | docs_build/dev/reports/lane_manifests/build-path.json | 64947469b9ba4fd4 | e55c4b6606b057c8 | Persistent manifest lane definition hash changed for build-path. |
+| asset-tool | GENERATED | docs_build/dev/reports/lane_manifests/asset-tool.json | adeda3f3cc784a18 | 2f179f3229386b61 | No persisted manifest existed for this lane. |
 
 ## Persisted Manifest Files
 
 | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| build-path | tools | generated | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 0a034c67ed94c66f | e55c4b6606b057c8 |
+| asset-tool | tools | generated | tests/playwright/tools/AssetToolMockRepository.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 92cab6342b8c5dc0 | 2f179f3229386b61 |
 
 ## Fast-Fail Enforcement
 

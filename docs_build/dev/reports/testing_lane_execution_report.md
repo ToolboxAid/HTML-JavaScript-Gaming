@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-05T18:45:52.119Z
+Generated: 2026-06-05T19:46:26.040Z
 Dry run: No
 
 ## Summary
@@ -9,7 +9,7 @@ PASS: 1
 WARN: 0
 FAIL: 0
 SKIP: 14
-Total lane elapsed time: 15.29s
+Total lane elapsed time: 22.71s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -109,7 +109,7 @@ Prevented Workspace lane reruns: 0
 | project-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge | repo-served Project Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock project repository |
 | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Project Workspace mock project context |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
-| asset-tool | PASS | 15.29s | 1 | Asset Tool rebuild slice validates SQL-shaped asset tables, ready Game Configuration handoff, import/preview workflow, and visible validation errors without exercising unrelated toolbox routes. | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | repo-served Assets page; in-memory SQL-shaped Asset Tool mock repository; Game Configuration mock repository handoff; file-name/path-based import preview |
+| asset-tool | PASS | 22.71s | 1 | Asset Tool rebuild slice validates SQL-shaped asset tables, ready Game Configuration handoff, import/preview workflow, and visible validation errors without exercising unrelated toolbox routes. | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | repo-served Assets page; in-memory SQL-shaped Asset Tool mock repository; Game Configuration mock repository handoff; file-name/path-based import preview |
 | build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Project Workspace mock project context; Toolbox role simulation |
 | tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation | repo-served Admin Tools Progress page; repo-served Toolbox Group view; Toolbox registry build sequence; Project Build Path workflow table |
 | tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Project Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
@@ -125,11 +125,11 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| asset-tool | 2.80s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:272:1 > Asset upload failures are visible and project context is required |
-| asset-tool | 2.40s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:206:1 > Image, video, and audio uploads create project-owned metadata and previews |
-| asset-tool | 2.00s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:163:1 > Asset Role changes update Usage options and import form layout stays usable |
-| asset-tool | 1.80s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:119:1 > Assets page lists all asset roles and starts from active project context |
-| asset-tool | 363ms | tests\playwright\tools\AssetToolMockRepository.spec.mjs:75:1 > Asset Tool repository exposes SQL-shaped role, storage, and metadata ownership |
+| asset-tool | 4.60s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:200:1 > Asset Role changes update picker mode, usage options, and import form layout |
+| asset-tool | 4.40s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:368:1 > Asset upload failures are visible and project context is required |
+| asset-tool | 3.10s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:286:1 > Image, video, and audio uploads create project-owned metadata and previews |
+| asset-tool | 2.30s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:145:1 > Assets page lists all asset roles and starts from active project context |
+| asset-tool | 545ms | tests\playwright\tools\AssetToolMockRepository.spec.mjs:77:1 > Asset Tool repository exposes SQL-shaped role, storage, and metadata ownership |
 
 ## Commands
 
@@ -146,7 +146,7 @@ Prevented Workspace lane reruns: 0
 - SKIP
 
 ### asset-tool
-- PASS 15.29s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list
+- PASS 22.71s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### build-path
 - SKIP

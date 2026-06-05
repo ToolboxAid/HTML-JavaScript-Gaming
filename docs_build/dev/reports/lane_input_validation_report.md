@@ -1,22 +1,22 @@
 # Lane Input Validation Report
 
-Generated: 2026-06-05T12:42:55.007Z
+Generated: 2026-06-05T19:46:03.266Z
 Status: PASS
 
 ## Input Files
 
 | Lane | Role | File | Status | Reason |
 | --- | --- | --- | --- | --- |
-| build-path | test | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | PASS | Manifest test input is explicit, present, and owned by the lane. |
-| build-path | helper | tests/helpers/playwrightRepoServer.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
-| build-path | helper | tests/helpers/playwrightStorageIsolation.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
-| build-path | helper | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
-| build-path | helper | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
-| build-path | import | tests/helpers/playwrightRepoServer.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| build-path | import | tests/helpers/playwrightStorageIsolation.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| build-path | import | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| build-path | import | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| build-path | import | toolbox/toolRegistry.js | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| asset-tool | test | tests/playwright/tools/AssetToolMockRepository.spec.mjs | PASS | Manifest test input is explicit, present, and owned by the lane. |
+| asset-tool | helper | tests/helpers/playwrightRepoServer.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+| asset-tool | helper | tests/helpers/playwrightStorageIsolation.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+| asset-tool | helper | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+| asset-tool | helper | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+| asset-tool | import | tests/helpers/playwrightRepoServer.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| asset-tool | import | tests/helpers/playwrightStorageIsolation.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| asset-tool | import | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| asset-tool | import | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| asset-tool | import | toolbox/assets/assets-mock-repository.js | PASS | Relative import dependency is resolved and recorded in the manifest. |
 
 ## Ownership Validation Failures
 

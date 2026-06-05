@@ -8,6 +8,13 @@ export const ASSET_TOOL_TABLES = Object.freeze([
   "asset_validation_items"
 ]);
 
+export const ASSET_PICKER_MODES = Object.freeze([
+  "file",
+  "palette",
+  "managed-tool",
+  "advanced"
+]);
+
 export const ASSET_ROLE_DEFINITIONS = Object.freeze([
   {
     id: "audio",
@@ -17,21 +24,23 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     mimeTypes: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp4"],
     previewBehavior: "Browser audio metadata preview",
     uploadEnabled: true,
+    inputMode: "file",
     maxSizeBytes: 52428800,
     usageRoles: ["sound", "music"],
-    validationNeeds: ["MIME must be audio/* or approved audio MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/audio/"]
+    validationNeeds: ["MIME must be audio/* or approved audio MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/audio/<usage>/"]
   },
   {
     id: "color",
     label: "Color",
     storageFolder: "color",
-    extensions: [".json"],
-    mimeTypes: ["application/json"],
+    extensions: [],
+    mimeTypes: [],
     previewBehavior: "Swatch metadata preview",
     uploadEnabled: false,
+    inputMode: "palette",
     maxSizeBytes: 1048576,
     usageRoles: ["hud", "text", "background", "border", "accent", "warning", "success", "danger", "shadow", "highlight"],
-    validationNeeds: ["Palette color metadata must include hex and name", "Color uploads are deferred until palette ownership is rebuilt"]
+    validationNeeds: ["Palette Tool required", "Palette color metadata must include hex and name"]
   },
   {
     id: "data",
@@ -39,23 +48,25 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     storageFolder: "data",
     extensions: [".json", ".csv", ".txt"],
     mimeTypes: ["application/json", "text/csv", "text/plain"],
-    previewBehavior: "Text metadata preview",
+    previewBehavior: "Data/Table Tool managed preview",
     uploadEnabled: false,
+    inputMode: "managed-tool",
     maxSizeBytes: 5242880,
     usageRoles: ["config", "table"],
-    validationNeeds: ["Structured data must declare format", "Data uploads are deferred until schema ownership is rebuilt"]
+    validationNeeds: ["Data/Table Tool required", "Structured data must declare format"]
   },
   {
     id: "font",
     label: "Font",
     storageFolder: "font",
-    extensions: [".woff", ".woff2", ".ttf", ".otf"],
+    extensions: [".ttf", ".otf", ".woff", ".woff2"],
     mimeTypes: ["font/woff", "font/woff2", "font/ttf", "font/otf"],
     previewBehavior: "Font sample preview",
-    uploadEnabled: false,
+    uploadEnabled: true,
+    inputMode: "file",
     maxSizeBytes: 10485760,
     usageRoles: ["ui", "display"],
-    validationNeeds: ["Font files must use approved font formats", "Font uploads are deferred until font loading ownership is rebuilt"]
+    validationNeeds: ["Font files must use approved font formats", "Project storage path must be generated under projects/<projectId>/font/<usage>/"]
   },
   {
     id: "image",
@@ -65,9 +76,10 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     mimeTypes: ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"],
     previewBehavior: "Image metadata preview",
     uploadEnabled: true,
+    inputMode: "file",
     maxSizeBytes: 10485760,
     usageRoles: ["sprite", "background", "bezel", "preview", "ui"],
-    validationNeeds: ["MIME must be image/* or approved image MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/image/"]
+    validationNeeds: ["MIME must be image/* or approved image MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/image/<usage>/"]
   },
   {
     id: "localization",
@@ -75,11 +87,12 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     storageFolder: "localization",
     extensions: [".json", ".po", ".pot", ".xliff", ".xlf"],
     mimeTypes: ["application/json", "text/plain", "application/x-xliff+xml"],
-    previewBehavior: "Localization key summary preview",
+    previewBehavior: "Localization Tool managed preview",
     uploadEnabled: false,
+    inputMode: "managed-tool",
     maxSizeBytes: 5242880,
     usageRoles: ["strings", "dialogue"],
-    validationNeeds: ["Localization files must declare locale", "Localization uploads are deferred until language ownership is rebuilt"]
+    validationNeeds: ["Localization Tool required", "Localization files must declare locale"]
   },
   {
     id: "shader",
@@ -87,11 +100,12 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     storageFolder: "shader",
     extensions: [".glsl", ".vert", ".frag", ".wgsl"],
     mimeTypes: ["text/plain"],
-    previewBehavior: "Shader source metadata preview",
+    previewBehavior: "Advanced shader source metadata preview",
     uploadEnabled: false,
+    inputMode: "advanced",
     maxSizeBytes: 2097152,
     usageRoles: ["fragment", "vertex", "compute"],
-    validationNeeds: ["Shader stage metadata is required", "Shader uploads are deferred until render pipeline ownership is rebuilt"]
+    validationNeeds: ["Advanced/Admin mode required", "Shader stage metadata is required"]
   },
   {
     id: "video",
@@ -101,9 +115,10 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     mimeTypes: ["video/mp4", "video/webm", "video/quicktime"],
     previewBehavior: "Browser video metadata preview",
     uploadEnabled: true,
+    inputMode: "file",
     maxSizeBytes: 209715200,
     usageRoles: ["cutscene", "loop"],
-    validationNeeds: ["MIME must be video/* or approved video MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/video/"]
+    validationNeeds: ["MIME must be video/* or approved video MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/video/<usage>/"]
   }
 ]);
 
@@ -115,7 +130,9 @@ export const ASSET_USAGE_BY_ROLE = Object.freeze(Object.fromEntries(
 
 export const ASSET_TYPES = ASSET_ROLE_LABELS;
 
-const PROJECT_ASSET_STORAGE_ROOT = "assets/projects";
+const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
+const PROJECT_ASSET_STORAGE_ROOT = "projects";
+const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 
 const REQUIRED_UPLOAD_FIELDS = Object.freeze([
   {
@@ -169,6 +186,7 @@ function roleDefinitionRows() {
     mimeTypes: role.mimeTypes.join(", "),
     previewBehavior: role.previewBehavior,
     uploadEnabled: role.uploadEnabled,
+    inputMode: role.inputMode,
     usageRoles: role.usageRoles.join(", "),
     maxSizeBytes: role.maxSizeBytes,
     dbFields: uploadedAssetMetadataFields().join(", "),
@@ -206,8 +224,44 @@ function normalizeUsage(value, assetRole) {
   return role?.usageRoles.includes(normalized) ? normalized : "";
 }
 
+function normalizeProjectId(value) {
+  const normalized = normalizeText(value).toUpperCase();
+  return ULID_PATTERN.test(normalized) ? normalized : "";
+}
+
+function assetProjectIdForProject(project) {
+  if (!project) {
+    return "";
+  }
+
+  if (project.id === "demo-project") {
+    return DEMO_ASSET_PROJECT_ID;
+  }
+
+  return normalizeProjectId(project.id);
+}
+
 function roleDefinitionForId(roleId) {
   return ASSET_ROLE_DEFINITIONS.find((role) => role.id === roleId) || null;
+}
+
+export function pickerDiagnosticForRole(role) {
+  if (!role) {
+    return "Choose an approved asset role.";
+  }
+  if (role.inputMode === "palette") {
+    return "Palette Tool required.";
+  }
+  if (role.id === "data") {
+    return "Data/Table Tool required.";
+  }
+  if (role.id === "localization") {
+    return "Localization Tool required.";
+  }
+  if (role.inputMode === "advanced") {
+    return "Advanced/Admin mode required.";
+  }
+  return `${role.label} file upload ready.`;
 }
 
 function extensionForFileName(fileName) {
@@ -274,12 +328,30 @@ function uploadedAssetMetadataFields() {
   ];
 }
 
-function storagePathForProjectAsset(projectId, assetRole, fileName) {
+function storagePathForProjectAsset(projectId, assetRole, usage, fileName) {
   const role = roleDefinitionForId(assetRole);
-  if (!projectId || !role || !fileName) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  const normalizedUsage = normalizeUsage(usage, assetRole);
+  if (!normalizedProjectId || !role || !normalizedUsage || !fileName) {
     return "";
   }
-  return `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${role.storageFolder}/${sanitizeFileName(fileName)}`;
+  return `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/${role.storageFolder}/${normalizedUsage}/${sanitizeFileName(fileName)}`;
+}
+
+function projectFolderForProjectId(projectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  return normalizedProjectId ? `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/` : "";
+}
+
+function localFolderCount(storageObjects) {
+  const folders = new Set();
+  storageObjects.forEach((object) => {
+    const parts = normalizeText(object.storedPath).split("/").filter(Boolean);
+    for (let index = 3; index < parts.length; index += 1) {
+      folders.add(parts.slice(0, index).join("/"));
+    }
+  });
+  return folders.size;
 }
 
 function previewKindForRole(role) {
@@ -315,11 +387,11 @@ function tableCounts(tables) {
   }));
 }
 
-function createStorageObject({ assetRole, fileName, mimeType, name, project, size }) {
+function createStorageObject({ assetRole, fileName, mimeType, name, project, size, usage }) {
   const role = roleDefinitionForId(assetRole);
   const projectId = project?.id || "";
   const originalName = normalizeText(fileName);
-  const storedPath = storagePathForProjectAsset(projectId, assetRole, originalName);
+  const storedPath = storagePathForProjectAsset(projectId, assetRole, usage, originalName);
   const checksum = checksumForMetadata({
     assetRole,
     fileName: originalName,
@@ -333,7 +405,7 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
     assetId: `${projectId}-asset-${assetRole}-${slugify(name || originalName)}`,
     checksum,
     createdAt: timestamp,
-    id: `${projectId}-storage-${assetRole}-${slugify(originalName)}`,
+    id: `${projectId}-storage-${assetRole}-${slugify(usage)}-${slugify(originalName)}`,
     mimeType,
     originalName,
     ownerProjectId: projectId,
@@ -353,14 +425,22 @@ export function createAssetToolMockRepository(options = {}) {
 
   function getConfigurationHandoff() {
     const snapshot = configurationRepository.getSnapshot();
+    const activeProject = snapshot.handoff.activeProject
+      ? {
+          ...snapshot.handoff.activeProject,
+          id: assetProjectIdForProject(snapshot.handoff.activeProject),
+          sourceProjectId: snapshot.handoff.activeProject.id
+        }
+      : null;
     const ready = Boolean(
       snapshot.handoff.ready
       && snapshot.configuration
       && snapshot.validation.findings.length === 0
+      && activeProject?.id
     );
 
     return {
-      activeProject: snapshot.handoff.activeProject,
+      activeProject,
       configuration: snapshot.configuration,
       ready,
       validation: snapshot.validation
@@ -373,8 +453,9 @@ export function createAssetToolMockRepository(options = {}) {
       if (!role.id) missing.push("id");
       if (!role.label) missing.push("label");
       if (!role.storageFolder) missing.push("storageFolder");
-      if (!Array.isArray(role.extensions) || role.extensions.length === 0) missing.push("extensions");
-      if (!Array.isArray(role.mimeTypes) || role.mimeTypes.length === 0) missing.push("mimeTypes");
+      if (!ASSET_PICKER_MODES.includes(role.inputMode)) missing.push("inputMode");
+      if (role.inputMode === "file" && (!Array.isArray(role.extensions) || role.extensions.length === 0)) missing.push("extensions");
+      if (role.inputMode === "file" && (!Array.isArray(role.mimeTypes) || role.mimeTypes.length === 0)) missing.push("mimeTypes");
       if (!role.previewBehavior) missing.push("previewBehavior");
       if (!Array.isArray(role.validationNeeds) || role.validationNeeds.length === 0) missing.push("validationNeeds");
       return {
@@ -411,8 +492,9 @@ export function createAssetToolMockRepository(options = {}) {
       fileName: normalizeText(input.fileName || input.originalName),
       mimeType: normalizeText(input.mimeType).toLowerCase(),
       name: normalizeText(input.name),
+      pickerMode: normalizeText(input.pickerMode),
       size: Number(input.size) || 0,
-      storedPath: storagePathForProjectAsset(activeProject?.id || "", assetRole, input.fileName || input.originalName),
+      storedPath: storagePathForProjectAsset(activeProject?.id || "", assetRole, input.usage || input.role, input.fileName || input.originalName),
       usage: normalizeUsage(input.usage || input.role, assetRole)
     };
 
@@ -424,22 +506,33 @@ export function createAssetToolMockRepository(options = {}) {
         action: "Open a project and complete a valid Game Configuration before uploading project assets."
       });
     }
+    if (activeProject && !activeProject.id) {
+      findings.push({
+        field: "projectId",
+        label: "Project ID",
+        action: "Open a project with a ULID projectId before uploading project assets."
+      });
+    }
 
+    const filePickerMode = role?.inputMode === "file";
     REQUIRED_UPLOAD_FIELDS.forEach((requirement) => {
+      if (requirement.field === "fileName" && !filePickerMode) {
+        return;
+      }
       if (!normalized[requirement.field]) {
         findings.push(requirement);
       }
     });
 
-    if (role && !role.uploadEnabled) {
+    if (role && !filePickerMode) {
       findings.push({
         field: "assetRole",
         label: role.label,
-        action: `${role.label} is represented in the role library, but upload is implemented first for Image, Video, and Audio only.`
+        action: pickerDiagnosticForRole(role)
       });
     }
 
-    if (role && normalized.fileName && !extensionMatchesRole(role, normalized.fileName)) {
+    if (filePickerMode && normalized.fileName && !extensionMatchesRole(role, normalized.fileName)) {
       findings.push({
         field: "fileName",
         label: "File Extension",
@@ -447,7 +540,7 @@ export function createAssetToolMockRepository(options = {}) {
       });
     }
 
-    if (role && normalized.mimeType && !mimeMatchesRole(role, normalized.mimeType)) {
+    if (filePickerMode && normalized.mimeType && !mimeMatchesRole(role, normalized.mimeType)) {
       findings.push({
         field: "mimeType",
         label: "MIME Type",
@@ -455,7 +548,7 @@ export function createAssetToolMockRepository(options = {}) {
       });
     }
 
-    if (role && normalized.size <= 0) {
+    if (filePickerMode && normalized.size <= 0) {
       findings.push({
         field: "size",
         label: "File Size",
@@ -463,7 +556,7 @@ export function createAssetToolMockRepository(options = {}) {
       });
     }
 
-    if (role && normalized.size > role.maxSizeBytes) {
+    if (filePickerMode && normalized.size > role.maxSizeBytes) {
       findings.push({
         field: "size",
         label: "File Size",
@@ -472,7 +565,7 @@ export function createAssetToolMockRepository(options = {}) {
     }
 
     if (normalized.storedPath && activeProject?.id) {
-      const expectedPrefix = `${PROJECT_ASSET_STORAGE_ROOT}/${activeProject.id}/${role?.storageFolder || ""}/`;
+      const expectedPrefix = `${PROJECT_ASSET_STORAGE_ROOT}/${activeProject.id}/${role?.storageFolder || ""}/${normalized.usage}/`;
       if (!normalized.storedPath.startsWith(expectedPrefix)) {
         findings.push({
           field: "storedPath",
@@ -520,7 +613,8 @@ export function createAssetToolMockRepository(options = {}) {
       mimeType: validation.asset.mimeType,
       name: validation.asset.name,
       project,
-      size: validation.asset.size
+      size: validation.asset.size,
+      usage: validation.asset.usage
     });
     const timestamp = storageObject.createdAt;
     const asset = {
@@ -605,10 +699,46 @@ export function createAssetToolMockRepository(options = {}) {
   }
 
   function resetAssetLibrary() {
-    tables = createEmptyTables();
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    if (!projectId) {
+      replaceValidationRows("", [
+        {
+          action: "Open a project with a ULID projectId before resetting project asset storage.",
+          field: "activeProject",
+          label: "Active Project"
+        }
+      ]);
+      return {
+        deletedFiles: 0,
+        deletedFolders: 0,
+        message: "Reset Asset Library blocked: no active projectId.",
+        projectId: "",
+        reset: false,
+        snapshot: getSnapshot()
+      };
+    }
+
+    const projectFolder = projectFolderForProjectId(projectId);
+    const storageObjects = tables.asset_storage_objects.filter(
+      (row) => row.projectId === projectId && row.storedPath.startsWith(projectFolder)
+    );
+    const deletedFiles = storageObjects.length;
+    const deletedFolders = localFolderCount(storageObjects);
+
+    tables.asset_library_items = tables.asset_library_items.filter((row) => row.projectId !== projectId);
+    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.projectId !== projectId);
+    tables.asset_import_events = tables.asset_import_events.filter((row) => row.projectId !== projectId);
+    tables.asset_validation_items = tables.asset_validation_items.filter((row) => row.projectId !== projectId);
     selectedAssetId = "";
-    seedDemoAssets();
-    return getSnapshot();
+    return {
+      deletedFiles,
+      deletedFolders,
+      message: `Reset Asset Library deleted ${deletedFiles} file${deletedFiles === 1 ? "" : "s"} and ${deletedFolders} folder${deletedFolders === 1 ? "" : "s"} under ${projectFolder}.`,
+      projectId,
+      reset: true,
+      snapshot: getSnapshot()
+    };
   }
 
   function clearAssetLibrary() {
@@ -633,7 +763,9 @@ export function createAssetToolMockRepository(options = {}) {
   function makeReadyGameConfiguration() {
     configurationRepository.makeValidGameDesign("demo-project");
     configurationRepository.updateConfiguration("demo-project", READY_CONFIGURATION_INPUT);
-    return resetAssetLibrary();
+    clearAssetLibrary();
+    seedDemoAssets();
+    return getSnapshot();
   }
 
   function getTables() {
@@ -644,7 +776,7 @@ export function createAssetToolMockRepository(options = {}) {
     const handoff = getConfigurationHandoff();
     const projectId = handoff.activeProject?.id || "";
     const assetRole = normalizeRoleId(input.assetRole || input.type);
-    return storagePathForProjectAsset(projectId, assetRole, input.fileName || input.originalName);
+    return storagePathForProjectAsset(projectId, assetRole, input.usage || input.role, input.fileName || input.originalName);
   }
 
   function getProgressHandoff() {
@@ -704,7 +836,8 @@ export function createAssetToolMockRepository(options = {}) {
     };
   }
 
-  resetAssetLibrary();
+  clearAssetLibrary();
+  seedDemoAssets();
 
   return {
     ASSET_ROLE_DEFINITIONS,

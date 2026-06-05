@@ -19,6 +19,7 @@ tests/results/
 tmp/test-results/
 tmp/
 scripts/untracked/
+projects/
 
 # Codex files
 docs/dev/codex_commands.md

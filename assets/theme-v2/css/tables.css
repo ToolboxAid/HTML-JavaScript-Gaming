@@ -37,35 +37,33 @@ td {
 }
 
 .tool-form-table {
+  table-layout: fixed;
   width: 100%
 }
 
 .tool-form-table th[scope="row"] {
   padding: var(--space-4) var(--space-6);
-  width: 1%;
-  white-space: nowrap;
+  width: 4rem;
+  white-space: normal;
   text-align: right;
   vertical-align: top
 }
 
 .tool-form-table td {
   padding: var(--space-4) var(--space-6);
-  min-width: 12rem;
+  min-width: 0;
   width: auto
 }
 
 .tool-form-table td[colspan] {
-  min-width: 0
+  min-width: 0;
+  overflow-wrap: anywhere
 }
 
 .tool-form-table input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
 .tool-form-table textarea,
 .tool-form-table select {
   box-sizing: border-box;
+  max-width: 100%;
   width: 100%
-}
-
-.data-table tr.is-selected td {
-  background: var(--orange-soft);
-  box-shadow: inset var(--space-3) 0 0 var(--orange)
 }

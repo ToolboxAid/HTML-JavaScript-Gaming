@@ -1,13 +1,13 @@
 # Incremental Validation Report
 
-Generated: 2026-06-05T12:42:55.006Z
+Generated: 2026-06-05T19:46:03.266Z
 Status: PASS
 
 ## Reuse Summary
 
 Reused manifests: 0
-Invalidated manifests: 1
-Generated manifests: 0
+Invalidated manifests: 0
+Generated manifests: 1
 Skipped manifests: 0
 Prevented lane regeneration: 0
 Prevented discovery scans: 0
@@ -18,7 +18,7 @@ Prevented fixture resolution passes: 0
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| build-path | INVALIDATED | Persistent manifest lane definition hash changed for build-path. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+| asset-tool | GENERATED | No persisted manifest existed for this lane. | Manifest was regenerated or skipped; no reuse savings for this lane. |
 
 ## Invalidation Rules
 

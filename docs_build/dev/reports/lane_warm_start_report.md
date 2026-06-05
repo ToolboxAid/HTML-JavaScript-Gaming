@@ -1,14 +1,14 @@
 # Lane Warm-Start Report
 
-Generated: 2026-06-05T12:42:55.005Z
+Generated: 2026-06-05T19:46:03.265Z
 Status: PASS
 Warm-start directory: docs_build/dev/reports/lane_warm_starts
 
 ## Summary
 
 Reused warm-start lanes: 0
-Invalidated warm-start states: 1
-Generated warm-start states: 0
+Invalidated warm-start states: 0
+Generated warm-start states: 1
 Skipped warm-start states: 0
 Prevented redundant initialization: 0
 Prevented lane graph assembly: 0
@@ -17,7 +17,7 @@ Prevented lane graph assembly: 0
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| build-path | INVALIDATED | docs_build/dev/reports/lane_warm_starts/build-path.json | e55c4b6606b057c8 | 7148bcdf1b1bd09f | 63d18ef7748baba0 | Warm-start dependencyGraphHash changed for build-path.; Warm-start dependencyHydrationHash changed for build-path.; Warm-start inputHash changed for build-path.; Warm-start laneDefinitionHash changed for build-path.; Warm-start manifestHash changed for build-path.; Warm-start warmStartHash changed for build-path. |
+| asset-tool | GENERATED | docs_build/dev/reports/lane_warm_starts/asset-tool.json | 2f179f3229386b61 | af5277606fe798e3 | f3efe86bf9b3fc91 | No prior warm-start state existed for this lane. |
 
 ## Fast-Fail Safeguards
 
