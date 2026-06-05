@@ -95,10 +95,21 @@
         return link;
     }
 
+    function applyRegistryImages(registry) {
+        const registryTool = registry.getToolBySlug(toolSlug);
+        if (!registryTool) {
+            return;
+        }
+
+        badge.src = registry.getToolImageSource(registryTool, "badge");
+        character.src = registry.getToolImageSource(registryTool, "tool");
+    }
+
     async function renderToolNavigation() {
         try {
             const registry = await import("/toolbox/toolRegistry.js");
             const navigation = registry.getToolNavigationTargets(toolSlug);
+            applyRegistryImages(registry);
             const navigationRow = document.createElement("nav");
             navigationRow.className = "tool-display-mode__navigation-row content-cluster";
             navigationRow.dataset.toolDisplayModeRow = "navigation";

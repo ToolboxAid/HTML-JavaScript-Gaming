@@ -1,6 +1,6 @@
 # Test Cleanup Routing Report
 
-Generated: 2026-06-05T02:09:17.252Z
+Generated: 2026-06-05T04:46:33.521Z
 Status: PASS
 
 ## Representative Routing Cases
@@ -18,7 +18,7 @@ Status: PASS
 Workspace V2 explicit/on-request only: PASS
 Full samples smoke explicit/on-request only: PASS
 Misplaced test preflight fast-fail: PASS
-Scheduled runtime lanes: tool-display-mode
+Scheduled runtime lanes: tool-images
 Full samples smoke decision: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
 
 ## Lane Script Routing
@@ -30,6 +30,7 @@ Full samples smoke decision: SKIP - Skipped because changed files do not modify 
 | test:lane:tools-progress | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tools-progress |
 | test:lane:tool-navigation | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-navigation |
 | test:lane:tool-display-mode | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-display-mode |
+| test:lane:tool-images | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-images |
 | test:lane:game-configuration | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-configuration |
 | test:lane:game-design | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-design |
 | test:lane:project-workspace | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane project-workspace |

@@ -1,0 +1,83 @@
+--------------------------------------------------------------------------------
+TOOL: hitboxes
+GROUP: Design
+COLOR: Pink
+MASCOT: Pixel Smith
+--------------------------------------------------------------------------------
+
+BADGE
+
+For hitboxes badge, this is what I would pass:
+
+Create ONE image only.
+
+Filename:
+badges/hitboxes-1024.png
+
+Size:
+1024W x 1024H
+
+Style:
+Premium game development software icon.
+Rounded square badge.
+Transparent background.
+Pink Design glow.
+
+Contents:
+- Transparent bounding box
+- Target reticle
+- Collision grid
+- Game Foundry gear G logo
+
+Requirements:
+- No mascot
+- No text
+- No labels
+- No filenames
+- No zip file
+- No UI mockup
+- No second image
+- No split screen
+- No contact sheet
+- No background scene
+
+The badge should completely fill the canvas.
+
+--------------------------------------------------------------------------------
+
+TOOL IMAGE
+
+Then separately for the tool image:
+
+Create ONE image only.
+
+Filename:
+tools/hitboxes-1024.png
+
+Size:
+1820W x 1024H
+
+Style:
+Game Foundry Studio mascot artwork.
+
+Main Character:
+Pixel Smith
+
+Scene:
+Pixel Smith aligning transparent collision boxes around a character and objects on a glowing grid, with precise measuring tools.
+
+Requirements:
+- The mascot is the primary focus
+- No text
+- No logos
+- No badge
+- No filename
+- No zip file
+- No UI mockup
+- No second image
+- No split screen
+- No contact sheet
+
+The image should be a full widescreen scene.
+
+================================================================================

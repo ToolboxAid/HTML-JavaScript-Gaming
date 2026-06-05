@@ -1,0 +1,83 @@
+--------------------------------------------------------------------------------
+TOOL: saved-data
+GROUP: Platform
+COLOR: Blue
+MASCOT: Foundry Bot
+--------------------------------------------------------------------------------
+
+BADGE
+
+For saved-data badge, this is what I would pass:
+
+Create ONE image only.
+
+Filename:
+badges/saved-data-1024.png
+
+Size:
+1024W x 1024H
+
+Style:
+Premium game development software icon.
+Rounded square badge.
+Transparent background.
+Blue Platform glow.
+
+Contents:
+- Vault
+- Database cylinder
+- Save crystal
+- Game Foundry gear G logo
+
+Requirements:
+- No mascot
+- No text
+- No labels
+- No filenames
+- No zip file
+- No UI mockup
+- No second image
+- No split screen
+- No contact sheet
+- No background scene
+
+The badge should completely fill the canvas.
+
+--------------------------------------------------------------------------------
+
+TOOL IMAGE
+
+Then separately for the tool image:
+
+Create ONE image only.
+
+Filename:
+tools/saved-data-1024.png
+
+Size:
+1820W x 1024H
+
+Style:
+Game Foundry Studio mascot artwork.
+
+Main Character:
+Foundry Bot
+
+Scene:
+Foundry Bot guarding and organizing saved game data in a friendly vault room with glowing database cylinders and save crystals.
+
+Requirements:
+- The mascot is the primary focus
+- No text
+- No logos
+- No badge
+- No filename
+- No zip file
+- No UI mockup
+- No second image
+- No split screen
+- No contact sheet
+
+The image should be a full widescreen scene.
+
+================================================================================

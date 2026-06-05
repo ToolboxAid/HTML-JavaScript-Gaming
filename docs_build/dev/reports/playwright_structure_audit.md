@@ -1,6 +1,6 @@
 # Playwright Structure Audit
 
-Generated: 2026-06-05T02:09:02.045Z
+Generated: 2026-06-05T04:46:18.788Z
 Status: PASS
 
 ## Lane Directories
@@ -35,7 +35,7 @@ No blocking structural findings.
 
 | File | Status | Missing Relative Imports |
 | --- | --- | --- |
-| tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | PASS | none |
+| tests/playwright/tools/ToolImageRegistry.spec.mjs | PASS | none |
 | tests/helpers/playwrightRepoServer.mjs | PASS | none |
 | tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
 | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |

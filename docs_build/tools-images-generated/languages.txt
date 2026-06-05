@@ -1,0 +1,83 @@
+--------------------------------------------------------------------------------
+TOOL: languages
+GROUP: Platform
+COLOR: Blue
+MASCOT: Foundry Bot
+--------------------------------------------------------------------------------
+
+BADGE
+
+For languages badge, this is what I would pass:
+
+Create ONE image only.
+
+Filename:
+badges/languages-1024.png
+
+Size:
+1024W x 1024H
+
+Style:
+Premium game development software icon.
+Rounded square badge.
+Transparent background.
+Blue Platform glow.
+
+Contents:
+- Globe
+- Translation bubbles without text
+- Language tiles
+- Game Foundry gear G logo
+
+Requirements:
+- No mascot
+- No text
+- No labels
+- No filenames
+- No zip file
+- No UI mockup
+- No second image
+- No split screen
+- No contact sheet
+- No background scene
+
+The badge should completely fill the canvas.
+
+--------------------------------------------------------------------------------
+
+TOOL IMAGE
+
+Then separately for the tool image:
+
+Create ONE image only.
+
+Filename:
+tools/languages-1024.png
+
+Size:
+1820W x 1024H
+
+Style:
+Game Foundry Studio mascot artwork.
+
+Main Character:
+Foundry Bot
+
+Scene:
+Foundry Bot connecting a globe to friendly translation bubbles and language tiles, with no readable characters or text.
+
+Requirements:
+- The mascot is the primary focus
+- No text
+- No logos
+- No badge
+- No filename
+- No zip file
+- No UI mockup
+- No second image
+- No split screen
+- No contact sheet
+
+The image should be a full widescreen scene.
+
+================================================================================

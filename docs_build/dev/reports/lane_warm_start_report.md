@@ -1,23 +1,23 @@
 # Lane Warm-Start Report
 
-Generated: 2026-06-05T02:09:02.083Z
+Generated: 2026-06-05T04:46:18.833Z
 Status: PASS
 Warm-start directory: docs_build/dev/reports/lane_warm_starts
 
 ## Summary
 
-Reused warm-start lanes: 0
-Invalidated warm-start states: 1
+Reused warm-start lanes: 1
+Invalidated warm-start states: 0
 Generated warm-start states: 0
 Skipped warm-start states: 0
-Prevented redundant initialization: 0
-Prevented lane graph assembly: 0
+Prevented redundant initialization: 1
+Prevented lane graph assembly: 1
 
 ## Warm-Start Decisions
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| tool-display-mode | INVALIDATED | docs_build/dev/reports/lane_warm_starts/tool-display-mode.json | d74c5e4650d1252c | 5fe6822b17726c02 | db32f98b67dba493 | Warm-start inputHash changed for tool-display-mode.; Warm-start manifestHash changed for tool-display-mode.; Warm-start warmStartHash changed for tool-display-mode. |
+| tool-images | REUSED | docs_build/dev/reports/lane_warm_starts/tool-images.json | 3995e406b66392a4 | ac6de6d59101bbcc | 0e7e6a30c3a7e460 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
 
 ## Fast-Fail Safeguards
 

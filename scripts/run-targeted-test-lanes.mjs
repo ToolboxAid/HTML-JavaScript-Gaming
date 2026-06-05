@@ -269,6 +269,27 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Tool Display Mode validates the two-row identity/navigation layout, anchors for previous/next targets, disabled text for missing targets, registry build-order labels, role preservation, and multi-path fallback without exercising unrelated toolbox routes."
   },
+  "tool-images": {
+    affectedSurface: "Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback",
+    commands: [
+      playwrightCommand("tests/playwright/tools/ToolImageRegistry.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/ToolImageRegistry.spec.mjs"
+    ],
+    fixtures: [
+      "Toolbox registry badge/tool image contract",
+      "repo-served Toolbox page",
+      "repo-served representative Toolbox tool pages",
+      "shared registry image fallback"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Tool image registry validates every active/planned tool image contract, approved Theme V2 image paths, no size-suffix registry references, registry-owned fallback for missing art, and representative Toolbox image consumption without exercising unrelated toolbox routes."
+  },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [

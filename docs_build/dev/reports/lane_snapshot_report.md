@@ -1,23 +1,23 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-05T02:09:02.083Z
+Generated: 2026-06-05T04:46:18.833Z
 Status: PASS
 Snapshot directory: docs_build/dev/reports/lane_snapshots
 
 ## Summary
 
-Reused lane snapshots: 0
-Invalidated snapshots: 1
+Reused lane snapshots: 1
+Invalidated snapshots: 0
 Generated snapshots: 0
 Skipped snapshots: 0
-Prevented graph rebuilds: 0
-Prevented manifest traversal: 0
+Prevented graph rebuilds: 1
+Prevented manifest traversal: 1
 
 ## Snapshot Decisions
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tool-display-mode | INVALIDATED | docs_build/dev/reports/lane_snapshots/tool-display-mode.json | d74c5e4650d1252c | 37a0b0722df16a80 | 751729a1e113a4de | 6c4fac7630b0b6f3 | 42f4b08da8c812e0 | cd7dee4b02af52ca | fa36e7934b2e9685 | Lane snapshot executionGraphHash changed for tool-display-mode.; Lane snapshot inputHash changed for tool-display-mode.; Lane snapshot manifestHash changed for tool-display-mode.; Lane snapshot snapshotHash changed for tool-display-mode.; Lane snapshot warmStartHash changed for tool-display-mode. |
+| tool-images | REUSED | docs_build/dev/reports/lane_snapshots/tool-images.json | 3995e406b66392a4 | 94568fb9a871813f | 751729a1e113a4de | 6c4fac7630b0b6f3 | f500fb1bb952254b | 5947516c13a9befd | 219ec8010d11f1ac | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
 
 ## Snapshot Validation Findings
 

@@ -1,19 +1,19 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T02:09:17.252Z
+Generated: 2026-06-05T04:46:33.521Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 15.12s
+Current measured lane elapsed time: 14.65s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
-Reused dependency hydration: 0
-Reused snapshots: 0
+Reused dependency hydration: 1
+Reused snapshots: 1
 Validation cache hits: 18
 
 ## Slow Paths Optimized
@@ -31,11 +31,10 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | tool-display-mode | 2.30s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:107:1 > Project Workspace and Game Configuration use registry order without page hardcoding |
-| current targeted run | tool-display-mode | 2.20s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:174:1 > multi-path fallback opens Toolbox Group view with only the target group expanded |
-| current targeted run | tool-display-mode | 1.50s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:81:1 > Game Design renders identity and navigation rows with registry anchor links |
-| current targeted run | tool-display-mode | 1.40s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:132:1 > missing previous target renders disabled text instead of a broken link |
-| current targeted run | tool-display-mode | 1.30s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:150:1 > Build Game renders plain previous and next links in the second row |
+| current targeted run | tool-images | 4.30s | tests\playwright\tools\ToolImageRegistry.spec.mjs:126:1 > representative tool pages consume registry images in Tool Display Mode |
+| current targeted run | tool-images | 3.10s | tests\playwright\tools\ToolImageRegistry.spec.mjs:108:1 > Toolbox cards consume registry image sources |
+| current targeted run | tool-images | 628ms | tests\playwright\tools\ToolImageRegistry.spec.mjs:72:1 > registry defines approved badge and tool image fields for every active tool |
+| current targeted run | tool-images | 529ms | tests\playwright\tools\ToolImageRegistry.spec.mjs:88:1 > registry reports missing images and resolves them through the shared fallback |
 
 ## Guardrails
 

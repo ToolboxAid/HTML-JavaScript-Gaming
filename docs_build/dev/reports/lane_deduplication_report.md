@@ -1,12 +1,12 @@
 # Lane Deduplication Report
 
-Generated: 2026-06-05T02:09:02.083Z
+Generated: 2026-06-05T04:46:18.832Z
 Status: PASS
 
 ## Summary
 
-Raw lane requests: tool-display-mode
-Unique scheduled lanes: tool-display-mode
+Raw lane requests: tool-images
+Unique scheduled lanes: tool-images
 Prevented duplicate lane executions: 0
 Prevented browser launches: 0
 Prevented Workspace lane reruns: 0

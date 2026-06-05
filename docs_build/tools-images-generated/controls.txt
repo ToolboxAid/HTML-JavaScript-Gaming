@@ -1,0 +1,83 @@
+--------------------------------------------------------------------------------
+TOOL: controls
+GROUP: Play
+COLOR: Green
+MASCOT: ForgeBot
+--------------------------------------------------------------------------------
+
+BADGE
+
+For controls badge, this is what I would pass:
+
+Create ONE image only.
+
+Filename:
+badges/controls-1024.png
+
+Size:
+1024W x 1024H
+
+Style:
+Premium game development software icon.
+Rounded square badge.
+Transparent background.
+Green Play glow.
+
+Contents:
+- Game controller
+- Input arrows
+- Button cluster
+- Game Foundry gear G logo
+
+Requirements:
+- No mascot
+- No text
+- No labels
+- No filenames
+- No zip file
+- No UI mockup
+- No second image
+- No split screen
+- No contact sheet
+- No background scene
+
+The badge should completely fill the canvas.
+
+--------------------------------------------------------------------------------
+
+TOOL IMAGE
+
+Then separately for the tool image:
+
+Create ONE image only.
+
+Filename:
+tools/controls-1024.png
+
+Size:
+1820W x 1024H
+
+Style:
+Game Foundry Studio mascot artwork.
+
+Main Character:
+ForgeBot
+
+Scene:
+ForgeBot testing game controls with a controller, glowing input arrows, button pads, and a playful game screen without text.
+
+Requirements:
+- The mascot is the primary focus
+- No text
+- No logos
+- No badge
+- No filename
+- No zip file
+- No UI mockup
+- No second image
+- No split screen
+- No contact sheet
+
+The image should be a full widescreen scene.
+
+================================================================================

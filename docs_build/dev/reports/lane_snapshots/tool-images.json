@@ -1,0 +1,109 @@
+{
+  "commandsHash": "5e0804a36f1cd2ac",
+  "dependencyGateStatus": "PASS",
+  "dependencyGraph": {
+    "dependencies": [],
+    "dependencyGraphHash": "94568fb9a871813f",
+    "importHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+      "toolbox/toolRegistry.js": "ae71e65fe4b23410"
+    },
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs",
+      "toolbox/toolRegistry.js"
+    ]
+  },
+  "dependencyGraphHash": "94568fb9a871813f",
+  "executionGraphHash": "5947516c13a9befd",
+  "fixtureGraph": {
+    "fixtureHashes": {},
+    "fixtures": []
+  },
+  "fixtureGraphHash": "6c4fac7630b0b6f3",
+  "helperGraph": {
+    "helperHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+    },
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ]
+  },
+  "helperGraphHash": "751729a1e113a4de",
+  "inputHash": "774e16c32e9926dc",
+  "lane": "tool-images",
+  "laneCompilationStatus": "PASS",
+  "laneDefinitionHash": "f69aae14d61a670b",
+  "manifest": {
+    "fileHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+      "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
+      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+      "tests/playwright/tools/ToolImageRegistry.spec.mjs": "12a27dfa542c1ae3",
+      "toolbox/toolRegistry.js": "ae71e65fe4b23410"
+    },
+    "fixtures": [],
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs"
+    ],
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs",
+      "tests/helpers/playwrightV8CoverageReporter.mjs",
+      "tests/helpers/workspaceV2CoverageReporter.mjs",
+      "toolbox/toolRegistry.js"
+    ],
+    "manifestHash": "3995e406b66392a4",
+    "manifestPath": "docs_build/dev/reports/lane_manifests/tool-images.json",
+    "source": "generated",
+    "tests": [
+      "tests/playwright/tools/ToolImageRegistry.spec.mjs"
+    ]
+  },
+  "manifestHash": "3995e406b66392a4",
+  "ownership": "tools",
+  "runtimeConfiguration": {
+    "affectedSurface": "Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback",
+    "commands": [
+      {
+        "args": [
+          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
+          "test",
+          "tests/playwright/tools/ToolImageRegistry.spec.mjs",
+          "--project=playwright",
+          "--workers=1",
+          "--reporter=list"
+        ],
+        "command": "C:\\nvm4w\\nodejs\\node.exe",
+        "targets": [
+          "tests/playwright/tools/ToolImageRegistry.spec.mjs"
+        ],
+        "type": "playwright"
+      }
+    ],
+    "commandsHash": "5e0804a36f1cd2ac",
+    "laneConfigHash": "c84316e6949fb0b5",
+    "requiresPreflight": true,
+    "requiresSamplesFlag": false
+  },
+  "runtimeConfigurationHash": "f500fb1bb952254b",
+  "snapshotHash": "219ec8010d11f1ac",
+  "version": 1,
+  "warmStartHash": "ac6de6d59101bbcc",
+  "generatedAt": "2026-06-05T04:40:07.031Z"
+}
