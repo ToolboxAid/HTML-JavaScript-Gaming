@@ -1,13 +1,14 @@
 {
   "commandsHash": "236cf16014cc50de",
   "dependencies": [],
-  "dependencyGraphHash": "37a0b0722df16a80",
+  "dependencyGraphHash": "0a034c67ed94c66f",
   "fileHashes": {
     "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
     "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
     "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-    "tests/playwright/tools/BuildPathProgressSimplification.spec.mjs": "ed9cda2741c0992c"
+    "tests/playwright/tools/BuildPathProgressSimplification.spec.mjs": "1af0b5293303efc2",
+    "toolbox/toolRegistry.js": "d35dc5205690c5e0"
   },
   "fixtures": [],
   "helpers": [
@@ -20,17 +21,18 @@
     "tests/helpers/playwrightRepoServer.mjs",
     "tests/helpers/playwrightStorageIsolation.mjs",
     "tests/helpers/playwrightV8CoverageReporter.mjs",
-    "tests/helpers/workspaceV2CoverageReporter.mjs"
+    "tests/helpers/workspaceV2CoverageReporter.mjs",
+    "toolbox/toolRegistry.js"
   ],
-  "inputHash": "16cab2aa6cc1790c",
+  "inputHash": "64947469b9ba4fd4",
   "lane": "build-path",
-  "laneDefinitionHash": "6a4230f897d5d5d9",
-  "manifestHash": "b86986cd2153c3f5",
+  "laneDefinitionHash": "f69aae14d61a670b",
+  "manifestHash": "e55c4b6606b057c8",
   "ownership": "tools",
   "tests": [
     "tests/playwright/tools/BuildPathProgressSimplification.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-06-05T00:45:18.933Z",
+  "generatedAt": "2026-06-05T12:42:54.087Z",
   "source": "generated"
 }

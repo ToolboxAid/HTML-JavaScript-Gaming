@@ -1,6 +1,6 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-05T12:32:34.998Z
+Generated: 2026-06-05T12:42:55.006Z
 Status: PASS
 Snapshot directory: docs_build/dev/reports/lane_snapshots
 
@@ -17,7 +17,7 @@ Prevented manifest traversal: 0
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tool-navigation | INVALIDATED | docs_build/dev/reports/lane_snapshots/tool-navigation.json | c06ebaf050255d61 | 0a034c67ed94c66f | 751729a1e113a4de | 6c4fac7630b0b6f3 | cc7795a6bc1b2d9e | 7c80d9ed012db476 | ac8151965dffbfd5 | Lane snapshot dependencyGraphHash changed for tool-navigation.; Lane snapshot executionGraphHash changed for tool-navigation.; Lane snapshot inputHash changed for tool-navigation.; Lane snapshot laneDefinitionHash changed for tool-navigation.; Lane snapshot manifestHash changed for tool-navigation.; Lane snapshot snapshotHash changed for tool-navigation.; Lane snapshot warmStartHash changed for tool-navigation. |
+| build-path | INVALIDATED | docs_build/dev/reports/lane_snapshots/build-path.json | e55c4b6606b057c8 | 0a034c67ed94c66f | 751729a1e113a4de | 6c4fac7630b0b6f3 | f54ad8f6e5196b36 | 6d25c5bf0f297b47 | 34a58b5588baff4d | Lane snapshot dependencyGraphHash changed for build-path.; Lane snapshot executionGraphHash changed for build-path.; Lane snapshot inputHash changed for build-path.; Lane snapshot laneDefinitionHash changed for build-path.; Lane snapshot manifestHash changed for build-path.; Lane snapshot snapshotHash changed for build-path.; Lane snapshot warmStartHash changed for build-path. |
 
 ## Snapshot Validation Findings
 

@@ -590,3 +590,58 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_118
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Updated Toolbox card rendering so tool names render as `h3 > a` links.
+- Sourced name-link targets from the registered Toolbox route via `getToolRoute()`.
+- Preserved existing preview-image links, Open Tool launch actions, card layout, status badges, and image diagnostics.
+- Added targeted Toolbox navigation/runtime Playwright/MSJ coverage for name-link route resolution.
+- Did not modify Toolbox registry metadata.
+- Did not add or modify CSS.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/tools-page-accordions.js`
+- `node --check tests/playwright/tools/ToolNavigationPrevNext.spec.mjs`
+- `npm run test:lane:tool-navigation`
+- Scoped `git diff --check` for changed implementation/test files.
+- Targeted changed-file scan confirmed no local CSS, inline styles, script blocks, or `start_of_day` references were introduced.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/toolbox-name-link-navigation-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_119
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Updated Build Path rows on `toolbox/index.html` so the Tool cell renders a registry-backed badge image and linked tool name.
+- Sourced Build Path tool-name links from `getToolRoute()`.
+- Sourced Build Path badge images through the approved Toolbox registry image path.
+- Reused the existing visible image diagnostic behavior for missing badge fallback.
+- Preserved Build Path workflow order, status labels, completion values, and progress guidance.
+- Added targeted Build Path Playwright/MSJ coverage for links, badges, and visible missing-badge diagnostics.
+- Did not add inline styles, style blocks, script blocks, inline event handlers, or CSS.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/tools-page-accordions.js`
+- `node --check tests/playwright/tools/BuildPathProgressSimplification.spec.mjs`
+- `npm run test:lane:build-path`
+- Scoped `git diff --check` for changed implementation/test files.
+- Targeted changed-file scan confirmed no inline styles, style blocks, script blocks, inline event handlers, or `start_of_day` references were introduced.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/build-path-tool-links-badges-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

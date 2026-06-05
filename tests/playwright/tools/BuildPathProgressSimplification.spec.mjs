@@ -1,7 +1,15 @@
 import { expect, test } from "@playwright/test";
+import {
+  TOOL_IMAGE_FALLBACK,
+  TOOL_REGISTRY,
+  getToolImageSource,
+  getToolRoute
+} from "../../../toolbox/toolRegistry.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
+const registryToolsByDisplayName = new Map(TOOL_REGISTRY.map((tool) => [tool.displayName, tool]));
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -120,6 +128,48 @@ test("Build Path shows N/A only for non-required contributor-focused tools", asy
     expect(audioRow.status).not.toBe("⚪ N/A");
     expect(publishRow.status).not.toBe("⚪ N/A");
     expect(publishRow.complete).not.toBe("N/A");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Build Path tool names link to registered routes and render badge images", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/index.html?role=admin");
+
+  try {
+    await page.getByRole("button", { name: "Build Path" }).click();
+    const rows = page.locator("[data-build-path-table='workflow'] tbody tr");
+    const rowCount = await rows.count();
+    expect(rowCount).toBeGreaterThan(0);
+
+    for (let index = 0; index < rowCount; index += 1) {
+      const row = rows.nth(index);
+      const toolName = await row.getAttribute("data-build-path-tool");
+      const registryTool = registryToolsByDisplayName.get(toolName);
+      expect(registryTool, `Registry entry missing for ${toolName}`).toBeTruthy();
+      const route = getToolRoute(registryTool);
+
+      await expect(row.locator("[data-build-path-tool-link]")).toHaveText(toolName);
+      await expect(row.locator("[data-build-path-tool-link]")).toHaveAttribute("data-registered-tool-route", route);
+      await expect(row.locator("[data-build-path-tool-link]")).toHaveAttribute("href", "/" + route);
+      await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("src", getToolImageSource(registryTool, "badge"));
+      await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("alt", toolName + " badge");
+      await expect(row.locator("[data-tool-image-diagnostic]")).toHaveCount(0);
+    }
+
+    const gameDesignRow = page.locator("[data-build-path-tool='Game Design']");
+    await gameDesignRow.locator("[data-build-path-badge]").evaluate((image) => {
+      image.dispatchEvent(new Event("error"));
+    });
+    await expect(gameDesignRow.locator("[data-build-path-badge]")).toHaveAttribute("src", TOOL_IMAGE_FALLBACK);
+    await expect(gameDesignRow.locator("[data-tool-image-diagnostic]")).toContainText("Badge image missing; fallback shown.");
+
+    await gameDesignRow.locator("[data-build-path-tool-link]").click();
+    await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
+    await expect(page.locator(".page-title h1")).toHaveText("Game Design");
 
     await expectNoPageFailures(failures);
   } finally {

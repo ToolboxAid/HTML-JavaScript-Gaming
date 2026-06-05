@@ -12,30 +12,30 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(77%) Toolbox Index - exercised 8 runtime JS files
+(85%) Toolbox Index - exercised 5 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (74%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(66%) toolbox/tools-page-accordions.js - executed lines 1869/1869; executed functions 40/61
-(88%) toolbox/toolRegistry.js - executed lines 1598/1598; executed functions 28/32
+(81%) toolbox/toolRegistry.js - executed lines 1598/1598; executed functions 26/32
+(90%) toolbox/tools-page-accordions.js - executed lines 1934/1934; executed functions 70/78
 
 Files with executed line/function counts where available:
-(66%) toolbox/tools-page-accordions.js - executed lines 1869/1869; executed functions 40/61
 (67%) assets/theme-v2/js/tool-display-mode.js - executed lines 172/172; executed functions 10/15
-(72%) toolbox/game-configuration/game-configuration-mock-repository.js - executed lines 283/283; executed functions 23/32
 (73%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 384/384; executed functions 24/33
-(74%) toolbox/project-workspace/project-workspace.js - executed lines 238/238; executed functions 17/23
-(78%) toolbox/game-configuration/game-configuration.js - executed lines 168/168; executed functions 14/18
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 205/205; executed functions 16/20
-(86%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 32/37
-(88%) toolbox/toolRegistry.js - executed lines 1598/1598; executed functions 28/32
+(81%) toolbox/toolRegistry.js - executed lines 1598/1598; executed functions 26/32
+(83%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 30/36
 (90%) toolbox/game-design/game-design.js - executed lines 224/224; executed functions 19/21
+(90%) toolbox/tools-page-accordions.js - executed lines 1934/1934; executed functions 70/78
+(100%) admin/tools-progress.js - executed lines 106/106; executed functions 11/11
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
+(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolImageRegistry.spec.mjs - changed JS file not collected as browser runtime coverage
-(66%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
-(88%) toolbox/toolRegistry.js - changed JS file with browser V8 coverage
+(0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
+(81%) toolbox/toolRegistry.js - changed JS file with browser V8 coverage
+(90%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage

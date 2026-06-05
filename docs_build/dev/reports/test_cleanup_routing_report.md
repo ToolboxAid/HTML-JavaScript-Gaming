@@ -1,6 +1,6 @@
 # Test Cleanup Routing Report
 
-Generated: 2026-06-05T12:32:35.000Z
+Generated: 2026-06-05T12:43:20.766Z
 Status: PASS
 
 ## Representative Routing Cases
@@ -18,8 +18,8 @@ Status: PASS
 Workspace V2 explicit/on-request only: PASS
 Full samples smoke explicit/on-request only: PASS
 Misplaced test preflight fast-fail: PASS
-Scheduled runtime lanes: tool-navigation
-Full samples smoke decision: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.
+Scheduled runtime lanes: build-path
+Full samples smoke decision: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
 
 ## Lane Script Routing
 

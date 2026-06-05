@@ -1,6 +1,6 @@
 # Persistent Lane Manifest Report
 
-Generated: 2026-06-05T12:32:34.998Z
+Generated: 2026-06-05T12:42:55.006Z
 Status: PASS
 Manifest directory: docs_build/dev/reports/lane_manifests
 
@@ -15,13 +15,13 @@ Prevented discovery scans: 0
 
 | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- |
-| tool-navigation | INVALIDATED | docs_build/dev/reports/lane_manifests/tool-navigation.json | a9998f909c56f09a | c06ebaf050255d61 | Persistent manifest lane definition hash changed for tool-navigation. |
+| build-path | INVALIDATED | docs_build/dev/reports/lane_manifests/build-path.json | 64947469b9ba4fd4 | e55c4b6606b057c8 | Persistent manifest lane definition hash changed for build-path. |
 
 ## Persisted Manifest Files
 
 | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| tool-navigation | tools | generated | tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 0a034c67ed94c66f | c06ebaf050255d61 |
+| build-path | tools | generated | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 0a034c67ed94c66f | e55c4b6606b057c8 |
 
 ## Fast-Fail Enforcement
 

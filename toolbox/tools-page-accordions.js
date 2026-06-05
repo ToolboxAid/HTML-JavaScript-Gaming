@@ -1623,6 +1623,54 @@ import {
         return cell;
     }
 
+    function createBuildPathBadgeDiagnostic(tool, registryTool) {
+        if (registryTool && registryImageSource(registryTool, "badge") !== TOOL_IMAGE_FALLBACK) {
+            return null;
+        }
+        return createToolImageDiagnostic(tool.title, ["Badge image missing; fallback shown."]);
+    }
+
+    function createBuildPathToolCell(tool) {
+        const cell = document.createElement("td");
+        const registryTool = registryToolForCard(tool);
+        const route = registryToolRoute(registryTool);
+        const href = registryToolHref(registryTool);
+
+        const content = document.createElement("span");
+        content.className = "content-cluster";
+
+        const badge = document.createElement("img");
+        badge.src = registryImageSource(registryTool, "badge");
+        badge.alt = tool.title + " badge";
+        badge.width = 64;
+        badge.height = 64;
+        badge.dataset.buildPathBadge = tool.title;
+        badge.dataset.toolImageKind = "badge";
+        badge.dataset.toolImageSource = registryTool ? "registry" : "fallback";
+        configureImageDiagnostic(badge, cell, tool.title, "badge");
+        content.append(badge);
+
+        if (route && href) {
+            const link = document.createElement("a");
+            link.href = href;
+            link.dataset.buildPathToolLink = tool.title;
+            link.dataset.registeredToolRoute = route;
+            link.textContent = tool.title;
+            content.append(link);
+        } else {
+            const text = document.createElement("span");
+            text.textContent = tool.title;
+            content.append(text);
+        }
+
+        cell.append(content);
+        const diagnostic = createBuildPathBadgeDiagnostic(tool, registryTool);
+        if (diagnostic) {
+            cell.append(diagnostic);
+        }
+        return cell;
+    }
+
     function createBuildPathTable() {
         const wrapper = document.createElement("div");
         wrapper.className = "table-wrapper";
@@ -1650,7 +1698,7 @@ import {
             tableRow.dataset.buildPathComplete = row.complete;
             tableRow.append(
                 createTableCell("td", String(row.order)),
-                createTableCell("td", row.tool.title),
+                createBuildPathToolCell(row.tool),
                 createTableCell("td", row.statusLabel),
                 createTableCell("td", row.complete)
             );

@@ -1,20 +1,20 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T12:32:35.001Z
+Generated: 2026-06-05T12:43:20.766Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 0ms
+Current measured lane elapsed time: 25.73s
 PR_26146_038 actual browser launches: 4
-Current actual browser launches: 0
+Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
 Reused dependency hydration: 0
 Reused snapshots: 0
-Validation cache hits: 1
+Validation cache hits: 18
 
 ## Slow Paths Optimized
 
@@ -31,11 +31,14 @@ Validation cache hits: 1
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | none | 0ms | No runtime test-duration lines were emitted. |
+| current targeted run | build-path | 6.00s | tests\playwright\tools\BuildPathProgressSimplification.spec.mjs:139:1 > Build Path tool names link to registered routes and render badge images |
+| current targeted run | build-path | 4.30s | tests\playwright\tools\BuildPathProgressSimplification.spec.mjs:74:1 > Toolbox removes Progress view and renders Build Path workflow table |
+| current targeted run | build-path | 2.60s | tests\playwright\tools\BuildPathProgressSimplification.spec.mjs:114:1 > Build Path shows N/A only for non-required contributor-focused tools |
+| current targeted run | build-path | 2.20s | tests\playwright\tools\BuildPathProgressSimplification.spec.mjs:181:1 > Admin navigation exposes Tools Progress and removes Project Progress |
 
 ## Guardrails
 
-Full samples smoke: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.
+Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
 Runtime failures observed: 0
 Runtime schedule status: PASS
 

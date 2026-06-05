@@ -1,6 +1,6 @@
 # Lane Warm-Start Report
 
-Generated: 2026-06-05T12:32:34.997Z
+Generated: 2026-06-05T12:42:55.005Z
 Status: PASS
 Warm-start directory: docs_build/dev/reports/lane_warm_starts
 
@@ -17,7 +17,7 @@ Prevented lane graph assembly: 0
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| tool-navigation | INVALIDATED | docs_build/dev/reports/lane_warm_starts/tool-navigation.json | c06ebaf050255d61 | 5dc43421a73b9226 | 0074b6ff936b5572 | Warm-start dependencyGraphHash changed for tool-navigation.; Warm-start dependencyHydrationHash changed for tool-navigation.; Warm-start inputHash changed for tool-navigation.; Warm-start laneDefinitionHash changed for tool-navigation.; Warm-start manifestHash changed for tool-navigation.; Warm-start warmStartHash changed for tool-navigation. |
+| build-path | INVALIDATED | docs_build/dev/reports/lane_warm_starts/build-path.json | e55c4b6606b057c8 | 7148bcdf1b1bd09f | 63d18ef7748baba0 | Warm-start dependencyGraphHash changed for build-path.; Warm-start dependencyHydrationHash changed for build-path.; Warm-start inputHash changed for build-path.; Warm-start laneDefinitionHash changed for build-path.; Warm-start manifestHash changed for build-path.; Warm-start warmStartHash changed for build-path. |
 
 ## Fast-Fail Safeguards
 
