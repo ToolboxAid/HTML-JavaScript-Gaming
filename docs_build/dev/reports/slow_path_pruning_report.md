@@ -1,19 +1,19 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-04T15:41:04.544Z
+Generated: 2026-06-05T00:18:40.824Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 11.27s
+Current measured lane elapsed time: 12.55s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
-Reused dependency hydration: 1
-Reused snapshots: 1
+Reused dependency hydration: 0
+Reused snapshots: 0
 Validation cache hits: 18
 
 ## Slow Paths Optimized
@@ -31,8 +31,10 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | workspace-contract | 2.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:41:1 > root tools surface links current tool pages without old_* routes |
-| current targeted run | workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:85:1 > tool template future-state page loads from root Theme V2 paths |
+| current targeted run | game-design | 2.00s | tests\playwright\tools\GameDesignMockRepository.spec.mjs:80:1 > Game Design saves and updates design fields against the active project |
+| current targeted run | game-design | 1.80s | tests\playwright\tools\GameDesignMockRepository.spec.mjs:55:1 > Game Design shows an actionable overlay when project context is missing |
+| current targeted run | game-design | 1.50s | tests\playwright\tools\GameDesignMockRepository.spec.mjs:129:1 > Game Design authors capability demos as Project Workspace projects |
+| current targeted run | game-design | 1.30s | tests\playwright\tools\GameDesignMockRepository.spec.mjs:155:1 > Toolbox Build Path view shows the Game Design handoff |
 
 ## Guardrails
 

@@ -1,27 +1,27 @@
 # Persistent Lane Manifest Report
 
-Generated: 2026-06-04T15:40:53.234Z
+Generated: 2026-06-05T00:18:28.234Z
 Status: PASS
 Manifest directory: docs_build/dev/reports/lane_manifests
 
 ## Summary
 
-Reused manifests: 1
+Reused manifests: 0
 Invalidated manifests: 0
-Generated manifests: 0
-Prevented discovery scans: 1
+Generated manifests: 1
+Prevented discovery scans: 0
 
 ## Manifest Events
 
 | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- |
-| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | f3af26104c151303 | dbc170269ad7062b | Inputs unchanged; persisted lane manifest reused. |
+| game-design | GENERATED | docs_build/dev/reports/lane_manifests/game-design.json | 524a46feff3c2312 | c91e3e832a8647ab | No persisted manifest existed for this lane. |
 
 ## Persisted Manifest Files
 
 | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 37a0b0722df16a80 | dbc170269ad7062b |
+| game-design | tools | generated | tests/playwright/tools/GameDesignMockRepository.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 37a0b0722df16a80 | c91e3e832a8647ab |
 
 ## Fast-Fail Enforcement
 

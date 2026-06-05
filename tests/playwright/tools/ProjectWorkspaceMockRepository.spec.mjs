@@ -312,7 +312,7 @@ test("Learn Getting Started documents screen and layout guidance", async ({ page
   }
 });
 
-test("Toolbox Project Data controls are admin-only and drive mock Progress and Build Path views", async ({ page }) => {
+test("Toolbox Project Data controls are admin-only and drive mock Build Path state", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html?role=guest");
 
   try {
@@ -339,19 +339,18 @@ test("Toolbox Project Data controls are admin-only and drive mock Progress and B
 
     await page.getByRole("button", { name: "Clear Test Data" }).click();
     await expect(page.locator("[data-project-data-status]")).toHaveText("Test data cleared. Active project: none.");
-    await page.getByRole("button", { name: "Progress" }).click();
-    await expect(page.getByText("Active Project: No active project", { exact: true })).toBeVisible();
-    await expect(page.getByText("Project Progress: No active project")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await page.getByRole("button", { name: "Build Path" }).click();
-    await expect(page.getByText(/Active mock project: none/)).toBeVisible();
+    await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
+    await expect(page.getByText("Active Project: No active project", { exact: true })).toBeVisible();
+    await expect(page.getByText("Project Completion: No active project")).toBeVisible();
+    await expect(page.locator("[data-build-path-tool='Project Workspace']")).toContainText("🔴 Not Started");
 
     await page.getByRole("button", { name: "Seed Demo Project" }).click();
     await expect(page.locator("[data-project-data-status]")).toHaveText("Demo projects seeded. Active project: Demo Project.");
-    await expect(page.getByText(/Active mock project: Demo Project/)).toBeVisible();
-
-    await page.getByRole("button", { name: "Progress" }).click();
     await expect(page.getByText("Active Project: Demo Project", { exact: true })).toBeVisible();
-    await expect(page.getByText("Project Progress: Demo Project identity ready")).toBeVisible();
+    await expect(page.getByText("Project Completion: Demo Project identity ready")).toBeVisible();
+    await expect(page.locator("[data-build-path-tool='Project Workspace']")).toContainText("🟢 Complete");
 
     await page.getByRole("button", { name: "Reset Project Data" }).click();
     await expect(page.locator("[data-project-data-status]")).toHaveText("Project Data reset. Active project: Demo Project.");

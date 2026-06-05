@@ -152,18 +152,17 @@ test("Game Design authors capability demos as Project Workspace projects", async
   }
 });
 
-test("Toolbox Progress and Build Path views show the Game Design handoff", async ({ page }) => {
+test("Toolbox Build Path view shows the Game Design handoff", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
 
   try {
-    await page.getByRole("button", { name: "Progress" }).click();
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toContainText("Project purpose context required");
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toContainText("Validation overlay hands off to Game Configuration");
+    await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
 
     await page.getByRole("button", { name: "Build Path" }).click();
-    await expect(page.locator("[data-tools-accordion='Game Design']")).toBeVisible();
-    await expect(page.locator("[data-tools-accordion='Game Design']")).toContainText("Define gameplay, rules, player experience, and the requirements that shape the build path.");
-    await expect(page.locator("[data-tools-accordion='Game Design']")).toContainText("Game Design");
+    await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
+    await expect(page.locator("[data-build-path-tool='Game Design']")).toContainText("Game Design");
+    await expect(page.locator("[data-build-path-tool='Game Design']")).toContainText("🟡 In Progress");
+    await expect(page.locator("[data-build-path-tool='Game Configuration']")).toContainText("🟡 In Progress");
 
     await expectNoPageFailures(failures);
   } finally {

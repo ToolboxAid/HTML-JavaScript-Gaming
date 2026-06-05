@@ -1,0 +1,91 @@
+{
+  "commandsHash": "4a5e6236d716f4d0",
+  "dependencyGateStatus": "PASS",
+  "dependencyGraph": {
+    "dependencies": [],
+    "dependencyGraphHash": "e83a526f9a8df3d7",
+    "importHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a"
+    },
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs"
+    ]
+  },
+  "dependencyGraphHash": "e83a526f9a8df3d7",
+  "executionGraphHash": "2a945095e27e129f",
+  "fixtureGraph": {
+    "fixtureHashes": {},
+    "fixtures": []
+  },
+  "fixtureGraphHash": "6c4fac7630b0b6f3",
+  "helperGraph": {
+    "helperHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a"
+    },
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs"
+    ]
+  },
+  "helperGraphHash": "32401d754ac95b3c",
+  "inputHash": "92f3aa5ae171644a",
+  "lane": "project-workspace",
+  "laneCompilationStatus": "PASS",
+  "laneDefinitionHash": "f4ba10cc6a317a51",
+  "manifest": {
+    "fileHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+      "tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs": "63316bc2fd205411"
+    },
+    "fixtures": [],
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs"
+    ],
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs"
+    ],
+    "manifestHash": "fe861148fae84324",
+    "manifestPath": "docs_build/dev/reports/lane_manifests/project-workspace.json",
+    "source": "generated",
+    "tests": [
+      "tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs"
+    ]
+  },
+  "manifestHash": "fe861148fae84324",
+  "ownership": "tools",
+  "runtimeConfiguration": {
+    "affectedSurface": "Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge",
+    "commands": [
+      {
+        "args": [
+          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
+          "test",
+          "tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs",
+          "--project=playwright",
+          "--workers=1",
+          "--reporter=list"
+        ],
+        "command": "C:\\nvm4w\\nodejs\\node.exe",
+        "targets": [
+          "tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs"
+        ],
+        "type": "playwright"
+      }
+    ],
+    "commandsHash": "4a5e6236d716f4d0",
+    "laneConfigHash": "ed92589bc0136fc6",
+    "requiresPreflight": true,
+    "requiresSamplesFlag": false
+  },
+  "runtimeConfigurationHash": "9bdf3b71acd34ea3",
+  "snapshotHash": "cdbf6c3431fe5576",
+  "version": 1,
+  "warmStartHash": "a47c79e0936fbc9e",
+  "generatedAt": "2026-06-05T00:17:24.025Z"
+}

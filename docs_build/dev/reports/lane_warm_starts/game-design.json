@@ -1,8 +1,8 @@
 {
-  "commandsHash": "39e16c9d480a1e51",
+  "commandsHash": "e68ab58c9a49aa63",
   "dependencyGraphHash": "37a0b0722df16a80",
   "dependencyHydration": {
-    "dependencyHydrationHash": "0ff8fc92c789456d",
+    "dependencyHydrationHash": "1a5eda0dbb35dbd2",
     "fixtureHashes": {},
     "fixtures": [],
     "helperHashes": {
@@ -30,16 +30,16 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "dependencyHydrationHash": "0ff8fc92c789456d",
-  "inputHash": "62b154c6697db40d",
-  "lane": "workspace-contract",
-  "laneConfigHash": "3d8db02cddc33911",
+  "dependencyHydrationHash": "1a5eda0dbb35dbd2",
+  "inputHash": "524a46feff3c2312",
+  "lane": "game-design",
+  "laneConfigHash": "fe5b7af00bbd4440",
   "laneDefinitionHash": "f4ba10cc6a317a51",
-  "manifestHash": "1fc4eb33f4a1ab9d",
+  "manifestHash": "c91e3e832a8647ab",
   "ownership": "tools",
-  "warmStartHash": "5ff8ffc5100dccc8",
+  "warmStartHash": "2de7907be6a98d09",
   "version": 1,
-  "generatedAt": "2026-06-05T00:16:40.718Z",
-  "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+  "generatedAt": "2026-06-05T00:18:27.291Z",
+  "manifestPath": "docs_build/dev/reports/lane_manifests/game-design.json",
   "sourceManifest": "generated"
 }

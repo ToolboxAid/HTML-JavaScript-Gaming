@@ -1,0 +1,30 @@
+{
+  "commandsHash": "4a5e6236d716f4d0",
+  "dependencies": [],
+  "dependencyGraphHash": "e83a526f9a8df3d7",
+  "fileHashes": {
+    "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+    "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+    "tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs": "63316bc2fd205411"
+  },
+  "fixtures": [],
+  "helpers": [
+    "tests/helpers/playwrightRepoServer.mjs",
+    "tests/helpers/playwrightStorageIsolation.mjs"
+  ],
+  "imports": [
+    "tests/helpers/playwrightRepoServer.mjs",
+    "tests/helpers/playwrightStorageIsolation.mjs"
+  ],
+  "inputHash": "92f3aa5ae171644a",
+  "lane": "project-workspace",
+  "laneDefinitionHash": "f4ba10cc6a317a51",
+  "manifestHash": "fe861148fae84324",
+  "ownership": "tools",
+  "tests": [
+    "tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs"
+  ],
+  "version": 1,
+  "generatedAt": "2026-06-05T00:17:23.043Z",
+  "source": "generated"
+}

@@ -1,24 +1,24 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-06-04T15:40:53.232Z
+Generated: 2026-06-05T00:18:28.233Z
 Status: PASS
 
 ## Runtime Cost Summary
 
 Reused runtime sessions: 0
-Reused lane snapshots: 1
-Reused warm-start lanes: 1
-Reused dependency hydration: 1
-Prevented graph rebuilds: 1
-Prevented redundant initialization: 1
+Reused lane snapshots: 0
+Reused warm-start lanes: 0
+Reused dependency hydration: 0
+Prevented graph rebuilds: 0
+Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
-Prevented redundant lane execution: 5
+Prevented redundant lane execution: 9
 Baseline Playwright/browser launches: 1
 Scheduled Playwright/browser launches: 1
 
 ## Scheduled Lane Order
 
-1. workspace-contract
+1. game-design
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+| game-design | GENERATED | GENERATED | GENERATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Game Design rebuild slice validates the active project context, design save/update, actionable validation, capability demo authoring, and Toolbox progress handoff without exercising unrelated toolbox routes. |
 
 ## Runtime Savings Observations
 

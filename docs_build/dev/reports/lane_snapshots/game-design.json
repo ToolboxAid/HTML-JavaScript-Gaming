@@ -1,5 +1,5 @@
 {
-  "commandsHash": "39e16c9d480a1e51",
+  "commandsHash": "e68ab58c9a49aa63",
   "dependencyGateStatus": "PASS",
   "dependencyGraph": {
     "dependencies": [],
@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "37a0b0722df16a80",
-  "executionGraphHash": "eda4d810b31a21af",
+  "executionGraphHash": "c237663bdf259252",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -39,8 +39,8 @@
     ]
   },
   "helperGraphHash": "751729a1e113a4de",
-  "inputHash": "62b154c6697db40d",
-  "lane": "workspace-contract",
+  "inputHash": "524a46feff3c2312",
+  "lane": "game-design",
   "laneCompilationStatus": "PASS",
   "laneDefinitionHash": "f4ba10cc6a317a51",
   "manifest": {
@@ -49,7 +49,7 @@
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "612f23e2a75c764f"
+      "tests/playwright/tools/GameDesignMockRepository.spec.mjs": "e93f06ca78832167"
     },
     "fixtures": [],
     "helpers": [
@@ -64,42 +64,42 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "1fc4eb33f4a1ab9d",
-    "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+    "manifestHash": "c91e3e832a8647ab",
+    "manifestPath": "docs_build/dev/reports/lane_manifests/game-design.json",
     "source": "generated",
     "tests": [
-      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+      "tests/playwright/tools/GameDesignMockRepository.spec.mjs"
     ]
   },
-  "manifestHash": "1fc4eb33f4a1ab9d",
+  "manifestHash": "c91e3e832a8647ab",
   "ownership": "tools",
   "runtimeConfiguration": {
-    "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
+    "affectedSurface": "Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff",
     "commands": [
       {
         "args": [
           "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
           "test",
-          "tests/playwright/tools/RootToolsFutureState.spec.mjs",
+          "tests/playwright/tools/GameDesignMockRepository.spec.mjs",
           "--project=playwright",
           "--workers=1",
           "--reporter=list"
         ],
         "command": "C:\\nvm4w\\nodejs\\node.exe",
         "targets": [
-          "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+          "tests/playwright/tools/GameDesignMockRepository.spec.mjs"
         ],
         "type": "playwright"
       }
     ],
-    "commandsHash": "39e16c9d480a1e51",
-    "laneConfigHash": "3d8db02cddc33911",
+    "commandsHash": "e68ab58c9a49aa63",
+    "laneConfigHash": "fe5b7af00bbd4440",
     "requiresPreflight": true,
     "requiresSamplesFlag": false
   },
-  "runtimeConfigurationHash": "c99c4343771f1683",
-  "snapshotHash": "871a2ff950a75736",
+  "runtimeConfigurationHash": "3171f9ce5e0dd545",
+  "snapshotHash": "7a900c43213c8328",
   "version": 1,
-  "warmStartHash": "5ff8ffc5100dccc8",
-  "generatedAt": "2026-06-05T00:16:41.617Z"
+  "warmStartHash": "2de7907be6a98d09",
+  "generatedAt": "2026-06-05T00:18:28.229Z"
 }

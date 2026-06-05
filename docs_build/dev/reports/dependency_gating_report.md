@@ -1,6 +1,6 @@
 # Dependency Gating Report
 
-Generated: 2026-06-04T15:40:53.232Z
+Generated: 2026-06-05T00:18:28.233Z
 Status: PASS
 
 ## Gate Order
@@ -14,7 +14,11 @@ Status: PASS
 
 | Lane | Selected | Status | Dependencies | Affected Surface | Reason |
 | --- | --- | --- | --- | --- | --- |
-| workspace-contract | Yes | PASS | none | Root tools future-state navigation and Tool Template V2 contract | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
+| workspace-contract | No | SKIP | none | Root tools future-state navigation and Tool Template V2 contract | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| project-workspace | No | SKIP | none | Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| game-design | Yes | PASS | none | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
+| game-configuration | No | SKIP | none | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| build-path | No | SKIP | none | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | tool-runtime | No | SKIP | none | Active public toolbox and Tool Template V2 contract | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | game-runtime | No | SKIP | none | Deprecated archive/v1-v2/games reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | integration | No | SKIP | none | Integration handoff behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |

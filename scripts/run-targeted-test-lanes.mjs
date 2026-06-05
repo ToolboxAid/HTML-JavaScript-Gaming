@@ -185,6 +185,27 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Game Configuration rebuild slice validates the valid Game Design handoff, blocked invalid handoffs, configuration save/update, actionable validation, user-facing output, and Toolbox progress handoff without exercising unrelated toolbox routes."
   },
+  "build-path": {
+    affectedSurface: "Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation",
+    commands: [
+      playwrightCommand("tests/playwright/tools/BuildPathProgressSimplification.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/BuildPathProgressSimplification.spec.mjs"
+    ],
+    fixtures: [
+      "repo-served Toolbox page",
+      "repo-served Admin Tools Progress page",
+      "Project Workspace mock project context",
+      "Toolbox role simulation"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Build Path simplification validates removal of the separate Progress view, workflow-order status/completion table behavior, contributor N/A rows, and Admin Tools Progress navigation without exercising unrelated toolbox routes."
+  },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [

@@ -11,7 +11,6 @@ import {
 
     const orderButton = document.querySelector("[data-tools-order]");
     const groupedButton = document.querySelector("[data-tools-sort='grouped']");
-    const progressButton = document.querySelector("[data-tools-view='progress']");
     const buildPathButton = document.querySelector("[data-tools-view='build-path']");
     const roleBanner = document.querySelector("[data-toolbox-role-banner]");
     const projectDataMenu = document.querySelector("[data-project-data-menu]");
@@ -27,13 +26,26 @@ import {
         ? urlMemberRole
         : defaultProjectMemberRole;
     let currentMode = "ascending";
-    const toolboxStatusModel = Object.freeze(["Ready", "Wireframe", "Under Construction", "Planned", "Hidden", "Deprecated"]);
     const statusLabelMap = Object.freeze({
         complete: "Ready",
         ready: "Wireframe",
         "in-progress": "Under Construction",
         locked: "Planned"
     });
+    const buildPathStatusIndicators = Object.freeze({
+        complete: "🟢 Complete",
+        "in-progress": "🟡 In Progress",
+        "not-started": "🔴 Not Started",
+        "not-applicable": "⚪ N/A"
+    });
+    const buildPathAlwaysRequired = Object.freeze([
+        "Project Workspace",
+        "Game Design",
+        "Game Configuration",
+        "Build Game",
+        "Game Testing",
+        "Publish"
+    ]);
     const progressRequirements = Object.freeze({
         "Game Design": ["Project Workspace"],
         "Game Configuration": ["Game Design"],
@@ -1270,8 +1282,6 @@ import {
                 ]
         }
 ];
-    const progressOrder = toolboxStatusModel;
-
     function compareByTitle(left, right) {
         return left.title.localeCompare(right.title);
     }
@@ -1444,9 +1454,6 @@ import {
         if (groupedButton) {
             groupedButton.setAttribute("aria-pressed", String(mode === "grouped"));
         }
-        if (progressButton) {
-            progressButton.setAttribute("aria-pressed", String(mode === "progress"));
-        }
         if (buildPathButton) {
             buildPathButton.setAttribute("aria-pressed", String(mode === "build-path"));
         }
@@ -1472,40 +1479,105 @@ import {
         }));
     }
 
-    function getProgressGroups() {
-        return progressOrder.map((status) => ({
-            title: status,
-            tools: getOrderedTools("ascending").filter((tool) => tool.status === status),
-            groupClass: "tool-group-build"
-        })).filter((group) => group.tools.length > 0);
+    function sourceToolByTitle(title) {
+        for (const group of toolGroups) {
+            const tool = group.tools.find((candidate) => candidate.title === title);
+            if (tool) {
+                const progress = progressModel[tool.title] || defaultProgress;
+                const mergedTool = {
+                    ...tool,
+                    group: group.group,
+                    ...progress
+                };
+                return {
+                    ...mergedTool,
+                    requires: progressRequirements[tool.title] || [],
+                    status: normalizeToolStatus(mergedTool)
+                };
+            }
+        }
+        return null;
     }
 
-    function getBuildPathGroups() {
-        const availableTools = roleAwareTools();
+    function isRequiredForCurrentBuildPath(tool) {
+        if (tool.title === "Publish") {
+            return true;
+        }
+        if (buildPathAlwaysRequired.includes(tool.title)) {
+            return true;
+        }
+        if (!isFocusedRoleView()) {
+            return true;
+        }
+        const focusTools = roleFocusTools[activeRoleFocus()];
+        return !Array.isArray(focusTools) || focusTools.includes(tool.title);
+    }
+
+    function buildPathStatusForTool(tool, activeProject) {
+        if (!isRequiredForCurrentBuildPath(tool)) {
+            return "not-applicable";
+        }
+        if (tool.title === "Project Workspace") {
+            return activeProject ? "complete" : "not-started";
+        }
+        if (!activeProject) {
+            return "not-started";
+        }
+        if (tool.status === "Complete") {
+            return "complete";
+        }
+        if (tool.status === "Ready" || tool.status === "Wireframe" || tool.status === "Under Construction") {
+            return "in-progress";
+        }
+        return "not-started";
+    }
+
+    function buildPathCompleteLabel(status) {
+        if (status === "complete") {
+            return "Yes";
+        }
+        if (status === "not-applicable") {
+            return "N/A";
+        }
+        return "No";
+    }
+
+    function getBuildPathRows() {
         const activeProject = projectWorkspaceRepository.getActiveProject();
-        return buildPathGroups.map((group) => ({
-            title: group.title,
-            tools: group.tools.map((title) => availableTools.find((tool) => tool.title === title)).filter(Boolean),
-            groupClass: group.groupClass,
-            note: group.title === "Project Workspace"
-                ? `${group.note} Active mock project: ${activeProject?.name || "none"}.`
-                : group.note
-        }));
+        let order = 0;
+        return buildPathGroups.flatMap((group) => group.tools.map((title) => {
+            const tool = sourceToolByTitle(title);
+            if (!tool) {
+                return null;
+            }
+            const status = buildPathStatusForTool(tool, activeProject);
+            order += 1;
+            return {
+                complete: buildPathCompleteLabel(status),
+                order,
+                status,
+                statusLabel: buildPathStatusIndicators[status],
+                tool
+            };
+        }).filter(Boolean));
     }
 
-    function createProgressSummary() {
+    function createBuildPathSummary() {
         const projectProgressSummary = getProjectProgressSummary();
         const article = document.createElement("article");
         article.className = "callout";
 
         const title = document.createElement("h3");
-        title.textContent = "Project Progress";
+        title.textContent = "Build Path Guidance";
 
         const activeProject = document.createElement("p");
         activeProject.textContent = "Active Project: " + projectProgressSummary.activeProjectName;
 
-        const projectProgress = document.createElement("p");
-        projectProgress.textContent = "Project Progress: " + projectProgressSummary.projectProgress;
+        const nextAction = document.createElement("p");
+        nextAction.textContent = "What should I do next? " + projectProgressSummary.recommendedNextTool;
+
+        const projectCompletion = document.createElement("p");
+        projectCompletion.textContent = "Project Completion: " + projectProgressSummary.projectProgress;
 
         const publishingProgress = document.createElement("p");
         publishingProgress.textContent = "Publishing Progress: " + projectProgressSummary.publishingProgress;
@@ -1513,11 +1585,56 @@ import {
         const currentFocus = document.createElement("p");
         currentFocus.textContent = "Current Focus: " + projectProgressSummary.currentFocus;
 
-        const nextTool = document.createElement("p");
-        nextTool.textContent = "Recommended Next Tool: " + projectProgressSummary.recommendedNextTool;
+        const direction = document.createElement("p");
+        direction.textContent = "Work top-to-bottom and left-to-right through the workflow table.";
 
-        article.append(title, activeProject, projectProgress, publishingProgress, currentFocus, nextTool);
+        article.append(title, activeProject, nextAction, projectCompletion, publishingProgress, currentFocus, direction);
         return article;
+    }
+
+    function createTableCell(tagName, text) {
+        const cell = document.createElement(tagName);
+        cell.textContent = text;
+        return cell;
+    }
+
+    function createBuildPathTable() {
+        const wrapper = document.createElement("div");
+        wrapper.className = "table-wrapper";
+        wrapper.dataset.buildPathTable = "workflow";
+
+        const table = document.createElement("table");
+        table.className = "data-table";
+        table.setAttribute("aria-label", "Build Path workflow status");
+
+        const caption = document.createElement("caption");
+        caption.textContent = "Project Build Path";
+
+        const head = document.createElement("thead");
+        const headRow = document.createElement("tr");
+        ["Order", "Tool", "Status", "Complete"].forEach((heading) => {
+            headRow.append(createTableCell("th", heading));
+        });
+        head.append(headRow);
+
+        const body = document.createElement("tbody");
+        getBuildPathRows().forEach((row) => {
+            const tableRow = document.createElement("tr");
+            tableRow.dataset.buildPathTool = row.tool.title;
+            tableRow.dataset.buildPathStatus = row.statusLabel;
+            tableRow.dataset.buildPathComplete = row.complete;
+            tableRow.append(
+                createTableCell("td", String(row.order)),
+                createTableCell("td", row.tool.title),
+                createTableCell("td", row.statusLabel),
+                createTableCell("td", row.complete)
+            );
+            body.append(tableRow);
+        });
+
+        table.append(caption, head, body);
+        wrapper.append(table);
+        return wrapper;
     }
 
     function createRoleFocusSummary() {
@@ -1727,12 +1844,8 @@ import {
         if (mode === "grouped") {
             const accordions = getGroupedTools().map((group, position) => createAccordion(group, position === 0));
             renderWithRoleFocus(...accordions);
-        } else if (mode === "progress") {
-            const accordions = getProgressGroups().map((group) => createAccordion(group, true, { showReadiness: true }));
-            renderWithRoleFocus(createProgressSummary(), ...accordions);
         } else if (mode === "build-path") {
-            const accordions = getBuildPathGroups().map((group) => createAccordion(group, true));
-            renderWithRoleFocus(...accordions);
+            renderWithRoleFocus(createBuildPathSummary(), createBuildPathTable());
         } else {
             renderWithRoleFocus(createToolGrid(getOrderedTools(mode)));
         }
@@ -1754,12 +1867,6 @@ import {
     if (groupedButton) {
         groupedButton.addEventListener("click", () => {
             render("grouped");
-        });
-    }
-
-    if (progressButton) {
-        progressButton.addEventListener("click", () => {
-            render("progress");
         });
     }
 

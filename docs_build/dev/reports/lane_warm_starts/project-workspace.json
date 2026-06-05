@@ -1,0 +1,37 @@
+{
+  "commandsHash": "4a5e6236d716f4d0",
+  "dependencyGraphHash": "e83a526f9a8df3d7",
+  "dependencyHydration": {
+    "dependencyHydrationHash": "bed8f250510de137",
+    "fixtureHashes": {},
+    "fixtures": [],
+    "helperHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a"
+    },
+    "helpers": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs"
+    ],
+    "importHashes": {
+      "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a"
+    },
+    "imports": [
+      "tests/helpers/playwrightRepoServer.mjs",
+      "tests/helpers/playwrightStorageIsolation.mjs"
+    ]
+  },
+  "dependencyHydrationHash": "bed8f250510de137",
+  "inputHash": "92f3aa5ae171644a",
+  "lane": "project-workspace",
+  "laneConfigHash": "ed92589bc0136fc6",
+  "laneDefinitionHash": "f4ba10cc6a317a51",
+  "manifestHash": "fe861148fae84324",
+  "ownership": "tools",
+  "warmStartHash": "a47c79e0936fbc9e",
+  "version": 1,
+  "generatedAt": "2026-06-05T00:17:23.050Z",
+  "manifestPath": "docs_build/dev/reports/lane_manifests/project-workspace.json",
+  "sourceManifest": "generated"
+}

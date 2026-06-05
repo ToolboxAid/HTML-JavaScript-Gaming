@@ -165,20 +165,17 @@ test("Game Configuration validation lists missing required sections and blocks B
   }
 });
 
-test("Toolbox Progress and Build Path views show Game Configuration handoff state", async ({ page }) => {
+test("Toolbox Build Path view shows Game Configuration handoff state", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
 
   try {
-    await page.getByRole("button", { name: "Progress" }).click();
-    const progressCard = page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) });
-    await expect(progressCard).toContainText("Valid Game Design handoff required");
-    await expect(progressCard).toContainText("Configuration sections required before Build Game");
-    await expect(progressCard).toContainText("Ready configuration recommends Assets");
+    await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
 
     await page.getByRole("button", { name: "Build Path" }).click();
-    await expect(page.locator("[data-tools-accordion='Game Configuration']")).toBeVisible();
-    await expect(page.locator("[data-tools-accordion='Game Configuration']")).toContainText("Complete playable setup from a valid Game Design handoff before Assets and Build Game readiness.");
-    await expect(page.locator("[data-tools-accordion='Game Configuration']")).toContainText("Game Configuration");
+    await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
+    await expect(page.locator("[data-build-path-tool='Game Configuration']")).toContainText("Game Configuration");
+    await expect(page.locator("[data-build-path-tool='Game Configuration']")).toContainText("🟡 In Progress");
+    await expect(page.getByText("What should I do next? Game Configuration")).toBeVisible();
 
     await expectNoPageFailures(failures);
   } finally {
