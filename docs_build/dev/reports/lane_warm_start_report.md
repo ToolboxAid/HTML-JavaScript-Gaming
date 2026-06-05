@@ -1,6 +1,6 @@
 # Lane Warm-Start Report
 
-Generated: 2026-06-05T01:49:31.798Z
+Generated: 2026-06-05T02:09:02.083Z
 Status: PASS
 Warm-start directory: docs_build/dev/reports/lane_warm_starts
 
@@ -17,7 +17,7 @@ Prevented lane graph assembly: 0
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | ddbcd96c3deab887 | 01cbeb24fa94fcf0 | 0ff8fc92c789456d | Warm-start inputHash changed for workspace-contract.; Warm-start laneDefinitionHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
+| tool-display-mode | INVALIDATED | docs_build/dev/reports/lane_warm_starts/tool-display-mode.json | d74c5e4650d1252c | 5fe6822b17726c02 | db32f98b67dba493 | Warm-start inputHash changed for tool-display-mode.; Warm-start manifestHash changed for tool-display-mode.; Warm-start warmStartHash changed for tool-display-mode. |
 
 ## Fast-Fail Safeguards
 

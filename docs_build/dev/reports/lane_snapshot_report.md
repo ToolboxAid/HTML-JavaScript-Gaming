@@ -1,6 +1,6 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-05T01:49:31.799Z
+Generated: 2026-06-05T02:09:02.083Z
 Status: PASS
 Snapshot directory: docs_build/dev/reports/lane_snapshots
 
@@ -17,7 +17,7 @@ Prevented manifest traversal: 0
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | ddbcd96c3deab887 | 37a0b0722df16a80 | 751729a1e113a4de | 6c4fac7630b0b6f3 | c99c4343771f1683 | 1f2c2cad37cea71d | e9a7933869c0fee6 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot laneDefinitionHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+| tool-display-mode | INVALIDATED | docs_build/dev/reports/lane_snapshots/tool-display-mode.json | d74c5e4650d1252c | 37a0b0722df16a80 | 751729a1e113a4de | 6c4fac7630b0b6f3 | 42f4b08da8c812e0 | cd7dee4b02af52ca | fa36e7934b2e9685 | Lane snapshot executionGraphHash changed for tool-display-mode.; Lane snapshot inputHash changed for tool-display-mode.; Lane snapshot manifestHash changed for tool-display-mode.; Lane snapshot snapshotHash changed for tool-display-mode.; Lane snapshot warmStartHash changed for tool-display-mode. |
 
 ## Snapshot Validation Findings
 

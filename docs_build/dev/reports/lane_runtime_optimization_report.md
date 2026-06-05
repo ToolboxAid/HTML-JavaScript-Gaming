@@ -1,6 +1,6 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-06-05T01:49:31.798Z
+Generated: 2026-06-05T02:09:02.083Z
 Status: PASS
 
 ## Runtime Cost Summary
@@ -18,7 +18,7 @@ Scheduled Playwright/browser launches: 1
 
 ## Scheduled Lane Order
 
-1. workspace-contract
+1. tool-display-mode
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+| tool-display-mode | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list | Tool Display Mode validates the two-row identity/navigation layout, anchors for previous/next targets, disabled text for missing targets, registry build-order labels, role preservation, and multi-path fallback without exercising unrelated toolbox routes. |
 
 ## Runtime Savings Observations
 

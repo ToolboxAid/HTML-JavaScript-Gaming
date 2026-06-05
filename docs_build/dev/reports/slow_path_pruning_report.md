@@ -1,13 +1,13 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T01:50:07.323Z
+Generated: 2026-06-05T02:09:17.252Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 35.48s
+Current measured lane elapsed time: 15.12s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
@@ -31,10 +31,11 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | workspace-contract | 10.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:407:1 > learn wireframe pages load with shared Theme V2 structure |
-| current targeted run | workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:68:1 > root tools surface links current tool pages without old_* routes |
-| current targeted run | workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:322:1 > common header renders primary navigation order across active pages |
-| current targeted run | workspace-contract | 2.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > tool template future-state page loads from root Theme V2 paths |
+| current targeted run | tool-display-mode | 2.30s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:107:1 > Project Workspace and Game Configuration use registry order without page hardcoding |
+| current targeted run | tool-display-mode | 2.20s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:174:1 > multi-path fallback opens Toolbox Group view with only the target group expanded |
+| current targeted run | tool-display-mode | 1.50s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:81:1 > Game Design renders identity and navigation rows with registry anchor links |
+| current targeted run | tool-display-mode | 1.40s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:132:1 > missing previous target renders disabled text instead of a broken link |
+| current targeted run | tool-display-mode | 1.30s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:150:1 > Build Game renders plain previous and next links in the second row |
 
 ## Guardrails
 

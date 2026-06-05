@@ -52,6 +52,21 @@ function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
+async function expectPlainNavigationLinks(page) {
+  await expect(page.locator("[data-tool-display-mode-row='navigation'] button")).toHaveCount(0);
+  const navigationLinks = await page.locator("[data-tool-display-mode-row='navigation'] a").evaluateAll((links) => (
+    links.map((link) => ({
+      className: link.className,
+      tagName: link.tagName.toLowerCase()
+    }))
+  ));
+  navigationLinks.forEach((link) => {
+    expect(link.tagName).toBe("a");
+    expect(link.className.split(/\s+/).filter(Boolean)).not.toContain("btn");
+    expect(link.className.split(/\s+/).filter(Boolean)).not.toContain("btn-secondary");
+  });
+}
+
 async function toolDisplayRows(page) {
   return page.locator("[data-tool-display-mode-row]").evaluateAll((rows) => (
     rows.map((row) => ({
@@ -81,7 +96,7 @@ test("Game Design renders identity and navigation rows with registry anchor link
     await expect(previous).toHaveAttribute("href", "toolbox/project-workspace/index.html?role=user");
     await expect(next).toHaveText("Next: Game Configuration");
     await expect(next).toHaveAttribute("href", "toolbox/game-configuration/index.html?role=user");
-    await expect(page.locator("[data-tool-display-mode-row='navigation'] button")).toHaveCount(0);
+    await expectPlainNavigationLinks(page);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -106,6 +121,7 @@ test("Project Workspace and Game Configuration use registry order without page h
     await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Design Tools");
     await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/index.html?view=group&group=design&role=admin");
     await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("data-tool-nav-group", "design");
+    await expectPlainNavigationLinks(page);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -124,6 +140,30 @@ test("missing previous target renders disabled text instead of a broken link", a
     await expect(page.locator("[data-tool-display-mode-row='navigation'] a")).toHaveCount(1);
     await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Project Workspace");
     await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/project-workspace/index.html?role=user");
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Build Game renders plain previous and next links in the second row", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/build-game/index.html?role=user");
+
+  try {
+    const rows = await toolDisplayRows(page);
+    expect(rows.map((row) => row.row)).toEqual(["identity", "navigation"]);
+    expect(rows[0].childTags).toEqual(["img", "span"]);
+    expect(rows[0].text).toBe("Build Game");
+    expect(rows[1].childTags).toEqual(["a", "a"]);
+
+    const previous = page.locator("[data-tool-nav-previous]");
+    const next = page.locator("[data-tool-nav-next]");
+    await expect(previous).toHaveText("Previous: Videos");
+    await expect(previous).toHaveAttribute("href", "toolbox/videos/index.html?role=user");
+    await expect(next).toHaveText("Next: Game Testing");
+    await expect(next).toHaveAttribute("href", "toolbox/game-testing/index.html?role=user");
+    await expectPlainNavigationLinks(page);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);

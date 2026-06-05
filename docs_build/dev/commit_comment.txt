@@ -1,1 +1,1 @@
-Refine Tool Display Mode previous next row layout and targeted coverage - PR_26155_100-102-tool-display-mode-nav
+Convert Tool Display Mode previous next controls to plain links - PR_26155_103-105-tool-display-mode-links

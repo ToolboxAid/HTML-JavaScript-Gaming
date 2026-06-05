@@ -86,7 +86,6 @@
         }
 
         const link = document.createElement("a");
-        link.className = "btn btn-secondary";
         link.href = roleAwareHref(target.href);
         link.dataset[dataAttribute] = target.kind;
         if (target.group) {

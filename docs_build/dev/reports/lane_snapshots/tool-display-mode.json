@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "37a0b0722df16a80",
-  "executionGraphHash": "644956bc05f4872a",
+  "executionGraphHash": "cd7dee4b02af52ca",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -39,7 +39,7 @@
     ]
   },
   "helperGraphHash": "751729a1e113a4de",
-  "inputHash": "daad206fba528908",
+  "inputHash": "b9f078003cc1c734",
   "lane": "tool-display-mode",
   "laneCompilationStatus": "PASS",
   "laneDefinitionHash": "f5b93baa7de2ddb0",
@@ -49,7 +49,7 @@
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs": "497ed75c6760241f"
+      "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs": "df2f48c799d83ab5"
     },
     "fixtures": [],
     "helpers": [
@@ -64,14 +64,14 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "e319aee6c70ac22b",
+    "manifestHash": "d74c5e4650d1252c",
     "manifestPath": "docs_build/dev/reports/lane_manifests/tool-display-mode.json",
     "source": "generated",
     "tests": [
       "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
     ]
   },
-  "manifestHash": "e319aee6c70ac22b",
+  "manifestHash": "d74c5e4650d1252c",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing",
@@ -98,8 +98,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "42f4b08da8c812e0",
-  "snapshotHash": "7dec062926edaa6b",
+  "snapshotHash": "fa36e7934b2e9685",
   "version": 1,
-  "warmStartHash": "79ff17068d750cce",
-  "generatedAt": "2026-06-05T01:48:22.067Z"
+  "warmStartHash": "5fe6822b17726c02",
+  "generatedAt": "2026-06-05T02:09:02.078Z"
 }

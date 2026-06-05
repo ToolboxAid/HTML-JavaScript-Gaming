@@ -1,6 +1,6 @@
 # Dependency Hydration Reuse Report
 
-Generated: 2026-06-05T01:49:31.798Z
+Generated: 2026-06-05T02:09:02.083Z
 Status: PASS
 
 ## Summary
@@ -16,7 +16,7 @@ Prevented fixture ownership traversal: 0
 
 | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 0ff8fc92c789456d | Dependency hydration was refreshed after warm-start invalidation. |
+| tool-display-mode | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | db32f98b67dba493 | Dependency hydration was refreshed after warm-start invalidation. |
 
 ## Safeguards
 

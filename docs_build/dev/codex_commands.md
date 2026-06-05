@@ -139,6 +139,31 @@ Required reports:
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
 
+## PR_26155_103-105
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Removed `btn` and `btn-secondary` classes from Tool Display Mode Previous/Next anchors.
+- Preserved the two-row Tool Display Mode body layout:
+  - identity row
+  - navigation row
+- Added Build Game Tool Display Mode regression coverage.
+- Kept Previous/Next registry-driven and anchor-based.
+- Did not add CSS, page-local styles, tool-local styles, inline styles, or style blocks.
+
+Validation:
+- `node --check assets/theme-v2/js/tool-display-mode.js`
+- `node --check tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs`
+- `npm run test:lane:tool-display-mode`
+- `git diff --check`
+
+Required reports:
+- `docs_build/dev/reports/tool-display-mode-links-not-buttons.md`
+- `docs_build/dev/reports/tool-display-mode-two-row-layout.md`
+- `docs_build/dev/reports/tool-display-mode-build-game-regression.md`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+
 ## PR_26154_053
 
 Changes:
