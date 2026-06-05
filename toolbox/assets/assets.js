@@ -1,6 +1,5 @@
 import {
   ASSET_ROLE_DEFINITIONS,
-  ASSET_USAGE_ROLES,
   createAssetToolMockRepository
 } from "./assets-mock-repository.js";
 
@@ -120,6 +119,15 @@ function fileStem(fileName) {
 function selectedRoleDefinition() {
   const roleId = elements.assetRole?.value || "image";
   return ASSET_ROLE_DEFINITIONS.find((role) => role.id === roleId) || ASSET_ROLE_DEFINITIONS[0];
+}
+
+function updateUsageOptions() {
+  const role = selectedRoleDefinition();
+  const currentUsage = elements.usage?.value || "";
+  appendOptions(elements.usage, role.usageRoles);
+  if (elements.usage && role.usageRoles.includes(currentUsage)) {
+    elements.usage.value = currentUsage;
+  }
 }
 
 function updateFileAccept() {
@@ -337,10 +345,11 @@ function validateCurrentForm() {
 }
 
 appendRoleOptions(elements.assetRole, ASSET_ROLE_DEFINITIONS);
-appendOptions(elements.usage, ASSET_USAGE_ROLES);
+updateUsageOptions();
 updateFileAccept();
 
 elements.assetRole?.addEventListener("change", () => {
+  updateUsageOptions();
   updateFileAccept();
   updateStoragePathPreview();
   validateCurrentForm();

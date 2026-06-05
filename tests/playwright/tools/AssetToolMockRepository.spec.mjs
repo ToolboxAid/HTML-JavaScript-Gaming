@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import {
   ASSET_ROLE_DEFINITIONS,
   ASSET_TOOL_TABLES,
+  ASSET_USAGE_BY_ROLE,
   createAssetToolMockRepository
 } from "../../../toolbox/assets/assets-mock-repository.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
@@ -100,7 +101,7 @@ test("Asset Tool repository exposes SQL-shaped role, storage, and metadata owner
     mimeType: "image/png",
     name: "Hero Sprite",
     size: 4096,
-    usage: "Sprite"
+    usage: "sprite"
   });
 
   expect(result.imported).toBe(true);
@@ -157,6 +158,41 @@ test("Assets page lists all asset roles and starts from active project context",
   }
 });
 
+test("Asset Role changes update Usage options and import form layout stays usable", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html");
+
+  try {
+    for (const [role, expectedUsages] of Object.entries(ASSET_USAGE_BY_ROLE)) {
+      await page.locator("[data-asset-tool-asset-role]").selectOption(role);
+      await expect(page.locator("[data-asset-tool-usage] option")).toHaveText(expectedUsages);
+    }
+
+    const roleLabelHtml = await page.locator("label[for='assetToolAssetRole']").innerHTML();
+    const storageLabelHtml = await page.locator("label[for='assetToolPath']").innerHTML();
+    expect(roleLabelHtml).toContain("<br>");
+    expect(storageLabelHtml).toContain("<br>");
+
+    await expect(page.locator("[data-asset-tool-upload-help-cell]")).toHaveAttribute("colspan", "2");
+    await expect(page.locator("[data-asset-tool-upload-help-cell]")).toContainText("Image, Video, and Audio upload first.");
+
+    const roleSelectBox = await page.locator("[data-asset-tool-asset-role]").boundingBox();
+    const usageSelectBox = await page.locator("[data-asset-tool-usage]").boundingBox();
+    const fileInputBox = await page.locator("[data-asset-tool-file]").boundingBox();
+    const helpBox = await page.locator("[data-asset-tool-upload-help-cell]").boundingBox();
+    const fileRowBox = await page.locator("[data-asset-tool-file]").locator("xpath=ancestor::tr").boundingBox();
+
+    expect(roleSelectBox?.width || 0).toBeGreaterThan(90);
+    expect(usageSelectBox?.width || 0).toBeGreaterThan(90);
+    expect(fileInputBox?.width || 0).toBeGreaterThan(100);
+    expect((helpBox?.y || 0)).toBeGreaterThan((fileRowBox?.y || 0));
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Image, video, and audio uploads create project-owned metadata and previews", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/assets/index.html");
 
@@ -166,7 +202,7 @@ test("Image, video, and audio uploads create project-owned metadata and previews
       fileName: "hero.png",
       mimeType: "image/png",
       name: "Hero Sprite",
-      usage: "Sprite"
+      usage: "sprite"
     });
 
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Hero Sprite to project asset storage.");
@@ -180,7 +216,7 @@ test("Image, video, and audio uploads create project-owned metadata and previews
       fileName: "intro.mp4",
       mimeType: "video/mp4",
       name: "Intro Cutscene",
-      usage: "UI"
+      usage: "cutscene"
     });
 
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Intro Cutscene to project asset storage.");
@@ -192,7 +228,7 @@ test("Image, video, and audio uploads create project-owned metadata and previews
       fileName: "theme.mp3",
       mimeType: "audio/mpeg",
       name: "Theme Music",
-      usage: "Music"
+      usage: "music"
     });
 
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Theme Music to project asset storage.");

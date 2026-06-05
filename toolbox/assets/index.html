@@ -44,7 +44,7 @@
                                             <table class="data-table tool-form-table" aria-label="Asset import fields" data-asset-tool-form-table>
                                                 <tbody>
                                                     <tr>
-                                                        <th scope="row"><label for="assetToolAssetRole">Asset Role</label></th>
+                                                        <th scope="row"><label for="assetToolAssetRole">Asset<br>Role</label></th>
                                                         <td><select id="assetToolAssetRole" data-asset-tool-asset-role></select></td>
                                                     </tr>
                                                     <tr>
@@ -56,12 +56,15 @@
                                                         <td><input id="assetToolName" type="text" placeholder="Player sprite" data-asset-tool-name></td>
                                                     </tr>
                                                     <tr>
-                                                        <th scope="row"><label for="assetToolPath">Storage Path</label></th>
+                                                        <th scope="row"><label for="assetToolPath">Storage<br>Path</label></th>
                                                         <td><input id="assetToolPath" type="text" placeholder="assets/projects/demo-project/image/player.png" data-asset-tool-path readonly></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="assetToolFile">File</label></th>
-                                                        <td><input id="assetToolFile" type="file" data-asset-tool-file aria-describedby="assetToolFileHelp"><p id="assetToolFileHelp">Image, Video, and Audio upload first. Project records store file metadata and project-owned paths only.</p></td>
+                                                        <td><input id="assetToolFile" type="file" data-asset-tool-file aria-describedby="assetToolFileHelp"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" data-asset-tool-upload-help-cell><p id="assetToolFileHelp">Image, Video, and Audio upload first. Project records store file metadata and project-owned paths only.</p></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

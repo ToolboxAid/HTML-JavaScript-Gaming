@@ -48,7 +48,12 @@ td {
 }
 
 .tool-form-table td {
+  min-width: 12rem;
   width: auto
+}
+
+.tool-form-table td[colspan] {
+  min-width: 0
 }
 
 .tool-form-table input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),

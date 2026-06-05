@@ -18,6 +18,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     previewBehavior: "Browser audio metadata preview",
     uploadEnabled: true,
     maxSizeBytes: 52428800,
+    usageRoles: ["sound", "music"],
     validationNeeds: ["MIME must be audio/* or approved audio MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/audio/"]
   },
   {
@@ -29,6 +30,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     previewBehavior: "Swatch metadata preview",
     uploadEnabled: false,
     maxSizeBytes: 1048576,
+    usageRoles: ["hud", "text", "background", "border", "accent", "warning", "success", "danger", "shadow", "highlight"],
     validationNeeds: ["Palette color metadata must include hex and name", "Color uploads are deferred until palette ownership is rebuilt"]
   },
   {
@@ -40,6 +42,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     previewBehavior: "Text metadata preview",
     uploadEnabled: false,
     maxSizeBytes: 5242880,
+    usageRoles: ["config", "table"],
     validationNeeds: ["Structured data must declare format", "Data uploads are deferred until schema ownership is rebuilt"]
   },
   {
@@ -51,6 +54,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     previewBehavior: "Font sample preview",
     uploadEnabled: false,
     maxSizeBytes: 10485760,
+    usageRoles: ["ui", "display"],
     validationNeeds: ["Font files must use approved font formats", "Font uploads are deferred until font loading ownership is rebuilt"]
   },
   {
@@ -62,6 +66,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     previewBehavior: "Image metadata preview",
     uploadEnabled: true,
     maxSizeBytes: 10485760,
+    usageRoles: ["sprite", "background", "bezel", "preview", "ui"],
     validationNeeds: ["MIME must be image/* or approved image MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/image/"]
   },
   {
@@ -73,6 +78,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     previewBehavior: "Localization key summary preview",
     uploadEnabled: false,
     maxSizeBytes: 5242880,
+    usageRoles: ["strings", "dialogue"],
     validationNeeds: ["Localization files must declare locale", "Localization uploads are deferred until language ownership is rebuilt"]
   },
   {
@@ -84,6 +90,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     previewBehavior: "Shader source metadata preview",
     uploadEnabled: false,
     maxSizeBytes: 2097152,
+    usageRoles: ["fragment", "vertex", "compute"],
     validationNeeds: ["Shader stage metadata is required", "Shader uploads are deferred until render pipeline ownership is rebuilt"]
   },
   {
@@ -95,27 +102,18 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     previewBehavior: "Browser video metadata preview",
     uploadEnabled: true,
     maxSizeBytes: 209715200,
+    usageRoles: ["cutscene", "loop"],
     validationNeeds: ["MIME must be video/* or approved video MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/video/"]
   }
 ]);
 
 export const ASSET_ROLE_LABELS = Object.freeze(ASSET_ROLE_DEFINITIONS.map((role) => role.label));
 
-export const ASSET_USAGE_ROLES = Object.freeze([
-  "Background",
-  "Character",
-  "Data",
-  "Font",
-  "Music",
-  "Sound Effect",
-  "Sprite",
-  "Tile",
-  "UI",
-  "World"
-]);
+export const ASSET_USAGE_BY_ROLE = Object.freeze(Object.fromEntries(
+  ASSET_ROLE_DEFINITIONS.map((role) => [role.id, Object.freeze([...role.usageRoles])])
+));
 
 export const ASSET_TYPES = ASSET_ROLE_LABELS;
-export const ASSET_ROLES = ASSET_USAGE_ROLES;
 
 const PROJECT_ASSET_STORAGE_ROOT = "assets/projects";
 
@@ -171,6 +169,7 @@ function roleDefinitionRows() {
     mimeTypes: role.mimeTypes.join(", "),
     previewBehavior: role.previewBehavior,
     uploadEnabled: role.uploadEnabled,
+    usageRoles: role.usageRoles.join(", "),
     maxSizeBytes: role.maxSizeBytes,
     dbFields: uploadedAssetMetadataFields().join(", "),
     validationNeeds: role.validationNeeds.join("; ")
@@ -201,9 +200,10 @@ function normalizeRoleId(value) {
   return fromLabel?.id || "";
 }
 
-function normalizeUsage(value) {
+function normalizeUsage(value, assetRole) {
   const normalized = normalizeText(value);
-  return ASSET_USAGE_ROLES.includes(normalized) ? normalized : "";
+  const role = roleDefinitionForId(assetRole);
+  return role?.usageRoles.includes(normalized) ? normalized : "";
 }
 
 function roleDefinitionForId(roleId) {
@@ -413,7 +413,7 @@ export function createAssetToolMockRepository(options = {}) {
       name: normalizeText(input.name),
       size: Number(input.size) || 0,
       storedPath: storagePathForProjectAsset(activeProject?.id || "", assetRole, input.fileName || input.originalName),
-      usage: normalizeUsage(input.usage || input.role)
+      usage: normalizeUsage(input.usage || input.role, assetRole)
     };
 
     const findings = [...validateRoleMetadata().findings];
@@ -599,7 +599,7 @@ export function createAssetToolMockRepository(options = {}) {
       mimeType: "image/png",
       name: "Demo Player Sprite",
       size: 2048,
-      usage: "Sprite"
+      usage: "sprite"
     });
     return getSnapshot();
   }
@@ -709,10 +709,9 @@ export function createAssetToolMockRepository(options = {}) {
   return {
     ASSET_ROLE_DEFINITIONS,
     ASSET_ROLE_LABELS,
-    ASSET_ROLES,
     ASSET_TOOL_TABLES,
     ASSET_TYPES,
-    ASSET_USAGE_ROLES,
+    ASSET_USAGE_BY_ROLE,
     clearAssetLibrary,
     getConfigurationHandoff,
     getProgressHandoff,

@@ -1035,3 +1035,38 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_148-150
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Read `archive/v1-v2/tools/old_asset-manager-v2/js/assetManagerMetadata.js` as behavior reference only.
+- Restored Asset Role to Usage dropdown relationships for Audio, Color, Data, Font, Image, Localization, Shader, and Video.
+- Removed the generic mixed usage dropdown source from the active Asset Tool repository.
+- Updated Asset runtime wiring so changing Asset Role refreshes Usage options.
+- Updated import validation so Usage must belong to the selected Asset Role.
+- Fixed Import Asset form layout:
+  - `Asset Role` and `Storage Path` labels render on two lines.
+  - File picker remains in the File row.
+  - Upload help text moved into a separate `colspan="2"` row.
+- Added a reusable Theme V2 `tool-form-table` value-cell minimum width in `assets/theme-v2/css/tables.css` after Playwright proved the existing shared pattern still allowed squashed selects.
+- Updated targeted Asset Tool Playwright coverage for dropdown options and layout usability.
+- Did not add page-local CSS, tool-local CSS, inline styles, style blocks, script blocks, or inline event handlers.
+- Did not modify archived V1/V2 files.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/assets/assets-mock-repository.js`
+- `node --check toolbox/assets/assets.js`
+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane asset-tool`
+- `git diff --check`
+- Supplemental static checks for generic usage values and inline styling/handlers.
+- Full samples smoke: skipped by request and because samples were not changed.
+
+Required reports:
+- `docs_build/dev/reports/asset-import-dropdown-layout-fix-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
