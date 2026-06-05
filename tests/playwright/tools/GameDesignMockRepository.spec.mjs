@@ -91,6 +91,7 @@ test("Game Design saves and updates design fields against the active project", a
     const projectDesignTable = page.locator("[data-game-design-project-design-table]");
     await expect(projectDesignTable).toBeVisible();
     await expect(projectDesignTable).toHaveClass(/data-table/);
+    await expect(projectDesignTable).toHaveClass(/tool-form-table/);
     await expect(projectDesignTable.locator("tbody tr")).toHaveCount(5);
     await expect(projectDesignTable.locator("th[scope='row'] label")).toHaveText([
       "Game Type",
@@ -117,6 +118,38 @@ test("Game Design saves and updates design fields against the active project", a
       { cellCount: 2, controlId: "gameDesignSummary", controlTag: "textarea", labelFor: "gameDesignSummary", labelText: "Design Summary" },
       { cellCount: 2, controlId: "gameDesignCapabilityNotes", controlTag: "textarea", labelFor: "gameDesignCapabilityNotes", labelText: "Capability Demo Notes" }
     ]);
+    await expect(page.locator("#gameDesignSummary")).toHaveAttribute("rows", "4");
+    await expect(page.locator("#gameDesignCapabilityNotes")).toHaveAttribute("rows", "4");
+    const projectDesignLayout = await projectDesignTable.evaluate((table) => {
+      const wrapper = table.closest(".table-wrapper");
+      const firstRow = table.querySelector("tbody tr");
+      const labelCell = firstRow?.querySelector("th");
+      const inputCell = firstRow?.querySelector("td");
+      const select = firstRow?.querySelector("select");
+      const textarea = table.querySelector("textarea");
+      const tableBox = table.getBoundingClientRect();
+      const wrapperBox = wrapper?.getBoundingClientRect();
+      const labelBox = labelCell?.getBoundingClientRect();
+      const inputBox = inputCell?.getBoundingClientRect();
+      const selectBox = select?.getBoundingClientRect();
+      const textareaBox = textarea?.getBoundingClientRect();
+      return {
+        controlColumnIsDominant: Boolean(labelBox && inputBox && inputBox.width > labelBox.width),
+        labelColumnIsCompact: Boolean(labelBox && tableBox && labelBox.width < tableBox.width * 0.4),
+        labelTextAlign: labelCell ? getComputedStyle(labelCell).textAlign : "",
+        selectFillsInputColumn: Boolean(selectBox && inputBox && selectBox.width >= inputBox.width - 32),
+        tableUsesWrapperWidth: Boolean(tableBox && wrapperBox && tableBox.width >= wrapperBox.width - 2),
+        textareaFillsInputColumn: Boolean(textareaBox && inputBox && textareaBox.width >= inputBox.width - 32)
+      };
+    });
+    expect(projectDesignLayout).toEqual({
+      controlColumnIsDominant: true,
+      labelColumnIsCompact: true,
+      labelTextAlign: "right",
+      selectFillsInputColumn: true,
+      tableUsesWrapperWidth: true,
+      textareaFillsInputColumn: true
+    });
     await expect(page.locator("[data-game-design-output] pre, [data-game-design-output] code")).toHaveCount(0);
     await expect(page.locator("[data-game-design-output]")).toContainText("Design Summary");
     await expect(page.locator("[data-game-design-output]")).toContainText("Validation Status");

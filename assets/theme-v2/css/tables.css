@@ -35,3 +35,25 @@ td {
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-brand)
 }
+
+.tool-form-table {
+  width: 100%
+}
+
+.tool-form-table th[scope="row"] {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+  vertical-align: top
+}
+
+.tool-form-table td {
+  width: auto
+}
+
+.tool-form-table input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.tool-form-table textarea,
+.tool-form-table select {
+  box-sizing: border-box;
+  width: 100%
+}

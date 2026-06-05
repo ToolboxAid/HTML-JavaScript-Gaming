@@ -671,3 +671,31 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_121
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Added reusable `.tool-form-table` Theme V2 CSS in `assets/theme-v2/css/tables.css`.
+- Updated `toolbox/game-design/index.html` Project Design table to opt into `data-table tool-form-table`.
+- Kept Project Design labels compact and right-aligned through the reusable Theme V2 table pattern.
+- Kept Project Design input controls stretching across the available input column through the reusable Theme V2 table pattern.
+- Set both Project Design textarea controls to `rows="4"`.
+- Added targeted Game Design Playwright/MSJ coverage for layout width, compact/right-aligned labels, input-column fill, and textarea rows.
+- Did not add inline styles, style blocks, script blocks, inline event handlers, page-local CSS, or tool-local CSS.
+- Did not modify unrelated Game Design sections.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check tests/playwright/tools/GameDesignMockRepository.spec.mjs`
+- `npm run test:lane:game-design`
+- Scoped `git diff --check` for changed implementation/test/report files.
+- Targeted changed-file scan confirmed no inline styles, style blocks, inline scripts, inline event handlers, or `start_of_day` file changes were introduced.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/tool-form-table-layout-standard-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
