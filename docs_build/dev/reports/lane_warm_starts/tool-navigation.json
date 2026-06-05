@@ -1,8 +1,8 @@
 {
   "commandsHash": "35210e0df0b6b5bc",
-  "dependencyGraphHash": "3d7cf28d3be765eb",
+  "dependencyGraphHash": "0a034c67ed94c66f",
   "dependencyHydration": {
-    "dependencyHydrationHash": "ac2d176afce66b9b",
+    "dependencyHydrationHash": "0074b6ff936b5572",
     "fixtureHashes": {},
     "fixtures": [],
     "helperHashes": {
@@ -22,7 +22,7 @@
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "toolbox/toolRegistry.js": "d55b1c1892e77b51"
+      "toolbox/toolRegistry.js": "d35dc5205690c5e0"
     },
     "imports": [
       "tests/helpers/playwrightRepoServer.mjs",
@@ -32,16 +32,16 @@
       "toolbox/toolRegistry.js"
     ]
   },
-  "dependencyHydrationHash": "ac2d176afce66b9b",
-  "inputHash": "e6d5980f6eb0ec87",
+  "dependencyHydrationHash": "0074b6ff936b5572",
+  "inputHash": "a9998f909c56f09a",
   "lane": "tool-navigation",
   "laneConfigHash": "896091c9482ba06e",
-  "laneDefinitionHash": "f5b93baa7de2ddb0",
-  "manifestHash": "5189f5c9a30cbcfe",
+  "laneDefinitionHash": "f69aae14d61a670b",
+  "manifestHash": "c06ebaf050255d61",
   "ownership": "tools",
-  "warmStartHash": "8179618816e1d902",
+  "warmStartHash": "5dc43421a73b9226",
   "version": 1,
-  "generatedAt": "2026-06-05T01:48:59.811Z",
+  "generatedAt": "2026-06-05T12:32:34.142Z",
   "manifestPath": "docs_build/dev/reports/lane_manifests/tool-navigation.json",
   "sourceManifest": "generated"
 }

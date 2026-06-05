@@ -3,13 +3,13 @@
   "dependencyGateStatus": "PASS",
   "dependencyGraph": {
     "dependencies": [],
-    "dependencyGraphHash": "d2621bf5b088b853",
+    "dependencyGraphHash": "0a034c67ed94c66f",
     "importHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "toolbox/toolRegistry.js": "1188192d15e8f88b"
+      "toolbox/toolRegistry.js": "d35dc5205690c5e0"
     },
     "imports": [
       "tests/helpers/playwrightRepoServer.mjs",
@@ -19,8 +19,8 @@
       "toolbox/toolRegistry.js"
     ]
   },
-  "dependencyGraphHash": "d2621bf5b088b853",
-  "executionGraphHash": "eb160af57e1ec65e",
+  "dependencyGraphHash": "0a034c67ed94c66f",
+  "executionGraphHash": "81cb626bc46d9425",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -41,7 +41,7 @@
     ]
   },
   "helperGraphHash": "751729a1e113a4de",
-  "inputHash": "26715a5f789dc6ab",
+  "inputHash": "5e103a78e09a98be",
   "lane": "tool-images",
   "laneCompilationStatus": "PASS",
   "laneDefinitionHash": "f69aae14d61a670b",
@@ -51,8 +51,8 @@
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/ToolImageRegistry.spec.mjs": "025d3a6c9091cca3",
-      "toolbox/toolRegistry.js": "1188192d15e8f88b"
+      "tests/playwright/tools/ToolImageRegistry.spec.mjs": "d2cacb031ee15727",
+      "toolbox/toolRegistry.js": "d35dc5205690c5e0"
     },
     "fixtures": [],
     "helpers": [
@@ -68,14 +68,14 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs",
       "toolbox/toolRegistry.js"
     ],
-    "manifestHash": "2c57bf85d09c8a7d",
+    "manifestHash": "1cb159eabee76617",
     "manifestPath": "docs_build/dev/reports/lane_manifests/tool-images.json",
     "source": "generated",
     "tests": [
       "tests/playwright/tools/ToolImageRegistry.spec.mjs"
     ]
   },
-  "manifestHash": "2c57bf85d09c8a7d",
+  "manifestHash": "1cb159eabee76617",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback",
@@ -102,8 +102,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "f500fb1bb952254b",
-  "snapshotHash": "8d10238a133e16ec",
+  "snapshotHash": "d16aa89e6c014d15",
   "version": 1,
-  "warmStartHash": "edf64024c99db3a4",
-  "generatedAt": "2026-06-05T12:10:07.494Z"
+  "warmStartHash": "bc2e1ea7d59f5f0c",
+  "generatedAt": "2026-06-05T12:23:21.691Z"
 }

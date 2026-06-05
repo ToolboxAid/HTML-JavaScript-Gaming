@@ -1446,7 +1446,7 @@ export function toolImageUsesFallback(tool, kind) {
   if (!tool || (kind !== "badge" && kind !== "tool")) {
     return true;
   }
-  return !toolImagePathExists(tool[kind]);
+  return !isApprovedToolImagePath(tool[kind], kind) || !toolImagePathExists(tool[kind]);
 }
 
 export function getToolImageSource(tool, kind) {
@@ -1454,7 +1454,37 @@ export function getToolImageSource(tool, kind) {
     return TOOL_IMAGE_FALLBACK;
   }
   const normalizedPath = normalizeToolImagePath(tool[kind]);
-  return toolImagePathExists(normalizedPath) ? normalizedPath : TOOL_IMAGE_FALLBACK;
+  return isApprovedToolImagePath(normalizedPath, kind) && toolImagePathExists(normalizedPath)
+    ? normalizedPath
+    : TOOL_IMAGE_FALLBACK;
+}
+
+function toolImageDiagnostic(tool, kind) {
+  const label = kind === "badge" ? "Badge" : "Tool";
+  if (!tool) {
+    return `${label} image registry entry missing; fallback shown.`;
+  }
+
+  const normalizedPath = normalizeToolImagePath(tool[kind]);
+  if (!normalizedPath) {
+    return `${label} image path missing; fallback shown.`;
+  }
+
+  if (!isApprovedToolImagePath(normalizedPath, kind)) {
+    return `${label} image path is outside approved Theme V2 ${kind} assets; fallback shown.`;
+  }
+
+  if (!toolImagePathExists(normalizedPath)) {
+    return `${label} image missing; fallback shown.`;
+  }
+
+  return "";
+}
+
+export function getToolImageDiagnostics(tool) {
+  return ["badge", "tool"]
+    .map((kind) => toolImageDiagnostic(tool, kind))
+    .filter(Boolean);
 }
 
 export function getToolImageCoverage() {

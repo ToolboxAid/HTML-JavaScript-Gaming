@@ -1,20 +1,20 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T12:10:24.669Z
+Generated: 2026-06-05T12:32:35.001Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 17.13s
+Current measured lane elapsed time: 0ms
 PR_26146_038 actual browser launches: 4
-Current actual browser launches: 1
+Current actual browser launches: 0
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
 Reused dependency hydration: 0
 Reused snapshots: 0
-Validation cache hits: 18
+Validation cache hits: 1
 
 ## Slow Paths Optimized
 
@@ -31,14 +31,11 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | tool-images | 4.40s | tests\playwright\tools\ToolImageRegistry.spec.mjs:130:1 > representative tool pages consume registry images in Tool Display Mode |
-| current targeted run | tool-images | 3.70s | tests\playwright\tools\ToolImageRegistry.spec.mjs:112:1 > Toolbox cards consume registry image sources |
-| current targeted run | tool-images | 669ms | tests\playwright\tools\ToolImageRegistry.spec.mjs:88:1 > registry coverage reports complete approved image assets |
-| current targeted run | tool-images | 633ms | tests\playwright\tools\ToolImageRegistry.spec.mjs:72:1 > registry defines approved badge and tool image fields for every active tool |
+| current targeted run | none | 0ms | No runtime test-duration lines were emitted. |
 
 ## Guardrails
 
-Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+Full samples smoke: SKIP - Skipped during pre-runtime validation because changed files do not modify sample JSON or shared sample loader/framework behavior.
 Runtime failures observed: 0
 Runtime schedule status: PASS
 

@@ -7,6 +7,7 @@ import {
   getActiveToolRegistry,
   getToolById,
   getToolImageCoverage,
+  getToolImageDiagnostics,
   getToolImageSource,
   isApprovedToolImagePath
 } from "../../../toolbox/toolRegistry.js";
@@ -109,7 +110,21 @@ test("registry coverage reports complete approved image assets", () => {
   }
 });
 
-test("Toolbox cards consume registry image sources", async ({ page }) => {
+test("registry diagnostics identify missing approved image assets", () => {
+  const missingTool = {
+    badge: "/assets/theme-v2/images/badges/missing-diagnostic-test.png",
+    tool: "/assets/theme-v2/images/tools/missing-diagnostic-test.png"
+  };
+
+  expect(getToolImageSource(missingTool, "badge")).toBe(TOOL_IMAGE_FALLBACK);
+  expect(getToolImageSource(missingTool, "tool")).toBe(TOOL_IMAGE_FALLBACK);
+  expect(getToolImageDiagnostics(missingTool)).toEqual([
+    "Badge image missing; fallback shown.",
+    "Tool image missing; fallback shown."
+  ]);
+});
+
+test("Toolbox cards consume registry image sources and expose visible image diagnostics", async ({ page }) => {
   const gameDesign = getToolById("game-design");
   const failures = await openRepoPage(page, "/toolbox/index.html?role=admin");
 
@@ -119,7 +134,20 @@ test("Toolbox cards consume registry image sources", async ({ page }) => {
     }).first();
     await expect(card).toBeVisible();
     await expect(card.locator(".card-media img")).toHaveAttribute("src", getToolImageSource(gameDesign, "tool"));
-    await expect(card.locator("object[aria-label='Game Design badge']")).toHaveAttribute("data", getToolImageSource(gameDesign, "badge"));
+    await expect(card.locator("img[alt='Game Design badge']")).toHaveAttribute("src", getToolImageSource(gameDesign, "badge"));
+    await expect(card.locator("[data-tool-image-diagnostic]")).toHaveCount(0);
+
+    await card.locator(".card-media img").evaluate((image) => {
+      image.dispatchEvent(new Event("error"));
+    });
+    await expect(card.locator("[data-tool-image-diagnostic]")).toContainText("Tool image missing; fallback shown.");
+    await expect(card.locator(".card-media img")).toHaveAttribute("src", TOOL_IMAGE_FALLBACK);
+
+    await card.locator("img[alt='Game Design badge']").evaluate((image) => {
+      image.dispatchEvent(new Event("error"));
+    });
+    await expect(card.locator("[data-tool-image-diagnostic]")).toContainText("Badge image missing; fallback shown.");
+    await expect(card.locator("img[alt='Game Design badge']")).toHaveAttribute("src", TOOL_IMAGE_FALLBACK);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);

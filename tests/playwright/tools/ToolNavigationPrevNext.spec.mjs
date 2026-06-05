@@ -7,6 +7,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 const expectedTools = [...TOOL_REGISTRY]
   .filter((tool) => tool.active === true)
   .sort((left, right) => left.order - right.order);
+const registryToolsByDisplayName = new Map(TOOL_REGISTRY.map((tool) => [tool.displayName, tool]));
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -90,6 +91,45 @@ test("Admin Tools Progress links routed tools and marks route-less tools as plan
     expect(routeLessTool.linkCount).toBe(0);
     expect(routeLessTool.text).toContain("Route Pending Tool");
     expect(routeLessTool.text).toContain("Planned - Route pending");
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Toolbox card names link to registered tool routes without duplicating launch actions", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/index.html?role=admin");
+
+  try {
+    const cards = page.locator("main [data-tools-accordion-list] article.control-card");
+    const cardCount = await cards.count();
+    expect(cardCount).toBeGreaterThan(0);
+
+    for (let index = 0; index < cardCount; index += 1) {
+      const card = cards.nth(index);
+      const toolName = (await card.locator("h3").innerText()).trim();
+      const registryTool = registryToolsByDisplayName.get(toolName);
+      expect(registryTool, `Registry entry missing for ${toolName}`).toBeTruthy();
+      const route = getToolRoute(registryTool);
+      const nameLink = card.locator("h3 > a[data-toolbox-tool-name-link]");
+
+      await expect(nameLink).toHaveCount(1);
+      await expect(nameLink).toHaveText(toolName);
+      await expect(nameLink).toHaveAttribute("data-registered-tool-route", route);
+      await expect(nameLink).toHaveAttribute("href", "/" + route);
+      await expect(card.locator(".card-media-link")).toHaveCount(1);
+      await expect(card.locator(".card-body > a.btn")).toHaveCount(1);
+    }
+
+    const gameDesignCard = cards.filter({
+      has: page.getByRole("heading", { exact: true, name: "Game Design" })
+    }).first();
+    await expect(gameDesignCard.locator(".card-media-link")).toHaveAttribute("href", "../toolbox/game-design/index.html");
+    await expect(gameDesignCard.locator(".card-body > a.btn")).toHaveAttribute("href", "../toolbox/game-design/index.html");
+    await gameDesignCard.locator("h3 > a[data-toolbox-tool-name-link]").click();
+    await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
+    await expect(page.locator(".page-title h1")).toHaveText("Game Design");
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);

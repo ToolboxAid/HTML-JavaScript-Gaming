@@ -561,3 +561,32 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_114-117
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Fixed Toolbox card image UI behavior after the asset coverage closeout.
+- Kept Toolbox card preview images registry-backed through approved `/assets/theme-v2/images/tools/` paths.
+- Converted Toolbox card badges from `<object>` to registry-backed `<img>` elements through approved `/assets/theme-v2/images/badges/` paths.
+- Added registry diagnostics for missing/invalid badge and tool image mappings.
+- Added visible Toolbox card diagnostics when a preview or badge image falls back to `/assets/theme-v2/images/image-missing.svg`.
+- Added targeted Playwright/MSJ coverage for registry diagnostics and visible card-level missing-image diagnostics.
+- Did not add or modify CSS.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/toolRegistry.js`
+- `node --check toolbox/tools-page-accordions.js`
+- `node --check tests/playwright/tools/ToolImageRegistry.spec.mjs`
+- `npm run test:lane:tool-images`
+- Scoped `git diff --check` for changed implementation/test/report files.
+- Targeted changed-file scan confirmed no local CSS, inline styles, script blocks, page-local image logic, `<object>` badge usage, `start_of_day` references, or size-suffix image registry paths were introduced.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/tool-image-ui-closeout-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

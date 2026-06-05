@@ -1,6 +1,6 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-05T12:10:07.499Z
+Generated: 2026-06-05T12:32:34.998Z
 Status: PASS
 Snapshot directory: docs_build/dev/reports/lane_snapshots
 
@@ -17,7 +17,7 @@ Prevented manifest traversal: 0
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tool-images | INVALIDATED | docs_build/dev/reports/lane_snapshots/tool-images.json | 2c57bf85d09c8a7d | d2621bf5b088b853 | 751729a1e113a4de | 6c4fac7630b0b6f3 | f500fb1bb952254b | eb160af57e1ec65e | 8d10238a133e16ec | Lane snapshot dependencyGraphHash changed for tool-images.; Lane snapshot executionGraphHash changed for tool-images.; Lane snapshot inputHash changed for tool-images.; Lane snapshot manifestHash changed for tool-images.; Lane snapshot snapshotHash changed for tool-images.; Lane snapshot warmStartHash changed for tool-images. |
+| tool-navigation | INVALIDATED | docs_build/dev/reports/lane_snapshots/tool-navigation.json | c06ebaf050255d61 | 0a034c67ed94c66f | 751729a1e113a4de | 6c4fac7630b0b6f3 | cc7795a6bc1b2d9e | 7c80d9ed012db476 | ac8151965dffbfd5 | Lane snapshot dependencyGraphHash changed for tool-navigation.; Lane snapshot executionGraphHash changed for tool-navigation.; Lane snapshot inputHash changed for tool-navigation.; Lane snapshot laneDefinitionHash changed for tool-navigation.; Lane snapshot manifestHash changed for tool-navigation.; Lane snapshot snapshotHash changed for tool-navigation.; Lane snapshot warmStartHash changed for tool-navigation. |
 
 ## Snapshot Validation Findings
 

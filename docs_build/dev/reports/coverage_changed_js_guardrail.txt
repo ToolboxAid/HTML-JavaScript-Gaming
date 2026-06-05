@@ -6,7 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(83%) toolbox/toolRegistry.js - executed lines 1574/1574; executed functions 24/29
+(66%) toolbox/tools-page-accordions.js - executed lines 1869/1869; executed functions 40/61
+(88%) toolbox/toolRegistry.js - executed lines 1598/1598; executed functions 28/32
 
 Guardrail warnings:
 (100%) none - no changed runtime JS coverage warnings

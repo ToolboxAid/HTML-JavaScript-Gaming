@@ -1,6 +1,6 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-06-05T12:10:07.498Z
+Generated: 2026-06-05T12:32:34.997Z
 Status: PASS
 
 ## Runtime Cost Summary
@@ -18,7 +18,7 @@ Scheduled Playwright/browser launches: 1
 
 ## Scheduled Lane Order
 
-1. tool-images
+1. tool-navigation
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| tool-images | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolImageRegistry.spec.mjs --project=playwright --workers=1 --reporter=list | Tool image registry validates every active/planned tool image contract, approved Theme V2 image paths, no size-suffix registry references, registry-owned fallback for missing art, and representative Toolbox image consumption without exercising unrelated toolbox routes. |
+| tool-navigation | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list | Tool navigation validates registry-owned tool routes, disabled rendering for route-less tools, build-order previous/next controls, multi-path fallback to Toolbox Group view, and role query preservation without exercising unrelated toolbox routes. |
 
 ## Runtime Savings Observations
 

@@ -1,1 +1,1 @@
-Close Toolbox image asset coverage gaps - PR_26156_110-113-tool-image-assets-closeout
+Close Toolbox image UI diagnostics - PR_26156_114-117-tool-image-ui-closeout

@@ -4,7 +4,9 @@ import {
 } from "./project-workspace/project-workspace-mock-repository.js";
 import {
     TOOL_IMAGE_FALLBACK,
+    getToolImageDiagnostics,
     getToolImageSource,
+    getToolRoute,
     getToolRegistry
 } from "./toolRegistry.js";
 
@@ -1749,12 +1751,81 @@ import {
         return registryTool ? getToolImageSource(registryTool, kind) : TOOL_IMAGE_FALLBACK;
     }
 
+    function registryToolRoute(registryTool) {
+        return registryTool ? getToolRoute(registryTool) : "";
+    }
+
+    function registryToolHref(registryTool) {
+        const route = registryToolRoute(registryTool);
+        return route ? "/" + route.replace(/^\/+/, "") : "";
+    }
+
+    function createToolNameHeading(tool, registryTool) {
+        const title = document.createElement("h3");
+        const href = registryToolHref(registryTool);
+        const route = registryToolRoute(registryTool);
+
+        if (!href || !route) {
+            title.textContent = tool.title;
+            return title;
+        }
+
+        const link = document.createElement("a");
+        link.href = href;
+        link.dataset.registeredToolRoute = route;
+        link.dataset.toolboxToolNameLink = tool.title;
+        link.textContent = tool.title;
+        title.append(link);
+        return title;
+    }
+
+    function createToolImageDiagnostic(toolTitle, diagnostics) {
+        if (!Array.isArray(diagnostics) || diagnostics.length === 0) {
+            return null;
+        }
+
+        const diagnostic = document.createElement("p");
+        diagnostic.className = "status";
+        diagnostic.dataset.toolImageDiagnostic = toolTitle;
+        diagnostic.setAttribute("role", "status");
+        diagnostic.textContent = "Image diagnostics: " + diagnostics.join(" ");
+        return diagnostic;
+    }
+
+    function appendToolImageDiagnostic(host, toolTitle, message) {
+        let diagnostic = host.querySelector("[data-tool-image-diagnostic]");
+        if (!diagnostic) {
+            diagnostic = createToolImageDiagnostic(toolTitle, [message]);
+            host.append(diagnostic);
+            return;
+        }
+
+        if (!diagnostic.textContent.includes(message)) {
+            diagnostic.textContent += " " + message;
+        }
+    }
+
+    function configureImageDiagnostic(image, host, toolTitle, kind) {
+        image.addEventListener("error", () => {
+            const message = `${kind === "badge" ? "Badge" : "Tool"} image missing; fallback shown.`;
+            appendToolImageDiagnostic(host, toolTitle, message);
+
+            const currentPath = new URL(image.src, window.location.href).pathname;
+            if (currentPath !== TOOL_IMAGE_FALLBACK) {
+                image.src = TOOL_IMAGE_FALLBACK;
+            }
+        });
+    }
+
     function createToolCard(tool, options = {}) {
         const registryTool = registryToolForCard(tool);
         const article = document.createElement("article");
         article.className = `control-card ${groupClass(tool.group)}`;
         article.dataset.mascot = tool.mascot;
         article.dataset.toolboxRole = tool.adminOnly ? "admin" : tool.hidden ? "hidden" : tool.planned ? "planned" : "creator";
+
+        const body = document.createElement("div");
+        body.className = "card-body";
 
         const media = document.createElement("div");
         media.className = "card-media";
@@ -1765,30 +1836,31 @@ import {
         const image = document.createElement("img");
         image.src = registryImageSource(registryTool, "tool");
         image.alt = tool.title + " preview";
+        image.dataset.toolImageKind = "tool";
+        image.dataset.toolImageSource = registryTool ? "registry" : "fallback";
+        configureImageDiagnostic(image, body, tool.title, "tool");
         mediaLink.append(image);
         media.append(mediaLink);
 
-        const body = document.createElement("div");
-        body.className = "card-body";
-
         const categoryText = tool.subgroup ? `${tool.group} - ${tool.subgroup}` : tool.group;
         const badgeCluster = createGroupLabel(tool.group, categoryText);
-        const badge = document.createElement("object");
-        badge.data = registryImageSource(registryTool, "badge");
-        badge.type = "image/png";
+        const badge = document.createElement("img");
+        badge.src = registryImageSource(registryTool, "badge");
+        badge.alt = tool.title + " badge";
         badge.width = 48;
         badge.height = 48;
-        badge.setAttribute("aria-label", tool.title + " badge");
-        badge.textContent = tool.title + " badge";
+        badge.dataset.toolImageKind = "badge";
+        badge.dataset.toolImageSource = registryTool ? "registry" : "fallback";
+        configureImageDiagnostic(badge, body, tool.title, "badge");
         badgeCluster.append(badge);
+        const imageDiagnostic = createToolImageDiagnostic(tool.title, getToolImageDiagnostics(registryTool));
 
         const readiness = document.createElement("span");
         readiness.className = "pill";
         readiness.dataset.toolboxReadiness = tool.status;
         readiness.textContent = tool.status;
 
-        const title = document.createElement("h3");
-        title.textContent = tool.title;
+        const title = createToolNameHeading(tool, registryTool);
 
         const description = document.createElement("p");
         description.textContent = tool.description;
@@ -1814,6 +1886,9 @@ import {
             });
 
             const progressParts = [readiness, title, description];
+            if (imageDiagnostic) {
+                progressParts.push(imageDiagnostic);
+            }
             if (childCapabilities) {
                 progressParts.push(childCapabilities);
             }
@@ -1821,6 +1896,9 @@ import {
             body.append(...progressParts);
         } else {
             const cardParts = [title, description];
+            if (imageDiagnostic) {
+                cardParts.push(imageDiagnostic);
+            }
             if (childCapabilities) {
                 cardParts.push(childCapabilities);
             }
