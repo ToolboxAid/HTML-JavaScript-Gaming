@@ -44,6 +44,10 @@ const SOURCE_ID_RENAMES = Object.freeze({
   crayola: PALETTE_SOURCE_PALETTE_COLORS
 });
 const SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
+const PALETTE_SOURCE_SWATCH_MOCK_DB_ROWS = Object.freeze([
+  Object.freeze({ id: "reference-red", source: "reference", sourceLabel: "Reference", symbol: "R", hex: "#FF0000", name: "Reference Red", tags: Object.freeze(["warm"]) }),
+  Object.freeze({ id: "reference-green", source: "reference", sourceLabel: "Reference", symbol: "G", hex: "#00FF00", name: "Reference Green", tags: Object.freeze(["cool"]) })
+]);
 
 function cloneSwatch(swatch) {
   return {
@@ -52,6 +56,21 @@ function cloneSwatch(swatch) {
     name: swatch.name,
     source: swatch.source,
     tags: [...swatch.tags]
+  };
+}
+
+function cloneSourcePaletteRow(row) {
+  return {
+    ...row,
+    tags: [...(Array.isArray(row.tags) ? row.tags : [])]
+  };
+}
+
+export function createPaletteToolMockDbTables(tables = {}) {
+  return {
+    palette_source_swatches: Object.prototype.hasOwnProperty.call(tables, "palette_source_swatches")
+      ? (Array.isArray(tables.palette_source_swatches) ? tables.palette_source_swatches : []).map(cloneSourcePaletteRow)
+      : PALETTE_SOURCE_SWATCH_MOCK_DB_ROWS.map(cloneSourcePaletteRow)
   };
 }
 
@@ -498,7 +517,10 @@ function createUsageId(projectId, swatchSymbol, assetId) {
 
 export function createProjectWorkspacePaletteRepository(options = {}) {
   const projectWorkspaceRepository = options.projectWorkspaceRepository || createProjectWorkspaceMockRepository();
-  const sourcePaletteRows = normalizeSourcePaletteRows(options.sourcePaletteRows || options.tables?.palette_source_swatches || []);
+  const mockDbTables = createPaletteToolMockDbTables(options.tables || {});
+  const sourcePaletteRows = normalizeSourcePaletteRows(Object.prototype.hasOwnProperty.call(options, "sourcePaletteRows")
+    ? options.sourcePaletteRows
+    : mockDbTables.palette_source_swatches);
   const workspaceRecords = new Map();
   const paletteColorRows = [];
   const usageRows = [];
@@ -786,6 +808,66 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     return saveSwatch(sourceSwatch, {
       source: normalizeSource(sourceSwatch.source)
     });
+  }
+
+  function pinSourceSwatches(sourceSwatches = []) {
+    const projectId = activeProjectId();
+    if (!projectId) {
+      return {
+        issues: [createIssue("activeProject", "Active Project", "Open a project before pinning source palette swatches.")],
+        ok: false,
+        message: "Pin All blocked: no active project.",
+        snapshot: getSnapshot()
+      };
+    }
+
+    const nextSwatches = getActiveSwatches().map(cloneSwatch);
+    const issues = [];
+    let added = 0;
+    let alreadyPinned = 0;
+    let skipped = 0;
+
+    (Array.isArray(sourceSwatches) ? sourceSwatches : []).forEach((sourceSwatch) => {
+      const swatch = normalizePaletteSwatchInput(sourceSwatch, {
+        source: normalizeSource(sourceSwatch?.source)
+      });
+      const colorKey = rgbKey(swatch.hex);
+      if (!swatch.symbol || !isOneCharacter(swatch.symbol) || !swatch.hex || !swatch.name) {
+        skipped += 1;
+        return;
+      }
+      if (colorKey && nextSwatches.some((existingSwatch) => rgbKey(existingSwatch.hex) === colorKey)) {
+        alreadyPinned += 1;
+        return;
+      }
+
+      const validation = validatePaletteSwatchInput(swatch, nextSwatches);
+      if (validation.issues.length) {
+        issues.push(...validation.issues);
+        skipped += 1;
+        return;
+      }
+
+      nextSwatches.push(validation.swatch);
+      added += 1;
+    });
+
+    const message = `Pin All complete: ${added} pinned, ${alreadyPinned} already pinned, ${skipped} skipped.`;
+    if (!added) {
+      return {
+        issues,
+        ok: alreadyPinned > 0,
+        message,
+        snapshot: getSnapshot()
+      };
+    }
+
+    const result = replaceSwatches(projectId, nextSwatches);
+    return {
+      ...result,
+      issues: [...(result.issues || []), ...issues],
+      message
+    };
   }
 
   function findPinnedSourceSwatch(sourceSwatch = {}) {
@@ -1103,6 +1185,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     listSwatches,
     loadActiveProjectPalettePayload,
     pinSourceSwatch,
+    pinSourceSwatches,
     recordSwatchUsage,
     redo,
     removeSelectedSwatch,

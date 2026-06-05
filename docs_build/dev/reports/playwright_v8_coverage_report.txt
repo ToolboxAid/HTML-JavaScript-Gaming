@@ -12,26 +12,26 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(77%) Toolbox Index - exercised 4 runtime JS files
+(83%) Toolbox Index - exercised 4 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (83%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(74%) toolbox/colors/palette-workspace-repository.js - executed lines 999/999; executed functions 81/109
-(88%) toolbox/colors/colors.js - executed lines 687/687; executed functions 65/74
+(85%) toolbox/colors/palette-workspace-repository.js - executed lines 1073/1073; executed functions 98/115
+(92%) toolbox/colors/colors.js - executed lines 694/694; executed functions 69/75
 
 Files with executed line/function counts where available:
 (65%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 20/31
-(74%) toolbox/colors/palette-workspace-repository.js - executed lines 999/999; executed functions 81/109
 (75%) toolbox/toolRegistry.js - executed lines 1754/1754; executed functions 27/36
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 205/205; executed functions 16/20
+(85%) toolbox/colors/palette-workspace-repository.js - executed lines 1073/1073; executed functions 98/115
 (87%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 13/15
-(88%) toolbox/colors/colors.js - executed lines 687/687; executed functions 65/74
+(92%) toolbox/colors/colors.js - executed lines 694/694; executed functions 69/75
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
 (0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(74%) toolbox/colors/palette-workspace-repository.js - changed JS file with browser V8 coverage
-(88%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
+(85%) toolbox/colors/palette-workspace-repository.js - changed JS file with browser V8 coverage
+(92%) toolbox/colors/colors.js - changed JS file with browser V8 coverage

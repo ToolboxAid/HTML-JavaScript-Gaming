@@ -112,7 +112,7 @@
                             <details class="vertical-accordion" open data-palette-project-accordion>
                                 <summary>Active Project Palette</summary>
                                 <div class="accordion-body content-stack">
-                                    <div class="content-stack content-stack--compact" aria-label="Active project palette controls">
+                                    <div class="grid cols-2" aria-label="Active project palette controls">
                                         <div class="action-group" aria-label="Active project palette sort" data-palette-user-sort></div>
                                         <div class="action-group action-group--end" aria-label="Active project palette size" data-palette-user-size></div>
                                     </div>
@@ -132,9 +132,12 @@
                                             <select id="paletteSourceSelect" data-palette-source-select></select>
                                             <label for="paletteSourceSearch">Search</label>
                                             <input id="paletteSourceSearch" type="search" data-palette-source-search>
+                                            <button class="btn btn--compact" type="button" data-palette-source-pin-all>Pin All</button>
                                         </div>
-                                        <div class="action-group" aria-label="Source swatches sort" data-palette-source-sort></div>
-                                        <div class="action-group action-group--end" aria-label="Source swatches size" data-palette-source-size></div>
+                                        <div class="grid cols-2" aria-label="Source swatches controls">
+                                            <div class="action-group" aria-label="Source swatches sort" data-palette-source-sort></div>
+                                            <div class="action-group action-group--end" aria-label="Source swatches size" data-palette-source-size></div>
+                                        </div>
                                     </div>
                                     <div class="palette-swatch-list-wrapper" data-palette-source-scroll>
                                         <div class="palette-swatch-list" role="group" aria-label="Source palette colors" data-palette-source-list>

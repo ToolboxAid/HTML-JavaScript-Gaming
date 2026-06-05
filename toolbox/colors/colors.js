@@ -5,12 +5,15 @@ import {
   validatePaletteSwatchInput
 } from "./palette-workspace-repository.js";
 
-const repository = createProjectWorkspacePaletteRepository();
+const params = new URLSearchParams(window.location.search);
+const repository = createProjectWorkspacePaletteRepository(params.get("source") === "empty"
+  ? { tables: { palette_source_swatches: [] } }
+  : {});
 
 const SORT_OPTIONS = Object.freeze([
   { key: "hue", label: "Hue" },
   { key: "saturation", label: "Sat" },
-  { key: "brightness", label: "Brit" },
+  { key: "brightness", label: "Bright" },
   { key: "name", label: "Name" },
   { key: "tag", label: "Tag" }
 ]);
@@ -21,7 +24,6 @@ const SIZE_OPTIONS = Object.freeze([
   { key: "large", label: "Large" }
 ]);
 
-const params = new URLSearchParams(window.location.search);
 let editorIssues = [];
 let editorTags = [];
 let harmonyRows = [];
@@ -55,6 +57,7 @@ const elements = {
   remove: document.querySelector("[data-palette-remove]"),
   selectedSummary: document.querySelector("[data-palette-selected-summary]"),
   sourceList: document.querySelector("[data-palette-source-list]"),
+  sourcePinAll: document.querySelector("[data-palette-source-pin-all]"),
   sourceSearch: document.querySelector("[data-palette-source-search]"),
   sourceSelect: document.querySelector("[data-palette-source-select]"),
   sourceSize: document.querySelector("[data-palette-source-size]"),
@@ -135,7 +138,7 @@ function renderSortButtons(container, state, label) {
   SORT_OPTIONS.forEach((option) => {
     const button = document.createElement("button");
     const active = state.key === option.key;
-    button.className = active ? "btn primary" : "btn";
+    button.className = active ? "btn btn--compact primary" : "btn btn--compact";
     button.type = "button";
     button.dataset.paletteSortKey = option.key;
     button.textContent = active ? `${option.label} ${sortDirectionCaret(state.direction)}` : option.label;
@@ -153,7 +156,7 @@ function renderSizeButtons(container, activeSize, label) {
   SIZE_OPTIONS.forEach((option) => {
     const button = document.createElement("button");
     const active = activeSize === option.key;
-    button.className = active ? "btn primary" : "btn";
+    button.className = active ? "btn btn--compact primary" : "btn btn--compact";
     button.type = "button";
     button.dataset.paletteSizeKey = option.key;
     button.textContent = option.label;
@@ -340,7 +343,7 @@ function renderSourceOptions(snapshot) {
   if (!snapshot.sourcePaletteOptions.length) {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = "No source palettes";
+    option.textContent = "No source palette";
     elements.sourceSelect.append(option);
     elements.sourceSelect.value = "";
     elements.sourceSelect.disabled = true;
@@ -439,6 +442,7 @@ function renderSourceSwatches() {
     sortKey: sourceSortState.key,
     sourceId
   });
+  setDisabled(elements.sourcePinAll, sourceSwatchRows.length === 0 || !repository.getActiveProject());
 
   elements.sourceList.replaceChildren();
   if (sourceSwatchRows.length === 0) {
@@ -446,7 +450,7 @@ function renderSourceSwatches() {
     message.className = "status";
     message.textContent = repository.sourcePaletteOptions().length
       ? "No source colors match the current filter."
-      : "No source palettes found. Add palette_source_swatches mock-DB records to browse source colors.";
+      : "No source palette found. Add palette_source_swatches mock-DB records to browse source colors.";
     elements.sourceList.append(message);
     return;
   }
@@ -683,6 +687,10 @@ elements.userSize?.addEventListener("click", (event) => {
 
 elements.sourceSelect?.addEventListener("change", render);
 elements.sourceSearch?.addEventListener("input", renderSourceSwatches);
+
+elements.sourcePinAll?.addEventListener("click", () => {
+  applyResult(repository.pinSourceSwatches(sourceSwatchRows));
+});
 
 elements.sourceSort?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-palette-sort-key]");

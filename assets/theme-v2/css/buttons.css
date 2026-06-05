@@ -17,6 +17,14 @@
   border-color: var(--orange-border-strong)
 }
 
+.btn--compact {
+  margin: var(--space-0);
+  padding: var(--space-3) var(--space-8);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: var(--line-height-sm)
+}
+
 .btn.cyan {
   background: var(--button-cyan-background)
 }

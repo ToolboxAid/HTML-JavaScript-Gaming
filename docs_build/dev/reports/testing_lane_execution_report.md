@@ -1,4 +1,4 @@
-# PR_26156_170 Testing Lane Execution Report
+# PR_26156_171 Testing Lane Execution Report
 
 ## Result
 PASS
@@ -22,13 +22,24 @@ PASS
 - Changed-file/static validation: PASS.
 
 ## Playwright Coverage
-- Source palettes from DB/mock-DB rows only: PASS.
-- Empty source palette diagnostic: PASS.
-- Sort controls are left-aligned buttons with visible active state and caret direction: PASS.
-- Size controls are right-aligned buttons with visible active state: PASS.
-- Active Project Palette and Source Swatches use consistent controls: PASS.
-- Swatch-only list rendering, upper-right pin, hover glow, and native browser `title` tooltip: PASS.
+- Source Palette Browser loads mock-DB `palette_source_swatches` rows: PASS.
+- Source swatches render visibly when DB/mock-DB rows exist: PASS.
+- Empty source palette diagnostic appears only with an explicitly empty source table: PASS.
+- Pin All pins the visible filtered source swatches: PASS.
+- Pin All skips already pinned swatches without duplicates: PASS.
+- Compact Hue/Sat/Brit/Name/Tag and Small/Medium/Large buttons fit one row: PASS.
+- Left/right control groups align on the same baseline: PASS.
+- Active sort/size state and caret direction remain visible: PASS.
+- Swatch-only list rendering, upper-right pin, hover glow, and native browser `title` tooltip remain covered: PASS.
 - Harmony controls and Add Selected action remain covered: PASS.
+
+## Impacted Lane
+- Palette Tool runtime/UI lane.
+- Theme V2 static validation for reusable `.btn--compact`.
+
+## Skipped Lanes
+- Full samples smoke was skipped by BUILD instruction.
+- Broader tool lanes were skipped because the Theme V2 change is a button modifier covered in the Palette Tool consumer lane plus static validation.
 
 ## Not Run
 - Full samples smoke was not run, per BUILD instruction.
