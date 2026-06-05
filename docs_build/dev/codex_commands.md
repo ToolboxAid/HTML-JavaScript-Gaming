@@ -80,6 +80,37 @@ Required reports:
 - `docs_build/dev/reports/theme_css_entrypoint_closeout_report.md`
 - `docs_build/dev/reports/migration_final_status_report.md`
 
+## PR_26155_096-099
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Added registry route/navigation helpers in `toolbox/toolRegistry.js`.
+- Made Admin Tools Progress tool names link through shared registry route data.
+- Added disabled planned rendering for route-less tools.
+- Added Previous Tool and Next Tool controls to shared Tool Display Mode.
+- Added registry-driven multi-path fallback from Game Configuration to Toolbox Group view.
+- Added Toolbox URL state support for `view=group&group=<slug>`.
+- Added the targeted `tool-navigation` Playwright lane.
+
+Validation:
+- `node --check toolbox/toolRegistry.js`
+- `node --check admin/tools-progress.js`
+- `node --check assets/theme-v2/js/tool-display-mode.js`
+- `node --check toolbox/tools-page-accordions.js`
+- `node --check tests/playwright/tools/ToolNavigationPrevNext.spec.mjs`
+- `npm run test:lane:tools-progress`
+- `npm run test:lane:tool-navigation`
+- `npm run test:workspace-v2`
+- `git diff --check`
+
+Required reports:
+- `docs_build/dev/reports/tools-progress-tool-links.md`
+- `docs_build/dev/reports/tool-display-mode-prev-next.md`
+- `docs_build/dev/reports/tool-display-mode-multi-path-fallback.md`
+- `docs_build/dev/reports/tool-navigation-targeted-msj-tests.md`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+
 ## PR_26154_053
 
 Changes:

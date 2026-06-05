@@ -1,1 +1,1 @@
-Hydrate Admin Tools Progress and restore Toolbox group colors - PR_26155_092-095-tools-progress-group-colors
+Add registry-driven tool navigation links and Tool Display previous/next controls - PR_26155_096-099-tool-navigation
