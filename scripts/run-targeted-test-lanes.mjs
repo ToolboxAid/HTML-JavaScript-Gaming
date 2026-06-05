@@ -248,6 +248,27 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Tool navigation validates registry-owned tool routes, disabled rendering for route-less tools, build-order previous/next controls, multi-path fallback to Toolbox Group view, and role query preservation without exercising unrelated toolbox routes."
   },
+  "tool-display-mode": {
+    affectedSurface: "Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing",
+    commands: [
+      playwrightCommand("tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
+    ],
+    fixtures: [
+      "repo-served Project Workspace, Game Design, Game Configuration, and AI Assistant tool pages",
+      "repo-served Toolbox Group view with URL-selected accordion",
+      "Toolbox registry build sequence and route metadata",
+      "shared Theme V2 Tool Display Mode script"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Tool Display Mode validates the two-row identity/navigation layout, anchors for previous/next targets, disabled text for missing targets, registry build-order labels, role preservation, and multi-path fallback without exercising unrelated toolbox routes."
+  },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [

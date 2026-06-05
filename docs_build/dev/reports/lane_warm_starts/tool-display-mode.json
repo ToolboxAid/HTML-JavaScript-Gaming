@@ -1,8 +1,8 @@
 {
-  "commandsHash": "39e16c9d480a1e51",
+  "commandsHash": "2114c5c4ce609110",
   "dependencyGraphHash": "37a0b0722df16a80",
   "dependencyHydration": {
-    "dependencyHydrationHash": "0ff8fc92c789456d",
+    "dependencyHydrationHash": "db32f98b67dba493",
     "fixtureHashes": {},
     "fixtures": [],
     "helperHashes": {
@@ -30,16 +30,16 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "dependencyHydrationHash": "0ff8fc92c789456d",
-  "inputHash": "7b6acddacb469f68",
-  "lane": "workspace-contract",
-  "laneConfigHash": "3d8db02cddc33911",
+  "dependencyHydrationHash": "db32f98b67dba493",
+  "inputHash": "daad206fba528908",
+  "lane": "tool-display-mode",
+  "laneConfigHash": "658c1dcf3fde6df6",
   "laneDefinitionHash": "f5b93baa7de2ddb0",
-  "manifestHash": "ddbcd96c3deab887",
+  "manifestHash": "e319aee6c70ac22b",
   "ownership": "tools",
-  "warmStartHash": "01cbeb24fa94fcf0",
+  "warmStartHash": "79ff17068d750cce",
   "version": 1,
-  "generatedAt": "2026-06-05T01:49:30.906Z",
-  "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+  "generatedAt": "2026-06-05T01:48:21.079Z",
+  "manifestPath": "docs_build/dev/reports/lane_manifests/tool-display-mode.json",
   "sourceManifest": "generated"
 }

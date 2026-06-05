@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-05T01:16:40.641Z
+Generated: 2026-06-05T01:50:07.371Z
 Dry run: No
 
 ## Summary
@@ -8,8 +8,8 @@ Dry run: No
 PASS: 1
 WARN: 0
 FAIL: 0
-SKIP: 11
-Total lane elapsed time: 16.55s
+SKIP: 12
+Total lane elapsed time: 35.48s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -21,7 +21,7 @@ Reason: Skipped because changed files do not modify sample JSON or shared sample
 
 Status: PASS
 Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
-Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes tool-navigation --targets tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
+Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
 Details: none
 
 ## Dependency Gate
@@ -32,7 +32,7 @@ Reason: No deterministic dependency failures before runtime.
 ## Runtime Scheduling
 
 Status: PASS
-Scheduled lane order: tool-navigation
+Scheduled lane order: workspace-contract
 Reused runtime sessions: 0
 Reused lane snapshots: 0
 Reused warm-start lanes: 0
@@ -40,7 +40,7 @@ Reused dependency hydration: 0
 Prevented graph rebuilds: 0
 Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
-Prevented redundant lane execution: 11
+Prevented redundant lane execution: 12
 
 ## Validation Cache
 
@@ -61,7 +61,7 @@ Prevented broad lane escalation: 0
 ## Discovery Scope
 
 Status: PASS
-Target files: tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
 Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
 Required fixtures: none
 Targeted file/helper reads: 5
@@ -71,16 +71,16 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
 ## Targeted File Manifests
 
 Status: PASS
-Generated manifests: tool-navigation:PASS
+Generated manifests: workspace-contract:PASS
 Prevented discovery expansion: Yes
 Prevented redundant scans: 4
-Persistent manifest events: tool-navigation:INVALIDATED
+Persistent manifest events: workspace-contract:INVALIDATED
 
 ## Warm-Start Reuse
 
 Status: PASS
-Warm-start events: tool-navigation:INVALIDATED
-Dependency hydration events: tool-navigation:INVALIDATED
+Warm-start events: workspace-contract:INVALIDATED
+Dependency hydration events: workspace-contract:INVALIDATED
 Prevented redundant initialization: 0
 Prevented helper resolution passes: 0
 Prevented fixture ownership traversal: 0
@@ -88,7 +88,7 @@ Prevented fixture ownership traversal: 0
 ## Lane Snapshots
 
 Status: PASS
-Snapshot events: tool-navigation:INVALIDATED
+Snapshot events: workspace-contract:INVALIDATED
 Reused snapshots: 0
 Invalidated snapshots: 1
 Prevented graph rebuilds: 0
@@ -105,13 +105,14 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+| workspace-contract | PASS | 35.48s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
 | project-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge | repo-served Project Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock project repository |
 | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Project Workspace mock project context |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
 | build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Project Workspace mock project context; Toolbox role simulation |
 | tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation | repo-served Admin Tools Progress page; repo-served Toolbox Group view; Toolbox registry build sequence; Project Build Path workflow table |
-| tool-navigation | PASS | 16.55s | 1 | Tool navigation validates registry-owned tool routes, disabled rendering for route-less tools, build-order previous/next controls, multi-path fallback to Toolbox Group view, and role query preservation without exercising unrelated toolbox routes. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Project Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
+| tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Project Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
+| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Project Workspace, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Active public toolbox and Tool Template V2 contract | repo-served root toolbox page; Tool Template V2 public page; Theme V2 shared partials and assets |
 | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/games reference coverage |  |
 | integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Integration handoff behavior | No active integration Playwright specs after removal of stale V2 tool and removed game manifest routes. |
@@ -122,16 +123,15 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| tool-navigation | 3.10s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:60:1 > Admin Tools Progress links routed tools and marks route-less tools as planned |
-| tool-navigation | 2.50s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:130:1 > multi-path next control routes to Toolbox Group view and preserves role |
-| tool-navigation | 1.30s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:100:1 > Tool Display Mode renders build-order previous and next controls |
-| tool-navigation | 1.30s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:115:1 > Project Workspace Tool Display Mode follows registry build order |
-| tool-navigation | 1.30s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:155:1 > Toolbox Group view can be selected directly with only the requested group expanded |
+| workspace-contract | 10.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:407:1 > learn wireframe pages load with shared Theme V2 structure |
+| workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:68:1 > root tools surface links current tool pages without old_* routes |
+| workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:322:1 > common header renders primary navigation order across active pages |
+| workspace-contract | 2.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Commands
 
 ### workspace-contract
-- SKIP
+- PASS 35.48s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### project-workspace
 - SKIP
@@ -149,7 +149,10 @@ Prevented Workspace lane reruns: 0
 - SKIP
 
 ### tool-navigation
-- PASS 16.55s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list
+- SKIP
+
+### tool-display-mode
+- SKIP
 
 ### tool-runtime
 - SKIP

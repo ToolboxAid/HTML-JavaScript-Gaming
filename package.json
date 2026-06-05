@@ -13,6 +13,7 @@
     "test:lane:build-path": "node ./scripts/run-targeted-test-lanes.mjs --lane build-path",
     "test:lane:tools-progress": "node ./scripts/run-targeted-test-lanes.mjs --lane tools-progress",
     "test:lane:tool-navigation": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-navigation",
+    "test:lane:tool-display-mode": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-display-mode",
     "test:lane:game-configuration": "node ./scripts/run-targeted-test-lanes.mjs --lane game-configuration",
     "test:lane:game-design": "node ./scripts/run-targeted-test-lanes.mjs --lane game-design",
     "test:lane:project-workspace": "node ./scripts/run-targeted-test-lanes.mjs --lane project-workspace",

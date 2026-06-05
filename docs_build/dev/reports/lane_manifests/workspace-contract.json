@@ -22,15 +22,15 @@
     "tests/helpers/playwrightV8CoverageReporter.mjs",
     "tests/helpers/workspaceV2CoverageReporter.mjs"
   ],
-  "inputHash": "d5a6c25b99d100a1",
+  "inputHash": "7b6acddacb469f68",
   "lane": "workspace-contract",
-  "laneDefinitionHash": "c4b46b5f48173769",
-  "manifestHash": "dfe46442e946dd33",
+  "laneDefinitionHash": "f5b93baa7de2ddb0",
+  "manifestHash": "ddbcd96c3deab887",
   "ownership": "tools",
   "tests": [
     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-06-05T01:14:35.070Z",
+  "generatedAt": "2026-06-05T01:49:30.897Z",
   "source": "generated"
 }

@@ -1,13 +1,13 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T01:16:40.604Z
+Generated: 2026-06-05T01:50:07.323Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 16.55s
+Current measured lane elapsed time: 35.48s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
@@ -31,11 +31,10 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | tool-navigation | 3.10s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:60:1 > Admin Tools Progress links routed tools and marks route-less tools as planned |
-| current targeted run | tool-navigation | 2.50s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:130:1 > multi-path next control routes to Toolbox Group view and preserves role |
-| current targeted run | tool-navigation | 1.30s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:100:1 > Tool Display Mode renders build-order previous and next controls |
-| current targeted run | tool-navigation | 1.30s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:115:1 > Project Workspace Tool Display Mode follows registry build order |
-| current targeted run | tool-navigation | 1.30s | tests\playwright\tools\ToolNavigationPrevNext.spec.mjs:155:1 > Toolbox Group view can be selected directly with only the requested group expanded |
+| current targeted run | workspace-contract | 10.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:407:1 > learn wireframe pages load with shared Theme V2 structure |
+| current targeted run | workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:68:1 > root tools surface links current tool pages without old_* routes |
+| current targeted run | workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:322:1 > common header renders primary navigation order across active pages |
+| current targeted run | workspace-contract | 2.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Guardrails
 

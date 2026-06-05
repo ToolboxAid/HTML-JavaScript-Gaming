@@ -1,6 +1,6 @@
 # Incremental Validation Report
 
-Generated: 2026-06-05T01:16:24.000Z
+Generated: 2026-06-05T01:49:31.800Z
 Status: PASS
 
 ## Reuse Summary
@@ -18,7 +18,7 @@ Prevented fixture resolution passes: 0
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| tool-navigation | INVALIDATED | Persistent manifest input hash changed for tool-navigation.; Persistent manifest hash changed for tool-navigation. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+| workspace-contract | INVALIDATED | Persistent manifest lane definition hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
 
 ## Invalidation Rules
 

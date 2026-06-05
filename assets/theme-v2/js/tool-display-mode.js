@@ -44,16 +44,21 @@
     const body = document.createElement("div");
     body.className = "tool-display-mode__body";
 
+    const identityRow = document.createElement("div");
+    identityRow.className = "tool-display-mode__identity-row content-cluster";
+    identityRow.dataset.toolDisplayModeRow = "identity";
+
     const character = document.createElement("img");
     character.className = "tool-display-mode__character";
     character.src = publicImageSource(slot.dataset.toolCharacterSrc, "characters");
     character.alt = toolName + " character";
-    body.appendChild(character);
+    identityRow.appendChild(character);
 
     const description = document.createElement("span");
     description.className = "tool-display-mode__description";
     description.textContent = toolName;
-    body.appendChild(description);
+    identityRow.appendChild(description);
+    body.appendChild(identityRow);
     displayMode.appendChild(body);
     slot.replaceWith(displayMode);
 
@@ -69,21 +74,19 @@
     }
 
     function createNavigationControl(direction, target) {
-        const controlLabel = direction === "previous" ? "Previous Tool" : "Next Tool";
+        const controlLabel = direction === "previous" ? "Previous" : "Next";
         const dataAttribute = direction === "previous" ? "toolNavPrevious" : "toolNavNext";
 
         if (!target || target.disabled) {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "btn";
-            button.disabled = true;
-            button.dataset[dataAttribute] = "disabled";
-            button.textContent = controlLabel + ": " + (target?.label || "Unavailable");
-            return button;
+            const disabledText = document.createElement("span");
+            disabledText.className = "pill";
+            disabledText.dataset[dataAttribute] = "disabled";
+            disabledText.textContent = controlLabel + ": " + (target?.label || "Unavailable");
+            return disabledText;
         }
 
         const link = document.createElement("a");
-        link.className = "btn";
+        link.className = "btn btn-secondary";
         link.href = roleAwareHref(target.href);
         link.dataset[dataAttribute] = target.kind;
         if (target.group) {
@@ -98,7 +101,8 @@
             const registry = await import("/toolbox/toolRegistry.js");
             const navigation = registry.getToolNavigationTargets(toolSlug);
             const navigationRow = document.createElement("nav");
-            navigationRow.className = "content-cluster";
+            navigationRow.className = "tool-display-mode__navigation-row content-cluster";
+            navigationRow.dataset.toolDisplayModeRow = "navigation";
             navigationRow.setAttribute("aria-label", "Tool build-order navigation");
             navigationRow.append(
                 createNavigationControl("previous", navigation.previous),

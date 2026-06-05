@@ -20,7 +20,7 @@
     ]
   },
   "dependencyGraphHash": "3d7cf28d3be765eb",
-  "executionGraphHash": "bfb37d857f4805dd",
+  "executionGraphHash": "2fc06d1bfa524bcd",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -41,17 +41,17 @@
     ]
   },
   "helperGraphHash": "751729a1e113a4de",
-  "inputHash": "3b8923c2c7df8f4f",
+  "inputHash": "e6d5980f6eb0ec87",
   "lane": "tool-navigation",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "c4b46b5f48173769",
+  "laneDefinitionHash": "f5b93baa7de2ddb0",
   "manifest": {
     "fileHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/ToolNavigationPrevNext.spec.mjs": "7049de53307a1a19",
+      "tests/playwright/tools/ToolNavigationPrevNext.spec.mjs": "d3a86fec845493a3",
       "toolbox/toolRegistry.js": "d55b1c1892e77b51"
     },
     "fixtures": [],
@@ -68,14 +68,14 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs",
       "toolbox/toolRegistry.js"
     ],
-    "manifestHash": "83c1caf61eccec49",
+    "manifestHash": "5189f5c9a30cbcfe",
     "manifestPath": "docs_build/dev/reports/lane_manifests/tool-navigation.json",
     "source": "generated",
     "tests": [
       "tests/playwright/tools/ToolNavigationPrevNext.spec.mjs"
     ]
   },
-  "manifestHash": "83c1caf61eccec49",
+  "manifestHash": "5189f5c9a30cbcfe",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing",
@@ -102,8 +102,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "cc7795a6bc1b2d9e",
-  "snapshotHash": "b19b139e025145fa",
+  "snapshotHash": "a94858d1f4a6b080",
   "version": 1,
-  "warmStartHash": "f03a205c75827fa5",
-  "generatedAt": "2026-06-05T01:16:23.994Z"
+  "warmStartHash": "8179618816e1d902",
+  "generatedAt": "2026-06-05T01:49:00.727Z"
 }

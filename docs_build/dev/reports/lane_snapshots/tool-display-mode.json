@@ -1,5 +1,5 @@
 {
-  "commandsHash": "39e16c9d480a1e51",
+  "commandsHash": "2114c5c4ce609110",
   "dependencyGateStatus": "PASS",
   "dependencyGraph": {
     "dependencies": [],
@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "37a0b0722df16a80",
-  "executionGraphHash": "1f2c2cad37cea71d",
+  "executionGraphHash": "644956bc05f4872a",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -39,8 +39,8 @@
     ]
   },
   "helperGraphHash": "751729a1e113a4de",
-  "inputHash": "7b6acddacb469f68",
-  "lane": "workspace-contract",
+  "inputHash": "daad206fba528908",
+  "lane": "tool-display-mode",
   "laneCompilationStatus": "PASS",
   "laneDefinitionHash": "f5b93baa7de2ddb0",
   "manifest": {
@@ -49,7 +49,7 @@
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "38fb5d00491ea6cb"
+      "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs": "497ed75c6760241f"
     },
     "fixtures": [],
     "helpers": [
@@ -64,42 +64,42 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "ddbcd96c3deab887",
-    "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+    "manifestHash": "e319aee6c70ac22b",
+    "manifestPath": "docs_build/dev/reports/lane_manifests/tool-display-mode.json",
     "source": "generated",
     "tests": [
-      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+      "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
     ]
   },
-  "manifestHash": "ddbcd96c3deab887",
+  "manifestHash": "e319aee6c70ac22b",
   "ownership": "tools",
   "runtimeConfiguration": {
-    "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
+    "affectedSurface": "Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing",
     "commands": [
       {
         "args": [
           "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
           "test",
-          "tests/playwright/tools/RootToolsFutureState.spec.mjs",
+          "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs",
           "--project=playwright",
           "--workers=1",
           "--reporter=list"
         ],
         "command": "C:\\nvm4w\\nodejs\\node.exe",
         "targets": [
-          "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+          "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
         ],
         "type": "playwright"
       }
     ],
-    "commandsHash": "39e16c9d480a1e51",
-    "laneConfigHash": "3d8db02cddc33911",
+    "commandsHash": "2114c5c4ce609110",
+    "laneConfigHash": "658c1dcf3fde6df6",
     "requiresPreflight": true,
     "requiresSamplesFlag": false
   },
-  "runtimeConfigurationHash": "c99c4343771f1683",
-  "snapshotHash": "e9a7933869c0fee6",
+  "runtimeConfigurationHash": "42f4b08da8c812e0",
+  "snapshotHash": "7dec062926edaa6b",
   "version": 1,
-  "warmStartHash": "01cbeb24fa94fcf0",
-  "generatedAt": "2026-06-05T01:49:31.794Z"
+  "warmStartHash": "79ff17068d750cce",
+  "generatedAt": "2026-06-05T01:48:22.067Z"
 }

@@ -1,6 +1,6 @@
 # Zero-Browser Preflight Report
 
-Generated: 2026-06-05T01:16:24.001Z
+Generated: 2026-06-05T01:49:31.801Z
 Status: PASS
 
 ## Prevented Browser Launches
@@ -23,13 +23,13 @@ No deterministic setup failures.
 | invalid imports | PASS | Relative imports checked by Playwright structure audit. |
 | unresolved fixtures | PASS | No unresolved fixture findings. |
 | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
-| targeted file manifests | PASS | tool-navigation:PASS |
-| persistent lane manifests | PASS | tool-navigation:INVALIDATED |
-| lane warm-start reuse | PASS | tool-navigation:INVALIDATED |
-| dependency hydration reuse | PASS | tool-navigation:INVALIDATED |
-| lane snapshots | PASS | tool-navigation:INVALIDATED |
+| targeted file manifests | PASS | workspace-contract:PASS |
+| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+| lane snapshots | PASS | workspace-contract:INVALIDATED |
 | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
-| scoped discovery | PASS | Targets: tests/playwright/tools/ToolNavigationPrevNext.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
+| scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
 | invalid grep patterns | PASS | No invalid grep patterns. |
 | Windows quoting hazards | PASS | No shell quoting hazards. |
 | invalid lane references | PASS | No invalid lane references. |

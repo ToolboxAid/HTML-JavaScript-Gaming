@@ -101,9 +101,9 @@ test("Tool Display Mode renders build-order previous and next controls", async (
   const failures = await openRepoPage(page, "/toolbox/game-design/index.html?role=user");
 
   try {
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous Tool: Project Workspace");
+    await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: Project Workspace");
     await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/project-workspace/index.html?role=user");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next Tool: Game Configuration");
+    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Game Configuration");
     await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/game-configuration/index.html?role=user");
     await expectNoPageFailures(failures);
   } finally {
@@ -116,9 +116,9 @@ test("Project Workspace Tool Display Mode follows registry build order", async (
   const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html?role=user");
 
   try {
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous Tool: AI Assistant");
+    await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: AI Assistant");
     await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/ai-assistant/index.html?role=user");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next Tool: Game Design");
+    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Game Design");
     await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/game-design/index.html?role=user");
     await expectNoPageFailures(failures);
   } finally {
@@ -132,7 +132,7 @@ test("multi-path next control routes to Toolbox Group view and preserves role", 
 
   try {
     const nextControl = page.locator("[data-tool-nav-next]");
-    await expect(nextControl).toHaveText("Next Tool: Design Tools");
+    await expect(nextControl).toHaveText("Next: Design Tools");
     await expect(nextControl).toHaveAttribute("data-tool-nav-group", "design");
     await expect(nextControl).toHaveAttribute("href", "toolbox/index.html?view=group&group=design&role=admin");
 
