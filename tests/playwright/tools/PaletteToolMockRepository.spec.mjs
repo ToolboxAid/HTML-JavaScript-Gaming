@@ -311,6 +311,10 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-log]")).toContainText("0 pinned, 1 already pinned");
     await page.locator("[data-palette-source-search]").fill("");
     await expect(page.locator("[data-palette-source-index]")).toHaveCount(2);
+    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
+    await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Complementary \d:/);
+    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("title", /^Scheme: Complementary\nLabel: Complementary 1\nHex: #[0-9A-F]{6}$/);
+    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("aria-label", /Complementary 1 #[0-9A-F]{6} from Complementary/);
     await expect(page.locator("[data-palette-harmony-match] option")).toHaveText([
       "Calculated",
       "Source Palette Closest Match",
@@ -351,11 +355,21 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-name", "Hero Blue");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-hex", "#123456AA");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("title", "Symbol: H\nHex: #123456AA\nName: Hero Blue\nTags: hero, ui");
+    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-selected", "true");
+    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveCSS("outline-style", "solid");
+    await expect(page.locator("[data-palette-swatch-row='H']")).not.toHaveCSS("box-shadow", "none");
+    await expect(page.locator("[data-palette-swatch-row='H'] [data-palette-selected-indicator]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-swatch-row='H'] [data-palette-pin-indicator]")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Reference Green']")).toHaveAttribute("data-palette-pinned", "true");
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Reference Green']")).toHaveAttribute("data-palette-selected", "false");
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Reference Green'] [data-palette-selected-indicator]")).toHaveCount(0);
     await expect(page.locator("[data-palette-user-list]")).not.toContainText(/Hero Blue|#123456AA|hero, ui|Symbol|Name|Hex|Source|Tags/);
     await expect(page.locator("[data-palette-selected-details]")).toHaveCount(0);
     await expect(page.locator("[data-palette-project-accordion]")).not.toContainText(/Symbol:|Hex:|Name:|Source:|Tags:/);
     await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_colors");
-    await expect(page.locator("[data-palette-harmony-list]")).toContainText("Complementary");
+    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
+    await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Complementary \d:/);
 
     const activePreviewTile = page.locator("[data-palette-swatch-row='H']");
     await page.locator("[data-palette-user-sort] [data-palette-sort-key='hue']").click();
@@ -384,6 +398,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await page.locator("[data-palette-tags]").fill("primary");
     await page.getByRole("button", { name: "Update Selected" }).click();
     await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-swatch-name", "Hero Updated");
+    await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-selected", "true");
     await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-swatch-tags", "feature, primary");
     await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("title", "Symbol: J\nHex: #ABCDEF\nName: Hero Updated\nTags: feature, primary");
     await expect(page.locator("[data-palette-user-list]")).not.toContainText(/Hero Updated|feature, primary|Symbol|Name|Hex|Source|Tags/);
@@ -404,10 +419,18 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-log]")).toHaveText("Editor form cleared.");
 
     await page.locator("[data-palette-harmony-scheme]").selectOption("triadic");
-    await expect(page.locator("[data-palette-harmony-list]")).toContainText("Triadic");
-    await page.locator("[data-palette-harmony-choice='1']").check();
+    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(3);
+    await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Triadic \d:/);
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("title", /^Scheme: Triadic\nLabel: Triadic 2\nHex: #[0-9A-F]{6}$/);
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("aria-label", /Triadic 2 #[0-9A-F]{6} from Triadic/);
+    await page.locator("[data-palette-harmony-choice='1']").click();
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("data-palette-selected", "true");
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveCSS("outline-style", "solid");
+    await expect(page.locator("[data-palette-harmony-choice='1'] [data-palette-selected-indicator]")).toHaveCount(0);
     await page.locator("[data-palette-harmony-add-selected]").click();
     await expect(page.locator("[data-palette-log]")).toContainText("Saved palette to tools.palette-browser.swatches.");
+    await page.locator("[data-palette-harmony-add-all]").click();
+    await expect(page.locator("[data-palette-log]")).toContainText("Harmony add complete");
 
     await page.getByLabel("Tool Display Mode").click();
     await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);

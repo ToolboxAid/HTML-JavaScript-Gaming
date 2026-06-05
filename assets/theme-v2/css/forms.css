@@ -162,6 +162,13 @@ input[type="color"][data-palette-swatch-size="large"] {
   outline-offset: var(--space-3)
 }
 
+.palette-swatch-tile[data-palette-selected="true"] {
+  outline: var(--border-width-sm) solid var(--gold);
+  outline-offset: var(--space-3);
+  box-shadow: 0 0 0 var(--space-3) var(--gold-soft), 0 0 var(--space-18) var(--orange-shadow-color);
+  transform: scale(1.04)
+}
+
 .palette-swatch-pin {
   position: absolute;
   top: var(--space-3);

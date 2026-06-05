@@ -13,7 +13,7 @@ const repository = createProjectWorkspacePaletteRepository(params.get("source") 
 const SORT_OPTIONS = Object.freeze([
   { key: "hue", label: "Hue" },
   { key: "saturation", label: "Sat" },
-  { key: "brightness", label: "Bright" },
+  { key: "brightness", label: "Brit" },
   { key: "name", label: "Name" },
   { key: "tag", label: "Tag" }
 ]);
@@ -126,6 +126,13 @@ function createListItem(text) {
   return item;
 }
 
+function createStatusMessage(text) {
+  const message = document.createElement("p");
+  message.className = "status";
+  message.textContent = text;
+  return message;
+}
+
 function sortDirectionCaret(direction) {
   return direction === "desc" ? "v" : "^";
 }
@@ -206,16 +213,21 @@ function swatchTooltipText(swatch) {
 function createSwatchTile(swatch, options = {}) {
   const tile = document.createElement("button");
   const pinned = Boolean(options.pinned);
+  const selected = Boolean(options.selected);
   tile.className = "palette-swatch-tile";
   tile.type = "button";
   tile.dataset.palettePinned = String(pinned);
+  tile.dataset.paletteSelected = String(selected);
   tile.dataset.paletteSwatchHex = swatch.hex;
   tile.dataset.paletteSwatchName = swatch.name;
   tile.dataset.paletteSwatchSource = repository.displaySource(swatch.source);
   tile.dataset.paletteSwatchTags = swatch.tags.join(", ");
-  tile.setAttribute("aria-label", swatchTileLabel(swatch, options.action || "Select palette color"));
+  tile.setAttribute("aria-label", options.label || `${selected ? "Selected. " : ""}${swatchTileLabel(swatch, options.action || "Select palette color")}`);
   tile.setAttribute("aria-pressed", String(Boolean(options.pressed)));
-  tile.title = swatchTooltipText(swatch);
+  tile.title = options.tooltip || swatchTooltipText(swatch);
+  if (selected) {
+    tile.setAttribute("aria-current", "true");
+  }
 
   if (options.swatchRow) {
     tile.dataset.paletteSwatchRow = swatch.symbol;
@@ -223,11 +235,14 @@ function createSwatchTile(swatch, options = {}) {
   if (Number.isInteger(options.sourceIndex)) {
     tile.dataset.paletteSourceIndex = String(options.sourceIndex);
   }
+  if (Number.isInteger(options.harmonyIndex)) {
+    tile.dataset.paletteHarmonyChoice = String(options.harmonyIndex);
+  }
 
-  tile.append(
-    createColorPreview(swatch.hex, options.size || "medium"),
-    createPinIndicator(pinned)
-  );
+  tile.append(createColorPreview(swatch.hex, options.size || "medium"));
+  if (options.showPin !== false) {
+    tile.append(createPinIndicator(pinned));
+  }
   return tile;
 }
 
@@ -424,6 +439,7 @@ function renderUserPalette(snapshot) {
       action: "Select palette color",
       pinned: true,
       pressed: snapshot.selectedSwatch?.symbol === swatch.symbol,
+      selected: snapshot.selectedSwatch?.symbol === swatch.symbol,
       size: userSizeState,
       swatchRow: true
     }));
@@ -498,14 +514,14 @@ function renderHarmony(snapshot) {
     : [];
 
   if (!baseSwatch) {
-    elements.harmonyList.append(createListItem("Select a project or source palette color to view scheme suggestions."));
+    elements.harmonyList.append(createStatusMessage("Select a project or source palette color to view scheme suggestions."));
     setText(elements.harmonyGuidance, "Select a project or source palette color to view scheme suggestions.");
     setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], true);
     return;
   }
 
   if (harmonyRows.length === 0) {
-    elements.harmonyList.append(createListItem("No harmony scheme colors available."));
+    elements.harmonyList.append(createStatusMessage("No harmony scheme colors available."));
     setText(elements.harmonyGuidance, "No harmony scheme colors are available for the selected palette color.");
     setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], true);
     return;
@@ -517,18 +533,26 @@ function renderHarmony(snapshot) {
   setText(elements.harmonyGuidance, `Showing ${harmonyRows.length} ${elements.harmonyScheme?.selectedOptions?.[0]?.textContent || "scheme"} colors from ${elements.harmonyMatch?.selectedOptions?.[0]?.textContent || "Calculated"}.`);
   setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], false);
 
+  const schemeLabel = elements.harmonyScheme?.selectedOptions?.[0]?.textContent || "Harmony";
   harmonyRows.forEach((suggestion, index) => {
-    const item = document.createElement("li");
-    const label = document.createElement("label");
-    const input = document.createElement("input");
-    input.type = "radio";
-    input.name = "paletteHarmonySuggestion";
-    input.value = String(index);
-    input.dataset.paletteHarmonyChoice = String(index);
-    input.checked = index === selectedHarmonyIndex;
-    label.append(input, document.createTextNode(` ${suggestion.name}: ${suggestion.hex} (${repository.displaySource(suggestion.source)})`));
-    item.append(label);
-    elements.harmonyList.append(item);
+    const selected = index === selectedHarmonyIndex;
+    elements.harmonyList.append(createSwatchTile({
+      hex: suggestion.hex,
+      name: suggestion.name,
+      source: suggestion.source,
+      symbol: String(index + 1),
+      tags: suggestion.tags
+    }, {
+      action: "Select harmony swatch",
+      harmonyIndex: index,
+      label: `${selected ? "Selected. " : ""}Select harmony swatch ${suggestion.name} ${suggestion.hex} from ${schemeLabel}.`,
+      pinned: false,
+      pressed: selected,
+      selected,
+      showPin: false,
+      size: "medium",
+      tooltip: `Scheme: ${schemeLabel}\nLabel: ${suggestion.name}\nHex: ${suggestion.hex}`
+    }));
   });
 }
 
@@ -715,12 +739,12 @@ elements.sourceSize?.addEventListener("click", (event) => {
 });
 elements.harmonyMatch?.addEventListener("change", render);
 elements.harmonyScheme?.addEventListener("change", render);
-elements.harmonyList?.addEventListener("change", (event) => {
-  const input = event.target.closest("[data-palette-harmony-choice]");
-  if (!input) {
+elements.harmonyList?.addEventListener("click", (event) => {
+  const tile = event.target.closest("[data-palette-harmony-choice]");
+  if (!tile) {
     return;
   }
-  selectedHarmonyIndex = Number(input.dataset.paletteHarmonyChoice);
+  selectedHarmonyIndex = Number(tile.dataset.paletteHarmonyChoice);
   render();
 });
 
