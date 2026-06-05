@@ -1,6 +1,6 @@
 import {
-  ASSET_ROLES,
-  ASSET_TYPES,
+  ASSET_ROLE_DEFINITIONS,
+  ASSET_USAGE_ROLES,
   createAssetToolMockRepository
 } from "./assets-mock-repository.js";
 
@@ -17,6 +17,7 @@ if (handoffMode === "missing") {
 }
 
 const elements = {
+  assetRole: document.querySelector("[data-asset-tool-asset-role]"),
   count: document.querySelector("[data-asset-tool-count]"),
   file: document.querySelector("[data-asset-tool-file]"),
   form: document.querySelector("[data-asset-tool-form]"),
@@ -25,6 +26,7 @@ const elements = {
   library: document.querySelector("[data-asset-tool-library]"),
   libraryStatus: document.querySelector("[data-asset-tool-library-status]"),
   log: document.querySelector("[data-asset-tool-log]"),
+  metadata: document.querySelector("[data-asset-tool-metadata]"),
   name: document.querySelector("[data-asset-tool-name]"),
   nextStep: document.querySelectorAll("[data-asset-tool-next-step], [data-asset-tool-output-next-step]"),
   outputMissing: document.querySelector("[data-asset-tool-output-missing]"),
@@ -34,10 +36,11 @@ const elements = {
   preview: document.querySelector("[data-asset-tool-preview]"),
   previewTitle: document.querySelector("[data-asset-tool-preview-title]"),
   reset: document.querySelector("[data-asset-tool-reset]"),
-  role: document.querySelector("[data-asset-tool-role]"),
+  roleDiagnostics: document.querySelector("[data-asset-tool-role-diagnostics]"),
+  roleLibrary: document.querySelector("[data-asset-tool-role-library]"),
   seed: document.querySelector("[data-asset-tool-seed]"),
   tableCounts: document.querySelector("[data-asset-tool-table-counts]"),
-  type: document.querySelector("[data-asset-tool-type]"),
+  usage: document.querySelector("[data-asset-tool-usage]"),
   validationList: document.querySelector("[data-asset-tool-validation-list]"),
   validationOverlay: document.querySelector("[data-asset-tool-validation-overlay]")
 };
@@ -51,6 +54,20 @@ function setText(target, value) {
   if (target) {
     target.textContent = value;
   }
+}
+
+function appendRoleOptions(select, definitions) {
+  if (!select) {
+    return;
+  }
+
+  select.replaceChildren();
+  definitions.forEach((role) => {
+    const option = document.createElement("option");
+    option.value = role.id;
+    option.textContent = role.label;
+    select.append(option);
+  });
 }
 
 function appendOptions(select, values) {
@@ -79,16 +96,20 @@ function createListItem(text) {
   return item;
 }
 
+function currentFile() {
+  return elements.file?.files?.[0] || null;
+}
+
 function readAssetForm() {
-  const file = elements.file?.files?.[0] || null;
+  const file = currentFile();
   return {
+    assetRole: elements.assetRole?.value,
     fileName: file?.name || "",
     mimeType: file?.type || "",
     name: elements.name?.value,
     path: elements.path?.value,
-    role: elements.role?.value,
     size: file?.size || 0,
-    type: elements.type?.value
+    usage: elements.usage?.value
   };
 }
 
@@ -96,9 +117,29 @@ function fileStem(fileName) {
   return String(fileName || "").replace(/\.[^.]+$/, "");
 }
 
-function assetPathFromFile(type, fileName) {
-  const folder = String(type || "data").toLowerCase();
-  return `assets/${folder}/${fileName}`;
+function selectedRoleDefinition() {
+  const roleId = elements.assetRole?.value || "image";
+  return ASSET_ROLE_DEFINITIONS.find((role) => role.id === roleId) || ASSET_ROLE_DEFINITIONS[0];
+}
+
+function updateFileAccept() {
+  if (!elements.file) {
+    return;
+  }
+
+  elements.file.accept = selectedRoleDefinition().extensions.join(",");
+}
+
+function updateStoragePathPreview() {
+  if (!elements.path) {
+    return;
+  }
+
+  const file = currentFile();
+  elements.path.value = repository.previewStoragePath({
+    assetRole: elements.assetRole?.value,
+    fileName: file?.name || elements.path.value
+  });
 }
 
 function renderHandoff(snapshot) {
@@ -106,7 +147,7 @@ function renderHandoff(snapshot) {
   const configuration = snapshot.handoff.configuration;
   const text = snapshot.handoff.ready && project && configuration
     ? `${project.name} - ${project.purpose} - Game Configuration ready`
-    : "No ready Game Configuration handoff";
+    : "No active project with ready Game Configuration handoff";
 
   setText(elements.handoffContext, text);
   if (elements.handoffOverlay) {
@@ -130,6 +171,37 @@ function renderValidation(snapshot) {
   elements.validationOverlay.hidden = snapshot.validation.findings.length === 0;
 }
 
+function renderRoleLibrary(snapshot) {
+  if (!elements.roleLibrary) {
+    return;
+  }
+
+  elements.roleLibrary.replaceChildren();
+  snapshot.roleDefinitions.forEach((role) => {
+    const row = document.createElement("tr");
+    row.dataset.assetToolRoleRow = role.id;
+    row.append(
+      createCell(role.label),
+      createCell(role.extensions.join(", ")),
+      createCell(role.previewBehavior),
+      createCell(role.uploadEnabled ? "Upload ready" : "Planned"),
+      createCell(role.validationNeeds.join("; "))
+    );
+    elements.roleLibrary.append(row);
+  });
+}
+
+function renderRoleDiagnostics(snapshot) {
+  if (!elements.roleDiagnostics) {
+    return;
+  }
+
+  elements.roleDiagnostics.replaceChildren();
+  snapshot.roleDiagnostics.forEach((diagnostic) => {
+    elements.roleDiagnostics.append(createListItem(`${diagnostic.label}: ${diagnostic.action}`));
+  });
+}
+
 function renderLibrary(snapshot) {
   if (!elements.library) {
     return;
@@ -140,8 +212,8 @@ function renderLibrary(snapshot) {
   if (snapshot.assets.length === 0) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 5;
-    cell.textContent = "No assets imported yet.";
+    cell.colSpan = 6;
+    cell.textContent = "No project assets uploaded yet.";
     row.append(cell);
     elements.library.append(row);
     return;
@@ -161,9 +233,10 @@ function renderLibrary(snapshot) {
 
     row.append(
       nameCell,
-      createCell(asset.type),
-      createCell(asset.role),
-      createCell(asset.path),
+      createCell(asset.assetRoleLabel),
+      createCell(asset.usage),
+      createCell(asset.storedPath),
+      createCell(`${asset.originalName}; ${asset.mimeType}; ${asset.size} bytes; ${asset.checksum}`),
       createCell(asset.status)
     );
     elements.library.append(row);
@@ -175,12 +248,12 @@ function renderPreview(snapshot) {
 
   if (!asset) {
     setText(elements.previewTitle, "Selected Asset Preview");
-    setText(elements.preview, "Choose or import an asset to preview its project record.");
+    setText(elements.preview, "Choose or upload an asset to preview its project storage metadata.");
     return;
   }
 
   setText(elements.previewTitle, `${asset.name} Preview`);
-  setText(elements.preview, `${asset.previewKind}: ${asset.path}${asset.fileName ? ` from ${asset.fileName}` : ""}.`);
+  setText(elements.preview, `${asset.previewKind}: ${asset.storedPath} from ${asset.originalName}.`);
 }
 
 function renderTables(snapshot) {
@@ -196,6 +269,29 @@ function renderTables(snapshot) {
   });
 }
 
+function renderMetadata(snapshot) {
+  if (!elements.metadata) {
+    return;
+  }
+
+  elements.metadata.replaceChildren();
+  const asset = snapshot.selectedAsset;
+  if (!asset) {
+    elements.metadata.append(createListItem("No selected asset metadata."));
+    return;
+  }
+
+  [
+    `Original name: ${asset.originalName}`,
+    `Stored path: ${asset.storedPath}`,
+    `Role: ${asset.assetRoleLabel}`,
+    `MIME type: ${asset.mimeType}`,
+    `Size: ${asset.size} bytes`,
+    `Checksum: ${asset.checksum}`,
+    `Owner project: ${asset.ownerProjectId}`
+  ].forEach((item) => elements.metadata.append(createListItem(item)));
+}
+
 function renderOutput(snapshot) {
   const missing = snapshot.validation.findings.map((finding) => finding.label).join(", ");
   const assetCount = snapshot.assets.length;
@@ -204,10 +300,10 @@ function renderOutput(snapshot) {
   setText(elements.libraryStatus, snapshot.progressHandoff.libraryStatus);
   setText(elements.nextStep, snapshot.progressHandoff.nextStep);
   setText(elements.outputValidation, snapshot.validation.status);
-  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Import at least one asset."));
+  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Upload at least one project asset."));
   setText(
     elements.outputSummary,
-    assetCount === 1 ? "1 asset ready." : `${assetCount} assets ready.`
+    assetCount === 1 ? "1 project asset ready." : `${assetCount} project assets ready.`
   );
 }
 
@@ -215,13 +311,18 @@ function render() {
   const snapshot = repository.getSnapshot();
   renderHandoff(snapshot);
   renderValidation(snapshot);
+  renderRoleLibrary(snapshot);
+  renderRoleDiagnostics(snapshot);
   renderLibrary(snapshot);
   renderPreview(snapshot);
   renderTables(snapshot);
+  renderMetadata(snapshot);
   renderOutput(snapshot);
+  updateStoragePathPreview();
 }
 
 function validateCurrentForm() {
+  updateStoragePathPreview();
   const validation = repository.validateAssetInput(readAssetForm());
   const findings = validation.findings.map((finding) => ({
     action: finding.action,
@@ -235,11 +336,18 @@ function validateCurrentForm() {
   setText(elements.outputValidation, validation.status);
 }
 
-appendOptions(elements.type, ASSET_TYPES);
-appendOptions(elements.role, ASSET_ROLES);
+appendRoleOptions(elements.assetRole, ASSET_ROLE_DEFINITIONS);
+appendOptions(elements.usage, ASSET_USAGE_ROLES);
+updateFileAccept();
+
+elements.assetRole?.addEventListener("change", () => {
+  updateFileAccept();
+  updateStoragePathPreview();
+  validateCurrentForm();
+});
 
 elements.file?.addEventListener("change", () => {
-  const file = elements.file?.files?.[0] || null;
+  const file = currentFile();
   if (!file) {
     return;
   }
@@ -247,9 +355,7 @@ elements.file?.addEventListener("change", () => {
   if (elements.name && !elements.name.value.trim()) {
     elements.name.value = fileStem(file.name);
   }
-  if (elements.path && !elements.path.value.trim()) {
-    elements.path.value = assetPathFromFile(elements.type?.value, file.name);
-  }
+  updateStoragePathPreview();
   validateCurrentForm();
 });
 
@@ -274,7 +380,7 @@ elements.library?.addEventListener("click", (event) => {
 
 elements.seed?.addEventListener("click", () => {
   repository.seedDemoAssets();
-  setText(elements.log, "Demo assets seeded.");
+  setText(elements.log, "Demo project assets seeded.");
   render();
 });
 

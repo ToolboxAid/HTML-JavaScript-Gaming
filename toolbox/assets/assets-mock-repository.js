@@ -1,20 +1,107 @@
 import { createGameConfigurationMockRepository } from "../game-configuration/game-configuration-mock-repository.js";
 
 export const ASSET_TOOL_TABLES = Object.freeze([
+  "asset_role_definitions",
   "asset_library_items",
+  "asset_storage_objects",
   "asset_import_events",
   "asset_validation_items"
 ]);
 
-export const ASSET_TYPES = Object.freeze([
-  "Image",
-  "Audio",
-  "Font",
-  "Data",
-  "Video"
+export const ASSET_ROLE_DEFINITIONS = Object.freeze([
+  {
+    id: "audio",
+    label: "Audio",
+    storageFolder: "audio",
+    extensions: [".mp3", ".wav", ".ogg", ".m4a"],
+    mimeTypes: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp4"],
+    previewBehavior: "Browser audio metadata preview",
+    uploadEnabled: true,
+    maxSizeBytes: 52428800,
+    validationNeeds: ["MIME must be audio/* or approved audio MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/audio/"]
+  },
+  {
+    id: "color",
+    label: "Color",
+    storageFolder: "color",
+    extensions: [".json"],
+    mimeTypes: ["application/json"],
+    previewBehavior: "Swatch metadata preview",
+    uploadEnabled: false,
+    maxSizeBytes: 1048576,
+    validationNeeds: ["Palette color metadata must include hex and name", "Color uploads are deferred until palette ownership is rebuilt"]
+  },
+  {
+    id: "data",
+    label: "Data",
+    storageFolder: "data",
+    extensions: [".json", ".csv", ".txt"],
+    mimeTypes: ["application/json", "text/csv", "text/plain"],
+    previewBehavior: "Text metadata preview",
+    uploadEnabled: false,
+    maxSizeBytes: 5242880,
+    validationNeeds: ["Structured data must declare format", "Data uploads are deferred until schema ownership is rebuilt"]
+  },
+  {
+    id: "font",
+    label: "Font",
+    storageFolder: "font",
+    extensions: [".woff", ".woff2", ".ttf", ".otf"],
+    mimeTypes: ["font/woff", "font/woff2", "font/ttf", "font/otf"],
+    previewBehavior: "Font sample preview",
+    uploadEnabled: false,
+    maxSizeBytes: 10485760,
+    validationNeeds: ["Font files must use approved font formats", "Font uploads are deferred until font loading ownership is rebuilt"]
+  },
+  {
+    id: "image",
+    label: "Image",
+    storageFolder: "image",
+    extensions: [".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"],
+    mimeTypes: ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"],
+    previewBehavior: "Image metadata preview",
+    uploadEnabled: true,
+    maxSizeBytes: 10485760,
+    validationNeeds: ["MIME must be image/* or approved image MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/image/"]
+  },
+  {
+    id: "localization",
+    label: "Localization",
+    storageFolder: "localization",
+    extensions: [".json", ".po", ".pot", ".xliff", ".xlf"],
+    mimeTypes: ["application/json", "text/plain", "application/x-xliff+xml"],
+    previewBehavior: "Localization key summary preview",
+    uploadEnabled: false,
+    maxSizeBytes: 5242880,
+    validationNeeds: ["Localization files must declare locale", "Localization uploads are deferred until language ownership is rebuilt"]
+  },
+  {
+    id: "shader",
+    label: "Shader",
+    storageFolder: "shader",
+    extensions: [".glsl", ".vert", ".frag", ".wgsl"],
+    mimeTypes: ["text/plain"],
+    previewBehavior: "Shader source metadata preview",
+    uploadEnabled: false,
+    maxSizeBytes: 2097152,
+    validationNeeds: ["Shader stage metadata is required", "Shader uploads are deferred until render pipeline ownership is rebuilt"]
+  },
+  {
+    id: "video",
+    label: "Video",
+    storageFolder: "video",
+    extensions: [".mp4", ".webm", ".mov"],
+    mimeTypes: ["video/mp4", "video/webm", "video/quicktime"],
+    previewBehavior: "Browser video metadata preview",
+    uploadEnabled: true,
+    maxSizeBytes: 209715200,
+    validationNeeds: ["MIME must be video/* or approved video MIME", "File size must be greater than zero", "Project storage path must be generated under assets/projects/<projectId>/video/"]
+  }
 ]);
 
-export const ASSET_ROLES = Object.freeze([
+export const ASSET_ROLE_LABELS = Object.freeze(ASSET_ROLE_DEFINITIONS.map((role) => role.label));
+
+export const ASSET_USAGE_ROLES = Object.freeze([
   "Background",
   "Character",
   "Data",
@@ -27,26 +114,31 @@ export const ASSET_ROLES = Object.freeze([
   "World"
 ]);
 
-const REQUIRED_FIELDS = Object.freeze([
+export const ASSET_TYPES = ASSET_ROLE_LABELS;
+export const ASSET_ROLES = ASSET_USAGE_ROLES;
+
+const PROJECT_ASSET_STORAGE_ROOT = "assets/projects";
+
+const REQUIRED_UPLOAD_FIELDS = Object.freeze([
   {
     field: "name",
     label: "Asset Name",
     action: "Name the asset before importing it."
   },
   {
-    field: "type",
-    label: "Asset Type",
-    action: "Choose an approved asset type."
+    field: "assetRole",
+    label: "Asset Role",
+    action: "Choose an approved asset role."
   },
   {
-    field: "role",
-    label: "Asset Role",
+    field: "usage",
+    label: "Usage",
     action: "Choose how the asset is used by the project."
   },
   {
-    field: "path",
-    label: "Asset Path",
-    action: "Use a project-relative path under assets/."
+    field: "fileName",
+    label: "Upload File",
+    action: "Choose a project asset file to upload."
   }
 ]);
 
@@ -65,17 +157,32 @@ function cloneRows(rows) {
 }
 
 function cloneTables(tables) {
-  return {
-    asset_import_events: cloneRows(tables.asset_import_events),
-    asset_library_items: cloneRows(tables.asset_library_items),
-    asset_validation_items: cloneRows(tables.asset_validation_items)
-  };
+  return Object.fromEntries(
+    ASSET_TOOL_TABLES.map((table) => [table, cloneRows(tables[table] || [])])
+  );
+}
+
+function roleDefinitionRows() {
+  return ASSET_ROLE_DEFINITIONS.map((role) => ({
+    id: role.id,
+    label: role.label,
+    storageFolder: role.storageFolder,
+    extensions: role.extensions.join(", "),
+    mimeTypes: role.mimeTypes.join(", "),
+    previewBehavior: role.previewBehavior,
+    uploadEnabled: role.uploadEnabled,
+    maxSizeBytes: role.maxSizeBytes,
+    dbFields: uploadedAssetMetadataFields().join(", "),
+    validationNeeds: role.validationNeeds.join("; ")
+  }));
 }
 
 function createEmptyTables() {
   return {
     asset_import_events: [],
     asset_library_items: [],
+    asset_role_definitions: roleDefinitionRows(),
+    asset_storage_objects: [],
     asset_validation_items: []
   };
 }
@@ -84,12 +191,55 @@ function normalizeText(value) {
   return String(value || "").trim();
 }
 
-function normalizeChoice(value, choices) {
-  return choices.includes(value) ? value : "";
+function normalizeRoleId(value) {
+  const normalized = normalizeText(value).toLowerCase();
+  const fromId = ASSET_ROLE_DEFINITIONS.find((role) => role.id === normalized);
+  if (fromId) {
+    return fromId.id;
+  }
+  const fromLabel = ASSET_ROLE_DEFINITIONS.find((role) => role.label.toLowerCase() === normalized);
+  return fromLabel?.id || "";
 }
 
-function normalizeAssetPath(value) {
-  return normalizeText(value).replace(/\\/g, "/");
+function normalizeUsage(value) {
+  const normalized = normalizeText(value);
+  return ASSET_USAGE_ROLES.includes(normalized) ? normalized : "";
+}
+
+function roleDefinitionForId(roleId) {
+  return ASSET_ROLE_DEFINITIONS.find((role) => role.id === roleId) || null;
+}
+
+function extensionForFileName(fileName) {
+  const match = normalizeText(fileName).toLowerCase().match(/(\.[a-z0-9]+)$/);
+  return match ? match[1] : "";
+}
+
+function mimeMatchesRole(role, mimeType) {
+  const normalizedMime = normalizeText(mimeType).toLowerCase();
+  if (!normalizedMime) {
+    return false;
+  }
+  if (role.mimeTypes.includes(normalizedMime)) {
+    return true;
+  }
+  return normalizedMime.startsWith(`${role.id}/`);
+}
+
+function extensionMatchesRole(role, fileName) {
+  const extension = extensionForFileName(fileName);
+  return Boolean(extension && role.extensions.includes(extension));
+}
+
+function sanitizeFileName(fileName) {
+  const raw = normalizeText(fileName) || "asset";
+  const extension = extensionForFileName(raw);
+  const basename = extension ? raw.slice(0, -extension.length) : raw;
+  const safeBasename = basename
+    .replace(/[\\/]+/g, "-")
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "asset";
+  return `${safeBasename}${extension}`;
 }
 
 function slugify(value) {
@@ -99,12 +249,45 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "") || "asset";
 }
 
-function previewKindForType(type) {
-  if (type === "Image") return "Image preview";
-  if (type === "Audio") return "Audio preview";
-  if (type === "Font") return "Font preview";
-  if (type === "Video") return "Video preview";
-  return "Data preview";
+function checksumForMetadata({ fileName, mimeType, size, projectId, assetRole }) {
+  const text = `${projectId}|${assetRole}|${fileName}|${mimeType}|${size}`;
+  let hash = 0;
+  for (let index = 0; index < text.length; index += 1) {
+    hash = ((hash << 5) - hash + text.charCodeAt(index)) >>> 0;
+  }
+  return `mock-sha256-${hash.toString(16).padStart(8, "0")}`;
+}
+
+function uploadedAssetMetadataFields() {
+  return [
+    "id",
+    "projectId",
+    "ownerProjectId",
+    "assetRole",
+    "originalName",
+    "storedPath",
+    "mimeType",
+    "size",
+    "checksum",
+    "createdAt",
+    "updatedAt"
+  ];
+}
+
+function storagePathForProjectAsset(projectId, assetRole, fileName) {
+  const role = roleDefinitionForId(assetRole);
+  if (!projectId || !role || !fileName) {
+    return "";
+  }
+  return `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${role.storageFolder}/${sanitizeFileName(fileName)}`;
+}
+
+function previewKindForRole(role) {
+  if (!role) return "Asset metadata preview";
+  if (role.id === "image") return "Image preview";
+  if (role.id === "audio") return "Audio preview";
+  if (role.id === "video") return "Video preview";
+  return role.previewBehavior;
 }
 
 function createReadyGameConfigurationRepository() {
@@ -132,6 +315,37 @@ function tableCounts(tables) {
   }));
 }
 
+function createStorageObject({ assetRole, fileName, mimeType, name, project, size }) {
+  const role = roleDefinitionForId(assetRole);
+  const projectId = project?.id || "";
+  const originalName = normalizeText(fileName);
+  const storedPath = storagePathForProjectAsset(projectId, assetRole, originalName);
+  const checksum = checksumForMetadata({
+    assetRole,
+    fileName: originalName,
+    mimeType,
+    projectId,
+    size
+  });
+  const timestamp = new Date().toISOString();
+
+  return {
+    assetId: `${projectId}-asset-${assetRole}-${slugify(name || originalName)}`,
+    checksum,
+    createdAt: timestamp,
+    id: `${projectId}-storage-${assetRole}-${slugify(originalName)}`,
+    mimeType,
+    originalName,
+    ownerProjectId: projectId,
+    projectId,
+    role: role?.label || assetRole,
+    size,
+    status: "Stored",
+    storedPath,
+    updatedAt: timestamp
+  };
+}
+
 export function createAssetToolMockRepository(options = {}) {
   const configurationRepository = options.configurationRepository || createReadyGameConfigurationRepository();
   let tables = createEmptyTables();
@@ -153,39 +367,119 @@ export function createAssetToolMockRepository(options = {}) {
     };
   }
 
+  function getRoleDiagnostics() {
+    return ASSET_ROLE_DEFINITIONS.map((role) => {
+      const missing = [];
+      if (!role.id) missing.push("id");
+      if (!role.label) missing.push("label");
+      if (!role.storageFolder) missing.push("storageFolder");
+      if (!Array.isArray(role.extensions) || role.extensions.length === 0) missing.push("extensions");
+      if (!Array.isArray(role.mimeTypes) || role.mimeTypes.length === 0) missing.push("mimeTypes");
+      if (!role.previewBehavior) missing.push("previewBehavior");
+      if (!Array.isArray(role.validationNeeds) || role.validationNeeds.length === 0) missing.push("validationNeeds");
+      return {
+        action: missing.length ? `Add missing role metadata: ${missing.join(", ")}.` : "Role metadata ready.",
+        id: `${role.id || "missing"}-role-diagnostic`,
+        label: role.label || role.id || "Asset Role",
+        status: missing.length ? "Invalid" : "Ready"
+      };
+    });
+  }
+
+  function validateRoleMetadata() {
+    const findings = getRoleDiagnostics()
+      .filter((diagnostic) => diagnostic.status !== "Ready")
+      .map((diagnostic) => ({
+        field: "assetRoleMetadata",
+        label: diagnostic.label,
+        action: diagnostic.action
+      }));
+
+    return {
+      findings,
+      status: findings.length ? "Needs Input" : "Ready"
+    };
+  }
+
   function validateAssetInput(input = {}) {
     const handoff = getConfigurationHandoff();
+    const activeProject = handoff.activeProject || null;
+    const assetRole = normalizeRoleId(input.assetRole || input.type);
+    const role = roleDefinitionForId(assetRole);
     const normalized = {
-      fileName: normalizeText(input.fileName),
-      mimeType: normalizeText(input.mimeType),
+      assetRole,
+      fileName: normalizeText(input.fileName || input.originalName),
+      mimeType: normalizeText(input.mimeType).toLowerCase(),
       name: normalizeText(input.name),
-      path: normalizeAssetPath(input.path),
-      role: normalizeChoice(input.role, ASSET_ROLES),
       size: Number(input.size) || 0,
-      type: normalizeChoice(input.type, ASSET_TYPES)
+      storedPath: storagePathForProjectAsset(activeProject?.id || "", assetRole, input.fileName || input.originalName),
+      usage: normalizeUsage(input.usage || input.role)
     };
 
-    const findings = [];
-    if (!handoff.ready) {
+    const findings = [...validateRoleMetadata().findings];
+    if (!handoff.ready || !activeProject) {
       findings.push({
-        field: "gameConfiguration",
-        label: "Game Configuration",
-        action: "Complete a valid Game Configuration before importing assets."
+        field: "activeProject",
+        label: "Active Project",
+        action: "Open a project and complete a valid Game Configuration before uploading project assets."
       });
     }
 
-    REQUIRED_FIELDS.forEach((requirement) => {
+    REQUIRED_UPLOAD_FIELDS.forEach((requirement) => {
       if (!normalized[requirement.field]) {
         findings.push(requirement);
       }
     });
 
-    if (normalized.path && !normalized.path.startsWith("assets/")) {
+    if (role && !role.uploadEnabled) {
       findings.push({
-        field: "path",
-        label: "Asset Path",
-        action: "Asset paths must begin with assets/."
+        field: "assetRole",
+        label: role.label,
+        action: `${role.label} is represented in the role library, but upload is implemented first for Image, Video, and Audio only.`
       });
+    }
+
+    if (role && normalized.fileName && !extensionMatchesRole(role, normalized.fileName)) {
+      findings.push({
+        field: "fileName",
+        label: "File Extension",
+        action: `${normalized.fileName} is not an approved ${role.label} file. Expected ${role.extensions.join(", ")}.`
+      });
+    }
+
+    if (role && normalized.mimeType && !mimeMatchesRole(role, normalized.mimeType)) {
+      findings.push({
+        field: "mimeType",
+        label: "MIME Type",
+        action: `${normalized.mimeType} is not accepted for ${role.label} assets.`
+      });
+    }
+
+    if (role && normalized.size <= 0) {
+      findings.push({
+        field: "size",
+        label: "File Size",
+        action: "Uploaded files must be greater than zero bytes."
+      });
+    }
+
+    if (role && normalized.size > role.maxSizeBytes) {
+      findings.push({
+        field: "size",
+        label: "File Size",
+        action: `${role.label} uploads must be ${role.maxSizeBytes} bytes or smaller.`
+      });
+    }
+
+    if (normalized.storedPath && activeProject?.id) {
+      const expectedPrefix = `${PROJECT_ASSET_STORAGE_ROOT}/${activeProject.id}/${role?.storageFolder || ""}/`;
+      if (!normalized.storedPath.startsWith(expectedPrefix)) {
+        findings.push({
+          field: "storedPath",
+          label: "Project Storage Path",
+          action: `Uploaded project assets must store under ${expectedPrefix}.`
+        });
+      }
     }
 
     return {
@@ -204,7 +498,8 @@ export function createAssetToolMockRepository(options = {}) {
 
   function importAsset(input = {}) {
     const handoff = getConfigurationHandoff();
-    const projectId = handoff.activeProject?.id || "";
+    const project = handoff.activeProject || null;
+    const projectId = project?.id || "";
     const validation = validateAssetInput(input);
     replaceValidationRows(projectId, validation.findings);
 
@@ -212,36 +507,59 @@ export function createAssetToolMockRepository(options = {}) {
       return {
         imported: false,
         message: validation.findings.length === 1
-          ? "Asset import blocked by 1 missing item."
-          : `Asset import blocked by ${validation.findings.length} missing items.`,
+          ? "Asset upload blocked by 1 missing item."
+          : `Asset upload blocked by ${validation.findings.length} missing items.`,
         snapshot: getSnapshot()
       };
     }
 
-    const asset = {
+    const role = roleDefinitionForId(validation.asset.assetRole);
+    const storageObject = createStorageObject({
+      assetRole: validation.asset.assetRole,
       fileName: validation.asset.fileName,
-      id: `${projectId}-asset-${slugify(validation.asset.name)}`,
       mimeType: validation.asset.mimeType,
       name: validation.asset.name,
-      path: validation.asset.path,
-      previewKind: previewKindForType(validation.asset.type),
+      project,
+      size: validation.asset.size
+    });
+    const timestamp = storageObject.createdAt;
+    const asset = {
+      assetRole: validation.asset.assetRole,
+      assetRoleLabel: role.label,
+      checksum: storageObject.checksum,
+      createdAt: timestamp,
+      fileName: validation.asset.fileName,
+      id: storageObject.assetId,
+      mimeType: validation.asset.mimeType,
+      name: validation.asset.name,
+      originalName: storageObject.originalName,
+      ownerProjectId: projectId,
+      ownerUserId: project.ownerUserId,
+      path: storageObject.storedPath,
+      previewKind: previewKindForRole(role),
       projectId,
-      role: validation.asset.role,
+      role: role.label,
       size: validation.asset.size,
       status: "Ready",
-      type: validation.asset.type,
-      updatedAt: new Date().toISOString()
+      storedPath: storageObject.storedPath,
+      storageObjectId: storageObject.id,
+      type: role.label,
+      updatedAt: timestamp,
+      usage: validation.asset.usage
     };
 
     tables.asset_library_items = tables.asset_library_items.filter((row) => row.id !== asset.id);
+    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.id !== storageObject.id);
     tables.asset_library_items.push(asset);
+    tables.asset_storage_objects.push(storageObject);
     tables.asset_import_events.push({
       assetId: asset.id,
       fileName: asset.fileName,
       id: `${asset.id}-import-${tables.asset_import_events.length + 1}`,
-      path: asset.path,
+      mimeType: asset.mimeType,
       projectId,
-      status: "Imported",
+      status: "Uploaded",
+      storedPath: asset.storedPath,
       type: asset.type
     });
     selectedAssetId = asset.id;
@@ -250,7 +568,7 @@ export function createAssetToolMockRepository(options = {}) {
     return {
       asset,
       imported: true,
-      message: `Imported ${asset.name} into the asset library.`,
+      message: `Uploaded ${asset.name} to project asset storage.`,
       snapshot: getSnapshot()
     };
   }
@@ -276,13 +594,12 @@ export function createAssetToolMockRepository(options = {}) {
 
   function seedDemoAssets() {
     importAsset({
+      assetRole: "image",
       fileName: "player.png",
       mimeType: "image/png",
       name: "Demo Player Sprite",
-      path: "assets/images/player.png",
-      role: "Sprite",
       size: 2048,
-      type: "Image"
+      usage: "Sprite"
     });
     return getSnapshot();
   }
@@ -323,6 +640,13 @@ export function createAssetToolMockRepository(options = {}) {
     return cloneTables(tables);
   }
 
+  function previewStoragePath(input = {}) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const assetRole = normalizeRoleId(input.assetRole || input.type);
+    return storagePathForProjectAsset(projectId, assetRole, input.fileName || input.originalName);
+  }
+
   function getProgressHandoff() {
     const handoff = getConfigurationHandoff();
     const assets = listAssets();
@@ -339,7 +663,7 @@ export function createAssetToolMockRepository(options = {}) {
 
     if (assets.length === 0) {
       return {
-        currentFocus: "Import Assets",
+        currentFocus: "Upload Project Assets",
         libraryStatus: "Needs Input",
         nextStep: "Assets",
         projectProgress: `${handoff.activeProject.name} needs project asset records`,
@@ -360,25 +684,22 @@ export function createAssetToolMockRepository(options = {}) {
     const handoff = getConfigurationHandoff();
     const assets = listAssets();
     const selectedAsset = getSelectedAsset() || assets[0] || null;
-    const validation = validateAssetInput({
-      name: selectedAsset?.name,
-      path: selectedAsset?.path,
-      role: selectedAsset?.role,
-      type: selectedAsset?.type
-    });
     const projectId = handoff.activeProject?.id || "";
     const findings = tables.asset_validation_items.filter((row) => row.projectId === projectId);
 
     return {
       assets,
       handoff,
+      metadataFields: uploadedAssetMetadataFields(),
       progressHandoff: getProgressHandoff(),
+      roleDefinitions: ASSET_ROLE_DEFINITIONS.map((role) => ({ ...role })),
+      roleDiagnostics: getRoleDiagnostics(),
       selectedAsset,
       tableCounts: tableCounts(tables),
       tables: getTables(),
       validation: {
         findings,
-        status: findings.length > 0 ? "Needs Input" : assets.length > 0 && handoff.ready ? "Ready" : validation.status
+        status: findings.length > 0 ? "Needs Input" : assets.length > 0 && handoff.ready ? "Ready" : validateRoleMetadata().status
       }
     };
   }
@@ -386,12 +707,16 @@ export function createAssetToolMockRepository(options = {}) {
   resetAssetLibrary();
 
   return {
+    ASSET_ROLE_DEFINITIONS,
+    ASSET_ROLE_LABELS,
     ASSET_ROLES,
     ASSET_TOOL_TABLES,
     ASSET_TYPES,
+    ASSET_USAGE_ROLES,
     clearAssetLibrary,
     getConfigurationHandoff,
     getProgressHandoff,
+    getRoleDiagnostics,
     getSnapshot,
     getTables,
     importAsset,
@@ -399,6 +724,7 @@ export function createAssetToolMockRepository(options = {}) {
     makeInvalidGameConfiguration,
     makeMissingGameConfiguration,
     makeReadyGameConfiguration,
+    previewStoragePath,
     resetAssetLibrary,
     seedDemoAssets,
     selectAsset,

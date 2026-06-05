@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Assets</div>
                 <h1>Assets</h1>
-                <p class="lede">Manage project asset records after Game Configuration is ready.</p>
+                <p class="lede">Manage project-owned asset uploads after Game Configuration is ready.</p>
             </div>
         </section>
         <section class="section">
@@ -44,29 +44,29 @@
                                             <table class="data-table tool-form-table" aria-label="Asset import fields" data-asset-tool-form-table>
                                                 <tbody>
                                                     <tr>
-                                                        <th scope="row"><label for="assetToolType">Type</label></th>
-                                                        <td><select id="assetToolType" data-asset-tool-type></select></td>
+                                                        <th scope="row"><label for="assetToolAssetRole">Asset Role</label></th>
+                                                        <td><select id="assetToolAssetRole" data-asset-tool-asset-role></select></td>
                                                     </tr>
                                                     <tr>
-                                                        <th scope="row"><label for="assetToolRole">Role</label></th>
-                                                        <td><select id="assetToolRole" data-asset-tool-role></select></td>
+                                                        <th scope="row"><label for="assetToolUsage">Usage</label></th>
+                                                        <td><select id="assetToolUsage" data-asset-tool-usage></select></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="assetToolName">Name</label></th>
                                                         <td><input id="assetToolName" type="text" placeholder="Player sprite" data-asset-tool-name></td>
                                                     </tr>
                                                     <tr>
-                                                        <th scope="row"><label for="assetToolPath">Path</label></th>
-                                                        <td><input id="assetToolPath" type="text" placeholder="assets/images/player.png" data-asset-tool-path></td>
+                                                        <th scope="row"><label for="assetToolPath">Storage Path</label></th>
+                                                        <td><input id="assetToolPath" type="text" placeholder="assets/projects/demo-project/image/player.png" data-asset-tool-path readonly></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="assetToolFile">File</label></th>
-                                                        <td><input id="assetToolFile" type="file" data-asset-tool-file aria-describedby="assetToolFileHelp"><p id="assetToolFileHelp">File data is previewed only. Asset records store file names and paths, not image data URLs.</p></td>
+                                                        <td><input id="assetToolFile" type="file" data-asset-tool-file aria-describedby="assetToolFileHelp"><p id="assetToolFileHelp">Image, Video, and Audio upload first. Project records store file metadata and project-owned paths only.</p></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <button class="btn" type="submit">Import Asset</button>
+                                        <button class="btn" type="submit">Upload Asset</button>
                                     </form>
                                 </div>
                             </details>
@@ -82,7 +82,7 @@
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="assets" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                     <section class="tool-center-panel">
                         <h2>Asset Library</h2>
-                        <p>Assets stores project-owned asset records in a SQL-shaped mock repository. Real database storage, cloud upload, binary file persistence, and export packaging are not implemented yet.</p>
+                        <p>Assets stores project-owned upload metadata in a SQL-shaped mock repository. Real database storage, cloud upload, binary file persistence, and export packaging are not implemented yet.</p>
                         <div class="grid cols-3" aria-label="Asset readiness summary">
                             <article class="mini-stat"><strong data-asset-tool-library-status>Needs Input</strong>Library Status</article>
                             <article class="mini-stat"><strong data-asset-tool-count>0</strong>Assets</article>
@@ -101,6 +101,30 @@
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
+                                    <div class="kicker">Role Library</div>
+                                    <h3>Asset Role Coverage</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Asset role library">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Role</th>
+                                                <th scope="col">File Types</th>
+                                                <th scope="col">Preview</th>
+                                                <th scope="col">Upload</th>
+                                                <th scope="col">Validation Needs</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-asset-tool-role-library>
+                                            <tr><td colspan="5">Loading asset role coverage.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
                                     <div class="kicker">Project Assets</div>
                                     <h3>Library Records</h3>
                                 </div>
@@ -109,14 +133,15 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Asset</th>
-                                                <th scope="col">Type</th>
                                                 <th scope="col">Role</th>
-                                                <th scope="col">Path</th>
+                                                <th scope="col">Usage</th>
+                                                <th scope="col">Stored Path</th>
+                                                <th scope="col">Metadata</th>
                                                 <th scope="col">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody data-asset-tool-library>
-                                            <tr><td colspan="5">No assets imported yet.</td></tr>
+                                            <tr><td colspan="6">No project assets uploaded yet.</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -140,10 +165,18 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body content-stack" data-asset-tool-output>
-                                    <p>Library Summary: <span data-asset-tool-output-summary>No assets imported yet.</span></p>
+                                    <p>Library Summary: <span data-asset-tool-output-summary>No project assets uploaded yet.</span></p>
                                     <p>Validation Status: <span data-asset-tool-output-validation>Needs Input</span></p>
-                                    <p>Missing Items: <span data-asset-tool-output-missing>Import at least one asset.</span></p>
+                                    <p>Missing Items: <span data-asset-tool-output-missing>Upload at least one project asset.</span></p>
                                     <p>Next Step: <span data-asset-tool-output-next-step>Assets</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>DB Metadata</summary>
+                                <div class="accordion-body content-stack">
+                                    <ul data-asset-tool-metadata>
+                                        <li>No selected asset metadata.</li>
+                                    </ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -158,6 +191,9 @@
                                             <ul data-asset-tool-validation-list></ul>
                                         </div>
                                     </article>
+                                    <ul data-asset-tool-role-diagnostics>
+                                        <li>Role metadata loading.</li>
+                                    </ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -169,7 +205,9 @@
                                                 <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
                                             </thead>
                                             <tbody data-asset-tool-table-counts>
+                                                <tr><td>asset_role_definitions</td><td>8</td></tr>
                                                 <tr><td>asset_library_items</td><td>0</td></tr>
+                                                <tr><td>asset_storage_objects</td><td>0</td></tr>
                                                 <tr><td>asset_import_events</td><td>0</td></tr>
                                                 <tr><td>asset_validation_items</td><td>0</td></tr>
                                             </tbody>

@@ -1004,3 +1004,34 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_142-147
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Audited `archive/v1-v2/tools/old_asset-manager-v2` reference files for role coverage and preview expectations without copying archive code.
+- Expanded the active Asset Tool repository to represent Audio, Color, Data, Font, Image, Localization, Shader, and Video role definitions.
+- Added project-owned storage metadata under `assets/projects/<projectId>/<assetRole>/...`.
+- Added SQL-shaped mock tables for role definitions and storage objects.
+- Updated the Asset Tool page/runtime to show role coverage, role diagnostics, generated storage paths, metadata output, and project-required upload behavior.
+- Implemented testable Image, Video, and Audio upload metadata workflows.
+- Kept Color, Data, Font, Localization, and Shader represented with visible planned/upload-blocked validation.
+- Updated targeted Asset Tool Playwright coverage for role listing, upload validation, previews, metadata, project-required handoff, and failure cases.
+- Did not add CSS.
+- Did not modify archived V1/V2 files.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/assets/assets-mock-repository.js`
+- `node --check toolbox/assets/assets.js`
+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane asset-tool --lane project-workspace`
+- `git diff --check`
+- Full samples smoke: skipped by request and because samples were not changed.
+
+Required reports:
+- `docs_build/dev/reports/asset-roles-storage-stacked-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
