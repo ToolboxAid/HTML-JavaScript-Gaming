@@ -15,6 +15,10 @@ const repository = createProjectWorkspacePaletteRepository({
 
 const params = new URLSearchParams(window.location.search);
 let editorIssues = [];
+let editorTags = [];
+let harmonyRows = [];
+let selectedHarmonyIndex = 0;
+let selectedSourceSwatch = null;
 let sourceSwatchRows = [];
 
 const elements = {
@@ -24,7 +28,12 @@ const elements = {
   count: document.querySelector("[data-palette-count]"),
   editorDiagnostic: document.querySelector("[data-palette-editor-diagnostic]"),
   form: document.querySelector("[data-palette-editor-form]"),
+  harmonyAddAll: document.querySelector("[data-palette-harmony-add-all]"),
+  harmonyAddSelected: document.querySelector("[data-palette-harmony-add-selected]"),
+  harmonyGuidance: document.querySelector("[data-palette-harmony-guidance]"),
   harmonyList: document.querySelector("[data-palette-harmony-list]"),
+  harmonyMatch: document.querySelector("[data-palette-harmony-match]"),
+  harmonyScheme: document.querySelector("[data-palette-harmony-scheme]"),
   hex: document.querySelector("[data-palette-hex]"),
   log: document.querySelector("[data-palette-log]"),
   name: document.querySelector("[data-palette-name]"),
@@ -32,20 +41,23 @@ const elements = {
   projectOverlay: document.querySelector("[data-palette-project-overlay]"),
   redo: document.querySelector("[data-palette-redo]"),
   remove: document.querySelector("[data-palette-remove]"),
-  selectedDetails: document.querySelector("[data-palette-selected-details]"),
   selectedSummary: document.querySelector("[data-palette-selected-summary]"),
   sourceList: document.querySelector("[data-palette-source-list]"),
   sourceSearch: document.querySelector("[data-palette-source-search]"),
   sourceSelect: document.querySelector("[data-palette-source-select]"),
+  sourceSize: document.querySelector("[data-palette-source-size]"),
   sourceSort: document.querySelector("[data-palette-source-sort]"),
   storagePath: document.querySelector("[data-palette-storage-path]"),
   symbol: document.querySelector("[data-palette-symbol]"),
   tableCounts: document.querySelector("[data-palette-table-counts]"),
   tags: document.querySelector("[data-palette-tags]"),
+  tagSuggestions: document.querySelector("[data-palette-tag-suggestions]"),
+  editorTagsList: document.querySelector("[data-palette-editor-tags-list]"),
   tagsList: document.querySelector("[data-palette-tags-list]"),
   undo: document.querySelector("[data-palette-undo]"),
   update: document.querySelector("[data-palette-update]"),
   userList: document.querySelector("[data-palette-user-list]"),
+  userSize: document.querySelector("[data-palette-user-size]"),
   userSort: document.querySelector("[data-palette-user-sort]"),
   validationList: document.querySelector("[data-palette-validation-list]"),
   validationOverlay: document.querySelector("[data-palette-validation-overlay]"),
@@ -99,24 +111,80 @@ function createListItem(text) {
   return item;
 }
 
-function createColorCell(hex) {
-  const cell = document.createElement("td");
+function normalizeSwatchPreviewSize(size) {
+  return ["small", "medium", "large"].includes(size) ? size : "medium";
+}
+
+function createColorPreview(hex, size = "medium") {
   const input = document.createElement("input");
   input.type = "color";
   input.disabled = true;
   input.value = hex.slice(0, 7);
+  input.dataset.paletteSwatchPreview = "";
+  input.dataset.paletteSwatchSize = normalizeSwatchPreviewSize(size);
   input.setAttribute("aria-label", `${hex} color preview`);
-  cell.append(input);
-  return cell;
+  return input;
 }
 
-function createButton(label, datasetName, datasetValue) {
-  const button = document.createElement("button");
-  button.className = "btn";
-  button.type = "button";
-  button.textContent = label;
-  button.dataset[datasetName] = datasetValue;
-  return button;
+function createPinIndicator(pinned) {
+  const indicator = document.createElement("span");
+  indicator.className = "palette-swatch-pin";
+  indicator.dataset.palettePinIndicator = "";
+  indicator.setAttribute("aria-hidden", "true");
+  indicator.title = pinned ? "Pinned" : "Not pinned";
+  return indicator;
+}
+
+function swatchTileLabel(swatch, action) {
+  return `${action} ${swatch.name}`;
+}
+
+function swatchTooltipText(swatch) {
+  return [
+    `Symbol: ${swatch.symbol}`,
+    `Hex: ${swatch.hex}`,
+    `Name: ${swatch.name}`,
+    `Tags: ${swatch.tags.length ? swatch.tags.join(", ") : "None"}`
+  ].join("\n");
+}
+
+function createSwatchTile(swatch, options = {}) {
+  const tile = document.createElement("button");
+  const pinned = Boolean(options.pinned);
+  tile.className = "palette-swatch-tile";
+  tile.type = "button";
+  tile.dataset.palettePinned = String(pinned);
+  tile.dataset.paletteSwatchHex = swatch.hex;
+  tile.dataset.paletteSwatchName = swatch.name;
+  tile.dataset.paletteSwatchSource = repository.displaySource(swatch.source);
+  tile.dataset.paletteSwatchTags = swatch.tags.join(", ");
+  tile.setAttribute("aria-label", swatchTileLabel(swatch, options.action || "Select palette color"));
+  tile.setAttribute("aria-pressed", String(Boolean(options.pressed)));
+  tile.title = swatchTooltipText(swatch);
+
+  if (options.swatchRow) {
+    tile.dataset.paletteSwatchRow = swatch.symbol;
+  }
+  if (Number.isInteger(options.sourceIndex)) {
+    tile.dataset.paletteSourceIndex = String(options.sourceIndex);
+  }
+
+  tile.append(
+    createColorPreview(swatch.hex, options.size || "medium"),
+    createPinIndicator(pinned)
+  );
+  return tile;
+}
+
+function normalizeTag(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function tagsFromText(value) {
+  return String(value || "")
+    .split(",")
+    .map(normalizeTag)
+    .filter(Boolean);
 }
 
 function readEditorForm() {
@@ -124,7 +192,7 @@ function readEditorForm() {
     hex: elements.hex?.value,
     name: elements.name?.value,
     symbol: elements.symbol?.value,
-    tags: elements.tags?.value
+    tags: [...editorTags, ...tagsFromText(elements.tags?.value)]
   };
 }
 
@@ -132,7 +200,9 @@ function fillEditorForm(swatch) {
   if (elements.symbol) elements.symbol.value = swatch?.symbol || "";
   if (elements.hex) elements.hex.value = swatch?.hex || "";
   if (elements.name) elements.name.value = swatch?.name || "";
-  if (elements.tags) elements.tags.value = Array.isArray(swatch?.tags) ? swatch.tags.join(", ") : "";
+  if (elements.tags) elements.tags.value = "";
+  editorTags = Array.isArray(swatch?.tags) ? [...swatch.tags] : [];
+  renderEditorTags();
 }
 
 function clearEditorForm() {
@@ -154,6 +224,58 @@ function allEditorControls() {
     elements.tags,
     elements.update
   ].filter(Boolean);
+}
+
+function activeTags() {
+  try {
+    return [...new Set(repository.getSnapshot().swatches.flatMap((swatch) => swatch.tags))].sort((left, right) => left.localeCompare(right));
+  } catch {
+    return [];
+  }
+}
+
+function renderEditorTags() {
+  if (!elements.editorTagsList) {
+    return;
+  }
+  elements.editorTagsList.replaceChildren();
+  if (!editorTags.length) {
+    elements.editorTagsList.append(createListItem("No tags added."));
+    return;
+  }
+  editorTags.forEach((tag) => {
+    elements.editorTagsList.append(createListItem(tag));
+  });
+}
+
+function renderTagSuggestions() {
+  if (!elements.tagSuggestions) {
+    return;
+  }
+  const query = normalizeTag(elements.tags?.value);
+  elements.tagSuggestions.replaceChildren();
+  activeTags()
+    .filter((tag) => query && tag.includes(query) && !editorTags.includes(tag))
+    .forEach((tag) => {
+      const option = document.createElement("option");
+      option.value = tag;
+      elements.tagSuggestions.append(option);
+    });
+}
+
+function acceptTagFromInput() {
+  const tag = normalizeTag(elements.tags?.value);
+  if (!tag) {
+    return;
+  }
+  if (!editorTags.includes(tag)) {
+    editorTags.push(tag);
+  }
+  if (elements.tags) {
+    elements.tags.value = "";
+  }
+  renderEditorTags();
+  renderTagSuggestions();
 }
 
 function renderSourceOptions(snapshot) {
@@ -212,41 +334,23 @@ function renderUserPalette(snapshot) {
   elements.userList.replaceChildren();
   const swatches = repository.listSwatches({ sortKey: elements.userSort?.value || "name" });
   if (swatches.length === 0) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 7;
-    cell.textContent = snapshot.projectRequired
-      ? "Open a project before editing palette swatches."
-      : "No project palette swatches yet.";
-    row.append(cell);
-    elements.userList.append(row);
+    const message = document.createElement("p");
+    message.className = "status";
+    message.textContent = snapshot.projectRequired
+      ? "Open a project before editing palette colors."
+      : "No project palette colors yet.";
+    elements.userList.append(message);
     return;
   }
 
   swatches.forEach((swatch) => {
-    const row = document.createElement("tr");
-    row.dataset.paletteSwatchRow = swatch.symbol;
-    const actionCell = document.createElement("td");
-    const select = createButton(
-      snapshot.selectedSwatch?.symbol === swatch.symbol ? `Selected ${swatch.symbol}` : `Select ${swatch.symbol}`,
-      "paletteSelectSwatch",
-      swatch.symbol
-    );
-    if (snapshot.selectedSwatch?.symbol === swatch.symbol) {
-      select.classList.add("primary");
-      select.setAttribute("aria-pressed", "true");
-    }
-    actionCell.append(select);
-    row.append(
-      createColorCell(swatch.hex),
-      createCell(swatch.symbol),
-      createCell(swatch.name),
-      createCell(swatch.hex),
-      createCell(repository.displaySource(swatch.source)),
-      createCell(swatch.tags.length ? swatch.tags.join(", ") : "None"),
-      actionCell
-    );
-    elements.userList.append(row);
+    elements.userList.append(createSwatchTile(swatch, {
+      action: "Select palette color",
+      pinned: true,
+      pressed: snapshot.selectedSwatch?.symbol === swatch.symbol,
+      size: elements.userSize?.value || "medium",
+      swatchRow: true
+    }));
   });
 }
 
@@ -264,50 +368,23 @@ function renderSourceSwatches() {
 
   elements.sourceList.replaceChildren();
   if (sourceSwatchRows.length === 0) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 6;
-    cell.textContent = "No source swatches match the current filter.";
-    row.append(cell);
-    elements.sourceList.append(row);
+    const message = document.createElement("p");
+    message.className = "status";
+    message.textContent = "No source colors match the current filter.";
+    elements.sourceList.append(message);
     return;
   }
 
   sourceSwatchRows.forEach((swatch, index) => {
-    const row = document.createElement("tr");
-    const actionCell = document.createElement("td");
-    actionCell.append(createButton(`Pin ${swatch.symbol}`, "palettePinSource", String(index)));
-    row.append(
-      createColorCell(swatch.hex),
-      createCell(swatch.symbol),
-      createCell(swatch.name),
-      createCell(swatch.hex),
-      createCell(swatch.source),
-      actionCell
-    );
-    elements.sourceList.append(row);
+    const pinned = repository.isSourceSwatchPinned(swatch);
+    elements.sourceList.append(createSwatchTile(swatch, {
+      action: pinned ? "Unpin source palette color" : "Pin source palette color",
+      pinned,
+      pressed: pinned,
+      size: elements.sourceSize?.value || "medium",
+      sourceIndex: index
+    }));
   });
-}
-
-function renderSelectedDetails(snapshot) {
-  if (!elements.selectedDetails) {
-    return;
-  }
-
-  elements.selectedDetails.replaceChildren();
-  const swatch = snapshot.selectedSwatch;
-  if (!swatch) {
-    elements.selectedDetails.append(createListItem("No selected swatch."));
-    return;
-  }
-
-  [
-    `Symbol: ${swatch.symbol}`,
-    `Hex: ${swatch.hex}`,
-    `Name: ${swatch.name}`,
-    `Source: ${repository.displaySource(swatch.source)}`,
-    `Tags: ${swatch.tags.length ? swatch.tags.join(", ") : "None"}`
-  ].forEach((line) => elements.selectedDetails.append(createListItem(line)));
 }
 
 function renderTags(snapshot) {
@@ -330,12 +407,48 @@ function renderHarmony(snapshot) {
   }
 
   elements.harmonyList.replaceChildren();
-  if (!snapshot.selectedSwatch) {
-    elements.harmonyList.append(createListItem("Select a swatch to view harmony suggestions."));
+  const baseSwatch = snapshot.selectedSwatch || selectedSourceSwatch;
+  const sourceId = elements.sourceSelect?.value || "";
+  harmonyRows = baseSwatch
+    ? repository.createHarmonySuggestions(baseSwatch, {
+        matchSource: elements.harmonyMatch?.value || "calculated",
+        schemeId: elements.harmonyScheme?.value || "complementary",
+        sourceId
+      })
+    : [];
+
+  if (!baseSwatch) {
+    elements.harmonyList.append(createListItem("Select a project or source palette color to view scheme suggestions."));
+    setText(elements.harmonyGuidance, "Select a project or source palette color to view scheme suggestions.");
+    setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], true);
     return;
   }
-  snapshot.harmony.forEach((suggestion) => {
-    elements.harmonyList.append(createListItem(`${suggestion.name}: ${suggestion.hex}`));
+
+  if (harmonyRows.length === 0) {
+    elements.harmonyList.append(createListItem("No harmony scheme colors available."));
+    setText(elements.harmonyGuidance, "No harmony scheme colors are available for the selected palette color.");
+    setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], true);
+    return;
+  }
+
+  if (selectedHarmonyIndex >= harmonyRows.length) {
+    selectedHarmonyIndex = 0;
+  }
+  setText(elements.harmonyGuidance, `Showing ${harmonyRows.length} ${elements.harmonyScheme?.selectedOptions?.[0]?.textContent || "scheme"} colors from ${elements.harmonyMatch?.selectedOptions?.[0]?.textContent || "Calculated"}.`);
+  setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], false);
+
+  harmonyRows.forEach((suggestion, index) => {
+    const item = document.createElement("li");
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "paletteHarmonySuggestion";
+    input.value = String(index);
+    input.dataset.paletteHarmonyChoice = String(index);
+    input.checked = index === selectedHarmonyIndex;
+    label.append(input, document.createTextNode(` ${suggestion.name}: ${suggestion.hex} (${repository.displaySource(suggestion.source)})`));
+    item.append(label);
+    elements.harmonyList.append(item);
   });
 }
 
@@ -382,10 +495,11 @@ function render() {
   renderValidation(snapshot);
   renderUserPalette(snapshot);
   renderSourceSwatches();
-  renderSelectedDetails(snapshot);
   renderTags(snapshot);
   renderHarmony(snapshot);
   renderTables(snapshot);
+  renderEditorTags();
+  renderTagSuggestions();
 }
 
 function applyResult(result) {
@@ -438,6 +552,17 @@ elements.form?.addEventListener("submit", (event) => {
 
 elements.form?.addEventListener("input", validateEditor);
 
+elements.tags?.addEventListener("input", renderTagSuggestions);
+
+elements.tags?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") {
+    return;
+  }
+  event.preventDefault();
+  acceptTagFromInput();
+  validateEditor();
+});
+
 elements.update?.addEventListener("click", () => {
   applyResult(repository.updateSelectedSwatch(readEditorForm()));
 });
@@ -457,31 +582,72 @@ elements.redo?.addEventListener("click", () => {
 });
 
 elements.userSort?.addEventListener("change", render);
-elements.sourceSelect?.addEventListener("change", renderSourceSwatches);
+elements.userSize?.addEventListener("change", render);
+elements.sourceSelect?.addEventListener("change", render);
 elements.sourceSearch?.addEventListener("input", renderSourceSwatches);
 elements.sourceSort?.addEventListener("change", renderSourceSwatches);
+elements.sourceSize?.addEventListener("change", renderSourceSwatches);
+elements.harmonyMatch?.addEventListener("change", render);
+elements.harmonyScheme?.addEventListener("change", render);
+elements.harmonyList?.addEventListener("change", (event) => {
+  const input = event.target.closest("[data-palette-harmony-choice]");
+  if (!input) {
+    return;
+  }
+  selectedHarmonyIndex = Number(input.dataset.paletteHarmonyChoice);
+  render();
+});
+
+elements.harmonyAddSelected?.addEventListener("click", () => {
+  const suggestion = harmonyRows[selectedHarmonyIndex];
+  if (!suggestion) {
+    editorIssues = [{
+      action: "Select a harmony scheme color before adding.",
+      field: "harmony",
+      label: "Harmony"
+    }];
+    render();
+    return;
+  }
+  applyResult(repository.addHarmonySuggestion(suggestion));
+});
+
+elements.harmonyAddAll?.addEventListener("click", () => {
+  if (!harmonyRows.length) {
+    editorIssues = [{
+      action: "Select a project or source palette color before adding harmony colors.",
+      field: "harmony",
+      label: "Harmony"
+    }];
+    render();
+    return;
+  }
+  applyResult(repository.addHarmonySuggestions(harmonyRows));
+});
 
 elements.userList?.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-palette-select-swatch]");
-  if (!button) {
+  const tile = event.target.closest("[data-palette-swatch-row]");
+  if (!tile) {
     return;
   }
 
-  const snapshot = repository.selectSwatch(button.dataset.paletteSelectSwatch);
+  const snapshot = repository.selectSwatch(tile.dataset.paletteSwatchRow);
   fillEditorForm(snapshot.selectedSwatch);
+  selectedSourceSwatch = null;
   editorIssues = [];
   render();
 });
 
 elements.sourceList?.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-palette-pin-source]");
-  if (!button) {
+  const tile = event.target.closest("[data-palette-source-index]");
+  if (!tile) {
     return;
   }
 
-  const swatch = sourceSwatchRows[Number(button.dataset.palettePinSource)];
+  const swatch = sourceSwatchRows[Number(tile.dataset.paletteSourceIndex)];
   if (swatch) {
-    applyResult(repository.pinSourceSwatch(swatch));
+    selectedSourceSwatch = swatch;
+    applyResult(repository.toggleSourceSwatchPin(swatch));
   }
 });
 

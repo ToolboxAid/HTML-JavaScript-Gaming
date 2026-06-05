@@ -85,6 +85,100 @@ input[type="color"] {
   padding: var(--space-4)
 }
 
+input[type="color"][data-palette-swatch-preview] {
+  width: var(--space-44);
+  min-width: var(--space-44);
+  height: var(--space-44);
+  min-height: var(--space-44);
+  padding: var(--space-0);
+  border: var(--border-width-sm) solid var(--line);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  overflow: hidden
+}
+
+input[type="color"][data-palette-swatch-preview]::-webkit-color-swatch-wrapper {
+  padding: var(--space-0)
+}
+
+input[type="color"][data-palette-swatch-preview]::-webkit-color-swatch {
+  border: var(--border-width-sm) solid var(--line);
+  border-radius: var(--radius-xs)
+}
+
+input[type="color"][data-palette-swatch-size="small"] {
+  width: var(--space-28);
+  min-width: var(--space-28);
+  height: var(--space-28);
+  min-height: var(--space-28)
+}
+
+input[type="color"][data-palette-swatch-size="large"] {
+  width: var(--space-54);
+  min-width: var(--space-54);
+  height: var(--space-54);
+  min-height: var(--space-54)
+}
+
+.palette-swatch-list-wrapper {
+  overflow: auto
+}
+
+.palette-swatch-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  align-items: flex-start
+}
+
+.palette-swatch-tile {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-0);
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: var(--transparent);
+  line-height: var(--line-height-single);
+  min-width: auto;
+  min-height: auto;
+  transition: box-shadow var(--transition-duration-fast), transform var(--transition-duration-fast)
+}
+
+.palette-swatch-tile input[type="color"] {
+  pointer-events: none
+}
+
+.palette-swatch-tile:hover,
+.palette-swatch-tile:focus-visible {
+  box-shadow: 0 0 0 var(--space-3) var(--gold-soft), 0 0 var(--space-18) var(--orange-shadow-color);
+  transform: translateY(-1px);
+  z-index: var(--z-index-sm)
+}
+
+.palette-swatch-tile:focus-visible {
+  outline: var(--border-width-sm) solid var(--gold);
+  outline-offset: var(--space-3)
+}
+
+.palette-swatch-pin {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: var(--space-10);
+  height: var(--space-10);
+  border: var(--border-width-sm) solid var(--bg);
+  border-radius: var(--radius-pill);
+  background: var(--red);
+  box-shadow: var(--shadow-sm);
+  pointer-events: none
+}
+
+.palette-swatch-tile[data-palette-pinned="true"] .palette-swatch-pin {
+  background: var(--green)
+}
+
 input[type="file"],
 select {
   min-height: var(--space-44)

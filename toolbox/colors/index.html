@@ -58,7 +58,13 @@
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="paletteTagsInput">Tags</label></th>
-                                                        <td><input id="paletteTagsInput" type="text" placeholder="hero, ui" data-palette-tags></td>
+                                                        <td>
+                                                            <input id="paletteTagsInput" type="text" placeholder="hero" list="paletteTagSuggestions" data-palette-tags>
+                                                            <datalist id="paletteTagSuggestions" data-palette-tag-suggestions></datalist>
+                                                            <ul data-palette-editor-tags-list>
+                                                                <li>No tags added.</li>
+                                                            </ul>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2" data-palette-editor-diagnostic>Ready for a project palette swatch.</td>
@@ -86,9 +92,9 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="colors" data-tool-icon-src="assets/theme-v2/images/badges/colors.png" data-tool-character-src="assets/theme-v2/images/characters/palette-manager.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Active Project Palette</h2>
+                        <h2>Palette Colors</h2>
                         <div class="grid cols-3" aria-label="Palette summary">
-                            <article class="mini-stat"><strong data-palette-count>0</strong>Swatches</article>
+                            <article class="mini-stat"><strong data-palette-count>0</strong>Palette Colors</article>
                             <article class="mini-stat"><strong data-palette-selected-summary>None</strong>Selected</article>
                             <article class="mini-stat"><strong data-palette-validation-status>Blocked</strong>Validation</article>
                         </div>
@@ -102,89 +108,64 @@
                                 <a class="btn" href="toolbox/project-workspace/index.html">Open Project Workspace</a>
                             </div>
                         </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Project Palette</div>
-                                    <h3>User Palette Swatches</h3>
+                        <div class="content-stack" data-palette-fullscreen-panels>
+                            <details class="vertical-accordion" open data-palette-project-accordion>
+                                <summary>Active Project Palette</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="content-cluster" aria-label="Active project palette controls">
+                                        <label for="paletteUserSort">Sort</label>
+                                        <select id="paletteUserSort" data-palette-user-sort>
+                                            <option value="hue">Hue</option>
+                                            <option value="saturation">Saturation</option>
+                                            <option value="brightness">Brightness</option>
+                                            <option value="name">Name</option>
+                                            <option value="tag">Tag</option>
+                                        </select>
+                                        <label for="paletteUserSize">Size</label>
+                                        <select id="paletteUserSize" data-palette-user-size>
+                                            <option value="small">Small</option>
+                                            <option value="medium" selected>Medium</option>
+                                            <option value="large">Large</option>
+                                        </select>
+                                    </div>
+                                    <div class="palette-swatch-list-wrapper" data-palette-user-scroll>
+                                        <div class="palette-swatch-list" role="group" aria-label="Active project palette colors" data-palette-user-list>
+                                            <p class="status">No project palette colors yet.</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <label for="paletteUserSort">Sort</label>
-                                <select id="paletteUserSort" data-palette-user-sort>
-                                    <option value="name">Name</option>
-                                    <option value="symbol">Symbol</option>
-                                    <option value="hex">Hex</option>
-                                    <option value="source">Source</option>
-                                    <option value="tag">Tag</option>
-                                </select>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Active project palette swatches">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Color</th>
-                                                <th scope="col">Symbol</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Hex</th>
-                                                <th scope="col">Source</th>
-                                                <th scope="col">Tags</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-palette-user-list>
-                                            <tr><td colspan="7">No project palette swatches yet.</td></tr>
-                                        </tbody>
-                                    </table>
+                            </details>
+                            <details class="vertical-accordion" open data-palette-source-accordion>
+                                <summary>Source Palette Browser</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="content-cluster" aria-label="Source palette controls">
+                                        <label for="paletteSourceSelect">Source</label>
+                                        <select id="paletteSourceSelect" data-palette-source-select></select>
+                                        <label for="paletteSourceSort">Sort</label>
+                                        <select id="paletteSourceSort" data-palette-source-sort>
+                                            <option value="hue">Hue</option>
+                                            <option value="saturation">Saturation</option>
+                                            <option value="brightness">Brightness</option>
+                                            <option value="name">Name</option>
+                                            <option value="tag">Tag</option>
+                                        </select>
+                                        <label for="paletteSourceSize">Size</label>
+                                        <select id="paletteSourceSize" data-palette-source-size>
+                                            <option value="small">Small</option>
+                                            <option value="medium" selected>Medium</option>
+                                            <option value="large">Large</option>
+                                        </select>
+                                        <label for="paletteSourceSearch">Search</label>
+                                        <input id="paletteSourceSearch" type="search" data-palette-source-search>
+                                    </div>
+                                    <div class="palette-swatch-list-wrapper" data-palette-source-scroll>
+                                        <div class="palette-swatch-list" role="group" aria-label="Source palette colors" data-palette-source-list>
+                                            <p class="status">No source colors available.</p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Source Palette Browser</div>
-                                    <h3>Source Swatches</h3>
-                                </div>
-                                <div class="table-wrapper">
-                                    <table class="data-table tool-form-table" aria-label="Source palette filters">
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row"><label for="paletteSourceSelect">Source</label></th>
-                                                <td><select id="paletteSourceSelect" data-palette-source-select></select></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><label for="paletteSourceSearch">Search</label></th>
-                                                <td><input id="paletteSourceSearch" type="search" data-palette-source-search></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><label for="paletteSourceSort">Sort</label></th>
-                                                <td>
-                                                    <select id="paletteSourceSort" data-palette-source-sort>
-                                                        <option value="name">Name</option>
-                                                        <option value="symbol">Symbol</option>
-                                                        <option value="hex">Hex</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Source palette swatches">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Color</th>
-                                                <th scope="col">Symbol</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Hex</th>
-                                                <th scope="col">Source</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-palette-source-list>
-                                            <tr><td colspan="6">No source swatches available.</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </article>
+                            </details>
+                        </div>
                     </section>
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
@@ -192,11 +173,55 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Selected Swatch</summary>
+                                <summary>Color Harmony Schemes</summary>
                                 <div class="accordion-body content-stack">
-                                    <ul data-palette-selected-details>
-                                        <li>No selected swatch.</li>
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Color harmony scheme controls">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteHarmonyMatch">Match</label></th>
+                                                    <td>
+                                                        <select id="paletteHarmonyMatch" data-palette-harmony-match>
+                                                            <option value="calculated">Calculated</option>
+                                                            <option value="source">Source Palette Closest Match</option>
+                                                            <option value="all">All Palettes Closest Match</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteHarmonyScheme">Scheme</label></th>
+                                                    <td>
+                                                        <select id="paletteHarmonyScheme" data-palette-harmony-scheme>
+                                                            <option value="achromatic">Achromatic</option>
+                                                            <option value="accented-analogous">Accented Analogous</option>
+                                                            <option value="analogous">Analogous</option>
+                                                            <option value="complementary" selected>Complementary</option>
+                                                            <option value="diadic">Diadic</option>
+                                                            <option value="double-complementary">Double-Complementary</option>
+                                                            <option value="double-split-complementary">Double-Split-Complementary</option>
+                                                            <option value="hexadic">Hexadic</option>
+                                                            <option value="monochromatic">Monochromatic</option>
+                                                            <option value="near-complementary">Near-Complementary</option>
+                                                            <option value="polychromatic">Polychromatic</option>
+                                                            <option value="side-complementary">Side-Complementary</option>
+                                                            <option value="split-complementary">Split-Complementary</option>
+                                                            <option value="square">Square</option>
+                                                            <option value="tetradic">Tetradic</option>
+                                                            <option value="triadic">Triadic</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p class="status" role="status" data-palette-harmony-guidance>Select a project or source palette color to view scheme suggestions.</p>
+                                    <ul data-palette-harmony-list>
+                                        <li>No harmony scheme colors available.</li>
                                     </ul>
+                                    <div class="hero-actions">
+                                        <button class="btn" type="button" data-palette-harmony-add-selected>Add Selected</button>
+                                        <button class="btn" type="button" data-palette-harmony-add-all>Add All</button>
+                                    </div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -204,14 +229,6 @@
                                 <div class="accordion-body content-stack">
                                     <ul data-palette-tags-list>
                                         <li>No tags in active palette.</li>
-                                    </ul>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Harmony Suggestions</summary>
-                                <div class="accordion-body content-stack">
-                                    <ul data-palette-harmony-list>
-                                        <li>Select a swatch to view harmony suggestions.</li>
                                     </ul>
                                 </div>
                             </details>
