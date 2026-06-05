@@ -78,6 +78,41 @@ async function toolDisplayRows(page) {
   ));
 }
 
+async function expectToolDisplayModeVisualLayout(page) {
+  const layout = await page.locator("#toolDisplayMode").evaluate((displayMode) => {
+    const badge = displayMode.querySelector(".tool-display-mode__badge");
+    const character = displayMode.querySelector(".tool-display-mode__character");
+    const description = displayMode.querySelector(".tool-display-mode__description");
+    const navigation = displayMode.querySelector(".tool-display-mode__navigation-row");
+    const badgeBox = badge.getBoundingClientRect();
+    const characterBox = character.getBoundingClientRect();
+    const descriptionBox = description.getBoundingClientRect();
+    const navigationBox = navigation.getBoundingClientRect();
+
+    return {
+      badgeHeight: Math.round(badgeBox.height),
+      badgeWidth: Math.round(badgeBox.width),
+      characterHeight: Math.round(characterBox.height),
+      characterWidth: Math.round(characterBox.width),
+      descriptionRightOfCharacter: descriptionBox.left >= characterBox.right,
+      navigationAlignedWithDescription: Math.abs(navigationBox.left - descriptionBox.left) <= 2,
+      navigationBelowDescription: navigationBox.top >= descriptionBox.bottom,
+      navigationRightOfCharacter: navigationBox.left >= characterBox.right
+    };
+  });
+
+  expect(layout).toEqual({
+    badgeHeight: 64,
+    badgeWidth: 64,
+    characterHeight: 127,
+    characterWidth: 225,
+    descriptionRightOfCharacter: true,
+    navigationAlignedWithDescription: true,
+    navigationBelowDescription: true,
+    navigationRightOfCharacter: true
+  });
+}
+
 test("Game Design renders identity and navigation rows with registry anchor links", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-design/index.html?role=user");
 
@@ -97,6 +132,7 @@ test("Game Design renders identity and navigation rows with registry anchor link
     await expect(next).toHaveText("Next: Game Configuration");
     await expect(next).toHaveAttribute("href", "toolbox/game-configuration/index.html?role=user");
     await expectPlainNavigationLinks(page);
+    await expectToolDisplayModeVisualLayout(page);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -164,6 +200,7 @@ test("Build Game renders plain previous and next links in the second row", async
     await expect(next).toHaveText("Next: Game Testing");
     await expect(next).toHaveAttribute("href", "toolbox/game-testing/index.html?role=user");
     await expectPlainNavigationLinks(page);
+    await expectToolDisplayModeVisualLayout(page);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);

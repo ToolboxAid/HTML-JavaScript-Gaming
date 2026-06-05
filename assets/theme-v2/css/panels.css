@@ -282,8 +282,8 @@
 }
 
 .tool-display-mode__badge {
-  width: var(--tool-display-media-size);
-  height: var(--tool-display-media-size);
+  width: 64px;
+  height: 64px;
   object-fit: cover;
   object-position: center;
   border: var(--border-standard);
@@ -292,17 +292,34 @@
 }
 
 .tool-display-mode__body {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(var(--space-0), 1fr);
+  grid-template-rows: auto auto;
   align-items: center;
-  gap: var(--space-0);
+  column-gap: var(--space-15);
+  row-gap: var(--space-8);
   min-width: var(--space-0);
   padding: var(--space-10) var(--space-14) var(--space-10) var(--space-0)
 }
 
+.tool-display-mode__identity-row {
+  display: contents
+}
+
+.tool-display-mode__navigation-row {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-14);
+  flex-wrap: wrap
+}
+
 .tool-display-mode__character {
-  width: 150px;
-  height: 150px;
-  margin-right: var(--space-15);
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 225px;
+  height: 127px;
   object-fit: contain;
   display: block;
   flex: 0 0 auto
@@ -314,6 +331,8 @@
 }
 
 .tool-display-mode__description {
+  grid-column: 2;
+  grid-row: 1;
   color: var(--gold);
   font-weight: var(--font-weight-heavy);
   overflow: hidden;

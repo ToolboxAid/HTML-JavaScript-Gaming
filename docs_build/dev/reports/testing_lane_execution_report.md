@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-05T13:05:49.934Z
+Generated: 2026-06-05T13:20:23.710Z
 Dry run: No
 
 ## Summary
@@ -9,7 +9,7 @@ PASS: 1
 WARN: 0
 FAIL: 0
 SKIP: 13
-Total lane elapsed time: 16.48s
+Total lane elapsed time: 18.48s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -21,7 +21,7 @@ Reason: Skipped because changed files do not modify sample JSON or shared sample
 
 Status: PASS
 Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
-Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes game-design --targets tests/playwright/tools/GameDesignMockRepository.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
+Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes tool-display-mode --targets tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
 Details: none
 
 ## Dependency Gate
@@ -32,7 +32,7 @@ Reason: No deterministic dependency failures before runtime.
 ## Runtime Scheduling
 
 Status: PASS
-Scheduled lane order: game-design
+Scheduled lane order: tool-display-mode
 Reused runtime sessions: 0
 Reused lane snapshots: 0
 Reused warm-start lanes: 0
@@ -61,7 +61,7 @@ Prevented broad lane escalation: 0
 ## Discovery Scope
 
 Status: PASS
-Target files: tests/playwright/tools/GameDesignMockRepository.spec.mjs
+Target files: tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
 Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
 Required fixtures: none
 Targeted file/helper reads: 5
@@ -71,16 +71,16 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
 ## Targeted File Manifests
 
 Status: PASS
-Generated manifests: game-design:PASS
+Generated manifests: tool-display-mode:PASS
 Prevented discovery expansion: Yes
 Prevented redundant scans: 4
-Persistent manifest events: game-design:INVALIDATED
+Persistent manifest events: tool-display-mode:INVALIDATED
 
 ## Warm-Start Reuse
 
 Status: PASS
-Warm-start events: game-design:INVALIDATED
-Dependency hydration events: game-design:INVALIDATED
+Warm-start events: tool-display-mode:INVALIDATED
+Dependency hydration events: tool-display-mode:INVALIDATED
 Prevented redundant initialization: 0
 Prevented helper resolution passes: 0
 Prevented fixture ownership traversal: 0
@@ -88,7 +88,7 @@ Prevented fixture ownership traversal: 0
 ## Lane Snapshots
 
 Status: PASS
-Snapshot events: game-design:INVALIDATED
+Snapshot events: tool-display-mode:INVALIDATED
 Reused snapshots: 0
 Invalidated snapshots: 1
 Prevented graph rebuilds: 0
@@ -107,12 +107,12 @@ Prevented Workspace lane reruns: 0
 | --- | --- | --- | --- | --- | --- | --- |
 | workspace-contract | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
 | project-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge | repo-served Project Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock project repository |
-| game-design | PASS | 16.48s | 1 | Game Design rebuild slice validates the active project context, design save/update, actionable validation, capability demo authoring, and Toolbox progress handoff without exercising unrelated toolbox routes. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Project Workspace mock project context |
+| game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Project Workspace mock project context |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
 | build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Project Workspace mock project context; Toolbox role simulation |
 | tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation | repo-served Admin Tools Progress page; repo-served Toolbox Group view; Toolbox registry build sequence; Project Build Path workflow table |
 | tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Project Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
-| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Project Workspace, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
+| tool-display-mode | PASS | 18.48s | 1 | Tool Display Mode validates the two-row identity/navigation layout, anchors for previous/next targets, disabled text for missing targets, registry build-order labels, role preservation, and multi-path fallback without exercising unrelated toolbox routes. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Project Workspace, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
 | tool-images | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | Toolbox registry badge/tool image contract; repo-served Toolbox page; repo-served representative Toolbox tool pages; shared registry image fallback |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Active public toolbox and Tool Template V2 contract | repo-served root toolbox page; Tool Template V2 public page; Theme V2 shared partials and assets |
 | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/games reference coverage |  |
@@ -124,10 +124,11 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| game-design | 3.70s | tests\playwright\tools\GameDesignMockRepository.spec.mjs:218:1 > Toolbox Build Path view shows the Game Design handoff |
-| game-design | 2.10s | tests\playwright\tools\GameDesignMockRepository.spec.mjs:80:1 > Game Design saves and updates design fields against the active project |
-| game-design | 1.80s | tests\playwright\tools\GameDesignMockRepository.spec.mjs:55:1 > Game Design shows an actionable overlay when project context is missing |
-| game-design | 1.50s | tests\playwright\tools\GameDesignMockRepository.spec.mjs:192:1 > Game Design authors capability demos as Project Workspace projects |
+| tool-display-mode | 4.30s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:211:1 > multi-path fallback opens Toolbox Group view with only the target group expanded |
+| tool-display-mode | 2.30s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:143:1 > Project Workspace and Game Configuration use registry order without page hardcoding |
+| tool-display-mode | 1.60s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:116:1 > Game Design renders identity and navigation rows with registry anchor links |
+| tool-display-mode | 1.30s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:168:1 > missing previous target renders disabled text instead of a broken link |
+| tool-display-mode | 1.30s | tests\playwright\tools\ToolDisplayModeNavigation.spec.mjs:186:1 > Build Game renders plain previous and next links in the second row |
 
 ## Commands
 
@@ -138,7 +139,7 @@ Prevented Workspace lane reruns: 0
 - SKIP
 
 ### game-design
-- PASS 16.48s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list
+- SKIP
 
 ### game-configuration
 - SKIP
@@ -153,7 +154,7 @@ Prevented Workspace lane reruns: 0
 - SKIP
 
 ### tool-display-mode
-- SKIP
+- PASS 18.48s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### tool-images
 - SKIP

@@ -699,3 +699,31 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_122
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Updated shared Tool Display Mode Theme V2 styling in `assets/theme-v2/css/panels.css`.
+- Set `.tool-display-mode__badge` to `64px` by `64px`.
+- Set `.tool-display-mode__character` to `225px` by `127px`.
+- Moved Tool Display Mode body layout to a two-column grid so description sits to the right of the character and navigation sits below the description area.
+- Preserved existing Tool Display Mode JavaScript, generated markup, and registry previous/next link behavior.
+- Added targeted Tool Display Mode Playwright/MSJ coverage for badge size, character size, description placement, and navigation placement.
+- Did not add inline styles, style blocks, script blocks, inline event handlers, page-local CSS, or tool-local CSS.
+- Did not modify unrelated tool content.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs`
+- `npm run test:lane:tool-display-mode`
+- Scoped `git diff --check` for changed implementation/test/report files.
+- Targeted changed-file scan confirmed no inline styles, style blocks, inline scripts, inline event handlers, or `start_of_day` file changes were introduced.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/tool-display-mode-layout-fix-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
