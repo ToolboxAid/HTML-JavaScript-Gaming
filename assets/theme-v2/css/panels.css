@@ -284,11 +284,11 @@
 .tool-display-mode__badge {
   width: 64px;
   height: 64px;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
-  border: var(--border-standard);
-  border-radius: var(--radius-pill);
-  background: var(--panel-soft)
+  border: 0;
+  border-radius: var(--space-0);
+  background: transparent
 }
 
 .tool-display-mode__body {
@@ -349,6 +349,11 @@ body.tool-focus-mode .tool-display-mode {
 
 body.tool-focus-mode .tool-display-mode__fullscreen-name {
   display: inline
+}
+
+body.tool-focus-mode .tool-display-mode__badge {
+  width: 32px;
+  height: 32px
 }
 
 .side-menu a {

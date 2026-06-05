@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { getActiveToolRegistry, getToolRoute } from "../../../toolbox/toolRegistry.js";
 
 const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Account", "Admin"];
 
@@ -496,6 +497,27 @@ test("tool template future-state page loads from root Theme V2 paths", async ({ 
     ));
     expect(loadedReferences.filter((reference) => reference.includes("GameFoundryStudio/"))).toEqual([]);
     expect(loadedReferences.filter((reference) => reference.includes("toolbox/old_"))).toEqual([]);
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("active tool pages do not render placeholder center panel images", async ({ page }) => {
+  const activeRoutes = getActiveToolRegistry()
+    .map((tool) => getToolRoute(tool))
+    .filter(Boolean);
+  const { failedRequests, pageErrors, server } = await openRepoPage(page, `/${activeRoutes[0]}`);
+
+  try {
+    for (const route of activeRoutes) {
+      await page.goto(`${server.baseUrl}/${route}`, { waitUntil: "networkidle" });
+      await expect(page.locator(".tool-center-panel")).toBeVisible();
+      await expect(page.locator(".tool-center-panel > img[src$='image-missing.svg']")).toHaveCount(0);
+      await expect(page.locator(".tool-center-panel h1, .tool-center-panel h2, .tool-center-panel h3").first()).toBeVisible();
+    }
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
   } finally {

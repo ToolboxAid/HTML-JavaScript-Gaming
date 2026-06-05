@@ -90,7 +90,10 @@ async function expectToolDisplayModeVisualLayout(page) {
     const navigationBox = navigation.getBoundingClientRect();
 
     return {
+      badgeBorderRadius: getComputedStyle(badge).borderRadius,
+      badgeBorderWidth: getComputedStyle(badge).borderTopWidth,
       badgeHeight: Math.round(badgeBox.height),
+      badgeObjectFit: getComputedStyle(badge).objectFit,
       badgeWidth: Math.round(badgeBox.width),
       characterHeight: Math.round(characterBox.height),
       characterWidth: Math.round(characterBox.width),
@@ -102,7 +105,10 @@ async function expectToolDisplayModeVisualLayout(page) {
   });
 
   expect(layout).toEqual({
+    badgeBorderRadius: "0px",
+    badgeBorderWidth: "0px",
     badgeHeight: 64,
+    badgeObjectFit: "contain",
     badgeWidth: 64,
     characterHeight: 127,
     characterWidth: 225,
@@ -111,6 +117,19 @@ async function expectToolDisplayModeVisualLayout(page) {
     navigationBelowDescription: true,
     navigationRightOfCharacter: true
   });
+}
+
+async function expectToolDisplayModeFullscreenBadge(page) {
+  await page.locator("#toolDisplayMode summary").click();
+  await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
+  const badgeSize = await page.locator(".tool-display-mode__badge").evaluate((badge) => {
+    const box = badge.getBoundingClientRect();
+    return {
+      height: Math.round(box.height),
+      width: Math.round(box.width)
+    };
+  });
+  expect(badgeSize).toEqual({ height: 32, width: 32 });
 }
 
 test("Game Design renders identity and navigation rows with registry anchor links", async ({ page }) => {
@@ -133,6 +152,7 @@ test("Game Design renders identity and navigation rows with registry anchor link
     await expect(next).toHaveAttribute("href", "toolbox/game-configuration/index.html?role=user");
     await expectPlainNavigationLinks(page);
     await expectToolDisplayModeVisualLayout(page);
+    await expectToolDisplayModeFullscreenBadge(page);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
