@@ -233,8 +233,15 @@ export function createGameConfigurationMockRepository(options = {}) {
     return getSnapshot();
   }
 
-  function makeInvalidGameDesign() {
+  function openRequestedProject(projectId) {
+    if (projectId) {
+      gameDesignRepository.openProjectContext(projectId);
+    }
+  }
+
+  function makeInvalidGameDesign(projectId = "") {
     gameDesignRepository.resetDesignData();
+    openRequestedProject(projectId);
     gameDesignRepository.saveDesign({
       gameType: "Puzzle"
     });
@@ -242,8 +249,9 @@ export function createGameConfigurationMockRepository(options = {}) {
     return getSnapshot();
   }
 
-  function makeValidGameDesign() {
+  function makeValidGameDesign(projectId = "") {
     gameDesignRepository.resetDesignData();
+    openRequestedProject(projectId);
     gameDesignRepository.saveDesign({
       designSummary: "A compact puzzle adventure with a clear rules handoff for configuration.",
       gameType: "Puzzle",

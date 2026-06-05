@@ -932,3 +932,34 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_129-135
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Consolidated Toolbox metadata into `toolbox/toolRegistry.js` as the SSoT for name, route, badge, group/category/color, status, readiness/requiredness, description, hidden/admin flags, and progress/checklist metadata.
+- Removed `admin/tools-progress-source.js` and updated Admin Tools Progress plus Toolbox rendering to consume registry metadata directly.
+- Standardized active tool page header hydration through shared Tool Display Mode registry data.
+- Reused the existing Theme V2 `tool-form-table` pattern for Project Workspace setup controls and added Project Status.
+- Audited actual statuses so Project Workspace, Game Design, and Game Configuration are Ready; Assets remains Planned; static shells remain Wireframe/Planned/Hidden as appropriate.
+- Replaced fake active static tool placeholder copy with visible `Not implemented yet.` status text.
+- Expanded Project Workspace foundation for Project Identity, Project Status, Project Progress, and Publishing Progress without adding real DB/auth/cloud/persistence.
+- Wired Game Design to Game Configuration handoff through project-aware query parameters without starting Asset implementation.
+- Prepared Asset rebuild planning using `archive/v1-v2/tools/old_asset-manager-v2/index.html` as reference only.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check assets/theme-v2/js/tool-display-mode.js`
+- `node --check tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs`
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+- `node scripts/validate-tool-registry.mjs`
+- `node scripts/validate-active-tools-surface.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane tools-progress --lane tool-runtime --lane build-path --lane project-workspace --lane game-design --lane game-configuration`
+- Full samples smoke: skipped because the bundle does not modify sample JSON, sample loader behavior, or sample runtime framework behavior.
+
+Required reports:
+- `docs_build/dev/reports/stacked-pr-execution-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

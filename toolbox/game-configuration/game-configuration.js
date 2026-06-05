@@ -6,13 +6,14 @@ import {
 const repository = createGameConfigurationMockRepository();
 const params = new URLSearchParams(window.location.search);
 const handoffMode = params.get("handoff");
+const requestedProject = params.get("project") || "";
 
 if (handoffMode === "missing") {
   repository.makeMissingGameDesign();
 } else if (handoffMode === "invalid") {
-  repository.makeInvalidGameDesign();
+  repository.makeInvalidGameDesign(requestedProject);
 } else {
-  repository.makeValidGameDesign();
+  repository.makeValidGameDesign(requestedProject);
 }
 
 const elements = {

@@ -21,7 +21,11 @@
     }
 
     function publicImageSource(source, folder) {
-        const fileName = explicitPngName(source) || (source ? "index.png" : toolSlug + ".png");
+        const fileName = explicitPngName(source);
+        if (!source || !fileName || fileName === "index.png") {
+            return publicAssetRoot + "/image-missing.svg";
+        }
+
         return publicAssetRoot + "/" + folder + "/" + fileName;
     }
 
@@ -101,6 +105,33 @@
             return;
         }
 
+        const registryName = registryTool.displayName || registryTool.name || toolName;
+        const registryDescription = registryTool.description || registryTool.shortDescription || registryName;
+        const pageKicker = document.querySelector(".page-title .kicker");
+        const pageLede = document.querySelector(".page-title .lede");
+        const metaDescription = document.querySelector("meta[name='description']");
+        const leftColumnTitle = document.querySelector(".tool-workspace .tool-column .tool-column-header h2");
+
+        document.title = registryName + " - GameFoundryStudio";
+        if (pageTitle) {
+            pageTitle.textContent = registryName;
+        }
+        if (pageKicker) {
+            pageKicker.textContent = "Toolbox / " + registryName;
+        }
+        if (pageLede) {
+            pageLede.textContent = registryDescription;
+        }
+        if (metaDescription) {
+            metaDescription.setAttribute("content", registryDescription);
+        }
+        if (leftColumnTitle) {
+            leftColumnTitle.textContent = registryName;
+        }
+        badge.alt = registryName + " badge";
+        fullscreenName.textContent = registryName;
+        character.alt = registryName + " character";
+        description.textContent = registryDescription;
         badge.src = registry.getToolImageSource(registryTool, "badge");
         character.src = registry.getToolImageSource(registryTool, "tool");
     }

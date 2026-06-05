@@ -87,7 +87,7 @@ async function main() {
   const partials = await readText("assets/theme-v2/js/gamefoundry-partials.js");
   const toolboxIndex = await readText("toolbox/index.html");
   const toolsAccordions = await readText("toolbox/tools-page-accordions.js");
-  const adminToolsProgressSource = await readText("admin/tools-progress-source.js");
+  const toolRegistry = await readText("toolbox/toolRegistry.js");
 
   for (const folderName of activeTools) {
     const route = routeForTool(folderName);
@@ -98,9 +98,10 @@ async function main() {
     if (!partials.includes(route)) {
       issues.push(`Active toolbox page missing from partial route map: ${route}`);
     }
-    if (!toolsAccordions.includes(accordionRoute) && !toolsAccordions.includes(route)) {
-      issues.push(`Active toolbox page missing from toolbox index grouping: ${route}`);
-    }
+  }
+
+  if (!toolsAccordions.includes("getActiveToolRegistry()") || !toolsAccordions.includes("getToolRoute(registryTool)")) {
+    issues.push("Toolbox index grouping must be registry-driven through active tool registry routes.");
   }
 
   const activeNavigationText = [
@@ -121,8 +122,8 @@ async function main() {
     issues.push("Arcade must not appear as an active toolbox tile or toolbox index label.");
   }
 
-  if (!/<button[^>]+data-tools-view="progress"[^>]*>\s*Progress\s*<\/button>/i.test(toolboxIndex)) {
-    issues.push("Toolbox index is missing the Progress view mode control.");
+  if (/<button[^>]+data-tools-view="progress"[^>]*>\s*Progress\s*<\/button>/i.test(toolboxIndex)) {
+    issues.push("Toolbox index must not expose the removed Project Progress view mode control.");
   }
   if (!/<button[^>]+data-tools-view="build-path"[^>]*>\s*Build Path\s*<\/button>/i.test(toolboxIndex)) {
     issues.push("Toolbox index is missing the Build Path view mode control.");
@@ -134,11 +135,11 @@ async function main() {
     issues.push("Toolbox role simulation must support an explicit Guest view.");
   }
   for (const groupName of ["Create", "Build", "Content", "Media", "Test", "Share", "Account"]) {
-    if (!toolsAccordions.includes(`"group": "${groupName}"`) || !headerNav.includes(`${groupName} &#9656;`)) {
+    if (!toolRegistry.includes(`"toolboxGroup": "${groupName}"`) || !headerNav.includes(`${groupName} &#9656;`)) {
       issues.push(`Toolbox creator-goal group is missing from active wiring: ${groupName}.`);
     }
   }
-  if (/"group": "(?:AI|Planning|Media & Audio|Build & Test|Share & Community|Hidden Capability|Admin Tools|Admin)"/.test(toolsAccordions)) {
+  if (/"toolboxGroup": "(?:Planning|Media & Audio|Build & Test|Share & Community|Hidden Capability|Admin Tools)"/.test(toolRegistry)) {
     issues.push("Toolbox index must use creator-goal groups instead of legacy technical grouping labels.");
   }
   if (/data-toolbox-admin-nav-group/.test(headerNav + "\n" + toolsAccordions) || /<a[^>]*data-toolbox-menu-group-label[^>]*>\s*Admin\s*&#9656;/.test(headerNav)) {
@@ -153,16 +154,16 @@ async function main() {
   if (/toolbox\/learn\/index\.html|data-route="tool-learn"|Creator Learning/.test(headerNav + "\n" + partials + "\n" + toolsAccordions)) {
     issues.push("Learn must not be exposed as a Toolbox tool.");
   }
-  if (!/"group": "Content"[\s\S]*"title": "Assets"/.test(toolsAccordions)) {
-    issues.push("Assets must belong to the Content Toolbox group.");
+  if (!/"id": "assets"[\s\S]*"toolboxGroup": "Content"/.test(toolRegistry)) {
+    issues.push("Assets must belong to the Content Toolbox group in the registry.");
   }
-  if (!/Planned world types/.test(toolsAccordions) || !/Vector/.test(toolsAccordions) || !/Tilemap/.test(toolsAccordions) || !/Isometric/.test(toolsAccordions) || !/Hex/.test(toolsAccordions)) {
+  if (!/Planned world types/.test(toolRegistry) || !/Vector/.test(toolRegistry) || !/Tilemap/.test(toolRegistry) || !/Isometric/.test(toolRegistry) || !/Hex/.test(toolRegistry)) {
     issues.push("Worlds must preserve planned world-type child capabilities: Vector, Tilemap, Isometric, and Hex.");
   }
-  if (!/Planned object types/.test(toolsAccordions) || !/Vector/.test(toolsAccordions) || !/Sprite/.test(toolsAccordions) || !/Character/.test(toolsAccordions) || !/Enemy/.test(toolsAccordions) || !/Interactive/.test(toolsAccordions)) {
+  if (!/Planned object types/.test(toolRegistry) || !/Vector/.test(toolRegistry) || !/Sprite/.test(toolRegistry) || !/Character/.test(toolRegistry) || !/Enemy/.test(toolRegistry) || !/Interactive/.test(toolRegistry)) {
     issues.push("Objects must preserve planned object-type child capabilities: Vector, Sprite, Character, Enemy, and Interactive.");
   }
-  if (!/dataset\.childCapabilities/.test(toolsAccordions) || !/createElement\("ul"\)/.test(toolsAccordions)) {
+  if (!/dataset\.childCapabilities/.test(toolsAccordions) || !/"childCapabilities"/.test(toolRegistry)) {
     issues.push("Toolbox child capabilities must render as visible child lists under their parent tool tiles.");
   }
   if (!/container callout/.test(toolboxIndex)) {
@@ -187,17 +188,17 @@ async function main() {
     issues.push("Progress and Build Path must remain view modes, not active toolbox tools or accordion groups.");
   }
   for (const readiness of ["Ready", "Wireframe", "Under Construction", "Planned", "Hidden", "Deprecated"]) {
-    if (!adminToolsProgressSource.includes(`"${readiness}"`)) {
-      issues.push(`Admin Tools Progress status source is missing Toolbox status model label: ${readiness}.`);
+    if (!toolRegistry.includes(`"${readiness}"`)) {
+      issues.push(`Toolbox registry status source is missing status model label: ${readiness}.`);
     }
   }
-  if (!/getToolsProgressSource/.test(toolsAccordions) || !/"requires"/.test(adminToolsProgressSource)) {
-    issues.push("Progress view must hydrate requires metadata from the Admin Tools Progress status source.");
+  if (!/getActiveToolRegistry/.test(toolsAccordions) || !/"requires"/.test(toolRegistry)) {
+    issues.push("Progress view must hydrate requires metadata from the Toolbox registry source.");
   }
   if (!/dataset\.toolboxReadiness/.test(toolsAccordions)) {
     issues.push("Progress view must render readiness labels on the existing tool tiles.");
   }
-  if (!/const buildPathGroups = \[/.test(toolsAccordions) || !/function getBuildPathGroups/.test(toolsAccordions)) {
+  if (!/const buildPathGroups = \[/.test(toolsAccordions) || !/function getBuildPathRows/.test(toolsAccordions)) {
     issues.push("Build Path view must use the existing toolbox renderer and existing tool tile data.");
   }
 

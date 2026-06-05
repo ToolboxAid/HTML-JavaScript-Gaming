@@ -1,10 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { getActiveToolRegistry } from "../../../toolbox/toolRegistry.js";
 import {
-  applyToolsProgressMetadata,
-  getToolsProgressSource,
-  toolProgressMetadataDiagnostic
-} from "../../../admin/tools-progress-source.js";
+  applyToolRegistryMetadata,
+  getActiveToolRegistry,
+  toolRegistryMetadataDiagnostic
+} from "../../../toolbox/toolRegistry.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -20,7 +19,7 @@ const REPRESENTATIVE_GROUP_TOOLS = Object.freeze({
   "Game Testing": ["Play", "tool-group-play"]
 });
 
-const expectedTools = getToolsProgressSource(getActiveToolRegistry());
+const expectedTools = getActiveToolRegistry();
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -143,9 +142,9 @@ test("Toolbox status cards consume Admin Tools Progress metadata", async ({ page
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
     const normalStatuses = await page.locator("[data-toolbox-readiness]").evaluateAll((statuses) => statuses.map((status) => status.textContent.trim()));
-    expect(normalStatuses).toEqual(["Ready", "Ready"]);
+    expect(normalStatuses).toEqual(["Ready", "Ready", "Ready"]);
     expect(normalStatuses.every((status) => status === "Ready")).toBe(true);
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toHaveCount(0);
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toHaveCount(1);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -153,8 +152,8 @@ test("Toolbox status cards consume Admin Tools Progress metadata", async ({ page
   }
 });
 
-test("Admin status source reports missing metadata diagnostics", async () => {
-  const missingTool = applyToolsProgressMetadata({
+test("Toolbox registry source reports missing metadata diagnostics", async () => {
+  const missingTool = applyToolRegistryMetadata({
     active: true,
     displayName: "Missing Metadata Tool",
     id: "missing-metadata-tool",
@@ -162,7 +161,7 @@ test("Admin status source reports missing metadata diagnostics", async () => {
   });
 
   expect(missingTool.missingStatusMetadata).toBe(true);
-  expect(toolProgressMetadataDiagnostic(missingTool)).toContain("Missing Admin Tools Progress metadata");
+  expect(toolRegistryMetadataDiagnostic(missingTool)).toContain("Missing Toolbox registry metadata");
   expect(missingTool.status).toBe("Missing Metadata");
   expect(missingTool.readiness).toBe("No");
 });

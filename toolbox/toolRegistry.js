@@ -1,6 +1,35 @@
-import { getVisibleToolsProgressSource } from "../admin/tools-progress-source.js";
-
 const TOOL_NAME_SUFFIX_PATTERN = /(?:^|[\s_-])(v2|v3|new|final|copy)(?:$|[\s_-])/i;
+
+export const TOOL_STATUS_MODEL = Object.freeze([
+  "Ready",
+  "Wireframe",
+  "Under Construction",
+  "Planned",
+  "Hidden",
+  "Deprecated"
+]);
+
+export const TOOL_REGISTRY_REQUIRED_METADATA_FIELDS = Object.freeze([
+  "adminOnly",
+  "deferred",
+  "hidden",
+  "progressChecklist",
+  "requiredForPlayable",
+  "requiredForPublish",
+  "requiredForTestable",
+  "requires",
+  "status",
+  "visibleInToolsList"
+]);
+
+const READINESS_BY_STATUS = Object.freeze({
+  Ready: "Yes",
+  Wireframe: "No",
+  "Under Construction": "No",
+  Planned: "No",
+  Hidden: "No",
+  Deprecated: "No"
+});
 
 export const TOOL_REGISTRY = Object.freeze([
   {
@@ -19,6 +48,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-ai",
     "active": true,
     "order": 1,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Create"
   },
   {
     "id": "project-workspace",
@@ -36,6 +79,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-build",
     "active": true,
     "order": 2,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Ready",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Build"
   },
   {
     "id": "game-design",
@@ -53,6 +110,22 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 3,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [
+      "project-workspace"
+    ],
+    "status": "Ready",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Build"
   },
   {
     "id": "game-configuration",
@@ -70,6 +143,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-build",
     "active": true,
     "order": 4,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [
+      "game-design"
+    ],
+    "status": "Ready",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
     "navigation": {
       "nextGroup": "Design",
       "nextToolIds": [
@@ -82,7 +170,8 @@ export const TOOL_REGISTRY = Object.freeze([
         "worlds",
         "animations"
       ]
-    }
+    },
+    "toolboxGroup": "Build"
   },
   {
     "id": "assets",
@@ -100,6 +189,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 5,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Planned",
+    "progressChecklist": [
+      "Not implemented yet",
+      "Asset rebuild is planned after Game Configuration handoff"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Content"
   },
   {
     "id": "colors",
@@ -117,6 +220,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 6,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Planned",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Content"
   },
   {
     "id": "fonts",
@@ -134,6 +251,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 7,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Content"
   },
   {
     "id": "sprites",
@@ -151,6 +282,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 8,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Content"
   },
   {
     "id": "characters",
@@ -168,6 +313,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 9,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Create"
   },
   {
     "id": "objects",
@@ -185,6 +344,28 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 10,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Create",
+    "capabilityLabel": "Planned object types",
+    "childCapabilities": [
+      "Vector",
+      "Sprite",
+      "Character",
+      "Enemy",
+      "Interactive"
+    ]
   },
   {
     "id": "worlds",
@@ -202,6 +383,27 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 11,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Not implemented yet",
+      "Static shell exists for planning review"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Create",
+    "capabilityLabel": "Planned world types",
+    "childCapabilities": [
+      "Vector",
+      "Tilemap",
+      "Isometric",
+      "Hex"
+    ]
   },
   {
     "id": "animations",
@@ -219,6 +421,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-design",
     "active": true,
     "order": 12,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Not implemented yet",
+      "Static shell exists for planning review"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Create"
   },
   {
     "id": "audio",
@@ -236,6 +452,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 13,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media"
   },
   {
     "id": "music",
@@ -253,6 +483,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 14,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media"
   },
   {
     "id": "voices",
@@ -270,6 +514,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 15,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media"
   },
   {
     "id": "videos",
@@ -287,6 +545,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 16,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media"
   },
   {
     "id": "build-game",
@@ -304,6 +576,22 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-build",
     "active": true,
     "order": 17,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [
+      "game-configuration"
+    ],
+    "status": "Planned",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Build"
   },
   {
     "id": "game-testing",
@@ -321,6 +609,22 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-play",
     "active": true,
     "order": 18,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [
+      "build-game"
+    ],
+    "status": "Planned",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Test"
   },
   {
     "id": "controls",
@@ -338,6 +642,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 19,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Test"
   },
   {
     "id": "hitboxes",
@@ -355,6 +673,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 20,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Test"
   },
   {
     "id": "saved-data",
@@ -372,6 +704,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 21,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Planned",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Account"
   },
   {
     "id": "debug",
@@ -389,6 +735,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 22,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Test"
   },
   {
     "id": "performance",
@@ -406,6 +766,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 23,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Test"
   },
   {
     "id": "events",
@@ -423,6 +797,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 24,
+    "requiredForPlayable": true,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Test"
   },
   {
     "id": "publish",
@@ -440,6 +828,22 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-marketplace",
     "active": true,
     "order": 25,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": true,
+    "requires": [
+      "game-testing"
+    ],
+    "status": "Planned",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Share"
   },
   {
     "id": "marketplace",
@@ -457,6 +861,22 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-marketplace",
     "active": true,
     "order": 26,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [
+      "publish"
+    ],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Share"
   },
   {
     "id": "community",
@@ -474,6 +894,22 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-marketplace",
     "active": true,
     "order": 27,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [
+      "publish"
+    ],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Share"
   },
   {
     "id": "languages",
@@ -491,6 +927,22 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 28,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [
+      "publish"
+    ],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Share"
   },
   {
     "id": "achievements",
@@ -508,6 +960,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-play",
     "active": true,
     "order": 29,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Account"
   },
   {
     "id": "ratings",
@@ -525,6 +991,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-play",
     "active": true,
     "order": 30,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "progressChecklist": [
+      "Review readiness",
+      "Static wireframe text only"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Account"
   },
   {
     "id": "cloud",
@@ -542,6 +1022,23 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 31,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [
+      "publish"
+    ],
+    "status": "Hidden",
+    "progressChecklist": [
+      "Hidden planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Share",
+    "subgroup": "Hidden planned"
   },
   {
     "id": "code",
@@ -559,6 +1056,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-build",
     "active": true,
     "order": 32,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Hidden",
+    "progressChecklist": [
+      "Hidden planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Build",
+    "subgroup": "Hidden planned"
   },
   {
     "id": "midi",
@@ -576,6 +1088,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 34,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Hidden",
+    "progressChecklist": [
+      "Hidden planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media",
+    "subgroup": "Hidden planned"
   },
   {
     "id": "particles",
@@ -593,6 +1120,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 35,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Hidden",
+    "progressChecklist": [
+      "Hidden planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media",
+    "subgroup": "Hidden planned"
   },
   {
     "id": "audio-effects",
@@ -610,6 +1152,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 36,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Hidden",
+    "progressChecklist": [
+      "Hidden planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media",
+    "subgroup": "Hidden planned"
   },
   {
     "id": "speech-to-text",
@@ -627,6 +1184,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 37,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Hidden",
+    "progressChecklist": [
+      "Hidden planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media",
+    "subgroup": "Hidden planned"
   },
   {
     "id": "text-to-speech",
@@ -644,6 +1216,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-audio",
     "active": true,
     "order": 38,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Hidden",
+    "progressChecklist": [
+      "Hidden planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Media",
+    "subgroup": "Hidden planned"
   },
   {
     "id": "users",
@@ -661,6 +1248,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 39,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Planned",
+    "progressChecklist": [
+      "Admin-only planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": true,
+    "visibleInToolsList": false,
+    "toolboxGroup": "Admin",
+    "subgroup": "Admin planned"
   },
   {
     "id": "environments",
@@ -678,6 +1280,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 40,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Planned",
+    "progressChecklist": [
+      "Admin-only planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": true,
+    "visibleInToolsList": false,
+    "toolboxGroup": "Admin",
+    "subgroup": "Admin planned"
   },
   {
     "id": "game-migration",
@@ -695,6 +1312,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 41,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Planned",
+    "progressChecklist": [
+      "Admin-only planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": true,
+    "visibleInToolsList": false,
+    "toolboxGroup": "Admin",
+    "subgroup": "Admin planned"
   },
   {
     "id": "platform-settings",
@@ -712,6 +1344,21 @@ export const TOOL_REGISTRY = Object.freeze([
     "colorGroup": "tool-group-platform",
     "active": true,
     "order": 42,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Planned",
+    "progressChecklist": [
+      "Admin-only planned capability",
+      "Static wireframe text only"
+    ],
+    "deferred": true,
+    "hidden": true,
+    "adminOnly": true,
+    "visibleInToolsList": false,
+    "toolboxGroup": "Admin",
+    "subgroup": "Admin planned"
   }
 ]);
 
@@ -860,6 +1507,88 @@ function normalizeToolImagePath(imagePath) {
   return withoutQuery.startsWith("/") ? withoutQuery : "/" + withoutQuery.replace(/^\/+/, "");
 }
 
+function cloneToolRegistryEntry(tool) {
+  const cloned = {
+    ...tool,
+    progressChecklist: Array.isArray(tool.progressChecklist) ? [...tool.progressChecklist] : [],
+    requires: Array.isArray(tool.requires) ? [...tool.requires] : [],
+    visibility: {
+      adminOnly: tool.adminOnly === true,
+      deferred: tool.deferred === true,
+      hidden: tool.hidden === true,
+      visibleInToolsList: tool.visibleInToolsList === true
+    }
+  };
+
+  if (tool.navigation) {
+    cloned.navigation = {
+      ...tool.navigation,
+      previousToolIds: Array.isArray(tool.navigation.previousToolIds) ? [...tool.navigation.previousToolIds] : tool.navigation.previousToolIds,
+      nextToolIds: Array.isArray(tool.navigation.nextToolIds) ? [...tool.navigation.nextToolIds] : tool.navigation.nextToolIds
+    };
+  }
+
+  return applyToolRegistryMetadata(cloned);
+}
+
+export function getToolProgressReadiness(status) {
+  return READINESS_BY_STATUS[status] || "No";
+}
+
+export function getMissingToolRegistryFields(tool) {
+  if (!tool) {
+    return [...TOOL_REGISTRY_REQUIRED_METADATA_FIELDS];
+  }
+
+  return TOOL_REGISTRY_REQUIRED_METADATA_FIELDS.filter((field) => {
+    if (field === "progressChecklist" || field === "requires") {
+      return !Array.isArray(tool[field]);
+    }
+    if (field === "status") {
+      return !TOOL_STATUS_MODEL.includes(tool.status);
+    }
+    return typeof tool[field] !== "boolean";
+  });
+}
+
+export function applyToolRegistryMetadata(tool) {
+  const missingFields = getMissingToolRegistryFields(tool);
+  const hasMissingMetadata = missingFields.length > 0;
+  return {
+    ...tool,
+    adminOnly: tool?.adminOnly === true || hasMissingMetadata,
+    deferred: tool?.deferred === true || hasMissingMetadata,
+    hidden: tool?.hidden === true || hasMissingMetadata,
+    missingStatusFields: missingFields,
+    missingStatusMetadata: hasMissingMetadata,
+    progressChecklist: Array.isArray(tool?.progressChecklist) ? [...tool.progressChecklist] : [],
+    readiness: getToolProgressReadiness(tool?.status),
+    requiredForPlayable: tool?.requiredForPlayable === true,
+    requiredForPublish: tool?.requiredForPublish === true,
+    requiredForTestable: tool?.requiredForTestable === true,
+    requires: Array.isArray(tool?.requires) ? [...tool.requires] : [],
+    status: TOOL_STATUS_MODEL.includes(tool?.status) ? tool.status : "Missing Metadata",
+    visibility: {
+      adminOnly: tool?.adminOnly === true || hasMissingMetadata,
+      deferred: tool?.deferred === true || hasMissingMetadata,
+      hidden: tool?.hidden === true || hasMissingMetadata,
+      visibleInToolsList: tool?.visibleInToolsList === true && !hasMissingMetadata
+    },
+    visibleInToolsList: tool?.visibleInToolsList === true && !hasMissingMetadata
+  };
+}
+
+export function toolRegistryMetadataDiagnostic(tool) {
+  if (!tool?.missingStatusMetadata) {
+    return "";
+  }
+
+  const fields = Array.isArray(tool.missingStatusFields) && tool.missingStatusFields.length
+    ? tool.missingStatusFields.join(", ")
+    : "status metadata";
+  return `Missing Toolbox registry metadata: ${fields}.`;
+}
+
 export function toolImagePathExists(imagePath) {
   const normalizedPath = normalizeToolImagePath(imagePath);
   return AVAILABLE_TOOL_IMAGE_PATHS.includes(normalizedPath);
@@ -942,7 +1671,7 @@ export function resolveToolIdAlias(toolId) {
 }
 
 export function getToolRegistry() {
-  return TOOL_REGISTRY.map((tool) => ({ ...tool }));
+  return TOOL_REGISTRY.map(cloneToolRegistryEntry);
 }
 
 export function getToolById(toolId) {
@@ -957,7 +1686,7 @@ export function getActiveToolRegistry() {
 }
 
 export function getVisibleActiveToolRegistry() {
-  return getVisibleToolsProgressSource(getActiveToolRegistry());
+  return getActiveToolRegistry().filter((tool) => tool.visibleInToolsList === true);
 }
 
 export function getToolRoute(tool) {

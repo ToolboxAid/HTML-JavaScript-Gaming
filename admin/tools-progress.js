@@ -1,9 +1,9 @@
-import { getActiveToolRegistry, getToolRoute } from "../toolbox/toolRegistry.js";
 import {
   getToolProgressReadiness,
-  getToolsProgressSource,
-  toolProgressMetadataDiagnostic
-} from "./tools-progress-source.js";
+  getActiveToolRegistry,
+  getToolRoute,
+  toolRegistryMetadataDiagnostic
+} from "../toolbox/toolRegistry.js";
 
 const swatchByGroup = Object.freeze({
   AI: "swatch-purple",
@@ -77,7 +77,7 @@ function createGroupCell(tool) {
 
 function createStatusCell(tool) {
   const cell = createCell("td", tool.status);
-  const statusDiagnostic = toolProgressMetadataDiagnostic(tool);
+  const statusDiagnostic = toolRegistryMetadataDiagnostic(tool);
   if (statusDiagnostic) {
     const diagnostic = document.createElement("span");
     diagnostic.className = "status";
@@ -102,11 +102,11 @@ function renderToolsProgress() {
     return;
   }
 
-  const tools = getToolsProgressSource(getActiveToolRegistry());
+  const tools = getActiveToolRegistry();
   progressBody.replaceChildren();
   tools.forEach((tool) => {
     const row = document.createElement("tr");
-    const statusDiagnostic = toolProgressMetadataDiagnostic(tool);
+    const statusDiagnostic = toolRegistryMetadataDiagnostic(tool);
     row.className = tool.colorGroup;
     row.dataset.toolsProgressTool = tool.displayName;
     row.dataset.toolsProgressOrder = String(tool.order);

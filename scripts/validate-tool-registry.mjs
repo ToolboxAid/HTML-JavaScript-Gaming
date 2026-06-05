@@ -107,11 +107,13 @@ async function main() {
   }
 
   for (const entry of visibleActiveEntries) {
-    const folderName = normalizeText(entry.folderName || entry.path);
-    const expectedIndexHref = `../toolbox/${folderName}/index.html`;
-    if (!activeToolboxIndexSource.includes(expectedIndexHref)) {
-      issues.push(`toolbox/tools-page-accordions.js is missing ${expectedIndexHref}.`);
+    if (!entry.visibleInToolsList) {
+      issues.push(`Visible registry entry ${entry.id} is not marked visibleInToolsList.`);
     }
+  }
+
+  if (!activeToolboxIndexSource.includes("getActiveToolRegistry()") || !activeToolboxIndexSource.includes("getToolRoute(registryTool)")) {
+    issues.push("toolbox/tools-page-accordions.js must render Toolbox cards from registry routes instead of duplicated literal routes.");
   }
 
   for (const directory of activeToolDirectories) {
@@ -131,7 +133,7 @@ async function main() {
     formatSection("Filesystem Active Tool Directories", activeToolDirectories),
     formatSection("Registry Folders", registryFolders),
     formatSection("Issues", issues.length > 0 ? issues : ["none"]),
-    formatSection("Notes", notes.length > 0 ? notes : ["registry, toolbox folders, and toolbox index routes are aligned"])
+    formatSection("Notes", notes.length > 0 ? notes : ["registry, toolbox folders, and registry-driven toolbox index routes are aligned"])
   ].join("\n");
 
   await fs.writeFile(reportPath, `${reportLines}\n`, "utf8");

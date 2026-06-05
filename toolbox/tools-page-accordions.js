@@ -8,11 +8,8 @@ import {
     getToolImageDiagnostics,
     getToolImageSource,
     getToolRoute,
+    toolRegistryMetadataDiagnostic
 } from "./toolRegistry.js";
-import {
-    getToolsProgressSource,
-    toolProgressMetadataDiagnostic
-} from "../admin/tools-progress-source.js";
 
 (function () {
     const list = document.querySelector("[data-tools-accordion-list]");
@@ -64,372 +61,25 @@ import {
         Publisher: ["Publish", "Marketplace", "Community", "Cloud", "Languages"],
         Viewer: ["Project Workspace", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]
     });
-    const registryTools = getToolsProgressSource(getActiveToolRegistry());
+    const registryTools = getActiveToolRegistry();
     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
-    const toolGroups = [
-            {
-                    "group": "Create",
-                    "tools": [
-                            {
-                                    "title": "Objects",
-                                    "href": "../toolbox/objects/index.html",
-                                    "description": "Design reusable game objects and object-ready assets.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge",
-                                    "capabilityLabel": "Planned object types",
-                                    "childCapabilities": [
-                                            "Vector",
-                                            "Sprite",
-                                            "Character",
-                                            "Enemy",
-                                            "Interactive"
-                                    ]
-                            },
-                            {
-                                    "title": "Characters",
-                                    "href": "../toolbox/characters/index.html",
-                                    "description": "Plan player, NPC, and character asset workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Worlds",
-                                    "href": "../toolbox/worlds/index.html",
-                                    "description": "Shape world layouts, maps, terrain, and scene geometry.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge",
-                                    "capabilityLabel": "Planned world types",
-                                    "childCapabilities": [
-                                            "Vector",
-                                            "Tilemap",
-                                            "Isometric",
-                                            "Hex"
-                                    ]
-                            },
-                            {
-                                    "title": "Animations",
-                                    "href": "../toolbox/animations/index.html",
-                                    "description": "Plan character and object animation states.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "AI Assistant",
-                                    "href": "../toolbox/ai-assistant/index.html",
-                                    "description": "Get guided technical help for game creation workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            }
-                    ]
-            },
-            {
-                    "group": "Build",
-                    "tools": [
-                            {
-                                    "title": "Project Workspace",
-                                    "href": "../toolbox/project-workspace/index.html",
-                                    "description": "Coordinate Build, Play, and Share readiness for one game project.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Game Design",
-                                    "href": "../toolbox/game-design/index.html",
-                                    "description": "Plan gameplay, systems, rules, and player experience.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Game Configuration",
-                                    "href": "../toolbox/game-configuration/index.html",
-                                    "description": "Plan release profile, debug visibility, and playable readiness gates.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Build Game",
-                                    "href": "../toolbox/build-game/index.html",
-                                    "description": "Plan build packaging and playable output readiness.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Custom Extensions",
-                                    "href": "../toolbox/code/index.html",
-                                    "description": "Hidden capability shell for approved extension hooks and creator-private custom logic.",
-                                    "role": "Hidden Preview",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge",
-                                    "subgroup": "Hidden planned"
-                            }
-                    ]
-            },
-            {
-                    "group": "Content",
-                    "tools": [
-                            {
-                                    "title": "Assets",
-                                    "href": "../toolbox/assets/index.html",
-                                    "description": "Create sprites, animations, vectors, and palettes.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Colors",
-                                    "href": "../toolbox/colors/index.html",
-                                    "description": "Craft and manage color palettes for your games.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Fonts",
-                                    "href": "../toolbox/fonts/index.html",
-                                    "description": "Plan game typography, font loading, and readable text choices.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Sprites",
-                                    "href": "../toolbox/sprites/index.html",
-                                    "description": "Plan sprite creation, review, and game-ready export workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            }
-                    ]
-            },
-            {
-                    "group": "Media",
-                    "tools": [
-                            {
-                                    "title": "Audio",
-                                    "href": "../toolbox/audio/index.html",
-                                    "description": "Plan game audio, effects, and playback readiness.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "bot"
-                            },
-                            {
-                                    "title": "Music",
-                                    "href": "../toolbox/music/index.html",
-                                    "description": "Plan reusable music and soundtrack workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "bot"
-                            },
-                            {
-                                    "title": "Voices",
-                                    "href": "../toolbox/voices/index.html",
-                                    "description": "Plan character voice, spoken output, and voice review workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "bot"
-                            },
-                            {
-                                    "title": "Videos",
-                                    "href": "../toolbox/videos/index.html",
-                                    "description": "Plan trailer, cutscene, and video asset workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "bot"
-                            },
-                            {
-                                    "title": "MIDI",
-                                    "href": "../toolbox/midi/index.html",
-                                    "description": "Hidden capability shell for MIDI-driven audio and music interaction flows.",
-                                    "role": "Hidden Preview",
-                                    "mascot": "foundry-bot",
-                                    "theme": "bot",
-                                    "subgroup": "Hidden planned"
-                            },
-                            {
-                                    "title": "Particles",
-                                    "href": "../toolbox/particles/index.html",
-                                    "description": "Hidden capability shell for visual effects and particle workflows.",
-                                    "role": "Hidden Preview",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge",
-                                    "subgroup": "Hidden planned"
-                            },
-                            {
-                                    "title": "Audio Effects",
-                                    "href": "../toolbox/audio-effects/index.html",
-                                    "description": "Hidden capability shell for reusable game effect audio workflows.",
-                                    "role": "Hidden Preview",
-                                    "mascot": "foundry-bot",
-                                    "theme": "bot",
-                                    "subgroup": "Hidden planned"
-                            },
-                            {
-                                    "title": "Voice Capture",
-                                    "href": "../toolbox/speech-to-text/index.html",
-                                    "description": "Hidden capability shell for spoken input and transcription workflows.",
-                                    "role": "Hidden Preview",
-                                    "mascot": "foundry-bot",
-                                    "theme": "bot",
-                                    "subgroup": "Hidden planned"
-                            },
-                            {
-                                    "title": "Voice Output",
-                                    "href": "../toolbox/text-to-speech/index.html",
-                                    "description": "Hidden capability shell for generated narration and spoken output workflows.",
-                                    "role": "Hidden Preview",
-                                    "mascot": "foundry-bot",
-                                    "theme": "bot",
-                                    "subgroup": "Hidden planned"
-                            }
-                    ]
-            },
-            {
-                    "group": "Test",
-                    "tools": [
-                            {
-                                    "title": "Game Testing",
-                                    "href": "../toolbox/game-testing/index.html",
-                                    "description": "Plan test passes, release checks, and playable validation.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Controls",
-                                    "href": "../toolbox/controls/index.html",
-                                    "description": "Map keyboard, mouse, gamepad, and touch controls.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Hitboxes",
-                                    "href": "../toolbox/hitboxes/index.html",
-                                    "description": "Plan collision, hurtbox, and interaction region workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Debug",
-                                    "href": "../toolbox/debug/index.html",
-                                    "description": "Plan visible creator debug settings and release gating.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Performance",
-                                    "href": "../toolbox/performance/index.html",
-                                    "description": "Plan performance budgets, diagnostics, and readiness checks.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Events",
-                                    "href": "../toolbox/events/index.html",
-                                    "description": "Plan gameplay events, triggers, and state transitions.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            }
-                    ]
-            },
-            {
-                    "group": "Share",
-                    "tools": [
-                            {
-                                    "title": "Publish",
-                                    "href": "../toolbox/publish/index.html",
-                                    "description": "Prepare publishing workflows and release-ready game packages.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Marketplace",
-                                    "href": "../toolbox/marketplace/index.html",
-                                    "description": "Plan marketplace listing, asset, and discovery workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Community",
-                                    "href": "../toolbox/community/index.html",
-                                    "description": "Plan creator community, tutorials, sharing, and feedback workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Languages",
-                                    "href": "../toolbox/languages/index.html",
-                                    "description": "Plan game language coverage and translation review workflows.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Cloud",
-                                    "href": "../toolbox/cloud/index.html",
-                                    "description": "Hidden capability shell for connected storage, sync, and publishing support.",
-                                    "role": "Hidden Preview",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge",
-                                    "subgroup": "Hidden planned"
-                            }
-                    ]
-            },
-            {
-                    "group": "Account",
-                    "tools": [
-                            {
-                                    "title": "Saved Data",
-                                    "href": "../toolbox/saved-data/index.html",
-                                    "description": "Inspect and manage saves, local storage, and game data.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Achievements",
-                                    "href": "../toolbox/achievements/index.html",
-                                    "description": "Plan achievement definitions and creator-facing unlock review.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            },
-                            {
-                                    "title": "Ratings",
-                                    "href": "../toolbox/ratings/index.html",
-                                    "description": "Plan player ratings, review signals, and quality feedback.",
-                                    "role": "Foundry Bot",
-                                    "mascot": "foundry-bot",
-                                    "theme": "forge"
-                            }
-                    ]
-            }
-    ];
-    const groupClassMap = {
-        "AI": "tool-group-ai",
-        "Audio": "tool-group-audio",
-        "Build/Create": "tool-group-build",
-        "Design": "tool-group-design",
-        "Marketplace": "tool-group-marketplace",
-        "Platform": "tool-group-platform",
-        "Play": "tool-group-play"
-};
+    const toolboxGroupOrder = Object.freeze([
+        "Create",
+        "Build",
+        "Content",
+        "Media",
+        "Test",
+        "Share",
+        "Account"
+    ]);
+    const toolGroups = toolboxGroupOrder
+        .map((group) => ({
+            group,
+            tools: registryTools
+                .filter((tool) => tool.toolboxGroup === group && tool.visibleInToolsList === true)
+                .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER))
+        }))
+        .filter((group) => group.tools.length > 0);
     const groupSwatchMap = {
         "AI": "swatch-purple",
         "Audio": "swatch-orange",
@@ -438,46 +88,7 @@ import {
         "Marketplace": "swatch-gold",
         "Platform": "swatch-blue",
         "Play": "swatch-green"
-};
-    const toolColorGroups = {
-        "AI Assistant": "AI",
-        "Audio": "Audio",
-        "Audio Effects": "Audio",
-        "MIDI": "Audio",
-        "Music": "Audio",
-        "Particles": "Audio",
-        "Voice Capture": "Audio",
-        "Voice Output": "Audio",
-        "Voices": "Audio",
-        "Videos": "Audio",
-        "Build Game": "Build/Create",
-        "Custom Extensions": "Build/Create",
-        "Game Configuration": "Build/Create",
-        "Project Workspace": "Build/Create",
-        "Animations": "Design",
-        "Assets": "Design",
-        "Characters": "Design",
-        "Colors": "Design",
-        "Fonts": "Design",
-        "Game Design": "Design",
-        "Objects": "Design",
-        "Sprites": "Design",
-        "Worlds": "Design",
-        "Community": "Marketplace",
-        "Marketplace": "Marketplace",
-        "Publish": "Marketplace",
-        "Cloud": "Platform",
-        "Controls": "Platform",
-        "Debug": "Platform",
-        "Events": "Platform",
-        "Hitboxes": "Platform",
-        "Languages": "Platform",
-        "Performance": "Platform",
-        "Saved Data": "Platform",
-        "Achievements": "Play",
-        "Game Testing": "Play",
-        "Ratings": "Play"
-};
+    };
     function getProjectProgressSummary() {
         const activeProject = projectWorkspaceRepository.getActiveProject();
         const progress = projectWorkspaceRepository.getProjectProgress();
@@ -573,13 +184,26 @@ import {
     }
 
     function colorGroupForTool(tool) {
-        return toolColorGroups[tool.title] || "Platform";
+        return tool.category || "Platform";
     }
 
     function enrichTool(tool, groupName = colorGroupForTool(tool)) {
-        const registryTool = registryToolForCard(tool);
+        const registryTool = registryToolForCard(tool) || tool;
+        const route = getToolRoute(registryTool);
+        const title = registryTool.displayName || registryTool.name || tool.title || "Tool";
         return {
             ...tool,
+            capabilityLabel: registryTool.capabilityLabel,
+            childCapabilities: registryTool.childCapabilities || [],
+            colorGroup: registryTool.colorGroup,
+            description: registryTool.description || registryTool.shortDescription || tool.description || "",
+            href: route ? `../${route}` : "",
+            id: registryTool.id,
+            mascot: "foundry-bot",
+            role: registryTool.adminOnly ? "Admin Preview" : registryTool.hidden ? "Hidden Preview" : "Foundry Bot",
+            subgroup: registryTool.subgroup,
+            theme: registryTool.category === "Audio" ? "bot" : "forge",
+            title,
             adminOnly: registryTool?.adminOnly === true,
             group: groupName,
             hidden: registryTool?.hidden === true,
@@ -593,8 +217,8 @@ import {
             requires: registryTool?.requires || [],
             status: registryTool?.status || "Missing Metadata",
             statusDiagnostic: registryTool
-                ? toolProgressMetadataDiagnostic(registryTool)
-                : "Missing Admin Tools Progress metadata: status metadata."
+                ? toolRegistryMetadataDiagnostic(registryTool)
+                : "Missing Toolbox registry metadata: status metadata."
         };
     }
 
@@ -722,7 +346,7 @@ import {
     }
 
     function groupClass(groupName) {
-        return groupClassMap[groupName] || "";
+        return registryTools.find((tool) => tool.category === groupName)?.colorGroup || "";
     }
 
     function groupSwatch(groupName) {
@@ -771,13 +395,8 @@ import {
     }
 
     function sourceToolByTitle(title) {
-        for (const group of toolGroups) {
-            const tool = group.tools.find((candidate) => candidate.title === title);
-            if (tool) {
-                return enrichTool(tool);
-            }
-        }
-        return null;
+        const registryTool = registryToolsByTitle.get(title);
+        return registryTool ? enrichTool(registryTool) : null;
     }
 
     function isRequiredForCurrentBuildPath(tool) {
@@ -1039,6 +658,9 @@ import {
     }
 
     function registryToolForCard(tool) {
+        if (tool?.id) {
+            return registryTools.find((candidate) => candidate.id === tool.id) || tool;
+        }
         return registryToolsByTitle.get(tool.title) || null;
     }
 

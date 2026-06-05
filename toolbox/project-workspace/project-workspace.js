@@ -1,6 +1,7 @@
 import {
   PROJECT_WORKSPACE_MEMBER_ROLES,
   PROJECT_WORKSPACE_PROJECT_PURPOSES,
+  PROJECT_WORKSPACE_PROJECT_STATUSES,
   createProjectWorkspaceMockRepository,
 } from "./project-workspace-mock-repository.js";
 
@@ -26,6 +27,7 @@ const elements = {
   projectProgress: document.querySelector("[data-project-progress]"),
   purposeInput: document.querySelector("[data-project-purpose-input]"),
   projectStatus: document.querySelector("[data-project-status]"),
+  projectStatusInput: document.querySelector("[data-project-status-input]"),
   publishingProgress: document.querySelector("[data-publishing-progress]"),
   recommendedNextTool: document.querySelectorAll("[data-recommended-next-tool]"),
   statusLog: document.querySelector("[data-project-workspace-log]"),
@@ -209,6 +211,9 @@ function renderWorkspace() {
   if (elements.purposeInput && activeProject?.purpose) {
     elements.purposeInput.value = activeProject.purpose;
   }
+  if (elements.projectStatusInput && activeProject?.status) {
+    elements.projectStatusInput.value = activeProject.status;
+  }
   if (elements.currentUserRoleInput) {
     elements.currentUserRoleInput.value = currentMember?.role || "Viewer";
   }
@@ -225,6 +230,7 @@ elements.form?.addEventListener("submit", (event) => {
     name: elements.nameInput?.value,
     ownerUserId: CREATOR_USER_ID,
     purpose: elements.purposeInput?.value,
+    status: elements.projectStatusInput?.value,
   });
 
   if (elements.nameInput) {
@@ -275,6 +281,17 @@ elements.purposeInput?.addEventListener("change", () => {
   renderWorkspace();
 });
 
+elements.projectStatusInput?.addEventListener("change", () => {
+  const activeProject = repository.getActiveProject();
+  if (!activeProject) {
+    return;
+  }
+
+  const project = repository.updateProjectStatus(activeProject.id, elements.projectStatusInput.value);
+  setStatusLog(`Updated ${project.name} status to ${project.status}.`);
+  renderWorkspace();
+});
+
 elements.currentUserRoleInput?.addEventListener("change", () => {
   const activeProject = repository.getActiveProject();
   if (!activeProject) {
@@ -287,5 +304,6 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
 });
 
 populateSelect(elements.purposeInput, PROJECT_WORKSPACE_PROJECT_PURPOSES);
+populateSelect(elements.projectStatusInput, PROJECT_WORKSPACE_PROJECT_STATUSES);
 populateSelect(elements.currentUserRoleInput, PROJECT_WORKSPACE_MEMBER_ROLES);
 renderWorkspace();

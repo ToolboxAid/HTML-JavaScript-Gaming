@@ -176,6 +176,10 @@ test("Game Design saves and updates design fields against the active project", a
     await expect(page.locator("[data-game-design-output-validation]")).toHaveText("Ready");
     await expect(page.locator("[data-game-design-output-next-step]")).toHaveText("Game Configuration");
     await expect(page.locator("[data-game-design-output-missing]")).toHaveText("None");
+    await expect(page.locator("[data-game-design-configuration-link]")).toHaveAttribute(
+      "href",
+      "toolbox/game-configuration/index.html?handoff=valid&project=demo-project"
+    );
 
     await page.getByLabel("Genre").selectOption("Fantasy");
     await page.getByRole("button", { name: "Save Game Design" }).click();

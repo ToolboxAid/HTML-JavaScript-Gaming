@@ -33,8 +33,24 @@
                                 <summary>Project Setup</summary>
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack content-stack--compact" data-project-form>
-                                        <label for="projectNameInput">Project Name <input id="projectNameInput" type="text" placeholder="Untitled game project" data-project-name-input></label>
-                                        <label for="projectPurposeInput">Project Purpose <select id="projectPurposeInput" data-project-purpose-input></select></label>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="Project setup fields">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="projectNameInput">Project Name</label></th>
+                                                        <td><input id="projectNameInput" type="text" placeholder="Untitled game project" data-project-name-input></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="projectPurposeInput">Project Purpose</label></th>
+                                                        <td><select id="projectPurposeInput" data-project-purpose-input></select></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="projectStatusInput">Project Status</label></th>
+                                                        <td><select id="projectStatusInput" data-project-status-input></select></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                         <button class="btn" type="submit">Create Project</button>
                                     </form>
                                     <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
@@ -51,7 +67,7 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="project-workspace" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                     <section class="tool-center-panel"><h2>Workspace Overview</h2>
-                        <p>Project Workspace now manages the local project list for the first real rebuild slice. It does not persist data or connect to external services.</p>
+                        <p>Project Workspace manages project identity, project status, project progress, and publishing progress against the local mock repository. Not implemented yet: real database persistence, authentication, cloud sync, or public release promotion.</p>
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
@@ -67,10 +83,10 @@
                                 </div>
                             </div>
                         </article>
-                        <article class="card" data-static-overlay-wireframe>
+                        <article class="card" data-project-workspace-foundation>
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Static Overlay Wireframe</div>
+                                    <div class="kicker">Project Foundation</div>
                                     <h3>Project Progress</h3>
                                 </div>
                                 <div class="grid cols-3">
@@ -146,7 +162,7 @@
                                     <div class="kicker">Requirements</div>
                                     <h3 id="project-workspace-missing-requirements-title">Missing Requirements</h3>
                                 </div>
-                                <p>This card remains a static review surface for the next required tools. It does not block, save, or validate runtime state.</p>
+                                <p>Not implemented yet: cross-tool blocking, publish validation, or persisted release gates. This review surface lists the next requirements only.</p>
                                 <div class="grid cols-3">
                                     <article class="callout"><h3>Game Design</h3><p><span class="pill">Under Construction</span> Define win and lose conditions.</p></article>
                                     <article class="callout"><h3>Game Configuration</h3><p><span class="pill">Planned</span> Choose release profile and debug policy.</p></article>

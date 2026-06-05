@@ -76,7 +76,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 2/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 3/37");
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=user/);
     await expect(page.locator("[data-project-data-menu]")).toBeHidden();
@@ -123,13 +123,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    const readyColorsCard = page.locator("main .control-card").filter({
-      has: page.locator("h3", { hasText: "Colors" })
+    const readyProjectWorkspaceCard = page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: "Project Workspace" })
     });
-    await expect(readyColorsCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/colors/index.html");
+    await expect(readyProjectWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/project-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Colors", "Saved Data"]);
-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Ready", "Ready"]);
+    expect(defaultToolLabels).toEqual(["Game Configuration", "Game Design", "Project Workspace"]);
+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Ready", "Ready", "Ready"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Assistant$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
@@ -157,50 +157,50 @@ test("root tools surface links current tool pages without old_* routes", async (
       "Custom Extensions"
     ]));
     await expect(page.locator("main .control-card .kicker")).toHaveCount(0);
-    const colorsCard = page.locator("main .control-card").filter({
-      has: page.locator("h3", { hasText: /^Colors$/ })
+    const designCard = page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: /^Game Design$/ })
     }).first();
-    await expect(colorsCard).toHaveClass(/(^|\s)tool-group-design(\s|$)/);
+    await expect(designCard).toHaveClass(/(^|\s)tool-group-design(\s|$)/);
     const allCardsHaveGroupClass = await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
       cards.every((card) => Array.from(card.classList).some((className) => className.startsWith("tool-group-")))
     ));
     expect(allCardsHaveGroupClass).toBe(true);
-    const colorsBorderColor = await colorsCard.evaluate((card) => getComputedStyle(card).borderColor);
-    expect(colorsBorderColor).not.toBe("rgba(0, 0, 0, 0)");
-    const colorsActionRow = colorsCard.locator("[data-toolbox-tile-action-row='Colors']");
-    await expect(colorsActionRow).toHaveCount(1);
-    await expect(colorsActionRow.locator("img[alt='Colors badge']")).toHaveCount(1);
-    await expect(colorsActionRow.locator("a.btn")).toHaveAttribute("href", "../toolbox/colors/index.html");
-    await expect(colorsActionRow.locator(".brand-color-swatch")).toHaveClass(/swatch-pink/);
-    await expect(colorsActionRow.locator("[data-toolbox-readiness]")).toHaveText("Ready");
-    await expect(colorsCard.locator("ul")).toHaveCount(0);
-    const colorsBodyOrder = await colorsCard.locator(".card-body").evaluate((body) => (
+    const designBorderColor = await designCard.evaluate((card) => getComputedStyle(card).borderColor);
+    expect(designBorderColor).not.toBe("rgba(0, 0, 0, 0)");
+    const designActionRow = designCard.locator("[data-toolbox-tile-action-row='Game Design']");
+    await expect(designActionRow).toHaveCount(1);
+    await expect(designActionRow.locator("img[alt='Game Design badge']")).toHaveCount(1);
+    await expect(designActionRow.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-design/index.html");
+    await expect(designActionRow.locator(".brand-color-swatch")).toHaveClass(/swatch-pink/);
+    await expect(designActionRow.locator("[data-toolbox-readiness]")).toHaveText("Ready");
+    await expect(designCard.locator("ul")).toHaveCount(0);
+    const designBodyOrder = await designCard.locator(".card-body").evaluate((body) => (
       Array.from(body.children).map((child) => child.classList.contains("content-cluster") ? "content-cluster" : child.tagName.toLowerCase())
     ));
-    expect(colorsBodyOrder).toEqual(["h3", "p", "content-cluster"]);
-    await expect(colorsCard.locator(".card-media-link")).toHaveAttribute("href", "../toolbox/colors/index.html");
-    const previewImage = colorsCard.locator(".card-media-link img");
+    expect(designBodyOrder).toEqual(["h3", "p", "content-cluster"]);
+    await expect(designCard.locator(".card-media-link")).toHaveAttribute("href", "../toolbox/game-design/index.html");
+    const previewImage = designCard.locator(".card-media-link img");
     const transformBeforeHover = await previewImage.evaluate((image) => getComputedStyle(image).transform);
-    await colorsCard.locator(".card-media-link").hover();
+    await designCard.locator(".card-media-link").hover();
     await page.waitForTimeout(100);
     const transformAfterHover = await previewImage.evaluate((image) => getComputedStyle(image).transform);
     expect(transformAfterHover).not.toBe(transformBeforeHover);
     expect(transformAfterHover).not.toBe("none");
-    const previewOverflow = await colorsCard.evaluate((card) => {
+    const previewOverflow = await designCard.evaluate((card) => {
       const media = card.querySelector(".card-media");
       const link = card.querySelector(".card-media-link");
       return [card, media, link].map((element) => getComputedStyle(element).overflow);
     });
     expect(previewOverflow).toEqual(["visible", "visible", "visible"]);
-    await colorsCard.locator(".card-media-link").click();
-    await page.waitForURL(/\/toolbox\/colors\/index\.html$/);
+    await designCard.locator(".card-media-link").click();
+    await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
     await page.goBack({ waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
     await page.getByRole("button", { name: "Group" }).click();
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(guestGroupLabels).toEqual(["Design", "Platform"]);
+    expect(guestGroupLabels).toEqual(["Build/Create", "Design"]);
     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
@@ -234,7 +234,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-project-data-menu]")).toBeHidden();
     await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 2/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 3/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await page.locator("[data-toolbox-role-banner]").click();
@@ -274,10 +274,10 @@ test("root tools surface links current tool pages without old_* routes", async (
     ]));
     await expect(page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Project Workspace$/ })
-    }).locator("[data-toolbox-readiness]")).toHaveText("Under Construction");
+    }).locator("[data-toolbox-readiness]")).toHaveText("Ready");
     await expect(page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Game Configuration$/ })
-    }).locator("[data-toolbox-readiness]")).toHaveText("Wireframe");
+    }).locator("[data-toolbox-readiness]")).toHaveText("Ready");
     await expect(page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Build Game$/ })
     }).locator("[data-toolbox-readiness]")).toHaveText("Planned");
@@ -288,7 +288,7 @@ test("root tools surface links current tool pages without old_* routes", async (
       has: page.locator("h3", { hasText: /^Worlds$/ })
     }).first();
     await expect(worldsCard).toHaveClass(/(^|\s)tool-group-design(\s|$)/);
-    await expect(worldsCard.locator("[data-toolbox-readiness]")).toHaveText("Under Construction");
+    await expect(worldsCard.locator("[data-toolbox-readiness]")).toHaveText("Wireframe");
     await expect(worldsCard.locator("[data-child-capabilities='Worlds']")).toHaveText("Planned world types: Vector, Tilemap, Isometric, Hex");
     await expect(worldsCard.locator("ul")).toHaveCount(0);
     const worldsBodyOrder = await worldsCard.locator(".card-body").evaluate((body) => (
@@ -320,7 +320,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-project-data-menu]")).toBeHidden();
     await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
     await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 2/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 3/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
   } finally {

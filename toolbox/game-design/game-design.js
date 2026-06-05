@@ -19,6 +19,7 @@ const elements = {
   capabilityDemoList: document.querySelector("[data-game-design-capability-demos]"),
   capabilityDemoNotes: document.querySelector("[data-game-design-capability-notes]"),
   capabilityDemoPanel: document.querySelector("[data-game-design-capability-panel]"),
+  configurationLink: document.querySelector("[data-game-design-configuration-link]"),
   designSummary: document.querySelector("[data-game-design-summary]"),
   designStatus: document.querySelector("[data-game-design-status]"),
   form: document.querySelector("[data-game-design-form]"),
@@ -217,6 +218,24 @@ function renderOutput(snapshot, validation) {
   );
 }
 
+function renderConfigurationLink(snapshot, validation) {
+  if (!elements.configurationLink) {
+    return;
+  }
+
+  const activeProject = snapshot.activeProject;
+  const ready = Boolean(activeProject && validation.findings.length === 0);
+  const target = new URL("toolbox/game-configuration/index.html", window.location.origin + "/");
+  target.searchParams.set("handoff", ready ? "valid" : activeProject ? "invalid" : "missing");
+  if (activeProject) {
+    target.searchParams.set("project", activeProject.id);
+  }
+  elements.configurationLink.href = target.pathname.replace(/^\/+/, "") + target.search;
+  elements.configurationLink.textContent = ready
+    ? `Review ${activeProject.name} Game Configuration`
+    : "Review Game Configuration";
+}
+
 function render() {
   const snapshot = repository.getSnapshot();
   const activeProject = snapshot.activeProject;
@@ -239,6 +258,7 @@ function render() {
   renderTables(snapshot.tables);
   renderHandoff(snapshot.progressHandoff);
   renderOutput(snapshot, validation);
+  renderConfigurationLink(snapshot, validation);
 }
 
 function renderFormValidation() {

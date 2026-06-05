@@ -112,6 +112,13 @@ export const PROJECT_WORKSPACE_PROJECT_PURPOSES = Object.freeze([
   "Template Project",
 ]);
 
+export const PROJECT_WORKSPACE_PROJECT_STATUSES = Object.freeze([
+  "Planning",
+  "Under Construction",
+  "Ready for Testing",
+  "Ready for Publish",
+]);
+
 export const PROJECT_WORKSPACE_MEMBER_ROLES = Object.freeze([
   "Owner",
   "Designer",
@@ -349,12 +356,16 @@ export function createProjectWorkspaceMockRepository() {
       projectCounter += 1;
     }
 
+    const status = PROJECT_WORKSPACE_PROJECT_STATUSES.includes(input.status)
+      ? input.status
+      : "Under Construction";
+
     const project = {
       id: candidateId,
       ownerUserId,
       name,
       purpose,
-      status: input.status || "Under Construction",
+      status,
     };
 
     tables.projects.push(project);
@@ -377,6 +388,17 @@ export function createProjectWorkspaceMockRepository() {
     }
 
     project.purpose = purpose;
+    return describeProject(project);
+  }
+
+  function updateProjectStatus(projectId, status) {
+    const project = getProjectById(projectId);
+
+    if (!project || !PROJECT_WORKSPACE_PROJECT_STATUSES.includes(status)) {
+      return describeProject(project);
+    }
+
+    project.status = status;
     return describeProject(project);
   }
 
@@ -443,5 +465,6 @@ export function createProjectWorkspaceMockRepository() {
     clearTestData,
     updateProjectMemberRole,
     updateProjectPurpose,
+    updateProjectStatus,
   };
 }
