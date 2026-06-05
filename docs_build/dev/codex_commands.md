@@ -727,3 +727,64 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_123
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Removed placeholder `image-missing.svg` center-panel preview images from active registry-owned tool pages.
+- Preserved center-panel headings and workspace content.
+- Updated shared Tool Display Mode badge styling in `assets/theme-v2/css/panels.css`.
+- Kept normal Tool Display Mode badge display at `64px` by `64px`.
+- Added fullscreen Tool Display Mode badge display at `32px` by `32px`.
+- Removed badge border, circular radius, panel background, and crop treatment so the square badge artwork displays fully.
+- Added active tool page UI coverage to confirm active tool center panels no longer render placeholder center images.
+- Added Tool Display Mode coverage for normal/fullscreen badge sizing and square/no-ring rendering.
+- Did not add inline styles, style blocks, script blocks, inline event handlers, page-local CSS, or tool-local CSS.
+- Did not modify archived V1/V2 pages.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+- `node --check tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime --lane tool-display-mode`
+- Registry-driven static check confirmed no active tool-center-panel placeholder images remain.
+- Scoped `git diff --check` for changed implementation/test/report files.
+- Targeted changed-file scan confirmed no inline styles, style blocks, inline scripts, inline event handlers, archived V1/V2 paths, or `start_of_day` file changes were introduced.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/tool-center-image-and-badge-cleanup-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_124
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Validated every active registry-owned tool page against the Toolbox registry group color class used by `toolbox/index.html` Group view.
+- Updated active tool page left and right `aside.tool-column` classes so each side column uses the page tool's registry `colorGroup`.
+- Preserved tool page layout, content, Theme V2 CSS wiring, and Toolbox Group view rendering.
+- Added targeted active tool page Playwright coverage for registry-aligned side column group classes and Toolbox Group view card classes.
+- Did not modify `toolbox/index.html`.
+- Did not add CSS, page-local CSS, tool-local CSS, inline styles, style blocks, script blocks, or inline event handlers.
+- Did not modify archived V1/V2 pages.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+- Targeted registry static check for active tool side column group classes.
+- `npm run test:lane:tool-runtime`
+- `git diff --check`
+- Changed-file static validation for forbidden archive/start_of_day paths and inline style/script/event-handler additions.
+- Confirmed `toolbox/index.html` has no diff.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/tool-page-group-color-alignment-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

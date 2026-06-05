@@ -53,6 +53,10 @@ function expectAlphabetical(labels) {
   expect(labels).toEqual(sortedCopy(labels));
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 async function primaryNavigationLabels(page) {
   return (await page.locator("nav.nav-links > a, nav.nav-links > .nav-item > a").evaluateAll((links) => (
     links.map((link) => link.textContent.trim())
@@ -505,19 +509,38 @@ test("tool template future-state page loads from root Theme V2 paths", async ({ 
   }
 });
 
-test("active tool pages do not render placeholder center panel images", async ({ page }) => {
-  const activeRoutes = getActiveToolRegistry()
-    .map((tool) => getToolRoute(tool))
-    .filter(Boolean);
-  const { failedRequests, pageErrors, server } = await openRepoPage(page, `/${activeRoutes[0]}`);
+test("active tool pages align center cleanup and registry group colors", async ({ page }) => {
+  const activeTools = getActiveToolRegistry()
+    .map((tool) => ({ ...tool, route: getToolRoute(tool) }))
+    .filter((tool) => Boolean(tool.route));
+  const { failedRequests, pageErrors, server } = await openRepoPage(page, `/${activeTools[0].route}`);
 
   try {
-    for (const route of activeRoutes) {
-      await page.goto(`${server.baseUrl}/${route}`, { waitUntil: "networkidle" });
+    for (const tool of activeTools) {
+      await page.goto(`${server.baseUrl}/${tool.route}`, { waitUntil: "networkidle" });
       await expect(page.locator(".tool-center-panel")).toBeVisible();
       await expect(page.locator(".tool-center-panel > img[src$='image-missing.svg']")).toHaveCount(0);
       await expect(page.locator(".tool-center-panel h1, .tool-center-panel h2, .tool-center-panel h3").first()).toBeVisible();
+
+      const sideColumns = page.locator(".tool-workspace > aside.tool-column");
+      await expect(sideColumns).toHaveCount(2);
+      const groupClassesByColumn = await sideColumns.evaluateAll((columns) => (
+        columns.map((column) => Array.from(column.classList).filter((className) => className.startsWith("tool-group-")))
+      ));
+      expect(groupClassesByColumn).toEqual([[tool.colorGroup], [tool.colorGroup]]);
     }
+
+    await page.goto(`${server.baseUrl}/toolbox/index.html?role=admin&view=group`, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Group" }).click();
+    const listedTools = activeTools.filter((tool) => tool.visibleInToolsList && !tool.adminOnly);
+    for (const tool of listedTools) {
+      const toolCard = page.locator("main [data-tools-accordion-list] .control-card").filter({
+        has: page.locator("h3", { hasText: new RegExp(`^${escapeRegExp(tool.displayName)}$`) })
+      }).first();
+      await expect(toolCard).toHaveCount(1);
+      await expect(toolCard).toHaveClass(new RegExp(`(^|\\s)${escapeRegExp(tool.colorGroup)}(\\s|$)`));
+    }
+
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
   } finally {

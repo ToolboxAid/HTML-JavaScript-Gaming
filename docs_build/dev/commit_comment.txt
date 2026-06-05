@@ -1,1 +1,1 @@
-Fix Tool Display Mode media and navigation layout - PR_26156_122-tool-display-mode-layout-fix
+Align active tool page side column group colors - PR_26156_124-tool-page-group-color-alignment
