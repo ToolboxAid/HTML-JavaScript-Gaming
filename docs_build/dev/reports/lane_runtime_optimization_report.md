@@ -1,24 +1,24 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-06-05T00:18:28.233Z
+Generated: 2026-06-05T00:46:38.339Z
 Status: PASS
 
 ## Runtime Cost Summary
 
 Reused runtime sessions: 0
-Reused lane snapshots: 0
-Reused warm-start lanes: 0
-Reused dependency hydration: 0
-Prevented graph rebuilds: 0
-Prevented redundant initialization: 0
+Reused lane snapshots: 1
+Reused warm-start lanes: 1
+Reused dependency hydration: 1
+Prevented graph rebuilds: 1
+Prevented redundant initialization: 1
 Prevented redundant browser launches: 0
-Prevented redundant lane execution: 9
+Prevented redundant lane execution: 10
 Baseline Playwright/browser launches: 1
 Scheduled Playwright/browser launches: 1
 
 ## Scheduled Lane Order
 
-1. game-design
+1. tools-progress
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| game-design | GENERATED | GENERATED | GENERATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Game Design rebuild slice validates the active project context, design save/update, actionable validation, capability demo authoring, and Toolbox progress handoff without exercising unrelated toolbox routes. |
+| tools-progress | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Project Build Path stays workflow-order and project-specific. |
 
 ## Runtime Savings Observations
 

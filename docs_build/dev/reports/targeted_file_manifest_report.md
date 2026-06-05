@@ -1,19 +1,19 @@
 # Targeted File Manifest Report
 
-Generated: 2026-06-05T00:18:28.234Z
+Generated: 2026-06-05T00:46:38.340Z
 Status: PASS
 
 ## Manifest-Generated Lane Inputs
 
 | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| game-design | tools | PASS | generated | tests/playwright/tools/GameDesignMockRepository.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 37a0b0722df16a80 | c91e3e832a8647ab | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+| tools-progress | tools | PASS | persistent | tests/playwright/tools/ToolsProgressHydration.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | d6eff447d72cd46d | 1f6ffc6a853a99ad | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
 
 ## Discovery Expansion Control
 
 Prevented discovery expansion: Yes
-Prevented redundant scans: 4
-Targeted file/helper reads: 5
+Prevented redundant scans: 0
+Targeted file/helper reads: 0
 
 ## Runtime Savings Observations
 

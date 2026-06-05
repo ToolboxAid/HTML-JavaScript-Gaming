@@ -1,23 +1,23 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-05T00:18:28.234Z
+Generated: 2026-06-05T00:46:38.339Z
 Status: PASS
 Snapshot directory: docs_build/dev/reports/lane_snapshots
 
 ## Summary
 
-Reused lane snapshots: 0
+Reused lane snapshots: 1
 Invalidated snapshots: 0
-Generated snapshots: 1
+Generated snapshots: 0
 Skipped snapshots: 0
-Prevented graph rebuilds: 0
-Prevented manifest traversal: 0
+Prevented graph rebuilds: 1
+Prevented manifest traversal: 1
 
 ## Snapshot Decisions
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| game-design | GENERATED | docs_build/dev/reports/lane_snapshots/game-design.json | c91e3e832a8647ab | 37a0b0722df16a80 | 751729a1e113a4de | 6c4fac7630b0b6f3 | 3171f9ce5e0dd545 | c237663bdf259252 | 7a900c43213c8328 | No prior lane snapshot existed for this lane. |
+| tools-progress | REUSED | docs_build/dev/reports/lane_snapshots/tools-progress.json | 1f6ffc6a853a99ad | d6eff447d72cd46d | 751729a1e113a4de | 6c4fac7630b0b6f3 | 229c5db430a440bc | 4afadbd47817addd | eab4c4b4730625b8 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
 
 ## Snapshot Validation Findings
 

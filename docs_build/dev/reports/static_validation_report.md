@@ -1,13 +1,13 @@
 # Static Validation Report
 
-Generated: 2026-06-05T00:18:28.227Z
+Generated: 2026-06-05T00:46:38.333Z
 Status: PASS
 Static only: No
 Dry run: No
 
 ## Requested Lanes
 
-- game-design
+- tools-progress
 
 ## Prevented Launches
 
@@ -22,13 +22,13 @@ Reason: No deterministic static validation failure was found.
 | invalid filename detection | PASS | Covered by Playwright structure audit. |
 | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | game-design:c91e3e832a8647ab |
-| persistent lane manifests | PASS | game-design:GENERATED |
-| lane warm-start reuse | PASS | game-design:GENERATED |
-| dependency hydration reuse | PASS | game-design:GENERATED |
+| targeted file manifests | PASS | tools-progress:1f6ffc6a853a99ad |
+| persistent lane manifests | PASS | tools-progress:REUSED |
+| lane warm-start reuse | PASS | tools-progress:REUSED |
+| dependency hydration reuse | PASS | tools-progress:REUSED |
 | lane input graph expansion | PASS | No inputs escaped manifest scope. |
-| scoped discovery targets | PASS | tests/playwright/tools/GameDesignMockRepository.spec.mjs |
-| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+| scoped discovery targets | PASS | tests/playwright/tools/ToolsProgressHydration.spec.mjs |
+| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
 | invalid lane target detection | PASS | No invalid lane target findings. |
 | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
 | duplicate lane registration detection | PASS | No duplicate lane registrations found. |

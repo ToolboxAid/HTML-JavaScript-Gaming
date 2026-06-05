@@ -47,41 +47,23 @@
                             <h2>What should I build next for the platform?</h2>
                         </div>
                         <p>Tools Progress is an Admin-only planning surface for platform-development readiness. Project completion belongs in Project Build Path, not here.</p>
+                        <p data-tools-progress-next>What should I build next for the platform? Loading tool progress.</p>
                         <div class="table-wrapper">
-                            <table class="data-table">
+                            <table class="data-table" aria-label="Platform Tooling Progress">
                                 <caption>Platform Tooling Progress</caption>
                                 <thead>
                                     <tr>
-                                        <th>Area</th>
+                                        <th>Order</th>
+                                        <th>Tool</th>
+                                        <th>Group</th>
                                         <th>Status</th>
-                                        <th>Next Platform Build Item</th>
+                                        <th>Complete</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Project Workspace</td>
-                                        <td>In Progress</td>
-                                        <td>Keep Project Build Path handoff stable.</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Game Design</td>
-                                        <td>In Progress</td>
-                                        <td>Preserve handoff into Game Configuration.</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Game Configuration</td>
-                                        <td>In Progress</td>
-                                        <td>Prepare Assets implementation readiness.</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Assets</td>
-                                        <td>Not Started</td>
-                                        <td>Start the next first-class tool rebuild.</td>
-                                    </tr>
-                                </tbody>
+                                <tbody data-tools-progress-body></tbody>
                             </table>
                         </div>
-                        <div class="status" role="status">Admin Tools Progress is platform planning only. It does not replace Project Build Path.</div>
+                        <div class="status" role="status" data-tools-progress-summary>Admin Tools Progress is platform planning only. It does not replace Project Build Path.</div>
                     </div>
                 </div>
             </div>
@@ -89,6 +71,7 @@
     </main>
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="admin/tools-progress.js"></script>
 </body>
 
 </html>

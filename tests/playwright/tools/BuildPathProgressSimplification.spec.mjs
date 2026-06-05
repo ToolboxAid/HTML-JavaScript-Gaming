@@ -139,7 +139,7 @@ test("Admin navigation exposes Tools Progress and removes Project Progress", asy
 
     await page.goto(`${failures.server.baseUrl}/admin/tools-progress.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "Tools Progress" })).toBeVisible();
-    await expect(page.getByText("What should I build next for the platform?")).toBeVisible();
+    await expect(page.locator("[data-tools-progress-next]")).toContainText("What should I build next for the platform?");
     await expect(page.getByText("Project completion belongs in Project Build Path, not here.")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("nav.nav-links").getByText("Project Progress", { exact: true })).toHaveCount(0);

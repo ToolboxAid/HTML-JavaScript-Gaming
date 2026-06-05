@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Grouping Colors - Game Foundry Studio</title>
-    <meta name="description" content="Game Foundry Studio tool grouping and badge color reference.">
+    <title>Grouping Colors - GameFoundryStudio</title>
+    <meta name="description" content="GameFoundryStudio tool grouping and badge color reference.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
 </head>
@@ -17,8 +17,8 @@
             <div class="container">
                 <div class="kicker">Admin Reference</div>
                 <h1>Tool grouping and color reference.</h1>
-                <p class="lede">Current tool group names remain the primary user-facing structure. Badge colors are
-                    secondary visual cues for future alignment.</p>
+                <p class="lede">Toolbox Group view uses semantic color browsing. Project Build Path remains the ordered
+                    workflow guide.</p>
             </div>
         </section>
         <section class="section">
@@ -66,177 +66,143 @@
             <div class="container">
                 <div class="card">
                     <div class="card-body">
-                        <h2>Current Tool Groupings (deprecated)</h2>
-                        <p>Your current groupings are strong from a user perspective, but they do not map perfectly to
-                            the color scheme.</p>
+                        <h2>Restored Group Color Model</h2>
+                        <p>Group colors are independent from Project Build Path progress. Group view supports browsing
+                            by semantic color category; Build Path answers what to do next for a project.</p>
                         <div class="table-wrapper">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Current Group</th>
+                                        <th>Color</th>
+                                        <th>Group</th>
                                         <th>Typical Tools</th>
-                                        <th>Color Family</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Assets / Content</td>
-                                        <td>Asset Studio, Palette Manager, Object Vector Studio, World Vector Studio
-                                        </td>
                                         <td><span class="brand-color-code"><span
-                                                    class="brand-color-swatch swatch-green"></span>Green <span
+                                                    class="brand-color-swatch swatch-purple"></span>Purple</span></td>
+                                        <td>AI</td>
+                                        <td>AI Assistant</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="brand-color-code"><span
                                                     class="brand-color-swatch swatch-orange"></span>Orange</span></td>
+                                        <td>Audio</td>
+                                        <td>Audio, Music, Voices, Videos, MIDI, Particles, Audio Effects, Voice Capture,
+                                            Voice Output</td>
                                     </tr>
                                     <tr>
-                                        <td>Building / Creation</td>
-                                        <td>Game Design Studio</td>
                                         <td><span class="brand-color-code"><span
-                                                    class="brand-color-swatch swatch-green"></span>Green</span></td>
+                                                    class="brand-color-swatch swatch-red"></span>Red</span></td>
+                                        <td>Build/Create</td>
+                                        <td>Project Workspace, Game Configuration, Build Game, Custom Extensions</td>
                                     </tr>
                                     <tr>
-                                        <td>Design / Animation</td>
-                                        <td>Animation Studio, Game Design Studio</td>
                                         <td><span class="brand-color-code"><span
-                                                    class="brand-color-swatch swatch-green"></span>Green</span></td>
+                                                    class="brand-color-swatch swatch-pink"></span>Pink</span></td>
+                                        <td>Design</td>
+                                        <td>Game Design, Assets, Colors, Fonts, Sprites, Characters, Objects, Worlds,
+                                            Animations</td>
                                     </tr>
                                     <tr>
-                                        <td>Media / Audio / Community</td>
-                                        <td>Sound Studio, MIDI Studio, Marketplace, Learn Studio</td>
                                         <td><span class="brand-color-code"><span
-                                                    class="brand-color-swatch swatch-red"></span>Red <span
-                                                    class="brand-color-swatch swatch-gold"></span>Gold <span
-                                                    class="brand-color-swatch swatch-purple"></span>Purple</span></td>
+                                                    class="brand-color-swatch swatch-gold"></span>Gold</span></td>
+                                        <td>Marketplace</td>
+                                        <td>Publish, Marketplace, Community</td>
                                     </tr>
                                     <tr>
-                                        <td>Technology / System</td>
-                                        <td>Code Studio, Input Studio, Cloud Studio, Storage Inspector, AI Assistant
-                                        </td>
                                         <td><span class="brand-color-code"><span
-                                                    class="brand-color-swatch swatch-gray"></span>Gray/Silver <span
-                                                    class="brand-color-swatch swatch-blue"></span>Blue <span
-                                                    class="brand-color-swatch swatch-purple"></span>Purple</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Settings and Admin</td>
-                                        <td>Settings Studio, Publish Studio</td>
-                                        <td><span class="brand-color-code"><span
-                                                    class="brand-color-swatch swatch-orange"></span>Orange <span
                                                     class="brand-color-swatch swatch-blue"></span>Blue</span></td>
+                                        <td>Platform</td>
+                                        <td>Controls, Hitboxes, Saved Data, Debug, Performance, Events, Languages,
+                                            Cloud</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="brand-color-code"><span
+                                                    class="brand-color-swatch swatch-green"></span>Green</span></td>
+                                        <td>Play</td>
+                                        <td>Game Testing, Achievements, Ratings</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <h2>Mismatch Notes</h2>
+                        <h2>Usage Notes</h2>
                         <details class="vertical-accordion" open>
-                            <summary>AI Assistant / Learn Studio</summary>
+                            <summary>AI</summary>
                             <div class="accordion-body">
-                                <p>Color says Purple for Intelligence / AI.</p>
-                                <ul>
-                                    <li>AI Assistant currently sits in Technology / System.</li>
-                                    <li>Learn Studio currently sits in Media / Audio / Community.</li>
-                                </ul>
-                                <p>Those two probably belong together.</p>
+                                <p>Purple is reserved for AI-assisted tooling.</p>
                             </div>
                         </details>
                         <details class="vertical-accordion">
-                            <summary>Cloud Studio / Storage Inspector / Publish Studio</summary>
+                            <summary>Build Path Independence</summary>
                             <div class="accordion-body">
-                                <p>Color says Blue for Platform / Cloud / Storage.</p>
-                                <ul>
-                                    <li>Cloud Studio currently sits in Technology / System.</li>
-                                    <li>Storage Inspector currently sits in Technology / System.</li>
-                                    <li>Publish Studio currently sits in Settings and Admin.</li>
-                                </ul>
-                                <p>These three naturally form a Platform group.</p>
+                                <p>Project Build Path keeps workflow order and project-specific readiness. Group colors
+                                    are only for browsing and scanning tool categories.</p>
                             </div>
                         </details>
                         <details class="vertical-accordion">
                             <summary>Marketplace</summary>
                             <div class="accordion-body">
-                                <p>Color says Gold for Community / Distribution.</p>
-                                <p>Marketplace currently sits in Media / Audio / Community, which fits well.</p>
+                                <p>Gold covers publishing, marketplace, and creator distribution destinations.</p>
                             </div>
                         </details>
-                        <details class="vertical-accordion">
-                            <summary>Palette Manager</summary>
-                            <div class="accordion-body">
-                                <p>Color says Orange for Utility / Configuration.</p>
-                                <p>Palette Manager currently sits in Assets / Content, which is the better placement
-                                    because that is how users will think about it.</p>
-                            </div>
-                        </details>
-                        <h2>Color-Aligned Grouping Option</h2>
-                        <p>If the goal is best user experience, keep the current group names and use the colors only as
-                            a visual cue.</p>
-                        <p>If the goal is making accordion grouping match colors, the tools could be reorganized into
-                            the color-aligned groups below.</p>
+                        <h2>Color Groups</h2>
                         <div class="grid cols-4">
                             <article class="mini-stat">
                                 <h3><span class="brand-color-code"><span
-                                            class="brand-color-swatch swatch-pink"></span>Pink: Build &amp;
-                                        Create</span></h3>
-                                <ul>
-                                    <li>Object Vector Studio</li>
-                                    <li>World Vector Studio</li>
-                                    <li>Animation Studio</li>
-                                    <li>Game Design Studio</li>
-                                </ul>
-                            </article>
-                            <article class="mini-stat">
-                                <h3><span class="brand-color-code"><span
-                                            class="brand-color-swatch swatch-orange"></span>Orange: Content &amp;
-                                        Assets</span></h3>
-                                <ul>
-                                    <li>Asset Studio</li>
-                                    <li>Palette Manager</li>
-                                    <li>Particle Studio</li>
-                                </ul>
-                            </article>
-                            <article class="mini-stat">
-                                <h3><span class="brand-color-code"><span
-                                            class="brand-color-swatch swatch-red"></span>Red: Media &amp; Audio</span>
-                                </h3>
-                                <ul>
-                                    <li>Sound Studio</li>
-                                    <li>MIDI Studio</li>
-                                </ul>
-                            </article>
-                            <article class="mini-stat">
-                                <h3><span class="brand-color-code"><span
-                                            class="brand-color-swatch swatch-purple"></span>Purple: AI &amp;
-                                        Learning</span></h3>
+                                            class="brand-color-swatch swatch-purple"></span>Purple: AI</span></h3>
                                 <ul>
                                     <li>AI Assistant</li>
-                                    <li>Learn Studio</li>
                                 </ul>
                             </article>
                             <article class="mini-stat">
                                 <h3><span class="brand-color-code"><span
-                                            class="brand-color-swatch swatch-blue"></span>Blue: Platform &amp;
-                                        Cloud</span></h3>
+                                            class="brand-color-swatch swatch-orange"></span>Orange: Audio</span></h3>
                                 <ul>
-                                    <li>Cloud Studio</li>
-                                    <li>Publish Studio</li>
-                                    <li>Storage Inspector</li>
+                                    <li>Audio</li>
+                                    <li>MIDI</li>
+                                    <li>Music</li>
+                                    <li>Voices</li>
                                 </ul>
                             </article>
                             <article class="mini-stat">
                                 <h3><span class="brand-color-code"><span
-                                            class="brand-color-swatch swatch-gray"></span>Gray/Silver: Development &amp;
-                                        System</span></h3>
+                                            class="brand-color-swatch swatch-red"></span>Red: Build/Create</span>
+                                </h3>
                                 <ul>
-                                    <li>Code Studio</li>
-                                    <li>Input Studio</li>
-                                    <li>Settings Studio</li>
+                                    <li>Project Workspace</li>
+                                    <li>Game Configuration</li>
+                                    <li>Build Game</li>
                                 </ul>
                             </article>
                             <article class="mini-stat">
                                 <h3><span class="brand-color-code"><span
-                                            class="brand-color-swatch swatch-gold"></span>Gold: Community &amp;
-                                        Marketplace</span></h3>
+                                            class="brand-color-swatch swatch-pink"></span>Pink: Design</span></h3>
                                 <ul>
+                                    <li>Game Design</li>
+                                    <li>Assets</li>
+                                    <li>Objects</li>
+                                    <li>Worlds</li>
+                                </ul>
+                            </article>
+                            <article class="mini-stat">
+                                <h3><span class="brand-color-code"><span
+                                            class="brand-color-swatch swatch-gold"></span>Gold: Marketplace</span></h3>
+                                <ul>
+                                    <li>Publish</li>
                                     <li>Marketplace</li>
-                                    <li>Match Format</li>
+                                    <li>Community</li>
+                                </ul>
+                            </article>
+                            <article class="mini-stat">
+                                <h3><span class="brand-color-code"><span
+                                            class="brand-color-swatch swatch-blue"></span>Blue: Platform</span></h3>
+                                <ul>
+                                    <li>Controls</li>
+                                    <li>Debug</li>
+                                    <li>Saved Data</li>
+                                    <li>Cloud</li>
                                 </ul>
                             </article>
                             <article class="mini-stat">
@@ -247,19 +213,9 @@
                                 </ul>
                             </article>
                         </div>
-                        <p>Personally, the current category names are better, but the badge colors should be used as a
-                            secondary visual grouping inside those categories, not as the primary grouping mechanism.
-                            That gives users meaningful categories while still getting instant color recognition.</p>
-                        <div class="callout"><strong>Recommended future alignment:</strong> keep the current category
-                            names as the primary user-facing grouping. Badge colors should be secondary visual grouping
-                            cues inside those categories, and tile colors can be corrected later.</div>
                         <div class="callout"><strong>Shared grouping color layer:</strong> grouping colors are applied
-                            through shared group classes and per-group imports under
-                            <code>assets/theme-v2/css/tools/grouping/</code>. Tools can be rethemed by changing the grouping CSS
-                            import or token mapping, and pages should not define their own group colors. The current
-                            mapping follows the Color-Aligned Grouping Option: Build &amp; Create pink, Content &amp;
-                            Assets orange, Media &amp; Audio red, AI &amp; Learning purple, Platform &amp; Cloud blue,
-                            and Development &amp; System gray.</div>
+                            through shared Theme V2 group classes in <code>assets/theme-v2/css/colors.css</code>.
+                            Pages and tools should consume the shared classes instead of defining local colors.</div>
                     </div>
                 </div>
             </div>

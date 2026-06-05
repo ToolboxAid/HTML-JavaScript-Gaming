@@ -18,7 +18,7 @@
     ]
   },
   "dependencyGraphHash": "37a0b0722df16a80",
-  "executionGraphHash": "fabb6b4533ff3d78",
+  "executionGraphHash": "8f674cccd24a8b32",
   "fixtureGraph": {
     "fixtureHashes": {},
     "fixtures": []
@@ -39,17 +39,17 @@
     ]
   },
   "helperGraphHash": "751729a1e113a4de",
-  "inputHash": "a4f77cb5f7dc44c7",
+  "inputHash": "16cab2aa6cc1790c",
   "lane": "build-path",
   "laneCompilationStatus": "PASS",
-  "laneDefinitionHash": "f4ba10cc6a317a51",
+  "laneDefinitionHash": "6a4230f897d5d5d9",
   "manifest": {
     "fileHashes": {
       "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "tests/playwright/tools/BuildPathProgressSimplification.spec.mjs": "30c0d1bbb029b1d7"
+      "tests/playwright/tools/BuildPathProgressSimplification.spec.mjs": "ed9cda2741c0992c"
     },
     "fixtures": [],
     "helpers": [
@@ -64,14 +64,14 @@
       "tests/helpers/playwrightV8CoverageReporter.mjs",
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ],
-    "manifestHash": "0417a20d0935ff01",
+    "manifestHash": "b86986cd2153c3f5",
     "manifestPath": "docs_build/dev/reports/lane_manifests/build-path.json",
     "source": "generated",
     "tests": [
       "tests/playwright/tools/BuildPathProgressSimplification.spec.mjs"
     ]
   },
-  "manifestHash": "0417a20d0935ff01",
+  "manifestHash": "b86986cd2153c3f5",
   "ownership": "tools",
   "runtimeConfiguration": {
     "affectedSurface": "Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation",
@@ -98,8 +98,8 @@
     "requiresSamplesFlag": false
   },
   "runtimeConfigurationHash": "f54ad8f6e5196b36",
-  "snapshotHash": "f0939e18771f97f4",
+  "snapshotHash": "ebda648ce87a83a1",
   "version": 1,
-  "warmStartHash": "a876b4d3221dd324",
-  "generatedAt": "2026-06-05T00:16:19.473Z"
+  "warmStartHash": "79db824986298d7e",
+  "generatedAt": "2026-06-05T00:45:19.838Z"
 }

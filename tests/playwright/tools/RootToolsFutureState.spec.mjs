@@ -171,14 +171,14 @@ test("root tools surface links current tool pages without old_* routes", async (
     const assetsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Assets$/ })
     }).first();
-    await expect(assetsCard).toHaveClass(/(^|\s)tool-group-content(\s|$)/);
+    await expect(assetsCard).toHaveClass(/(^|\s)tool-group-design(\s|$)/);
     const allCardsHaveGroupClass = await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
       cards.every((card) => Array.from(card.classList).some((className) => className.startsWith("tool-group-")))
     ));
     expect(allCardsHaveGroupClass).toBe(true);
     const assetsBorderColor = await assetsCard.evaluate((card) => getComputedStyle(card).borderColor);
     expect(assetsBorderColor).not.toBe("rgba(0, 0, 0, 0)");
-    await expect(assetsCard.locator(".card-body > .content-cluster")).toContainText("Content");
+    await expect(assetsCard.locator(".card-body > .content-cluster")).toContainText("Design");
     await expect(assetsCard.locator(".card-body > .content-cluster")).toHaveCount(1);
     const assetsBodyOrder = await assetsCard.locator(".card-body").evaluate((body) => (
       Array.from(body.children).map((child) => child.classList.contains("content-cluster") ? "content-cluster" : child.tagName.toLowerCase())
@@ -206,7 +206,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const worldsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Worlds$/ })
     }).first();
-    await expect(worldsCard).toHaveClass(/(^|\s)tool-group-create(\s|$)/);
+    await expect(worldsCard).toHaveClass(/(^|\s)tool-group-design(\s|$)/);
     await expect(worldsCard).toContainText("Planned world types");
     await expect(worldsCard.locator("[data-child-capabilities='Worlds'] li")).toHaveText(["Vector", "Tilemap", "Isometric", "Hex"]);
     const objectsCard = page.locator("main .control-card").filter({
@@ -218,7 +218,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(guestGroupLabels).toEqual(["Account", "Build", "Content", "Create", "Media", "Share", "Test"]);
+    expect(guestGroupLabels).toEqual(["AI", "Audio", "Build/Create", "Design", "Marketplace", "Platform", "Play"]);
     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
@@ -294,7 +294,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(adminGroupLabels).toEqual(["Account", "Build", "Content", "Create", "Media", "Share", "Test"]);
+    expect(adminGroupLabels).toEqual(["AI", "Audio", "Build/Create", "Design", "Marketplace", "Platform", "Play"]);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();

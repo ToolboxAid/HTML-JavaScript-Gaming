@@ -1,27 +1,27 @@
 # Persistent Lane Manifest Report
 
-Generated: 2026-06-05T00:18:28.234Z
+Generated: 2026-06-05T00:46:38.340Z
 Status: PASS
 Manifest directory: docs_build/dev/reports/lane_manifests
 
 ## Summary
 
-Reused manifests: 0
+Reused manifests: 1
 Invalidated manifests: 0
-Generated manifests: 1
-Prevented discovery scans: 0
+Generated manifests: 0
+Prevented discovery scans: 1
 
 ## Manifest Events
 
 | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- |
-| game-design | GENERATED | docs_build/dev/reports/lane_manifests/game-design.json | 524a46feff3c2312 | c91e3e832a8647ab | No persisted manifest existed for this lane. |
+| tools-progress | REUSED | docs_build/dev/reports/lane_manifests/tools-progress.json | f22b1a0a704f6240 | 1f6ffc6a853a99ad | Inputs unchanged; persisted lane manifest reused. |
 
 ## Persisted Manifest Files
 
 | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| game-design | tools | generated | tests/playwright/tools/GameDesignMockRepository.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 37a0b0722df16a80 | c91e3e832a8647ab |
+| tools-progress | tools | persistent | tests/playwright/tools/ToolsProgressHydration.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | d6eff447d72cd46d | 1f6ffc6a853a99ad |
 
 ## Fast-Fail Enforcement
 

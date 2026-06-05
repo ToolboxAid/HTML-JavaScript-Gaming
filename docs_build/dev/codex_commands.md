@@ -411,3 +411,45 @@ Required reports:
 - `docs_build/dev/reports/toolbox-role-filter-wireframe.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+## PR_26155_092-095
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Hydrated `admin/tools-progress.html` from the active Toolbox registry using `admin/tools-progress.js`.
+- Restored the Toolbox group/color model:
+  - Purple = AI
+  - Orange = Audio
+  - Red = Build/Create
+  - Pink = Design
+  - Gold = Marketplace
+  - Blue = Platform
+  - Green = Play
+- Updated `toolbox/toolRegistry.js` category/color metadata for every active/planned tool.
+- Updated `toolbox/tools-page-accordions.js` so Toolbox Group view browses restored semantic color groups while Build Path remains workflow-order and project-specific.
+- Updated shared Theme V2 group classes in `assets/theme-v2/css/colors.css`.
+- Updated Admin group color references in `admin/grouping-colors.html`, `admin/controls.html`, and `admin/design-system.html`.
+- Added targeted Tools Progress Playwright/MSJ coverage.
+- Registered `npm run test:lane:tools-progress`.
+
+Validation:
+- `npm run test:lane:tools-progress`
+- `npm run test:lane:build-path`
+- `npm run test:workspace-v2`
+- `node --check admin/tools-progress.js`
+- `node --check toolbox/tools-page-accordions.js`
+- `node --check scripts/run-targeted-test-lanes.mjs`
+- `node --check tests/playwright/tools/ToolsProgressHydration.spec.mjs`
+- `node --check tests/playwright/tools/BuildPathProgressSimplification.spec.mjs`
+- Targeted fixed-string reference checks for removed Project Progress route/nav references.
+- Targeted touched-surface scan for forbidden `Studio` wording except `GameFoundryStudio`.
+- Targeted touched-surface scan confirming Arcade is absent from Toolbox.
+- `git diff --check`
+
+Required reports:
+- `docs_build/dev/reports/admin-tools-progress-hydration.md`
+- `docs_build/dev/reports/toolbox-group-color-model-restore.md`
+- `docs_build/dev/reports/group-color-propagation.md`
+- `docs_build/dev/reports/tools-progress-targeted-msj-tests.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

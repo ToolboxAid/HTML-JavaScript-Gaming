@@ -833,22 +833,61 @@ import {
         }
 ];
     const groupClassMap = {
-        "Create": "tool-group-create",
-        "Build": "tool-group-build",
-        "Content": "tool-group-content",
-        "Media": "tool-group-media",
-        "Test": "tool-group-test",
-        "Share": "tool-group-share",
-        "Account": "tool-group-account"
+        "AI": "tool-group-ai",
+        "Audio": "tool-group-audio",
+        "Build/Create": "tool-group-build-create",
+        "Design": "tool-group-design",
+        "Marketplace": "tool-group-marketplace",
+        "Platform": "tool-group-platform",
+        "Play": "tool-group-play"
 };
     const groupSwatchMap = {
-        "Create": "swatch-pink",
-        "Build": "swatch-gray",
-        "Content": "swatch-orange",
-        "Media": "swatch-red",
-        "Test": "swatch-blue",
-        "Share": "swatch-gold",
-        "Account": "swatch-blue"
+        "AI": "swatch-purple",
+        "Audio": "swatch-orange",
+        "Build/Create": "swatch-red",
+        "Design": "swatch-pink",
+        "Marketplace": "swatch-gold",
+        "Platform": "swatch-blue",
+        "Play": "swatch-green"
+};
+    const toolColorGroups = {
+        "AI Assistant": "AI",
+        "Audio": "Audio",
+        "Audio Effects": "Audio",
+        "MIDI": "Audio",
+        "Music": "Audio",
+        "Particles": "Audio",
+        "Voice Capture": "Audio",
+        "Voice Output": "Audio",
+        "Voices": "Audio",
+        "Videos": "Audio",
+        "Build Game": "Build/Create",
+        "Custom Extensions": "Build/Create",
+        "Game Configuration": "Build/Create",
+        "Project Workspace": "Build/Create",
+        "Animations": "Design",
+        "Assets": "Design",
+        "Characters": "Design",
+        "Colors": "Design",
+        "Fonts": "Design",
+        "Game Design": "Design",
+        "Objects": "Design",
+        "Sprites": "Design",
+        "Worlds": "Design",
+        "Community": "Marketplace",
+        "Marketplace": "Marketplace",
+        "Publish": "Marketplace",
+        "Cloud": "Platform",
+        "Controls": "Platform",
+        "Debug": "Platform",
+        "Events": "Platform",
+        "Hitboxes": "Platform",
+        "Languages": "Platform",
+        "Performance": "Platform",
+        "Saved Data": "Platform",
+        "Achievements": "Play",
+        "Game Testing": "Play",
+        "Ratings": "Play"
 };
     const badgeMap = {
         "AI Assistant": "ai-assistant"
@@ -1210,7 +1249,7 @@ import {
     const buildPathGroups = [
         {
                 "title": "Project Workspace",
-                "groupClass": "tool-group-build",
+                "groupClass": "tool-group-build-create",
                 "note": "Start with the single project surface that coordinates current focus, readiness, and recommended next tool.",
                 "tools": [
                         "Project Workspace"
@@ -1218,7 +1257,7 @@ import {
         },
         {
                 "title": "Game Design",
-                "groupClass": "tool-group-build",
+                "groupClass": "tool-group-design",
                 "note": "Define gameplay, rules, player experience, and the requirements that shape the build path.",
                 "tools": [
                         "Game Design"
@@ -1226,7 +1265,7 @@ import {
         },
         {
                 "title": "Game Configuration",
-                "groupClass": "tool-group-build",
+                "groupClass": "tool-group-build-create",
                 "note": "Complete playable setup from a valid Game Design handoff before Assets and Build Game readiness.",
                 "tools": [
                         "Game Configuration"
@@ -1234,7 +1273,7 @@ import {
         },
         {
                 "title": "Required Tool Path",
-                "groupClass": "tool-group-create",
+                "groupClass": "tool-group-design",
                 "note": "Use readiness fields to identify creator-facing blockers before a playable build.",
                 "tools": [
                         "Colors",
@@ -1250,7 +1289,7 @@ import {
         },
         {
                 "title": "Build Game",
-                "groupClass": "tool-group-build",
+                "groupClass": "tool-group-build-create",
                 "note": "Build Game is the package and playable-output checkpoint for this wireframe.",
                 "tools": [
                         "Build Game"
@@ -1258,7 +1297,7 @@ import {
         },
         {
                 "title": "Game Testing",
-                "groupClass": "tool-group-test",
+                "groupClass": "tool-group-play",
                 "note": "Game Testing collects test readiness, hitboxes, debug policy, performance checks, and event review.",
                 "tools": [
                         "Game Testing",
@@ -1270,7 +1309,7 @@ import {
         },
         {
                 "title": "Publish",
-                "groupClass": "tool-group-share",
+                "groupClass": "tool-group-marketplace",
                 "note": "Publish is required for public release; Marketplace, Community, Languages, Achievements, and Ratings support Share readiness.",
                 "tools": [
                         "Publish",
@@ -1288,6 +1327,10 @@ import {
 
     function compareByGroup(left, right) {
         return left.group.localeCompare(right.group);
+    }
+
+    function colorGroupForTool(tool) {
+        return toolColorGroups[tool.title] || "Platform";
     }
 
     function normalizeToolStatus(tool) {
@@ -1353,10 +1396,21 @@ import {
     }
 
     function visibleToolGroups() {
-        return toolGroups.map((toolGroup) => ({
-            ...toolGroup,
-            tools: toolGroup.tools.filter(isVisibleForRole).sort(compareByTitle)
-        })).filter((toolGroup) => toolGroup.tools.length > 0).sort(compareByGroup);
+        const groups = new Map();
+        toolGroups.flatMap((toolGroup) => toolGroup.tools).filter(isVisibleForRole).forEach((tool) => {
+            const groupName = colorGroupForTool(tool);
+            if (!groups.has(groupName)) {
+                groups.set(groupName, []);
+            }
+            groups.get(groupName).push({
+                ...tool,
+                group: groupName
+            });
+        });
+        return Array.from(groups.entries()).map(([group, tools]) => ({
+            group,
+            tools: tools.sort(compareByTitle)
+        })).sort(compareByGroup);
     }
 
     function roleAwareTools() {
@@ -1486,7 +1540,7 @@ import {
                 const progress = progressModel[tool.title] || defaultProgress;
                 const mergedTool = {
                     ...tool,
-                    group: group.group,
+                    group: colorGroupForTool(tool),
                     ...progress
                 };
                 return {

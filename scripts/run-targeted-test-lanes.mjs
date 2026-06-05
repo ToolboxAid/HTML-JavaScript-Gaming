@@ -206,6 +206,27 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Build Path simplification validates removal of the separate Progress view, workflow-order status/completion table behavior, contributor N/A rows, and Admin Tools Progress navigation without exercising unrelated toolbox routes."
   },
+  "tools-progress": {
+    affectedSurface: "Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation",
+    commands: [
+      playwrightCommand("tests/playwright/tools/ToolsProgressHydration.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/ToolsProgressHydration.spec.mjs"
+    ],
+    fixtures: [
+      "repo-served Admin Tools Progress page",
+      "repo-served Toolbox Group view",
+      "Toolbox registry build sequence",
+      "Project Build Path workflow table"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Project Build Path stays workflow-order and project-specific."
+  },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [

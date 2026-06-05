@@ -1,6 +1,6 @@
 # Zero-Browser Preflight Report
 
-Generated: 2026-06-05T00:18:28.235Z
+Generated: 2026-06-05T00:46:38.341Z
 Status: PASS
 
 ## Prevented Browser Launches
@@ -23,13 +23,13 @@ No deterministic setup failures.
 | invalid imports | PASS | Relative imports checked by Playwright structure audit. |
 | unresolved fixtures | PASS | No unresolved fixture findings. |
 | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
-| targeted file manifests | PASS | game-design:PASS |
-| persistent lane manifests | PASS | game-design:GENERATED |
-| lane warm-start reuse | PASS | game-design:GENERATED |
-| dependency hydration reuse | PASS | game-design:GENERATED |
-| lane snapshots | PASS | game-design:GENERATED |
+| targeted file manifests | PASS | tools-progress:PASS |
+| persistent lane manifests | PASS | tools-progress:REUSED |
+| lane warm-start reuse | PASS | tools-progress:REUSED |
+| dependency hydration reuse | PASS | tools-progress:REUSED |
+| lane snapshots | PASS | tools-progress:REUSED |
 | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
-| scoped discovery | PASS | Targets: tests/playwright/tools/GameDesignMockRepository.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
+| scoped discovery | PASS | Targets: tests/playwright/tools/ToolsProgressHydration.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
 | invalid grep patterns | PASS | No invalid grep patterns. |
 | Windows quoting hazards | PASS | No shell quoting hazards. |
 | invalid lane references | PASS | No invalid lane references. |

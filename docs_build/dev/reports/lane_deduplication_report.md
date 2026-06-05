@@ -1,12 +1,12 @@
 # Lane Deduplication Report
 
-Generated: 2026-06-05T00:18:28.233Z
+Generated: 2026-06-05T00:46:38.338Z
 Status: PASS
 
 ## Summary
 
-Raw lane requests: game-design
-Unique scheduled lanes: game-design
+Raw lane requests: tools-progress
+Unique scheduled lanes: tools-progress
 Prevented duplicate lane executions: 0
 Prevented browser launches: 0
 Prevented Workspace lane reruns: 0

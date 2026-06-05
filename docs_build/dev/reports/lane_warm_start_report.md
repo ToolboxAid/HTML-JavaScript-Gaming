@@ -1,23 +1,23 @@
 # Lane Warm-Start Report
 
-Generated: 2026-06-05T00:18:28.233Z
+Generated: 2026-06-05T00:46:38.339Z
 Status: PASS
 Warm-start directory: docs_build/dev/reports/lane_warm_starts
 
 ## Summary
 
-Reused warm-start lanes: 0
+Reused warm-start lanes: 1
 Invalidated warm-start states: 0
-Generated warm-start states: 1
+Generated warm-start states: 0
 Skipped warm-start states: 0
-Prevented redundant initialization: 0
-Prevented lane graph assembly: 0
+Prevented redundant initialization: 1
+Prevented lane graph assembly: 1
 
 ## Warm-Start Decisions
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| game-design | GENERATED | docs_build/dev/reports/lane_warm_starts/game-design.json | c91e3e832a8647ab | 2de7907be6a98d09 | 1a5eda0dbb35dbd2 | No prior warm-start state existed for this lane. |
+| tools-progress | REUSED | docs_build/dev/reports/lane_warm_starts/tools-progress.json | 1f6ffc6a853a99ad | df64f7214f438c9a | 50f124e1a335350d | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
 
 ## Fast-Fail Safeguards
 
