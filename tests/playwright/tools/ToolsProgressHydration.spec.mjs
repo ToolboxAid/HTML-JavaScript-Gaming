@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { TOOL_REGISTRY } from "../../../toolbox/toolRegistry.js";
+import { getActiveToolRegistry } from "../../../toolbox/toolRegistry.js";
+import {
+  applyToolsProgressMetadata,
+  getToolsProgressSource,
+  toolProgressMetadataDiagnostic
+} from "../../../admin/tools-progress-source.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -15,9 +20,7 @@ const REPRESENTATIVE_GROUP_TOOLS = Object.freeze({
   "Game Testing": ["Play", "tool-group-play"]
 });
 
-const expectedTools = [...TOOL_REGISTRY]
-  .filter((tool) => tool.active === true)
-  .sort((left, right) => left.order - right.order);
+const expectedTools = getToolsProgressSource(getActiveToolRegistry());
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -111,14 +114,57 @@ test("Admin Tools Progress hydrates every planned and active tool in build order
     expect(rows.map((row) => row.tool)).toEqual(expectedTools.map((tool) => tool.displayName));
     expect(rows.map((row) => row.order)).toEqual(expectedTools.map((tool) => tool.order));
     expect(rows.map((row) => row.status)).toEqual(expectedTools.map((tool) => tool.status));
-    expect(rows.map((row) => row.complete)).toEqual(expectedTools.map((tool) => tool.status === "Ready" ? "Yes" : "No"));
+    expect(rows.map((row) => row.complete)).toEqual(expectedTools.map((tool) => tool.readiness));
     expect(rows.map((row) => row.order)).toEqual([...rows.map((row) => row.order)].sort((left, right) => left - right));
+    await expect(page.locator("[data-tools-progress-status-diagnostic]")).toHaveCount(0);
     await expect(page.locator("[data-tools-progress-summary]")).toContainText(`Tools Progress lists ${expectedTools.length}/${expectedTools.length}`);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();
   }
+});
+
+test("Toolbox status cards consume Admin Tools Progress metadata", async ({ page }) => {
+  const failures = await openRepoPage(page, "/admin/tools-progress.html");
+
+  try {
+    const adminRows = await toolsProgressRows(page);
+    const statusByTool = new Map(adminRows.map((row) => [row.tool, row.status]));
+
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
+    for (const toolName of ["Project Workspace", "Game Configuration", "Build Game", "Cloud"]) {
+      const card = page.locator("main .control-card").filter({
+        has: page.locator("h3", { hasText: new RegExp(`^${toolName}$`) })
+      }).first();
+      await expect(card.locator("[data-toolbox-readiness]")).toHaveText(statusByTool.get(toolName));
+    }
+    await expect(page.locator("[data-toolbox-status-diagnostic]")).toHaveCount(0);
+
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
+    const normalStatuses = await page.locator("[data-toolbox-readiness]").evaluateAll((statuses) => statuses.map((status) => status.textContent.trim()));
+    expect(normalStatuses).toEqual(["Ready", "Ready"]);
+    expect(normalStatuses.every((status) => status === "Ready")).toBe(true);
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toHaveCount(0);
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Admin status source reports missing metadata diagnostics", async () => {
+  const missingTool = applyToolsProgressMetadata({
+    active: true,
+    displayName: "Missing Metadata Tool",
+    id: "missing-metadata-tool",
+    order: 999
+  });
+
+  expect(missingTool.missingStatusMetadata).toBe(true);
+  expect(toolProgressMetadataDiagnostic(missingTool)).toContain("Missing Admin Tools Progress metadata");
+  expect(missingTool.status).toBe("Missing Metadata");
+  expect(missingTool.readiness).toBe("No");
 });
 
 test("restored group colors propagate to Admin Tools Progress and Toolbox Group view", async ({ page }) => {

@@ -1,13 +1,9 @@
 import { getActiveToolRegistry, getToolRoute } from "../toolbox/toolRegistry.js";
-
-const completionByStatus = Object.freeze({
-  Ready: "Yes",
-  Wireframe: "No",
-  "Under Construction": "No",
-  Planned: "No",
-  Hidden: "No",
-  Deprecated: "No"
-});
+import {
+  getToolProgressReadiness,
+  getToolsProgressSource,
+  toolProgressMetadataDiagnostic
+} from "./tools-progress-source.js";
 
 const swatchByGroup = Object.freeze({
   AI: "swatch-purple",
@@ -79,8 +75,22 @@ function createGroupCell(tool) {
   return cell;
 }
 
+function createStatusCell(tool) {
+  const cell = createCell("td", tool.status);
+  const statusDiagnostic = toolProgressMetadataDiagnostic(tool);
+  if (statusDiagnostic) {
+    const diagnostic = document.createElement("span");
+    diagnostic.className = "status";
+    diagnostic.dataset.toolsProgressStatusDiagnostic = tool.displayName;
+    diagnostic.setAttribute("role", "status");
+    diagnostic.textContent = statusDiagnostic;
+    cell.append(diagnostic);
+  }
+  return cell;
+}
+
 function isComplete(tool) {
-  return completionByStatus[tool.status] || "No";
+  return tool.readiness || getToolProgressReadiness(tool.status);
 }
 
 function firstIncompleteTool(tools) {
@@ -92,10 +102,11 @@ function renderToolsProgress() {
     return;
   }
 
-  const tools = getActiveToolRegistry();
+  const tools = getToolsProgressSource(getActiveToolRegistry());
   progressBody.replaceChildren();
   tools.forEach((tool) => {
     const row = document.createElement("tr");
+    const statusDiagnostic = toolProgressMetadataDiagnostic(tool);
     row.className = tool.colorGroup;
     row.dataset.toolsProgressTool = tool.displayName;
     row.dataset.toolsProgressOrder = String(tool.order);
@@ -103,11 +114,14 @@ function renderToolsProgress() {
     row.dataset.toolsProgressColorGroup = tool.colorGroup;
     row.dataset.toolsProgressStatus = tool.status;
     row.dataset.toolsProgressComplete = isComplete(tool);
+    if (statusDiagnostic) {
+      row.dataset.toolsProgressStatusDiagnostic = statusDiagnostic;
+    }
     row.append(
       createCell("td", String(tool.order)),
       createToolNameCell(tool),
       createGroupCell(tool),
-      createCell("td", tool.status),
+      createStatusCell(tool),
       createCell("td", isComplete(tool))
     );
     progressBody.append(row);

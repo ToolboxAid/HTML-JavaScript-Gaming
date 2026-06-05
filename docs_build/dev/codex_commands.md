@@ -896,3 +896,39 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_128
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Added `admin/tools-progress-source.js` as the Admin Tools Progress status metadata source consumed by both Admin Tools Progress and Toolbox rendering.
+- Removed duplicated Toolbox-local status/readiness/visibility/requiredness ownership from `toolbox/toolRegistry.js`.
+- Updated `admin/tools-progress.js` to hydrate rows from the Admin status source.
+- Updated `toolbox/tools-page-accordions.js` to hydrate card visibility/status from the Admin status source.
+- Added visible missing-metadata diagnostics for Admin Tools Progress rows and Toolbox cards.
+- Removed obsolete/dead Toolbox status constants and local progress mappings.
+- Updated targeted Tools Progress tests to verify Admin source reflection, user/Admin visibility, and missing-metadata diagnostics.
+- Updated the tool registry validator so base registry entries no longer need duplicate status visibility fields.
+- Did not modify archived V1/V2 pages.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check admin/tools-progress-source.js`
+- `node --check admin/tools-progress.js`
+- `node --check toolbox/toolRegistry.js`
+- `node --check toolbox/tools-page-accordions.js`
+- `node --check tests/playwright/tools/ToolsProgressHydration.spec.mjs`
+- `node --check scripts/validate-tool-registry.mjs`
+- `node --check scripts/validate-active-tools-surface.mjs`
+- `node scripts/validate-tool-registry.mjs`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane tools-progress --lane tool-runtime`
+- `git diff --check`
+- Supplemental `node scripts/validate-active-tools-surface.mjs` was not used as this PR's validation gate because it still reports existing non-status Toolbox wireframe expectations outside PR_26156_128 scope.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/tool-status-registry-enforcement-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

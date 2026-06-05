@@ -87,6 +87,7 @@ async function main() {
   const partials = await readText("assets/theme-v2/js/gamefoundry-partials.js");
   const toolboxIndex = await readText("toolbox/index.html");
   const toolsAccordions = await readText("toolbox/tools-page-accordions.js");
+  const adminToolsProgressSource = await readText("admin/tools-progress-source.js");
 
   for (const folderName of activeTools) {
     const route = routeForTool(folderName);
@@ -186,12 +187,12 @@ async function main() {
     issues.push("Progress and Build Path must remain view modes, not active toolbox tools or accordion groups.");
   }
   for (const readiness of ["Ready", "Wireframe", "Under Construction", "Planned", "Hidden", "Deprecated"]) {
-    if (!toolsAccordions.includes(`"${readiness}"`)) {
-      issues.push(`Progress view is missing Toolbox status model label: ${readiness}.`);
+    if (!adminToolsProgressSource.includes(`"${readiness}"`)) {
+      issues.push(`Admin Tools Progress status source is missing Toolbox status model label: ${readiness}.`);
     }
   }
-  if (!/progressRequirements/.test(toolsAccordions) || !/requires:/.test(toolsAccordions)) {
-    issues.push("Progress view must expose the static requires foundation field for visible tool tiles.");
+  if (!/getToolsProgressSource/.test(toolsAccordions) || !/"requires"/.test(adminToolsProgressSource)) {
+    issues.push("Progress view must hydrate requires metadata from the Admin Tools Progress status source.");
   }
   if (!/dataset\.toolboxReadiness/.test(toolsAccordions)) {
     issues.push("Progress view must render readiness labels on the existing tool tiles.");

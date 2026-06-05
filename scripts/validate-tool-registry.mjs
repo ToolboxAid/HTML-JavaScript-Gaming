@@ -78,8 +78,8 @@ async function main() {
   issues.push(...collectDuplicates(registryEntries.map((entry) => entry.name || entry.displayName), "name"));
   issues.push(...collectDuplicates(registryFolders, "folder"));
 
-  if (registryEntries.some((entry) => entry.legacy === true || entry.active !== true || entry.visibleInToolsList !== true)) {
-    issues.push("toolRegistry.js must contain active visible toolbox entries only.");
+  if (registryEntries.some((entry) => entry.legacy === true || entry.active !== true)) {
+    issues.push("toolRegistry.js must contain active toolbox entries only.");
   }
   if (registryEntries.some((entry) => normalizeText(entry.path || entry.entryPoint).includes("archive/v1-v2"))) {
     issues.push("toolRegistry.js must not contain archive/v1-v2 paths.");
@@ -104,6 +104,10 @@ async function main() {
     if (!(await pathExists(path.join(toolboxRoot, folderName, "index.html")))) {
       issues.push(`Registry entry ${entry.id} points to missing toolbox/${folderName}/index.html.`);
     }
+  }
+
+  for (const entry of visibleActiveEntries) {
+    const folderName = normalizeText(entry.folderName || entry.path);
     const expectedIndexHref = `../toolbox/${folderName}/index.html`;
     if (!activeToolboxIndexSource.includes(expectedIndexHref)) {
       issues.push(`toolbox/tools-page-accordions.js is missing ${expectedIndexHref}.`);
