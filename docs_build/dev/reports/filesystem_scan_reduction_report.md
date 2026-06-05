@@ -1,6 +1,6 @@
 # Filesystem Scan Reduction Report
 
-Generated: 2026-06-05T00:46:38.320Z
+Generated: 2026-06-05T00:58:35.492Z
 Status: PASS
 
 ## Scan Enforcement
@@ -13,7 +13,7 @@ Status: PASS
 | tests/playwright/engine | SKIP | Unselected lane directory discovery was skipped. |
 | tests/playwright/games | SKIP | Unselected lane directory discovery was skipped. |
 | tests/playwright/integration | SKIP | Unselected lane directory discovery was skipped. |
-| tests/playwright/tools | SKIP | Unselected lane directory discovery was skipped. |
+| tests/playwright/tools | SCOPED | Selected lane discovery was restricted to explicit target specs. |
 
 ## Runtime Savings Observations
 

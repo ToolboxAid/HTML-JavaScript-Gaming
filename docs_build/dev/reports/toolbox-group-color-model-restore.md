@@ -34,7 +34,7 @@ Representative mappings:
 - Project Workspace, Game Configuration, Build Game, Custom Extensions -> Build/Create / Red
 - Game Design, Assets, Colors, Fonts, Sprites, Characters, Objects, Worlds, Animations -> Design / Pink
 - Publish, Marketplace, Community -> Marketplace / Gold
-- Controls, Hitboxes, Saved Data, Debug, Performance, Events, Languages, Cloud -> Platform / Blue
+- Controls, Hitboxes, Saved Data, Debug, Performance, Events, Languages, Cloud, Users, Environments, Game Migration, Platform Settings -> Platform / Blue
 - Game Testing, Achievements, Ratings -> Play / Green
 
 ## Theme V2 Gap Findings

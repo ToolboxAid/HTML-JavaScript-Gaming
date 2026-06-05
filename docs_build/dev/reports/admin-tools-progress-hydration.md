@@ -32,7 +32,7 @@ For this wireframe planning surface:
 ## Manual Test Notes
 
 1. Open `admin/tools-progress.html`.
-2. Confirm the table lists all 37 active/planned registry tools.
+2. Confirm the table lists all 41 active/planned registry tools.
 3. Confirm rows are ordered by the numeric build sequence, not alphabetically.
 4. Confirm `Status` and `Complete` columns render for every row.
 5. Confirm the page copy says Tools Progress is platform planning only and does not replace Project Build Path.

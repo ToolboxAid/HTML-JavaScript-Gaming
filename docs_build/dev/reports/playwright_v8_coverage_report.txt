@@ -12,33 +12,28 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(84%) Toolbox Index - exercised 3 runtime JS files
+(90%) Toolbox Index - exercised 2 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(80%) Theme V2 Shared JS - exercised 1 runtime JS files
+(71%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(67%) toolbox/toolRegistry.js - executed lines 1092/1092; executed functions 6/9
-(94%) toolbox/tools-page-accordions.js - executed lines 1843/1843; executed functions 65/69
+(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(95%) toolbox/tools-page-accordions.js - executed lines 1843/1843; executed functions 59/62
 
 Files with executed line/function counts where available:
-(67%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 384/384; executed functions 20/30
-(67%) toolbox/toolRegistry.js - executed lines 1092/1092; executed functions 6/9
+(55%) assets/theme-v2/js/tool-display-mode.js - executed lines 113/113; executed functions 6/11
+(79%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 384/384; executed functions 27/34
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 205/205; executed functions 16/20
-(94%) toolbox/tools-page-accordions.js - executed lines 1843/1843; executed functions 65/69
-(100%) admin/tools-progress.js - executed lines 81/81; executed functions 9/9
+(95%) toolbox/tools-page-accordions.js - executed lines 1843/1843; executed functions 59/62
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(0%) toolbox/toolRegistry.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) admin/tools-progress.js - changed JS file not collected as browser runtime coverage
 (0%) scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameConfigurationMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameDesignMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolsProgressHydration.spec.mjs - changed JS file not collected as browser runtime coverage
-(67%) toolbox/toolRegistry.js - changed JS file with browser V8 coverage
-(80%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(94%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
-(100%) admin/tools-progress.js - changed JS file with browser V8 coverage
+(0%) toolbox/toolRegistry.js - changed JS file not collected as browser runtime coverage
+(95%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage

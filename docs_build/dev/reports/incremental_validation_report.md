@@ -1,6 +1,6 @@
 # Incremental Validation Report
 
-Generated: 2026-06-05T00:46:38.340Z
+Generated: 2026-06-05T00:58:35.521Z
 Status: PASS
 
 ## Reuse Summary
@@ -18,7 +18,7 @@ Prevented fixture resolution passes: 0
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| tools-progress | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
+| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
 
 ## Invalidation Rules
 

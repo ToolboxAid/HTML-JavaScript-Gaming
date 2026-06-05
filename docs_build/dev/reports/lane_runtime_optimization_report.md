@@ -1,6 +1,6 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-06-05T00:46:38.339Z
+Generated: 2026-06-05T00:58:35.519Z
 Status: PASS
 
 ## Runtime Cost Summary
@@ -18,7 +18,7 @@ Scheduled Playwright/browser launches: 1
 
 ## Scheduled Lane Order
 
-1. tools-progress
+1. workspace-contract
 
 ## Scheduling Blockers
 
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| tools-progress | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Project Build Path stays workflow-order and project-specific. |
+| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
 
 ## Runtime Savings Observations
 

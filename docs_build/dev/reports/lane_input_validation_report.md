@@ -1,22 +1,21 @@
 # Lane Input Validation Report
 
-Generated: 2026-06-05T00:46:38.340Z
+Generated: 2026-06-05T00:58:35.521Z
 Status: PASS
 
 ## Input Files
 
 | Lane | Role | File | Status | Reason |
 | --- | --- | --- | --- | --- |
-| tools-progress | test | tests/playwright/tools/ToolsProgressHydration.spec.mjs | PASS | Manifest test input is explicit, present, and owned by the lane. |
-| tools-progress | helper | tests/helpers/playwrightRepoServer.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
-| tools-progress | helper | tests/helpers/playwrightStorageIsolation.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
-| tools-progress | helper | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
-| tools-progress | helper | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
-| tools-progress | import | tests/helpers/playwrightRepoServer.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| tools-progress | import | tests/helpers/playwrightStorageIsolation.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| tools-progress | import | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| tools-progress | import | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| tools-progress | import | toolbox/toolRegistry.js | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| workspace-contract | test | tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | Manifest test input is explicit, present, and owned by the lane. |
+| workspace-contract | helper | tests/helpers/playwrightRepoServer.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+| workspace-contract | helper | tests/helpers/playwrightStorageIsolation.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+| workspace-contract | helper | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+| workspace-contract | helper | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+| workspace-contract | import | tests/helpers/playwrightRepoServer.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| workspace-contract | import | tests/helpers/playwrightStorageIsolation.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| workspace-contract | import | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| workspace-contract | import | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
 
 ## Ownership Validation Failures
 

@@ -1,13 +1,13 @@
 # Playwright Discovery Ownership Report
 
-Generated: 2026-06-05T00:46:38.315Z
+Generated: 2026-06-05T00:58:35.487Z
 Status: PASS
 
 ## Discovery-Time Ownership
 
 | File | Lane Requested | Detected Ownership | Expected Location | Lane Blocked | Status | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| tests/playwright/tools/ToolsProgressHydration.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tools lane location |
+| tests/playwright/tools/RootToolsFutureState.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: RootToolsFutureState |
 
 ## Shared Helper Naming
 

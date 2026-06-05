@@ -1,13 +1,13 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-05T00:46:50.263Z
+Generated: 2026-06-05T00:59:06.467Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 11.88s
+Current measured lane elapsed time: 30.90s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
@@ -31,9 +31,10 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | tools-progress | 2.60s | tests\playwright\tools\ToolsProgressHydration.spec.mjs:124:1 > restored group colors propagate to Admin Tools Progress and Toolbox Group view |
-| current targeted run | tools-progress | 2.10s | tests\playwright\tools\ToolsProgressHydration.spec.mjs:162:1 > Project Build Path remains project-specific workflow order separate from Tools Progress |
-| current targeted run | tools-progress | 1.50s | tests\playwright\tools\ToolsProgressHydration.spec.mjs:95:1 > Admin Tools Progress hydrates every planned and active tool in build order |
+| current targeted run | workspace-contract | 10.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:407:1 > learn wireframe pages load with shared Theme V2 structure |
+| current targeted run | workspace-contract | 6.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:68:1 > root tools surface links current tool pages without old_* routes |
+| current targeted run | workspace-contract | 6.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:322:1 > common header renders primary navigation order across active pages |
+| current targeted run | workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Guardrails
 

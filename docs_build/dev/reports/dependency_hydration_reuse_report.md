@@ -1,6 +1,6 @@
 # Dependency Hydration Reuse Report
 
-Generated: 2026-06-05T00:46:38.339Z
+Generated: 2026-06-05T00:58:35.520Z
 Status: PASS
 
 ## Summary
@@ -16,7 +16,7 @@ Prevented fixture ownership traversal: 0
 
 | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| tools-progress | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 50f124e1a335350d | Dependency hydration reused from validated warm-start state. |
+| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 0ff8fc92c789456d | Dependency hydration reused from validated warm-start state. |
 
 ## Safeguards
 
