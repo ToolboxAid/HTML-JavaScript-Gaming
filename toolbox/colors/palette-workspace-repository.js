@@ -7,6 +7,7 @@ export const PALETTE_SOURCE_PALETTE_COLORS = "palette-colors";
 
 export const PALETTE_TOOL_TABLES = Object.freeze([
   "palette_colors",
+  "palette_source_swatches",
   "project_workspace_palette_globals",
   "palette_swatch_usages"
 ]);
@@ -44,39 +45,6 @@ const SOURCE_ID_RENAMES = Object.freeze({
 });
 const SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
 
-const DEFAULT_SOURCE_PALETTES = Object.freeze({
-  [PALETTE_SOURCE_PALETTE_COLORS]: Object.freeze([
-    { symbol: "!", hex: "#232323", name: "Black", source: PALETTE_SOURCE_PALETTE_COLORS },
-    { symbol: "#", hex: "#B4674D", name: "Brown", source: PALETTE_SOURCE_PALETTE_COLORS },
-    { symbol: "$", hex: "#FF7538", name: "Orange", source: PALETTE_SOURCE_PALETTE_COLORS },
-    { symbol: "%", hex: "#FCE883", name: "Yellow", source: PALETTE_SOURCE_PALETTE_COLORS },
-    { symbol: "&", hex: "#1CAC78", name: "Green", source: PALETTE_SOURCE_PALETTE_COLORS },
-    { symbol: "(", hex: "#1F75FE", name: "Blue", source: PALETTE_SOURCE_PALETTE_COLORS },
-    { symbol: ")", hex: "#926EAE", name: "Violet", source: PALETTE_SOURCE_PALETTE_COLORS },
-    { symbol: "*", hex: "#EE204D", name: "Red", source: PALETTE_SOURCE_PALETTE_COLORS }
-  ]),
-  javascript: Object.freeze([
-    { symbol: "R", hex: "#FF0000", name: "Red", source: "javascript" },
-    { symbol: "G", hex: "#008000", name: "Green", source: "javascript" },
-    { symbol: "B", hex: "#0000FF", name: "Blue", source: "javascript" },
-    { symbol: "K", hex: "#000000", name: "Black", source: "javascript" },
-    { symbol: "W", hex: "#FFFFFF", name: "White", source: "javascript" }
-  ]),
-  w3c: Object.freeze([
-    { symbol: "A", hex: "#00FFFF", name: "Aqua", source: "w3c" },
-    { symbol: "F", hex: "#FF00FF", name: "Fuchsia", source: "w3c" },
-    { symbol: "L", hex: "#00FF00", name: "Lime", source: "w3c" },
-    { symbol: "M", hex: "#800000", name: "Maroon", source: "w3c" },
-    { symbol: "N", hex: "#000080", name: "Navy", source: "w3c" }
-  ])
-});
-
-const DEFAULT_SOURCE_PALETTE_LABELS = Object.freeze({
-  [PALETTE_SOURCE_PALETTE_COLORS]: "Palette Colors",
-  javascript: "JavaScript",
-  w3c: "W3C"
-});
-
 function cloneSwatch(swatch) {
   return {
     symbol: swatch.symbol,
@@ -113,9 +81,9 @@ function normalizeSourceId(value) {
   return SOURCE_ID_RENAMES[normalized] || normalized;
 }
 
-function sourceLabel(sourceId, sourcePaletteLabels = DEFAULT_SOURCE_PALETTE_LABELS) {
+function sourceLabel(sourceId, label = "") {
   const normalizedSourceId = normalizeSourceId(sourceId);
-  const rawLabel = normalizeText(sourcePaletteLabels?.[sourceId]) || normalizeText(sourcePaletteLabels?.[normalizedSourceId]);
+  const rawLabel = normalizeText(label);
   if (normalizedSourceId.startsWith(PALETTE_SOURCE_PALETTE_COLORS)) {
     const suffix = normalizedSourceId.slice(PALETTE_SOURCE_PALETTE_COLORS.length).replace(/^-+/, "");
     return suffix ? `Palette Colors ${suffix}` : "Palette Colors";
@@ -301,59 +269,49 @@ export function validatePaletteWorkspacePayload(payload = {}) {
   };
 }
 
-function normalizeSourcePalettes(sourcePalettes = DEFAULT_SOURCE_PALETTES, sourcePaletteLabels = DEFAULT_SOURCE_PALETTE_LABELS) {
-  const entries = Object.entries(sourcePalettes && typeof sourcePalettes === "object" ? sourcePalettes : DEFAULT_SOURCE_PALETTES);
-  const normalizedPalettes = {};
-  const normalizedLabels = {};
-
-  entries.forEach(([sourceId, swatches]) => {
-    const normalizedSourceId = normalizeSourceId(sourceId);
-    if (!normalizedSourceId || !Array.isArray(swatches)) {
-      return;
-    }
-    const normalizedSwatches = swatches
-      .map((swatch) => normalizePaletteSwatchInput(swatch, { source: normalizedSourceId }))
-      .filter((swatch) => swatch.symbol && isOneCharacter(swatch.symbol) && swatch.hex && swatch.name);
-
-    if (normalizedSwatches.length) {
-      normalizedPalettes[normalizedSourceId] = [
-        ...(normalizedPalettes[normalizedSourceId] || []),
-        ...normalizedSwatches.map(cloneSwatch)
-      ];
-      normalizedLabels[normalizedSourceId] = sourceLabel(sourceId, sourcePaletteLabels);
-    }
-  });
-
-  return {
-    labels: Object.freeze(normalizedLabels),
-    palettes: Object.freeze(normalizedPalettes)
-  };
+function normalizeSourcePaletteRows(sourcePaletteRows = []) {
+  return (Array.isArray(sourcePaletteRows) ? sourcePaletteRows : [])
+    .map((row, index) => {
+      const normalizedSourceId = normalizeSourceId(row?.sourceId || row?.paletteId || row?.source);
+      const swatch = normalizePaletteSwatchInput(row, { source: normalizedSourceId });
+      if (!normalizedSourceId || !swatch.symbol || !isOneCharacter(swatch.symbol) || !swatch.hex || !swatch.name) {
+        return null;
+      }
+      return {
+        hex: swatch.hex,
+        id: normalizeText(row.id) || `${normalizedSourceId}-source-swatch-${index + 1}`,
+        name: swatch.name,
+        source: normalizedSourceId,
+        sourceLabel: sourceLabel(normalizedSourceId, row.sourceLabel || row.paletteLabel || row.label),
+        symbol: swatch.symbol,
+        tags: [...swatch.tags]
+      };
+    })
+    .filter(Boolean);
 }
 
-function compareSwatches(sortKey) {
+function compareSwatches(sortKey, sortDirection = "asc") {
   return (left, right) => {
+    const direction = sortDirection === "desc" ? -1 : 1;
+    let result = 0;
     if (sortKey === "brightness") {
-      return colorMetrics(left.hex).brightness - colorMetrics(right.hex).brightness || left.name.localeCompare(right.name);
+      result = colorMetrics(left.hex).brightness - colorMetrics(right.hex).brightness || left.name.localeCompare(right.name);
+    } else if (sortKey === "hex") {
+      result = left.hex.localeCompare(right.hex);
+    } else if (sortKey === "hue") {
+      result = colorMetrics(left.hex).hue - colorMetrics(right.hex).hue || left.name.localeCompare(right.name);
+    } else if (sortKey === "saturation") {
+      result = colorMetrics(left.hex).saturation - colorMetrics(right.hex).saturation || left.name.localeCompare(right.name);
+    } else if (sortKey === "source") {
+      result = left.source.localeCompare(right.source) || left.name.localeCompare(right.name);
+    } else if (sortKey === "symbol") {
+      result = left.symbol.localeCompare(right.symbol);
+    } else if (sortKey === "tag") {
+      result = (left.tags[0] || "\uffff").localeCompare(right.tags[0] || "\uffff") || left.name.localeCompare(right.name);
+    } else {
+      result = left.name.localeCompare(right.name);
     }
-    if (sortKey === "hex") {
-      return left.hex.localeCompare(right.hex);
-    }
-    if (sortKey === "hue") {
-      return colorMetrics(left.hex).hue - colorMetrics(right.hex).hue || left.name.localeCompare(right.name);
-    }
-    if (sortKey === "saturation") {
-      return colorMetrics(left.hex).saturation - colorMetrics(right.hex).saturation || left.name.localeCompare(right.name);
-    }
-    if (sortKey === "source") {
-      return left.source.localeCompare(right.source) || left.name.localeCompare(right.name);
-    }
-    if (sortKey === "symbol") {
-      return left.symbol.localeCompare(right.symbol);
-    }
-    if (sortKey === "tag") {
-      return (left.tags[0] || "\uffff").localeCompare(right.tags[0] || "\uffff") || left.name.localeCompare(right.name);
-    }
-    return left.name.localeCompare(right.name);
+    return result * direction;
   };
 }
 
@@ -540,7 +498,7 @@ function createUsageId(projectId, swatchSymbol, assetId) {
 
 export function createProjectWorkspacePaletteRepository(options = {}) {
   const projectWorkspaceRepository = options.projectWorkspaceRepository || createProjectWorkspaceMockRepository();
-  const sourcePaletteData = normalizeSourcePalettes(options.sourcePalettes, options.sourcePaletteLabels);
+  const sourcePaletteRows = normalizeSourcePaletteRows(options.sourcePaletteRows || options.tables?.palette_source_swatches || []);
   const workspaceRecords = new Map();
   const paletteColorRows = [];
   const usageRows = [];
@@ -779,23 +737,37 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   function listSwatches(optionsForList = {}) {
     return getActiveSwatches()
       .map(cloneSwatch)
-      .sort(compareSwatches(optionsForList.sortKey || "name"));
+      .sort(compareSwatches(optionsForList.sortKey || "name", optionsForList.sortDirection || "asc"));
+  }
+
+  function sourceRowsForSource(sourceId) {
+    return sourcePaletteRows.filter((row) => row.source === sourceId);
   }
 
   function sourcePaletteOptions() {
-    return Object.keys(sourcePaletteData.palettes)
-      .sort((left, right) => sourcePaletteData.labels[left].localeCompare(sourcePaletteData.labels[right]))
+    return [...new Set(sourcePaletteRows.map((row) => row.source))]
+      .sort((left, right) => {
+        const leftLabel = sourceRowsForSource(left)[0]?.sourceLabel || left;
+        const rightLabel = sourceRowsForSource(right)[0]?.sourceLabel || right;
+        return leftLabel.localeCompare(rightLabel);
+      })
       .map((sourceId) => ({
         id: sourceId,
-        label: sourcePaletteData.labels[sourceId],
-        swatchCount: sourcePaletteData.palettes[sourceId].length
+        label: sourceRowsForSource(sourceId)[0]?.sourceLabel || sourceId,
+        swatchCount: sourceRowsForSource(sourceId).length
       }));
   }
 
   function listSourceSwatches(optionsForList = {}) {
     const sourceId = normalizeText(optionsForList.sourceId) || sourcePaletteOptions()[0]?.id || "";
     const query = normalizeText(optionsForList.query).toLowerCase();
-    const swatches = sourcePaletteData.palettes[sourceId] || [];
+    const swatches = sourceRowsForSource(sourceId).map((row) => ({
+      hex: row.hex,
+      name: row.name,
+      source: row.source,
+      symbol: row.symbol,
+      tags: [...row.tags]
+    }));
     return swatches
       .filter((swatch) => {
         if (!query) {
@@ -807,7 +779,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
           .includes(query);
       })
       .map(cloneSwatch)
-      .sort(compareSwatches(optionsForList.sortKey || "name"));
+      .sort(compareSwatches(optionsForList.sortKey || "name", optionsForList.sortDirection || "asc"));
   }
 
   function pinSourceSwatch(sourceSwatch = {}) {
@@ -838,6 +810,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function createHarmonySuggestions(inputSwatch = null, optionsForHarmony = {}) {
+    const sourcePaletteData = {
+      palettes: sourcePaletteOptions().reduce((palettes, source) => {
+        palettes[source.id] = listSourceSwatches({ sourceId: source.id });
+        return palettes;
+      }, {})
+    };
     return harmonyForSwatch(inputSwatch, optionsForHarmony, sourcePaletteData);
   }
 
@@ -1044,6 +1022,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         ...row,
         tags: [...row.tags]
       })),
+      palette_source_swatches: sourcePaletteRows.map((row) => ({
+        ...row,
+        tags: [...row.tags]
+      })),
       palette_swatch_usages: usageRows.map((row) => ({ ...row })),
       project_workspace_palette_globals: [...workspaceRecords.values()].map((record) => ({
         projectId: record.projectId,
@@ -1072,7 +1054,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         status: payloadValidation.valid ? "Ready" : "Reject"
       };
       swatches = payloadValidation.valid
-        ? workspace.tools[PALETTE_TOOL_KEY].swatches.map(cloneSwatch).sort(compareSwatches(optionsForSnapshot.sortKey || "name"))
+        ? workspace.tools[PALETTE_TOOL_KEY].swatches.map(cloneSwatch).sort(compareSwatches(optionsForSnapshot.sortKey || "name", optionsForSnapshot.sortDirection || "asc"))
         : [];
     } else {
       validation = {

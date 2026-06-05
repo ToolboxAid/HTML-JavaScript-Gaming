@@ -1,4 +1,4 @@
-# PR_26156_165-169 Testing Lane Execution Report
+# PR_26156_170 Testing Lane Execution Report
 
 ## Result
 PASS
@@ -10,31 +10,25 @@ PASS
   - PASS
 - `node --check tests\playwright\tools\PaletteToolMockRepository.spec.mjs`
   - PASS
+- `rg -n "DEFAULT_SOURCE_PALETTES|DEFAULT_SOURCE_PALETTE_LABELS|SOURCE_PALETTES|paletteList" toolbox/colors tests/playwright/tools/PaletteToolMockRepository.spec.mjs`
+  - PASS, no matches
 - `node .\node_modules\@playwright\test\cli.js test --project=playwright --workers=1 --reporter=list --grep "Palette (repository|Tool)"`
   - PASS, 3 tests
-- `node .\scripts\run-targeted-test-lanes.mjs --lane asset-tool`
-  - PASS, 6 Playwright tests
-- `npm run test:workspace-v2`
-  - PASS, 5 Playwright tests
-  - Note: command name is legacy; user-facing product language is Project Workspace.
 - `npm run test:playwright:static`
   - PASS
-- `node .\node_modules\@playwright\test\cli.js test --project=playwright --workers=1 --reporter=list --grep "Palette (repository|Tool)|Color assets consume"`
-  - PASS, 4 Playwright tests
 
 ## Required Lanes
 - Targeted Palette Tool runtime/UI lane: PASS.
-- Asset Tool Color picker handoff lane: PASS because Palette DB/color ownership changed.
-- Project Workspace palette handoff lane: PASS via Palette repository active project ownership coverage plus legacy `npm run test:workspace-v2`.
 - Changed-file/static validation: PASS.
 
 ## Playwright Coverage
-- Fullscreen layout: PASS.
-- DB-backed Palette Colors rename and `palette_colors` ownership: PASS.
-- Harmony controls and Add Selected action: PASS.
-- Sort and size controls: PASS.
-- Tag suggestions and Enter-to-add tag: PASS.
-- Source swatch row click pin/unpin behavior: PASS.
+- Source palettes from DB/mock-DB rows only: PASS.
+- Empty source palette diagnostic: PASS.
+- Sort controls are left-aligned buttons with visible active state and caret direction: PASS.
+- Size controls are right-aligned buttons with visible active state: PASS.
+- Active Project Palette and Source Swatches use consistent controls: PASS.
+- Swatch-only list rendering, upper-right pin, hover glow, and native browser `title` tooltip: PASS.
+- Harmony controls and Add Selected action remain covered: PASS.
 
 ## Not Run
 - Full samples smoke was not run, per BUILD instruction.

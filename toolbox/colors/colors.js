@@ -1,4 +1,3 @@
-import "../../src/engine/paletteList.js";
 import {
   PALETTE_TOOL_KEY,
   PALETTE_WORKSPACE_PATH,
@@ -6,12 +5,21 @@ import {
   validatePaletteSwatchInput
 } from "./palette-workspace-repository.js";
 
-const sourcePalettes = globalThis.paletteList?.SOURCE_PALETTES || undefined;
-const sourcePaletteLabels = globalThis.paletteList?.SOURCE_PALETTE_LABELS || undefined;
-const repository = createProjectWorkspacePaletteRepository({
-  sourcePaletteLabels,
-  sourcePalettes
-});
+const repository = createProjectWorkspacePaletteRepository();
+
+const SORT_OPTIONS = Object.freeze([
+  { key: "hue", label: "Hue" },
+  { key: "saturation", label: "Sat" },
+  { key: "brightness", label: "Brit" },
+  { key: "name", label: "Name" },
+  { key: "tag", label: "Tag" }
+]);
+
+const SIZE_OPTIONS = Object.freeze([
+  { key: "small", label: "Small" },
+  { key: "medium", label: "Medium" },
+  { key: "large", label: "Large" }
+]);
 
 const params = new URLSearchParams(window.location.search);
 let editorIssues = [];
@@ -20,6 +28,10 @@ let harmonyRows = [];
 let selectedHarmonyIndex = 0;
 let selectedSourceSwatch = null;
 let sourceSwatchRows = [];
+const sourceSortState = { direction: "asc", key: "name" };
+let sourceSizeState = "medium";
+const userSortState = { direction: "asc", key: "name" };
+let userSizeState = "medium";
 
 const elements = {
   activeProject: document.querySelector("[data-palette-active-project]"),
@@ -109,6 +121,46 @@ function createListItem(text) {
   const item = document.createElement("li");
   item.textContent = text;
   return item;
+}
+
+function sortDirectionCaret(direction) {
+  return direction === "desc" ? "v" : "^";
+}
+
+function renderSortButtons(container, state, label) {
+  if (!container) {
+    return;
+  }
+  container.replaceChildren();
+  SORT_OPTIONS.forEach((option) => {
+    const button = document.createElement("button");
+    const active = state.key === option.key;
+    button.className = active ? "btn primary" : "btn";
+    button.type = "button";
+    button.dataset.paletteSortKey = option.key;
+    button.textContent = active ? `${option.label} ${sortDirectionCaret(state.direction)}` : option.label;
+    button.setAttribute("aria-label", `${label} sort ${option.label}${active ? ` ${state.direction}` : ""}`);
+    button.setAttribute("aria-pressed", String(active));
+    container.append(button);
+  });
+}
+
+function renderSizeButtons(container, activeSize, label) {
+  if (!container) {
+    return;
+  }
+  container.replaceChildren();
+  SIZE_OPTIONS.forEach((option) => {
+    const button = document.createElement("button");
+    const active = activeSize === option.key;
+    button.className = active ? "btn primary" : "btn";
+    button.type = "button";
+    button.dataset.paletteSizeKey = option.key;
+    button.textContent = option.label;
+    button.setAttribute("aria-label", `${label} size ${option.label}`);
+    button.setAttribute("aria-pressed", String(active));
+    container.append(button);
+  });
 }
 
 function normalizeSwatchPreviewSize(size) {
@@ -285,6 +337,17 @@ function renderSourceOptions(snapshot) {
 
   const currentSource = elements.sourceSelect.value;
   elements.sourceSelect.replaceChildren();
+  if (!snapshot.sourcePaletteOptions.length) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "No source palettes";
+    elements.sourceSelect.append(option);
+    elements.sourceSelect.value = "";
+    elements.sourceSelect.disabled = true;
+    return;
+  }
+
+  elements.sourceSelect.disabled = false;
   snapshot.sourcePaletteOptions.forEach((source) => {
     const option = document.createElement("option");
     option.value = source.id;
@@ -294,6 +357,13 @@ function renderSourceOptions(snapshot) {
   if (currentSource && snapshot.sourcePaletteOptions.some((source) => source.id === currentSource)) {
     elements.sourceSelect.value = currentSource;
   }
+}
+
+function renderPaletteControls() {
+  renderSortButtons(elements.userSort, userSortState, "Active project palette");
+  renderSizeButtons(elements.userSize, userSizeState, "Active project palette");
+  renderSortButtons(elements.sourceSort, sourceSortState, "Source swatches");
+  renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
 }
 
 function renderProject(snapshot) {
@@ -332,7 +402,10 @@ function renderUserPalette(snapshot) {
   }
 
   elements.userList.replaceChildren();
-  const swatches = repository.listSwatches({ sortKey: elements.userSort?.value || "name" });
+  const swatches = repository.listSwatches({
+    sortDirection: userSortState.direction,
+    sortKey: userSortState.key
+  });
   if (swatches.length === 0) {
     const message = document.createElement("p");
     message.className = "status";
@@ -348,7 +421,7 @@ function renderUserPalette(snapshot) {
       action: "Select palette color",
       pinned: true,
       pressed: snapshot.selectedSwatch?.symbol === swatch.symbol,
-      size: elements.userSize?.value || "medium",
+      size: userSizeState,
       swatchRow: true
     }));
   });
@@ -362,7 +435,8 @@ function renderSourceSwatches() {
   const sourceId = elements.sourceSelect?.value;
   sourceSwatchRows = repository.listSourceSwatches({
     query: elements.sourceSearch?.value || "",
-    sortKey: elements.sourceSort?.value || "name",
+    sortDirection: sourceSortState.direction,
+    sortKey: sourceSortState.key,
     sourceId
   });
 
@@ -370,7 +444,9 @@ function renderSourceSwatches() {
   if (sourceSwatchRows.length === 0) {
     const message = document.createElement("p");
     message.className = "status";
-    message.textContent = "No source colors match the current filter.";
+    message.textContent = repository.sourcePaletteOptions().length
+      ? "No source colors match the current filter."
+      : "No source palettes found. Add palette_source_swatches mock-DB records to browse source colors.";
     elements.sourceList.append(message);
     return;
   }
@@ -381,7 +457,7 @@ function renderSourceSwatches() {
       action: pinned ? "Unpin source palette color" : "Pin source palette color",
       pinned,
       pressed: pinned,
-      size: elements.sourceSize?.value || "medium",
+      size: sourceSizeState,
       sourceIndex: index
     }));
   });
@@ -478,7 +554,10 @@ function renderSummary(snapshot) {
 function render() {
   let snapshot;
   try {
-    snapshot = repository.getSnapshot({ sortKey: elements.userSort?.value || "name" });
+    snapshot = repository.getSnapshot({
+      sortDirection: userSortState.direction,
+      sortKey: userSortState.key
+    });
   } catch (error) {
     editorIssues = [{
       action: error.message,
@@ -490,6 +569,7 @@ function render() {
   }
 
   renderSourceOptions(snapshot);
+  renderPaletteControls();
   renderProject(snapshot);
   renderSummary(snapshot);
   renderValidation(snapshot);
@@ -581,12 +661,50 @@ elements.redo?.addEventListener("click", () => {
   applyResult(repository.redo());
 });
 
-elements.userSort?.addEventListener("change", render);
-elements.userSize?.addEventListener("change", render);
+elements.userSort?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-palette-sort-key]");
+  if (!button) {
+    return;
+  }
+  const key = button.dataset.paletteSortKey;
+  userSortState.direction = userSortState.key === key && userSortState.direction === "asc" ? "desc" : "asc";
+  userSortState.key = key;
+  render();
+});
+
+elements.userSize?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-palette-size-key]");
+  if (!button) {
+    return;
+  }
+  userSizeState = button.dataset.paletteSizeKey;
+  render();
+});
+
 elements.sourceSelect?.addEventListener("change", render);
 elements.sourceSearch?.addEventListener("input", renderSourceSwatches);
-elements.sourceSort?.addEventListener("change", renderSourceSwatches);
-elements.sourceSize?.addEventListener("change", renderSourceSwatches);
+
+elements.sourceSort?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-palette-sort-key]");
+  if (!button) {
+    return;
+  }
+  const key = button.dataset.paletteSortKey;
+  sourceSortState.direction = sourceSortState.key === key && sourceSortState.direction === "asc" ? "desc" : "asc";
+  sourceSortState.key = key;
+  renderSourceSwatches();
+  renderSortButtons(elements.sourceSort, sourceSortState, "Source swatches");
+});
+
+elements.sourceSize?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-palette-size-key]");
+  if (!button) {
+    return;
+  }
+  sourceSizeState = button.dataset.paletteSizeKey;
+  renderSourceSwatches();
+  renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
+});
 elements.harmonyMatch?.addEventListener("change", render);
 elements.harmonyScheme?.addEventListener("change", render);
 elements.harmonyList?.addEventListener("change", (event) => {
