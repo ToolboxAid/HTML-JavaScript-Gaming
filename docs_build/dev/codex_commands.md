@@ -645,3 +645,29 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_120
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Updated `toolbox/game-design/index.html` so Design Fields > Project Design uses a two-column Theme V2 table.
+- Kept labels in the left column and controls in the right column with existing IDs, values, data hooks, and form behavior preserved.
+- Added targeted Game Design Playwright/MSJ coverage for the table structure and label/control pair preservation.
+- Documented Theme V2 gaps for reusable right-aligned table labels and table-cell control fill behavior.
+- Did not add CSS, inline styles, style blocks, script blocks, inline event handlers, or tool-local/page-local assets.
+- Did not modify unrelated Game Design sections.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check tests/playwright/tools/GameDesignMockRepository.spec.mjs`
+- `npm run test:lane:game-design`
+- Scoped `git diff --check` for changed implementation/test/report files.
+- Targeted changed-file scan confirmed no inline styles, style blocks, inline scripts, inline event handlers, or `start_of_day` references were introduced.
+- Full samples smoke: skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/game-design-project-design-table-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

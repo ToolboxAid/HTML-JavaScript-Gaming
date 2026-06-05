@@ -70,21 +70,32 @@
                                     <h3>Project Design</h3>
                                 </div>
                                 <form class="content-stack" data-game-design-form>
-                                    <label for="gameDesignType">Game Type
-                                        <select id="gameDesignType" data-game-design-type></select>
-                                    </label>
-                                    <label for="gameDesignGenre">Genre
-                                        <select id="gameDesignGenre" data-game-design-genre></select>
-                                    </label>
-                                    <label for="gameDesignPlayStyle">Play Style
-                                        <select id="gameDesignPlayStyle" data-game-design-play-style></select>
-                                    </label>
-                                    <label for="gameDesignSummary">Design Summary
-                                        <textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the project promise, core loop, and player goal."></textarea>
-                                    </label>
-                                    <label for="gameDesignCapabilityNotes">Capability Demo Notes
-                                        <textarea id="gameDesignCapabilityNotes" rows="3" data-game-design-capability-notes placeholder="Optional notes when this project demonstrates a specific capability."></textarea>
-                                    </label>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Project Design fields" data-game-design-project-design-table>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignType">Game Type</label></th>
+                                                    <td><select id="gameDesignType" data-game-design-type></select></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignGenre">Genre</label></th>
+                                                    <td><select id="gameDesignGenre" data-game-design-genre></select></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignPlayStyle">Play Style</label></th>
+                                                    <td><select id="gameDesignPlayStyle" data-game-design-play-style></select></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignSummary">Design Summary</label></th>
+                                                    <td><textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the project promise, core loop, and player goal."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignCapabilityNotes">Capability Demo Notes</label></th>
+                                                    <td><textarea id="gameDesignCapabilityNotes" rows="3" data-game-design-capability-notes placeholder="Optional notes when this project demonstrates a specific capability."></textarea></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                     <button class="btn" type="submit">Save Game Design</button>
                                 </form>
                             </div>

@@ -87,6 +87,36 @@ test("Game Design saves and updates design fields against the active project", a
     await expect(page.locator("[data-game-design-active-project], [data-game-design-project-purpose], [data-game-design-project-status], [data-game-design-project-select]")).toHaveCount(0);
     await expect(page.locator(".tool-center-panel [data-game-design-form]")).toBeVisible();
     await expect(page.locator("aside [data-game-design-form]")).toHaveCount(0);
+    await expect(page.locator("[data-game-design-form] style, [data-game-design-form] [style], [data-game-design-form] script:not([src])")).toHaveCount(0);
+    const projectDesignTable = page.locator("[data-game-design-project-design-table]");
+    await expect(projectDesignTable).toBeVisible();
+    await expect(projectDesignTable).toHaveClass(/data-table/);
+    await expect(projectDesignTable.locator("tbody tr")).toHaveCount(5);
+    await expect(projectDesignTable.locator("th[scope='row'] label")).toHaveText([
+      "Game Type",
+      "Genre",
+      "Play Style",
+      "Design Summary",
+      "Capability Demo Notes"
+    ]);
+    const projectDesignPairs = await projectDesignTable.locator("tbody tr").evaluateAll((rows) => rows.map((row) => {
+      const label = row.querySelector("th label");
+      const control = row.querySelector("td select, td textarea");
+      return {
+        cellCount: row.children.length,
+        controlId: control?.id ?? null,
+        controlTag: control?.tagName.toLowerCase() ?? null,
+        labelFor: label?.getAttribute("for") ?? null,
+        labelText: label?.textContent.trim() ?? null
+      };
+    }));
+    expect(projectDesignPairs).toEqual([
+      { cellCount: 2, controlId: "gameDesignType", controlTag: "select", labelFor: "gameDesignType", labelText: "Game Type" },
+      { cellCount: 2, controlId: "gameDesignGenre", controlTag: "select", labelFor: "gameDesignGenre", labelText: "Genre" },
+      { cellCount: 2, controlId: "gameDesignPlayStyle", controlTag: "select", labelFor: "gameDesignPlayStyle", labelText: "Play Style" },
+      { cellCount: 2, controlId: "gameDesignSummary", controlTag: "textarea", labelFor: "gameDesignSummary", labelText: "Design Summary" },
+      { cellCount: 2, controlId: "gameDesignCapabilityNotes", controlTag: "textarea", labelFor: "gameDesignCapabilityNotes", labelText: "Capability Demo Notes" }
+    ]);
     await expect(page.locator("[data-game-design-output] pre, [data-game-design-output] code")).toHaveCount(0);
     await expect(page.locator("[data-game-design-output]")).toContainText("Design Summary");
     await expect(page.locator("[data-game-design-output]")).toContainText("Validation Status");
