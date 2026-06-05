@@ -1,1 +1,1 @@
-Add registry-driven tool navigation links and Tool Display previous/next controls - PR_26155_096-099-tool-navigation
+Refine Tool Display Mode previous next row layout and targeted coverage - PR_26155_100-102-tool-display-mode-nav

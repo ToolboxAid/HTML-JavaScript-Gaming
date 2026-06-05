@@ -111,6 +111,34 @@ Required reports:
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
 
+## PR_26155_100-102
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Updated shared Tool Display Mode body layout to identity row plus navigation row.
+- Kept character image and tool name on the first row.
+- Kept Previous/Next navigation on the second row.
+- Changed missing previous/next targets from disabled buttons to disabled text.
+- Kept enabled Previous/Next controls as registry-driven links.
+- Added the targeted `tool-display-mode` Playwright lane.
+
+Validation:
+- `node --check assets/theme-v2/js/tool-display-mode.js`
+- `node --check tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs`
+- `node --check tests/playwright/tools/ToolNavigationPrevNext.spec.mjs`
+- `node --check scripts/run-targeted-test-lanes.mjs`
+- `npm run test:lane:tool-display-mode`
+- `npm run test:lane:tool-navigation`
+- `npm run test:workspace-v2`
+- `git diff --check`
+
+Required reports:
+- `docs_build/dev/reports/tool-display-mode-nav-layout.md`
+- `docs_build/dev/reports/tool-display-mode-registry-links.md`
+- `docs_build/dev/reports/tool-display-mode-targeted-msj-tests.md`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+
 ## PR_26154_053
 
 Changes:
