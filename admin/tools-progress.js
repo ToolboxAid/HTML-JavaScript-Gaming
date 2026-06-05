@@ -1,4 +1,4 @@
-import { getActiveToolRegistry } from "../toolbox/toolRegistry.js";
+import { getActiveToolRegistry, getToolRoute } from "../toolbox/toolRegistry.js";
 
 const completionByStatus = Object.freeze({
   Ready: "Yes",
@@ -26,6 +26,37 @@ const nextBuildItem = document.querySelector("[data-tools-progress-next]");
 function createCell(tagName, text) {
   const cell = document.createElement(tagName);
   cell.textContent = text;
+  return cell;
+}
+
+export function createToolNameNode(tool) {
+  const label = document.createElement("span");
+  label.className = "content-cluster";
+  const route = getToolRoute(tool);
+
+  if (route) {
+    const link = document.createElement("a");
+    link.href = route;
+    link.textContent = tool.displayName;
+    link.dataset.toolsProgressRoute = route;
+    label.append(link);
+    return label;
+  }
+
+  const text = document.createElement("span");
+  text.textContent = tool.displayName;
+
+  const planned = document.createElement("span");
+  planned.className = "pill";
+  planned.textContent = `${tool.status || "Planned"} - Route pending`;
+
+  label.append(text, planned);
+  return label;
+}
+
+function createToolNameCell(tool) {
+  const cell = document.createElement("td");
+  cell.append(createToolNameNode(tool));
   return cell;
 }
 
@@ -74,7 +105,7 @@ function renderToolsProgress() {
     row.dataset.toolsProgressComplete = isComplete(tool);
     row.append(
       createCell("td", String(tool.order)),
-      createCell("td", tool.displayName),
+      createToolNameCell(tool),
       createGroupCell(tool),
       createCell("td", tool.status),
       createCell("td", isComplete(tool))

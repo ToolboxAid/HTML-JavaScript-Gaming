@@ -1,8 +1,8 @@
 {
   "commandsHash": "4565513dba0bdc75",
-  "dependencyGraphHash": "a60a7b745b549b6c",
+  "dependencyGraphHash": "3d7cf28d3be765eb",
   "dependencyHydration": {
-    "dependencyHydrationHash": "ad6811ea5849a6e0",
+    "dependencyHydrationHash": "78150b30ad516cb3",
     "fixtureHashes": {},
     "fixtures": [],
     "helperHashes": {
@@ -22,7 +22,7 @@
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "toolbox/toolRegistry.js": "737e6ad2c2b94b9a"
+      "toolbox/toolRegistry.js": "d55b1c1892e77b51"
     },
     "imports": [
       "tests/helpers/playwrightRepoServer.mjs",
@@ -32,16 +32,16 @@
       "toolbox/toolRegistry.js"
     ]
   },
-  "dependencyHydrationHash": "ad6811ea5849a6e0",
-  "inputHash": "e7cd0fc0ad06043f",
+  "dependencyHydrationHash": "78150b30ad516cb3",
+  "inputHash": "b8b0aaa997345428",
   "lane": "tools-progress",
   "laneConfigHash": "276bfccf8c21b7f4",
-  "laneDefinitionHash": "6a4230f897d5d5d9",
-  "manifestHash": "dfeb9720a244639c",
+  "laneDefinitionHash": "c4b46b5f48173769",
+  "manifestHash": "cd299115f569d950",
   "ownership": "tools",
-  "warmStartHash": "dc6c2010186baffa",
+  "warmStartHash": "96dd72f98e5581bb",
   "version": 1,
-  "generatedAt": "2026-06-05T00:55:15.466Z",
+  "generatedAt": "2026-06-05T01:13:35.065Z",
   "manifestPath": "docs_build/dev/reports/lane_manifests/tools-progress.json",
   "sourceManifest": "generated"
 }

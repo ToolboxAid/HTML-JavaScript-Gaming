@@ -1,6 +1,6 @@
 # Validation Cache Report
 
-Generated: 2026-06-05T00:58:35.522Z
+Generated: 2026-06-05T01:16:24.001Z
 Status: PASS
 
 ## Cache Summary
@@ -12,34 +12,34 @@ Validations computed: 10
 
 | Stage | Cache | Input Hash | Reused By | Invalidation Inputs |
 | --- | --- | --- | --- | --- |
-| lane registration validation | MISS | 8af242435d5b8d92 | initial computation | lane definitions change; package.json lane scripts change |
-| runner preflight validation | MISS | ab491f2e7877bb1d | initial computation | lane definitions change; fixture ownership changes; targeted files change |
-| scoped discovery map | MISS | 18201bed19823fde | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-| targeted file manifest validation | MISS | 4034eab354947355 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-| lane warm-start validation | MISS | a64a5cf330ca7492 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-| structural ownership validation | MISS | c507f2f966a8e47d | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-| lane compilation validation | MISS | cc371eab228567d0 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
-| lane compilation validation | HIT | cc371eab228567d0 | dependency validation input | unchanged within execution cycle |
-| dependency validation | MISS | 4b0f6953093d09e2 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
-| lane snapshot validation | MISS | 786f6fdfecfd9ac7 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-| zero-browser preflight | MISS | a52c5a6acc8d07a2 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
-| structural ownership validation | HIT | c507f2f966a8e47d | static validation report | unchanged within execution cycle |
-| structural ownership validation | HIT | c507f2f966a8e47d | zero-browser preflight report | unchanged within execution cycle |
-| scoped discovery map | HIT | 18201bed19823fde | structural ownership validation input | unchanged within execution cycle |
-| scoped discovery map | HIT | 18201bed19823fde | discovery scope reporting | unchanged within execution cycle |
-| targeted file manifest validation | HIT | 4034eab354947355 | lane input validation report | unchanged within execution cycle |
-| targeted file manifest validation | HIT | 4034eab354947355 | runtime scheduling blockers | unchanged within execution cycle |
-| lane warm-start validation | HIT | a64a5cf330ca7492 | warm-start report | unchanged within execution cycle |
-| lane warm-start validation | HIT | a64a5cf330ca7492 | dependency hydration reuse report | unchanged within execution cycle |
-| lane warm-start validation | HIT | a64a5cf330ca7492 | runtime scheduling | unchanged within execution cycle |
-| lane snapshot validation | HIT | 786f6fdfecfd9ac7 | lane snapshot report | unchanged within execution cycle |
-| lane snapshot validation | HIT | 786f6fdfecfd9ac7 | execution graph reuse report | unchanged within execution cycle |
-| lane snapshot validation | HIT | 786f6fdfecfd9ac7 | runtime scheduling | unchanged within execution cycle |
-| lane compilation validation | HIT | cc371eab228567d0 | lane compilation report | unchanged within execution cycle |
-| lane compilation validation | HIT | cc371eab228567d0 | runtime scheduling | unchanged within execution cycle |
-| dependency validation | HIT | 4b0f6953093d09e2 | dependency report | unchanged within execution cycle |
-| dependency validation | HIT | 4b0f6953093d09e2 | runtime scheduling | unchanged within execution cycle |
-| zero-browser preflight | HIT | a52c5a6acc8d07a2 | zero-browser report output | unchanged within execution cycle |
+| lane registration validation | MISS | 70927b0f90fb96a6 | initial computation | lane definitions change; package.json lane scripts change |
+| runner preflight validation | MISS | da35578d605ac57b | initial computation | lane definitions change; fixture ownership changes; targeted files change |
+| scoped discovery map | MISS | 3c748c783e8908e2 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+| targeted file manifest validation | MISS | 6bfa3358294eebe0 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+| lane warm-start validation | MISS | 55da5e8ba076d17c | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+| structural ownership validation | MISS | 96d7bbc1a17db23d | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+| lane compilation validation | MISS | d1e3ac3ee0a8bfd9 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
+| lane compilation validation | HIT | d1e3ac3ee0a8bfd9 | dependency validation input | unchanged within execution cycle |
+| dependency validation | MISS | 78ec986ed0e309a1 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
+| lane snapshot validation | MISS | e2f4ee0a6cee7938 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+| zero-browser preflight | MISS | 02c55866c8e3b93a | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
+| structural ownership validation | HIT | 96d7bbc1a17db23d | static validation report | unchanged within execution cycle |
+| structural ownership validation | HIT | 96d7bbc1a17db23d | zero-browser preflight report | unchanged within execution cycle |
+| scoped discovery map | HIT | 3c748c783e8908e2 | structural ownership validation input | unchanged within execution cycle |
+| scoped discovery map | HIT | 3c748c783e8908e2 | discovery scope reporting | unchanged within execution cycle |
+| targeted file manifest validation | HIT | 6bfa3358294eebe0 | lane input validation report | unchanged within execution cycle |
+| targeted file manifest validation | HIT | 6bfa3358294eebe0 | runtime scheduling blockers | unchanged within execution cycle |
+| lane warm-start validation | HIT | 55da5e8ba076d17c | warm-start report | unchanged within execution cycle |
+| lane warm-start validation | HIT | 55da5e8ba076d17c | dependency hydration reuse report | unchanged within execution cycle |
+| lane warm-start validation | HIT | 55da5e8ba076d17c | runtime scheduling | unchanged within execution cycle |
+| lane snapshot validation | HIT | e2f4ee0a6cee7938 | lane snapshot report | unchanged within execution cycle |
+| lane snapshot validation | HIT | e2f4ee0a6cee7938 | execution graph reuse report | unchanged within execution cycle |
+| lane snapshot validation | HIT | e2f4ee0a6cee7938 | runtime scheduling | unchanged within execution cycle |
+| lane compilation validation | HIT | d1e3ac3ee0a8bfd9 | lane compilation report | unchanged within execution cycle |
+| lane compilation validation | HIT | d1e3ac3ee0a8bfd9 | runtime scheduling | unchanged within execution cycle |
+| dependency validation | HIT | 78ec986ed0e309a1 | dependency report | unchanged within execution cycle |
+| dependency validation | HIT | 78ec986ed0e309a1 | runtime scheduling | unchanged within execution cycle |
+| zero-browser preflight | HIT | 02c55866c8e3b93a | zero-browser report output | unchanged within execution cycle |
 
 ## Deterministic Invalidation Rules
 

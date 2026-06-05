@@ -1,23 +1,23 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-05T00:58:35.520Z
+Generated: 2026-06-05T01:16:23.999Z
 Status: PASS
 Snapshot directory: docs_build/dev/reports/lane_snapshots
 
 ## Summary
 
-Reused lane snapshots: 1
-Invalidated snapshots: 0
+Reused lane snapshots: 0
+Invalidated snapshots: 1
 Generated snapshots: 0
 Skipped snapshots: 0
-Prevented graph rebuilds: 1
-Prevented manifest traversal: 1
+Prevented graph rebuilds: 0
+Prevented manifest traversal: 0
 
 ## Snapshot Decisions
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 93000b97fb6b1a5e | 37a0b0722df16a80 | 751729a1e113a4de | 6c4fac7630b0b6f3 | c99c4343771f1683 | 0bd589c4cb15d4e9 | 641f5a9e7c88db2e | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
+| tool-navigation | INVALIDATED | docs_build/dev/reports/lane_snapshots/tool-navigation.json | 83c1caf61eccec49 | 3d7cf28d3be765eb | 751729a1e113a4de | 6c4fac7630b0b6f3 | cc7795a6bc1b2d9e | bfb37d857f4805dd | b19b139e025145fa | Lane snapshot executionGraphHash changed for tool-navigation.; Lane snapshot inputHash changed for tool-navigation.; Lane snapshot manifestHash changed for tool-navigation.; Lane snapshot snapshotHash changed for tool-navigation.; Lane snapshot warmStartHash changed for tool-navigation. |
 
 ## Snapshot Validation Findings
 

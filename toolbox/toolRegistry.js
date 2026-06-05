@@ -132,7 +132,20 @@ export const TOOL_REGISTRY = Object.freeze([
     "adminOnly": false,
     "active": true,
     "order": 4,
-    "visibleInToolsList": true
+    "visibleInToolsList": true,
+    "navigation": {
+      "nextGroup": "Design",
+      "nextToolIds": [
+        "assets",
+        "colors",
+        "fonts",
+        "sprites",
+        "characters",
+        "objects",
+        "worlds",
+        "animations"
+      ]
+    }
   },
   {
     "id": "assets",
@@ -1210,4 +1223,112 @@ export function getActiveToolRegistry() {
 
 export function getVisibleActiveToolRegistry() {
   return getActiveToolRegistry().filter((tool) => tool.visibleInToolsList === true);
+}
+
+export function getToolRoute(tool) {
+  if (!tool || typeof tool.entryPoint !== "string" || tool.entryPoint.trim() === "") {
+    return "";
+  }
+  return `toolbox/${tool.entryPoint.trim().replace(/^\/+/, "")}`;
+}
+
+export function getToolBySlug(toolSlug) {
+  const normalizedToolSlug = typeof toolSlug === "string" ? toolSlug.trim() : "";
+  if (!normalizedToolSlug) {
+    return null;
+  }
+  return getToolRegistry().find((tool) => (
+    tool.id === normalizedToolSlug
+    || tool.path === normalizedToolSlug
+    || tool.folderName === normalizedToolSlug
+  )) ?? null;
+}
+
+export function toToolGroupSlug(groupName) {
+  return String(groupName || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function navigationCandidateIds(tool, direction, activeTools) {
+  const configuredIds = tool.navigation?.[`${direction}ToolIds`];
+  if (Array.isArray(configuredIds) && configuredIds.length > 0) {
+    return configuredIds;
+  }
+
+  const currentIndex = activeTools.findIndex((candidate) => candidate.id === tool.id);
+  const adjacentIndex = direction === "previous" ? currentIndex - 1 : currentIndex + 1;
+  return activeTools[adjacentIndex] ? [activeTools[adjacentIndex].id] : [];
+}
+
+function disabledToolTarget(label) {
+  return {
+    disabled: true,
+    group: "",
+    href: "",
+    kind: "disabled",
+    label
+  };
+}
+
+function resolvedToolTarget(tool) {
+  const route = getToolRoute(tool);
+  if (!route) {
+    return disabledToolTarget(`${tool.displayName || tool.name || "Tool"} planned`);
+  }
+  return {
+    disabled: false,
+    group: "",
+    href: route,
+    kind: "tool",
+    label: tool.displayName || tool.name
+  };
+}
+
+function groupedToolTarget(groupName) {
+  const groupSlug = toToolGroupSlug(groupName);
+  return {
+    disabled: !groupSlug,
+    group: groupSlug,
+    href: groupSlug ? `toolbox/index.html?view=group&group=${groupSlug}` : "",
+    kind: "group",
+    label: groupName ? `${groupName} Tools` : "Toolbox Group"
+  };
+}
+
+function navigationTarget(tool, direction, activeTools) {
+  const candidates = navigationCandidateIds(tool, direction, activeTools)
+    .map((candidateId) => getToolById(candidateId))
+    .filter(Boolean);
+
+  if (candidates.length === 0) {
+    return disabledToolTarget(direction === "previous" ? "No previous tool" : "No next tool");
+  }
+
+  if (candidates.length === 1) {
+    return resolvedToolTarget(candidates[0]);
+  }
+
+  const configuredGroup = tool.navigation?.[`${direction}Group`];
+  return groupedToolTarget(configuredGroup || candidates[0].category);
+}
+
+export function getToolNavigationTargets(toolSlug) {
+  const tool = getToolBySlug(toolSlug);
+  const activeTools = getActiveToolRegistry();
+  if (!tool || !activeTools.some((candidate) => candidate.id === tool.id)) {
+    return {
+      next: disabledToolTarget("No next tool"),
+      previous: disabledToolTarget("No previous tool"),
+      tool: null
+    };
+  }
+
+  return {
+    next: navigationTarget(tool, "next", activeTools),
+    previous: navigationTarget(tool, "previous", activeTools),
+    tool
+  };
 }

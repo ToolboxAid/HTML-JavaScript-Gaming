@@ -1,22 +1,22 @@
 # Dependency Hydration Reuse Report
 
-Generated: 2026-06-05T00:58:35.520Z
+Generated: 2026-06-05T01:16:23.999Z
 Status: PASS
 
 ## Summary
 
-Reused dependency hydration: 1
-Invalidated dependency hydration: 0
+Reused dependency hydration: 0
+Invalidated dependency hydration: 1
 Generated dependency hydration: 0
-Prevented dependency graph hydration: 1
-Prevented helper resolution passes: 4
+Prevented dependency graph hydration: 0
+Prevented helper resolution passes: 0
 Prevented fixture ownership traversal: 0
 
 ## Hydration Decisions
 
 | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 0ff8fc92c789456d | Dependency hydration reused from validated warm-start state. |
+| tool-navigation | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | ac2d176afce66b9b | Dependency hydration was refreshed after warm-start invalidation. |
 
 ## Safeguards
 

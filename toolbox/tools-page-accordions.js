@@ -16,16 +16,18 @@ import {
     const projectDataMenu = document.querySelector("[data-project-data-menu]");
     const projectDataStatus = document.querySelector("[data-project-data-status]");
     const toolCount = document.querySelector("[data-tools-count]");
-    const urlRole = new URLSearchParams(window.location.search).get("role");
+    const searchParams = new URLSearchParams(window.location.search);
+    const urlRole = searchParams.get("role");
     const toolboxRole = urlRole === "admin" ? "admin" : urlRole === "user" ? "creator" : "guest";
     const projectWorkspaceRepository = createProjectWorkspaceMockRepository();
     projectWorkspaceRepository.resetProjectData();
-    const urlMemberRole = new URLSearchParams(window.location.search).get("memberRole");
+    const urlMemberRole = searchParams.get("memberRole");
     const defaultProjectMemberRole = "Owner";
     const projectMemberRole = PROJECT_WORKSPACE_MEMBER_ROLES.includes(urlMemberRole)
         ? urlMemberRole
         : defaultProjectMemberRole;
-    let currentMode = "ascending";
+    let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
+    let targetGroupSlug = currentMode === "grouped" ? groupSlug(searchParams.get("group")) : "";
     const statusLabelMap = Object.freeze({
         complete: "Ready",
         ready: "Wireframe",
@@ -1493,6 +1495,14 @@ import {
         return groupSwatchMap[groupName] || "swatch-orange";
     }
 
+    function groupSlug(groupName) {
+        return String(groupName || "")
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+    }
+
     function badgeName(tool) {
         if (badgeMap[tool.title]) {
             return badgeMap[tool.title];
@@ -1896,11 +1906,16 @@ import {
 
     function render(mode) {
         if (mode === "grouped") {
-            const accordions = getGroupedTools().map((group, position) => createAccordion(group, position === 0));
+            const accordions = getGroupedTools().map((group, position) => {
+                const groupIsTargeted = targetGroupSlug ? groupSlug(group.title) === targetGroupSlug : position === 0;
+                return createAccordion(group, groupIsTargeted);
+            });
             renderWithRoleFocus(...accordions);
         } else if (mode === "build-path") {
+            targetGroupSlug = "";
             renderWithRoleFocus(createBuildPathSummary(), createBuildPathTable());
         } else {
+            targetGroupSlug = "";
             renderWithRoleFocus(createToolGrid(getOrderedTools(mode)));
         }
         currentMode = mode;
@@ -1920,6 +1935,7 @@ import {
 
     if (groupedButton) {
         groupedButton.addEventListener("click", () => {
+            targetGroupSlug = "";
             render("grouped");
         });
     }
@@ -1932,5 +1948,5 @@ import {
 
     configureRoleBanner();
     configureProjectDataActions();
-    render("ascending");
+    render(currentMode);
 }());

@@ -57,6 +57,60 @@
     displayMode.appendChild(body);
     slot.replaceWith(displayMode);
 
+    function roleAwareHref(targetHref) {
+        const role = new URLSearchParams(window.location.search).get("role");
+        if (!role || !targetHref) {
+            return targetHref;
+        }
+
+        const targetUrl = new URL(targetHref, window.location.origin + "/");
+        targetUrl.searchParams.set("role", role);
+        return targetUrl.pathname.replace(/^\/+/, "") + targetUrl.search + targetUrl.hash;
+    }
+
+    function createNavigationControl(direction, target) {
+        const controlLabel = direction === "previous" ? "Previous Tool" : "Next Tool";
+        const dataAttribute = direction === "previous" ? "toolNavPrevious" : "toolNavNext";
+
+        if (!target || target.disabled) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "btn";
+            button.disabled = true;
+            button.dataset[dataAttribute] = "disabled";
+            button.textContent = controlLabel + ": " + (target?.label || "Unavailable");
+            return button;
+        }
+
+        const link = document.createElement("a");
+        link.className = "btn";
+        link.href = roleAwareHref(target.href);
+        link.dataset[dataAttribute] = target.kind;
+        if (target.group) {
+            link.dataset.toolNavGroup = target.group;
+        }
+        link.textContent = controlLabel + ": " + target.label;
+        return link;
+    }
+
+    async function renderToolNavigation() {
+        try {
+            const registry = await import("/toolbox/toolRegistry.js");
+            const navigation = registry.getToolNavigationTargets(toolSlug);
+            const navigationRow = document.createElement("nav");
+            navigationRow.className = "content-cluster";
+            navigationRow.setAttribute("aria-label", "Tool build-order navigation");
+            navigationRow.append(
+                createNavigationControl("previous", navigation.previous),
+                createNavigationControl("next", navigation.next)
+            );
+            body.appendChild(navigationRow);
+        } catch (error) {
+            console.warn("Tool navigation could not be loaded.", error);
+        }
+    }
+
+    renderToolNavigation();
 
     async function enterToolMode() {
         document.body.classList.add("tool-focus-mode");

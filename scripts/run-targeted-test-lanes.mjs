@@ -227,6 +227,27 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Project Build Path stays workflow-order and project-specific."
   },
+  "tool-navigation": {
+    affectedSurface: "Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing",
+    commands: [
+      playwrightCommand("tests/playwright/tools/ToolNavigationPrevNext.spec.mjs")
+    ],
+    dependencies: [],
+    discoveryTargets: [
+      "tests/playwright/tools/ToolNavigationPrevNext.spec.mjs"
+    ],
+    fixtures: [
+      "repo-served Admin Tools Progress page",
+      "repo-served Project Workspace, Game Design, and Game Configuration tool pages",
+      "repo-served Toolbox Group view with URL-selected accordion",
+      "Toolbox registry build sequence and route metadata"
+    ],
+    fixturePaths: [],
+    ownership: "tools",
+    playwrightDir: "tests/playwright/tools",
+    requiresPreflight: true,
+    reason: "Tool navigation validates registry-owned tool routes, disabled rendering for route-less tools, build-order previous/next controls, multi-path fallback to Toolbox Group view, and role query preservation without exercising unrelated toolbox routes."
+  },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [
