@@ -463,6 +463,22 @@ function uniqueSuggestions(suggestions) {
   });
 }
 
+function withoutBaseColorSuggestions(suggestions, baseHex, schemeLabel) {
+  let calculatedIndex = 0;
+  return suggestions
+    .filter((suggestion) => rgbKey(suggestion.hex) !== rgbKey(baseHex))
+    .map((suggestion) => {
+      if (suggestion.sourceName !== "Calculated") {
+        return suggestion;
+      }
+      calculatedIndex += 1;
+      return {
+        ...suggestion,
+        name: `${schemeLabel} ${calculatedIndex}`
+      };
+    });
+}
+
 function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
   const rgb = hexToRgb(swatch?.hex);
   if (!rgb) {
@@ -501,7 +517,7 @@ function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
     };
   });
 
-  return uniqueSuggestions(calculated);
+  return withoutBaseColorSuggestions(uniqueSuggestions(calculated), swatch.hex, scheme.label);
 }
 
 function nextAvailableSymbol(existingSwatches, seedText = "") {

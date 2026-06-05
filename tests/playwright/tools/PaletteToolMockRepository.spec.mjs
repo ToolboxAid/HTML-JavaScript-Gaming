@@ -263,7 +263,7 @@ test("Palette repository owns active project swatches without mutating invalid p
   expect(repository.createHarmonySuggestions(repository.findSwatch("R"), {
     matchSource: "calculated",
     schemeId: "triadic"
-  })).toHaveLength(3);
+  })).toHaveLength(2);
 
   repository.selectSwatch("R");
   repository.recordSwatchUsage({ assetId: "asset.color.red", symbol: "R", toolId: "assets" });
@@ -346,10 +346,9 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await page.locator("[data-palette-source-pin-all]").click();
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
     await expect(page.locator("[data-palette-log]")).toContainText("0 pinned, 1 already pinned");
-    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
+    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(0);
     await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Complementary \d:/);
-    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("title", /^Scheme: Complementary\nLabel: Complementary 1\nHex: #[0-9A-F]{6}$/);
-    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("aria-label", /Complementary 1 #[0-9A-F]{6} from Complementary/);
+    await expect(page.locator("[data-palette-harmony-list]")).toContainText("No harmony scheme colors available.");
     await page.locator("[data-palette-user-list] [data-palette-swatch-name='Black'] [data-palette-pin-indicator]").click();
     await expect(page.locator("[data-palette-count]")).toHaveText("0");
     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("None");
@@ -410,8 +409,10 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-selected-details]")).toHaveCount(0);
     await expect(page.locator("[data-palette-project-accordion]")).not.toContainText(/Symbol:|Hex:|Name:|Source:|Tags:/);
     await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_colors");
-    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
+    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(1);
     await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Complementary \d:/);
+    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("title", /^Scheme: Complementary\nLabel: Complementary 1\nHex: #[0-9A-F]{6}$/);
+    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("aria-label", /Complementary 1 #[0-9A-F]{6} from Complementary/);
 
     const activePreviewTile = page.locator("[data-palette-swatch-row='H']");
     await page.locator("[data-palette-user-sort] [data-palette-sort-key='hue']").click();
@@ -461,7 +462,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-log]")).toHaveText("Editor form cleared.");
 
     await page.locator("[data-palette-harmony-scheme]").selectOption("triadic");
-    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(3);
+    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
     await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Triadic \d:/);
     await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("title", /^Scheme: Triadic\nLabel: Triadic 2\nHex: #[0-9A-F]{6}$/);
     await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("aria-label", /Triadic 2 #[0-9A-F]{6} from Triadic/);

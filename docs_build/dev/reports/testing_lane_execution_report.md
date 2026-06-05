@@ -36,6 +36,8 @@ PASS
 - Palette Colors count updates after add/remove: PASS.
 - Selected state clears when selected color is removed: PASS.
 - Source palette records remain available after active color removal: PASS.
+- Color Harmony Schemes does not render the selected/base swatch: PASS.
+- Harmony Add Selected and Add All continue from the remaining generated swatches: PASS.
 
 ## Impacted Lane
 - Palette Tool runtime/UI lane.

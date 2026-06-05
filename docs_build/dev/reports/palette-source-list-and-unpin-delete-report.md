@@ -12,12 +12,14 @@ PASS
 - Ensured active user palette removal updates the mock DB `palette_colors` table, count, and selected state.
 - Ensured active user palette removal does not remove source palette records.
 - Kept source pinning duplicate-safe.
+- Removed the selected/base color from Color Harmony Schemes output so harmony swatches only show distinct generated colors.
 
 ## Implementation Notes
 - Source palette records are provided by `toolbox/colors/palette-source-mock-db.js` and loaded by `createPaletteToolMockDbTables()`.
 - Source labels come from mock DB records, so dropdown labels render as `8-color set`, `16-color set`, `32-color set`, `W3C`, and `JavaScript`.
 - Palette options sort by label with numeric-aware ordering.
 - `repository.removeSwatch(symbol)` removes a specific active palette color and clears selection when the removed color was selected.
+- Harmony suggestions filter out the selected swatch RGB and renumber calculated labels after filtering.
 - The active palette pin indicator now receives pointer events through the existing reusable Theme V2 swatch pin pattern.
 
 ## Validation
