@@ -145,9 +145,11 @@ test("Assets page lists all asset roles and starts from active project context",
     await expect(page.locator("[data-asset-tool-preview]")).toHaveText("Image preview: assets/projects/demo-project/image/player.png from player.png.");
     await expect(page.locator("[data-asset-tool-output] pre, [data-asset-tool-output] code")).toHaveCount(0);
     await expect(page.locator("[data-asset-tool-output]")).not.toContainText("{");
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Original name: player.png");
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Stored path: assets/projects/demo-project/image/player.png");
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Checksum: mock-sha256-");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("player.png image/png");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("2048 bytes");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("mock-sha256-");
+    await expect(page.locator("[data-asset-tool-library]")).not.toContainText(";");
+    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toHaveCount(1);
     await expect(page.locator("[data-asset-tool-table-counts]")).toContainText("asset_role_definitions");
     await expect(page.locator("[data-asset-tool-table-counts]")).toContainText("asset_storage_objects");
 
@@ -174,16 +176,24 @@ test("Asset Role changes update Usage options and import form layout stays usabl
 
     await expect(page.locator("[data-asset-tool-upload-help-cell]")).toHaveAttribute("colspan", "2");
     await expect(page.locator("[data-asset-tool-upload-help-cell]")).toContainText("Image, Video, and Audio upload first.");
+    await expect(page.locator("[data-asset-tool-file-name]")).toHaveText("No file selected.");
+    await expect(page.locator("[data-asset-tool-path]")).toHaveAttribute("readonly", "");
 
     const roleSelectBox = await page.locator("[data-asset-tool-asset-role]").boundingBox();
     const usageSelectBox = await page.locator("[data-asset-tool-usage]").boundingBox();
     const fileInputBox = await page.locator("[data-asset-tool-file]").boundingBox();
     const helpBox = await page.locator("[data-asset-tool-upload-help-cell]").boundingBox();
     const fileRowBox = await page.locator("[data-asset-tool-file]").locator("xpath=ancestor::tr").boundingBox();
+    const fileNameRowBox = await page.locator("[data-asset-tool-file-name]").locator("xpath=ancestor::tr").boundingBox();
+    const labelCellPadding = await page.locator("label[for='assetToolAssetRole']").locator("xpath=ancestor::th").evaluate((node) => getComputedStyle(node).paddingTop);
+    const valueCellPadding = await page.locator("[data-asset-tool-asset-role]").locator("xpath=ancestor::td").evaluate((node) => getComputedStyle(node).paddingTop);
 
     expect(roleSelectBox?.width || 0).toBeGreaterThan(90);
     expect(usageSelectBox?.width || 0).toBeGreaterThan(90);
     expect(fileInputBox?.width || 0).toBeGreaterThan(100);
+    expect(Number.parseFloat(labelCellPadding)).toBeLessThanOrEqual(7);
+    expect(Number.parseFloat(valueCellPadding)).toBeLessThanOrEqual(7);
+    expect((fileNameRowBox?.y || 0)).toBeGreaterThan((fileRowBox?.y || 0));
     expect((helpBox?.y || 0)).toBeGreaterThan((fileRowBox?.y || 0));
 
     expectNoPageFailures(failures);
@@ -208,8 +218,12 @@ test("Image, video, and audio uploads create project-owned metadata and previews
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Hero Sprite to project asset storage.");
     await expect(page.locator("[data-asset-tool-preview-title]")).toHaveText("Hero Sprite Preview");
     await expect(page.locator("[data-asset-tool-preview]")).toHaveText("Image preview: assets/projects/demo-project/image/hero.png from hero.png.");
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("MIME type: image/png");
+    await expect(page.locator("[data-asset-tool-file-name]")).toHaveText("hero.png");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("hero.png image/png");
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Owner project: demo-project");
+    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toHaveCount(1);
+    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toContainText("Hero Sprite");
+    await expect(page.locator("[data-asset-tool-library] tr.is-selected td").nth(4)).not.toContainText(";");
 
     await uploadAsset(page, {
       assetRole: "video",
@@ -221,7 +235,7 @@ test("Image, video, and audio uploads create project-owned metadata and previews
 
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Intro Cutscene to project asset storage.");
     await expect(page.locator("[data-asset-tool-preview]")).toHaveText("Video preview: assets/projects/demo-project/video/intro.mp4 from intro.mp4.");
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("MIME type: video/mp4");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("intro.mp4 video/mp4");
 
     await uploadAsset(page, {
       assetRole: "audio",
@@ -239,6 +253,14 @@ test("Image, video, and audio uploads create project-owned metadata and previews
     await expect(page.locator("[data-asset-tool-output-next-step]")).toHaveText("Build Game");
     await expect(page.locator("[data-asset-tool-library]")).not.toContainText("assets/theme-v2");
     await expect(page.locator("[data-asset-tool-library]")).not.toContainText("assets/images/hero.png");
+    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toHaveCount(1);
+    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toContainText("Theme Music");
+
+    await page.getByRole("button", { name: "Hero Sprite" }).click();
+    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toHaveCount(1);
+    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toContainText("Hero Sprite");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("hero.png image/png");
+    await expect(page.locator("[data-asset-tool-metadata]")).not.toContainText(";");
 
     expectNoPageFailures(failures);
   } finally {

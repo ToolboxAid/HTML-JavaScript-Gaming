@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-05T18:27:22.138Z
+Generated: 2026-06-05T18:45:52.119Z
 Dry run: No
 
 ## Summary
@@ -9,7 +9,7 @@ PASS: 1
 WARN: 0
 FAIL: 0
 SKIP: 14
-Total lane elapsed time: 14.98s
+Total lane elapsed time: 15.29s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
 Status: PASS
 Scheduled lane order: asset-tool
 Reused runtime sessions: 0
-Reused lane snapshots: 1
-Reused warm-start lanes: 1
-Reused dependency hydration: 1
-Prevented graph rebuilds: 1
-Prevented redundant initialization: 1
+Reused lane snapshots: 0
+Reused warm-start lanes: 0
+Reused dependency hydration: 0
+Prevented graph rebuilds: 0
+Prevented redundant initialization: 0
 Prevented redundant browser launches: 0
 Prevented redundant lane execution: 14
 
@@ -64,7 +64,7 @@ Status: PASS
 Target files: tests/playwright/tools/AssetToolMockRepository.spec.mjs
 Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
 Required fixtures: none
-Targeted file/helper reads: 0
+Targeted file/helper reads: 5
 Cached discovery reuse: Yes
 Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
 
@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
 Status: PASS
 Generated manifests: asset-tool:PASS
 Prevented discovery expansion: Yes
-Prevented redundant scans: 0
-Persistent manifest events: asset-tool:REUSED
+Prevented redundant scans: 4
+Persistent manifest events: asset-tool:GENERATED
 
 ## Warm-Start Reuse
 
 Status: PASS
-Warm-start events: asset-tool:REUSED
-Dependency hydration events: asset-tool:REUSED
-Prevented redundant initialization: 1
-Prevented helper resolution passes: 4
+Warm-start events: asset-tool:GENERATED
+Dependency hydration events: asset-tool:GENERATED
+Prevented redundant initialization: 0
+Prevented helper resolution passes: 0
 Prevented fixture ownership traversal: 0
 
 ## Lane Snapshots
 
 Status: PASS
-Snapshot events: asset-tool:REUSED
-Reused snapshots: 1
+Snapshot events: asset-tool:GENERATED
+Reused snapshots: 0
 Invalidated snapshots: 0
-Prevented graph rebuilds: 1
-Prevented redundant dependency traversal: 1
-Prevented fixture/helper graph assembly: 4
+Prevented graph rebuilds: 0
+Prevented redundant dependency traversal: 0
+Prevented fixture/helper graph assembly: 0
 
 ## Lane Deduplication
 
@@ -109,7 +109,7 @@ Prevented Workspace lane reruns: 0
 | project-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge | repo-served Project Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock project repository |
 | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Project Workspace mock project context |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
-| asset-tool | PASS | 14.98s | 1 | Asset Tool rebuild slice validates SQL-shaped asset tables, ready Game Configuration handoff, import/preview workflow, and visible validation errors without exercising unrelated toolbox routes. | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | repo-served Assets page; in-memory SQL-shaped Asset Tool mock repository; Game Configuration mock repository handoff; file-name/path-based import preview |
+| asset-tool | PASS | 15.29s | 1 | Asset Tool rebuild slice validates SQL-shaped asset tables, ready Game Configuration handoff, import/preview workflow, and visible validation errors without exercising unrelated toolbox routes. | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | repo-served Assets page; in-memory SQL-shaped Asset Tool mock repository; Game Configuration mock repository handoff; file-name/path-based import preview |
 | build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Project Workspace mock project context; Toolbox role simulation |
 | tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation | repo-served Admin Tools Progress page; repo-served Toolbox Group view; Toolbox registry build sequence; Project Build Path workflow table |
 | tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Project Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
@@ -125,11 +125,11 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| asset-tool | 2.80s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:250:1 > Asset upload failures are visible and project context is required |
-| asset-tool | 2.30s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:196:1 > Image, video, and audio uploads create project-owned metadata and previews |
-| asset-tool | 1.90s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:161:1 > Asset Role changes update Usage options and import form layout stays usable |
-| asset-tool | 1.70s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:119:1 > Assets page lists all asset roles and starts from active project context |
-| asset-tool | 485ms | tests\playwright\tools\AssetToolMockRepository.spec.mjs:75:1 > Asset Tool repository exposes SQL-shaped role, storage, and metadata ownership |
+| asset-tool | 2.80s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:272:1 > Asset upload failures are visible and project context is required |
+| asset-tool | 2.40s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:206:1 > Image, video, and audio uploads create project-owned metadata and previews |
+| asset-tool | 2.00s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:163:1 > Asset Role changes update Usage options and import form layout stays usable |
+| asset-tool | 1.80s | tests\playwright\tools\AssetToolMockRepository.spec.mjs:119:1 > Assets page lists all asset roles and starts from active project context |
+| asset-tool | 363ms | tests\playwright\tools\AssetToolMockRepository.spec.mjs:75:1 > Asset Tool repository exposes SQL-shaped role, storage, and metadata ownership |
 
 ## Commands
 
@@ -146,7 +146,7 @@ Prevented Workspace lane reruns: 0
 - SKIP
 
 ### asset-tool
-- PASS 14.97s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list
+- PASS 15.29s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### build-path
 - SKIP

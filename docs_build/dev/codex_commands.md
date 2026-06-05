@@ -1070,3 +1070,34 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26156_151-153
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Updated Project Assets > Library Records so the selected record receives a reusable selected-row state.
+- Preserved existing record click behavior and metadata/preview updates.
+- Ensured only one library record is highlighted at a time through snapshot-driven table rendering.
+- Added a selected filename row directly under the File picker in Import Asset.
+- Kept Storage Path read-only.
+- Reduced shared Theme V2 tool form table cell padding to improve narrow panel input space.
+- Replaced semicolon-separated metadata formatting with separate readable metadata lines.
+- Updated targeted Asset Tool Playwright coverage for selected-row state, selected filename row, read-only Storage Path, compact table spacing, and no-semicolon metadata.
+- Added refreshed Playwright V8 coverage artifacts for changed runtime JavaScript.
+- Did not modify archived V1/V2 files.
+- Did not modify `start_of_day`.
+
+Validation:
+- `node --check toolbox/assets/assets.js`
+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `node --check toolbox/assets/assets-mock-repository.js`
+- `node ./scripts/run-targeted-test-lanes.mjs --lane asset-tool`
+- `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list`
+- Full samples smoke: skipped by request and because samples were not changed.
+
+Required reports:
+- `docs_build/dev/reports/asset-library-selection-layout-metadata-report.md`
+- `docs_build/dev/reports/testing_lane_execution_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

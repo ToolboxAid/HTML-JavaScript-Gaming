@@ -19,6 +19,7 @@ const elements = {
   assetRole: document.querySelector("[data-asset-tool-asset-role]"),
   count: document.querySelector("[data-asset-tool-count]"),
   file: document.querySelector("[data-asset-tool-file]"),
+  fileName: document.querySelector("[data-asset-tool-file-name]"),
   form: document.querySelector("[data-asset-tool-form]"),
   handoffContext: document.querySelector("[data-asset-tool-handoff-context]"),
   handoffOverlay: document.querySelector("[data-asset-tool-handoff-overlay]"),
@@ -93,6 +94,20 @@ function createListItem(text) {
   const item = document.createElement("li");
   item.textContent = text;
   return item;
+}
+
+function createMetadataCell(asset) {
+  const cell = document.createElement("td");
+  [
+    `${asset.originalName} ${asset.mimeType}`,
+    `${asset.size} bytes`,
+    asset.checksum
+  ].forEach((line) => {
+    const item = document.createElement("div");
+    item.textContent = line;
+    cell.append(item);
+  });
+  return cell;
 }
 
 function currentFile() {
@@ -230,12 +245,19 @@ function renderLibrary(snapshot) {
   snapshot.assets.forEach((asset) => {
     const row = document.createElement("tr");
     row.dataset.assetToolRow = asset.id;
+    if (snapshot.selectedAsset?.id === asset.id) {
+      row.className = "is-selected";
+      row.setAttribute("aria-selected", "true");
+    } else {
+      row.setAttribute("aria-selected", "false");
+    }
 
     const nameCell = document.createElement("td");
     const select = document.createElement("button");
     select.className = "btn";
     select.type = "button";
     select.dataset.assetToolSelect = asset.id;
+    select.setAttribute("aria-pressed", String(snapshot.selectedAsset?.id === asset.id));
     select.textContent = asset.name;
     nameCell.append(select);
 
@@ -244,7 +266,7 @@ function renderLibrary(snapshot) {
       createCell(asset.assetRoleLabel),
       createCell(asset.usage),
       createCell(asset.storedPath),
-      createCell(`${asset.originalName}; ${asset.mimeType}; ${asset.size} bytes; ${asset.checksum}`),
+      createMetadataCell(asset),
       createCell(asset.status)
     );
     elements.library.append(row);
@@ -290,12 +312,11 @@ function renderMetadata(snapshot) {
   }
 
   [
-    `Original name: ${asset.originalName}`,
+    `${asset.originalName} ${asset.mimeType}`,
+    `${asset.size} bytes`,
+    asset.checksum,
     `Stored path: ${asset.storedPath}`,
     `Role: ${asset.assetRoleLabel}`,
-    `MIME type: ${asset.mimeType}`,
-    `Size: ${asset.size} bytes`,
-    `Checksum: ${asset.checksum}`,
     `Owner project: ${asset.ownerProjectId}`
   ].forEach((item) => elements.metadata.append(createListItem(item)));
 }
@@ -327,6 +348,11 @@ function render() {
   renderMetadata(snapshot);
   renderOutput(snapshot);
   updateStoragePathPreview();
+  updateSelectedFileName();
+}
+
+function updateSelectedFileName() {
+  setText(elements.fileName, currentFile()?.name || "No file selected.");
 }
 
 function validateCurrentForm() {
@@ -364,6 +390,7 @@ elements.file?.addEventListener("change", () => {
   if (elements.name && !elements.name.value.trim()) {
     elements.name.value = fileStem(file.name);
   }
+  updateSelectedFileName();
   updateStoragePathPreview();
   validateCurrentForm();
 });
