@@ -2,6 +2,11 @@ import { createGameConfigurationMockRepository } from "../game-configuration/gam
 import {
   createProjectWorkspacePaletteRepository
 } from "../colors/palette-workspace-repository.js";
+import {
+  loadMockDbTables,
+  mockDbPersistenceEnabled,
+  saveMockDbTables,
+} from "../../src/shared/mock-db/mock-db-store.js";
 
 export const ASSET_TOOL_TABLES = Object.freeze([
   "asset_role_definitions",
@@ -10,6 +15,8 @@ export const ASSET_TOOL_TABLES = Object.freeze([
   "asset_import_events",
   "asset_validation_items"
 ]);
+
+const ASSET_DB_OWNER = "asset";
 
 export const ASSET_PICKER_MODES = Object.freeze([
   "file",
@@ -451,8 +458,19 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
 export function createAssetToolMockRepository(options = {}) {
   const configurationRepository = options.configurationRepository || createReadyGameConfigurationRepository();
   const paletteRepository = options.paletteRepository || createProjectWorkspacePaletteRepository();
-  let tables = createEmptyTables();
+  const loadedMockDbTables = loadMockDbTables(ASSET_DB_OWNER, createEmptyTables(), options);
+  const persistenceEnabled = mockDbPersistenceEnabled(options);
+  let hasPersistedTables = Boolean(loadedMockDbTables.persisted && persistenceEnabled);
+  let tables = loadedMockDbTables.tables;
+  tables.asset_role_definitions = roleDefinitionRows();
   let selectedAssetId = "";
+
+  function persistTables() {
+    saveMockDbTables(ASSET_DB_OWNER, tables, options);
+    if (persistenceEnabled) {
+      hasPersistedTables = true;
+    }
+  }
 
   function getConfigurationHandoff() {
     const snapshot = configurationRepository.getSnapshot();
@@ -742,6 +760,7 @@ export function createAssetToolMockRepository(options = {}) {
     }
     selectedAssetId = asset.id;
     replaceValidationRows(projectId, []);
+    persistTables();
 
     return {
       asset,
@@ -815,6 +834,7 @@ export function createAssetToolMockRepository(options = {}) {
     tables.asset_import_events = tables.asset_import_events.filter((row) => row.projectId !== projectId);
     tables.asset_validation_items = tables.asset_validation_items.filter((row) => row.projectId !== projectId);
     selectedAssetId = "";
+    persistTables();
     return {
       deletedFiles,
       deletedFolders,
@@ -828,6 +848,7 @@ export function createAssetToolMockRepository(options = {}) {
   function clearAssetLibrary() {
     tables = createEmptyTables();
     selectedAssetId = "";
+    persistTables();
     return getSnapshot();
   }
 
@@ -847,6 +868,10 @@ export function createAssetToolMockRepository(options = {}) {
   function makeReadyGameConfiguration() {
     configurationRepository.makeValidGameDesign("demo-project");
     configurationRepository.updateConfiguration("demo-project", READY_CONFIGURATION_INPUT);
+    if (hasPersistedTables) {
+      selectedAssetId = tables.asset_library_items[0]?.id || "";
+      return getSnapshot();
+    }
     clearAssetLibrary();
     seedDemoAssets();
     return getSnapshot();
@@ -940,8 +965,13 @@ export function createAssetToolMockRepository(options = {}) {
     };
   }
 
-  clearAssetLibrary();
-  seedDemoAssets();
+  if (hasPersistedTables) {
+    selectedAssetId = tables.asset_library_items[0]?.id || "";
+    persistTables();
+  } else {
+    clearAssetLibrary();
+    seedDemoAssets();
+  }
 
   return {
     ASSET_ROLE_DEFINITIONS,

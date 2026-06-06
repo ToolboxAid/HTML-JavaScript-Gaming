@@ -612,6 +612,15 @@ test("representative active tool pages align center cleanup and registry group c
       ), legacyHeaderClasses);
       expect(sidePanelStyles.every((styles) => styles.staleHeaderClasses.length === 0)).toBe(true);
       expect(sidePanelStyles.every((styles) => styles.headerBackgroundColor !== "rgba(0, 0, 0, 0)")).toBe(true);
+      const sidePanelHrColors = await sideColumns.evaluateAll((columns) => (
+        columns.map((column) => {
+          const hr = document.createElement("hr");
+          column.append(hr);
+          const borderColor = getComputedStyle(hr).borderTopColor;
+          hr.remove();
+          return borderColor;
+        })
+      ));
 
       if (expectedFromToolboxGroup) {
         expect(sidePanelStyles.map((styles) => styles.borderColor)).toEqual([
@@ -619,6 +628,10 @@ test("representative active tool pages align center cleanup and registry group c
           expectedFromToolboxGroup.borderColor
         ]);
         expect(sidePanelStyles.map((styles) => styles.headerColor)).toEqual([
+          expectedFromToolboxGroup.borderColor,
+          expectedFromToolboxGroup.borderColor
+        ]);
+        expect(sidePanelHrColors).toEqual([
           expectedFromToolboxGroup.borderColor,
           expectedFromToolboxGroup.borderColor
         ]);

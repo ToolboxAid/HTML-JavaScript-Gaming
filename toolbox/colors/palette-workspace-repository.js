@@ -1,5 +1,9 @@
 import { createProjectWorkspaceMockRepository } from "../project-workspace/project-workspace-mock-repository.js";
 import { createPaletteSourceMockDbRows } from "./palette-source-mock-db.js";
+import {
+  loadMockDbTables,
+  saveMockDbTables,
+} from "../../src/shared/mock-db/mock-db-store.js";
 
 export const PALETTE_TOOL_KEY = "palette-browser";
 export const PALETTE_WORKSPACE_PATH = `tools.${PALETTE_TOOL_KEY}.swatches`;
@@ -12,6 +16,8 @@ export const PALETTE_TOOL_TABLES = Object.freeze([
   "project_workspace_palette_globals",
   "palette_swatch_usages"
 ]);
+
+const PALETTE_DB_OWNER = "palette";
 
 export const PALETTE_HARMONY_MATCH_SOURCES = Object.freeze([
   { id: "calculated", label: "Calculated" },
@@ -565,18 +571,36 @@ function createUsageId(projectId, swatchSymbol, assetId) {
 
 export function createProjectWorkspacePaletteRepository(options = {}) {
   const projectWorkspaceRepository = options.projectWorkspaceRepository || createProjectWorkspaceMockRepository();
-  const mockDbTables = createPaletteToolMockDbTables(options.tables || {});
+  const seedMockDbTables = {
+    palette_colors: [],
+    palette_swatch_usages: [],
+    project_workspace_palette_globals: [],
+    ...createPaletteToolMockDbTables(options.tables || {}),
+  };
+  const loadedMockDbTables = loadMockDbTables(PALETTE_DB_OWNER, seedMockDbTables, options).tables;
   const sourcePaletteInputRows = Object.prototype.hasOwnProperty.call(options, "sourcePaletteRows")
     ? options.sourcePaletteRows
-    : mockDbTables.palette_source_swatches;
+    : loadedMockDbTables.palette_source_swatches;
   const sourcePaletteRecordCount = Array.isArray(sourcePaletteInputRows) ? sourcePaletteInputRows.length : 0;
   const sourcePaletteRows = normalizeSourcePaletteRows(sourcePaletteInputRows);
   const workspaceRecords = new Map();
-  const paletteColorRows = [];
-  const usageRows = [];
+  const paletteColorRows = (loadedMockDbTables.palette_colors || []).map((row) => ({
+    ...row,
+    tags: Array.isArray(row.tags) ? [...row.tags] : normalizeTags(row.tags),
+  }));
+  const usageRows = (loadedMockDbTables.palette_swatch_usages || []).map((row) => ({ ...row }));
+  (loadedMockDbTables.project_workspace_palette_globals || []).forEach((row) => {
+    if (row.projectId) {
+      workspaceRecords.set(row.projectId, createEmptyWorkspaceRecord(row.projectId));
+    }
+  });
   const undoStacks = new Map();
   const redoStacks = new Map();
   let selectedSymbol = "";
+
+  function persistTables() {
+    saveMockDbTables(PALETTE_DB_OWNER, getTables(), options);
+  }
 
   function getActiveProject() {
     return projectWorkspaceRepository.getActiveProject();
@@ -693,6 +717,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     } else if (!activeSwatches.some((swatch) => swatch.symbol === selectedSymbol)) {
       selectedSymbol = optionsForReplace.selection === "preserve" ? "" : activeSwatches[0]?.symbol || "";
     }
+    persistTables();
 
     return {
       ok: true,
@@ -1244,6 +1269,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     selectedSymbol = swatchesFromColorRows(projectId)[0]?.symbol || "";
     undoStacks.set(projectId, []);
     redoStacks.set(projectId, []);
+    persistTables();
     return {
       ok: true,
       message: `Palette payload loaded into ${PALETTE_WORKSPACE_PATH}.`,
@@ -1291,6 +1317,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     } else {
       usageRows.push(row);
     }
+    persistTables();
     return {
       ok: true,
       message: `Recorded ${row.toolId} usage for ${swatch.name}.`,
@@ -1317,6 +1344,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     usageRows.splice(0);
     workspaceRecords.clear();
     selectedSymbol = "";
+    persistTables();
     return getSnapshot();
   }
 
@@ -1326,6 +1354,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     usageRows.splice(0);
     workspaceRecords.clear();
     selectedSymbol = "";
+    persistTables();
     return getSnapshot();
   }
 

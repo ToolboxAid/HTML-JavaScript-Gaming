@@ -12,24 +12,35 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(86%) Toolbox Index - exercised 6 runtime JS files
+(82%) Toolbox Index - exercised 13 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (74%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 961/961; executed functions 76/80
+(70%) toolbox/colors/palette-workspace-repository.js - executed lines 1315/1315; executed functions 89/127
+(81%) toolbox/assets/assets-mock-repository.js - executed lines 913/913; executed functions 61/75
+(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 992/992; executed functions 80/84
 (96%) toolbox/project-journey/project-journey.js - executed lines 950/950; executed functions 100/104
+(100%) src/shared/mock-db/mock-db-store.js - executed lines 176/176; executed functions 20/20
 
 Files with executed line/function counts where available:
 (67%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 10/15
+(69%) toolbox/colors/colors.js - executed lines 883/883; executed functions 62/90
+(70%) toolbox/colors/palette-workspace-repository.js - executed lines 1315/1315; executed functions 89/127
 (71%) toolbox/project-workspace/project-workspace.js - executed lines 264/264; executed functions 17/24
 (73%) toolbox/tools-page-accordions.js - executed lines 826/826; executed functions 55/75
 (76%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 26/34
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 207/207; executed functions 16/20
+(81%) toolbox/assets/assets-mock-repository.js - executed lines 913/913; executed functions 61/75
+(85%) toolbox/game-configuration/game-configuration-mock-repository.js - executed lines 290/290; executed functions 29/34
 (86%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 32/37
-(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 961/961; executed functions 76/80
+(88%) toolbox/assets/assets.js - executed lines 519/519; executed functions 53/60
+(89%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 33/37
+(94%) admin/db-viewer.js - executed lines 389/389; executed functions 68/72
+(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 992/992; executed functions 80/84
 (96%) toolbox/project-journey/project-journey.js - executed lines 950/950; executed functions 100/104
-(98%) admin/db-viewer.js - executed lines 227/227; executed functions 41/42
+(100%) src/shared/mock-db/mock-db-store.js - executed lines 176/176; executed functions 20/20
+(100%) toolbox/colors/palette-source-mock-db.js - executed lines 927/927; executed functions 6/6
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
@@ -37,6 +48,10 @@ Uncovered or low-coverage changed JS files:
 Changed JS files considered:
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+(70%) toolbox/colors/palette-workspace-repository.js - changed JS file with browser V8 coverage
+(81%) toolbox/assets/assets-mock-repository.js - changed JS file with browser V8 coverage
+(94%) admin/db-viewer.js - changed JS file with browser V8 coverage
 (95%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage
 (96%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage
-(98%) admin/db-viewer.js - changed JS file with browser V8 coverage
+(100%) src/shared/mock-db/mock-db-store.js - changed JS file with browser V8 coverage

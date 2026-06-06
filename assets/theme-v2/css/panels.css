@@ -159,6 +159,10 @@
   color: var(--tool-group-color)
 }
 
+.tool-column[class*="tool-group-"] hr {
+  border-color: var(--tool-group-accent)
+}
+
 .tool-column .accordion-stack {
   padding: var(--space-8) var(--space-12);
   gap: var(--space-8)
@@ -434,6 +438,10 @@ body.tool-focus-mode .tool-display-mode__badge {
   border-top: var(--border-standard);
   grid-column: 1 / -1;
   min-height: var(--space-0)
+}
+
+.tool-column[class*="tool-group-"] .tool-stat-divider {
+  border-top-color: var(--tool-group-accent)
 }
 
 .brand-color-code {

@@ -1,9 +1,29 @@
 import {
   createProjectWorkspaceMockRepository,
 } from "../project-workspace/project-workspace-mock-repository.js";
+import {
+  loadMockDbTables,
+  saveMockDbTables,
+} from "../../src/shared/mock-db/mock-db-store.js";
 
 function makeUlid(sequence) {
   return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;
+}
+
+function sequenceFromUlid(value) {
+  const match = /^01K2GFSJ0Y(\d{16})$/.exec(String(value || ""));
+  return match ? Number.parseInt(match[1], 10) : Number.NaN;
+}
+
+function nextUlidSequence(records, startAt, endBefore) {
+  const maxSequence = records.reduce((max, record) => {
+    const sequence = sequenceFromUlid(record.key);
+    if (!Number.isFinite(sequence) || sequence < startAt || sequence >= endBefore) {
+      return max;
+    }
+    return Math.max(max, sequence);
+  }, startAt - 1);
+  return maxSequence + 1;
 }
 
 export const PROJECT_JOURNEY_KEYS = Object.freeze({
@@ -59,6 +79,7 @@ export const PROJECT_JOURNEY_KEYS = Object.freeze({
 export const PROJECT_JOURNEY_CURRENT_USER_KEY = PROJECT_JOURNEY_KEYS.users.designer;
 
 const PROJECT_JOURNEY_ROUTE_PROJECT_ALIAS = "demo-project";
+const PROJECT_JOURNEY_DB_OWNER = "project-journey";
 const GENERATED_ULID_SEQUENCE = Object.freeze({
   item: 1001,
   activity: 2001,
@@ -451,20 +472,25 @@ function getSeedTables() {
 export function createProjectJourneyMockRepository(options = {}) {
   const workspaceRepository =
     options.workspaceRepository || createProjectWorkspaceMockRepository();
-  const tables = getSeedTables();
+  const tables = loadMockDbTables(PROJECT_JOURNEY_DB_OWNER, getSeedTables(), options).tables;
   let selectedNoteKey = PROJECT_JOURNEY_KEYS.notes.designPass;
   let selectedItemKey = PROJECT_JOURNEY_KEYS.items.designAffordance;
-  let nextItemNumber = GENERATED_ULID_SEQUENCE.item;
-  let nextActivityNumber = GENERATED_ULID_SEQUENCE.activity;
-  let nextTypeNumber = GENERATED_ULID_SEQUENCE.type;
-  let nextNoteNumber = GENERATED_ULID_SEQUENCE.note;
-  let nextDiagnosticNumber = GENERATED_ULID_SEQUENCE.diagnostic;
+  let nextItemNumber = nextUlidSequence(tables.project_journey_items, GENERATED_ULID_SEQUENCE.item, GENERATED_ULID_SEQUENCE.activity);
+  let nextActivityNumber = nextUlidSequence(tables.project_journey_activity, GENERATED_ULID_SEQUENCE.activity, GENERATED_ULID_SEQUENCE.type);
+  let nextTypeNumber = nextUlidSequence(tables.project_journey_note_types, GENERATED_ULID_SEQUENCE.type, GENERATED_ULID_SEQUENCE.note);
+  let nextNoteNumber = nextUlidSequence(tables.project_journey_notes, GENERATED_ULID_SEQUENCE.note, GENERATED_ULID_SEQUENCE.diagnostic);
+  let nextDiagnosticNumber = nextUlidSequence(tables.project_journey_items, GENERATED_ULID_SEQUENCE.diagnostic, Number.POSITIVE_INFINITY);
+
+  function persistTables() {
+    saveMockDbTables(PROJECT_JOURNEY_DB_OWNER, tables, options);
+  }
 
   function touchNote(noteKey, updatedByType = "user") {
     const note = tables.project_journey_notes.find((item) => item.key === noteKey);
     if (note) {
       note.updatedAt = new Date().toISOString();
       note.updatedByType = updatedByType === "system" ? "system" : "user";
+      persistTables();
     }
   }
 
@@ -481,6 +507,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       updatedByType: byType === "system" ? "system" : "user",
     });
     nextActivityNumber += 1;
+    persistTables();
   }
 
   function getActiveProject() {
@@ -757,6 +784,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     selectedItemKey = item.key;
     touchNote(note.key, "user");
     addActivity(activeProject.key, note.key, `Added item to ${note.name}`, "user");
+    persistTables();
     return hydrateItem(item);
   }
 
@@ -791,6 +819,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       "";
     touchNote(item.noteKey, "user");
     addActivity(activeProject.key, item.noteKey, `Deleted user item from ${note?.name || "Project Journey"}`, "user");
+    persistTables();
     return {
       deleted: true,
       reason: "Deleted user-created item.",
@@ -828,6 +857,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     selectedNoteKey = item.noteKey;
     touchNote(item.noteKey, item.updatedByType);
     addActivity(activeProject.key, item.noteKey, `${item.updatedByType === "system" ? "System" : "User"} updated selected journey item`, item.updatedByType);
+    persistTables();
     return hydrateItem(item);
   }
 
@@ -861,6 +891,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     resequence(items);
     touchNote(item.noteKey, "user");
     addActivity(activeProject.key, item.noteKey, "Reordered journey items", "user");
+    persistTables();
     return hydrateItem(item);
   }
 
@@ -884,6 +915,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     note.typeKey = type.key;
     touchNote(note.key, "user");
     addActivity(activeProject.key, note.key, `Changed ${note.name} type to ${type.name}`, "user");
+    persistTables();
     return getSelectedNote();
   }
 
@@ -924,6 +956,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     };
     nextTypeNumber += 1;
     tables.project_journey_note_types.push(type);
+    persistTables();
     return {
       type: clone(type),
       created: true,
@@ -1003,6 +1036,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       return hydrateItem(item);
     });
     touchNote(noteKey, "system");
+    persistTables();
     return created;
   }
 

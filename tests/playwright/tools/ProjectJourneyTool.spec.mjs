@@ -151,17 +151,23 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     expect(statTileLayout.every((tile) => tile.valueLabelSameLine)).toBe(true);
     expect(statTileLayout.every((tile) => tile.labelClass === "" && !tile.hasStatusClass)).toBe(true);
     const dividerPlacement = await page.locator("[data-journey-stat-divider]").evaluate((divider) => {
+      const column = divider.closest(".tool-column[class*='tool-group-']");
       return {
         previousStat: divider.previousElementSibling?.querySelector("[data-journey-stat-label]")?.textContent?.trim(),
         nextStat: divider.nextElementSibling?.querySelector("[data-journey-stat-label]")?.textContent?.trim(),
+        borderTopColor: getComputedStyle(divider).borderTopColor,
+        borderTopWidth: getComputedStyle(divider).borderTopWidth,
+        columnBorderColor: column ? getComputedStyle(column).borderTopColor : "",
         role: divider.getAttribute("role"),
       };
     });
-    expect(dividerPlacement).toEqual({
+    expect(dividerPlacement).toMatchObject({
       previousStat: "Total",
       nextStat: statusLabels()[0],
+      borderTopWidth: "1px",
       role: "separator",
     });
+    expect(dividerPlacement.borderTopColor).toBe(dividerPlacement.columnBorderColor);
     await expect(page.locator(`[data-journey-note-button="${PROJECT_JOURNEY_KEYS.notes.designPass}"]`)).toHaveClass(/primary/);
     await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`)).toHaveClass(/primary/);
     await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`)).toContainText("Designer review should focus on checkbox visibility");
