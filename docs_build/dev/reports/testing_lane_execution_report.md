@@ -195,6 +195,21 @@ This section records the full targeted validation set for `PR_26156_189-project-
 
 Full samples smoke was not run, per PR instructions.
 
+## PR_26156_191 Admin Notes Live Folder Listing Manual Lane Summary
+
+This section records the targeted validation set for `PR_26156_191-admin-notes-live-folder-listing`.
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `node --check admin/notes.js` | PASS | Admin Notes live listing/runtime syntax check. |
+| `node --check tests/helpers/playwrightRepoServer.mjs` | PASS | Local/dev filesystem listing endpoint syntax check. |
+| `node --check tests/playwright/tools/AdminNotesViewer.spec.mjs` | PASS | Admin Notes filesystem/listing spec syntax check. |
+| `rg --pcre2 ... admin/notes.js admin/notes.html tests/helpers/playwrightRepoServer.mjs tests/playwright/tools/AdminNotesViewer.spec.mjs docs_build/dev/admin-notes` | PASS | No tracked directory-index references, no inline CSS/script handlers, no archive/start_of_day references. |
+| `npx playwright test tests/playwright/tools/AdminNotesViewer.spec.mjs --workers=1` | PASS | 4 tests; live filesystem Current Folder listing, manually added folder/file, folder index links, file links, Open folder target/diagnostic, root return, traversal rejection. |
+| `npm run test:playwright:static` | PASS | Changed-file/static zero-browser validation. |
+
+Full samples smoke was not run, per PR instructions.
+
 ## PR_26156_190 Status Legend And Journey Counts Manual Lane Summary
 
 This section records the targeted validation set for `PR_26156_190-status-legend-and-journey-counts-polish`.

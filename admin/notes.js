@@ -1,10 +1,10 @@
 const NOTES_DIRECTORY = "docs_build/dev/admin-notes";
-const DIRECTORY_INDEX_PATH = `${NOTES_DIRECTORY}/directory-index.json`;
 const DEFAULT_NOTE = "index";
 const LINK_CLASS = "btn btn--compact primary";
 const NOTE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
 const STATUS_ICON_PATTERN = /^\[([ xX.!?])\]\s*(.*)$/;
 const NOTE_INDEX_FILE = "index.txt";
+const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
 const STATUS_MARKERS = {
   " ": {
     marker: "[ ]",
@@ -53,8 +53,9 @@ class AdminNotesViewer {
     this.content = documentRef.querySelector("[data-admin-notes-content]");
     this.directory = documentRef.querySelector("[data-admin-notes-directory]");
     this.directoryLinks = documentRef.querySelector("[data-admin-notes-directory-links]");
+    this.openFolderLink = documentRef.querySelector("[data-admin-notes-open-folder]");
+    this.folderDiagnostic = documentRef.querySelector("[data-admin-notes-folder-diagnostic]");
     this.legendList = documentRef.querySelector("[data-admin-notes-legend-list]");
-    this.directoryIndex = null;
     this.bindEvents();
   }
 
@@ -70,6 +71,16 @@ class AdminNotesViewer {
         return;
       }
       this.openNote(link.dataset.adminNoteLink || DEFAULT_NOTE, true);
+    });
+    this.openFolderLink?.addEventListener("click", (event) => {
+      if (!this.openFolderLink.href || this.openFolderLink.getAttribute("aria-disabled") === "true") {
+        event.preventDefault();
+        this.setFolderDiagnostic("Open folder is available only for safe Admin Notes folders in local/dev mode.");
+        return;
+      }
+      event.preventDefault();
+      this.documentRef.defaultView?.open(this.openFolderLink.href, "_blank", "noopener,noreferrer");
+      this.setFolderDiagnostic("If the folder did not open, your browser may require local file or dev-server mode for folder links.");
     });
   }
 
@@ -213,6 +224,17 @@ class AdminNotesViewer {
     return normalizedPath;
   }
 
+  adminNotesFolderPathFromValue(value) {
+    const folderPath = this.rootRelativeFolderPathFromValue(value);
+    if (!folderPath) {
+      return null;
+    }
+    if (folderPath !== NOTES_DIRECTORY && !folderPath.startsWith(`${NOTES_DIRECTORY}/`)) {
+      return null;
+    }
+    return folderPath;
+  }
+
   fileNameForPath(filePath) {
     return String(filePath || "").split("/").pop() || NOTE_INDEX_FILE;
   }
@@ -250,7 +272,10 @@ class AdminNotesViewer {
   }
 
   async renderDirectoryLinks(folderPath, currentFilePath) {
-    const entries = await this.directoryEntriesForFolder(folderPath);
+    const listing = await this.directoryListingForFolder(folderPath);
+    this.updateOpenFolderLink(listing);
+    this.setFolderDiagnostic(listing.error || "");
+    const entries = listing.entries;
     const safeEntries = entries
       .map((entry) => this.safeDirectoryEntry(entry))
       .filter(Boolean)
@@ -263,27 +288,68 @@ class AdminNotesViewer {
     });
   }
 
-  async directoryEntriesForFolder(folderPath) {
-    const safeFolderPath = this.rootRelativeFolderPathFromValue(folderPath);
+  async directoryListingForFolder(folderPath) {
+    const safeFolderPath = this.adminNotesFolderPathFromValue(folderPath);
     if (!safeFolderPath) {
-      return [];
-    }
-    const directoryIndex = await this.loadDirectoryIndex();
-    const entries = directoryIndex.folders?.[safeFolderPath];
-    return Array.isArray(entries) ? entries : [];
-  }
-
-  async loadDirectoryIndex() {
-    if (this.directoryIndex) {
-      return this.directoryIndex;
+      return {
+        entries: [],
+        error: "Current Folder listing is restricted to docs_build/dev/admin-notes/."
+      };
     }
     try {
-      const response = await fetch(DIRECTORY_INDEX_PATH, { cache: "no-store" });
-      this.directoryIndex = response.ok ? await response.json() : { folders: {} };
+      const response = await fetch(this.directoryListingUrl(safeFolderPath), { cache: "no-store" });
+      if (!response.ok) {
+        return {
+          entries: [],
+          error: "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
+        };
+      }
+      const listing = await response.json();
+      return {
+        entries: Array.isArray(listing.entries) ? listing.entries : [],
+        folderPath: this.adminNotesFolderPathFromValue(listing.folderPath),
+        folderFileUrl: this.safeFolderFileUrl(listing.folderFileUrl),
+        error: ""
+      };
     } catch {
-      this.directoryIndex = { folders: {} };
+      return {
+        entries: [],
+        error: "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
+      };
     }
-    return this.directoryIndex;
+  }
+
+  directoryListingUrl(folderPath) {
+    const folderUrl = folderPath.endsWith("/") ? folderPath : `${folderPath}/`;
+    return `${folderUrl}?${DIRECTORY_LIST_QUERY}=1`;
+  }
+
+  safeFolderFileUrl(value) {
+    const rawValue = String(value || "").trim();
+    if (!rawValue || !rawValue.startsWith("file://")) {
+      return "";
+    }
+    return rawValue;
+  }
+
+  setFolderDiagnostic(message) {
+    if (this.folderDiagnostic) {
+      this.folderDiagnostic.textContent = message;
+    }
+  }
+
+  updateOpenFolderLink(listing) {
+    if (!this.openFolderLink) {
+      return;
+    }
+    const folderUrl = listing.folderFileUrl || "";
+    if (!folderUrl) {
+      this.openFolderLink.href = "#";
+      this.openFolderLink.setAttribute("aria-disabled", "true");
+      return;
+    }
+    this.openFolderLink.href = folderUrl;
+    this.openFolderLink.setAttribute("aria-disabled", "false");
   }
 
   safeDirectoryEntry(entry) {
@@ -296,36 +362,26 @@ class AdminNotesViewer {
       if (!path.endsWith(`/${NOTE_INDEX_FILE}`)) {
         return null;
       }
-      const folderPath = this.folderPathForFile(path);
-      const noteName = this.noteNameForDirectoryPath(folderPath);
-      return { label, noteName, path, type: "folder" };
+      if (!this.adminNotesFolderPathFromValue(this.folderPathForFile(path))) {
+        return null;
+      }
+      return { label, path, type: "folder" };
     }
     if (entry.type === "file") {
+      if (!this.adminNotesFolderPathFromValue(this.folderPathForFile(path))) {
+        return null;
+      }
       return { label, path, type: "file" };
     }
     return null;
-  }
-
-  noteNameForDirectoryPath(folderPath) {
-    const prefix = `${NOTES_DIRECTORY}/`;
-    if (!folderPath.startsWith(prefix)) {
-      return null;
-    }
-    const noteName = folderPath.slice(prefix.length);
-    return this.validNoteName(noteName) ? noteName : null;
   }
 
   directoryLink(entry) {
     const link = this.documentRef.createElement("a");
     link.className = LINK_CLASS;
     link.textContent = entry.label;
-    if (entry.type === "folder" && entry.noteName) {
-      link.href = this.hrefForNote(entry.noteName);
-      link.dataset.adminNoteLink = entry.noteName;
-    } else {
-      link.href = this.hrefForFile(entry.path);
-      link.dataset.adminNoteFile = entry.path;
-    }
+    link.href = this.hrefForFile(entry.path);
+    link.dataset.adminNoteFile = entry.path;
     link.dataset.adminNotesDirectoryLink = entry.type;
     return link;
   }

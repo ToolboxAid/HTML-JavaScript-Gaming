@@ -1,7 +1,18 @@
 import { expect, test } from "@playwright/test";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(__dirname, "../../..");
+const adminNotesRoot = path.join(repoRoot, "docs_build", "dev", "admin-notes");
+const liveFolder = path.join(adminNotesRoot, "live-folder-fixture");
+const liveFolderIndex = path.join(liveFolder, "index.txt");
+const liveFolderChild = path.join(liveFolder, "child-note.txt");
+const liveTextFile = path.join(adminNotesRoot, "live-note-fixture.txt");
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -17,6 +28,19 @@ test.afterEach(async ({ page }) => {
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
+
+async function removeLiveFixtures() {
+  await fs.rm(liveFolder, { recursive: true, force: true });
+  await fs.rm(liveTextFile, { force: true });
+}
+
+async function createLiveFixtures() {
+  await removeLiveFixtures();
+  await fs.mkdir(liveFolder, { recursive: true });
+  await fs.writeFile(liveFolderIndex, "Ideas\n- [ ] Live folder index rendered from filesystem.\n", "utf8");
+  await fs.writeFile(liveFolderChild, "Ideas\n- [.] Live child text file rendered from filesystem.\n", "utf8");
+  await fs.writeFile(liveTextFile, "Ideas\n- [!] Live text note rendered from filesystem.\n", "utf8");
+}
 
 async function openRepoPage(page, pathName) {
   const server = await startRepoServer();
@@ -92,10 +116,21 @@ test("Admin Notes displays index.txt, parser output, and linked subnotes", async
     expect(rootLinkBox).not.toBeNull();
     expect(rootLinkBox.x).toBeGreaterThan(currentFolderTitleBox.x + currentFolderTitleBox.width);
     expect(rootLinkBox.y).toBeLessThan(currentFolderTitleBox.y + currentFolderTitleBox.height);
+    const openFolderLink = page.locator("[data-admin-notes-open-folder]");
+    await expect(openFolderLink).toHaveText("Open folder");
+    await expect(openFolderLink).toHaveAttribute("href", /^file:\/\/.+docs_build.+admin-notes\/?$/);
+    await expect(openFolderLink).toHaveAttribute("aria-disabled", "false");
+    expect(await openFolderLink.getAttribute("href")).not.toContain("index.txt");
+    await page.evaluate(() => {
+      window.open = () => null;
+    });
+    await openFolderLink.click();
+    await expect(page.locator("[data-admin-notes-folder-diagnostic]")).toContainText("browser may require local file or dev-server mode");
     await expect(page.locator("[data-admin-notes-root-link]")).toHaveText("Return to root index");
     await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "index.txt" })).toHaveCount(0);
     const directoryFolderLink = page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "other/" });
-    await expect(directoryFolderLink).toHaveAttribute("data-admin-note-link", "other");
+    await expect(directoryFolderLink).toHaveAttribute("data-admin-note-file", "docs_build/dev/admin-notes/other/index.txt");
+    await expect(directoryFolderLink).toHaveAttribute("data-admin-notes-directory-link", "folder");
     const directoryFileLink = page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "quick-reference.txt" });
     await expect(directoryFileLink).toHaveAttribute("data-admin-note-file", "docs_build/dev/admin-notes/quick-reference.txt");
     await expect(page.locator("[data-admin-notes-legend]")).toBeVisible();
@@ -126,6 +161,8 @@ test("Admin Notes displays index.txt, parser output, and linked subnotes", async
     await expect(page.locator("[data-admin-notes-content]")).toContainText("current-folder file link");
     await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "other/" })).toBeVisible();
     await expect(page.locator("[data-admin-notes-root-link]")).toBeVisible();
+    await expect(openFolderLink).toHaveAttribute("href", /^file:\/\/.+docs_build.+admin-notes\/?$/);
+    expect(await openFolderLink.getAttribute("href")).not.toContain("quick-reference.txt");
 
     await page.locator("[data-admin-notes-root-link]").click();
     await page.waitForURL(/admin\/notes\.html$/);
@@ -159,6 +196,51 @@ test("Admin Notes displays index.txt, parser output, and linked subnotes", async
   }
 });
 
+test("Admin Notes lists manually added filesystem folders and text files", async ({ page }) => {
+  await createLiveFixtures();
+  const failures = await openRepoPage(page, "/admin/notes.html");
+
+  try {
+    const liveFolderLink = page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "live-folder-fixture/" });
+    const liveFileLink = page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "live-note-fixture.txt" });
+    await expect(liveFolderLink).toHaveAttribute("data-admin-note-file", "docs_build/dev/admin-notes/live-folder-fixture/index.txt");
+    await expect(liveFolderLink).toHaveAttribute("data-admin-notes-directory-link", "folder");
+    await expect(liveFileLink).toHaveAttribute("data-admin-note-file", "docs_build/dev/admin-notes/live-note-fixture.txt");
+    await expect(liveFileLink).toHaveAttribute("data-admin-notes-directory-link", "file");
+
+    await liveFileLink.click();
+    await page.waitForURL(/admin\/notes\.html\?file=docs_build%2Fdev%2Fadmin-notes%2Flive-note-fixture\.txt$/);
+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Live text note rendered from filesystem");
+    await expect(page.locator("[data-admin-notes-open-folder]")).toHaveAttribute("href", /^file:\/\/.+docs_build.+admin-notes\/?$/);
+
+    await page.locator("[data-admin-notes-root-link]").click();
+    await page.waitForURL(/admin\/notes\.html$/);
+    await liveFolderLink.click();
+    await page.waitForURL(/admin\/notes\.html\?file=docs_build%2Fdev%2Fadmin-notes%2Flive-folder-fixture%2Findex\.txt$/);
+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Live folder index rendered from filesystem");
+    await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "index.txt" })).toHaveCount(0);
+    const childLink = page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "child-note.txt" });
+    await expect(childLink).toHaveAttribute("data-admin-note-file", "docs_build/dev/admin-notes/live-folder-fixture/child-note.txt");
+    const folderHref = await page.locator("[data-admin-notes-open-folder]").getAttribute("href");
+    expect(folderHref).toMatch(/^file:\/\/.+docs_build.+admin-notes.+live-folder-fixture\/?$/);
+    expect(folderHref).not.toContain("index.txt");
+
+    await childLink.click();
+    await page.waitForURL(/admin\/notes\.html\?file=docs_build%2Fdev%2Fadmin-notes%2Flive-folder-fixture%2Fchild-note\.txt$/);
+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Live child text file rendered from filesystem");
+
+    await page.locator("[data-admin-notes-root-link]").click();
+    await page.waitForURL(/admin\/notes\.html$/);
+    await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+    await removeLiveFixtures();
+  }
+});
+
 test("Admin Notes opens custom root-relative text file links", async ({ page }) => {
   const failures = await openRepoPage(page, "/admin/notes.html");
 
@@ -174,8 +256,9 @@ test("Admin Notes opens custom root-relative text file links", async ({ page }) 
     await expect(page.locator("[data-admin-notes-content]")).toContainText("TOOL: achievements");
     await expect(page.locator("[data-admin-notes-return]")).toHaveCount(0);
     await expect(page.locator("[data-admin-notes-root-link]")).toBeVisible();
-    await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "achievements.txt" })).toBeVisible();
-    await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "ai-assistant.txt" })).toBeVisible();
+    await expect(page.locator("[data-admin-notes-directory-links] a")).toHaveCount(0);
+    await expect(page.locator("[data-admin-notes-folder-diagnostic]")).toContainText("restricted to docs_build/dev/admin-notes");
+    await expect(page.locator("[data-admin-notes-open-folder]")).toHaveAttribute("aria-disabled", "true");
 
     await page.locator("[data-admin-notes-root-link]").click();
     await page.waitForURL(/admin\/notes\.html$/);
