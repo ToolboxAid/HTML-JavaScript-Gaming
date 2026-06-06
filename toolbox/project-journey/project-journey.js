@@ -12,6 +12,8 @@ const DELETE_CONFIRMATION_MESSAGE = "It is best to keep the note unless it was c
 const FORGE_BOT_INDICATOR_SRC = "assets/theme-v2/images/forge-bot.svg";
 
 const filterButtons = Array.from(document.querySelectorAll("[data-journey-filter]"));
+const sortButtons = Array.from(document.querySelectorAll("[data-journey-sort]"));
+const sortHeaders = Array.from(document.querySelectorAll("[data-journey-sort-header]"));
 const summaryBody = document.querySelector("[data-journey-summary-body]");
 const itemTree = document.querySelector("[data-journey-item-tree]");
 const selectedNoteMessage = document.querySelector("[data-journey-selected-note]");
@@ -25,6 +27,10 @@ const moveUpButton = document.querySelector("[data-journey-move-up]");
 const moveDownButton = document.querySelector("[data-journey-move-down]");
 const indentButton = document.querySelector("[data-journey-indent]");
 const outdentButton = document.querySelector("[data-journey-outdent]");
+const newNoteNameInput = document.querySelector("[data-journey-new-note-name]");
+const newNoteTypeSelect = document.querySelector("[data-journey-new-note-type]");
+const addNoteButton = document.querySelector("[data-journey-add-note]");
+const noteStatus = document.querySelector("[data-journey-note-status]");
 const noteTypeSelect = document.querySelector("[data-journey-note-type-select]");
 const typeInput = document.querySelector("[data-journey-type-input]");
 const addTypeButton = document.querySelector("[data-journey-add-type]");
@@ -48,6 +54,11 @@ const statTargets = {
 
 let activeFilter = "all";
 let selectedSummaryNoteId = "note-design-pass";
+let preferredNewNoteTypeId = "";
+let summarySort = {
+  key: "updated",
+  direction: "desc",
+};
 
 function applyInitialProjectRoute() {
   const projectId = params.get("project");
@@ -99,6 +110,9 @@ function setEditingDisabled(disabled) {
     moveDownButton,
     indentButton,
     outdentButton,
+    newNoteNameInput,
+    newNoteTypeSelect,
+    addNoteButton,
     noteTypeSelect,
     typeInput,
     addTypeButton,
@@ -111,7 +125,14 @@ function setEditingDisabled(disabled) {
 
 function updateFilterButtons() {
   filterButtons.forEach((button) => {
-    button.setAttribute("aria-pressed", String(button.dataset.journeyFilter === activeFilter));
+    const selected = button.dataset.journeyFilter === activeFilter;
+    button.setAttribute("aria-pressed", String(selected));
+    button.classList.toggle("primary", selected);
+    if (selected) {
+      button.setAttribute("aria-current", "true");
+    } else {
+      button.removeAttribute("aria-current");
+    }
   });
 }
 
@@ -137,17 +158,23 @@ function renderStatusLegend() {
   });
 }
 
-function renderNoteTypeOptions(note) {
-  if (!noteTypeSelect) {
+function populateNoteTypeSelect(selectElement, types, selectedTypeId) {
+  if (!selectElement) {
     return;
   }
-  noteTypeSelect.innerHTML = "";
-  repository.listNoteTypes().forEach((type) => {
+  selectElement.innerHTML = "";
+  types.forEach((type) => {
     const option = createElement("option", { text: type.name });
     option.value = type.id;
-    noteTypeSelect.append(option);
+    selectElement.append(option);
   });
-  noteTypeSelect.value = note?.typeId || "";
+  selectElement.value = selectedTypeId || types[0]?.id || "";
+}
+
+function renderNoteTypeOptions(note) {
+  const types = repository.listNoteTypes();
+  populateNoteTypeSelect(noteTypeSelect, types, note?.typeId || "");
+  populateNoteTypeSelect(newNoteTypeSelect, types, preferredNewNoteTypeId || note?.typeId || "");
 }
 
 function createStatusText(statusId) {
@@ -159,8 +186,44 @@ function getSelectedItem() {
   return repository.getSelectedItem();
 }
 
+function summarySortValue(note, key) {
+  if (key === "name") {
+    return note.name.toLowerCase();
+  }
+  if (key === "type") {
+    return (note.type?.name || "Unknown").toLowerCase();
+  }
+  if (key === "updated") {
+    return note.updatedAt;
+  }
+  if (["not-started", "blocker", "decide", "in-progress", "complete", "open", "total"].includes(key)) {
+    return note.counts?.[key] || 0;
+  }
+  return "";
+}
+
+function sortSummaryNotes(notes) {
+  const direction = summarySort.direction === "asc" ? 1 : -1;
+  return [...notes].sort((left, right) => {
+    const leftValue = summarySortValue(left, summarySort.key);
+    const rightValue = summarySortValue(right, summarySort.key);
+    if (typeof leftValue === "number" && typeof rightValue === "number") {
+      return (leftValue - rightValue) * direction;
+    }
+    return String(leftValue).localeCompare(String(rightValue)) * direction;
+  });
+}
+
+function updateSortHeaders() {
+  sortHeaders.forEach((header) => {
+    const selected = header.dataset.journeySortHeader === summarySort.key;
+    header.setAttribute("aria-sort", selected ? (summarySort.direction === "asc" ? "ascending" : "descending") : "none");
+  });
+}
+
 function renderSummary(notes) {
   summaryBody.innerHTML = "";
+  updateSortHeaders();
 
   if (!notes.length) {
     const row = createElement("tr");
@@ -173,7 +236,7 @@ function renderSummary(notes) {
     return;
   }
 
-  notes.forEach((note) => {
+  sortSummaryNotes(notes).forEach((note) => {
     const row = createElement("tr");
     const nameCell = createElement("td");
     const selected = selectedSummaryNoteId === note.id;
@@ -207,9 +270,10 @@ function renderSummary(notes) {
 function makeItemButton(item) {
   const selectedItem = getSelectedItem();
   const selected = selectedItem?.itemId === item.itemId;
+  const detailsPreview = item.userDetails ? ` - ${item.userDetails}` : "";
   const button = createElement("button", {
     className: selected ? "btn btn--compact primary tool-tree-row__content" : "btn btn--compact tool-tree-row__content",
-    text: `${createStatusText(item.status)} ${item.title}`,
+    text: `${createStatusText(item.status)} ${item.title}${detailsPreview}`,
   });
   button.type = "button";
   button.dataset.journeyItemButton = item.itemId;
@@ -268,7 +332,7 @@ function makeSelectedItemDetails(item, editingDisabled) {
 
   if (item.createdByType === "system") {
     const guidance = createElement("div", {
-      className: "status",
+      className: "status tool-guidance-block",
     });
     guidance.dataset.journeySystemGuidance = "";
     const heading = createElement("strong", { text: "System Guidance" });
@@ -341,21 +405,38 @@ function renderItemTree(note, editingDisabled) {
   itemTree.append(root);
 }
 
-function renderEditor(editingDisabled) {
+function renderEditor(editingDisabled, note) {
   const selectedItem = getSelectedItem();
   if (!selectedItem) {
+    const canAddItem = Boolean(!editingDisabled && note);
     statusInput.value = "not-started";
     titleInput.value = "";
-    titleInput.disabled = true;
+    statusInput.disabled = !canAddItem;
+    titleInput.disabled = !canAddItem;
+    addItemButton.disabled = !canAddItem;
+    updateItemButton.disabled = true;
+    moveUpButton.disabled = true;
+    moveDownButton.disabled = true;
+    indentButton.disabled = true;
+    outdentButton.disabled = true;
     if (editorStatus) {
-      editorStatus.textContent = "Select a journey item to review ownership.";
+      editorStatus.textContent = canAddItem
+        ? "No item selected. Add Item will create a user-created editable item."
+        : "Select a journey item to review ownership.";
     }
     return;
   }
 
   statusInput.value = selectedItem.status;
   titleInput.value = selectedItem.title;
+  statusInput.disabled = editingDisabled;
   titleInput.disabled = Boolean(editingDisabled || selectedItem.createdByType === "system");
+  addItemButton.disabled = editingDisabled;
+  updateItemButton.disabled = editingDisabled;
+  moveUpButton.disabled = editingDisabled;
+  moveDownButton.disabled = editingDisabled;
+  indentButton.disabled = editingDisabled;
+  outdentButton.disabled = editingDisabled;
   if (editorStatus) {
     editorStatus.textContent =
       selectedItem.createdByType === "system"
@@ -581,7 +662,7 @@ function render() {
   renderNoteTypeOptions(note);
   renderSummary(notes);
   renderItemTree(note, editingDisabled);
-  renderEditor(editingDisabled);
+  renderEditor(editingDisabled, note);
   renderStatScope(selectedStatsNote, notes);
   renderStats(statCounts);
   renderSuggestedTools(note);
@@ -593,6 +674,17 @@ filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
     activeFilter = button.dataset.journeyFilter || "all";
     selectedSummaryNoteId = "";
+    render();
+  });
+});
+
+sortButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const key = button.dataset.journeySort || "updated";
+    summarySort = {
+      key,
+      direction: summarySort.key === key && summarySort.direction === "asc" ? "desc" : "asc",
+    };
     render();
   });
 });
@@ -690,6 +782,27 @@ outdentButton.addEventListener("click", () => {
   render();
 });
 
+addNoteButton.addEventListener("click", () => {
+  const note = repository.addNote({
+    name: newNoteNameInput.value,
+    typeId: newNoteTypeSelect.value,
+  });
+  if (!note) {
+    if (noteStatus) {
+      noteStatus.textContent = "Open a project before adding a Project Journey note.";
+    }
+    return;
+  }
+  activeFilter = "all";
+  selectedSummaryNoteId = note.id;
+  preferredNewNoteTypeId = note.typeId;
+  newNoteNameInput.value = "";
+  if (noteStatus) {
+    noteStatus.textContent = `Added ${note.name} to the summary table.`;
+  }
+  render();
+});
+
 noteTypeSelect.addEventListener("change", () => {
   repository.updateSelectedNoteType(noteTypeSelect.value);
   render();
@@ -700,6 +813,7 @@ addTypeButton.addEventListener("click", () => {
   typeStatus.textContent = result.message;
   if (result.created) {
     typeInput.value = "";
+    preferredNewNoteTypeId = result.type.id;
   }
   render();
 });

@@ -56,6 +56,16 @@ function timestamp(minutes) {
   return new Date(new Date(now).getTime() + minutes * 60_000).toISOString();
 }
 
+function makeAuditFields(minutes, byType = "system") {
+  const value = timestamp(minutes);
+  return {
+    createdAt: value,
+    updatedAt: value,
+    createdByType: byType,
+    updatedByType: byType,
+  };
+}
+
 function normalizeIndent(indent) {
   const parsed = Number(indent);
   if (!Number.isFinite(parsed)) {
@@ -81,8 +91,7 @@ function makeTemplate(templateId, templateKey, originalMeaning, systemGuidance, 
     linkedToolContexts,
     version: 1,
     isActive: true,
-    createdAt: timestamp(minutes),
-    updatedAt: timestamp(minutes),
+    ...makeAuditFields(minutes),
   };
 }
 
@@ -99,6 +108,7 @@ function makeSystemItem({
   order,
   minutes,
 }) {
+  const timestampValue = timestamp(minutes);
   return {
     itemId,
     projectId: "demo-project",
@@ -113,20 +123,20 @@ function makeSystemItem({
     linkedRecordId,
     indent,
     order,
-    createdAt: timestamp(minutes),
-    updatedAt: timestamp(minutes),
+    createdAt: timestampValue,
+    updatedAt: timestampValue,
   };
 }
 
 function getSeedTables() {
   const project_journey_note_types = [
-    { id: "design", name: "Design", seeded: true, userExtensible: true },
-    { id: "story", name: "Story", seeded: true, userExtensible: true },
-    { id: "release", name: "Release", seeded: true, userExtensible: true },
-    { id: "research", name: "Research", seeded: true, userExtensible: true },
-    { id: "idea", name: "Idea", seeded: true, userExtensible: true },
-    { id: "question", name: "Question", seeded: true, userExtensible: true },
-    { id: "task", name: "Task", seeded: true, userExtensible: true },
+    { id: "design", name: "Design", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { id: "story", name: "Story", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { id: "release", name: "Release", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { id: "research", name: "Research", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { id: "idea", name: "Idea", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { id: "question", name: "Question", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { id: "task", name: "Task", seeded: true, userExtensible: true, ...makeAuditFields(0) },
   ];
 
   const project_journey_notes = [
@@ -136,7 +146,7 @@ function getSeedTables() {
       ownerId: PROJECT_JOURNEY_CURRENT_USER_ID,
       name: "Palette and Input Density",
       typeId: "design",
-      updatedAt: timestamp(5),
+      ...makeAuditFields(5),
     },
     {
       id: "note-release-readiness",
@@ -144,7 +154,7 @@ function getSeedTables() {
       ownerId: "user-producer",
       name: "Release Readiness",
       typeId: "release",
-      updatedAt: timestamp(9),
+      ...makeAuditFields(9),
     },
     {
       id: "note-story-map",
@@ -152,7 +162,7 @@ function getSeedTables() {
       ownerId: PROJECT_JOURNEY_CURRENT_USER_ID,
       name: "Story Beats",
       typeId: "story",
-      updatedAt: timestamp(14),
+      ...makeAuditFields(14),
     },
     {
       id: "note-research-ux",
@@ -160,7 +170,7 @@ function getSeedTables() {
       ownerId: "user-producer",
       name: "Research Questions",
       typeId: "research",
-      updatedAt: timestamp(18),
+      ...makeAuditFields(18),
     },
   ];
 
@@ -239,6 +249,7 @@ function getSeedTables() {
         9,
       ),
       isActive: false,
+      updatedByType: "system",
       updatedAt: timestamp(19),
     },
   ];
@@ -333,14 +344,14 @@ function getSeedTables() {
       projectId: "demo-project",
       noteId: "note-design-pass",
       message: "Palette and Input Density updated by Designer",
-      createdAt: timestamp(20),
+      ...makeAuditFields(20),
     },
     {
       id: "activity-2",
       projectId: "demo-project",
       noteId: "note-release-readiness",
       message: "Release Readiness marked with a blocker",
-      createdAt: timestamp(22),
+      ...makeAuditFields(22),
     },
   ];
 
@@ -362,22 +373,28 @@ export function createProjectJourneyMockRepository(options = {}) {
   let nextItemNumber = tables.project_journey_items.length + 1;
   let nextActivityNumber = tables.project_journey_activity.length + 1;
   let nextTypeNumber = tables.project_journey_note_types.length + 1;
+  let nextNoteNumber = tables.project_journey_notes.length + 1;
   let nextDiagnosticNumber = 1;
 
-  function touchNote(noteId) {
+  function touchNote(noteId, updatedByType = "user") {
     const note = tables.project_journey_notes.find((item) => item.id === noteId);
     if (note) {
       note.updatedAt = new Date().toISOString();
+      note.updatedByType = updatedByType === "system" ? "system" : "user";
     }
   }
 
-  function addActivity(projectId, noteId, message) {
+  function addActivity(projectId, noteId, message, byType = "user") {
+    const timestampValue = new Date().toISOString();
     tables.project_journey_activity.unshift({
       id: `activity-${nextActivityNumber}`,
       projectId,
       noteId,
       message,
-      createdAt: new Date().toISOString(),
+      createdAt: timestampValue,
+      updatedAt: timestampValue,
+      createdByType: byType === "system" ? "system" : "user",
+      updatedByType: byType === "system" ? "system" : "user",
     });
     nextActivityNumber += 1;
   }
@@ -516,6 +533,36 @@ export function createProjectJourneyMockRepository(options = {}) {
       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
   }
 
+  function addNote({ name, typeId } = {}) {
+    const activeProject = requireActiveProject();
+    if (!activeProject) {
+      return null;
+    }
+
+    const normalizedName = String(name || "").trim() || "New Project Journey Note";
+    const selectedType =
+      tables.project_journey_note_types.find((type) => type.id === typeId) ||
+      tables.project_journey_note_types[0];
+    const timestampValue = new Date().toISOString();
+    const note = {
+      id: `note-new-${nextNoteNumber}`,
+      projectId: activeProject.id,
+      ownerId: PROJECT_JOURNEY_CURRENT_USER_ID,
+      name: normalizedName,
+      typeId: selectedType?.id || "",
+      createdAt: timestampValue,
+      updatedAt: timestampValue,
+      createdByType: "user",
+      updatedByType: "user",
+    };
+    nextNoteNumber += 1;
+    tables.project_journey_notes.push(note);
+    selectedNoteId = note.id;
+    selectedItemId = "";
+    addActivity(activeProject.id, note.id, `Added note ${note.name}`, "user");
+    return getSelectedNote();
+  }
+
   function getSelectedNote() {
     const activeProject = requireActiveProject();
     if (!activeProject) {
@@ -603,8 +650,8 @@ export function createProjectJourneyMockRepository(options = {}) {
     nextItemNumber += 1;
     tables.project_journey_items.push(item);
     selectedItemId = item.itemId;
-    touchNote(note.id);
-    addActivity(activeProject.id, note.id, `Added item to ${note.name}`);
+    touchNote(note.id, "user");
+    addActivity(activeProject.id, note.id, `Added item to ${note.name}`, "user");
     return hydrateItem(item);
   }
 
@@ -637,8 +684,8 @@ export function createProjectJourneyMockRepository(options = {}) {
       remainingItems.find((candidate) => candidate.order >= deletedOrder)?.itemId ||
       remainingItems.at(-1)?.itemId ||
       "";
-    touchNote(item.noteId);
-    addActivity(activeProject.id, item.noteId, `Deleted user item from ${note?.name || "Project Journey"}`);
+    touchNote(item.noteId, "user");
+    addActivity(activeProject.id, item.noteId, `Deleted user item from ${note?.name || "Project Journey"}`, "user");
     return {
       deleted: true,
       reason: "Deleted user-created item.",
@@ -674,8 +721,8 @@ export function createProjectJourneyMockRepository(options = {}) {
     item.updatedAt = new Date().toISOString();
     selectedItemId = item.itemId;
     selectedNoteId = item.noteId;
-    touchNote(item.noteId);
-    addActivity(activeProject.id, item.noteId, `${item.updatedByType === "system" ? "System" : "User"} updated selected journey item`);
+    touchNote(item.noteId, item.updatedByType);
+    addActivity(activeProject.id, item.noteId, `${item.updatedByType === "system" ? "System" : "User"} updated selected journey item`, item.updatedByType);
     return hydrateItem(item);
   }
 
@@ -707,8 +754,8 @@ export function createProjectJourneyMockRepository(options = {}) {
     item.updatedAt = timestampValue;
     neighbor.updatedAt = timestampValue;
     resequence(items);
-    touchNote(item.noteId);
-    addActivity(activeProject.id, item.noteId, "Reordered journey items");
+    touchNote(item.noteId, "user");
+    addActivity(activeProject.id, item.noteId, "Reordered journey items", "user");
     return hydrateItem(item);
   }
 
@@ -730,8 +777,8 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
 
     note.typeId = type.id;
-    touchNote(note.id);
-    addActivity(activeProject.id, note.id, `Changed ${note.name} type to ${type.name}`);
+    touchNote(note.id, "user");
+    addActivity(activeProject.id, note.id, `Changed ${note.name} type to ${type.name}`, "user");
     return getSelectedNote();
   }
 
@@ -758,11 +805,16 @@ export function createProjectJourneyMockRepository(options = {}) {
       };
     }
 
+    const timestampValue = new Date().toISOString();
     const type = {
       id: `custom-type-${nextTypeNumber}`,
       name: normalized,
       seeded: false,
       userExtensible: true,
+      createdAt: timestampValue,
+      updatedAt: timestampValue,
+      createdByType: "user",
+      updatedByType: "user",
     };
     nextTypeNumber += 1;
     tables.project_journey_note_types.push(type);
@@ -844,7 +896,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       tables.project_journey_items.push(item);
       return hydrateItem(item);
     });
-    touchNote(noteId);
+    touchNote(noteId, "system");
     return created;
   }
 
@@ -855,6 +907,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     clearActiveProject: () => workspaceRepository.clearTestData(),
     listNoteTypes: () => clone(tables.project_journey_note_types),
     addNoteType,
+    addNote,
     updateSelectedNoteType,
     listNotes,
     getSelectedNote,

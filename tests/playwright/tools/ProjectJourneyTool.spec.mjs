@@ -82,6 +82,8 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[data-journey-stat-not-started]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
+    await expect(page.locator("[data-journey-filter='all']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-filter='all']")).toHaveAttribute("aria-current", "true");
     const statusIconPattern = /[\u2b1c\u26d4\u2753\u2705]|\u{1f7e1}/u;
     const statTileLayout = await page.locator("[aria-label='Selected note statistics'] .mini-stat").evaluateAll((tiles) =>
       tiles.map((tile) => {
@@ -119,8 +121,20 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[aria-label='Selected note statistics']")).not.toContainText(statusIconPattern);
     await expect(page.locator("[data-journey-note-button='note-design-pass']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-item-button='item-design-1']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-item-button='item-design-1']")).toContainText("Designer review should focus on checkbox visibility");
     await expect(page.getByLabel("Title")).toBeDisabled();
     await expect(page.locator("[data-journey-system-guidance]")).toContainText("Check whether selected swatches clearly expose batch tagging");
+    const guidanceWraps = await page.locator("[data-journey-system-guidance]").evaluate((guidance) => {
+      const styles = getComputedStyle(guidance);
+      return {
+        usesAvailableWidth: guidance.getBoundingClientRect().width >= guidance.parentElement.getBoundingClientRect().width - 2,
+        wrapsNaturally: styles.overflowWrap === "anywhere",
+      };
+    });
+    expect(guidanceWraps).toEqual({
+      usesAvailableWidth: true,
+      wrapsNaturally: true,
+    });
     await expect(page.locator("[data-journey-selected-item-details='item-design-1']")).toContainText("Item Details");
     await expect(page.locator("[data-journey-item-details-input]")).toHaveValue("Designer review should focus on checkbox visibility and selected-row contrast.");
     const detailsFollowsSelectedRow = await page.locator("[data-journey-selected-item-details='item-design-1']").evaluate((details) => {
@@ -145,6 +159,8 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       "✅ Complete"
     ]);
     await expect(page.locator("aside.tool-column").last().locator("details > summary", { hasText: /^Status Legend$/ })).toHaveCount(0);
+    await expect(page.locator("details > summary", { hasText: /^Note Tree$/ })).toHaveCount(1);
+    await expect(page.locator("details > summary", { hasText: /^Selected Note Tree$/ })).toHaveCount(0);
     const legendFollowsStats = await page.locator("[data-journey-status-legend]").evaluate((legend) => {
       const statistics = legend.closest("details");
       const statGrid = statistics?.querySelector("[aria-label='Selected note statistics']");
@@ -163,6 +179,12 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       "Total",
       "Updated"
     ]);
+    const summaryTableWidth = await page.locator("[data-journey-summary-table]").evaluate((table) => {
+      const tableBox = table.getBoundingClientRect();
+      const wrapperBox = table.parentElement.getBoundingClientRect();
+      return Math.round(tableBox.width - wrapperBox.width);
+    });
+    expect(Math.abs(summaryTableWidth)).toBeLessThanOrEqual(1);
     await expect(page.getByText("Current Folder")).toHaveCount(0);
     await expect(page.getByText("Return to root index")).toHaveCount(0);
     await expect(page.getByText("Open folder")).toHaveCount(0);
@@ -223,20 +245,87 @@ test("Project Journey updates selected note types from the mock DB", async ({ pa
   });
 
   try {
-    await expect(page.getByLabel("Selected Note Type")).toHaveValue("design");
-    await page.getByLabel("Selected Note Type").selectOption("task");
+    const selectedNoteType = page.locator("[data-journey-note-type-select]");
+    const newNoteType = page.locator("[data-journey-new-note-type]");
+    await expect(selectedNoteType).toHaveValue("design");
+    await page.locator("[data-journey-note-type-select]").selectOption("task");
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(1)).toHaveText("Task");
-    const typeOptionCountBefore = await page.getByLabel("Selected Note Type").locator("option").count();
-    await page.getByLabel("Add Type").fill("Playtest");
-    await page.getByRole("button", { name: "Add Type" }).click();
+    const typeOptionCountBefore = await selectedNoteType.locator("option").count();
+    await page.getByLabel("Add Note Type").fill("Playtest");
+    await page.getByRole("button", { name: "Add Note Type" }).click();
     await expect(page.locator("[data-journey-type-status]")).toContainText("Playtest is available");
-    await expect(page.getByLabel("Selected Note Type").locator("option", { hasText: "Playtest" })).toHaveCount(1);
-    await page.getByLabel("Selected Note Type").selectOption({ label: "Playtest" });
+    await expect(selectedNoteType.locator("option", { hasText: "Playtest" })).toHaveCount(1);
+    await expect(newNoteType.locator("option", { hasText: "Playtest" })).toHaveCount(1);
+    await expect(newNoteType).toHaveValue(/custom-type-/);
+    await selectedNoteType.selectOption({ label: "Playtest" });
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(1)).toHaveText("Playtest");
-    await page.getByLabel("Add Type").fill("playtest");
-    await page.getByRole("button", { name: "Add Type" }).click();
+    await page.getByLabel("Add Note Type").fill("playtest");
+    await page.getByRole("button", { name: "Add Note Type" }).click();
     await expect(page.locator("[data-journey-type-status]")).toContainText("Playtest already exists");
-    await expect(page.getByLabel("Selected Note Type").locator("option")).toHaveCount(typeOptionCountBefore + 1);
+    await expect(selectedNoteType.locator("option")).toHaveCount(typeOptionCountBefore + 1);
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
+
+test("Project Journey sorts summary columns and adds user-owned notes", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
+
+  try {
+    const sortKeys = [
+      "name",
+      "type",
+      "not-started",
+      "blocker",
+      "decide",
+      "in-progress",
+      "complete",
+      "open",
+      "total",
+      "updated",
+    ];
+    await expect(page.locator("[data-journey-sort-header='updated']")).toHaveAttribute("aria-sort", "descending");
+    for (const key of sortKeys) {
+      await page.locator(`[data-journey-sort="${key}"]`).click();
+      await expect(page.locator(`[data-journey-sort-header="${key}"]`)).toHaveAttribute("aria-sort", "ascending");
+      await page.locator(`[data-journey-sort="${key}"]`).click();
+      await expect(page.locator(`[data-journey-sort-header="${key}"]`)).toHaveAttribute("aria-sort", "descending");
+    }
+
+    await page.locator("[data-journey-sort='name']").click();
+    await expect(page.locator("[data-journey-note-button]").first()).toHaveText("Palette and Input Density");
+    await page.locator("[data-journey-sort='name']").click();
+    await expect(page.locator("[data-journey-note-button]").first()).toHaveText("Story Beats");
+
+    const noteRowsBefore = await page.locator("[data-journey-note-button]").count();
+    await page.locator("[data-journey-new-note-name]").fill("Usability Audit");
+    await page.locator("[data-journey-new-note-type]").selectOption("task");
+    await page.getByRole("button", { name: "Add Note", exact: true }).click();
+    await expect(page.locator("[data-journey-note-status]")).toContainText("Added Usability Audit");
+    await expect(page.locator("[data-journey-note-button]")).toHaveCount(noteRowsBefore + 1);
+    await expect(page.locator("[data-journey-note-button='note-new-5']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-selected-note]")).toContainText("Usability Audit (Task)");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("0");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("0");
+    await expect(page.locator("[data-journey-item-tree]")).toContainText("No journey items yet.");
+    await expect(page.locator("[data-journey-editor-status]")).toContainText("Add Item will create a user-created editable item");
+    await expect(page.getByLabel("Title")).toBeEnabled();
+
+    await page.getByLabel("Title").fill("First user-added task");
+    await page.getByRole("button", { name: "Add Item" }).click();
+    await expect(page.locator("[data-journey-editor-status]")).toContainText("User-created item");
+    await expect(page.getByLabel("Title")).toBeEnabled();
+    await expect(page.locator("[data-journey-item-tree]")).toContainText("First user-added task");
+    await page.locator("[data-journey-item-details-input]").fill("First task details stay user-editable.");
+    await page.getByRole("button", { name: "Update Item" }).click();
+    await expect(page.locator("[data-journey-item-tree]")).toContainText("First task details stay user-editable.");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("1");
+    const userRow = page.locator("[data-journey-item-row]").filter({ hasText: "First user-added task" });
+    await expect(userRow.locator("[data-journey-delete-item]")).toHaveCount(1);
+    await expect(userRow.locator("[data-journey-system-item-indicator]")).toHaveCount(0);
 
     await expectNoPageFailures(failures);
   } finally {
@@ -250,6 +339,9 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
   try {
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
     await page.locator("[data-journey-filter='mine']").click();
+    await expect(page.locator("[data-journey-filter='mine']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-filter='mine']")).toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-journey-filter='all']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: My Notes (2 notes).");
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("5");
@@ -418,6 +510,16 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   expect(tables.project_journey_templates).toBeTruthy();
   expect(tables.project_journey_entries).toBeUndefined();
 
+  const auditFields = ["createdAt", "updatedAt", "createdByType", "updatedByType"];
+  for (const [tableName, records] of Object.entries(tables)) {
+    expect(records.length, `${tableName} should include records for DB Viewer diagnostics`).toBeGreaterThan(0);
+    for (const record of records) {
+      for (const field of auditFields) {
+        expect(record, `${tableName} record must include ${field}`).toHaveProperty(field);
+      }
+    }
+  }
+
   const forbiddenItemFields = ["originalMeaning", "systemGuidance", "linkedToolContexts"];
   for (const item of tables.project_journey_items) {
     for (const field of forbiddenItemFields) {
@@ -494,6 +596,23 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
 
   repository.updateSelectedNoteType("task");
   expect(repository.getSelectedNote().type.name).toBe("Task");
+
+  const addedNote = repository.addNote({
+    name: "Repository-created note",
+    typeId: typeResult.type.id,
+  });
+  expect(addedNote.name).toBe("Repository-created note");
+  expect(addedNote.type.name).toBe("Playtest");
+  expect(addedNote.createdByType).toBe("user");
+  expect(addedNote.updatedByType).toBe("user");
+  expect(addedNote.items).toHaveLength(0);
+  const firstAddedItem = repository.addItem({
+    title: "First editable user item",
+    status: "not-started",
+    userDetails: "Created from an empty note.",
+  });
+  expect(firstAddedItem.createdByType).toBe("user");
+  expect(firstAddedItem.title).toBe("First editable user item");
 });
 
 test("Project Journey requires an active project before editing", async ({ page }) => {
@@ -504,8 +623,10 @@ test("Project Journey requires an active project before editing", async ({ page 
     await expect(page.locator("[data-journey-diagnostics]")).toContainText("Open a project in Project Workspace");
     await expect(page.getByRole("button", { name: "Add Item" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Update Item" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Add Note", exact: true })).toBeDisabled();
     await expect(page.getByLabel("Title")).toBeDisabled();
-    await expect(page.getByLabel("Selected Note Type")).toBeDisabled();
+    await expect(page.locator("[data-journey-note-type-select]")).toBeDisabled();
+    await expect(page.locator("[data-journey-new-note-type]")).toBeDisabled();
 
     await expectNoPageFailures(failures);
   } finally {

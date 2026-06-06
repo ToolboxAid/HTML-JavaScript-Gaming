@@ -44,6 +44,15 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
+                                <summary>Add Note</summary>
+                                <div class="accordion-body content-stack">
+                                    <label for="journeyNewNoteName">Note Name <input id="journeyNewNoteName" type="text" placeholder="Playtest follow-ups" data-journey-new-note-name></label>
+                                    <label for="journeyNewNoteType">Type <select id="journeyNewNoteType" data-journey-new-note-type></select></label>
+                                    <button class="btn primary" type="button" data-journey-add-note>Add Note</button>
+                                    <div class="status" role="status" data-journey-note-status>Add a project-scoped note to the summary table.</div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
                                 <summary>Selected Item Editor</summary>
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack content-stack--compact" data-journey-editor-form>
@@ -76,12 +85,12 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Note Types</summary>
+                                <summary>Selected Note Metadata</summary>
                                 <div class="accordion-body content-stack">
                                     <p>Seeded defaults stay extensible in the Project Journey mock data.</p>
-                                    <label for="journeyNoteTypeSelect">Selected Note Type <select id="journeyNoteTypeSelect" data-journey-note-type-select></select></label>
-                                    <label for="journeyTypeInput">Add Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
-                                    <button class="btn" type="button" data-journey-add-type>Add Type</button>
+                                    <label for="journeyNoteTypeSelect">Type <select id="journeyNoteTypeSelect" data-journey-note-type-select></select></label>
+                                    <label for="journeyTypeInput">Add Note Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
+                                    <button class="btn" type="button" data-journey-add-type>Add Note Type</button>
                                     <div class="status" role="status" data-journey-type-status>Default types ready.</div>
                                 </div>
                             </details>
@@ -96,19 +105,19 @@
                                 <summary>Summary Table</summary>
                                 <div class="accordion-body">
                                     <div class="table-wrapper">
-                                        <table class="data-table" aria-label="Project Journey note summary">
+                                        <table class="data-table data-table--fixed" aria-label="Project Journey note summary" data-journey-summary-table>
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Type</th>
-                                                    <th scope="col">⬜</th>
-                                                    <th scope="col">⛔</th>
-                                                    <th scope="col">❓</th>
-                                                    <th scope="col">🟡</th>
-                                                    <th scope="col">✅</th>
-                                                    <th scope="col">Open</th>
-                                                    <th scope="col">Total</th>
-                                                    <th scope="col">Updated</th>
+                                                    <th scope="col" data-journey-sort-header="name"><button class="btn btn--compact" type="button" data-journey-sort="name">Name</button></th>
+                                                    <th scope="col" data-journey-sort-header="type"><button class="btn btn--compact" type="button" data-journey-sort="type">Type</button></th>
+                                                    <th scope="col" data-journey-sort-header="not-started"><button class="btn btn--compact" type="button" data-journey-sort="not-started">⬜</button></th>
+                                                    <th scope="col" data-journey-sort-header="blocker"><button class="btn btn--compact" type="button" data-journey-sort="blocker">⛔</button></th>
+                                                    <th scope="col" data-journey-sort-header="decide"><button class="btn btn--compact" type="button" data-journey-sort="decide">❓</button></th>
+                                                    <th scope="col" data-journey-sort-header="in-progress"><button class="btn btn--compact" type="button" data-journey-sort="in-progress">🟡</button></th>
+                                                    <th scope="col" data-journey-sort-header="complete"><button class="btn btn--compact" type="button" data-journey-sort="complete">✅</button></th>
+                                                    <th scope="col" data-journey-sort-header="open"><button class="btn btn--compact" type="button" data-journey-sort="open">Open</button></th>
+                                                    <th scope="col" data-journey-sort-header="total"><button class="btn btn--compact" type="button" data-journey-sort="total">Total</button></th>
+                                                    <th scope="col" data-journey-sort-header="updated"><button class="btn btn--compact" type="button" data-journey-sort="updated">Updated</button></th>
                                                 </tr>
                                             </thead>
                                             <tbody data-journey-summary-body>
@@ -119,7 +128,7 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Selected Note Tree</summary>
+                                <summary>Note Tree</summary>
                                 <div class="accordion-body content-stack">
                                     <div class="status" role="status" data-journey-selected-note>Choose a note from the summary table.</div>
                                     <div data-journey-item-tree></div>
@@ -139,11 +148,12 @@
                                     <div class="grid cols-2" aria-label="Selected note statistics">
                                         <article class="mini-stat"><strong data-journey-stat-open>0</strong><span data-journey-stat-label>Open</span></article>
                                         <article class="mini-stat"><strong data-journey-stat-total>0</strong><span data-journey-stat-label>Total</span></article>
-                                        <article class="mini-stat"><strong data-journey-stat-not-started>0</strong><span data-journey-stat-label>Not Started</span></article>
-                                        <article class="mini-stat"><strong data-journey-stat-blocker>0</strong><span data-journey-stat-label>Blocked</span></article>
-                                        <article class="mini-stat"><strong data-journey-stat-decide>0</strong><span data-journey-stat-label>Decisions</span></article>
-                                        <article class="mini-stat"><strong data-journey-stat-in-progress>0</strong><span data-journey-stat-label>In Progress</span></article>
-                                        <article class="mini-stat"><strong data-journey-stat-complete>0</strong><span data-journey-stat-label>Complete</span></article>
+
+                                        <article class="mini-stat"><strong data-journey-stat-not-started>0</strong><span data-journey-stat-label>⬜ Not Started</span></article>
+                                        <article class="mini-stat"><strong data-journey-stat-blocker>0</strong><span data-journey-stat-label>⛔ Blocker</span></article>
+                                        <article class="mini-stat"><strong data-journey-stat-decide>0</strong><span data-journey-stat-label>❓ Decide</span></article>
+                                        <article class="mini-stat"><strong data-journey-stat-in-progress>0</strong><span data-journey-stat-label>🟡 In Progress</span></article>
+                                        <article class="mini-stat"><strong data-journey-stat-complete>0</strong><span data-journey-stat-label>✅ Complete</span></article>
                                     </div>
                                     <div class="callout">
                                         <strong>Status Legend</strong>

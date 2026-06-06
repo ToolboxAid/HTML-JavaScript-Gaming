@@ -463,7 +463,10 @@ body.tool-focus-mode .tool-display-mode__badge {
 .tool-tree-row__content {
   flex: 1 1 auto;
   justify-content: flex-start;
-  min-width: var(--space-0)
+  min-width: var(--space-0);
+  overflow-wrap: anywhere;
+  text-align: left;
+  white-space: normal
 }
 
 .tool-tree-row__action {
@@ -488,6 +491,11 @@ body.tool-focus-mode .tool-display-mode__badge {
   min-width: 32px;
   padding: var(--space-0);
   width: 32px
+}
+
+.tool-guidance-block {
+  width: 100%;
+  overflow-wrap: anywhere
 }
 
 .mascot-role {

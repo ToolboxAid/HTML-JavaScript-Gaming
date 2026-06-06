@@ -72,6 +72,7 @@
         "admin-themes": "admin/themes.html",
         "admin-design-system": "admin/design-system.html",
         "admin-controls": "admin/controls.html",
+        "admin-db-viewer": "admin/db-viewer.html",
         "admin-grouping-colors": "admin/grouping-colors.html",
         "admin-ratings": "admin/ratings.html",
         "admin-users": "admin/users.html",

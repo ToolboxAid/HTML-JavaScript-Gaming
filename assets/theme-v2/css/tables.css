@@ -25,6 +25,15 @@ td {
   border-collapse: collapse
 }
 
+.data-table--fixed {
+  table-layout: fixed
+}
+
+.data-table--fixed th,
+.data-table--fixed td {
+  overflow-wrap: anywhere
+}
+
 .data-table caption {
   color: var(--text)
 }
