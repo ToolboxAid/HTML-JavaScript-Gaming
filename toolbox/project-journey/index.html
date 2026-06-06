@@ -31,7 +31,12 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Navigation</summary>
-                                <div class="accordion-body">
+                                <div class="accordion-body content-stack">
+                                    <label for="journeySearchInput">Search <input id="journeySearchInput" type="search" placeholder="Type, status, item, tool" data-journey-search-input></label>
+                                    <div class="action-group" aria-label="Project Journey search controls">
+                                        <button class="btn btn--compact" type="button" data-journey-search-clear>Clear Search</button>
+                                    </div>
+                                    <div class="status" role="status" data-journey-search-status>Search is clear.</div>
                                     <div class="action-group" role="group" aria-label="Project Journey note filters">
                                         <button class="btn btn--compact" type="button" data-journey-filter="all">All Notes</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="mine">My Notes</button>
@@ -68,6 +73,10 @@
                                                     <tr>
                                                         <th scope="row"><label for="journeyItemTitleInput">Title</label></th>
                                                         <td><input id="journeyItemTitleInput" type="text" placeholder="Write the next project journey item" data-journey-title-input></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="journeyNewItemTitleInput">New Item Title</label></th>
+                                                        <td><input id="journeyNewItemTitleInput" type="text" placeholder="Title for the next user-created item" data-journey-new-item-title-input></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

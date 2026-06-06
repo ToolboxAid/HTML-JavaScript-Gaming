@@ -1,5 +1,5 @@
 import {
-  PROJECT_JOURNEY_IDS,
+  PROJECT_JOURNEY_KEYS,
   PROJECT_JOURNEY_STATUS_BY_ID,
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyMockRepository,
@@ -24,6 +24,7 @@ const statusInput = document.querySelector("[data-journey-status-input]");
 const titleInput = document.querySelector("[data-journey-title-input]");
 const addItemButton = document.querySelector("[data-journey-add-item]");
 const updateItemButton = document.querySelector("[data-journey-update-item]");
+const newItemTitleInput = document.querySelector("[data-journey-new-item-title-input]");
 const moveUpButton = document.querySelector("[data-journey-move-up]");
 const moveDownButton = document.querySelector("[data-journey-move-down]");
 const indentButton = document.querySelector("[data-journey-indent]");
@@ -41,6 +42,9 @@ const statScope = document.querySelector("[data-journey-stat-scope]");
 const suggestedTools = document.querySelector("[data-journey-suggested-tools]");
 const recentActivity = document.querySelector("[data-journey-recent-activity]");
 const diagnostics = document.querySelector("[data-journey-diagnostics]");
+const searchInput = document.querySelector("[data-journey-search-input]");
+const searchClearButton = document.querySelector("[data-journey-search-clear]");
+const searchStatus = document.querySelector("[data-journey-search-status]");
 
 const statTargets = {
   open: document.querySelector("[data-journey-stat-open]"),
@@ -57,8 +61,11 @@ const sortButtonLabels = new Map(
 );
 
 let activeFilter = "all";
-let selectedSummaryNoteId = PROJECT_JOURNEY_IDS.notes.designPass;
-let preferredNewNoteTypeId = "";
+let selectedSummaryNoteKey = PROJECT_JOURNEY_KEYS.notes.designPass;
+let selectedSummaryNoteKeyBeforeSearch = PROJECT_JOURNEY_KEYS.notes.designPass;
+let searchSelectionSnapshotTaken = false;
+let preferredNewNoteTypeKey = "";
+let statusSelectionChanged = false;
 let summarySort = {
   key: "updated",
   direction: "desc",
@@ -108,6 +115,7 @@ function setEditingDisabled(disabled) {
   [
     statusInput,
     titleInput,
+    newItemTitleInput,
     addItemButton,
     updateItemButton,
     moveUpButton,
@@ -120,6 +128,8 @@ function setEditingDisabled(disabled) {
     noteTypeSelect,
     typeInput,
     addTypeButton,
+    searchInput,
+    searchClearButton,
   ].forEach((control) => {
     if (control) {
       control.disabled = disabled;
@@ -158,16 +168,16 @@ function populateNoteTypeSelect(selectElement, types, selectedTypeId) {
   selectElement.innerHTML = "";
   types.forEach((type) => {
     const option = createElement("option", { text: type.name });
-    option.value = type.id;
+    option.value = type.key;
     selectElement.append(option);
   });
-  selectElement.value = selectedTypeId || types[0]?.id || "";
+  selectElement.value = selectedTypeId || types[0]?.key || "";
 }
 
 function renderNoteTypeOptions(note) {
   const types = repository.listNoteTypes();
-  populateNoteTypeSelect(noteTypeSelect, types, note?.typeId || "");
-  populateNoteTypeSelect(newNoteTypeSelect, types, preferredNewNoteTypeId || note?.typeId || "");
+  populateNoteTypeSelect(noteTypeSelect, types, note?.typeKey || "");
+  populateNoteTypeSelect(newNoteTypeSelect, types, preferredNewNoteTypeKey || note?.typeKey || "");
 }
 
 function createStatusText(statusId) {
@@ -213,12 +223,12 @@ function ensureSelectedItemMatchesFilter(note) {
 
   const selectedItem = getSelectedItem();
   const selectedVisible = note.items.some(
-    (item) => item.itemId === selectedItem?.itemId && item.createdByType === "system",
+    (item) => item.key === selectedItem?.key && item.createdByType === "system",
   );
   if (!selectedVisible) {
     const firstSystemItem = note.items.find((item) => item.createdByType === "system");
     if (firstSystemItem) {
-      repository.selectItem(firstSystemItem.itemId);
+      repository.selectItem(firstSystemItem.key);
     }
   }
 }
@@ -287,13 +297,13 @@ function renderSummary(notes) {
   sortSummaryNotes(notes).forEach((note) => {
     const row = createElement("tr");
     const nameCell = createElement("td");
-    const selected = selectedSummaryNoteId === note.id;
+    const selected = selectedSummaryNoteKey === note.key;
     const noteButton = createElement("button", {
       className: selected ? "btn btn--compact primary" : "btn btn--compact",
       text: note.name,
     });
     noteButton.type = "button";
-    noteButton.dataset.journeyNoteButton = note.id;
+    noteButton.dataset.journeyNoteButton = note.key;
     noteButton.setAttribute("aria-pressed", String(selected));
     if (selected) {
       noteButton.setAttribute("aria-current", "true");
@@ -318,14 +328,14 @@ function renderSummary(notes) {
 
 function makeItemButton(item) {
   const selectedItem = getSelectedItem();
-  const selected = selectedItem?.itemId === item.itemId;
+  const selected = selectedItem?.key === item.key;
   const detailsPreview = item.userDetails ? ` - ${item.userDetails}` : "";
   const button = createElement("button", {
     className: selected ? "btn btn--compact primary tool-tree-row__content" : "btn btn--compact tool-tree-row__content",
     text: `${createStatusText(item.status)} ${item.title}${detailsPreview}`,
   });
   button.type = "button";
-  button.dataset.journeyItemButton = item.itemId;
+  button.dataset.journeyItemButton = item.key;
   button.setAttribute("aria-pressed", String(selected));
   return button;
 }
@@ -355,7 +365,7 @@ function createDeleteItemButton(item) {
   button.setAttribute("aria-label", "Delete user-created item");
   icon.setAttribute("aria-hidden", "true");
   button.append(icon);
-  button.dataset.journeyDeleteItem = item.itemId;
+  button.dataset.journeyDeleteItem = item.key;
   return button;
 }
 
@@ -363,7 +373,7 @@ function makeItemRowContent(item) {
   const row = createElement("span", {
     className: "tool-tree-row tool-tree-row--single-line",
   });
-  row.dataset.journeyItemRow = item.itemId;
+  row.dataset.journeyItemRow = item.key;
   row.append(makeItemButton(item));
   if (item.createdByType === "user") {
     row.append(createDeleteItemButton(item));
@@ -377,7 +387,7 @@ function makeSelectedItemDetails(item, editingDisabled) {
   const details = createElement("div", {
     className: "content-stack content-stack--compact",
   });
-  details.dataset.journeySelectedItemDetails = item.itemId;
+  details.dataset.journeySelectedItemDetails = item.key;
 
   if (item.createdByType === "system") {
     const guidance = createElement("div", {
@@ -462,7 +472,7 @@ function renderItemTree(note, editingDisabled) {
     const itemElement = createElement("li");
     itemElement.setAttribute("role", "treeitem");
     itemElement.append(makeItemRowContent(item));
-    if (selectedItem?.itemId === item.itemId) {
+    if (selectedItem?.key === item.key) {
       itemElement.append(makeSelectedItemDetails(item, editingDisabled));
     }
     lists[indent].append(itemElement);
@@ -474,6 +484,7 @@ function renderItemTree(note, editingDisabled) {
 
 function renderEditor(editingDisabled, note) {
   const selectedItem = getSelectedItem();
+  statusSelectionChanged = false;
   if (!selectedItem) {
     const canAddItem = Boolean(!editingDisabled && note);
     statusInput.value = "not-started";
@@ -507,7 +518,7 @@ function renderEditor(editingDisabled, note) {
   if (editorStatus) {
     editorStatus.textContent =
       selectedItem.createdByType === "system"
-        ? `System-created item. Title and guidance are template-owned by ${selectedItem.template?.templateKey || selectedItem.templateId || "missing template"}; status and Item Details are editable. Original meaning: ${selectedItem.originalMeaning || "Unavailable"}`
+        ? `System-created item. Title and guidance are template-owned by ${selectedItem.template?.templateSlug || selectedItem.templateKey || "missing template"}; status and Item Details are editable. Original meaning: ${selectedItem.originalMeaning || "Unavailable"}`
         : "User-created item. Title, status, and Item Details are editable.";
   }
 }
@@ -532,6 +543,75 @@ function aggregateCounts(notes) {
     });
     return counts;
   }, emptyCounts());
+}
+
+function normalizeSearchText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function currentSearchQuery() {
+  return normalizeSearchText(searchInput?.value || "");
+}
+
+function matchesSearch(value, query) {
+  return normalizeSearchText(value).includes(query);
+}
+
+function itemMatchesSearch(item, query) {
+  const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
+  const values = [
+    item.title,
+    item.userDetails,
+    item.systemGuidance,
+    status?.label,
+    status ? `${status.icon} ${status.label}` : "",
+    ...(item.linkedToolContexts || []),
+  ];
+  return values.some((value) => matchesSearch(value, query));
+}
+
+function noteMatchesSearch(note, query) {
+  const values = [
+    note.name,
+    note.type?.name,
+    note.type?.typeSlug,
+    ...note.items.flatMap((item) => item.linkedToolContexts || []),
+    ...getSuggestedToolNames(note),
+  ];
+  return values.some((value) => matchesSearch(value, query));
+}
+
+function visibleItemsForActiveFilter(note) {
+  if (!note) {
+    return [];
+  }
+  if (isSystemGeneratedFilter()) {
+    return note.items.filter((item) => item.createdByType === "system");
+  }
+  return note.items;
+}
+
+function applySearch(notes, query) {
+  if (!query) {
+    return notes;
+  }
+
+  return notes
+    .map((note) => {
+      const visibleItems = visibleItemsForActiveFilter(note);
+      const matchedItems = visibleItems.filter((item) => itemMatchesSearch(item, query));
+      const noteMatched = noteMatchesSearch(note, query);
+      const items = noteMatched && !matchedItems.length ? visibleItems : matchedItems;
+      if (!noteMatched && !matchedItems.length) {
+        return null;
+      }
+      return {
+        ...note,
+        items,
+        counts: countItems(items),
+      };
+    })
+    .filter(Boolean);
 }
 
 function activeFilterLabel() {
@@ -560,6 +640,41 @@ function renderStats(counts) {
   });
 }
 
+function renderSearchStatus(query, notes) {
+  if (!searchStatus) {
+    return;
+  }
+  searchStatus.textContent = query
+    ? `Search matched ${notes.length} note${notes.length === 1 ? "" : "s"}.`
+    : "Search is clear.";
+}
+
+function captureSearchSelectionSnapshot() {
+  if (!searchSelectionSnapshotTaken) {
+    selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
+    searchSelectionSnapshotTaken = true;
+  }
+}
+
+function restoreSearchSelectionSnapshot() {
+  selectedSummaryNoteKey = selectedSummaryNoteKeyBeforeSearch;
+  if (selectedSummaryNoteKey) {
+    repository.selectNote(selectedSummaryNoteKey);
+  }
+  searchSelectionSnapshotTaken = false;
+  selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
+}
+
+function ensureSelectedItemVisible(note) {
+  if (!note?.items.length) {
+    return;
+  }
+  const selectedItem = getSelectedItem();
+  if (!note.items.some((item) => item.key === selectedItem?.key)) {
+    repository.selectItem(note.items[0].key);
+  }
+}
+
 function findToolByName(name) {
   return registryTools.find((tool) => tool.displayName === name || tool.name === name);
 }
@@ -582,8 +697,8 @@ function getSuggestedToolNames(note) {
     question: ["AI Assistant", "Project Workspace", "Game Design"],
     task: ["Project Workspace", "Game Testing", "Debug"],
   };
-  const noteTypeKey = note.type?.typeKey || note.typeId;
-  const names = [...templateToolNames, ...(suggestionsByType[noteTypeKey] || ["Project Workspace", "Game Design"])];
+  const noteTypeSlug = note.type?.typeSlug || "";
+  const names = [...templateToolNames, ...(suggestionsByType[noteTypeSlug] || ["Project Workspace", "Game Design"])];
 
   if (note.counts?.blocker > 0) {
     return ["Project Workspace", "Debug", ...names];
@@ -698,12 +813,12 @@ function renderDiagnostics(activeProject, note, notes) {
 
 function selectFirstVisibleNote(notes) {
   const current = repository.getSelectedNote();
-  if (current && notes.some((note) => note.id === current.id)) {
+  if (current && notes.some((note) => note.key === current.key)) {
     return current;
   }
 
   if (notes[0]) {
-    return repository.selectNote(notes[0].id);
+    return repository.selectNote(notes[0].key);
   }
 
   return current;
@@ -711,12 +826,14 @@ function selectFirstVisibleNote(notes) {
 
 function render() {
   const activeProject = repository.getActiveProject();
-  const notes = repository.listNotes(activeFilter);
+  const searchQuery = currentSearchQuery();
+  const notes = applySearch(repository.listNotes(activeFilter), searchQuery);
   const note = selectFirstVisibleNote(notes);
   ensureSelectedItemMatchesFilter(note);
-  const displayNote = filterNoteItemsForDisplay(note);
-  const selectedStatsNote = selectedSummaryNoteId
-    ? notes.find((item) => item.id === selectedSummaryNoteId) || null
+  const displayNote = searchQuery ? notes.find((item) => item.key === note?.key) || null : filterNoteItemsForDisplay(note);
+  ensureSelectedItemVisible(displayNote);
+  const selectedStatsNote = selectedSummaryNoteKey
+    ? notes.find((item) => item.key === selectedSummaryNoteKey) || null
     : null;
   const statCounts = selectedStatsNote ? selectedStatsNote.counts : aggregateCounts(notes);
   const editingDisabled = !activeProject || !note;
@@ -739,12 +856,21 @@ function render() {
   renderSuggestedTools(displayNote);
   renderRecentActivity();
   renderDiagnostics(activeProject, displayNote, notes);
+  renderSearchStatus(searchQuery, notes);
 }
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    if (currentSearchQuery()) {
+      captureSearchSelectionSnapshot();
+    } else {
+      searchSelectionSnapshotTaken = false;
+    }
     activeFilter = button.dataset.journeyFilter || "all";
-    selectedSummaryNoteId = "";
+    selectedSummaryNoteKey = "";
+    if (!currentSearchQuery()) {
+      selectedSummaryNoteKeyBeforeSearch = "";
+    }
     render();
   });
 });
@@ -765,8 +891,12 @@ summaryBody.addEventListener("click", (event) => {
   if (!button) {
     return;
   }
-  selectedSummaryNoteId = button.dataset.journeyNoteButton;
-  repository.selectNote(selectedSummaryNoteId);
+  selectedSummaryNoteKey = button.dataset.journeyNoteButton;
+  if (!currentSearchQuery()) {
+    selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
+    searchSelectionSnapshotTaken = false;
+  }
+  repository.selectNote(selectedSummaryNoteKey);
   render();
 });
 
@@ -800,20 +930,26 @@ itemTree.addEventListener("input", (event) => {
   if (!selectedItem) {
     return;
   }
-  repository.updateItem(selectedItem.itemId, {
+  repository.updateItem(selectedItem.key, {
     userDetails: detailsInput.value,
   });
-  renderDiagnostics(repository.getActiveProject(), repository.getSelectedNote(), repository.listNotes(activeFilter));
+  renderDiagnostics(repository.getActiveProject(), repository.getSelectedNote(), applySearch(repository.listNotes(activeFilter), currentSearchQuery()));
 });
 
 addItemButton.addEventListener("click", () => {
   const selectedItem = getSelectedItem();
+  const addStatus = statusSelectionChanged ? statusInput.value : "not-started";
+  const title = newItemTitleInput?.value || (!selectedItem || selectedItem.createdByType === "user" ? titleInput.value : "");
   repository.addItem({
-    title: selectedItem?.createdByType === "system" ? "" : titleInput.value,
-    status: statusInput.value,
+    title,
+    status: addStatus,
     userDetails: "",
     indent: selectedItem?.indent || 0,
   });
+  if (newItemTitleInput) {
+    newItemTitleInput.value = "";
+  }
+  statusSelectionChanged = false;
   render();
 });
 
@@ -825,7 +961,7 @@ editorForm.addEventListener("submit", (event) => {
   }
 
   const detailsInput = itemTree.querySelector("[data-journey-item-details-input]");
-  repository.updateItem(selectedItem.itemId, {
+  repository.updateItem(selectedItem.key, {
     title: titleInput.value,
     status: statusInput.value,
     userDetails: detailsInput?.value || selectedItem.userDetails || "",
@@ -853,10 +989,33 @@ outdentButton.addEventListener("click", () => {
   render();
 });
 
+statusInput.addEventListener("change", () => {
+  statusSelectionChanged = true;
+});
+
+searchInput?.addEventListener("input", () => {
+  if (currentSearchQuery()) {
+    captureSearchSelectionSnapshot();
+  } else if (searchSelectionSnapshotTaken) {
+    restoreSearchSelectionSnapshot();
+  }
+  render();
+});
+
+searchClearButton?.addEventListener("click", () => {
+  if (searchInput) {
+    searchInput.value = "";
+  }
+  if (searchSelectionSnapshotTaken) {
+    restoreSearchSelectionSnapshot();
+  }
+  render();
+});
+
 addNoteButton.addEventListener("click", () => {
   const note = repository.addNote({
     name: newNoteNameInput.value,
-    typeId: newNoteTypeSelect.value,
+    typeKey: newNoteTypeSelect.value,
   });
   if (!note) {
     if (noteStatus) {
@@ -865,8 +1024,9 @@ addNoteButton.addEventListener("click", () => {
     return;
   }
   activeFilter = "all";
-  selectedSummaryNoteId = note.id;
-  preferredNewNoteTypeId = note.typeId;
+  selectedSummaryNoteKey = note.key;
+  selectedSummaryNoteKeyBeforeSearch = note.key;
+  preferredNewNoteTypeKey = note.typeKey;
   newNoteNameInput.value = "";
   if (noteStatus) {
     noteStatus.textContent = `Added ${note.name} to the summary table.`;
@@ -884,7 +1044,7 @@ addTypeButton.addEventListener("click", () => {
   typeStatus.textContent = result.message;
   if (result.created) {
     typeInput.value = "";
-    preferredNewNoteTypeId = result.type.id;
+    preferredNewNoteTypeKey = result.type.key;
   }
   render();
 });

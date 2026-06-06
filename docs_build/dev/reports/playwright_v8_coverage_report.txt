@@ -17,8 +17,8 @@ Exercised tool entry points detected:
 (74%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 960/960; executed functions 76/80
-(96%) toolbox/project-journey/project-journey.js - executed lines 805/805; executed functions 79/82
+(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 961/961; executed functions 76/80
+(96%) toolbox/project-journey/project-journey.js - executed lines 950/950; executed functions 100/104
 
 Files with executed line/function counts where available:
 (67%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 10/15
@@ -27,17 +27,15 @@ Files with executed line/function counts where available:
 (76%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 26/34
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 207/207; executed functions 16/20
 (86%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 32/37
-(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 960/960; executed functions 76/80
-(96%) toolbox/project-journey/project-journey.js - executed lines 805/805; executed functions 79/82
-(98%) admin/db-viewer.js - executed lines 221/221; executed functions 40/41
+(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 961/961; executed functions 76/80
+(96%) toolbox/project-journey/project-journey.js - executed lines 950/950; executed functions 100/104
+(98%) admin/db-viewer.js - executed lines 227/227; executed functions 41/42
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) admin/notes.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AdminNotesViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (95%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage
 (96%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage

@@ -6,7 +6,7 @@ function makeUlid(sequence) {
   return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;
 }
 
-export const PROJECT_JOURNEY_IDS = Object.freeze({
+export const PROJECT_JOURNEY_KEYS = Object.freeze({
   project: makeUlid(1),
   users: Object.freeze({
     designer: makeUlid(51),
@@ -56,7 +56,7 @@ export const PROJECT_JOURNEY_IDS = Object.freeze({
   }),
 });
 
-export const PROJECT_JOURNEY_CURRENT_USER_ID = PROJECT_JOURNEY_IDS.users.designer;
+export const PROJECT_JOURNEY_CURRENT_USER_KEY = PROJECT_JOURNEY_KEYS.users.designer;
 
 const PROJECT_JOURNEY_ROUTE_PROJECT_ALIAS = "demo-project";
 const GENERATED_ULID_SEQUENCE = Object.freeze({
@@ -152,10 +152,10 @@ function resequence(items) {
     });
 }
 
-function makeTemplate(templateId, templateKey, originalMeaning, systemGuidance, linkedToolContexts, minutes) {
+function makeTemplate(key, templateSlug, originalMeaning, systemGuidance, linkedToolContexts, minutes) {
   return {
-    templateId,
-    templateKey,
+    key,
+    templateSlug,
     originalMeaning,
     systemGuidance,
     linkedToolContexts,
@@ -166,12 +166,12 @@ function makeTemplate(templateId, templateKey, originalMeaning, systemGuidance, 
 }
 
 function makeSystemItem({
-  itemId,
-  noteId,
+  key,
+  noteKey,
   status,
   title,
   userDetails = "",
-  templateId,
+  templateKey,
   linkedRecordType = "tool",
   linkedRecordId = "project-journey",
   indent = 0,
@@ -180,15 +180,15 @@ function makeSystemItem({
 }) {
   const timestampValue = timestamp(minutes);
   return {
-    itemId,
-    projectId: PROJECT_JOURNEY_IDS.project,
-    noteId,
+    key,
+    projectKey: PROJECT_JOURNEY_KEYS.project,
+    noteKey,
     status,
     title,
     userDetails,
     createdByType: "system",
     updatedByType: "system",
-    templateId,
+    templateKey,
     linkedRecordType,
     linkedRecordId,
     indent,
@@ -200,57 +200,57 @@ function makeSystemItem({
 
 function getSeedTables() {
   const project_journey_note_types = [
-    { id: PROJECT_JOURNEY_IDS.noteTypes.design, typeKey: "design", name: "Design", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { id: PROJECT_JOURNEY_IDS.noteTypes.story, typeKey: "story", name: "Story", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { id: PROJECT_JOURNEY_IDS.noteTypes.release, typeKey: "release", name: "Release", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { id: PROJECT_JOURNEY_IDS.noteTypes.research, typeKey: "research", name: "Research", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { id: PROJECT_JOURNEY_IDS.noteTypes.idea, typeKey: "idea", name: "Idea", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { id: PROJECT_JOURNEY_IDS.noteTypes.question, typeKey: "question", name: "Question", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { id: PROJECT_JOURNEY_IDS.noteTypes.task, typeKey: "task", name: "Task", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: PROJECT_JOURNEY_KEYS.noteTypes.design, typeSlug: "design", name: "Design", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: PROJECT_JOURNEY_KEYS.noteTypes.story, typeSlug: "story", name: "Story", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: PROJECT_JOURNEY_KEYS.noteTypes.release, typeSlug: "release", name: "Release", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: PROJECT_JOURNEY_KEYS.noteTypes.research, typeSlug: "research", name: "Research", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: PROJECT_JOURNEY_KEYS.noteTypes.idea, typeSlug: "idea", name: "Idea", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: PROJECT_JOURNEY_KEYS.noteTypes.question, typeSlug: "question", name: "Question", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: PROJECT_JOURNEY_KEYS.noteTypes.task, typeSlug: "task", name: "Task", seeded: true, userExtensible: true, ...makeAuditFields(0) },
   ];
 
   const project_journey_notes = [
     {
-      id: PROJECT_JOURNEY_IDS.notes.designPass,
-      noteKey: "design-pass",
-      projectId: PROJECT_JOURNEY_IDS.project,
-      ownerId: PROJECT_JOURNEY_CURRENT_USER_ID,
+      key: PROJECT_JOURNEY_KEYS.notes.designPass,
+      slug: "design-pass",
+      projectKey: PROJECT_JOURNEY_KEYS.project,
+      ownerKey: PROJECT_JOURNEY_CURRENT_USER_KEY,
       name: "Palette and Input Density",
-      typeId: PROJECT_JOURNEY_IDS.noteTypes.design,
+      typeKey: PROJECT_JOURNEY_KEYS.noteTypes.design,
       ...makeAuditFields(5),
     },
     {
-      id: PROJECT_JOURNEY_IDS.notes.releaseReadiness,
-      noteKey: "release-readiness",
-      projectId: PROJECT_JOURNEY_IDS.project,
-      ownerId: PROJECT_JOURNEY_IDS.users.producer,
+      key: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
+      slug: "release-readiness",
+      projectKey: PROJECT_JOURNEY_KEYS.project,
+      ownerKey: PROJECT_JOURNEY_KEYS.users.producer,
       name: "Release Readiness",
-      typeId: PROJECT_JOURNEY_IDS.noteTypes.release,
+      typeKey: PROJECT_JOURNEY_KEYS.noteTypes.release,
       ...makeAuditFields(9),
     },
     {
-      id: PROJECT_JOURNEY_IDS.notes.storyMap,
-      noteKey: "story-map",
-      projectId: PROJECT_JOURNEY_IDS.project,
-      ownerId: PROJECT_JOURNEY_CURRENT_USER_ID,
+      key: PROJECT_JOURNEY_KEYS.notes.storyMap,
+      slug: "story-map",
+      projectKey: PROJECT_JOURNEY_KEYS.project,
+      ownerKey: PROJECT_JOURNEY_CURRENT_USER_KEY,
       name: "Story Beats",
-      typeId: PROJECT_JOURNEY_IDS.noteTypes.story,
+      typeKey: PROJECT_JOURNEY_KEYS.noteTypes.story,
       ...makeAuditFields(14),
     },
     {
-      id: PROJECT_JOURNEY_IDS.notes.researchUx,
-      noteKey: "research-ux",
-      projectId: PROJECT_JOURNEY_IDS.project,
-      ownerId: PROJECT_JOURNEY_IDS.users.producer,
+      key: PROJECT_JOURNEY_KEYS.notes.researchUx,
+      slug: "research-ux",
+      projectKey: PROJECT_JOURNEY_KEYS.project,
+      ownerKey: PROJECT_JOURNEY_KEYS.users.producer,
       name: "Research Questions",
-      typeId: PROJECT_JOURNEY_IDS.noteTypes.research,
+      typeKey: PROJECT_JOURNEY_KEYS.noteTypes.research,
       ...makeAuditFields(18),
     },
   ];
 
   const project_journey_templates = [
     makeTemplate(
-      PROJECT_JOURNEY_IDS.templates.paletteAffordance,
+      PROJECT_JOURNEY_KEYS.templates.paletteAffordance,
       "palette.swatch-affordance",
       "Review palette swatch affordance in the active project palette.",
       "Check whether selected swatches clearly expose batch tagging, checked state, and keyboard-friendly scanning.",
@@ -258,7 +258,7 @@ function getSeedTables() {
       1,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_IDS.templates.batchTagLanguage,
+      PROJECT_JOURNEY_KEYS.templates.batchTagLanguage,
       "palette.batch-tag-language",
       "Confirm batch tag language after checked swatches are applied.",
       "Keep the copy focused on what happens to checked swatches and avoid implying tags are auto-added.",
@@ -266,7 +266,7 @@ function getSeedTables() {
       2,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_IDS.templates.compactTagState,
+      PROJECT_JOURNEY_KEYS.templates.compactTagState,
       "palette.compact-tag-state",
       "Decide whether tag chips need a compact state for small canvases.",
       "Compare dense palette screens against the normal Project Palette Tags view before creating another display mode.",
@@ -274,7 +274,7 @@ function getSeedTables() {
       3,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_IDS.templates.releaseLaneOwnership,
+      PROJECT_JOURNEY_KEYS.templates.releaseLaneOwnership,
       "release.validation-lane-ownership",
       "Resolve final validation lane ownership before release.",
       "Confirm the targeted lane owner is named before publish readiness moves forward.",
@@ -282,7 +282,7 @@ function getSeedTables() {
       4,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_IDS.templates.archiveBoundary,
+      PROJECT_JOURNEY_KEYS.templates.archiveBoundary,
       "release.archive-boundary",
       "Confirm no archived Tool V1/V2 files were touched.",
       "Use the active Toolbox paths for implementation and keep archived V1/V2 material read-only.",
@@ -290,7 +290,7 @@ function getSeedTables() {
       5,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_IDS.templates.openingGoal,
+      PROJECT_JOURNEY_KEYS.templates.openingGoal,
       "story.opening-player-goal",
       "Outline the opening player goal.",
       "Describe the first player-readable goal in one sentence before expanding beats.",
@@ -298,7 +298,7 @@ function getSeedTables() {
       6,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_IDS.templates.tutorialMilestones,
+      PROJECT_JOURNEY_KEYS.templates.tutorialMilestones,
       "story.tutorial-workspace-milestones",
       "Connect tutorial beats to workspace milestones.",
       "Attach tutorial beats to concrete build path milestones so story work stays testable.",
@@ -306,7 +306,7 @@ function getSeedTables() {
       7,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_IDS.templates.uxSubnotes,
+      PROJECT_JOURNEY_KEYS.templates.uxSubnotes,
       "research.ux-subnote-decision",
       "Decide which unanswered UX questions need their own notes.",
       "Promote only durable UX questions into separate notes; keep short follow-ups inline as item details.",
@@ -315,7 +315,7 @@ function getSeedTables() {
     ),
     {
       ...makeTemplate(
-        PROJECT_JOURNEY_IDS.templates.inactiveGuidance,
+        PROJECT_JOURNEY_KEYS.templates.inactiveGuidance,
         "diagnostic.inactive-guidance",
         "Inactive template diagnostic.",
         "This inactive template exists only for Project Journey diagnostics validation.",
@@ -330,92 +330,92 @@ function getSeedTables() {
 
   const project_journey_items = [
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.designAffordance,
-      noteId: PROJECT_JOURNEY_IDS.notes.designPass,
+      key: PROJECT_JOURNEY_KEYS.items.designAffordance,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
       status: "in-progress",
       title: "Review palette swatch affordance in the active project palette.",
       userDetails: "Designer review should focus on checkbox visibility and selected-row contrast.",
-      templateId: PROJECT_JOURNEY_IDS.templates.paletteAffordance,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.paletteAffordance,
       indent: 0,
       order: 1,
       minutes: 10,
     }),
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.designBatchTag,
-      noteId: PROJECT_JOURNEY_IDS.notes.designPass,
+      key: PROJECT_JOURNEY_KEYS.items.designBatchTag,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
       status: "not-started",
       title: "Confirm batch tag language after checked swatches are applied.",
-      templateId: PROJECT_JOURNEY_IDS.templates.batchTagLanguage,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.batchTagLanguage,
       indent: 1,
       order: 2,
       minutes: 11,
     }),
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.designCompactTag,
-      noteId: PROJECT_JOURNEY_IDS.notes.designPass,
+      key: PROJECT_JOURNEY_KEYS.items.designCompactTag,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
       status: "decide",
       title: "Decide whether tag chips need a compact state for small canvases.",
-      templateId: PROJECT_JOURNEY_IDS.templates.compactTagState,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.compactTagState,
       indent: 1,
       order: 3,
       minutes: 12,
     }),
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.releaseLaneOwnership,
-      noteId: PROJECT_JOURNEY_IDS.notes.releaseReadiness,
+      key: PROJECT_JOURNEY_KEYS.items.releaseLaneOwnership,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
       status: "blocker",
       title: "Resolve final validation lane ownership before release.",
-      templateId: PROJECT_JOURNEY_IDS.templates.releaseLaneOwnership,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.releaseLaneOwnership,
       indent: 0,
       order: 1,
       minutes: 13,
     }),
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.releaseArchiveBoundary,
-      noteId: PROJECT_JOURNEY_IDS.notes.releaseReadiness,
+      key: PROJECT_JOURNEY_KEYS.items.releaseArchiveBoundary,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
       status: "complete",
       title: "Confirm no archived Tool V1/V2 files were touched.",
-      templateId: PROJECT_JOURNEY_IDS.templates.archiveBoundary,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.archiveBoundary,
       indent: 0,
       order: 2,
       minutes: 14,
     }),
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.releaseSkippedChecklist,
-      noteId: PROJECT_JOURNEY_IDS.notes.releaseReadiness,
+      key: PROJECT_JOURNEY_KEYS.items.releaseSkippedChecklist,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
       status: "skipped",
       title: "Skip launch-day checklist items that no longer apply.",
-      templateId: PROJECT_JOURNEY_IDS.templates.archiveBoundary,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.archiveBoundary,
       indent: 0,
       order: 3,
       minutes: 15,
     }),
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.storyOpeningGoal,
-      noteId: PROJECT_JOURNEY_IDS.notes.storyMap,
+      key: PROJECT_JOURNEY_KEYS.items.storyOpeningGoal,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.storyMap,
       status: "not-started",
       title: "Outline the opening player goal.",
-      templateId: PROJECT_JOURNEY_IDS.templates.openingGoal,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.openingGoal,
       indent: 0,
       order: 1,
       minutes: 16,
     }),
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.storyTutorialMilestones,
-      noteId: PROJECT_JOURNEY_IDS.notes.storyMap,
+      key: PROJECT_JOURNEY_KEYS.items.storyTutorialMilestones,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.storyMap,
       status: "in-progress",
       title: "Connect tutorial beats to workspace milestones.",
-      templateId: PROJECT_JOURNEY_IDS.templates.tutorialMilestones,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.tutorialMilestones,
       indent: 1,
       order: 2,
       minutes: 17,
     }),
     makeSystemItem({
-      itemId: PROJECT_JOURNEY_IDS.items.researchUxSubnotes,
-      noteId: PROJECT_JOURNEY_IDS.notes.researchUx,
+      key: PROJECT_JOURNEY_KEYS.items.researchUxSubnotes,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.researchUx,
       status: "decide",
       title: "Decide which unanswered UX questions need their own notes.",
-      templateId: PROJECT_JOURNEY_IDS.templates.uxSubnotes,
+      templateKey: PROJECT_JOURNEY_KEYS.templates.uxSubnotes,
       indent: 0,
       order: 1,
       minutes: 18,
@@ -424,16 +424,16 @@ function getSeedTables() {
 
   const project_journey_activity = [
     {
-      id: PROJECT_JOURNEY_IDS.activity.paletteDensityUpdated,
-      projectId: PROJECT_JOURNEY_IDS.project,
-      noteId: PROJECT_JOURNEY_IDS.notes.designPass,
+      key: PROJECT_JOURNEY_KEYS.activity.paletteDensityUpdated,
+      projectKey: PROJECT_JOURNEY_KEYS.project,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
       message: "Palette and Input Density updated by Designer",
       ...makeAuditFields(20),
     },
     {
-      id: PROJECT_JOURNEY_IDS.activity.releaseBlocked,
-      projectId: PROJECT_JOURNEY_IDS.project,
-      noteId: PROJECT_JOURNEY_IDS.notes.releaseReadiness,
+      key: PROJECT_JOURNEY_KEYS.activity.releaseBlocked,
+      projectKey: PROJECT_JOURNEY_KEYS.project,
+      noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
       message: "Release Readiness marked with a blocker",
       ...makeAuditFields(22),
     },
@@ -452,28 +452,28 @@ export function createProjectJourneyMockRepository(options = {}) {
   const workspaceRepository =
     options.workspaceRepository || createProjectWorkspaceMockRepository();
   const tables = getSeedTables();
-  let selectedNoteId = PROJECT_JOURNEY_IDS.notes.designPass;
-  let selectedItemId = PROJECT_JOURNEY_IDS.items.designAffordance;
+  let selectedNoteKey = PROJECT_JOURNEY_KEYS.notes.designPass;
+  let selectedItemKey = PROJECT_JOURNEY_KEYS.items.designAffordance;
   let nextItemNumber = GENERATED_ULID_SEQUENCE.item;
   let nextActivityNumber = GENERATED_ULID_SEQUENCE.activity;
   let nextTypeNumber = GENERATED_ULID_SEQUENCE.type;
   let nextNoteNumber = GENERATED_ULID_SEQUENCE.note;
   let nextDiagnosticNumber = GENERATED_ULID_SEQUENCE.diagnostic;
 
-  function touchNote(noteId, updatedByType = "user") {
-    const note = tables.project_journey_notes.find((item) => item.id === noteId);
+  function touchNote(noteKey, updatedByType = "user") {
+    const note = tables.project_journey_notes.find((item) => item.key === noteKey);
     if (note) {
       note.updatedAt = new Date().toISOString();
       note.updatedByType = updatedByType === "system" ? "system" : "user";
     }
   }
 
-  function addActivity(projectId, noteId, message, byType = "user") {
+  function addActivity(projectKey, noteKey, message, byType = "user") {
     const timestampValue = new Date().toISOString();
     tables.project_journey_activity.unshift({
-      id: makeUlid(nextActivityNumber),
-      projectId,
-      noteId,
+      key: makeUlid(nextActivityNumber),
+      projectKey,
+      noteKey,
       message,
       createdAt: timestampValue,
       updatedAt: timestampValue,
@@ -490,7 +490,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
     return {
       ...project,
-      id: PROJECT_JOURNEY_IDS.project,
+      key: PROJECT_JOURNEY_KEYS.project,
     };
   }
 
@@ -510,25 +510,25 @@ export function createProjectJourneyMockRepository(options = {}) {
       };
     }
 
-    if (!item.templateId) {
+    if (!item.templateKey) {
       return {
         template: null,
         templateDiagnostic: {
           type: "missing",
-          message: `System-created item "${item.title}" is missing templateId.`,
+          message: `System-created item "${item.title}" is missing templateKey.`,
         },
       };
     }
 
     const template = tables.project_journey_templates.find(
-      (candidate) => candidate.templateId === item.templateId,
+      (candidate) => candidate.key === item.templateKey,
     );
     if (!template) {
       return {
         template: null,
         templateDiagnostic: {
           type: "invalid",
-          message: `System-created item "${item.title}" references missing templateId ${item.templateId}.`,
+          message: `System-created item "${item.title}" references missing templateKey ${item.templateKey}.`,
         },
       };
     }
@@ -538,7 +538,7 @@ export function createProjectJourneyMockRepository(options = {}) {
         template: clone(template),
         templateDiagnostic: {
           type: "inactive",
-          message: `System-created item "${item.title}" references inactive templateId ${item.templateId}.`,
+          message: `System-created item "${item.title}" references inactive templateKey ${item.templateKey}.`,
         },
       };
     }
@@ -561,9 +561,9 @@ export function createProjectJourneyMockRepository(options = {}) {
     };
   }
 
-  function getItemsForNote(noteId) {
+  function getItemsForNote(noteKey) {
     return tables.project_journey_items
-      .filter((item) => item.noteId === noteId)
+      .filter((item) => item.noteKey === noteKey)
       .sort((left, right) => left.order - right.order);
   }
 
@@ -574,7 +574,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     return true;
   }
 
-  function getNoteCounts(noteId, filterId = "all") {
+  function getNoteCounts(noteKey, filterId = "all") {
     const counts = {
       total: 0,
       open: 0,
@@ -586,7 +586,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       decide: 0,
     };
 
-    getItemsForNote(noteId).filter((item) => itemMatchesCountFilter(item, filterId)).forEach((item) => {
+    getItemsForNote(noteKey).filter((item) => itemMatchesCountFilter(item, filterId)).forEach((item) => {
       const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
       if (!status) {
         return;
@@ -603,7 +603,7 @@ export function createProjectJourneyMockRepository(options = {}) {
 
   function noteMatchesFilter(note, filterId) {
     if (filterId === "mine") {
-      return note.ownerId === PROJECT_JOURNEY_CURRENT_USER_ID;
+      return note.ownerKey === PROJECT_JOURNEY_CURRENT_USER_KEY;
     }
 
     if (!filterId || filterId === "all") {
@@ -611,10 +611,10 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
 
     if (filterId === "system") {
-      return getItemsForNote(note.id).some((item) => item.createdByType === "system");
+      return getItemsForNote(note.key).some((item) => item.createdByType === "system");
     }
 
-    return getItemsForNote(note.id).some((item) => item.status === filterId);
+    return getItemsForNote(note.key).some((item) => item.status === filterId);
   }
 
   function listNotes(filterId = "all") {
@@ -624,19 +624,20 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
 
     return tables.project_journey_notes
-      .filter((note) => note.projectId === activeProject.id)
+      .filter((note) => note.projectKey === activeProject.key)
       .filter((note) => noteMatchesFilter(note, filterId))
       .map((note) => ({
         ...clone(note),
         type: clone(
-          tables.project_journey_note_types.find((type) => type.id === note.typeId),
+          tables.project_journey_note_types.find((type) => type.key === note.typeKey),
         ),
-        counts: getNoteCounts(note.id, filterId === "system" ? "system" : "all"),
+        counts: getNoteCounts(note.key, filterId === "system" ? "system" : "all"),
+        items: getItemsForNote(note.key).map(hydrateItem),
       }))
       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
   }
 
-  function addNote({ name, typeId } = {}) {
+  function addNote({ name, typeKey } = {}) {
     const activeProject = requireActiveProject();
     if (!activeProject) {
       return null;
@@ -644,16 +645,16 @@ export function createProjectJourneyMockRepository(options = {}) {
 
     const normalizedName = String(name || "").trim() || "New Project Journey Note";
     const selectedType =
-      tables.project_journey_note_types.find((type) => type.id === typeId) ||
+      tables.project_journey_note_types.find((type) => type.key === typeKey) ||
       tables.project_journey_note_types[0];
     const timestampValue = new Date().toISOString();
     const note = {
-      id: makeUlid(nextNoteNumber),
-      noteKey: `user-note-${nextNoteNumber}`,
-      projectId: activeProject.id,
-      ownerId: PROJECT_JOURNEY_CURRENT_USER_ID,
+      key: makeUlid(nextNoteNumber),
+      slug: `user-note-${nextNoteNumber}`,
+      projectKey: activeProject.key,
+      ownerKey: PROJECT_JOURNEY_CURRENT_USER_KEY,
       name: normalizedName,
-      typeId: selectedType?.id || "",
+      typeKey: selectedType?.key || "",
       createdAt: timestampValue,
       updatedAt: timestampValue,
       createdByType: "user",
@@ -661,9 +662,9 @@ export function createProjectJourneyMockRepository(options = {}) {
     };
     nextNoteNumber += 1;
     tables.project_journey_notes.push(note);
-    selectedNoteId = note.id;
-    selectedItemId = "";
-    addActivity(activeProject.id, note.id, `Added note ${note.name}`, "user");
+    selectedNoteKey = note.key;
+    selectedItemKey = "";
+    addActivity(activeProject.key, note.key, `Added note ${note.name}`, "user");
     return getSelectedNote();
   }
 
@@ -675,75 +676,75 @@ export function createProjectJourneyMockRepository(options = {}) {
 
     const note =
       tables.project_journey_notes.find(
-        (item) => item.id === selectedNoteId && item.projectId === activeProject.id,
-      ) || tables.project_journey_notes.find((item) => item.projectId === activeProject.id);
+        (item) => item.key === selectedNoteKey && item.projectKey === activeProject.key,
+      ) || tables.project_journey_notes.find((item) => item.projectKey === activeProject.key);
 
     if (!note) {
       return null;
     }
 
-    selectedNoteId = note.id;
+    selectedNoteKey = note.key;
     const selectedItem = tables.project_journey_items.find(
-      (item) => item.itemId === selectedItemId && item.noteId === note.id,
+      (item) => item.key === selectedItemKey && item.noteKey === note.key,
     );
     if (!selectedItem) {
-      selectedItemId = getItemsForNote(note.id)[0]?.itemId || "";
+      selectedItemKey = getItemsForNote(note.key)[0]?.key || "";
     }
 
     return {
       ...clone(note),
       type: clone(
-        tables.project_journey_note_types.find((type) => type.id === note.typeId),
+        tables.project_journey_note_types.find((type) => type.key === note.typeKey),
       ),
-      counts: getNoteCounts(note.id),
-      items: getItemsForNote(note.id).map(hydrateItem),
+      counts: getNoteCounts(note.key),
+      items: getItemsForNote(note.key).map(hydrateItem),
     };
   }
 
-  function selectNote(noteId) {
-    const note = tables.project_journey_notes.find((item) => item.id === noteId);
+  function selectNote(noteKey) {
+    const note = tables.project_journey_notes.find((item) => item.key === noteKey);
     if (!note) {
       return getSelectedNote();
     }
 
-    selectedNoteId = note.id;
-    selectedItemId = getItemsForNote(note.id)[0]?.itemId || "";
+    selectedNoteKey = note.key;
+    selectedItemKey = getItemsForNote(note.key)[0]?.key || "";
     return getSelectedNote();
   }
 
-  function selectItem(itemId) {
-    const item = tables.project_journey_items.find((candidate) => candidate.itemId === itemId);
+  function selectItem(itemKey) {
+    const item = tables.project_journey_items.find((candidate) => candidate.key === itemKey);
     if (item) {
-      selectedItemId = item.itemId;
-      selectedNoteId = item.noteId;
+      selectedItemKey = item.key;
+      selectedNoteKey = item.noteKey;
     }
     return item ? hydrateItem(item) : null;
   }
 
   function getSelectedItem() {
-    const item = tables.project_journey_items.find((candidate) => candidate.itemId === selectedItemId);
+    const item = tables.project_journey_items.find((candidate) => candidate.key === selectedItemKey);
     return item ? hydrateItem(item) : null;
   }
 
   function addItem({ title, status, userDetails = "", indent = 0 }) {
     const activeProject = requireActiveProject();
-    const note = tables.project_journey_notes.find((item) => item.id === selectedNoteId);
+    const note = tables.project_journey_notes.find((item) => item.key === selectedNoteKey);
     if (!activeProject || !note) {
       return null;
     }
 
-    const existingItems = getItemsForNote(note.id);
+    const existingItems = getItemsForNote(note.key);
     const timestampValue = new Date().toISOString();
     const item = {
-      itemId: makeUlid(nextItemNumber),
-      projectId: activeProject.id,
-      noteId: note.id,
+      key: makeUlid(nextItemNumber),
+      projectKey: activeProject.key,
+      noteKey: note.key,
       status: PROJECT_JOURNEY_STATUS_BY_ID[status] ? status : "not-started",
       title: String(title || "").trim() || "New journey item",
       userDetails: String(userDetails || "").trim(),
       createdByType: "user",
       updatedByType: "user",
-      templateId: "",
+      templateKey: "",
       linkedRecordType: "",
       linkedRecordId: "",
       indent: normalizeIndent(indent),
@@ -753,15 +754,15 @@ export function createProjectJourneyMockRepository(options = {}) {
     };
     nextItemNumber += 1;
     tables.project_journey_items.push(item);
-    selectedItemId = item.itemId;
-    touchNote(note.id, "user");
-    addActivity(activeProject.id, note.id, `Added item to ${note.name}`, "user");
+    selectedItemKey = item.key;
+    touchNote(note.key, "user");
+    addActivity(activeProject.key, note.key, `Added item to ${note.name}`, "user");
     return hydrateItem(item);
   }
 
-  function deleteItem(itemId) {
+  function deleteItem(itemKey) {
     const activeProject = requireActiveProject();
-    const item = tables.project_journey_items.find((candidate) => candidate.itemId === itemId);
+    const item = tables.project_journey_items.find((candidate) => candidate.key === itemKey);
     if (!activeProject || !item) {
       return {
         deleted: false,
@@ -777,29 +778,29 @@ export function createProjectJourneyMockRepository(options = {}) {
       };
     }
 
-    const note = tables.project_journey_notes.find((candidate) => candidate.id === item.noteId);
+    const note = tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey);
     const deletedOrder = item.order;
     tables.project_journey_items = tables.project_journey_items.filter(
-      (candidate) => candidate.itemId !== item.itemId,
+      (candidate) => candidate.key !== item.key,
     );
-    const remainingItems = getItemsForNote(item.noteId);
+    const remainingItems = getItemsForNote(item.noteKey);
     resequence(remainingItems);
-    selectedItemId =
-      remainingItems.find((candidate) => candidate.order >= deletedOrder)?.itemId ||
-      remainingItems.at(-1)?.itemId ||
+    selectedItemKey =
+      remainingItems.find((candidate) => candidate.order >= deletedOrder)?.key ||
+      remainingItems.at(-1)?.key ||
       "";
-    touchNote(item.noteId, "user");
-    addActivity(activeProject.id, item.noteId, `Deleted user item from ${note?.name || "Project Journey"}`, "user");
+    touchNote(item.noteKey, "user");
+    addActivity(activeProject.key, item.noteKey, `Deleted user item from ${note?.name || "Project Journey"}`, "user");
     return {
       deleted: true,
       reason: "Deleted user-created item.",
-      selectedItemId,
+      selectedItemKey,
     };
   }
 
-  function updateItem(itemId, updates = {}, updatedByType = "user") {
+  function updateItem(itemKey, updates = {}, updatedByType = "user") {
     const activeProject = requireActiveProject();
-    const item = tables.project_journey_items.find((candidate) => candidate.itemId === itemId);
+    const item = tables.project_journey_items.find((candidate) => candidate.key === itemKey);
     if (!activeProject || !item) {
       return null;
     }
@@ -823,26 +824,26 @@ export function createProjectJourneyMockRepository(options = {}) {
 
     item.updatedByType = updatedByType === "system" ? "system" : "user";
     item.updatedAt = new Date().toISOString();
-    selectedItemId = item.itemId;
-    selectedNoteId = item.noteId;
-    touchNote(item.noteId, item.updatedByType);
-    addActivity(activeProject.id, item.noteId, `${item.updatedByType === "system" ? "System" : "User"} updated selected journey item`, item.updatedByType);
+    selectedItemKey = item.key;
+    selectedNoteKey = item.noteKey;
+    touchNote(item.noteKey, item.updatedByType);
+    addActivity(activeProject.key, item.noteKey, `${item.updatedByType === "system" ? "System" : "User"} updated selected journey item`, item.updatedByType);
     return hydrateItem(item);
   }
 
-  function applySystemItemUpdate(itemId, updates = {}) {
-    return updateItem(itemId, updates, "system");
+  function applySystemItemUpdate(itemKey, updates = {}) {
+    return updateItem(itemKey, updates, "system");
   }
 
   function moveSelectedItem(direction) {
     const activeProject = requireActiveProject();
-    const item = tables.project_journey_items.find((candidate) => candidate.itemId === selectedItemId);
+    const item = tables.project_journey_items.find((candidate) => candidate.key === selectedItemKey);
     if (!activeProject || !item) {
       return null;
     }
 
-    const items = getItemsForNote(item.noteId);
-    const currentIndex = items.findIndex((candidate) => candidate.itemId === item.itemId);
+    const items = getItemsForNote(item.noteKey);
+    const currentIndex = items.findIndex((candidate) => candidate.key === item.key);
     const nextIndex = currentIndex + direction;
     if (currentIndex < 0 || nextIndex < 0 || nextIndex >= items.length) {
       return hydrateItem(item);
@@ -858,31 +859,31 @@ export function createProjectJourneyMockRepository(options = {}) {
     item.updatedAt = timestampValue;
     neighbor.updatedAt = timestampValue;
     resequence(items);
-    touchNote(item.noteId, "user");
-    addActivity(activeProject.id, item.noteId, "Reordered journey items", "user");
+    touchNote(item.noteKey, "user");
+    addActivity(activeProject.key, item.noteKey, "Reordered journey items", "user");
     return hydrateItem(item);
   }
 
   function changeSelectedIndent(delta) {
-    const item = tables.project_journey_items.find((candidate) => candidate.itemId === selectedItemId);
+    const item = tables.project_journey_items.find((candidate) => candidate.key === selectedItemKey);
     if (!item) {
       return null;
     }
 
-    return updateItem(item.itemId, { indent: item.indent + delta }, "user");
+    return updateItem(item.key, { indent: item.indent + delta }, "user");
   }
 
-  function updateSelectedNoteType(typeId) {
+  function updateSelectedNoteType(typeKey) {
     const activeProject = requireActiveProject();
-    const note = tables.project_journey_notes.find((item) => item.id === selectedNoteId);
-    const type = tables.project_journey_note_types.find((item) => item.id === typeId);
+    const note = tables.project_journey_notes.find((item) => item.key === selectedNoteKey);
+    const type = tables.project_journey_note_types.find((item) => item.key === typeKey);
     if (!activeProject || !note || !type) {
       return null;
     }
 
-    note.typeId = type.id;
-    touchNote(note.id, "user");
-    addActivity(activeProject.id, note.id, `Changed ${note.name} type to ${type.name}`, "user");
+    note.typeKey = type.key;
+    touchNote(note.key, "user");
+    addActivity(activeProject.key, note.key, `Changed ${note.name} type to ${type.name}`, "user");
     return getSelectedNote();
   }
 
@@ -911,8 +912,8 @@ export function createProjectJourneyMockRepository(options = {}) {
 
     const timestampValue = new Date().toISOString();
     const type = {
-      id: makeUlid(nextTypeNumber),
-      typeKey: `custom-${nextTypeNumber}`,
+      key: makeUlid(nextTypeNumber),
+      typeSlug: `custom-${nextTypeNumber}`,
       name: normalized,
       seeded: false,
       userExtensible: true,
@@ -939,7 +940,7 @@ export function createProjectJourneyMockRepository(options = {}) {
 
     return clone(
       tables.project_journey_activity
-        .filter((activity) => activity.projectId === activeProject.id)
+        .filter((activity) => activity.projectKey === activeProject.key)
         .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
         .slice(0, limit),
     );
@@ -947,7 +948,7 @@ export function createProjectJourneyMockRepository(options = {}) {
 
   function getTemplateDiagnostics() {
     return tables.project_journey_items
-      .filter((item) => item.projectId === getActiveProject()?.id)
+      .filter((item) => item.projectKey === getActiveProject()?.key)
       .map(resolveTemplate)
       .map((result) => result.templateDiagnostic)
       .filter(Boolean);
@@ -959,37 +960,37 @@ export function createProjectJourneyMockRepository(options = {}) {
       return [];
     }
 
-    const noteId = PROJECT_JOURNEY_IDS.notes.designPass;
-    const existingItems = getItemsForNote(noteId);
+    const noteKey = PROJECT_JOURNEY_KEYS.notes.designPass;
+    const existingItems = getItemsForNote(noteKey);
     const fixtures = [
       {
         title: "Missing template diagnostic item",
-        templateId: "",
+        templateKey: "",
         status: "not-started",
       },
       {
         title: "Inactive template diagnostic item",
-        templateId: PROJECT_JOURNEY_IDS.templates.inactiveGuidance,
+        templateKey: PROJECT_JOURNEY_KEYS.templates.inactiveGuidance,
         status: "blocker",
       },
       {
         title: "Invalid template diagnostic item",
-        templateId: PROJECT_JOURNEY_IDS.templates.invalidMissing,
+        templateKey: PROJECT_JOURNEY_KEYS.templates.invalidMissing,
         status: "decide",
       },
     ];
     const created = fixtures.map((fixture, index) => {
       const timestampValue = new Date().toISOString();
       const item = {
-        itemId: makeUlid(nextDiagnosticNumber),
-        projectId: activeProject.id,
-        noteId,
+        key: makeUlid(nextDiagnosticNumber),
+        projectKey: activeProject.key,
+        noteKey,
         status: fixture.status,
         title: fixture.title,
         userDetails: "",
         createdByType: "system",
         updatedByType: "system",
-        templateId: fixture.templateId,
+        templateKey: fixture.templateKey,
         linkedRecordType: "diagnostic",
         linkedRecordId: fixture.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
         indent: 0,
@@ -1001,13 +1002,13 @@ export function createProjectJourneyMockRepository(options = {}) {
       tables.project_journey_items.push(item);
       return hydrateItem(item);
     });
-    touchNote(noteId, "system");
+    touchNote(noteKey, "system");
     return created;
   }
 
   function openProject(projectId) {
     const workspaceProjectId =
-      projectId === PROJECT_JOURNEY_IDS.project ? PROJECT_JOURNEY_ROUTE_PROJECT_ALIAS : projectId;
+      projectId === PROJECT_JOURNEY_KEYS.project ? PROJECT_JOURNEY_ROUTE_PROJECT_ALIAS : projectId;
     return workspaceRepository.openProject(workspaceProjectId);
   }
 

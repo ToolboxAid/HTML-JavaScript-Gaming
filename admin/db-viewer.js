@@ -35,12 +35,16 @@ class AdminDbViewer {
   }
 
   recordId(record) {
-    return record.itemId || record.templateId || record.id || record.name || "record";
+    return record.key || record.name || "record";
   }
 
-  shortKey(record) {
-    const key = String(this.recordId(record));
-    return key.length > 8 ? key.slice(-8) : key;
+  isUlidKey(value) {
+    return /^[0-9A-HJKMNP-TV-Z]{26}$/.test(String(value || ""));
+  }
+
+  formatKeyValue(value) {
+    const key = String(value);
+    return key.slice(0, 10);
   }
 
   formatValue(value) {
@@ -92,7 +96,6 @@ class AdminDbViewer {
     const fields = this.tableFields(records);
     const head = this.createElement("thead");
     const headerRow = this.createElement("tr");
-    headerRow.append(this.createElement("th", { text: "Key" }));
     fields.forEach((field) => {
       headerRow.append(this.createElement("th", { text: field }));
     });
@@ -102,11 +105,15 @@ class AdminDbViewer {
     records.forEach((record) => {
       const row = this.createElement("tr");
       row.dataset.adminDbRecord = this.recordId(record);
-      const keyCell = this.createElement("td", { text: this.shortKey(record) });
-      keyCell.title = this.recordId(record);
-      row.append(keyCell);
       fields.forEach((field) => {
-        row.append(this.createElement("td", { text: this.formatValue(record[field]) }));
+        const value = record[field];
+        const cell = this.createElement("td", {
+          text: this.isUlidKey(value) ? this.formatKeyValue(value) : this.formatValue(value),
+        });
+        if (this.isUlidKey(value)) {
+          cell.title = String(value);
+        }
+        row.append(cell);
       });
       tableBody.append(row);
     });
@@ -142,52 +149,52 @@ class AdminDbViewer {
   }
 
   relationshipsForTables(tables) {
-    const noteTypeIds = new Set(tables.project_journey_note_types.map((type) => type.id));
-    const noteIds = new Set(tables.project_journey_notes.map((note) => note.id));
-    const activeTemplateIds = new Set(
+    const noteTypeKeys = new Set(tables.project_journey_note_types.map((type) => type.key));
+    const noteKeys = new Set(tables.project_journey_notes.map((note) => note.key));
+    const activeTemplateKeys = new Set(
       tables.project_journey_templates
         .filter((template) => template.isActive)
-        .map((template) => template.templateId),
+        .map((template) => template.key),
     );
     return [
       {
-        name: "project_journey_notes.typeId -> project_journey_note_types.id",
+        name: "project_journey_notes.typeKey -> project_journey_note_types.key",
         checked: tables.project_journey_notes.length,
-        missing: tables.project_journey_notes.filter((note) => !noteTypeIds.has(note.typeId)),
+        missing: tables.project_journey_notes.filter((note) => !noteTypeKeys.has(note.typeKey)),
       },
       {
-        name: "project_journey_items.noteId -> project_journey_notes.id",
+        name: "project_journey_items.noteKey -> project_journey_notes.key",
         checked: tables.project_journey_items.length,
-        missing: tables.project_journey_items.filter((item) => !noteIds.has(item.noteId)),
+        missing: tables.project_journey_items.filter((item) => !noteKeys.has(item.noteKey)),
       },
       {
-        name: "system project_journey_items.templateId -> active project_journey_templates.templateId",
+        name: "system project_journey_items.templateKey -> active project_journey_templates.key",
         checked: tables.project_journey_items.filter((item) => item.createdByType === "system").length,
         missing: tables.project_journey_items.filter(
-          (item) => item.createdByType === "system" && !activeTemplateIds.has(item.templateId),
+          (item) => item.createdByType === "system" && !activeTemplateKeys.has(item.templateKey),
         ),
       },
       {
-        name: "project_journey_activity.noteId -> project_journey_notes.id",
+        name: "project_journey_activity.noteKey -> project_journey_notes.key",
         checked: tables.project_journey_activity.length,
-        missing: tables.project_journey_activity.filter((activity) => !noteIds.has(activity.noteId)),
+        missing: tables.project_journey_activity.filter((activity) => !noteKeys.has(activity.noteKey)),
       },
     ];
   }
 
   tableBleedFindings(tables) {
-    const notesById = new Map(tables.project_journey_notes.map((note) => [note.id, note]));
+    const notesByKey = new Map(tables.project_journey_notes.map((note) => [note.key, note]));
     const findings = [];
     tables.project_journey_items.forEach((item) => {
-      const note = notesById.get(item.noteId);
-      if (note && note.projectId !== item.projectId) {
-        findings.push(`${item.itemId} projectId ${item.projectId} does not match note ${note.id} projectId ${note.projectId}.`);
+      const note = notesByKey.get(item.noteKey);
+      if (note && note.projectKey !== item.projectKey) {
+        findings.push(`${item.key} projectKey ${item.projectKey} does not match note ${note.key} projectKey ${note.projectKey}.`);
       }
     });
     tables.project_journey_activity.forEach((activity) => {
-      const note = notesById.get(activity.noteId);
-      if (note && note.projectId !== activity.projectId) {
-        findings.push(`${activity.id} projectId ${activity.projectId} does not match note ${note.id} projectId ${note.projectId}.`);
+      const note = notesByKey.get(activity.noteKey);
+      if (note && note.projectKey !== activity.projectKey) {
+        findings.push(`${activity.key} projectKey ${activity.projectKey} does not match note ${note.key} projectKey ${note.projectKey}.`);
       }
     });
     return findings;
