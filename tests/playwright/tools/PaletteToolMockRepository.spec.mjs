@@ -150,6 +150,41 @@ async function expectControlGroupsShareLine(page, sortSelector, sizeSelector) {
   expect(Math.abs(sortCenter - sizeCenter)).toBeLessThan(4);
 }
 
+async function expectSwatchRegionScrollsOnly(page, scrollSelector, controlsSelector, summarySelector) {
+  const scrollRegion = page.locator(scrollSelector);
+  const controls = page.locator(controlsSelector);
+  const summary = page.locator(summarySelector);
+  const metrics = await scrollRegion.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      clientHeight: node.clientHeight,
+      overflowY: style.overflowY,
+      scrollHeight: node.scrollHeight
+    };
+  });
+  expect(metrics.overflowY).toMatch(/auto|scroll/);
+  expect(metrics.scrollHeight).toBeGreaterThan(metrics.clientHeight);
+  const controlsBefore = await controls.boundingBox();
+  const summaryBefore = await summary.boundingBox();
+  await scrollRegion.evaluate((node) => {
+    node.scrollTop = node.scrollHeight;
+  });
+  const controlsAfter = await controls.boundingBox();
+  const summaryAfter = await summary.boundingBox();
+  expect(Math.abs((controlsBefore?.y || 0) - (controlsAfter?.y || 0))).toBeLessThan(2);
+  expect(Math.abs((summaryBefore?.y || 0) - (summaryAfter?.y || 0))).toBeLessThan(2);
+}
+
+async function expectFullscreenAccordionSplit(page) {
+  const projectBox = await page.locator("[data-palette-project-accordion]").boundingBox();
+  const sourceBox = await page.locator("[data-palette-source-accordion]").boundingBox();
+  expect(projectBox?.height || 0).toBeGreaterThan(180);
+  expect(sourceBox?.height || 0).toBeGreaterThan(180);
+  expect(Math.abs((projectBox?.height || 0) - (sourceBox?.height || 0))).toBeLessThan(12);
+  expect(sourceBox?.y || 0).toBeGreaterThan((projectBox?.y || 0) + (projectBox?.height || 0) - 4);
+  return { projectBox, sourceBox };
+}
+
 test("Palette repository owns active project swatches without mutating invalid payloads", async () => {
   const emptyRepository = createProjectWorkspacePaletteRepository({ tables: { palette_source_swatches: [] } });
   expect(emptyRepository.sourcePaletteOptions()).toEqual([]);
@@ -475,14 +510,46 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await page.locator("[data-palette-harmony-add-all]").click();
     await expect(page.locator("[data-palette-log]")).toContainText("Harmony add complete");
 
+    await page.locator("[data-palette-source-select]").selectOption("javascript");
+    await expect(page.locator("[data-palette-source-index]")).toHaveCount(140);
+    await page.locator("[data-palette-source-pin-all]").click();
+    await expect(page.locator("[data-palette-log]")).toContainText("Pin All complete");
+
     await page.getByLabel("Tool Display Mode").click();
     await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
-    const projectBox = await page.locator("[data-palette-project-accordion]").boundingBox();
-    const sourceBox = await page.locator("[data-palette-source-accordion]").boundingBox();
+    await expect(page.locator(".tool-center-panel")).toHaveCSS("overflow-y", "hidden");
+    const { projectBox, sourceBox } = await expectFullscreenAccordionSplit(page);
     expect(projectBox?.width || 0).toBeGreaterThan(300);
     expect(sourceBox?.width || 0).toBeGreaterThan(300);
-    expect(sourceBox?.y || 0).toBeGreaterThan((projectBox?.y || 0) + (projectBox?.height || 0) - 4);
     expect(Math.abs((projectBox?.width || 0) - (sourceBox?.width || 0))).toBeLessThan(80);
+    await expectSwatchRegionScrollsOnly(
+      page,
+      "[data-palette-user-scroll]",
+      "[aria-label='Active project palette controls']",
+      "[data-palette-project-accordion] > summary"
+    );
+    await expectSwatchRegionScrollsOnly(
+      page,
+      "[data-palette-source-scroll]",
+      "[aria-label='Source palette controls']",
+      "[data-palette-source-accordion] > summary"
+    );
+
+    await page.locator("[data-palette-source-accordion] > summary").click();
+    await expect(page.locator("[data-palette-source-accordion]")).not.toHaveAttribute("open", "");
+    const projectOnlyBox = await page.locator("[data-palette-project-accordion]").boundingBox();
+    const collapsedSourceBox = await page.locator("[data-palette-source-accordion]").boundingBox();
+    expect(projectOnlyBox?.height || 0).toBeGreaterThan((projectBox?.height || 0) * 1.45);
+    expect(collapsedSourceBox?.height || 0).toBeLessThan((sourceBox?.height || 0) * 0.45);
+
+    await page.locator("[data-palette-source-accordion] > summary").click();
+    await expect(page.locator("[data-palette-source-accordion]")).toHaveAttribute("open", "");
+    await page.locator("[data-palette-project-accordion] > summary").click();
+    await expect(page.locator("[data-palette-project-accordion]")).not.toHaveAttribute("open", "");
+    const collapsedProjectBox = await page.locator("[data-palette-project-accordion]").boundingBox();
+    const sourceOnlyBox = await page.locator("[data-palette-source-accordion]").boundingBox();
+    expect(sourceOnlyBox?.height || 0).toBeGreaterThan((sourceBox?.height || 0) * 1.45);
+    expect(collapsedProjectBox?.height || 0).toBeLessThan((projectBox?.height || 0) * 0.45);
 
     expectNoPageFailures(failures);
   } finally {

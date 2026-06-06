@@ -91,7 +91,7 @@
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="colors" data-tool-icon-src="assets/theme-v2/images/badges/colors.png" data-tool-character-src="assets/theme-v2/images/characters/palette-manager.png"></div>
-                    <section class="tool-center-panel">
+                    <section class="tool-center-panel tool-center-panel--scroll-contained">
                         <h2>Palette Colors</h2>
                         <div class="grid cols-3" aria-label="Palette summary">
                             <article class="mini-stat"><strong data-palette-count>0</strong>Palette Colors</article>
@@ -108,24 +108,24 @@
                                 <a class="btn" href="toolbox/project-workspace/index.html">Open Project Workspace</a>
                             </div>
                         </article>
-                        <div class="content-stack" data-palette-fullscreen-panels>
-                            <details class="vertical-accordion" open data-palette-project-accordion>
+                        <div class="content-stack accordion-fill-stack" data-palette-fullscreen-panels>
+                            <details class="vertical-accordion accordion-fill-panel" open data-palette-project-accordion>
                                 <summary>Active Project Palette</summary>
-                                <div class="accordion-body content-stack">
+                                <div class="accordion-body content-stack accordion-scroll-body">
                                     <div class="grid cols-2" aria-label="Active project palette controls">
                                         <div class="action-group" aria-label="Active project palette sort" data-palette-user-sort></div>
                                         <div class="action-group action-group--end" aria-label="Active project palette size" data-palette-user-size></div>
                                     </div>
-                                    <div class="palette-swatch-list-wrapper" data-palette-user-scroll>
+                                    <div class="palette-swatch-list-wrapper scroll-region" data-palette-user-scroll>
                                         <div class="palette-swatch-list" role="group" aria-label="Active project palette colors" data-palette-user-list>
                                             <p class="status">No project palette colors yet.</p>
                                         </div>
                                     </div>
                                 </div>
                             </details>
-                            <details class="vertical-accordion" open data-palette-source-accordion>
+                            <details class="vertical-accordion accordion-fill-panel" open data-palette-source-accordion>
                                 <summary>Source Palette Browser</summary>
-                                <div class="accordion-body content-stack">
+                                <div class="accordion-body content-stack accordion-scroll-body">
                                     <div class="content-stack content-stack--compact" aria-label="Source palette controls">
                                         <div class="content-cluster" aria-label="Source palette filters">
                                             <label for="paletteSourceSelect">Source</label>
@@ -139,7 +139,7 @@
                                             <div class="action-group action-group--end" aria-label="Source swatches size" data-palette-source-size></div>
                                         </div>
                                     </div>
-                                    <div class="palette-swatch-list-wrapper" data-palette-source-scroll>
+                                    <div class="palette-swatch-list-wrapper scroll-region" data-palette-source-scroll>
                                         <div class="palette-swatch-list" role="group" aria-label="Source palette colors" data-palette-source-list>
                                             <p class="status">No source colors available.</p>
                                         </div>

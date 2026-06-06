@@ -232,6 +232,14 @@ body.tool-focus-mode .tool-center-panel {
   overflow: auto
 }
 
+body.tool-focus-mode .tool-center-panel--scroll-contained {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: var(--space-0);
+  overflow: hidden
+}
+
 body.tool-focus-mode .tool-column:first-of-type {
   grid-column: 1;
   grid-row: 1 / span 2
