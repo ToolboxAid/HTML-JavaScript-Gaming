@@ -418,6 +418,18 @@ body.tool-focus-mode .tool-display-mode__badge {
   color: var(--gold)
 }
 
+.mini-stat--inline {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-8);
+  justify-content: flex-start;
+  white-space: nowrap
+}
+
+.mini-stat--inline strong {
+  display: inline
+}
+
 .tool-stat-divider {
   border-top: var(--border-standard);
   grid-column: 1 / -1;

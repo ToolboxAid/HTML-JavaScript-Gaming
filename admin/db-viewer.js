@@ -38,6 +38,11 @@ class AdminDbViewer {
     return record.itemId || record.templateId || record.id || record.name || "record";
   }
 
+  shortKey(record) {
+    const key = String(this.recordId(record));
+    return key.length > 8 ? key.slice(-8) : key;
+  }
+
   formatValue(value) {
     if (Array.isArray(value)) {
       return value.join(", ");
@@ -80,13 +85,14 @@ class AdminDbViewer {
       className: "table-wrapper",
     });
     const table = this.createElement("table", {
-      className: "data-table",
+      className: "data-table data-table--preserve-casing",
     });
     table.setAttribute("aria-label", `${tableName} records`);
 
     const fields = this.tableFields(records);
     const head = this.createElement("thead");
     const headerRow = this.createElement("tr");
+    headerRow.append(this.createElement("th", { text: "Key" }));
     fields.forEach((field) => {
       headerRow.append(this.createElement("th", { text: field }));
     });
@@ -96,6 +102,9 @@ class AdminDbViewer {
     records.forEach((record) => {
       const row = this.createElement("tr");
       row.dataset.adminDbRecord = this.recordId(record);
+      const keyCell = this.createElement("td", { text: this.shortKey(record) });
+      keyCell.title = this.recordId(record);
+      row.append(keyCell);
       fields.forEach((field) => {
         row.append(this.createElement("td", { text: this.formatValue(record[field]) }));
       });

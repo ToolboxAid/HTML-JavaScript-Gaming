@@ -1,4 +1,5 @@
 import {
+  PROJECT_JOURNEY_IDS,
   PROJECT_JOURNEY_STATUS_BY_ID,
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyMockRepository,
@@ -37,7 +38,6 @@ const addTypeButton = document.querySelector("[data-journey-add-type]");
 const typeStatus = document.querySelector("[data-journey-type-status]");
 const editorStatus = document.querySelector("[data-journey-editor-status]");
 const statScope = document.querySelector("[data-journey-stat-scope]");
-const statusLegend = document.querySelector("[data-journey-status-legend]");
 const suggestedTools = document.querySelector("[data-journey-suggested-tools]");
 const recentActivity = document.querySelector("[data-journey-recent-activity]");
 const diagnostics = document.querySelector("[data-journey-diagnostics]");
@@ -57,7 +57,7 @@ const sortButtonLabels = new Map(
 );
 
 let activeFilter = "all";
-let selectedSummaryNoteId = "note-design-pass";
+let selectedSummaryNoteId = PROJECT_JOURNEY_IDS.notes.designPass;
 let preferredNewNoteTypeId = "";
 let summarySort = {
   key: "updated",
@@ -148,17 +148,6 @@ function renderStatusOptions() {
     });
     option.value = status.id;
     statusInput.append(option);
-  });
-}
-
-function renderStatusLegend() {
-  statusLegend?.replaceChildren();
-  PROJECT_JOURNEY_STATUSES.forEach((status) => {
-    statusLegend?.append(
-      createElement("span", {
-        text: `${status.icon} ${status.label}`,
-      }),
-    );
   });
 }
 
@@ -593,7 +582,8 @@ function getSuggestedToolNames(note) {
     question: ["AI Assistant", "Project Workspace", "Game Design"],
     task: ["Project Workspace", "Game Testing", "Debug"],
   };
-  const names = [...templateToolNames, ...(suggestionsByType[note.typeId] || ["Project Workspace", "Game Design"])];
+  const noteTypeKey = note.type?.typeKey || note.typeId;
+  const names = [...templateToolNames, ...(suggestionsByType[noteTypeKey] || ["Project Workspace", "Game Design"])];
 
   if (note.counts?.blocker > 0) {
     return ["Project Workspace", "Debug", ...names];
@@ -900,6 +890,5 @@ addTypeButton.addEventListener("click", () => {
 });
 
 renderStatusOptions();
-renderStatusLegend();
 applyInitialProjectRoute();
 render();

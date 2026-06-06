@@ -45,6 +45,11 @@ td {
   letter-spacing: var(--letter-spacing-brand)
 }
 
+.data-table--preserve-casing th {
+  letter-spacing: 0;
+  text-transform: none
+}
+
 .tool-form-table {
   table-layout: fixed;
   width: 100%

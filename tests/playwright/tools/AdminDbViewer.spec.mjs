@@ -1,7 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { PROJECT_JOURNEY_IDS } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
+const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -72,7 +75,21 @@ test("Admin DB Viewer shows read-only mock DB tables and diagnostics", async ({ 
     await expect(page.locator("[data-admin-db-table='project_journey_note_types']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='project_journey_activity']")).toBeVisible();
 
+    for (const tableName of [
+      "project_journey_activity",
+      "project_journey_items",
+      "project_journey_note_types",
+      "project_journey_notes",
+      "project_journey_templates",
+    ]) {
+      await expect(page.locator(`[data-admin-db-table="${tableName}"] thead th`).first()).toHaveText("Key");
+      const keyCell = page.locator(`[data-admin-db-table="${tableName}"] tbody tr`).first().locator("td").first();
+      await expect(keyCell).toHaveText(/^[0-9A-HJKMNP-TV-Z]{6,8}$/);
+      await expect(keyCell).toHaveAttribute("title", ULID_PATTERN);
+    }
+
     const itemHeaders = await page.locator("[data-admin-db-table='project_journey_items'] thead th").allTextContents();
+    expect(itemHeaders[0]).toBe("Key");
     expect(itemHeaders).toEqual(expect.arrayContaining([
       "itemId",
       "projectId",
@@ -86,8 +103,14 @@ test("Admin DB Viewer shows read-only mock DB tables and diagnostics", async ({ 
       "updatedByType",
       "templateId",
     ]));
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("item-design-1");
-    await expect(page.locator("[data-admin-db-table='project_journey_templates']")).toContainText("template-palette-affordance");
+    expect(itemHeaders).not.toEqual(expect.arrayContaining(["CREATEDAT", "UPDATEDAT", "CREATEDBYTYPE", "UPDATEDBYTYPE"]));
+    const createdAtHeader = page.locator("[data-admin-db-table='project_journey_items'] thead th", { hasText: "createdAt" });
+    await expect(createdAtHeader).toHaveCSS("text-transform", "none");
+    const designItemRow = page.locator(`[data-admin-db-record="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`);
+    await expect(designItemRow.locator("td").first()).toHaveText(PROJECT_JOURNEY_IDS.items.designAffordance.slice(-8));
+    await expect(designItemRow.locator("td").first()).toHaveAttribute("title", PROJECT_JOURNEY_IDS.items.designAffordance);
+    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText(PROJECT_JOURNEY_IDS.items.designAffordance);
+    await expect(page.locator("[data-admin-db-table='project_journey_templates']")).toContainText(PROJECT_JOURNEY_IDS.templates.paletteAffordance);
     await expect(page.locator("[data-admin-db-table='project_journey_note_types']")).toContainText("Design");
     await expect(page.locator("[data-admin-db-table='project_journey_activity']")).toContainText("Palette and Input Density updated by Designer");
 

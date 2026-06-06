@@ -6,12 +6,14 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 import {
+  PROJECT_JOURNEY_IDS,
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyMockRepository,
 } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
+const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -109,11 +111,20 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     expect(compactButtonWidth).toBeGreaterThanOrEqual(70);
     const statTileLayout = await page.locator("[aria-label='Selected note statistics'] .mini-stat").evaluateAll((tiles) =>
       tiles.map((tile) => {
+        const strong = tile.querySelector("strong");
         const label = tile.querySelector("[data-journey-stat-label]");
+        const strongRect = strong?.getBoundingClientRect();
+        const labelRect = label?.getBoundingClientRect();
         return {
           children: Array.from(tile.children).map((child) => child.tagName),
+          tileClass: tile.className || "",
           labelClass: label?.className || "",
           labelText: label?.textContent?.trim() || "",
+          valueLabelSameLine: Boolean(
+            strongRect &&
+              labelRect &&
+              Math.abs((strongRect.top + strongRect.height / 2) - (labelRect.top + labelRect.height / 2)) <= 2,
+          ),
           hasStatusClass: Array.from(tile.querySelectorAll("*")).some((element) =>
             /\b(status|pill)\b/.test(element.className || ""),
           ),
@@ -136,6 +147,8 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       "Total",
       ...statusLabels(),
     ]);
+    expect(statTileLayout.every((tile) => tile.tileClass.includes("mini-stat--inline"))).toBe(true);
+    expect(statTileLayout.every((tile) => tile.valueLabelSameLine)).toBe(true);
     expect(statTileLayout.every((tile) => tile.labelClass === "" && !tile.hasStatusClass)).toBe(true);
     const dividerPlacement = await page.locator("[data-journey-stat-divider]").evaluate((divider) => {
       return {
@@ -149,10 +162,10 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       nextStat: statusLabels()[0],
       role: "separator",
     });
-    await expect(page.locator("[data-journey-note-button='note-design-pass']")).toHaveClass(/primary/);
-    await expect(page.locator("[data-journey-item-button='item-design-1']")).toHaveClass(/primary/);
-    await expect(page.locator("[data-journey-item-button='item-design-1']")).toContainText("Designer review should focus on checkbox visibility");
-    const treeRowLayout = await page.locator("[data-journey-item-row='item-design-1']").evaluate((row) => {
+    await expect(page.locator(`[data-journey-note-button="${PROJECT_JOURNEY_IDS.notes.designPass}"]`)).toHaveClass(/primary/);
+    await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`)).toHaveClass(/primary/);
+    await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`)).toContainText("Designer review should focus on checkbox visibility");
+    const treeRowLayout = await page.locator(`[data-journey-item-row="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`).evaluate((row) => {
       const content = row.querySelector("[data-journey-item-button]");
       const action = row.querySelector("[data-journey-system-item-indicator], [data-journey-delete-item]");
       const contentStyles = getComputedStyle(content);
@@ -188,14 +201,14 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       usesAvailableWidth: true,
       wrapsNaturally: true,
     });
-    await expect(page.locator("[data-journey-selected-item-details='item-design-1']")).toContainText("Item Details");
+    await expect(page.locator(`[data-journey-selected-item-details="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`)).toContainText("Item Details");
     await expect(page.locator("[data-journey-item-details-input]")).toHaveValue("Designer review should focus on checkbox visibility and selected-row contrast.");
-    const detailsFollowsSelectedRow = await page.locator("[data-journey-selected-item-details='item-design-1']").evaluate((details) => {
+    const detailsFollowsSelectedRow = await page.locator(`[data-journey-selected-item-details="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`).evaluate((details, itemId) => {
       const previous = details.previousElementSibling;
-      return Boolean(previous?.matches("[data-journey-item-row='item-design-1']"));
-    });
+      return Boolean(previous?.matches(`[data-journey-item-row="${itemId}"]`));
+    }, PROJECT_JOURNEY_IDS.items.designAffordance);
     expect(detailsFollowsSelectedRow).toBe(true);
-    const itemDetailsLayout = await page.locator("[data-journey-selected-item-details='item-design-1']").evaluate((details) => {
+    const itemDetailsLayout = await page.locator(`[data-journey-selected-item-details="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`).evaluate((details) => {
       const label = details.querySelector("label[for='journeyItemDetailsInput']");
       const input = details.querySelector("#journeyItemDetailsInput");
       const labelRect = label.getBoundingClientRect();
@@ -212,16 +225,10 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("#journeyStatusInput option")).toHaveText(statusLabels());
     const dropdownLabels = await page.locator("#journeyStatusInput option").allTextContents();
     expect(dropdownLabels.some((label) => /\[[ .x!?-]\]/.test(label))).toBe(false);
-    await expect(page.locator("[data-journey-status-legend] span")).toHaveText(statusLabels());
-    await expect(page.locator("aside.tool-column").last().locator("details > summary", { hasText: /^Status Legend$/ })).toHaveCount(0);
+    await expect(page.locator("[data-journey-status-legend]")).toHaveCount(0);
+    await expect(page.locator("aside.tool-column").last().locator(".callout", { hasText: "Status Legend" })).toHaveCount(0);
     await expect(page.locator("details > summary", { hasText: /^Note Tree$/ })).toHaveCount(1);
     await expect(page.locator("details > summary", { hasText: /^Selected Note Tree$/ })).toHaveCount(0);
-    const legendFollowsStats = await page.locator("[data-journey-status-legend]").evaluate((legend) => {
-      const statistics = legend.closest("details");
-      const statGrid = statistics?.querySelector("[aria-label='Selected note statistics']");
-      return Boolean(statGrid && (statGrid.compareDocumentPosition(legend) & Node.DOCUMENT_POSITION_FOLLOWING));
-    });
-    expect(legendFollowsStats).toBe(true);
     await expect(page.locator("table[aria-label='Project Journey note summary'] thead th")).toHaveText([
       "Name",
       "Type",
@@ -313,8 +320,8 @@ test("Project Journey updates selected note types from the mock DB", async ({ pa
   try {
     const selectedNoteType = page.locator("[data-journey-note-type-select]");
     const newNoteType = page.locator("[data-journey-new-note-type]");
-    await expect(selectedNoteType).toHaveValue("design");
-    await page.locator("[data-journey-note-type-select]").selectOption("task");
+    await expect(selectedNoteType).toHaveValue(PROJECT_JOURNEY_IDS.noteTypes.design);
+    await page.locator("[data-journey-note-type-select]").selectOption(PROJECT_JOURNEY_IDS.noteTypes.task);
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(1)).toHaveText("Task");
     const typeOptionCountBefore = await selectedNoteType.locator("option").count();
     await page.getByLabel("Add Note Type").fill("Playtest");
@@ -322,7 +329,7 @@ test("Project Journey updates selected note types from the mock DB", async ({ pa
     await expect(page.locator("[data-journey-type-status]")).toContainText("Playtest is available");
     await expect(selectedNoteType.locator("option", { hasText: "Playtest" })).toHaveCount(1);
     await expect(newNoteType.locator("option", { hasText: "Playtest" })).toHaveCount(1);
-    await expect(newNoteType).toHaveValue(/custom-type-/);
+    await expect(newNoteType).toHaveValue(ULID_PATTERN);
     await selectedNoteType.selectOption({ label: "Playtest" });
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(1)).toHaveText("Playtest");
     await page.getByLabel("Add Note Type").fill("playtest");
@@ -376,11 +383,11 @@ test("Project Journey sorts summary columns and adds user-owned notes", async ({
 
     const noteRowsBefore = await page.locator("[data-journey-note-button]").count();
     await page.locator("[data-journey-new-note-name]").fill("Usability Audit");
-    await page.locator("[data-journey-new-note-type]").selectOption("task");
+    await page.locator("[data-journey-new-note-type]").selectOption(PROJECT_JOURNEY_IDS.noteTypes.task);
     await page.getByRole("button", { name: "Add Note", exact: true }).click();
     await expect(page.locator("[data-journey-note-status]")).toContainText("Added Usability Audit");
     await expect(page.locator("[data-journey-note-button]")).toHaveCount(noteRowsBefore + 1);
-    await expect(page.locator("[data-journey-note-button='note-new-5']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-note-button]", { hasText: "Usability Audit" })).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-selected-note]")).toContainText("Usability Audit (Task)");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("0");
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("0");
@@ -457,7 +464,7 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Story Beats");
 
     await page.getByRole("button", { name: "Release Readiness" }).click();
-    await expect(page.locator("[data-journey-note-button='note-release-readiness']")).toHaveClass(/primary/);
+    await expect(page.locator(`[data-journey-note-button="${PROJECT_JOURNEY_IDS.notes.releaseReadiness}"]`)).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for selected note: Release Readiness.");
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("3");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
@@ -500,10 +507,10 @@ test("Project Journey enforces item ownership while resolving template guidance"
   const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
 
   try {
-    await expect(page.locator("[data-journey-item-button='item-design-1']")).toHaveClass(/primary/);
+    await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`)).toHaveClass(/primary/);
     await expect(page.getByRole("button", { name: "Delete Row" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Delete user-created item" })).toHaveCount(0);
-    const systemRow = page.locator("[data-journey-item-row='item-design-1']");
+    const systemRow = page.locator(`[data-journey-item-row="${PROJECT_JOURNEY_IDS.items.designAffordance}"]`);
     await expect(systemRow.locator("[data-journey-delete-item]")).toHaveCount(0);
     const systemIndicator = systemRow.locator("[data-journey-system-item-indicator]");
     await expect(systemIndicator).toHaveAttribute("src", /forge-bot\.svg$/);
@@ -587,8 +594,8 @@ test("Project Journey displays system template diagnostics", async ({ page }) =>
 
   try {
     await expect(page.locator("[data-journey-diagnostics]")).toContainText("missing templateId");
-    await expect(page.locator("[data-journey-diagnostics]")).toContainText("inactive templateId template-inactive-guidance");
-    await expect(page.locator("[data-journey-diagnostics]")).toContainText("references missing templateId template-does-not-exist");
+    await expect(page.locator("[data-journey-diagnostics]")).toContainText(`inactive templateId ${PROJECT_JOURNEY_IDS.templates.inactiveGuidance}`);
+    await expect(page.locator("[data-journey-diagnostics]")).toContainText(`references missing templateId ${PROJECT_JOURNEY_IDS.templates.invalidMissing}`);
     await page.getByRole("button", { name: /Missing template diagnostic item/ }).click();
     await expect(page.locator("[data-journey-item-tree]")).toContainText("System guidance is unavailable until the linked template is repaired.");
 
@@ -616,6 +623,37 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
       }
     }
   }
+
+  const primaryKeyFields = {
+    project_journey_note_types: "id",
+    project_journey_notes: "id",
+    project_journey_templates: "templateId",
+    project_journey_items: "itemId",
+    project_journey_activity: "id",
+  };
+  for (const [tableName, primaryKeyField] of Object.entries(primaryKeyFields)) {
+    for (const record of tables[tableName]) {
+      expect(record[primaryKeyField], `${tableName}.${primaryKeyField} must be ULID-style`).toMatch(ULID_PATTERN);
+      expect(record[primaryKeyField], `${tableName}.${primaryKeyField} must not be a readable demo key`).not.toMatch(/^(activity|demo-project|note-|item-|template-|custom-type-)/);
+    }
+  }
+
+  tables.project_journey_notes.forEach((note) => {
+    expect(note.projectId).toMatch(ULID_PATTERN);
+    expect(note.ownerId).toMatch(ULID_PATTERN);
+    expect(note.typeId).toMatch(ULID_PATTERN);
+  });
+  tables.project_journey_items.forEach((item) => {
+    expect(item.projectId).toMatch(ULID_PATTERN);
+    expect(item.noteId).toMatch(ULID_PATTERN);
+    if (item.templateId) {
+      expect(item.templateId).toMatch(ULID_PATTERN);
+    }
+  });
+  tables.project_journey_activity.forEach((activity) => {
+    expect(activity.projectId).toMatch(ULID_PATTERN);
+    expect(activity.noteId).toMatch(ULID_PATTERN);
+  });
 
   const forbiddenItemFields = ["originalMeaning", "systemGuidance", "linkedToolContexts"];
   for (const item of tables.project_journey_items) {
@@ -652,7 +690,7 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   expect(selectedSystemItem.systemGuidance).toContain("Check whether selected swatches");
   expect(selectedSystemItem.originalMeaning).toContain("Review palette swatch affordance");
 
-  const userUpdate = repository.updateItem("item-design-1", {
+  const userUpdate = repository.updateItem(PROJECT_JOURNEY_IDS.items.designAffordance, {
     title: "User should not rewrite the system title",
     status: "blocker",
     userDetails: "User-owned details on a system-created item.",
@@ -662,7 +700,7 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   expect(userUpdate.userDetails).toBe("User-owned details on a system-created item.");
   expect(userUpdate.updatedByType).toBe("user");
 
-  const systemUpdate = repository.applySystemItemUpdate("item-design-1", {
+  const systemUpdate = repository.applySystemItemUpdate(PROJECT_JOURNEY_IDS.items.designAffordance, {
     title: "System automation title",
     status: "complete",
     userDetails: "System automation detail.",
@@ -678,20 +716,22 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   });
   expect(userItem.createdByType).toBe("user");
   expect(userItem.updatedByType).toBe("user");
+  expect(userItem.itemId).toMatch(ULID_PATTERN);
   expect(userItem.templateId).toBe("");
   expect(repository.deleteItem(userItem.itemId).deleted).toBe(true);
-  expect(repository.deleteItem("item-design-1").deleted).toBe(false);
+  expect(repository.deleteItem(PROJECT_JOURNEY_IDS.items.designAffordance).deleted).toBe(false);
 
   const typeCount = repository.listNoteTypes().length;
   const typeResult = repository.addNoteType("Playtest");
   expect(typeResult.created).toBe(true);
+  expect(typeResult.type.id).toMatch(ULID_PATTERN);
   expect(repository.listNoteTypes()).toHaveLength(typeCount + 1);
   const duplicateResult = repository.addNoteType("playtest");
   expect(duplicateResult.created).toBe(false);
   expect(duplicateResult.duplicate).toBe(true);
   expect(repository.listNoteTypes()).toHaveLength(typeCount + 1);
 
-  repository.updateSelectedNoteType("task");
+  repository.updateSelectedNoteType(PROJECT_JOURNEY_IDS.noteTypes.task);
   expect(repository.getSelectedNote().type.name).toBe("Task");
 
   const addedNote = repository.addNote({
@@ -702,6 +742,7 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   expect(addedNote.type.name).toBe("Playtest");
   expect(addedNote.createdByType).toBe("user");
   expect(addedNote.updatedByType).toBe("user");
+  expect(addedNote.id).toMatch(ULID_PATTERN);
   expect(addedNote.items).toHaveLength(0);
   const firstAddedItem = repository.addItem({
     title: "First editable user item",
