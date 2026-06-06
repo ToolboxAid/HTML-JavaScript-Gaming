@@ -3,6 +3,7 @@ import {
   PALETTE_TOOL_KEY,
   PALETTE_WORKSPACE_PATH,
   createProjectWorkspacePaletteRepository,
+  normalizePaletteSwatchInput,
   validatePaletteSwatchInput
 } from "./palette-workspace-repository.js";
 
@@ -49,6 +50,7 @@ const sourceSortState = { direction: "asc", key: "name" };
 let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "name" };
 let userSizeState = "medium";
+const invalidHexPreviewValue = "#FFFFFF";
 
 const elements = {
   activeProject: document.querySelector("[data-palette-active-project]"),
@@ -63,6 +65,7 @@ const elements = {
   harmonyMatch: document.querySelector("[data-palette-harmony-match]"),
   harmonyScheme: document.querySelector("[data-palette-harmony-scheme]"),
   hex: document.querySelector("[data-palette-hex]"),
+  hexPreview: document.querySelector("[data-palette-user-hex-preview]"),
   log: document.querySelector("[data-palette-log]"),
   name: document.querySelector("[data-palette-name]"),
   projectDiagnostic: document.querySelector("[data-palette-project-diagnostic]"),
@@ -279,6 +282,7 @@ function fillUserSwatchForm(swatch) {
   if (elements.symbol) elements.symbol.value = swatch?.symbol || "";
   if (elements.hex) elements.hex.value = swatch?.hex || "";
   if (elements.name) elements.name.value = swatch?.name || "";
+  renderUserHexPreview();
 }
 
 function isUserDefinedSwatch(swatch) {
@@ -297,21 +301,60 @@ function clearUserSwatchForm() {
   render();
 }
 
-function userDefinedControls() {
-  return [
-    elements.add,
-    elements.clear,
-    elements.hex,
-    elements.name,
-    elements.symbol,
-    elements.update
-  ].filter(Boolean);
-}
-
 function selectedTagControls() {
   return [
     elements.tags
   ].filter(Boolean);
+}
+
+function userDefinedLocked(snapshot) {
+  return snapshot.projectRequired || snapshot.validation.status === "Reject";
+}
+
+function userDefinedAddValidation(snapshot) {
+  return validatePaletteSwatchInput(
+    readUserSwatchForm(),
+    snapshot.swatches,
+    { source: PALETTE_SOURCE_USER }
+  );
+}
+
+function userDefinedAddReady(snapshot) {
+  return !userDefinedLocked(snapshot) && userDefinedAddValidation(snapshot).issues.length === 0;
+}
+
+function renderUserHexPreview() {
+  if (!elements.hexPreview) {
+    return;
+  }
+
+  const normalizedHex = normalizePaletteSwatchInput({ hex: elements.hex?.value }).hex;
+  if (normalizedHex) {
+    elements.hexPreview.value = normalizedHex.slice(0, 7);
+    elements.hexPreview.dataset.palettePreviewState = "valid";
+    elements.hexPreview.setAttribute("aria-label", `User defined hex preview ${normalizedHex}`);
+    elements.hexPreview.title = `Hex preview ${normalizedHex}`;
+    return;
+  }
+
+  elements.hexPreview.value = invalidHexPreviewValue;
+  elements.hexPreview.dataset.palettePreviewState = "invalid";
+  elements.hexPreview.setAttribute("aria-label", "Invalid or empty user defined hex preview");
+  elements.hexPreview.title = "Invalid or empty hex preview";
+}
+
+function renderUserDefinedControlState(snapshot) {
+  const selectedSwatch = snapshot.selectedSwatch;
+  const userSwatch = selectedUserDefinedSwatch(snapshot);
+  const locked = userDefinedLocked(snapshot);
+  setDisabled([elements.hex, elements.name, elements.symbol, elements.clear], locked);
+  setDisabled(elements.add, locked || !userDefinedAddReady(snapshot));
+  setDisabled(elements.update, locked || !userSwatch);
+  setText(
+    elements.userSwatchDiagnostic,
+    userSwatch ? `Editing base values for ${userSwatch.name}.` : selectedSwatch ? "Ready for a new user-defined swatch." : "Ready for a user-defined swatch."
+  );
+  renderUserHexPreview();
 }
 
 function activeTags() {
@@ -419,7 +462,6 @@ function renderProject(snapshot) {
   const activeProject = snapshot.activeProject;
   const selectedSwatch = snapshot.selectedSwatch;
   const userSwatch = selectedUserDefinedSwatch(snapshot);
-  const userDefinedLocked = snapshot.projectRequired || snapshot.validation.status === "Reject";
   setText(
     elements.activeProject,
     activeProject ? `${activeProject.name} - ${activeProject.purpose}` : "No active project."
@@ -432,12 +474,7 @@ function renderProject(snapshot) {
   if (selectedSwatch && !userSwatch) {
     fillUserSwatchForm(null);
   }
-  setDisabled(userDefinedControls(), userDefinedLocked);
-  setDisabled(elements.update, userDefinedLocked || !userSwatch);
-  setText(
-    elements.userSwatchDiagnostic,
-    userSwatch ? `Editing base values for ${userSwatch.name}.` : selectedSwatch ? "Ready for a new user-defined swatch." : "Ready for a user-defined swatch."
-  );
+  renderUserDefinedControlState(snapshot);
 }
 
 function renderSelectedSwatchEditor(snapshot) {
@@ -690,6 +727,7 @@ function validateUserSwatch() {
       { excludeSymbol: snapshot.selectedSwatch?.symbol || "" }
     ).issues;
   }
+  renderUserDefinedControlState(snapshot);
   renderValidation(snapshot);
 }
 
@@ -717,6 +755,11 @@ function runInitialQueryState() {
 
 elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
+  const snapshot = repository.getSnapshot();
+  if (!userDefinedAddReady(snapshot)) {
+    validateUserSwatch();
+    return;
+  }
   const result = repository.addSwatch(readUserSwatchForm());
   if (result.ok) {
     fillUserSwatchForm(selectedUserDefinedSwatch(result.snapshot));

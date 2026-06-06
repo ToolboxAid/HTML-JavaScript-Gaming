@@ -168,6 +168,31 @@ async function expectReadableDisabledField(page, selector, value) {
   expect(style.textFillColor).toBe(style.bodyColor);
 }
 
+async function expectUserHexPreview(page, state, value) {
+  const preview = page.locator("[data-palette-user-hex-preview]");
+  await expect(preview).toHaveCount(1);
+  await expect(preview).toHaveAttribute("data-palette-preview-state", state);
+  await expect(preview).toHaveAttribute("data-palette-swatch-size", "small");
+  await expect(preview).toHaveValue(value);
+  if (state === "invalid") {
+    await expect(preview).toHaveCSS("border-top-style", "dashed");
+  }
+}
+
+async function expectUserHexPreviewInHexHeader(page) {
+  const hexHeader = page.locator("[data-palette-user-swatch-form] th", {
+    has: page.locator("label[for='paletteHexInput']")
+  });
+  await expect(hexHeader.locator("[data-palette-user-hex-preview]")).toHaveCount(1);
+  await expect(page.locator("[data-palette-user-swatch-form] td", {
+    has: page.locator("#paletteHexInput")
+  }).locator("[data-palette-user-hex-preview]")).toHaveCount(0);
+  const headerOrder = await hexHeader
+    .locator("label[for='paletteHexInput'], [data-palette-user-hex-preview]")
+    .evaluateAll((nodes) => nodes.map((node) => node.tagName === "LABEL" ? node.textContent.trim() : node.id));
+  expect(headerOrder).toEqual(["Hex", "paletteHexPreview"]);
+}
+
 async function expectSwatchRegionScrollsOnly(page, scrollSelector, controlsSelector, summarySelector) {
   const scrollRegion = page.locator(scrollSelector);
   const controls = page.locator(controlsSelector);
@@ -438,7 +463,9 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toBeEnabled();
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toBeEnabled();
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-tags]")).toHaveCount(0);
-    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add Swatch" })).toBeEnabled();
+    await expectUserHexPreviewInHexHeader(page);
+    await expectUserHexPreview(page, "invalid", "#ffffff");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Update Selected" })).toBeDisabled();
     await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Clear Form" })).toBeEnabled();
     await expect(page.locator("[data-palette-selected-symbol]")).toBeDisabled();
@@ -522,7 +549,8 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toHaveValue("");
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toHaveValue("");
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toHaveValue("");
-    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add Swatch" })).toBeEnabled();
+    await expectUserHexPreview(page, "invalid", "#ffffff");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Update Selected" })).toBeDisabled();
     await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Clear Form" })).toBeEnabled();
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveAttribute("data-palette-swatch-tags", "");
@@ -552,7 +580,8 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toBeEnabled();
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toBeEnabled();
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toBeEnabled();
-    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add Swatch" })).toBeEnabled();
+    await expectUserHexPreview(page, "invalid", "#ffffff");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Update Selected" })).toBeDisabled();
     await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Clear Form" })).toBeEnabled();
     await page.locator("[data-palette-source-index]").first().click();
@@ -592,7 +621,11 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     ]);
     await expect(page.locator("[data-palette-harmony-guidance]")).toContainText("Select a project or source palette color");
 
-    await page.getByRole("button", { name: "Add Swatch" }).click();
+    await page.locator("[data-palette-symbol]").fill("HH");
+    await page.locator("[data-palette-hex]").fill("#12");
+    await page.locator("[data-palette-name]").fill("");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
+    await expectUserHexPreview(page, "invalid", "#ffffff");
     await expect(page.locator("[data-palette-validation-overlay]")).toBeVisible();
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Symbol");
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Hex");
@@ -601,7 +634,9 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await page.locator("[data-palette-symbol]").fill("H");
     await page.locator("[data-palette-hex]").fill("#123456aa");
     await page.locator("[data-palette-name]").fill("Hero Blue");
-    await page.getByRole("button", { name: "Add Swatch" }).click();
+    await expectUserHexPreview(page, "valid", "#123456");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeEnabled();
+    await page.getByRole("button", { name: "Add User Defined" }).click();
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-name", "Hero Blue");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-hex", "#123456AA");
@@ -619,8 +654,19 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toHaveValue("H");
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toHaveValue("#123456AA");
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toHaveValue("Hero Blue");
+    await expectUserHexPreview(page, "valid", "#123456");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.locator("[data-palette-editor-tags-list]")).toContainText("No tags added.");
     await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Update Selected" })).toBeEnabled();
+    await page.locator("[data-palette-symbol]").fill("K");
+    await page.locator("[data-palette-hex]").fill("#654321");
+    await page.locator("[data-palette-name]").fill("Hero Green");
+    await expectUserHexPreview(page, "valid", "#654321");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeEnabled();
+    await page.locator("[data-palette-symbol]").fill("H");
+    await page.locator("[data-palette-hex]").fill("#123456AA");
+    await page.locator("[data-palette-name]").fill("Hero Blue");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("aria-current", "true");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveCSS("outline-style", "solid");
     await expect(page.locator("[data-palette-swatch-row='H']")).not.toHaveCSS("box-shadow", "none");
@@ -688,6 +734,8 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toHaveValue("J");
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toHaveValue("#ABCDEF");
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toHaveValue("Hero Updated");
+    await expectUserHexPreview(page, "valid", "#abcdef");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.locator("[data-palette-user-list]")).not.toContainText(/Hero Updated|ui, feature|Symbol|Name|Hex|Source|Tags/);
 
     await page.getByRole("button", { name: "Undo" }).click();
@@ -702,11 +750,15 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await page.locator("[data-palette-symbol]").fill("J");
     await page.locator("[data-palette-hex]").fill("#111111");
     await page.locator("[data-palette-name]").fill("Duplicate Symbol");
-    await page.getByRole("button", { name: "Add Swatch" }).click();
-    await expect(page.locator("[data-palette-validation-list]")).toContainText("Duplicate Symbol");
+    await expectUserHexPreview(page, "valid", "#111111");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
 
     await page.getByRole("button", { name: "Clear Form" }).click();
     await expect(page.locator("[data-palette-symbol]")).toHaveValue("");
+    await expect(page.locator("[data-palette-hex]")).toHaveValue("");
+    await expect(page.locator("[data-palette-name]")).toHaveValue("");
+    await expectUserHexPreview(page, "invalid", "#ffffff");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.locator("[data-palette-log]")).toHaveText("User defined swatch form cleared.");
 
     await page.locator("[data-palette-harmony-scheme]").selectOption("triadic");
@@ -843,7 +895,7 @@ test("Palette Tool rejects invalid payloads before render and blocks editing wit
   try {
     await expect(page.locator("[data-palette-active-project]")).toHaveText("No active project.");
     await expect(page.locator("[data-palette-project-overlay]")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Add Swatch" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Update Selected" })).toBeDisabled();
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Active Project");
     expectNoPageFailures(missingProjectFailures);

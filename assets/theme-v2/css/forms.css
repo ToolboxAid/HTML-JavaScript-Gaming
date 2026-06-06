@@ -34,6 +34,21 @@ form {
   gap: var(--space-14)
 }
 
+.field-inline {
+  display: flex;
+  gap: var(--space-8);
+  align-items: center;
+  max-width: 100%
+}
+
+.field-inline input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.field-inline textarea,
+.field-inline select {
+  flex: 1 1 auto;
+  min-width: var(--space-0);
+  width: auto
+}
+
 .field-hint {
   color: var(--muted);
   font-size: var(--font-size-sm);
@@ -112,6 +127,21 @@ input[type="color"][data-palette-swatch-preview]::-webkit-color-swatch-wrapper {
 input[type="color"][data-palette-swatch-preview]::-webkit-color-swatch {
   border: var(--border-width-sm) solid var(--line);
   border-radius: var(--radius-xs)
+}
+
+input[type="color"][data-palette-preview-state="invalid"] {
+  background: repeating-linear-gradient(45deg, var(--panel), var(--panel) var(--space-4), var(--steel-soft) var(--space-4), var(--steel-soft) var(--space-8));
+  border-style: dashed
+}
+
+input[type="color"][data-palette-preview-state="invalid"]::-webkit-color-swatch {
+  background: repeating-linear-gradient(45deg, var(--panel), var(--panel) var(--space-4), var(--steel-soft) var(--space-4), var(--steel-soft) var(--space-8));
+  border-style: dashed
+}
+
+input[type="color"][data-palette-preview-state="invalid"]::-moz-color-swatch {
+  background: repeating-linear-gradient(45deg, var(--panel), var(--panel) var(--space-4), var(--steel-soft) var(--space-4), var(--steel-soft) var(--space-8));
+  border-style: dashed
 }
 
 input[type="color"][data-palette-swatch-size="small"] {

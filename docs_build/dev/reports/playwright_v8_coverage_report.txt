@@ -18,7 +18,7 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (89%) toolbox/colors/palette-workspace-repository.js - executed lines 1244/1244; executed functions 125/140
-(96%) toolbox/colors/colors.js - executed lines 794/794; executed functions 78/81
+(96%) toolbox/colors/colors.js - executed lines 831/831; executed functions 82/85
 
 Files with executed line/function counts where available:
 (65%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 20/31
@@ -26,7 +26,7 @@ Files with executed line/function counts where available:
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 205/205; executed functions 16/20
 (87%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 13/15
 (89%) toolbox/colors/palette-workspace-repository.js - executed lines 1244/1244; executed functions 125/140
-(96%) toolbox/colors/colors.js - executed lines 794/794; executed functions 78/81
+(96%) toolbox/colors/colors.js - executed lines 831/831; executed functions 82/85
 (100%) toolbox/colors/palette-source-mock-db.js - executed lines 927/927; executed functions 6/6
 
 Uncovered or low-coverage changed JS files:
