@@ -66,29 +66,69 @@ test("Admin Notes displays index.txt, parser output, and linked subnotes", async
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Things to Fix");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Undecided Questions");
     await expect(page.locator("[data-admin-notes-status]")).toContainText("docs_build/dev/admin-notes/index.txt");
+    const titleBox = await page.locator("[data-admin-notes-title]").boundingBox();
+    const loadedPathBox = await page.locator("[data-admin-notes-status]").boundingBox();
+    expect(titleBox).not.toBeNull();
+    expect(loadedPathBox).not.toBeNull();
+    expect(loadedPathBox.x).toBeGreaterThan(titleBox.x + titleBox.width);
+    expect(loadedPathBox.y).toBeLessThan(titleBox.y + titleBox.height);
+    expect(loadedPathBox.y + loadedPathBox.height).toBeGreaterThan(titleBox.y);
     await expect(page.locator("[data-admin-notes-return]")).toBeHidden();
     await expect(page.locator("[data-admin-notes-return]")).toHaveText("Return to index.txt");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("[data-admin-notes-status-icon='open']")).toHaveText("[ ]");
-    await expect(page.locator("[data-admin-notes-status-icon='active']")).toHaveText("[.]");
-    await expect(page.locator("[data-admin-notes-status-icon='blocked']")).toHaveText("[!]");
-    await expect(page.locator("[data-admin-notes-status-icon='question']")).toHaveText("[?]");
+    await expect(page.locator("[data-admin-notes-status-icon='not-started']")).toHaveText("⬜");
+    await expect(page.locator("[data-admin-notes-status-icon='in-progress']")).toHaveText("🟡");
+    await expect(page.locator("[data-admin-notes-status-icon='blocker']")).toHaveText("⛔");
+    await expect(page.locator("[data-admin-notes-status-icon='decide']")).toHaveText("❓");
+    await expect(page.locator("[data-admin-notes-status-icon='decide']")).toHaveAttribute(
+      "title",
+      "Decide which project questions need their own subnote files."
+    );
     await expect(page.locator("[data-admin-notes-content] > ul > li").first()).toContainText("Capture admin-only project ideas");
     await expect(page.locator("[data-admin-notes-content] ul ul li").first()).toContainText("nested ideas");
+    await expect(page.locator("[data-admin-notes-directory]")).toBeVisible();
+    await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "index.txt" })).toHaveCount(0);
+    const directoryFolderLink = page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "other/" });
+    await expect(directoryFolderLink).toHaveAttribute("data-admin-note-link", "other");
+    const directoryFileLink = page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "quick-reference.txt" });
+    await expect(directoryFileLink).toHaveAttribute("data-admin-note-file", "docs_build/dev/admin-notes/quick-reference.txt");
+    await expect(page.locator("[data-admin-notes-legend]")).toBeVisible();
+    await expect(page.locator("[data-admin-notes-legend-list] li")).toHaveText([
+      "⬜ Not Started",
+      "🟡 In Progress",
+      "✅ Complete",
+      "⛔ Blocker",
+      "❓ Decide"
+    ]);
+    await expect(page.locator("[data-admin-notes-legend-icon='decide']")).toHaveAttribute(
+      "title",
+      "Decide which project questions need their own subnote files."
+    );
 
-    const otherLink = page.locator("[data-admin-note-link='other']");
+    await directoryFileLink.click();
+    await page.waitForURL(/admin\/notes\.html\?file=docs_build%2Fdev%2Fadmin-notes%2Fquick-reference\.txt$/);
+    await expect(page.locator("[data-admin-notes-title]")).toHaveText("quick-reference.txt");
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("docs_build/dev/admin-notes/quick-reference.txt");
+    await expect(page.locator("[data-admin-notes-content]")).toContainText("current-folder file link");
+    await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "other/" })).toBeVisible();
+
+    await page.locator("[data-admin-notes-return]").click();
+    await page.waitForURL(/admin\/notes\.html$/);
+
+    const otherLink = page.locator("[data-admin-notes-content] [data-admin-note-link='other']");
     await expect(otherLink).toHaveText("[other]");
     await expect(otherLink).toHaveClass(/primary/);
     await expect(otherLink).toHaveAttribute("href", /admin\/notes\.html\?note=other$/);
     await otherLink.click();
     await page.waitForURL(/admin\/notes\.html\?note=other$/);
-    await expect(page.locator("[data-admin-notes-title]")).toHaveText("other/index.txt");
+    await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("sample linked admin subnote");
     await expect(page.locator("[data-admin-notes-status]")).toContainText("docs_build/dev/admin-notes/other/index.txt");
     await expect(page.locator("[data-admin-notes-return]")).toBeVisible();
     await expect(page.locator("[data-admin-notes-return]")).toHaveText("Return to index.txt");
-    await expect(page.locator("[data-admin-notes-status-icon='done']")).toHaveText("[x]");
+    await expect(page.locator("[data-admin-notes-status-icon='complete']")).toHaveText("✅");
     await expect(page.locator("[data-admin-notes-content] ul ul li")).toContainText("Return to index.txt");
+    await expect(page.locator("[data-admin-notes-directory]")).toBeHidden();
 
     await page.locator("[data-admin-notes-return]").click();
     await page.waitForURL(/admin\/notes\.html$/);
@@ -112,10 +152,12 @@ test("Admin Notes opens custom root-relative text file links", async ({ page }) 
     await expect(backslashLink).toHaveClass(/primary/);
     await backslashLink.click();
     await page.waitForURL(/admin\/notes\.html\?file=docs_build%2Ftools-images-generated%2Fachievements\.txt$/);
-    await expect(page.locator("[data-admin-notes-title]")).toHaveText("docs_build/tools-images-generated/achievements.txt");
+    await expect(page.locator("[data-admin-notes-title]")).toHaveText("achievements.txt");
     await expect(page.locator("[data-admin-notes-status]")).toContainText("docs_build/tools-images-generated/achievements.txt");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("TOOL: achievements");
     await expect(page.locator("[data-admin-notes-return]")).toBeVisible();
+    await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "achievements.txt" })).toBeVisible();
+    await expect(page.locator("[data-admin-notes-directory-links]").getByRole("link", { name: "ai-assistant.txt" })).toBeVisible();
 
     await page.locator("[data-admin-notes-return]").click();
     await page.waitForURL(/admin\/notes\.html$/);
@@ -136,7 +178,7 @@ test("Admin Notes shows actionable errors for missing and rejected paths", async
   const missingFailures = await openRepoPage(page, "/admin/notes.html?note=missing");
 
   try {
-    await expect(page.locator("[data-admin-notes-title]")).toHaveText("missing/index.txt");
+    await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
     await expect(page.locator("[data-admin-notes-error]")).toContainText("Missing note file docs_build/dev/admin-notes/missing/index.txt");
     await expect(page.locator("[data-admin-notes-error]")).toContainText("return to index.txt");
     await expect(page.locator("[data-admin-notes-return]")).toBeVisible();

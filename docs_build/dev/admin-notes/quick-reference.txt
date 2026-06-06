@@ -1,0 +1,3 @@
+Quick Reference
+- [.] This text file appears as a current-folder file link.
+- Use it to verify supported text file directory links.

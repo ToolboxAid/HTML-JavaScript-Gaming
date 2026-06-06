@@ -41,15 +41,25 @@
                     <a href="admin/tools-progress.html">Tools Progress</a>
                     <a href="admin/users.html">Users</a>
                 </aside>
-                <article class="card" aria-labelledby="admin-notes-title">
+                <article class="card" aria-labelledby="admin-notes-title" data-admin-notes-viewer>
                     <div class="card-body content-stack">
                         <div>
                             <div class="kicker">Project Notes</div>
-                            <h2 id="admin-notes-title" data-admin-notes-title>index.txt</h2>
+                            <div class="content-cluster">
+                                <h2 id="admin-notes-title" data-admin-notes-title>index.txt</h2>
+                                <span class="status" role="status" data-admin-notes-status>Loading admin notes.</span>
+                            </div>
                         </div>
                         <a href="admin/notes.html" data-admin-notes-return hidden>Return to index.txt</a>
-                        <div class="status" role="status" data-admin-notes-status>Loading admin notes.</div>
                         <div class="content-stack" data-admin-notes-content aria-live="polite"></div>
+                        <nav class="callout" aria-labelledby="admin-notes-directory-title" data-admin-notes-directory hidden>
+                            <h3 id="admin-notes-directory-title">Current Folder</h3>
+                            <div class="action-group action-group--tight" data-admin-notes-directory-links></div>
+                        </nav>
+                        <section class="callout content-stack" aria-labelledby="admin-notes-legend-title" data-admin-notes-legend>
+                            <h3 id="admin-notes-legend-title">Status Legend</h3>
+                            <ul data-admin-notes-legend-list></ul>
+                        </section>
                     </div>
                 </article>
             </div>
