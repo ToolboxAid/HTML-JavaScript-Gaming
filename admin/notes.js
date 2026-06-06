@@ -44,7 +44,6 @@ class AdminNotesViewer {
     this.historyRef = historyRef;
     this.surface = documentRef.querySelector("[data-admin-notes-viewer]");
     this.title = documentRef.querySelector("[data-admin-notes-title]");
-    this.returnLink = documentRef.querySelector("[data-admin-notes-return]");
     this.status = documentRef.querySelector("[data-admin-notes-status]");
     this.content = documentRef.querySelector("[data-admin-notes-content]");
     this.directory = documentRef.querySelector("[data-admin-notes-directory]");
@@ -66,11 +65,6 @@ class AdminNotesViewer {
         return;
       }
       this.openNote(link.dataset.adminNoteLink || DEFAULT_NOTE, true);
-    });
-
-    this.returnLink?.addEventListener("click", (event) => {
-      event.preventDefault();
-      this.openNote(DEFAULT_NOTE, true);
     });
   }
 
@@ -113,12 +107,12 @@ class AdminNotesViewer {
     this.clearContent();
     const title = NOTE_INDEX_FILE;
     this.setTitle(title);
-    this.setReturnVisible(normalizedNoteName !== DEFAULT_NOTE);
 
     if (!this.validNoteName(normalizedNoteName)) {
       this.renderError(
         `Rejected note path "${noteName}". Use a bracket note name containing only letters, numbers, underscores, or hyphens.`
       );
+      await this.renderDirectoryLinks(NOTES_DIRECTORY, "");
       return;
     }
 
@@ -138,12 +132,12 @@ class AdminNotesViewer {
     const normalizedFilePath = this.rootRelativeTextPathFromValue(filePath);
     this.clearContent();
     this.setTitle(normalizedFilePath ? this.fileNameForPath(normalizedFilePath) : "linked file");
-    this.setReturnVisible(true);
 
     if (!normalizedFilePath) {
       this.renderError(
         `Rejected linked file path "${filePath}". Use a repository-root text file path without traversal.`
       );
+      await this.renderDirectoryLinks(NOTES_DIRECTORY, "");
       return;
     }
 
@@ -163,6 +157,7 @@ class AdminNotesViewer {
       const response = await fetch(filePath, { cache: "no-store" });
       if (!response.ok) {
         this.renderError(missingMessage);
+        await this.renderDirectoryLinks(this.folderPathForFile(currentFilePath), currentFilePath);
         return;
       }
       const text = await response.text();
@@ -226,9 +221,6 @@ class AdminNotesViewer {
   clearContent() {
     this.content?.replaceChildren();
     this.directoryLinks?.replaceChildren();
-    if (this.directory) {
-      this.directory.hidden = true;
-    }
   }
 
   setTitle(value) {
@@ -240,12 +232,6 @@ class AdminNotesViewer {
   setStatus(value) {
     if (this.status) {
       this.status.textContent = value;
-    }
-  }
-
-  setReturnVisible(visible) {
-    if (this.returnLink) {
-      this.returnLink.hidden = !visible;
     }
   }
 
@@ -267,19 +253,9 @@ class AdminNotesViewer {
       .sort((left, right) => left.label.localeCompare(right.label));
 
     this.directoryLinks?.replaceChildren();
-    if (!safeEntries.length) {
-      if (this.directory) {
-        this.directory.hidden = true;
-      }
-      return;
-    }
-
     safeEntries.forEach((entry) => {
       this.directoryLinks?.append(this.directoryLink(entry));
     });
-    if (this.directory) {
-      this.directory.hidden = false;
-    }
   }
 
   async directoryEntriesForFolder(folderPath) {
@@ -352,11 +328,10 @@ class AdminNotesViewer {
   renderLegend() {
     this.legendList?.replaceChildren();
     Object.values(STATUS_MARKERS).forEach((marker) => {
-      const item = this.documentRef.createElement("li");
-      item.title = marker.title;
+      const item = this.documentRef.createElement("span");
+      item.dataset.adminNotesLegendItem = marker.name;
       const icon = this.documentRef.createElement("span");
       icon.dataset.adminNotesLegendIcon = marker.name;
-      icon.title = marker.title;
       icon.textContent = marker.icon;
       item.append(icon);
       item.append(this.documentRef.createTextNode(` ${marker.label}`));

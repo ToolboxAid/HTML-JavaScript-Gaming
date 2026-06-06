@@ -17,11 +17,11 @@ Exercised tool entry points detected:
 (80%) Theme V2 Shared JS - exercised 1 runtime JS files
 
 Changed runtime JS files covered:
-(100%) admin/notes.js - executed lines 452/452; executed functions 46/46
+(100%) admin/notes.js - executed lines 430/430; executed functions 44/44
 
 Files with executed line/function counts where available:
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 206/206; executed functions 16/20
-(100%) admin/notes.js - executed lines 452/452; executed functions 46/46
+(100%) admin/notes.js - executed lines 430/430; executed functions 44/44
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
