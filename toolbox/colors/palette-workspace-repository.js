@@ -527,6 +527,28 @@ function nextAvailableSymbol(existingSwatches, seedText = "") {
   return candidates.find((candidate) => !used.has(candidate)) || "";
 }
 
+function generatedHarmonyNameRoot(name) {
+  const normalizedName = normalizeText(name);
+  return normalizedName.replace(/\s+\d+$/, "") || normalizedName;
+}
+
+function nextGeneratedHarmonyName(name, existingSwatches) {
+  const normalizedName = normalizeText(name);
+  const usedNames = new Set(existingSwatches.map((swatch) => swatch.name.toLowerCase()));
+  if (normalizedName && !usedNames.has(normalizedName.toLowerCase())) {
+    return normalizedName;
+  }
+
+  const root = generatedHarmonyNameRoot(normalizedName) || "Harmony";
+  let index = 1;
+  let candidate = `${root} ${index}`;
+  while (usedNames.has(candidate.toLowerCase())) {
+    index += 1;
+    candidate = `${root} ${index}`;
+  }
+  return candidate;
+}
+
 function createUsageId(projectId, swatchSymbol, assetId) {
   return `${projectId || "project"}-${swatchSymbol || "swatch"}-${assetId || "asset"}`;
 }
@@ -996,7 +1018,6 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   function addHarmonySuggestion(suggestion = {}) {
     const projectId = activeProjectId();
     const swatches = getActiveSwatches();
-    const symbol = nextAvailableSymbol(swatches, suggestion.name);
     if (!projectId) {
       return {
         issues: [createIssue("activeProject", "Active Project", "Open a project before adding harmony colors.")],
@@ -1005,6 +1026,17 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         snapshot: getSnapshot()
       };
     }
+    if (rgbKey(suggestion.hex) && swatches.some((swatch) => rgbKey(swatch.hex) === rgbKey(suggestion.hex))) {
+      return {
+        issues: [],
+        ok: false,
+        message: "Harmony color already exists in the active project palette.",
+        snapshot: getSnapshot()
+      };
+    }
+
+    const name = nextGeneratedHarmonyName(suggestion.name, swatches);
+    const symbol = nextAvailableSymbol(swatches, name);
     if (!symbol) {
       return {
         issues: [createIssue("symbol", "Symbol", "No available one-character palette symbol remains.")],
@@ -1016,7 +1048,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
     const validation = validatePaletteSwatchInput({
       hex: suggestion.hex,
-      name: suggestion.name,
+      name,
       source: "harmony",
       symbol,
       tags: []

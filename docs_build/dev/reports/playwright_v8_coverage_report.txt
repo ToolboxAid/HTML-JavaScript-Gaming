@@ -12,19 +12,19 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(86%) Toolbox Index - exercised 5 runtime JS files
+(85%) Toolbox Index - exercised 5 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (83%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(95%) toolbox/colors/colors.js - executed lines 793/793; executed functions 77/81
+(87%) toolbox/colors/palette-workspace-repository.js - executed lines 1218/1218; executed functions 116/134
 
 Files with executed line/function counts where available:
 (65%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 20/31
 (75%) toolbox/toolRegistry.js - executed lines 1754/1754; executed functions 27/36
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 205/205; executed functions 16/20
 (87%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 13/15
-(87%) toolbox/colors/palette-workspace-repository.js - executed lines 1190/1190; executed functions 113/130
+(87%) toolbox/colors/palette-workspace-repository.js - executed lines 1218/1218; executed functions 116/134
 (95%) toolbox/colors/colors.js - executed lines 793/793; executed functions 77/81
 (100%) toolbox/colors/palette-source-mock-db.js - executed lines 927/927; executed functions 6/6
 
@@ -33,4 +33,4 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(95%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
+(87%) toolbox/colors/palette-workspace-repository.js - changed JS file with browser V8 coverage

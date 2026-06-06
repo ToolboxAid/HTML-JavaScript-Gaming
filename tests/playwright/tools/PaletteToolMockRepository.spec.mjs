@@ -262,7 +262,9 @@ test("Palette repository owns active project swatches without mutating invalid p
   ]));
 
   expect(repository.addSwatch({ symbol: "H", hex: "#654321", name: "Other" }).ok).toBe(false);
-  expect(repository.addSwatch({ symbol: "O", hex: "#654321", name: "Hero Blue" }).ok).toBe(false);
+  const duplicateNameResult = repository.addSwatch({ symbol: "O", hex: "#654321", name: "Hero Blue" });
+  expect(duplicateNameResult.ok).toBe(false);
+  expect(duplicateNameResult.issues.map((issue) => issue.label)).toContain("Duplicate Name");
   expect(repository.addSwatch({ symbol: "O", hex: "#123456", name: "Other" }).ok).toBe(false);
 
   const updateResult = repository.updateSelectedSwatch({
@@ -331,7 +333,44 @@ test("Palette repository owns active project swatches without mutating invalid p
   expect(harmonySwatch).toMatchObject({ source: "harmony", tags: [] });
   const duplicateHarmonyResult = repository.addHarmonySuggestions([harmonySuggestion]);
   expect(duplicateHarmonyResult.ok).toBe(false);
+  expect(duplicateHarmonyResult.issues).toEqual([]);
   expect(repository.listSwatches().filter((swatch) => swatch.name === harmonySuggestion.name)).toHaveLength(1);
+
+  const harmonyRepository = createProjectWorkspacePaletteRepository({ sourcePaletteRows });
+  expect(harmonyRepository.addSwatch({ symbol: "A", hex: "#112233", name: "Base One" }).ok).toBe(true);
+  expect(harmonyRepository.addSwatch({ symbol: "B", hex: "#445566", name: "Base Two" }).ok).toBe(true);
+  const firstComplementary = harmonyRepository.createHarmonySuggestions(harmonyRepository.findSwatch("A"), {
+    matchSource: "calculated",
+    schemeId: "complementary"
+  })[0];
+  const secondComplementary = harmonyRepository.createHarmonySuggestions(harmonyRepository.findSwatch("B"), {
+    matchSource: "calculated",
+    schemeId: "complementary"
+  })[0];
+  expect(firstComplementary.name).toBe("Complementary 1");
+  expect(secondComplementary.name).toBe("Complementary 1");
+  expect(harmonyRepository.addHarmonySuggestion(firstComplementary).ok).toBe(true);
+  expect(harmonyRepository.addHarmonySuggestion(secondComplementary).ok).toBe(true);
+  expect(harmonyRepository.listSwatches().filter((swatch) => swatch.source === "harmony").map((swatch) => swatch.name)).toEqual([
+    "Complementary 1",
+    "Complementary 2"
+  ]);
+  const triadicSuggestions = harmonyRepository.createHarmonySuggestions(harmonyRepository.findSwatch("A"), {
+    matchSource: "calculated",
+    schemeId: "triadic"
+  });
+  const triadicAddAllResult = harmonyRepository.addHarmonySuggestions(triadicSuggestions);
+  expect(triadicAddAllResult.ok).toBe(true);
+  expect(triadicAddAllResult.message).toBe("Harmony add complete: 2 added, 0 skipped.");
+  expect(harmonyRepository.listSwatches().filter((swatch) => swatch.name.startsWith("Triadic ")).map((swatch) => swatch.name)).toEqual([
+    "Triadic 1",
+    "Triadic 2"
+  ]);
+  const repeatTriadicResult = harmonyRepository.addHarmonySuggestions(triadicSuggestions);
+  expect(repeatTriadicResult.ok).toBe(false);
+  expect(repeatTriadicResult.message).toBe("Harmony add complete: 0 added, 2 skipped.");
+  expect(repeatTriadicResult.issues).toEqual([]);
+  expect(harmonyRepository.listSwatches().filter((swatch) => swatch.name.startsWith("Triadic "))).toHaveLength(2);
 
   repository.selectSwatch("R");
   repository.recordSwatchUsage({ assetId: "asset.color.red", symbol: "R", toolId: "assets" });
