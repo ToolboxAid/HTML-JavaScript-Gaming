@@ -235,6 +235,17 @@
   max-width: var(--tool-center-copy-max)
 }
 
+body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>img {
+  width: auto;
+  max-width: min(var(--tool-center-image-max), 75%);
+  max-height: var(--space-78);
+  margin: var(--space-0) auto var(--space-10)
+}
+
+body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
+  margin-block: var(--space-0) var(--space-10)
+}
+
 .tool-display-mode {
   margin: var(--space-0) var(--space-0) var(--space-12);
   position: relative;

@@ -42,7 +42,6 @@ const SIZE_OPTIONS = Object.freeze([
 let editorIssues = [];
 let editorTags = [];
 let harmonyRows = [];
-let selectedHarmonyIndex = 0;
 let selectedSourceSwatch = null;
 let sourceSwatchRows = [];
 const sourceSortState = { direction: "asc", key: "name" };
@@ -58,7 +57,6 @@ const elements = {
   editorDiagnostic: document.querySelector("[data-palette-editor-diagnostic]"),
   form: document.querySelector("[data-palette-editor-form]"),
   harmonyAddAll: document.querySelector("[data-palette-harmony-add-all]"),
-  harmonyAddSelected: document.querySelector("[data-palette-harmony-add-selected]"),
   harmonyGuidance: document.querySelector("[data-palette-harmony-guidance]"),
   harmonyList: document.querySelector("[data-palette-harmony-list]"),
   harmonyMatch: document.querySelector("[data-palette-harmony-match]"),
@@ -536,26 +534,23 @@ function renderHarmony(snapshot) {
   if (!baseSwatch) {
     elements.harmonyList.append(createStatusMessage("Select a project or source palette color to view scheme suggestions."));
     setText(elements.harmonyGuidance, "Select a project or source palette color to view scheme suggestions.");
-    setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], true);
+    setDisabled(elements.harmonyAddAll, true);
     return;
   }
 
   if (harmonyRows.length === 0) {
     elements.harmonyList.append(createStatusMessage("No harmony scheme colors available."));
     setText(elements.harmonyGuidance, "No harmony scheme colors are available for the selected palette color.");
-    setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], true);
+    setDisabled(elements.harmonyAddAll, true);
     return;
   }
 
-  if (selectedHarmonyIndex >= harmonyRows.length) {
-    selectedHarmonyIndex = 0;
-  }
   setText(elements.harmonyGuidance, `Showing ${harmonyRows.length} ${elements.harmonyScheme?.selectedOptions?.[0]?.textContent || "scheme"} colors from ${elements.harmonyMatch?.selectedOptions?.[0]?.textContent || "Calculated"}.`);
-  setDisabled([elements.harmonyAddSelected, elements.harmonyAddAll], false);
+  setDisabled(elements.harmonyAddAll, false);
 
   const schemeLabel = elements.harmonyScheme?.selectedOptions?.[0]?.textContent || "Harmony";
   harmonyRows.forEach((suggestion, index) => {
-    const selected = index === selectedHarmonyIndex;
+    const pinned = repository.isSourceSwatchPinned(suggestion);
     elements.harmonyList.append(createSwatchTile({
       hex: suggestion.hex,
       name: suggestion.name,
@@ -563,13 +558,11 @@ function renderHarmony(snapshot) {
       symbol: String(index + 1),
       tags: suggestion.tags
     }, {
-      action: "Select harmony swatch",
+      action: pinned ? "Remove harmony swatch" : "Add harmony swatch",
       harmonyIndex: index,
-      label: `${selected ? "Selected. " : ""}Select harmony swatch ${suggestion.name} ${suggestion.hex} from ${schemeLabel}.`,
-      pinned: false,
-      pressed: selected,
-      selected,
-      showPin: false,
+      label: `${pinned ? "Remove" : "Add"} harmony swatch ${suggestion.name} ${suggestion.hex} from ${schemeLabel}.`,
+      pinned,
+      pressed: pinned,
       size: "medium",
       tooltip: `Scheme: ${schemeLabel}\nLabel: ${suggestion.name}\nHex: ${suggestion.hex}`
     }));
@@ -593,7 +586,7 @@ function renderSummary(snapshot) {
   setText(elements.count, String(snapshot.swatches.length));
   setText(
     elements.selectedSummary,
-    snapshot.selectedSwatch ? `${snapshot.selectedSwatch.symbol} ${snapshot.selectedSwatch.name}` : "None"
+    snapshot.selectedSwatch ? snapshot.selectedSwatch.name : "None"
   );
   setDisabled(elements.undo, !snapshot.canUndo);
   setDisabled(elements.redo, !snapshot.canRedo);
@@ -764,22 +757,17 @@ elements.harmonyList?.addEventListener("click", (event) => {
   if (!tile) {
     return;
   }
-  selectedHarmonyIndex = Number(tile.dataset.paletteHarmonyChoice);
-  render();
-});
-
-elements.harmonyAddSelected?.addEventListener("click", () => {
-  const suggestion = harmonyRows[selectedHarmonyIndex];
+  const suggestion = harmonyRows[Number(tile.dataset.paletteHarmonyChoice)];
   if (!suggestion) {
     editorIssues = [{
-      action: "Select a harmony scheme color before adding.",
+      action: "Select a harmony scheme color before pinning.",
       field: "harmony",
       label: "Harmony"
     }];
     render();
     return;
   }
-  applyResult(repository.addHarmonySuggestion(suggestion));
+  applyResult(repository.toggleHarmonySuggestionPin(suggestion));
 });
 
 elements.harmonyAddAll?.addEventListener("click", () => {

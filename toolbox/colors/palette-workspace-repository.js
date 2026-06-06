@@ -852,7 +852,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         snapshot: getSnapshot()
       };
     }
-    return saveSwatch(sourceSwatch, {
+    return saveSwatch({
+      ...sourceSwatch,
+      tags: []
+    }, {
       source: normalizeSource(sourceSwatch.source)
     });
   }
@@ -878,6 +881,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       const swatch = normalizePaletteSwatchInput(sourceSwatch, {
         source: normalizeSource(sourceSwatch?.source)
       });
+      swatch.tags = [];
       const colorKey = rgbKey(swatch.hex);
       if (!swatch.symbol || !isOneCharacter(swatch.symbol) || !swatch.hex || !swatch.name) {
         skipped += 1;
@@ -948,8 +952,17 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function addHarmonySuggestion(suggestion = {}) {
+    const projectId = activeProjectId();
     const swatches = getActiveSwatches();
     const symbol = nextAvailableSymbol(swatches, suggestion.name);
+    if (!projectId) {
+      return {
+        issues: [createIssue("activeProject", "Active Project", "Open a project before adding harmony colors.")],
+        ok: false,
+        message: "Harmony color blocked: no active project.",
+        snapshot: getSnapshot()
+      };
+    }
     if (!symbol) {
       return {
         issues: [createIssue("symbol", "Symbol", "No available one-character palette symbol remains.")],
@@ -958,13 +971,26 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         snapshot: getSnapshot()
       };
     }
-    return saveSwatch({
+
+    const validation = validatePaletteSwatchInput({
       hex: suggestion.hex,
       name: suggestion.name,
       source: "harmony",
       symbol,
-      tags: Array.isArray(suggestion.tags) ? suggestion.tags : ["harmony"]
-    }, { source: "harmony" });
+      tags: []
+    }, swatches, { source: "harmony" });
+    if (validation.issues.length) {
+      return {
+        issues: validation.issues,
+        ok: false,
+        message: `Harmony color blocked by ${validation.issues.length} validation item${validation.issues.length === 1 ? "" : "s"}.`,
+        snapshot: getSnapshot()
+      };
+    }
+
+    return replaceSwatches(projectId, [...swatches, validation.swatch], {
+      selection: "preserve"
+    });
   }
 
   function addHarmonySuggestions(suggestions = []) {
@@ -980,6 +1006,14 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       message: `Harmony add complete: ${added} added, ${skipped} skipped.`,
       snapshot: getSnapshot()
     };
+  }
+
+  function toggleHarmonySuggestionPin(suggestion = {}) {
+    const pinnedSwatch = findPinnedSourceSwatch(suggestion);
+    if (pinnedSwatch) {
+      return removeSwatch(pinnedSwatch.symbol);
+    }
+    return addHarmonySuggestion(suggestion);
   }
 
   function undo() {
@@ -1241,6 +1275,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     seedActiveProjectPalette,
     selectSwatch,
     sourcePaletteOptions,
+    toggleHarmonySuggestionPin,
     toggleSourceSwatchPin,
     undo,
     updateSelectedSwatch

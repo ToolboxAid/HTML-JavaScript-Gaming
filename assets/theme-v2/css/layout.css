@@ -232,7 +232,8 @@ body.tool-focus-mode .tool-center-panel {
   overflow: auto
 }
 
-body.tool-focus-mode .tool-center-panel--scroll-contained {
+body.tool-focus-mode .tool-center-panel:has(>.accordion-fill-stack),
+body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion) {
   display: flex;
   flex-direction: column;
   height: 100%;

@@ -180,3 +180,25 @@ body.tool-focus-mode .accordion-scroll-body>.scroll-region {
   min-height: var(--space-0);
   overflow: auto
 }
+
+body.tool-focus-mode .tool-center-panel>details.vertical-accordion {
+  flex: 0 0 auto;
+  min-height: var(--space-0)
+}
+
+body.tool-focus-mode .tool-center-panel>details.vertical-accordion[open] {
+  flex: 1 1 var(--space-0);
+  min-height: var(--space-0);
+  position: relative
+}
+
+body.tool-focus-mode .tool-center-panel>details.vertical-accordion[open]>summary {
+  min-block-size: var(--space-52);
+  min-height: var(--space-0)
+}
+
+body.tool-focus-mode .tool-center-panel>details.vertical-accordion[open]>.accordion-body {
+  position: absolute;
+  inset: var(--space-52) var(--space-0) var(--space-0);
+  overflow: auto
+}

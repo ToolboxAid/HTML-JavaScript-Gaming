@@ -269,7 +269,7 @@ test("Palette repository owns active project swatches without mutating invalid p
   const sourceSwatch = repository.listSourceSwatches({ sourceId: "reference", sortKey: "hue" })[0];
   const pinResult = repository.pinSourceSwatch(sourceSwatch);
   expect(pinResult.ok).toBe(true);
-  expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", source: "reference" });
+  expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", source: "reference", tags: [] });
   expect(repository.listSwatches({ sortKey: "hue" }).map((swatch) => swatch.name)).toContain("Reference Red");
   const duplicatePinResult = repository.pinSourceSwatch(sourceSwatch);
   expect(duplicatePinResult.ok).toBe(true);
@@ -281,6 +281,7 @@ test("Palette repository owns active project swatches without mutating invalid p
     "Reference Green",
     "Reference Red"
   ]);
+  expect(repository.listSwatches().filter((swatch) => swatch.source === "reference").every((swatch) => swatch.tags.length === 0)).toBe(true);
   const sourceCountAfterPinAll = repository.listSwatches().filter((swatch) => swatch.source === "reference").length;
   const repeatPinAllResult = repository.pinSourceSwatches(repository.listSourceSwatches({ sourceId: "reference", sortKey: "hue" }));
   expect(repeatPinAllResult.ok).toBe(true);
@@ -299,6 +300,17 @@ test("Palette repository owns active project swatches without mutating invalid p
     matchSource: "calculated",
     schemeId: "triadic"
   })).toHaveLength(2);
+  const harmonySuggestion = repository.createHarmonySuggestions(repository.findSwatch("R"), {
+    matchSource: "calculated",
+    schemeId: "triadic"
+  })[0];
+  const harmonyResult = repository.addHarmonySuggestion(harmonySuggestion);
+  expect(harmonyResult.ok).toBe(true);
+  const harmonySwatch = repository.listSwatches().find((swatch) => swatch.name === harmonySuggestion.name);
+  expect(harmonySwatch).toMatchObject({ source: "harmony", tags: [] });
+  const duplicateHarmonyResult = repository.addHarmonySuggestions([harmonySuggestion]);
+  expect(duplicateHarmonyResult.ok).toBe(false);
+  expect(repository.listSwatches().filter((swatch) => swatch.name === harmonySuggestion.name)).toHaveLength(1);
 
   repository.selectSwatch("R");
   repository.recordSwatchUsage({ assetId: "asset.color.red", symbol: "R", toolId: "assets" });
@@ -377,6 +389,9 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveCount(1);
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveAttribute("data-palette-selected", "true");
+    await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Black");
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveAttribute("data-palette-swatch-tags", "");
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveAttribute("title", /^Symbol: .+\nHex: #[0-9A-F]{6}\nName: Black\nTags: None$/);
     await expect(page.locator("[data-palette-source-index]").first()).toHaveAttribute("data-palette-pinned", "true");
     await page.locator("[data-palette-source-pin-all]").click();
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
@@ -444,10 +459,14 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-selected-details]")).toHaveCount(0);
     await expect(page.locator("[data-palette-project-accordion]")).not.toContainText(/Symbol:|Hex:|Name:|Source:|Tags:/);
     await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_colors");
+    await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Hero Blue");
+    await expect(page.locator("[data-palette-harmony-add-selected]")).toHaveCount(0);
     await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(1);
     await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Complementary \d:/);
     await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("title", /^Scheme: Complementary\nLabel: Complementary 1\nHex: #[0-9A-F]{6}$/);
-    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("aria-label", /Complementary 1 #[0-9A-F]{6} from Complementary/);
+    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("aria-label", /Add harmony swatch Complementary 1 #[0-9A-F]{6} from Complementary/);
+    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("data-palette-pinned", "false");
+    await expect(page.locator("[data-palette-harmony-choice]").first().locator("[data-palette-pin-indicator]")).toHaveCount(1);
 
     const activePreviewTile = page.locator("[data-palette-swatch-row='H']");
     await page.locator("[data-palette-user-sort] [data-palette-sort-key='hue']").click();
@@ -479,6 +498,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-selected", "true");
     await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-swatch-tags", "feature, primary");
     await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("title", "Symbol: J\nHex: #ABCDEF\nName: Hero Updated\nTags: feature, primary");
+    await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Hero Updated");
     await expect(page.locator("[data-palette-user-list]")).not.toContainText(/Hero Updated|feature, primary|Symbol|Name|Hex|Source|Tags/);
 
     await page.getByRole("button", { name: "Undo" }).click();
@@ -500,15 +520,27 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
     await expect(page.locator("[data-palette-harmony-list]")).not.toContainText(/Triadic \d:/);
     await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("title", /^Scheme: Triadic\nLabel: Triadic 2\nHex: #[0-9A-F]{6}$/);
-    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("aria-label", /Triadic 2 #[0-9A-F]{6} from Triadic/);
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("aria-label", /Add harmony swatch Triadic 2 #[0-9A-F]{6} from Triadic/);
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("data-palette-pinned", "false");
     await page.locator("[data-palette-harmony-choice='1']").click();
-    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("data-palette-selected", "true");
-    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveCSS("outline-style", "solid");
-    await expect(page.locator("[data-palette-harmony-choice='1'] [data-palette-selected-indicator]")).toHaveCount(0);
-    await page.locator("[data-palette-harmony-add-selected]").click();
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("data-palette-pinned", "true");
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("aria-label", /Remove harmony swatch Triadic 2 #[0-9A-F]{6} from Triadic/);
+    await expect(page.locator("[data-palette-harmony-choice='1'] [data-palette-pin-indicator]")).toHaveCount(1);
     await expect(page.locator("[data-palette-log]")).toContainText("Saved palette to tools.palette-browser.swatches.");
+    await expect(page.locator("[data-palette-count]")).toHaveText("2");
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Triadic 2']")).toHaveAttribute("data-palette-swatch-tags", "");
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Triadic 2']")).toHaveAttribute("title", /^Symbol: .+\nHex: #[0-9A-F]{6}\nName: Triadic 2\nTags: None$/);
+    await page.locator("[data-palette-harmony-choice='1']").click();
+    await expect(page.locator("[data-palette-harmony-choice='1']")).toHaveAttribute("data-palette-pinned", "false");
+    await expect(page.locator("[data-palette-count]")).toHaveText("1");
+    await page.locator("[data-palette-harmony-choice='1']").click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("2");
     await page.locator("[data-palette-harmony-add-all]").click();
-    await expect(page.locator("[data-palette-log]")).toContainText("Harmony add complete");
+    await expect(page.locator("[data-palette-log]")).toContainText("Harmony add complete: 1 added, 1 skipped.");
+    await expect(page.locator("[data-palette-count]")).toHaveText("3");
+    await page.locator("[data-palette-harmony-add-all]").click();
+    await expect(page.locator("[data-palette-log]")).toContainText("Harmony add complete: 0 added, 2 skipped.");
+    await expect(page.locator("[data-palette-count]")).toHaveText("3");
 
     await page.locator("[data-palette-source-select]").selectOption("javascript");
     await expect(page.locator("[data-palette-source-index]")).toHaveCount(140);
