@@ -42,7 +42,45 @@
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack" data-palette-editor-form>
                                         <div class="table-wrapper">
-                                            <table class="data-table tool-form-table" aria-label="Palette swatch editor fields">
+                                            <table class="data-table tool-form-table" aria-label="Selected palette swatch tag editor fields">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteSelectedSymbolInput">Symbol</label></th>
+                                                        <td><input id="paletteSelectedSymbolInput" maxlength="2" type="text" data-palette-selected-symbol disabled></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteSelectedHexInput">Hex</label></th>
+                                                        <td><input id="paletteSelectedHexInput" type="text" placeholder="#1F75FE" data-palette-selected-hex disabled></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteSelectedNameInput">Name</label></th>
+                                                        <td><input id="paletteSelectedNameInput" type="text" placeholder="Hero Blue" data-palette-selected-name disabled></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteTagsInput">Tags</label></th>
+                                                        <td>
+                                                            <input id="paletteTagsInput" type="text" placeholder="hero" list="paletteTagSuggestions" data-palette-tags>
+                                                            <datalist id="paletteTagSuggestions" data-palette-tag-suggestions></datalist>
+                                                            <div class="action-group" role="list" aria-label="Selected palette color tags" data-palette-editor-tags-list>
+                                                                <p class="status">No tags added.</p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" data-palette-editor-diagnostic>Select a Palette Colors swatch to edit tags.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>User Defined Swatch</summary>
+                                <div class="accordion-body content-stack">
+                                    <form class="content-stack" data-palette-user-swatch-form>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="User defined swatch fields">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row"><label for="paletteSymbolInput">Symbol</label></th>
@@ -57,17 +95,7 @@
                                                         <td><input id="paletteNameInput" type="text" placeholder="Hero Blue" data-palette-name></td>
                                                     </tr>
                                                     <tr>
-                                                        <th scope="row"><label for="paletteTagsInput">Tags</label></th>
-                                                        <td>
-                                                            <input id="paletteTagsInput" type="text" placeholder="hero" list="paletteTagSuggestions" data-palette-tags>
-                                                            <datalist id="paletteTagSuggestions" data-palette-tag-suggestions></datalist>
-                                                            <ul data-palette-editor-tags-list>
-                                                                <li>No tags added.</li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="2" data-palette-editor-diagnostic>Ready for a project palette swatch.</td>
+                                                        <td colspan="2" data-palette-user-swatch-diagnostic>Ready for a user-defined swatch.</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -75,7 +103,6 @@
                                         <div class="hero-actions">
                                             <button class="btn primary" type="submit" data-palette-add>Add Swatch</button>
                                             <button class="btn" type="button" data-palette-update>Update Selected</button>
-                                            <button class="btn" type="button" data-palette-remove>Remove Selected</button>
                                             <button class="btn" type="button" data-palette-clear>Clear Form</button>
                                         </div>
                                     </form>

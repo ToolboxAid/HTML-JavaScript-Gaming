@@ -701,7 +701,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function addSwatch(input = {}) {
-    return saveSwatch(input, { source: PALETTE_SOURCE_USER });
+    return saveSwatch({
+      ...input,
+      tags: []
+    }, { source: PALETTE_SOURCE_USER });
   }
 
   function updateSelectedSwatch(input = {}) {
@@ -728,13 +731,52 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     return saveSwatch(
       {
         ...input,
-        source: selectedSwatch.source || PALETTE_SOURCE_USER
+        source: selectedSwatch.source || PALETTE_SOURCE_USER,
+        tags: [...selectedSwatch.tags]
       },
       {
         excludeSymbol: selectedSwatch.symbol,
         source: selectedSwatch.source || PALETTE_SOURCE_USER
       }
     );
+  }
+
+  function updateSelectedSwatchTags(tags = []) {
+    const projectId = activeProjectId();
+    const swatches = getActiveSwatches();
+    const selectedSwatch = getSelectedSwatch();
+    if (!projectId || !selectedSwatch) {
+      return {
+        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before editing tags.")],
+        ok: false,
+        message: "Palette tag update blocked: no selected swatch.",
+        snapshot: getSnapshot()
+      };
+    }
+
+    const validation = validatePaletteSwatchInput({
+      ...selectedSwatch,
+      tags: normalizeTags(tags)
+    }, swatches, {
+      excludeSymbol: selectedSwatch.symbol,
+      source: selectedSwatch.source || PALETTE_SOURCE_USER
+    });
+    if (validation.issues.length) {
+      return {
+        issues: validation.issues,
+        ok: false,
+        message: `Palette tag update blocked by ${validation.issues.length} validation item${validation.issues.length === 1 ? "" : "s"}.`,
+        snapshot: getSnapshot()
+      };
+    }
+
+    const result = replaceSwatches(projectId, swatches.map((swatch) => (
+      swatch.symbol === selectedSwatch.symbol ? validation.swatch : swatch
+    )), { selection: "preserve" });
+    return {
+      ...result,
+      message: result.ok ? `Updated tags for ${selectedSwatch.name}.` : result.message
+    };
   }
 
   function removeSwatch(symbol) {
@@ -1278,6 +1320,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     toggleHarmonySuggestionPin,
     toggleSourceSwatchPin,
     undo,
-    updateSelectedSwatch
+    updateSelectedSwatch,
+    updateSelectedSwatchTags
   };
 }

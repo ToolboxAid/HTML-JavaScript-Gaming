@@ -55,7 +55,7 @@ const elements = {
   clear: document.querySelector("[data-palette-clear]"),
   count: document.querySelector("[data-palette-count]"),
   editorDiagnostic: document.querySelector("[data-palette-editor-diagnostic]"),
-  form: document.querySelector("[data-palette-editor-form]"),
+  form: document.querySelector("[data-palette-user-swatch-form]"),
   harmonyAddAll: document.querySelector("[data-palette-harmony-add-all]"),
   harmonyGuidance: document.querySelector("[data-palette-harmony-guidance]"),
   harmonyList: document.querySelector("[data-palette-harmony-list]"),
@@ -67,8 +67,10 @@ const elements = {
   projectDiagnostic: document.querySelector("[data-palette-project-diagnostic]"),
   projectOverlay: document.querySelector("[data-palette-project-overlay]"),
   redo: document.querySelector("[data-palette-redo]"),
-  remove: document.querySelector("[data-palette-remove]"),
   selectedSummary: document.querySelector("[data-palette-selected-summary]"),
+  selectedHex: document.querySelector("[data-palette-selected-hex]"),
+  selectedName: document.querySelector("[data-palette-selected-name]"),
+  selectedSymbol: document.querySelector("[data-palette-selected-symbol]"),
   sourceList: document.querySelector("[data-palette-source-list]"),
   sourcePinAll: document.querySelector("[data-palette-source-pin-all]"),
   sourceSearch: document.querySelector("[data-palette-source-search]"),
@@ -84,6 +86,7 @@ const elements = {
   tagsList: document.querySelector("[data-palette-tags-list]"),
   undo: document.querySelector("[data-palette-undo]"),
   update: document.querySelector("[data-palette-update]"),
+  userSwatchDiagnostic: document.querySelector("[data-palette-user-swatch-diagnostic]"),
   userList: document.querySelector("[data-palette-user-list]"),
   userSize: document.querySelector("[data-palette-user-size]"),
   userSort: document.querySelector("[data-palette-user-sort]"),
@@ -262,49 +265,42 @@ function normalizeTag(value) {
   return String(value || "").trim().toLowerCase();
 }
 
-function tagsFromText(value) {
-  return String(value || "")
-    .split(",")
-    .map(normalizeTag)
-    .filter(Boolean);
-}
-
-function readEditorForm() {
+function readUserSwatchForm() {
   return {
     hex: elements.hex?.value,
     name: elements.name?.value,
-    symbol: elements.symbol?.value,
-    tags: [...editorTags, ...tagsFromText(elements.tags?.value)]
+    symbol: elements.symbol?.value
   };
 }
 
-function fillEditorForm(swatch) {
+function fillUserSwatchForm(swatch) {
   if (elements.symbol) elements.symbol.value = swatch?.symbol || "";
   if (elements.hex) elements.hex.value = swatch?.hex || "";
   if (elements.name) elements.name.value = swatch?.name || "";
-  if (elements.tags) elements.tags.value = "";
-  editorTags = Array.isArray(swatch?.tags) ? [...swatch.tags] : [];
-  renderEditorTags();
 }
 
-function clearEditorForm() {
-  fillEditorForm(null);
+function clearUserSwatchForm() {
+  fillUserSwatchForm(null);
   editorIssues = [];
-  setText(elements.editorDiagnostic, "Editor form cleared.");
-  setText(elements.log, "Editor form cleared.");
+  setText(elements.userSwatchDiagnostic, "User defined swatch form cleared.");
+  setText(elements.log, "User defined swatch form cleared.");
   render();
 }
 
-function allEditorControls() {
+function userDefinedControls() {
   return [
     elements.add,
     elements.clear,
     elements.hex,
     elements.name,
-    elements.remove,
     elements.symbol,
-    elements.tags,
     elements.update
+  ].filter(Boolean);
+}
+
+function selectedTagControls() {
+  return [
+    elements.tags
   ].filter(Boolean);
 }
 
@@ -322,11 +318,17 @@ function renderEditorTags() {
   }
   elements.editorTagsList.replaceChildren();
   if (!editorTags.length) {
-    elements.editorTagsList.append(createListItem("No tags added."));
+    elements.editorTagsList.append(createStatusMessage("No tags added."));
     return;
   }
   editorTags.forEach((tag) => {
-    elements.editorTagsList.append(createListItem(tag));
+    const button = document.createElement("button");
+    button.className = "btn btn--compact";
+    button.type = "button";
+    button.dataset.paletteTagValue = tag;
+    button.textContent = tag;
+    button.setAttribute("aria-label", `Remove tag ${tag}`);
+    elements.editorTagsList.append(button);
   });
 }
 
@@ -350,14 +352,21 @@ function acceptTagFromInput() {
   if (!tag) {
     return;
   }
-  if (!editorTags.includes(tag)) {
-    editorTags.push(tag);
+  const snapshot = repository.getSnapshot();
+  if (!snapshot.selectedSwatch) {
+    editorIssues = [{
+      action: "Select a Palette Colors swatch before adding tags.",
+      field: "tags",
+      label: "Tags"
+    }];
+    render();
+    return;
   }
+  const result = repository.updateSelectedSwatchTags([...editorTags, tag]);
   if (elements.tags) {
     elements.tags.value = "";
   }
-  renderEditorTags();
-  renderTagSuggestions();
+  applyResult(result);
 }
 
 function renderSourceOptions(snapshot) {
@@ -407,7 +416,23 @@ function renderProject(snapshot) {
     activeProject ? `Palette edits save live to ${PALETTE_WORKSPACE_PATH}.` : "Active project required."
   );
   setHidden(elements.projectOverlay, !snapshot.projectRequired);
-  setDisabled(allEditorControls(), snapshot.projectRequired || snapshot.validation.status === "Reject");
+  setDisabled(userDefinedControls(), snapshot.projectRequired || snapshot.validation.status === "Reject");
+  setDisabled(elements.update, snapshot.projectRequired || snapshot.validation.status === "Reject" || !snapshot.selectedSwatch);
+}
+
+function renderSelectedSwatchEditor(snapshot) {
+  const selectedSwatch = snapshot.selectedSwatch;
+  if (elements.selectedSymbol) elements.selectedSymbol.value = selectedSwatch?.symbol || "";
+  if (elements.selectedHex) elements.selectedHex.value = selectedSwatch?.hex || "";
+  if (elements.selectedName) elements.selectedName.value = selectedSwatch?.name || "";
+  if (elements.tags) elements.tags.value = "";
+  editorTags = Array.isArray(selectedSwatch?.tags) ? [...selectedSwatch.tags] : [];
+  setDisabled([elements.selectedSymbol, elements.selectedHex, elements.selectedName], true);
+  setDisabled(selectedTagControls(), snapshot.projectRequired || snapshot.validation.status === "Reject" || !selectedSwatch);
+  setText(
+    elements.editorDiagnostic,
+    selectedSwatch ? `Editing tags for ${selectedSwatch.name}.` : "Select a Palette Colors swatch to edit tags."
+  );
 }
 
 function renderValidation(snapshot) {
@@ -612,6 +637,7 @@ function render() {
   renderSourceOptions(snapshot);
   renderPaletteControls();
   renderProject(snapshot);
+  renderSelectedSwatchEditor(snapshot);
   renderSummary(snapshot);
   renderValidation(snapshot);
   renderUserPalette(snapshot);
@@ -625,18 +651,21 @@ function render() {
 
 function applyResult(result) {
   editorIssues = result.issues || [];
+  if (result.snapshot) {
+    fillUserSwatchForm(result.snapshot.selectedSwatch);
+  }
   setText(elements.log, result.message);
-  setText(elements.editorDiagnostic, result.message);
+  setText(elements.userSwatchDiagnostic, result.message);
   render();
 }
 
-function validateEditor() {
+function validateUserSwatch() {
   const snapshot = repository.getSnapshot();
   if (snapshot.projectRequired) {
     editorIssues = snapshot.validation.findings;
   } else {
     editorIssues = validatePaletteSwatchInput(
-      readEditorForm(),
+      readUserSwatchForm(),
       snapshot.swatches,
       { excludeSymbol: snapshot.selectedSwatch?.symbol || "" }
     ).issues;
@@ -668,10 +697,14 @@ function runInitialQueryState() {
 
 elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
-  applyResult(repository.addSwatch(readEditorForm()));
+  const result = repository.addSwatch(readUserSwatchForm());
+  if (result.ok) {
+    fillUserSwatchForm(result.snapshot.selectedSwatch);
+  }
+  applyResult(result);
 });
 
-elements.form?.addEventListener("input", validateEditor);
+elements.form?.addEventListener("input", validateUserSwatch);
 
 elements.tags?.addEventListener("input", renderTagSuggestions);
 
@@ -681,18 +714,28 @@ elements.tags?.addEventListener("keydown", (event) => {
   }
   event.preventDefault();
   acceptTagFromInput();
-  validateEditor();
+});
+
+elements.editorTagsList?.addEventListener("click", (event) => {
+  const tagButton = event.target.closest("[data-palette-tag-value]");
+  if (!tagButton) {
+    return;
+  }
+  const result = repository.updateSelectedSwatchTags(
+    editorTags.filter((tag) => tag !== tagButton.dataset.paletteTagValue)
+  );
+  applyResult(result);
 });
 
 elements.update?.addEventListener("click", () => {
-  applyResult(repository.updateSelectedSwatch(readEditorForm()));
+  const result = repository.updateSelectedSwatch(readUserSwatchForm());
+  if (result.ok) {
+    fillUserSwatchForm(result.snapshot.selectedSwatch);
+  }
+  applyResult(result);
 });
 
-elements.remove?.addEventListener("click", () => {
-  applyResult(repository.removeSelectedSwatch());
-});
-
-elements.clear?.addEventListener("click", clearEditorForm);
+elements.clear?.addEventListener("click", clearUserSwatchForm);
 
 elements.undo?.addEventListener("click", () => {
   applyResult(repository.undo());
@@ -795,14 +838,14 @@ elements.userList?.addEventListener("click", (event) => {
     const result = repository.removeSwatch(tile.dataset.paletteSwatchRow);
     selectedSourceSwatch = null;
     if (deletingSelected || !result.snapshot.selectedSwatch) {
-      fillEditorForm(result.snapshot.selectedSwatch);
+      fillUserSwatchForm(result.snapshot.selectedSwatch);
     }
     applyResult(result);
     return;
   }
 
   const snapshot = repository.selectSwatch(tile.dataset.paletteSwatchRow);
-  fillEditorForm(snapshot.selectedSwatch);
+  fillUserSwatchForm(snapshot.selectedSwatch);
   selectedSourceSwatch = null;
   editorIssues = [];
   render();
