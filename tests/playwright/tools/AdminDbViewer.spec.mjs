@@ -56,11 +56,14 @@ test("Admin DB Viewer shows read-only mock DB tables and diagnostics", async ({ 
   const failures = await openRepoPage(page, "/admin/db-viewer.html");
 
   try {
-    await expect(page.getByRole("heading", { name: "DB Viewer" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Mock DB Project Journey Tables" })).toBeVisible();
     await expect(page.locator("[data-admin-only='true']")).toHaveCount(1);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("nav.nav-links a[data-route='admin-db-viewer']")).toHaveText("DB Viewer");
-    await expect(page.locator(".side-menu a.active")).toHaveText("DB Viewer");
+    await expect(page.locator(".tool-workspace--wide")).toBeVisible();
+    await expect(page.locator(".tool-workspace--wide > .tool-column")).toHaveCount(2);
+    await expect(page.locator("#toolDisplayMode")).toBeVisible();
+    await expect(page.locator("[data-admin-db-viewer].tool-center-panel")).toBeVisible();
     await expect(page.locator("[data-admin-db-status]")).toHaveText("Read-only mock DB dump loaded for Demo Project.");
 
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).toBeVisible();

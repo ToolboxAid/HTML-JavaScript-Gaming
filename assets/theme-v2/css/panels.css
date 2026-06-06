@@ -418,6 +418,12 @@ body.tool-focus-mode .tool-display-mode__badge {
   color: var(--gold)
 }
 
+.tool-stat-divider {
+  border-top: var(--border-standard);
+  grid-column: 1 / -1;
+  min-height: var(--space-0)
+}
+
 .brand-color-code {
   align-items: center;
   display: flex;
@@ -467,6 +473,14 @@ body.tool-focus-mode .tool-display-mode__badge {
   overflow-wrap: anywhere;
   text-align: left;
   white-space: normal
+}
+
+.tool-tree-row--single-line .tool-tree-row__content {
+  flex: 0 1 90%;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
 }
 
 .tool-tree-row__action {

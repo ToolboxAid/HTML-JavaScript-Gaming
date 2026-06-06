@@ -182,6 +182,54 @@ function createStatusText(statusId) {
   return status ? `${status.icon} ${status.label}` : "Unknown";
 }
 
+function isSystemGeneratedFilter() {
+  return activeFilter === "system";
+}
+
+function countItems(items) {
+  return items.reduce((counts, item) => {
+    const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
+    if (!status) {
+      return counts;
+    }
+    counts.total += 1;
+    counts[item.status] += 1;
+    if (status.open) {
+      counts.open += 1;
+    }
+    return counts;
+  }, emptyCounts());
+}
+
+function filterNoteItemsForDisplay(note) {
+  if (!note || !isSystemGeneratedFilter()) {
+    return note;
+  }
+  const items = note.items.filter((item) => item.createdByType === "system");
+  return {
+    ...note,
+    items,
+    counts: countItems(items),
+  };
+}
+
+function ensureSelectedItemMatchesFilter(note) {
+  if (!note || !isSystemGeneratedFilter()) {
+    return;
+  }
+
+  const selectedItem = getSelectedItem();
+  const selectedVisible = note.items.some(
+    (item) => item.itemId === selectedItem?.itemId && item.createdByType === "system",
+  );
+  if (!selectedVisible) {
+    const firstSystemItem = note.items.find((item) => item.createdByType === "system");
+    if (firstSystemItem) {
+      repository.selectItem(firstSystemItem.itemId);
+    }
+  }
+}
+
 function getSelectedItem() {
   return repository.getSelectedItem();
 }
@@ -312,7 +360,7 @@ function createDeleteItemButton(item) {
 
 function makeItemRowContent(item) {
   const row = createElement("span", {
-    className: "tool-tree-row",
+    className: "tool-tree-row tool-tree-row--single-line",
   });
   row.dataset.journeyItemRow = item.itemId;
   row.append(makeItemButton(item));
@@ -352,7 +400,25 @@ function makeSelectedItemDetails(item, editingDisabled) {
   textarea.value = item.userDetails || "";
   textarea.disabled = editingDisabled;
   textarea.dataset.journeyItemDetailsInput = "";
-  details.append(label, textarea);
+  const wrapper = createElement("div", {
+    className: "table-wrapper",
+  });
+  const table = createElement("table", {
+    className: "data-table tool-form-table",
+  });
+  table.setAttribute("aria-label", "Selected journey item details");
+  const tableBody = createElement("tbody");
+  const row = createElement("tr");
+  const header = createElement("th");
+  header.scope = "row";
+  const cell = createElement("td");
+  header.append(label);
+  cell.append(textarea);
+  row.append(header, cell);
+  tableBody.append(row);
+  table.append(tableBody);
+  wrapper.append(table);
+  details.append(wrapper);
   return details;
 }
 
@@ -644,6 +710,8 @@ function render() {
   const activeProject = repository.getActiveProject();
   const notes = repository.listNotes(activeFilter);
   const note = selectFirstVisibleNote(notes);
+  ensureSelectedItemMatchesFilter(note);
+  const displayNote = filterNoteItemsForDisplay(note);
   const selectedStatsNote = selectedSummaryNoteId
     ? notes.find((item) => item.id === selectedSummaryNoteId) || null
     : null;
@@ -661,13 +729,13 @@ function render() {
   updateFilterButtons();
   renderNoteTypeOptions(note);
   renderSummary(notes);
-  renderItemTree(note, editingDisabled);
-  renderEditor(editingDisabled, note);
+  renderItemTree(displayNote, editingDisabled);
+  renderEditor(editingDisabled, displayNote);
   renderStatScope(selectedStatsNote, notes);
   renderStats(statCounts);
-  renderSuggestedTools(note);
+  renderSuggestedTools(displayNote);
   renderRecentActivity();
-  renderDiagnostics(activeProject, note, notes);
+  renderDiagnostics(activeProject, displayNote, notes);
 }
 
 filterButtons.forEach((button) => {

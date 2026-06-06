@@ -17,8 +17,8 @@ Exercised tool entry points detected:
 (74%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 855/855; executed functions 72/76
-(97%) toolbox/project-journey/project-journey.js - executed lines 739/739; executed functions 73/75
+(94%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 864/864; executed functions 74/79
+(96%) toolbox/project-journey/project-journey.js - executed lines 802/802; executed functions 80/83
 
 Files with executed line/function counts where available:
 (67%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 10/15
@@ -27,17 +27,16 @@ Files with executed line/function counts where available:
 (76%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 26/34
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 207/207; executed functions 16/20
 (84%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 31/37
-(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 855/855; executed functions 72/76
-(97%) toolbox/project-journey/project-journey.js - executed lines 739/739; executed functions 73/75
-(98%) admin/db-viewer.js - executed lines 213/213; executed functions 39/40
+(94%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 864/864; executed functions 74/79
+(96%) toolbox/project-journey/project-journey.js - executed lines 802/802; executed functions 80/83
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
+(0%) admin/db-viewer.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (80%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(95%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage
-(97%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage
-(98%) admin/db-viewer.js - changed JS file with browser V8 coverage
+(94%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage
+(96%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage

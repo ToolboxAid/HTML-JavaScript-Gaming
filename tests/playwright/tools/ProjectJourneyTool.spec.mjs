@@ -5,7 +5,10 @@ import { fileURLToPath } from "node:url";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-import { createProjectJourneyMockRepository } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
+import {
+  PROJECT_JOURNEY_STATUSES,
+  createProjectJourneyMockRepository,
+} from "../../../toolbox/project-journey/project-journey-mock-repository.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
@@ -62,6 +65,10 @@ function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
+function statusLabels() {
+  return PROJECT_JOURNEY_STATUSES.map((status) => `${status.icon} ${status.label}`);
+}
+
 async function closeWithCoverage(page, failures) {
   await workspaceV2CoverageReporter.stop(page);
   await failures.server.close();
@@ -84,7 +91,6 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
     await expect(page.locator("[data-journey-filter='all']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-filter='all']")).toHaveAttribute("aria-current", "true");
-    const statusIconPattern = /[\u2b1c\u26d4\u2753\u2705]|\u{1f7e1}/u;
     const statTileLayout = await page.locator("[aria-label='Selected note statistics'] .mini-stat").evaluateAll((tiles) =>
       tiles.map((tile) => {
         const label = tile.querySelector("[data-journey-stat-label]");
@@ -111,17 +117,47 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     expect(statTileLayout.map((tile) => tile.labelText)).toEqual([
       "Open",
       "Total",
-      "Not Started",
-      "Blocked",
-      "Decisions",
-      "In Progress",
-      "Complete",
+      ...statusLabels(),
     ]);
-    expect(statTileLayout.every((tile) => tile.labelClass === "" && !tile.hasStatusClass && !statusIconPattern.test(tile.labelText))).toBe(true);
-    await expect(page.locator("[aria-label='Selected note statistics']")).not.toContainText(statusIconPattern);
+    expect(statTileLayout.every((tile) => tile.labelClass === "" && !tile.hasStatusClass)).toBe(true);
+    const dividerPlacement = await page.locator("[data-journey-stat-divider]").evaluate((divider) => {
+      return {
+        previousStat: divider.previousElementSibling?.querySelector("[data-journey-stat-label]")?.textContent?.trim(),
+        nextStat: divider.nextElementSibling?.querySelector("[data-journey-stat-label]")?.textContent?.trim(),
+        role: divider.getAttribute("role"),
+      };
+    });
+    expect(dividerPlacement).toEqual({
+      previousStat: "Total",
+      nextStat: statusLabels()[0],
+      role: "separator",
+    });
     await expect(page.locator("[data-journey-note-button='note-design-pass']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-item-button='item-design-1']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-item-button='item-design-1']")).toContainText("Designer review should focus on checkbox visibility");
+    const treeRowLayout = await page.locator("[data-journey-item-row='item-design-1']").evaluate((row) => {
+      const content = row.querySelector("[data-journey-item-button]");
+      const action = row.querySelector("[data-journey-system-item-indicator], [data-journey-delete-item]");
+      const contentStyles = getComputedStyle(content);
+      const contentRect = content.getBoundingClientRect();
+      const actionRect = action.getBoundingClientRect();
+      return {
+        contentFlexBasis: contentStyles.flexBasis,
+        contentMaxWidth: contentStyles.maxWidth,
+        contentTextAlign: contentStyles.textAlign,
+        contentWhiteSpace: contentStyles.whiteSpace,
+        actionSameLine: Math.abs((contentRect.top + contentRect.height / 2) - (actionRect.top + actionRect.height / 2)) <= 2,
+        actionRightOfContent: actionRect.left >= contentRect.right,
+      };
+    });
+    expect(treeRowLayout).toEqual({
+      contentFlexBasis: "90%",
+      contentMaxWidth: "90%",
+      contentTextAlign: "left",
+      contentWhiteSpace: "nowrap",
+      actionSameLine: true,
+      actionRightOfContent: true,
+    });
     await expect(page.getByLabel("Title")).toBeDisabled();
     await expect(page.locator("[data-journey-system-guidance]")).toContainText("Check whether selected swatches clearly expose batch tagging");
     const guidanceWraps = await page.locator("[data-journey-system-guidance]").evaluate((guidance) => {
@@ -142,22 +178,24 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       return Boolean(previous?.matches("[data-journey-item-row='item-design-1']"));
     });
     expect(detailsFollowsSelectedRow).toBe(true);
-    await expect(page.locator("#journeyStatusInput option")).toHaveText([
-      "⬜ Not Started",
-      "⛔ Blocker",
-      "❓ Decide",
-      "🟡 In Progress",
-      "✅ Complete"
-    ]);
+    const itemDetailsLayout = await page.locator("[data-journey-selected-item-details='item-design-1']").evaluate((details) => {
+      const label = details.querySelector("label[for='journeyItemDetailsInput']");
+      const input = details.querySelector("#journeyItemDetailsInput");
+      const labelRect = label.getBoundingClientRect();
+      const inputRect = input.getBoundingClientRect();
+      return {
+        usesFormTable: Boolean(label.closest("table.tool-form-table")),
+        labelIsLeftOfInput: labelRect.right <= inputRect.left,
+      };
+    });
+    expect(itemDetailsLayout).toEqual({
+      usesFormTable: true,
+      labelIsLeftOfInput: true,
+    });
+    await expect(page.locator("#journeyStatusInput option")).toHaveText(statusLabels());
     const dropdownLabels = await page.locator("#journeyStatusInput option").allTextContents();
     expect(dropdownLabels.some((label) => /\[[ .x!?]\]/.test(label))).toBe(false);
-    await expect(page.locator("[data-journey-status-legend] span")).toHaveText([
-      "⬜ Not Started",
-      "⛔ Blocker",
-      "❓ Decide",
-      "🟡 In Progress",
-      "✅ Complete"
-    ]);
+    await expect(page.locator("[data-journey-status-legend] span")).toHaveText(statusLabels());
     await expect(page.locator("aside.tool-column").last().locator("details > summary", { hasText: /^Status Legend$/ })).toHaveCount(0);
     await expect(page.locator("details > summary", { hasText: /^Note Tree$/ })).toHaveCount(1);
     await expect(page.locator("details > summary", { hasText: /^Selected Note Tree$/ })).toHaveCount(0);
@@ -170,11 +208,11 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("table[aria-label='Project Journey note summary'] thead th")).toHaveText([
       "Name",
       "Type",
-      "⬜",
-      "⛔",
-      "❓",
-      "🟡",
-      "✅",
+      PROJECT_JOURNEY_STATUSES[0].icon,
+      PROJECT_JOURNEY_STATUSES[1].icon,
+      PROJECT_JOURNEY_STATUSES[2].icon,
+      PROJECT_JOURNEY_STATUSES[3].icon,
+      PROJECT_JOURNEY_STATUSES[4].icon,
       "Open",
       "Total",
       "Updated"
@@ -326,6 +364,17 @@ test("Project Journey sorts summary columns and adds user-owned notes", async ({
     const userRow = page.locator("[data-journey-item-row]").filter({ hasText: "First user-added task" });
     await expect(userRow.locator("[data-journey-delete-item]")).toHaveCount(1);
     await expect(userRow.locator("[data-journey-system-item-indicator]")).toHaveCount(0);
+
+    await page.locator("[data-journey-filter='system']").click();
+    await expect(page.locator("[data-journey-filter='system']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-filter='system']")).toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: System Generated (4 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("8");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("7");
+    await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Usability Audit");
+    await expect(page.locator("[data-journey-item-tree]")).not.toContainText("First user-added task");
+    expect(await page.locator("[data-journey-item-tree] [data-journey-system-item-indicator]").count()).toBeGreaterThan(0);
 
     await expectNoPageFailures(failures);
   } finally {

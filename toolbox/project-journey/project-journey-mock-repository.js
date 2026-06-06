@@ -476,7 +476,14 @@ export function createProjectJourneyMockRepository(options = {}) {
       .sort((left, right) => left.order - right.order);
   }
 
-  function getNoteCounts(noteId) {
+  function itemMatchesCountFilter(item, filterId) {
+    if (filterId === "system") {
+      return item.createdByType === "system";
+    }
+    return true;
+  }
+
+  function getNoteCounts(noteId, filterId = "all") {
     const counts = {
       total: 0,
       open: 0,
@@ -487,7 +494,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       decide: 0,
     };
 
-    getItemsForNote(noteId).forEach((item) => {
+    getItemsForNote(noteId).filter((item) => itemMatchesCountFilter(item, filterId)).forEach((item) => {
       const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
       if (!status) {
         return;
@@ -511,6 +518,10 @@ export function createProjectJourneyMockRepository(options = {}) {
       return true;
     }
 
+    if (filterId === "system") {
+      return getItemsForNote(note.id).some((item) => item.createdByType === "system");
+    }
+
     return getItemsForNote(note.id).some((item) => item.status === filterId);
   }
 
@@ -528,7 +539,7 @@ export function createProjectJourneyMockRepository(options = {}) {
         type: clone(
           tables.project_journey_note_types.find((type) => type.id === note.typeId),
         ),
-        counts: getNoteCounts(note.id),
+        counts: getNoteCounts(note.id, filterId === "system" ? "system" : "all"),
       }))
       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
   }
