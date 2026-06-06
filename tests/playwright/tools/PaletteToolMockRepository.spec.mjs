@@ -6,6 +6,7 @@ import {
 } from "../../../toolbox/colors/palette-workspace-repository.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+import { expectCompactToolFormControls } from "../../helpers/toolFormControlAssertions.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const sourcePaletteRows = [
@@ -341,6 +342,13 @@ test("Palette repository owns active project swatches without mutating invalid p
   expect(repeatPinAllResult.message).toContain("0 pinned, 2 already pinned");
   expect(repository.listSwatches().filter((swatch) => swatch.source === "reference")).toHaveLength(sourceCountAfterPinAll);
   expect(repository.getSnapshot().selectedSwatch).toMatchObject({ name: "Reference Green", symbol: "G" });
+  const batchTagResult = repository.addTagToSwatches(["J", "R"], "batch");
+  expect(batchTagResult.ok).toBe(true);
+  expect(batchTagResult.message).toBe("Added tag batch to 2 checked swatches.");
+  expect(repository.findSwatch("J")).toMatchObject({ name: "Hero Updated", tags: ["primary", "batch"] });
+  expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", tags: ["batch"] });
+  expect(repository.findSwatch("G")).toMatchObject({ name: "Reference Green", tags: [] });
+  expect(repository.getSnapshot().selectedSwatch).toMatchObject({ name: "Reference Green", symbol: "G" });
 
   const bulkPinRepository = createProjectWorkspacePaletteRepository({ sourcePaletteRows });
   const bulkSourceSwatches = bulkPinRepository.listSourceSwatches({ sourceId: "reference", sortKey: "hue" });
@@ -477,6 +485,20 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
     await expect(page.locator("[data-palette-tags]")).toHaveValue("");
     await expect(page.locator("[data-palette-editor-form] input[placeholder], [data-palette-user-swatch-form] input[placeholder]")).toHaveCount(0);
+    await expectCompactToolFormControls(page, [
+      "[data-palette-selected-symbol]",
+      "[data-palette-selected-hex]",
+      "[data-palette-selected-name]",
+      "[data-palette-tags]",
+      "[data-palette-symbol]",
+      "[data-palette-hex]",
+      "[data-palette-name]",
+      "[data-palette-source-select]",
+      "[data-palette-source-search]",
+      "[data-palette-harmony-match]",
+      "[data-palette-harmony-scheme]"
+    ]);
+    await expect(page.locator("[data-palette-user-hex-preview]")).not.toHaveClass(/tool-form-control/);
     await expect(page.locator("[data-palette-editor-tags-input-row] th")).toHaveAttribute("rowspan", "2");
     const tagInputRowBox = await page.locator("[data-palette-editor-tags-input-row]").boundingBox();
     const tagListRowBox = await page.locator("[data-palette-editor-tags-list-row]").boundingBox();
@@ -841,6 +863,75 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     const sourceOnlyBox = await page.locator("[data-palette-source-accordion]").boundingBox();
     expect(sourceOnlyBox?.height || 0).toBeGreaterThan((sourceBox?.height || 0) * 1.45);
     expect(collapsedProjectBox?.height || 0).toBeLessThan((projectBox?.height || 0) * 0.45);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Palette Tool batch tags checked project palette swatches", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/colors/index.html");
+
+  try {
+    await expect(page.getByText("Project Palette Tags")).toBeVisible();
+    await expect(page.getByText("Swatch Editor")).toHaveCount(0);
+    await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
+
+    await page.locator("[data-palette-source-select]").selectOption("palette-colors008");
+    await page.locator("[data-palette-source-pin-all]").click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("8");
+    await expect(page.locator("[data-palette-swatch-check]")).toHaveCount(8);
+
+    const blackItem = page.locator("[data-palette-swatch-item]", {
+      has: page.locator("[data-palette-swatch-name='Black']")
+    });
+    const brownItem = page.locator("[data-palette-swatch-item]", {
+      has: page.locator("[data-palette-swatch-name='Brown']")
+    });
+    const blueItem = page.locator("[data-palette-swatch-item]", {
+      has: page.locator("[data-palette-swatch-name='Blue']")
+    });
+    const blackTile = blackItem.locator("[data-palette-swatch-row]");
+    const brownTile = brownItem.locator("[data-palette-swatch-row]");
+    const blueTile = blueItem.locator("[data-palette-swatch-row]");
+    const blackCheck = blackItem.locator("[data-palette-swatch-check]");
+    const brownCheck = brownItem.locator("[data-palette-swatch-check]");
+
+    await blackTile.click();
+    await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Black");
+    const checkBox = await blackCheck.boundingBox();
+    const tileBox = await blackTile.boundingBox();
+    expect((checkBox?.x || 0) - (tileBox?.x || 0)).toBeLessThan(10);
+    expect((checkBox?.y || 0) - (tileBox?.y || 0)).toBeLessThan(10);
+
+    await page.locator("[data-palette-tags]").fill("solo");
+    await expect(blackTile).toHaveAttribute("data-palette-swatch-tags", "");
+    await page.locator("[data-palette-tags]").press("Enter");
+    await expect(blackTile).toHaveAttribute("data-palette-swatch-tags", "solo");
+    await expect(brownTile).toHaveAttribute("data-palette-swatch-tags", "");
+    await expect(blueTile).toHaveAttribute("data-palette-swatch-tags", "");
+
+    await blackCheck.check();
+    await brownCheck.check();
+    await expect(page.locator("[data-palette-clear-checked]")).toBeEnabled();
+    await page.locator("[data-palette-tags]").fill("batch");
+    await page.locator("[data-palette-tags]").press("Enter");
+    await expect(blackTile).toHaveAttribute("data-palette-swatch-tags", "solo, batch");
+    await expect(brownTile).toHaveAttribute("data-palette-swatch-tags", "batch");
+    await expect(blueTile).toHaveAttribute("data-palette-swatch-tags", "");
+
+    await page.locator("[data-palette-clear-checked]").click();
+    await expect(blackCheck).not.toBeChecked();
+    await expect(brownCheck).not.toBeChecked();
+    await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
+
+    await page.locator("[data-palette-tags]").fill("afterclear");
+    await page.locator("[data-palette-tags]").press("Enter");
+    await expect(blackTile).toHaveAttribute("data-palette-swatch-tags", "solo, batch, afterclear");
+    await expect(brownTile).toHaveAttribute("data-palette-swatch-tags", "batch");
+    await expect(blueTile).toHaveAttribute("data-palette-swatch-tags", "");
 
     expectNoPageFailures(failures);
   } finally {

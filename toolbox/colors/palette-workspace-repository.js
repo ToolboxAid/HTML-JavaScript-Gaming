@@ -815,6 +815,54 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     };
   }
 
+  function addTagToSwatches(symbols = [], tag = "") {
+    const projectId = activeProjectId();
+    const swatches = getActiveSwatches();
+    const normalizedTag = normalizeTags([tag])[0] || "";
+    const targetSymbols = [...new Set(symbols.map(normalizeText))]
+      .filter((symbol) => swatches.some((swatch) => swatch.symbol === symbol));
+
+    if (!projectId) {
+      return {
+        issues: [createIssue("activeProject", "Active Project", "Open a project before editing palette swatches.")],
+        ok: false,
+        message: "Palette tag update blocked: no active project.",
+        snapshot: getSnapshot()
+      };
+    }
+
+    if (!normalizedTag) {
+      return {
+        issues: [createIssue("tags", "Tags", "Enter a tag before updating checked swatches.")],
+        ok: false,
+        message: "Palette tag update blocked: no tag entered.",
+        snapshot: getSnapshot()
+      };
+    }
+
+    if (!targetSymbols.length) {
+      return {
+        issues: [createIssue("checkedSwatches", "Checked Swatches", "Check at least one active project palette swatch before batch tagging.")],
+        ok: false,
+        message: "Palette tag update blocked: no checked swatches.",
+        snapshot: getSnapshot()
+      };
+    }
+
+    const nextSwatches = swatches.map((swatch) => (
+      targetSymbols.includes(swatch.symbol)
+        ? { ...swatch, tags: normalizeTags([...swatch.tags, normalizedTag]) }
+        : swatch
+    ));
+    const result = replaceSwatches(projectId, nextSwatches, { selection: "preserve" });
+    return {
+      ...result,
+      message: result.ok
+        ? `Added tag ${normalizedTag} to ${targetSymbols.length} checked swatch${targetSymbols.length === 1 ? "" : "es"}.`
+        : result.message
+    };
+  }
+
   function removeSwatch(symbol) {
     const projectId = activeProjectId();
     const normalizedSymbol = normalizeText(symbol);
@@ -1365,6 +1413,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     getSwatchUsage,
     getTables,
     isSourceSwatchPinned,
+    addTagToSwatches,
     listSourceSwatches,
     listSwatches,
     loadActiveProjectPalettePayload,

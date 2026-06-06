@@ -38,7 +38,7 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Swatch Editor</summary>
+                                <summary>Project Palette Tags</summary>
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack" data-palette-editor-form>
                                         <div class="table-wrapper">
@@ -46,20 +46,20 @@
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row"><label for="paletteSelectedSymbolInput">Symbol</label></th>
-                                                        <td><input class="field-value--readable-disabled" id="paletteSelectedSymbolInput" maxlength="2" type="text" data-palette-selected-symbol readonly disabled></td>
+                                                        <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedSymbolInput" maxlength="2" type="text" data-palette-selected-symbol readonly disabled></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="paletteSelectedHexInput">Hex</label></th>
-                                                        <td><input class="field-value--readable-disabled" id="paletteSelectedHexInput" type="text" data-palette-selected-hex readonly disabled></td>
+                                                        <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedHexInput" type="text" data-palette-selected-hex readonly disabled></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="paletteSelectedNameInput">Name</label></th>
-                                                        <td><input class="field-value--readable-disabled" id="paletteSelectedNameInput" type="text" data-palette-selected-name readonly disabled></td>
+                                                        <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedNameInput" type="text" data-palette-selected-name readonly disabled></td>
                                                     </tr>
                                                     <tr data-palette-editor-tags-input-row>
                                                         <th scope="row" rowspan="2"><label for="paletteTagsInput">Tags</label></th>
                                                         <td>
-                                                            <input id="paletteTagsInput" type="text" list="paletteTagSuggestions" data-palette-tags>
+                                                            <input class="tool-form-control" id="paletteTagsInput" type="text" list="paletteTagSuggestions" data-palette-tags>
                                                             <datalist id="paletteTagSuggestions" data-palette-tag-suggestions></datalist>
                                                         </td>
                                                     </tr>
@@ -77,6 +77,9 @@
                                             </table>
                                         </div>
                                     </form>
+                                    <div class="action-group action-group--end">
+                                        <button class="btn btn--compact" type="button" data-palette-clear-checked>Clear Checked</button>
+                                    </div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -88,7 +91,7 @@
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row"><label for="paletteSymbolInput">Symbol</label></th>
-                                                        <td><input id="paletteSymbolInput" maxlength="2" type="text" data-palette-symbol></td>
+                                                        <td><input class="tool-form-control" id="paletteSymbolInput" maxlength="2" type="text" data-palette-symbol></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">
@@ -98,12 +101,12 @@
                                                             </span>
                                                         </th>
                                                         <td>
-                                                            <input id="paletteHexInput" type="text" data-palette-hex>
+                                                            <input class="tool-form-control" id="paletteHexInput" type="text" data-palette-hex>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="paletteNameInput">Name</label></th>
-                                                        <td><input id="paletteNameInput" type="text" data-palette-name></td>
+                                                        <td><input class="tool-form-control" id="paletteNameInput" type="text" data-palette-name></td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2" data-palette-user-swatch-diagnostic>Ready for a user-defined swatch.</td>
@@ -167,9 +170,9 @@
                                     <div class="content-stack content-stack--compact" aria-label="Source palette controls">
                                         <div class="content-cluster" aria-label="Source palette filters">
                                             <label for="paletteSourceSelect">Source</label>
-                                            <select id="paletteSourceSelect" data-palette-source-select></select>
+                                            <select class="tool-form-control" id="paletteSourceSelect" data-palette-source-select></select>
                                             <label for="paletteSourceSearch">Search</label>
-                                            <input id="paletteSourceSearch" type="search" data-palette-source-search>
+                                            <input class="tool-form-control" id="paletteSourceSearch" type="search" data-palette-source-search>
                                             <button class="btn btn--compact" type="button" data-palette-source-pin-all>Pin All</button>
                                         </div>
                                         <div class="grid cols-2" aria-label="Source swatches controls">
@@ -200,7 +203,7 @@
                                                 <tr>
                                                     <th scope="row"><label for="paletteHarmonyMatch">Match</label></th>
                                                     <td>
-                                                        <select id="paletteHarmonyMatch" data-palette-harmony-match>
+                                                        <select class="tool-form-control" id="paletteHarmonyMatch" data-palette-harmony-match>
                                                             <option value="calculated">Calculated</option>
                                                             <option value="source">Source Palette Closest Match</option>
                                                             <option value="all">All Palettes Closest Match</option>
@@ -210,7 +213,7 @@
                                                 <tr>
                                                     <th scope="row"><label for="paletteHarmonyScheme">Scheme</label></th>
                                                     <td>
-                                                        <select id="paletteHarmonyScheme" data-palette-harmony-scheme>
+                                                        <select class="tool-form-control" id="paletteHarmonyScheme" data-palette-harmony-scheme>
                                                             <option value="achromatic">Achromatic</option>
                                                             <option value="accented-analogous">Accented Analogous</option>
                                                             <option value="analogous">Analogous</option>

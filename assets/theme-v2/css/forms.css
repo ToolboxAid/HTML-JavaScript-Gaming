@@ -83,6 +83,14 @@ select {
   padding: var(--space-12)
 }
 
+.tool-form-control {
+  box-sizing: border-box;
+  height: var(--space-28);
+  min-height: var(--space-28);
+  padding: var(--space-3) var(--space-8);
+  line-height: var(--line-height-sm)
+}
+
 .field-value--readable-disabled:disabled {
   color: var(--text);
   -webkit-text-fill-color: var(--text);
@@ -167,6 +175,23 @@ input[type="color"][data-palette-swatch-size="large"] {
   flex-wrap: wrap;
   gap: var(--space-8);
   align-items: flex-start
+}
+
+.palette-swatch-item {
+  position: relative;
+  display: inline-flex
+}
+
+.palette-swatch-check {
+  position: absolute;
+  top: calc(var(--space-8) * -1);
+  left: calc(var(--space-8) * -1);
+  z-index: var(--z-index-md);
+  width: var(--space-14);
+  height: var(--space-14);
+  margin: var(--space-0);
+  background: var(--panel);
+  cursor: pointer
 }
 
 .palette-swatch-tile {

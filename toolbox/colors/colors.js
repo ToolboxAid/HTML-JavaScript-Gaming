@@ -50,12 +50,14 @@ const sourceSortState = { direction: "asc", key: "name" };
 let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "name" };
 let userSizeState = "medium";
+const checkedSwatchSymbols = new Set();
 const invalidHexPreviewValue = "#FFFFFF";
 
 const elements = {
   activeProject: document.querySelector("[data-palette-active-project]"),
   add: document.querySelector("[data-palette-add]"),
   clear: document.querySelector("[data-palette-clear]"),
+  clearChecked: document.querySelector("[data-palette-clear-checked]"),
   count: document.querySelector("[data-palette-count]"),
   editorDiagnostic: document.querySelector("[data-palette-editor-diagnostic]"),
   form: document.querySelector("[data-palette-user-swatch-form]"),
@@ -266,6 +268,23 @@ function createSwatchTile(swatch, options = {}) {
   return tile;
 }
 
+function createCheckedSwatchTile(swatch, options = {}) {
+  const wrapper = document.createElement("span");
+  wrapper.className = "palette-swatch-item";
+  wrapper.dataset.paletteSwatchItem = swatch.symbol;
+
+  const checkbox = document.createElement("input");
+  checkbox.className = "palette-swatch-check";
+  checkbox.type = "checkbox";
+  checkbox.checked = checkedSwatchSymbols.has(swatch.symbol);
+  checkbox.dataset.paletteSwatchCheck = swatch.symbol;
+  checkbox.setAttribute("aria-label", `Apply Project Palette Tags to ${swatch.name}`);
+  checkbox.title = `Apply Project Palette Tags to ${swatch.name}`;
+
+  wrapper.append(checkbox, createSwatchTile(swatch, options));
+  return wrapper;
+}
+
 function normalizeTag(value) {
   return String(value || "").trim().toLowerCase();
 }
@@ -305,6 +324,16 @@ function selectedTagControls() {
   return [
     elements.tags
   ].filter(Boolean);
+}
+
+function checkedSwatchSymbolsFromSnapshot(snapshot) {
+  const activeSymbols = new Set(snapshot.swatches.map((swatch) => swatch.symbol));
+  [...checkedSwatchSymbols].forEach((symbol) => {
+    if (!activeSymbols.has(symbol)) {
+      checkedSwatchSymbols.delete(symbol);
+    }
+  });
+  return [...checkedSwatchSymbols];
 }
 
 function userDefinedLocked(snapshot) {
@@ -406,7 +435,8 @@ function acceptTagFromInput() {
     return;
   }
   const snapshot = repository.getSnapshot();
-  if (!snapshot.selectedSwatch) {
+  const checkedSymbols = checkedSwatchSymbolsFromSnapshot(snapshot);
+  if (!snapshot.selectedSwatch && !checkedSymbols.length) {
     editorIssues = [{
       action: "Select a Palette Colors swatch before adding tags.",
       field: "tags",
@@ -415,7 +445,9 @@ function acceptTagFromInput() {
     render();
     return;
   }
-  const result = repository.updateSelectedSwatchTags([...editorTags, tag]);
+  const result = checkedSymbols.length
+    ? repository.addTagToSwatches(checkedSymbols, tag)
+    : repository.updateSelectedSwatchTags([...editorTags, tag]);
   if (elements.tags) {
     elements.tags.value = "";
   }
@@ -485,10 +517,14 @@ function renderSelectedSwatchEditor(snapshot) {
   if (elements.tags) elements.tags.value = "";
   editorTags = Array.isArray(selectedSwatch?.tags) ? [...selectedSwatch.tags] : [];
   setDisabled([elements.selectedSymbol, elements.selectedHex, elements.selectedName], true);
-  setDisabled(selectedTagControls(), snapshot.projectRequired || snapshot.validation.status === "Reject" || !selectedSwatch);
+  const checkedSymbols = checkedSwatchSymbolsFromSnapshot(snapshot);
+  setDisabled(selectedTagControls(), snapshot.projectRequired || snapshot.validation.status === "Reject" || (!selectedSwatch && !checkedSymbols.length));
+  setDisabled(elements.clearChecked, checkedSymbols.length === 0);
   setText(
     elements.editorDiagnostic,
-    selectedSwatch ? `Editing tags for ${selectedSwatch.name}.` : "Select a Palette Colors swatch to edit tags."
+    checkedSymbols.length
+      ? `Adding tags to ${checkedSymbols.length} checked swatch${checkedSymbols.length === 1 ? "" : "es"}.`
+      : selectedSwatch ? `Editing tags for ${selectedSwatch.name}.` : "Select a Palette Colors swatch to edit tags."
   );
 }
 
@@ -528,8 +564,9 @@ function renderUserPalette(snapshot) {
     return;
   }
 
+  checkedSwatchSymbolsFromSnapshot(snapshot);
   swatches.forEach((swatch) => {
-    elements.userList.append(createSwatchTile(swatch, {
+    elements.userList.append(createCheckedSwatchTile(swatch, {
       action: "Select palette color",
       pinned: true,
       pressed: snapshot.selectedSwatch?.symbol === swatch.symbol,
@@ -691,6 +728,7 @@ function render() {
     return;
   }
 
+  checkedSwatchSymbolsFromSnapshot(snapshot);
   renderSourceOptions(snapshot);
   renderPaletteControls();
   renderProject(snapshot);
@@ -799,6 +837,13 @@ elements.update?.addEventListener("click", () => {
 });
 
 elements.clear?.addEventListener("click", clearUserSwatchForm);
+
+elements.clearChecked?.addEventListener("click", () => {
+  checkedSwatchSymbols.clear();
+  setText(elements.log, "Cleared checked palette swatches.");
+  setText(elements.editorDiagnostic, "Cleared checked palette swatches.");
+  render();
+});
 
 elements.undo?.addEventListener("click", () => {
   applyResult(repository.undo());
@@ -911,6 +956,20 @@ elements.userList?.addEventListener("click", (event) => {
   fillUserSwatchForm(selectedUserDefinedSwatch(snapshot));
   selectedSourceSwatch = null;
   editorIssues = [];
+  render();
+});
+
+elements.userList?.addEventListener("change", (event) => {
+  const checkbox = event.target.closest("[data-palette-swatch-check]");
+  if (!checkbox) {
+    return;
+  }
+
+  if (checkbox.checked) {
+    checkedSwatchSymbols.add(checkbox.dataset.paletteSwatchCheck);
+  } else {
+    checkedSwatchSymbols.delete(checkbox.dataset.paletteSwatchCheck);
+  }
   render();
 });
 
