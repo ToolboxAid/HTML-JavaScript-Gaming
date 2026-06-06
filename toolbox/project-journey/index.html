@@ -44,41 +44,42 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Selected Row Editor</summary>
+                                <summary>Selected Item Editor</summary>
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack content-stack--compact" data-journey-editor-form>
                                         <div class="table-wrapper">
-                                            <table class="data-table tool-form-table" aria-label="Selected journey row editor fields">
+                                            <table class="data-table tool-form-table" aria-label="Selected journey item editor fields">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row"><label for="journeyStatusInput">Status</label></th>
                                                         <td><select id="journeyStatusInput" data-journey-status-input></select></td>
                                                     </tr>
                                                     <tr>
-                                                        <th scope="row"><label for="journeyEntryTextInput">Entry</label></th>
-                                                        <td><input id="journeyEntryTextInput" type="text" placeholder="Write the next project journey row" data-journey-entry-text-input></td>
+                                                        <th scope="row"><label for="journeyItemTitleInput">Title</label></th>
+                                                        <td><input id="journeyItemTitleInput" type="text" placeholder="Write the next project journey item" data-journey-title-input></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="action-group" aria-label="Selected row ordering controls">
+                                        <div class="action-group" aria-label="Selected item ordering controls">
                                             <button class="btn btn--compact" type="button" data-journey-move-up>Move Up</button>
                                             <button class="btn btn--compact" type="button" data-journey-move-down>Move Down</button>
                                             <button class="btn btn--compact" type="button" data-journey-outdent>&lt;</button>
                                             <button class="btn btn--compact" type="button" data-journey-indent>&gt;</button>
                                         </div>
-                                        <div class="action-group" aria-label="Selected row save controls">
-                                            <button class="btn primary" type="button" data-journey-add-row>Add Row</button>
-                                            <button class="btn" type="submit" data-journey-update-row>Update Row</button>
+                                        <div class="action-group" aria-label="Selected item save controls">
+                                            <button class="btn primary" type="button" data-journey-add-item>Add Item</button>
+                                            <button class="btn" type="submit" data-journey-update-item>Update Item</button>
                                         </div>
-                                        <div class="status" role="status" data-journey-editor-status>Select a row to review ownership.</div>
+                                        <div class="status" role="status" data-journey-editor-status>Select an item to review ownership.</div>
                                     </form>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
+                            <details class="vertical-accordion" open>
                                 <summary>Note Types</summary>
                                 <div class="accordion-body content-stack">
                                     <p>Seeded defaults stay extensible in the Project Journey mock data.</p>
+                                    <label for="journeyNoteTypeSelect">Selected Note Type <select id="journeyNoteTypeSelect" data-journey-note-type-select></select></label>
                                     <label for="journeyTypeInput">Add Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
                                     <button class="btn" type="button" data-journey-add-type>Add Type</button>
                                     <div class="status" role="status" data-journey-type-status>Default types ready.</div>
@@ -121,14 +122,7 @@
                                 <summary>Selected Note Tree</summary>
                                 <div class="accordion-body content-stack">
                                     <div class="status" role="status" data-journey-selected-note>Choose a note from the summary table.</div>
-                                    <div data-journey-entry-tree></div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Free-form Notes</summary>
-                                <div class="accordion-body content-stack">
-                                    <label for="journeyFreeformNotes">Selected note details</label>
-                                    <textarea id="journeyFreeformNotes" rows="6" data-journey-freeform-notes></textarea>
+                                    <div data-journey-item-tree></div>
                                 </div>
                             </details>
                         </div>

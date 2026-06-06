@@ -18,8 +18,8 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (84%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 31/37
-(92%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 524/524; executed functions 58/63
-(97%) toolbox/project-journey/project-journey.js - executed lines 554/554; executed functions 57/59
+(93%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 805/805; executed functions 68/73
+(97%) toolbox/project-journey/project-journey.js - executed lines 631/631; executed functions 64/66
 
 Files with executed line/function counts where available:
 (67%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 10/15
@@ -28,8 +28,8 @@ Files with executed line/function counts where available:
 (76%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 26/34
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 206/206; executed functions 16/20
 (84%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 31/37
-(92%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 524/524; executed functions 58/63
-(97%) toolbox/project-journey/project-journey.js - executed lines 554/554; executed functions 57/59
+(93%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 805/805; executed functions 68/73
+(97%) toolbox/project-journey/project-journey.js - executed lines 631/631; executed functions 64/66
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
@@ -37,5 +37,5 @@ Uncovered or low-coverage changed JS files:
 Changed JS files considered:
 (0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (84%) toolbox/toolRegistry.js - changed JS file with browser V8 coverage
-(92%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage
+(93%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage
 (97%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage

@@ -7,8 +7,8 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
 (84%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 31/37
-(92%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 524/524; executed functions 58/63
-(97%) toolbox/project-journey/project-journey.js - executed lines 554/554; executed functions 57/59
+(93%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 805/805; executed functions 68/73
+(97%) toolbox/project-journey/project-journey.js - executed lines 631/631; executed functions 64/66
 
 Guardrail warnings:
 (100%) none - no changed runtime JS coverage warnings

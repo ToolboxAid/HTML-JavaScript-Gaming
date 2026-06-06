@@ -64,12 +64,58 @@ function normalizeIndent(indent) {
   return Math.max(0, Math.min(4, Math.trunc(parsed)));
 }
 
-function resequence(entries) {
-  entries
+function resequence(items) {
+  items
     .sort((left, right) => left.order - right.order)
-    .forEach((entry, index) => {
-      entry.order = index + 1;
+    .forEach((item, index) => {
+      item.order = index + 1;
     });
+}
+
+function makeTemplate(templateId, templateKey, originalMeaning, systemGuidance, linkedToolContexts, minutes) {
+  return {
+    templateId,
+    templateKey,
+    originalMeaning,
+    systemGuidance,
+    linkedToolContexts,
+    version: 1,
+    isActive: true,
+    createdAt: timestamp(minutes),
+    updatedAt: timestamp(minutes),
+  };
+}
+
+function makeSystemItem({
+  itemId,
+  noteId,
+  status,
+  title,
+  userDetails = "",
+  templateId,
+  linkedRecordType = "tool",
+  linkedRecordId = "project-journey",
+  indent = 0,
+  order,
+  minutes,
+}) {
+  return {
+    itemId,
+    projectId: "demo-project",
+    noteId,
+    status,
+    title,
+    userDetails,
+    createdByType: "system",
+    updatedByType: "system",
+    templateId,
+    linkedRecordType,
+    linkedRecordId,
+    indent,
+    order,
+    createdAt: timestamp(minutes),
+    updatedAt: timestamp(minutes),
+  };
 }
 
 function getSeedTables() {
@@ -90,8 +136,6 @@ function getSeedTables() {
       ownerId: PROJECT_JOURNEY_CURRENT_USER_ID,
       name: "Palette and Input Density",
       typeId: "design",
-      freeformNotes:
-        "Track the palette editing flow, checked-swatch batch tagging, and how dense controls feel while iterating.",
       updatedAt: timestamp(5),
     },
     {
@@ -100,8 +144,6 @@ function getSeedTables() {
       ownerId: "user-producer",
       name: "Release Readiness",
       typeId: "release",
-      freeformNotes:
-        "Keep launch risks and validation notes visible before the next handoff.",
       updatedAt: timestamp(9),
     },
     {
@@ -110,8 +152,6 @@ function getSeedTables() {
       ownerId: PROJECT_JOURNEY_CURRENT_USER_ID,
       name: "Story Beats",
       typeId: "story",
-      freeformNotes:
-        "Draft the player-facing arc and keep undecided questions close to implementation tasks.",
       updatedAt: timestamp(14),
     },
     {
@@ -120,83 +160,172 @@ function getSeedTables() {
       ownerId: "user-producer",
       name: "Research Questions",
       typeId: "research",
-      freeformNotes:
-        "Collect research threads that should become separate notes or tasks later.",
       updatedAt: timestamp(18),
     },
   ];
 
-  const project_journey_entries = [
+  const project_journey_templates = [
+    makeTemplate(
+      "template-palette-affordance",
+      "palette.swatch-affordance",
+      "Review palette swatch affordance in the active project palette.",
+      "Check whether selected swatches clearly expose batch tagging, checked state, and keyboard-friendly scanning.",
+      ["Colors", "Project Workspace"],
+      1,
+    ),
+    makeTemplate(
+      "template-batch-tag-language",
+      "palette.batch-tag-language",
+      "Confirm batch tag language after checked swatches are applied.",
+      "Keep the copy focused on what happens to checked swatches and avoid implying tags are auto-added.",
+      ["Colors", "Project Workspace"],
+      2,
+    ),
+    makeTemplate(
+      "template-compact-tag-state",
+      "palette.compact-tag-state",
+      "Decide whether tag chips need a compact state for small canvases.",
+      "Compare dense palette screens against the normal Project Palette Tags view before creating another display mode.",
+      ["Colors", "Game Design"],
+      3,
+    ),
+    makeTemplate(
+      "template-release-lane-ownership",
+      "release.validation-lane-ownership",
+      "Resolve final validation lane ownership before release.",
+      "Confirm the targeted lane owner is named before publish readiness moves forward.",
+      ["Publish", "Game Testing"],
+      4,
+    ),
+    makeTemplate(
+      "template-archive-boundary",
+      "release.archive-boundary",
+      "Confirm no archived Tool V1/V2 files were touched.",
+      "Use the active Toolbox paths for implementation and keep archived V1/V2 material read-only.",
+      ["Publish", "Project Workspace"],
+      5,
+    ),
+    makeTemplate(
+      "template-opening-goal",
+      "story.opening-player-goal",
+      "Outline the opening player goal.",
+      "Describe the first player-readable goal in one sentence before expanding beats.",
+      ["Game Design", "Project Workspace"],
+      6,
+    ),
+    makeTemplate(
+      "template-tutorial-milestones",
+      "story.tutorial-workspace-milestones",
+      "Connect tutorial beats to workspace milestones.",
+      "Attach tutorial beats to concrete build path milestones so story work stays testable.",
+      ["Game Design", "Project Workspace"],
+      7,
+    ),
+    makeTemplate(
+      "template-ux-subnotes",
+      "research.ux-subnote-decision",
+      "Decide which unanswered UX questions need their own notes.",
+      "Promote only durable UX questions into separate notes; keep short follow-ups inline as item details.",
+      ["AI Assistant", "Project Workspace"],
+      8,
+    ),
     {
-      id: "entry-design-1",
+      ...makeTemplate(
+        "template-inactive-guidance",
+        "diagnostic.inactive-guidance",
+        "Inactive template diagnostic.",
+        "This inactive template exists only for Project Journey diagnostics validation.",
+        ["Project Workspace"],
+        9,
+      ),
+      isActive: false,
+      updatedAt: timestamp(19),
+    },
+  ];
+
+  const project_journey_items = [
+    makeSystemItem({
+      itemId: "item-design-1",
       noteId: "note-design-pass",
-      statusId: "in-progress",
-      text: "Review palette swatch affordance in the active project palette.",
+      status: "in-progress",
+      title: "Review palette swatch affordance in the active project palette.",
+      userDetails: "Designer review should focus on checkbox visibility and selected-row contrast.",
+      templateId: "template-palette-affordance",
       indent: 0,
       order: 1,
-    },
-    {
-      id: "entry-design-2",
+      minutes: 10,
+    }),
+    makeSystemItem({
+      itemId: "item-design-2",
       noteId: "note-design-pass",
-      statusId: "not-started",
-      text: "Confirm batch tag language after checked swatches are applied.",
+      status: "not-started",
+      title: "Confirm batch tag language after checked swatches are applied.",
+      templateId: "template-batch-tag-language",
       indent: 1,
       order: 2,
-    },
-    {
-      id: "entry-design-3",
+      minutes: 11,
+    }),
+    makeSystemItem({
+      itemId: "item-design-3",
       noteId: "note-design-pass",
-      statusId: "decide",
-      text: "Decide whether tag chips need a compact state for small canvases.",
+      status: "decide",
+      title: "Decide whether tag chips need a compact state for small canvases.",
+      templateId: "template-compact-tag-state",
       indent: 1,
       order: 3,
-    },
-    {
-      id: "entry-release-1",
+      minutes: 12,
+    }),
+    makeSystemItem({
+      itemId: "item-release-1",
       noteId: "note-release-readiness",
-      statusId: "blocker",
-      text: "Resolve final validation lane ownership before release.",
+      status: "blocker",
+      title: "Resolve final validation lane ownership before release.",
+      templateId: "template-release-lane-ownership",
       indent: 0,
       order: 1,
-    },
-    {
-      id: "entry-release-2",
+      minutes: 13,
+    }),
+    makeSystemItem({
+      itemId: "item-release-2",
       noteId: "note-release-readiness",
-      statusId: "complete",
-      text: "Confirm no archived Tool V1/V2 files were touched.",
+      status: "complete",
+      title: "Confirm no archived Tool V1/V2 files were touched.",
+      templateId: "template-archive-boundary",
       indent: 0,
       order: 2,
-    },
-    {
-      id: "entry-story-1",
+      minutes: 14,
+    }),
+    makeSystemItem({
+      itemId: "item-story-1",
       noteId: "note-story-map",
-      statusId: "not-started",
-      text: "Outline the opening player goal.",
+      status: "not-started",
+      title: "Outline the opening player goal.",
+      templateId: "template-opening-goal",
       indent: 0,
       order: 1,
-    },
-    {
-      id: "entry-story-2",
+      minutes: 15,
+    }),
+    makeSystemItem({
+      itemId: "item-story-2",
       noteId: "note-story-map",
-      statusId: "in-progress",
-      text: "Connect tutorial beats to workspace milestones.",
+      status: "in-progress",
+      title: "Connect tutorial beats to workspace milestones.",
+      templateId: "template-tutorial-milestones",
       indent: 1,
       order: 2,
-    },
-    {
-      id: "entry-research-1",
+      minutes: 16,
+    }),
+    makeSystemItem({
+      itemId: "item-research-1",
       noteId: "note-research-ux",
-      statusId: "decide",
-      text: "Decide which unanswered UX questions need their own notes.",
+      status: "decide",
+      title: "Decide which unanswered UX questions need their own notes.",
+      templateId: "template-ux-subnotes",
       indent: 0,
       order: 1,
-    },
-  ].map((entry) => ({
-    ...entry,
-    createdBy: "project-journey-seed",
-    createdByType: "system",
-    originalSystemMeaning: entry.text,
-  }));
+      minutes: 17,
+    }),
+  ];
 
   const project_journey_activity = [
     {
@@ -218,7 +347,8 @@ function getSeedTables() {
   return {
     project_journey_note_types,
     project_journey_notes,
-    project_journey_entries,
+    project_journey_templates,
+    project_journey_items,
     project_journey_activity,
   };
 }
@@ -228,10 +358,11 @@ export function createProjectJourneyMockRepository(options = {}) {
     options.workspaceRepository || createProjectWorkspaceMockRepository();
   const tables = getSeedTables();
   let selectedNoteId = "note-design-pass";
-  let selectedEntryId = "entry-design-1";
-  let nextEntryNumber = tables.project_journey_entries.length + 1;
+  let selectedItemId = "item-design-1";
+  let nextItemNumber = tables.project_journey_items.length + 1;
   let nextActivityNumber = tables.project_journey_activity.length + 1;
   let nextTypeNumber = tables.project_journey_note_types.length + 1;
+  let nextDiagnosticNumber = 1;
 
   function touchNote(noteId) {
     const note = tables.project_journey_notes.find((item) => item.id === noteId);
@@ -263,9 +394,68 @@ export function createProjectJourneyMockRepository(options = {}) {
     return project;
   }
 
-  function getEntriesForNote(noteId) {
-    return tables.project_journey_entries
-      .filter((entry) => entry.noteId === noteId)
+  function resolveTemplate(item) {
+    if (item.createdByType !== "system") {
+      return {
+        template: null,
+        templateDiagnostic: null,
+      };
+    }
+
+    if (!item.templateId) {
+      return {
+        template: null,
+        templateDiagnostic: {
+          type: "missing",
+          message: `System-created item "${item.title}" is missing templateId.`,
+        },
+      };
+    }
+
+    const template = tables.project_journey_templates.find(
+      (candidate) => candidate.templateId === item.templateId,
+    );
+    if (!template) {
+      return {
+        template: null,
+        templateDiagnostic: {
+          type: "invalid",
+          message: `System-created item "${item.title}" references missing templateId ${item.templateId}.`,
+        },
+      };
+    }
+
+    if (!template.isActive) {
+      return {
+        template: clone(template),
+        templateDiagnostic: {
+          type: "inactive",
+          message: `System-created item "${item.title}" references inactive templateId ${item.templateId}.`,
+        },
+      };
+    }
+
+    return {
+      template: clone(template),
+      templateDiagnostic: null,
+    };
+  }
+
+  function hydrateItem(item) {
+    const { template, templateDiagnostic } = resolveTemplate(item);
+    return {
+      ...clone(item),
+      template,
+      templateDiagnostic,
+      originalMeaning: template?.originalMeaning || "",
+      systemGuidance: template?.systemGuidance || "",
+      linkedToolContexts: template?.linkedToolContexts || [],
+    };
+  }
+
+  function getItemsForNote(noteId) {
+    return tables.project_journey_items
+      .filter((item) => item.noteId === noteId)
       .sort((left, right) => left.order - right.order);
   }
 
@@ -280,13 +470,13 @@ export function createProjectJourneyMockRepository(options = {}) {
       decide: 0,
     };
 
-    getEntriesForNote(noteId).forEach((entry) => {
-      const status = PROJECT_JOURNEY_STATUS_BY_ID[entry.statusId];
+    getItemsForNote(noteId).forEach((item) => {
+      const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
       if (!status) {
         return;
       }
       counts.total += 1;
-      counts[entry.statusId] += 1;
+      counts[item.status] += 1;
       if (status.open) {
         counts.open += 1;
       }
@@ -304,7 +494,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       return true;
     }
 
-    return getEntriesForNote(note.id).some((entry) => entry.statusId === filterId);
+    return getItemsForNote(note.id).some((item) => item.status === filterId);
   }
 
   function listNotes(filterId = "all") {
@@ -342,11 +532,11 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
 
     selectedNoteId = note.id;
-    const selectedEntry = tables.project_journey_entries.find(
-      (entry) => entry.id === selectedEntryId && entry.noteId === note.id,
+    const selectedItem = tables.project_journey_items.find(
+      (item) => item.itemId === selectedItemId && item.noteId === note.id,
     );
-    if (!selectedEntry) {
-      selectedEntryId = getEntriesForNote(note.id)[0]?.id || "";
+    if (!selectedItem) {
+      selectedItemId = getItemsForNote(note.id)[0]?.itemId || "";
     }
 
     return {
@@ -355,7 +545,7 @@ export function createProjectJourneyMockRepository(options = {}) {
         tables.project_journey_note_types.find((type) => type.id === note.typeId),
       ),
       counts: getNoteCounts(note.id),
-      entries: clone(getEntriesForNote(note.id)),
+      items: getItemsForNote(note.id).map(hydrateItem),
     };
   }
 
@@ -366,170 +556,206 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
 
     selectedNoteId = note.id;
-    selectedEntryId = getEntriesForNote(note.id)[0]?.id || "";
+    selectedItemId = getItemsForNote(note.id)[0]?.itemId || "";
     return getSelectedNote();
   }
 
-  function selectEntry(entryId) {
-    const entry = tables.project_journey_entries.find((item) => item.id === entryId);
-    if (entry) {
-      selectedEntryId = entry.id;
-      selectedNoteId = entry.noteId;
+  function selectItem(itemId) {
+    const item = tables.project_journey_items.find((candidate) => candidate.itemId === itemId);
+    if (item) {
+      selectedItemId = item.itemId;
+      selectedNoteId = item.noteId;
     }
-    return clone(entry || null);
+    return item ? hydrateItem(item) : null;
   }
 
-  function getSelectedEntry() {
-    return clone(
-      tables.project_journey_entries.find((entry) => entry.id === selectedEntryId) || null,
-    );
+  function getSelectedItem() {
+    const item = tables.project_journey_items.find((candidate) => candidate.itemId === selectedItemId);
+    return item ? hydrateItem(item) : null;
   }
 
-  function addEntry({ text, statusId, indent = 0 }) {
+  function addItem({ title, status, userDetails = "", indent = 0 }) {
     const activeProject = requireActiveProject();
     const note = tables.project_journey_notes.find((item) => item.id === selectedNoteId);
     if (!activeProject || !note) {
       return null;
     }
 
-    const existingEntries = getEntriesForNote(note.id);
-    const entry = {
-      id: `entry-new-${nextEntryNumber}`,
+    const existingItems = getItemsForNote(note.id);
+    const timestampValue = new Date().toISOString();
+    const item = {
+      itemId: `item-new-${nextItemNumber}`,
+      projectId: activeProject.id,
       noteId: note.id,
-      statusId: PROJECT_JOURNEY_STATUS_BY_ID[statusId] ? statusId : "not-started",
-      text: text.trim() || "New journey entry",
-      indent: normalizeIndent(indent),
-      order: existingEntries.length + 1,
-      createdBy: PROJECT_JOURNEY_CURRENT_USER_ID,
+      status: PROJECT_JOURNEY_STATUS_BY_ID[status] ? status : "not-started",
+      title: String(title || "").trim() || "New journey item",
+      userDetails: String(userDetails || "").trim(),
       createdByType: "user",
-      originalSystemMeaning: "",
+      updatedByType: "user",
+      templateId: "",
+      linkedRecordType: "",
+      linkedRecordId: "",
+      indent: normalizeIndent(indent),
+      order: existingItems.length + 1,
+      createdAt: timestampValue,
+      updatedAt: timestampValue,
     };
-    nextEntryNumber += 1;
-    tables.project_journey_entries.push(entry);
-    selectedEntryId = entry.id;
+    nextItemNumber += 1;
+    tables.project_journey_items.push(item);
+    selectedItemId = item.itemId;
     touchNote(note.id);
-    addActivity(activeProject.id, note.id, `Added row to ${note.name}`);
-    return clone(entry);
+    addActivity(activeProject.id, note.id, `Added item to ${note.name}`);
+    return hydrateItem(item);
   }
 
-  function deleteEntry(entryId) {
+  function deleteItem(itemId) {
     const activeProject = requireActiveProject();
-    const entry = tables.project_journey_entries.find((item) => item.id === entryId);
-    if (!activeProject || !entry) {
+    const item = tables.project_journey_items.find((candidate) => candidate.itemId === itemId);
+    if (!activeProject || !item) {
       return {
         deleted: false,
-        reason: "No journey row is selected for deletion.",
+        reason: "No journey item is selected for deletion.",
       };
     }
 
-    if (entry.createdByType === "system") {
+    if (item.createdByType === "system") {
       return {
         deleted: false,
-        reason: "System-created rows can be edited but not deleted.",
-        entry: clone(entry),
+        reason: "System-created items can be edited but not deleted.",
+        item: hydrateItem(item),
       };
     }
 
-    const note = tables.project_journey_notes.find((item) => item.id === entry.noteId);
-    const deletedOrder = entry.order;
-    tables.project_journey_entries = tables.project_journey_entries.filter(
-      (item) => item.id !== entry.id,
+    const note = tables.project_journey_notes.find((candidate) => candidate.id === item.noteId);
+    const deletedOrder = item.order;
+    tables.project_journey_items = tables.project_journey_items.filter(
+      (candidate) => candidate.itemId !== item.itemId,
     );
-    const remainingEntries = getEntriesForNote(entry.noteId);
-    resequence(remainingEntries);
-    selectedEntryId =
-      remainingEntries.find((item) => item.order >= deletedOrder)?.id ||
-      remainingEntries.at(-1)?.id ||
+    const remainingItems = getItemsForNote(item.noteId);
+    resequence(remainingItems);
+    selectedItemId =
+      remainingItems.find((candidate) => candidate.order >= deletedOrder)?.itemId ||
+      remainingItems.at(-1)?.itemId ||
       "";
-    touchNote(entry.noteId);
-    addActivity(activeProject.id, entry.noteId, `Deleted user row from ${note?.name || "Project Journey"}`);
+    touchNote(item.noteId);
+    addActivity(activeProject.id, item.noteId, `Deleted user item from ${note?.name || "Project Journey"}`);
     return {
       deleted: true,
-      reason: "Deleted user-created row.",
-      selectedEntryId,
+      reason: "Deleted user-created item.",
+      selectedItemId,
     };
   }
 
-  function updateEntry(entryId, updates = {}) {
+  function updateItem(itemId, updates = {}, updatedByType = "user") {
     const activeProject = requireActiveProject();
-    const entry = tables.project_journey_entries.find((item) => item.id === entryId);
-    if (!activeProject || !entry) {
+    const item = tables.project_journey_items.find((candidate) => candidate.itemId === itemId);
+    if (!activeProject || !item) {
       return null;
     }
 
-    if (typeof updates.text === "string") {
-      entry.text = updates.text.trim() || entry.text;
+    const isSystemItem = item.createdByType === "system";
+    if (!isSystemItem && typeof updates.title === "string") {
+      item.title = updates.title.trim() || item.title;
     }
-    if (PROJECT_JOURNEY_STATUS_BY_ID[updates.statusId]) {
-      entry.statusId = updates.statusId;
+    if (PROJECT_JOURNEY_STATUS_BY_ID[updates.status]) {
+      item.status = updates.status;
+    }
+    if (typeof updates.userDetails === "string") {
+      item.userDetails = updates.userDetails.trim();
     }
     if (updates.indent !== undefined) {
-      entry.indent = normalizeIndent(updates.indent);
+      item.indent = normalizeIndent(updates.indent);
+    }
+    if (updatedByType === "system" && typeof updates.title === "string") {
+      item.title = updates.title.trim() || item.title;
     }
 
-    selectedEntryId = entry.id;
-    selectedNoteId = entry.noteId;
-    touchNote(entry.noteId);
-    addActivity(activeProject.id, entry.noteId, "Updated selected journey row");
-    return clone(entry);
+    item.updatedByType = updatedByType === "system" ? "system" : "user";
+    item.updatedAt = new Date().toISOString();
+    selectedItemId = item.itemId;
+    selectedNoteId = item.noteId;
+    touchNote(item.noteId);
+    addActivity(activeProject.id, item.noteId, `${item.updatedByType === "system" ? "System" : "User"} updated selected journey item`);
+    return hydrateItem(item);
   }
 
-  function moveSelectedEntry(direction) {
+  function applySystemItemUpdate(itemId, updates = {}) {
+    return updateItem(itemId, updates, "system");
+  }
+
+  function moveSelectedItem(direction) {
     const activeProject = requireActiveProject();
-    const entry = tables.project_journey_entries.find((item) => item.id === selectedEntryId);
-    if (!activeProject || !entry) {
+    const item = tables.project_journey_items.find((candidate) => candidate.itemId === selectedItemId);
+    if (!activeProject || !item) {
       return null;
     }
 
-    const entries = getEntriesForNote(entry.noteId);
-    const currentIndex = entries.findIndex((item) => item.id === entry.id);
+    const items = getItemsForNote(item.noteId);
+    const currentIndex = items.findIndex((candidate) => candidate.itemId === item.itemId);
     const nextIndex = currentIndex + direction;
-    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= entries.length) {
-      return clone(entry);
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= items.length) {
+      return hydrateItem(item);
     }
 
-    const neighbor = entries[nextIndex];
-    const currentOrder = entry.order;
-    entry.order = neighbor.order;
+    const neighbor = items[nextIndex];
+    const currentOrder = item.order;
+    const timestampValue = new Date().toISOString();
+    item.order = neighbor.order;
     neighbor.order = currentOrder;
-    resequence(entries);
-    touchNote(entry.noteId);
-    addActivity(activeProject.id, entry.noteId, "Reordered journey rows");
-    return clone(entry);
+    item.updatedByType = "user";
+    neighbor.updatedByType = "user";
+    item.updatedAt = timestampValue;
+    neighbor.updatedAt = timestampValue;
+    resequence(items);
+    touchNote(item.noteId);
+    addActivity(activeProject.id, item.noteId, "Reordered journey items");
+    return hydrateItem(item);
   }
 
   function changeSelectedIndent(delta) {
-    const entry = tables.project_journey_entries.find((item) => item.id === selectedEntryId);
-    if (!entry) {
+    const item = tables.project_journey_items.find((candidate) => candidate.itemId === selectedItemId);
+    if (!item) {
       return null;
     }
 
-    return updateEntry(entry.id, { indent: entry.indent + delta });
+    return updateItem(item.itemId, { indent: item.indent + delta }, "user");
   }
 
-  function updateSelectedNoteFreeform(value) {
+  function updateSelectedNoteType(typeId) {
     const activeProject = requireActiveProject();
     const note = tables.project_journey_notes.find((item) => item.id === selectedNoteId);
-    if (!activeProject || !note) {
+    const type = tables.project_journey_note_types.find((item) => item.id === typeId);
+    if (!activeProject || !note || !type) {
       return null;
     }
 
-    note.freeformNotes = value;
+    note.typeId = type.id;
     touchNote(note.id);
-    return clone(note);
+    addActivity(activeProject.id, note.id, `Changed ${note.name} type to ${type.name}`);
+    return getSelectedNote();
   }
 
   function addNoteType(name) {
     const normalized = String(name || "").trim();
     if (!normalized) {
-      return null;
+      return {
+        type: null,
+        created: false,
+        duplicate: false,
+        message: "Enter a type name to add it to the mock note type table.",
+      };
     }
 
     const existing = tables.project_journey_note_types.find(
       (type) => type.name.toLowerCase() === normalized.toLowerCase(),
     );
     if (existing) {
-      return clone(existing);
+      return {
+        type: clone(existing),
+        created: false,
+        duplicate: true,
+        message: `${existing.name} already exists in the mock note type table.`,
+      };
     }
 
     const type = {
@@ -540,7 +766,12 @@ export function createProjectJourneyMockRepository(options = {}) {
     };
     nextTypeNumber += 1;
     tables.project_journey_note_types.push(type);
-    return clone(type);
+    return {
+      type: clone(type),
+      created: true,
+      duplicate: false,
+      message: `${type.name} is available in the mock note type table.`,
+    };
   }
 
   function listRecentActivity(limit = 5) {
@@ -557,6 +788,66 @@ export function createProjectJourneyMockRepository(options = {}) {
     );
   }
 
+  function getTemplateDiagnostics() {
+    return tables.project_journey_items
+      .filter((item) => item.projectId === getActiveProject()?.id)
+      .map(resolveTemplate)
+      .map((result) => result.templateDiagnostic)
+      .filter(Boolean);
+  }
+
+  function injectTemplateDiagnostics() {
+    const activeProject = requireActiveProject();
+    if (!activeProject) {
+      return [];
+    }
+
+    const noteId = "note-design-pass";
+    const existingItems = getItemsForNote(noteId);
+    const fixtures = [
+      {
+        title: "Missing template diagnostic item",
+        templateId: "",
+        status: "not-started",
+      },
+      {
+        title: "Inactive template diagnostic item",
+        templateId: "template-inactive-guidance",
+        status: "blocker",
+      },
+      {
+        title: "Invalid template diagnostic item",
+        templateId: "template-does-not-exist",
+        status: "decide",
+      },
+    ];
+    const created = fixtures.map((fixture, index) => {
+      const timestampValue = new Date().toISOString();
+      const item = {
+        itemId: `item-template-diagnostic-${nextDiagnosticNumber}`,
+        projectId: activeProject.id,
+        noteId,
+        status: fixture.status,
+        title: fixture.title,
+        userDetails: "",
+        createdByType: "system",
+        updatedByType: "system",
+        templateId: fixture.templateId,
+        linkedRecordType: "diagnostic",
+        linkedRecordId: fixture.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        indent: 0,
+        order: existingItems.length + index + 1,
+        createdAt: timestampValue,
+        updatedAt: timestampValue,
+      };
+      nextDiagnosticNumber += 1;
+      tables.project_journey_items.push(item);
+      return hydrateItem(item);
+    });
+    touchNote(noteId);
+    return created;
+  }
+
   return {
     getTables: () => clone(tables),
     getActiveProject,
@@ -564,18 +855,21 @@ export function createProjectJourneyMockRepository(options = {}) {
     clearActiveProject: () => workspaceRepository.clearTestData(),
     listNoteTypes: () => clone(tables.project_journey_note_types),
     addNoteType,
+    updateSelectedNoteType,
     listNotes,
     getSelectedNote,
     selectNote,
-    selectEntry,
-    getSelectedEntry,
-    addEntry,
-    deleteEntry,
-    updateEntry,
-    moveSelectedEntry,
+    selectItem,
+    getSelectedItem,
+    addItem,
+    deleteItem,
+    updateItem,
+    applySystemItemUpdate,
+    moveSelectedItem,
     changeSelectedIndent,
-    updateSelectedNoteFreeform,
     getNoteCounts,
+    getTemplateDiagnostics,
+    injectTemplateDiagnostics,
     listRecentActivity,
   };
 }

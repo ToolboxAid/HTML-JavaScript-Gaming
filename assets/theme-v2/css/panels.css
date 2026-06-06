@@ -439,6 +439,57 @@ body.tool-focus-mode .tool-display-mode__badge {
   width: var(--icon-size-sm)
 }
 
+.tool-tree--compact,
+.tool-tree--compact ul {
+  margin-top: var(--space-8)
+}
+
+.tool-tree--compact ul {
+  padding-left: var(--space-14)
+}
+
+.tool-tree--compact li {
+  line-height: var(--line-height-md);
+  margin-top: var(--space-6)
+}
+
+.tool-tree-row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-8);
+  width: 100%
+}
+
+.tool-tree-row__content {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  min-width: var(--space-0)
+}
+
+.tool-tree-row__action {
+  flex: 0 0 32px;
+  margin-left: auto
+}
+
+.tool-icon-32 {
+  height: 32px;
+  object-fit: contain;
+  width: 32px
+}
+
+.tool-icon-32.tool-tree-row__action {
+  height: 32px;
+  margin: var(--space-0) var(--space-0) var(--space-0) auto;
+  width: 32px
+}
+
+.tool-icon-button {
+  height: 32px;
+  min-width: 32px;
+  padding: var(--space-0);
+  width: 32px
+}
+
 .mascot-role {
   color: var(--text);
   font-size: var(--font-size-xl);

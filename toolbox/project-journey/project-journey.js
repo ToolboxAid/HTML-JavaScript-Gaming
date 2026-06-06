@@ -1,5 +1,4 @@
 import {
-  PROJECT_JOURNEY_CURRENT_USER_ID,
   PROJECT_JOURNEY_STATUS_BY_ID,
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyMockRepository,
@@ -14,19 +13,19 @@ const FORGE_BOT_INDICATOR_SRC = "assets/theme-v2/images/forge-bot.svg";
 
 const filterButtons = Array.from(document.querySelectorAll("[data-journey-filter]"));
 const summaryBody = document.querySelector("[data-journey-summary-body]");
-const entryTree = document.querySelector("[data-journey-entry-tree]");
+const itemTree = document.querySelector("[data-journey-item-tree]");
 const selectedNoteMessage = document.querySelector("[data-journey-selected-note]");
 const activeProjectMessage = document.querySelector("[data-journey-active-project]");
 const editorForm = document.querySelector("[data-journey-editor-form]");
 const statusInput = document.querySelector("[data-journey-status-input]");
-const entryTextInput = document.querySelector("[data-journey-entry-text-input]");
-const addRowButton = document.querySelector("[data-journey-add-row]");
-const updateRowButton = document.querySelector("[data-journey-update-row]");
+const titleInput = document.querySelector("[data-journey-title-input]");
+const addItemButton = document.querySelector("[data-journey-add-item]");
+const updateItemButton = document.querySelector("[data-journey-update-item]");
 const moveUpButton = document.querySelector("[data-journey-move-up]");
 const moveDownButton = document.querySelector("[data-journey-move-down]");
 const indentButton = document.querySelector("[data-journey-indent]");
 const outdentButton = document.querySelector("[data-journey-outdent]");
-const freeformNotes = document.querySelector("[data-journey-freeform-notes]");
+const noteTypeSelect = document.querySelector("[data-journey-note-type-select]");
 const typeInput = document.querySelector("[data-journey-type-input]");
 const addTypeButton = document.querySelector("[data-journey-add-type]");
 const typeStatus = document.querySelector("[data-journey-type-status]");
@@ -60,6 +59,10 @@ function applyInitialProjectRoute() {
   if (projectId) {
     repository.openProject(projectId);
   }
+
+  if (params.get("templateDiagnostic") === "all") {
+    repository.injectTemplateDiagnostics();
+  }
 }
 
 function createElement(tagName, options = {}) {
@@ -89,14 +92,14 @@ function formatDate(value) {
 function setEditingDisabled(disabled) {
   [
     statusInput,
-    entryTextInput,
-    addRowButton,
-    updateRowButton,
+    titleInput,
+    addItemButton,
+    updateItemButton,
     moveUpButton,
     moveDownButton,
     indentButton,
     outdentButton,
-    freeformNotes,
+    noteTypeSelect,
     typeInput,
     addTypeButton,
   ].forEach((control) => {
@@ -134,13 +137,26 @@ function renderStatusLegend() {
   });
 }
 
+function renderNoteTypeOptions(note) {
+  if (!noteTypeSelect) {
+    return;
+  }
+  noteTypeSelect.innerHTML = "";
+  repository.listNoteTypes().forEach((type) => {
+    const option = createElement("option", { text: type.name });
+    option.value = type.id;
+    noteTypeSelect.append(option);
+  });
+  noteTypeSelect.value = note?.typeId || "";
+}
+
 function createStatusText(statusId) {
   const status = PROJECT_JOURNEY_STATUS_BY_ID[statusId];
   return status ? `${status.icon} ${status.label}` : "Unknown";
 }
 
-function getSelectedEntry() {
-  return repository.getSelectedEntry();
+function getSelectedItem() {
+  return repository.getSelectedItem();
 }
 
 function renderSummary(notes) {
@@ -188,74 +204,112 @@ function renderSummary(notes) {
   });
 }
 
-function makeEntryButton(entry) {
-  const selectedEntry = getSelectedEntry();
-  const selected = selectedEntry?.id === entry.id;
+function makeItemButton(item) {
+  const selectedItem = getSelectedItem();
+  const selected = selectedItem?.itemId === item.itemId;
   const button = createElement("button", {
-    className: selected ? "btn btn--compact primary" : "btn btn--compact",
-    text: `${createStatusText(entry.statusId)} ${entry.text}`,
+    className: selected ? "btn btn--compact primary tool-tree-row__content" : "btn btn--compact tool-tree-row__content",
+    text: `${createStatusText(item.status)} ${item.title}`,
   });
   button.type = "button";
-  button.dataset.journeyEntryButton = entry.id;
+  button.dataset.journeyItemButton = item.itemId;
   button.setAttribute("aria-pressed", String(selected));
   return button;
 }
 
-function createSystemEntryIndicator() {
-  const indicator = createElement("img");
-  indicator.className = "brand-color-swatch";
+function createSystemItemIndicator() {
+  const indicator = createElement("img", {
+    className: "tool-icon-32 tool-tree-row__action",
+  });
   indicator.src = FORGE_BOT_INDICATOR_SRC;
   indicator.alt = "forge-bot created";
   indicator.title = "forge-bot created";
-  indicator.dataset.journeySystemEntryIndicator = "";
+  indicator.width = 32;
+  indicator.height = 32;
+  indicator.dataset.journeySystemItemIndicator = "";
   return indicator;
 }
 
-function createDeleteEntryButton(entry) {
+function createDeleteItemButton(item) {
   const button = createElement("button", {
-    className: "btn btn--compact",
+    className: "btn btn--compact tool-icon-button tool-tree-row__action",
   });
   const icon = createElement("span", {
     className: "fa fa-trash",
   });
   button.type = "button";
-  button.title = "Delete user-created row";
-  button.setAttribute("aria-label", "Delete user-created row");
+  button.title = "Delete user-created item";
+  button.setAttribute("aria-label", "Delete user-created item");
   icon.setAttribute("aria-hidden", "true");
   button.append(icon);
-  button.dataset.journeyDeleteEntry = entry.id;
+  button.dataset.journeyDeleteItem = item.itemId;
   return button;
 }
 
-function makeEntryRowContent(entry) {
+function makeItemRowContent(item) {
   const row = createElement("span", {
-    className: "action-group action-group--tight",
+    className: "tool-tree-row",
   });
-  row.dataset.journeyEntryRow = entry.id;
-  row.append(makeEntryButton(entry));
-  if (entry.createdByType === "user") {
-    row.append(createDeleteEntryButton(entry));
+  row.dataset.journeyItemRow = item.itemId;
+  row.append(makeItemButton(item));
+  if (item.createdByType === "user") {
+    row.append(createDeleteItemButton(item));
   } else {
-    row.append(createSystemEntryIndicator());
+    row.append(createSystemItemIndicator());
   }
   return row;
 }
 
-function renderEntryTree(note) {
-  entryTree.innerHTML = "";
+function makeSelectedItemDetails(item, editingDisabled) {
+  const details = createElement("div", {
+    className: "content-stack content-stack--compact",
+  });
+  details.dataset.journeySelectedItemDetails = item.itemId;
 
-  if (!note || !note.entries.length) {
-    entryTree.append(createElement("p", { text: "No journey entries yet." }));
+  if (item.createdByType === "system") {
+    const guidance = createElement("div", {
+      className: "status",
+    });
+    guidance.dataset.journeySystemGuidance = "";
+    const heading = createElement("strong", { text: "System Guidance" });
+    const body = createElement("p", {
+      text: item.systemGuidance || "System guidance is unavailable until the linked template is repaired.",
+    });
+    guidance.append(heading, body);
+    details.append(guidance);
+  }
+
+  const label = createElement("label");
+  label.setAttribute("for", "journeyItemDetailsInput");
+  label.textContent = "Item Details";
+  const textarea = createElement("textarea");
+  textarea.id = "journeyItemDetailsInput";
+  textarea.rows = 4;
+  textarea.value = item.userDetails || "";
+  textarea.disabled = editingDisabled;
+  textarea.dataset.journeyItemDetailsInput = "";
+  details.append(label, textarea);
+  return details;
+}
+
+function renderItemTree(note, editingDisabled) {
+  itemTree.innerHTML = "";
+
+  if (!note || !note.items.length) {
+    itemTree.append(createElement("p", { text: "No journey items yet." }));
     return;
   }
 
-  const root = createElement("ul");
+  const selectedItem = getSelectedItem();
+  const root = createElement("ul", {
+    className: "tool-tree--compact",
+  });
   root.setAttribute("role", "tree");
   const lists = [root];
   const lastItems = [];
 
-  note.entries.forEach((entry) => {
-    let indent = Math.max(0, Math.min(Number(entry.indent) || 0, 4));
+  note.items.forEach((item) => {
+    let indent = Math.max(0, Math.min(Number(item.indent) || 0, 4));
     if (indent > lastItems.length) {
       indent = lastItems.length;
     }
@@ -274,34 +328,39 @@ function renderEntryTree(note) {
       }
     }
 
-    const item = createElement("li");
-    item.setAttribute("role", "treeitem");
-    item.append(makeEntryRowContent(entry));
-    lists[indent].append(item);
-    lastItems[indent] = item;
+    const itemElement = createElement("li");
+    itemElement.setAttribute("role", "treeitem");
+    itemElement.append(makeItemRowContent(item));
+    if (selectedItem?.itemId === item.itemId) {
+      itemElement.append(makeSelectedItemDetails(item, editingDisabled));
+    }
+    lists[indent].append(itemElement);
+    lastItems[indent] = itemElement;
   });
 
-  entryTree.append(root);
+  itemTree.append(root);
 }
 
 function renderEditor(editingDisabled) {
-  const selectedEntry = getSelectedEntry();
-  if (!selectedEntry) {
+  const selectedItem = getSelectedItem();
+  if (!selectedItem) {
     statusInput.value = "not-started";
-    entryTextInput.value = "";
+    titleInput.value = "";
+    titleInput.disabled = true;
     if (editorStatus) {
-      editorStatus.textContent = "Select a journey row to review ownership.";
+      editorStatus.textContent = "Select a journey item to review ownership.";
     }
     return;
   }
 
-  statusInput.value = selectedEntry.statusId;
-  entryTextInput.value = selectedEntry.text;
+  statusInput.value = selectedItem.status;
+  titleInput.value = selectedItem.title;
+  titleInput.disabled = Boolean(editingDisabled || selectedItem.createdByType === "system");
   if (editorStatus) {
     editorStatus.textContent =
-      selectedEntry.createdByType === "system"
-        ? `System-created row. Original meaning: ${selectedEntry.originalSystemMeaning || selectedEntry.text}`
-        : `User-created row by ${selectedEntry.createdBy || PROJECT_JOURNEY_CURRENT_USER_ID}.`;
+      selectedItem.createdByType === "system"
+        ? `System-created item. Title and guidance are template-owned by ${selectedItem.template?.templateKey || selectedItem.templateId || "missing template"}; status and Item Details are editable. Original meaning: ${selectedItem.originalMeaning || "Unavailable"}`
+        : "User-created item. Title, status, and Item Details are editable.";
   }
 }
 
@@ -361,6 +420,10 @@ function getSuggestedToolNames(note) {
     return ["Project Workspace"];
   }
 
+  const selectedItem = getSelectedItem();
+  const templateToolNames = selectedItem?.linkedToolContexts?.filter((context) =>
+    registryTools.some((tool) => tool.displayName === context || tool.name === context),
+  ) || [];
   const suggestionsByType = {
     design: ["Game Design", "Colors", "Assets"],
     story: ["Game Design", "Project Workspace", "AI Assistant"],
@@ -370,7 +433,7 @@ function getSuggestedToolNames(note) {
     question: ["AI Assistant", "Project Workspace", "Game Design"],
     task: ["Project Workspace", "Game Testing", "Debug"],
   };
-  const names = suggestionsByType[note.typeId] || ["Project Workspace", "Game Design"];
+  const names = [...templateToolNames, ...(suggestionsByType[note.typeId] || ["Project Workspace", "Game Design"])];
 
   if (note.counts?.blocker > 0) {
     return ["Project Workspace", "Debug", ...names];
@@ -453,16 +516,27 @@ function renderDiagnostics(activeProject, note, notes) {
     messages.push("No active project is open. Open a project in Project Workspace to enable editing.");
   } else {
     messages.push(`Active project: ${activeProject.name}.`);
-    messages.push(`Current mock user: ${PROJECT_JOURNEY_CURRENT_USER_ID}.`);
   }
 
   if (activeProject && !notes.length) {
-    messages.push("The selected filter has no matching notes; switch filters or add rows to an existing note.");
+    messages.push("The selected filter has no matching notes; switch filters or add items to an existing note.");
   }
 
   if (note) {
+    const selectedItem = getSelectedItem();
     messages.push(`Selected note: ${note.name}.`);
-    messages.push(`Total counts every row; Open counts ⬜, ⛔, ❓, and 🟡 rows.`);
+    messages.push(`Total counts every item; Open counts ${PROJECT_JOURNEY_STATUS_BY_ID["not-started"].icon}, ${PROJECT_JOURNEY_STATUS_BY_ID.blocker.icon}, ${PROJECT_JOURNEY_STATUS_BY_ID.decide.icon}, and ${PROJECT_JOURNEY_STATUS_BY_ID["in-progress"].icon} items.`);
+    if (selectedItem) {
+      messages.push(`Selected item updatedByType: ${selectedItem.updatedByType}.`);
+      messages.push(`Selected item createdByType: ${selectedItem.createdByType}.`);
+    }
+  }
+
+  const templateDiagnostics = activeProject ? repository.getTemplateDiagnostics() : [];
+  if (templateDiagnostics.length) {
+    templateDiagnostics.forEach((diagnostic) => messages.push(diagnostic.message));
+  } else if (activeProject) {
+    messages.push("All system-created Project Journey items resolve active templates.");
   }
 
   const list = createElement("ul");
@@ -501,12 +575,12 @@ function render() {
   selectedNoteMessage.textContent = note
     ? `${note.name} (${note.type?.name || "Unknown"})`
     : "Choose a note from the summary table.";
-  freeformNotes.value = note?.freeformNotes || "";
 
   setEditingDisabled(editingDisabled);
   updateFilterButtons();
+  renderNoteTypeOptions(note);
   renderSummary(notes);
-  renderEntryTree(note);
+  renderItemTree(note, editingDisabled);
   renderEditor(editingDisabled);
   renderStatScope(selectedStatsNote, notes);
   renderStats(statCounts);
@@ -533,58 +607,76 @@ summaryBody.addEventListener("click", (event) => {
   render();
 });
 
-entryTree.addEventListener("click", (event) => {
-  const deleteButton = event.target.closest("[data-journey-delete-entry]");
+itemTree.addEventListener("click", (event) => {
+  const deleteButton = event.target.closest("[data-journey-delete-item]");
   if (deleteButton) {
     event.preventDefault();
     event.stopPropagation();
     if (!window.confirm(DELETE_CONFIRMATION_MESSAGE)) {
       return;
     }
-    repository.deleteEntry(deleteButton.dataset.journeyDeleteEntry);
+    repository.deleteItem(deleteButton.dataset.journeyDeleteItem);
     render();
     return;
   }
 
-  const button = event.target.closest("[data-journey-entry-button]");
+  const button = event.target.closest("[data-journey-item-button]");
   if (!button) {
     return;
   }
-  repository.selectEntry(button.dataset.journeyEntryButton);
+  repository.selectItem(button.dataset.journeyItemButton);
   render();
 });
 
-addRowButton.addEventListener("click", () => {
-  const selectedEntry = getSelectedEntry();
-  repository.addEntry({
-    text: entryTextInput.value,
-    statusId: statusInput.value,
-    indent: selectedEntry?.indent || 0,
+itemTree.addEventListener("input", (event) => {
+  const detailsInput = event.target.closest("[data-journey-item-details-input]");
+  if (!detailsInput) {
+    return;
+  }
+  const selectedItem = getSelectedItem();
+  if (!selectedItem) {
+    return;
+  }
+  repository.updateItem(selectedItem.itemId, {
+    userDetails: detailsInput.value,
+  });
+  renderDiagnostics(repository.getActiveProject(), repository.getSelectedNote(), repository.listNotes(activeFilter));
+});
+
+addItemButton.addEventListener("click", () => {
+  const selectedItem = getSelectedItem();
+  repository.addItem({
+    title: selectedItem?.createdByType === "system" ? "" : titleInput.value,
+    status: statusInput.value,
+    userDetails: "",
+    indent: selectedItem?.indent || 0,
   });
   render();
 });
 
 editorForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  const selectedEntry = getSelectedEntry();
-  if (!selectedEntry) {
+  const selectedItem = getSelectedItem();
+  if (!selectedItem) {
     return;
   }
 
-  repository.updateEntry(selectedEntry.id, {
-    text: entryTextInput.value,
-    statusId: statusInput.value,
+  const detailsInput = itemTree.querySelector("[data-journey-item-details-input]");
+  repository.updateItem(selectedItem.itemId, {
+    title: titleInput.value,
+    status: statusInput.value,
+    userDetails: detailsInput?.value || selectedItem.userDetails || "",
   });
   render();
 });
 
 moveUpButton.addEventListener("click", () => {
-  repository.moveSelectedEntry(-1);
+  repository.moveSelectedItem(-1);
   render();
 });
 
 moveDownButton.addEventListener("click", () => {
-  repository.moveSelectedEntry(1);
+  repository.moveSelectedItem(1);
   render();
 });
 
@@ -598,26 +690,18 @@ outdentButton.addEventListener("click", () => {
   render();
 });
 
-freeformNotes.addEventListener("input", () => {
-  repository.updateSelectedNoteFreeform(freeformNotes.value);
-  const note = repository.getSelectedNote();
-  const notes = repository.listNotes(activeFilter);
-  const selectedStatsNote = selectedSummaryNoteId
-    ? notes.find((item) => item.id === selectedSummaryNoteId) || null
-    : null;
-  renderStatScope(selectedStatsNote, notes);
-  renderStats(selectedStatsNote ? selectedStatsNote.counts : aggregateCounts(notes));
-  renderDiagnostics(repository.getActiveProject(), note, notes);
+noteTypeSelect.addEventListener("change", () => {
+  repository.updateSelectedNoteType(noteTypeSelect.value);
+  render();
 });
 
 addTypeButton.addEventListener("click", () => {
-  const type = repository.addNoteType(typeInput.value);
-  typeStatus.textContent = type
-    ? `${type.name} is available in the mock note type table.`
-    : "Enter a type name to add it to the mock note type table.";
-  if (type) {
+  const result = repository.addNoteType(typeInput.value);
+  typeStatus.textContent = result.message;
+  if (result.created) {
     typeInput.value = "";
   }
+  render();
 });
 
 renderStatusOptions();
