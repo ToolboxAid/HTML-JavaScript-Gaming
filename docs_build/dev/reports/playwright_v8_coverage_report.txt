@@ -12,28 +12,22 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(88%) Toolbox Index - exercised 5 runtime JS files
+(0%) Toolbox Index - not exercised by this Playwright run
 (0%) Tool Template V2 - not exercised by this Playwright run
-(83%) Theme V2 Shared JS - exercised 2 runtime JS files
+(80%) Theme V2 Shared JS - exercised 1 runtime JS files
 
 Changed runtime JS files covered:
-(90%) toolbox/colors/palette-workspace-repository.js - executed lines 1288/1288; executed functions 129/144
-(97%) toolbox/colors/colors.js - executed lines 883/883; executed functions 88/91
+(80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 206/206; executed functions 16/20
+(100%) admin/notes.js - executed lines 143/143; executed functions 22/22
 
 Files with executed line/function counts where available:
-(65%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 20/31
-(75%) toolbox/toolRegistry.js - executed lines 1754/1754; executed functions 27/36
-(80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 205/205; executed functions 16/20
-(87%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 13/15
-(90%) toolbox/colors/palette-workspace-repository.js - executed lines 1288/1288; executed functions 129/144
-(97%) toolbox/colors/colors.js - executed lines 883/883; executed functions 88/91
-(100%) toolbox/colors/palette-source-mock-db.js - executed lines 927/927; executed functions 6/6
+(80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 206/206; executed functions 16/20
+(100%) admin/notes.js - executed lines 143/143; executed functions 22/22
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) tests/helpers/toolFormControlAssertions.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(90%) toolbox/colors/palette-workspace-repository.js - changed JS file with browser V8 coverage
-(97%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
+(0%) tests/playwright/tools/AdminNotesViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+(80%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(100%) admin/notes.js - changed JS file with browser V8 coverage

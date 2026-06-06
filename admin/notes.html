@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Notes - GameFoundryStudio</title>
+    <meta name="description" content="Admin-only project notes viewer for GameFoundryStudio planning notes.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body>
+    <div data-partial="header-nav"></div>
+    <main data-admin-only="true">
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Admin Only</div>
+                <h1>Admin Notes</h1>
+                <p class="lede">Private project notes for ideas, fixes, and undecided questions.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container account-panel">
+                <aside class="side-menu" aria-label="Admin pages">
+                    <a href="admin/analytics.html">Analytics</a>
+                    <a href="admin/branding.html">Branding</a>
+                    <a href="admin/controls.html">Controls</a>
+                    <a href="admin/design-system.html">Design System</a>
+                    <a href="toolbox/environments/index.html">Environments</a>
+                    <a href="toolbox/game-migration/index.html">Game Migration</a>
+                    <a href="admin/grouping-colors.html">Grouping Colors</a>
+                    <a href="admin/moderation.html">Moderation</a>
+                    <a class="active" aria-current="page" href="admin/notes.html">Notes</a>
+                    <a href="toolbox/platform-settings/index.html">Platform Settings</a>
+                    <a href="admin/ratings.html">Ratings</a>
+                    <a href="admin/roles.html">Roles</a>
+                    <a href="admin/site-settings.html">Site Settings</a>
+                    <a href="admin/themes.html">Themes</a>
+                    <a href="admin/tools-progress.html">Tools Progress</a>
+                    <a href="admin/users.html">Users</a>
+                </aside>
+                <article class="card" aria-labelledby="admin-notes-title">
+                    <div class="card-body content-stack">
+                        <div>
+                            <div class="kicker">Project Notes</div>
+                            <h2 id="admin-notes-title" data-admin-notes-title>note.txt</h2>
+                        </div>
+                        <a href="admin/notes.html" data-admin-notes-return hidden>Return to note.txt</a>
+                        <div class="status" role="status" data-admin-notes-status>Loading admin notes.</div>
+                        <div class="content-stack" data-admin-notes-content aria-live="polite"></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="admin/notes.js"></script>
+</body>
+
+</html>
