@@ -217,13 +217,13 @@ function swatchTileLabel(swatch, action) {
   return `${action} ${swatch.name}`;
 }
 
-function swatchTooltipText(swatch) {
+function swatchTooltipText(swatch, sourceLabel = "") {
   return [
-    `Symbol: ${swatch.symbol}`,
-    `Hex: ${swatch.hex}`,
     `Name: ${swatch.name}`,
-    `Tags: ${swatch.tags.length ? swatch.tags.join(", ") : "None"}`
-  ].join("\n");
+    `Hex: ${swatch.hex}`,
+    `Source: ${sourceLabel || repository.displaySource(swatch.source)}`,
+    swatch.tags.length ? `Tags: ${swatch.tags.join(", ")}` : ""
+  ].filter(Boolean).join("\n");
 }
 
 function createSwatchTile(swatch, options = {}) {
@@ -236,11 +236,12 @@ function createSwatchTile(swatch, options = {}) {
   tile.dataset.paletteSelected = String(selected);
   tile.dataset.paletteSwatchHex = swatch.hex;
   tile.dataset.paletteSwatchName = swatch.name;
-  tile.dataset.paletteSwatchSource = repository.displaySource(swatch.source);
+  const sourceLabel = options.sourceLabel || repository.displaySource(swatch.source);
+  tile.dataset.paletteSwatchSource = sourceLabel;
   tile.dataset.paletteSwatchTags = swatch.tags.join(", ");
   tile.setAttribute("aria-label", options.label || `${selected ? "Selected. " : ""}${swatchTileLabel(swatch, options.action || "Select palette color")}`);
   tile.setAttribute("aria-pressed", String(Boolean(options.pressed)));
-  tile.title = options.tooltip || swatchTooltipText(swatch);
+  tile.title = options.tooltip || swatchTooltipText(swatch, sourceLabel);
   if (selected) {
     tile.setAttribute("aria-current", "true");
   }
@@ -600,7 +601,7 @@ function renderHarmony(snapshot) {
       name: suggestion.name,
       source: suggestion.source,
       symbol: String(index + 1),
-      tags: suggestion.tags
+      tags: []
     }, {
       action: pinned ? "Remove harmony swatch" : "Add harmony swatch",
       harmonyIndex: index,
@@ -608,7 +609,7 @@ function renderHarmony(snapshot) {
       pinned,
       pressed: pinned,
       size: "medium",
-      tooltip: `Scheme: ${schemeLabel}\nLabel: ${suggestion.name}\nHex: ${suggestion.hex}`
+      sourceLabel: schemeLabel
     }));
   });
 }

@@ -148,6 +148,16 @@ function displaySource(value) {
   return sourceLabel(value);
 }
 
+function isHarmonySchemeSource(value) {
+  const normalized = normalizeSourceId(value);
+  return PALETTE_HARMONY_SCHEMES.some((scheme) => scheme.id === normalized);
+}
+
+function displayHarmonySource(value) {
+  const normalized = normalizeSourceId(value);
+  return PALETTE_HARMONY_SCHEMES.find((scheme) => scheme.id === normalized)?.label || "";
+}
+
 function createEmptyWorkspaceRecord(projectId) {
   return {
     projectId,
@@ -678,6 +688,8 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const activeSwatches = swatchesFromColorRows(projectId);
     if (optionsForReplace.selection === "clear") {
       selectedSymbol = "";
+    } else if (optionsForReplace.selectedSymbol) {
+      selectedSymbol = optionsForReplace.selectedSymbol;
     } else if (!activeSwatches.some((swatch) => swatch.symbol === selectedSymbol)) {
       selectedSymbol = optionsForReplace.selection === "preserve" ? "" : activeSwatches[0]?.symbol || "";
     }
@@ -719,7 +731,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       ? swatches.map((swatch) => (swatch.symbol === optionsForSave.excludeSymbol ? validation.swatch : swatch))
       : [...swatches, validation.swatch];
     selectedSymbol = validation.swatch.symbol;
-    return replaceSwatches(projectId, nextSwatches);
+    return replaceSwatches(projectId, nextSwatches, {
+      selectedSymbol: validation.swatch.symbol
+    });
   }
 
   function addSwatch(input = {}) {
@@ -939,6 +953,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const issues = [];
     let added = 0;
     let alreadyPinned = 0;
+    let lastAddedSymbol = "";
     let skipped = 0;
 
     (Array.isArray(sourceSwatches) ? sourceSwatches : []).forEach((sourceSwatch) => {
@@ -965,6 +980,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
       nextSwatches.push(validation.swatch);
       added += 1;
+      lastAddedSymbol = validation.swatch.symbol;
     });
 
     const message = `Pin All complete: ${added} pinned, ${alreadyPinned} already pinned, ${skipped} skipped.`;
@@ -977,7 +993,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const result = replaceSwatches(projectId, nextSwatches);
+    const result = replaceSwatches(projectId, nextSwatches, {
+      selectedSymbol: lastAddedSymbol
+    });
     return {
       ...result,
       issues: [...(result.issues || []), ...issues],
@@ -995,6 +1013,17 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
   function isSourceSwatchPinned(sourceSwatch = {}) {
     return Boolean(findPinnedSourceSwatch(sourceSwatch));
+  }
+
+  function displaySwatchSource(value) {
+    const normalized = normalizeSourceId(value);
+    if (normalized === PALETTE_SOURCE_USER) {
+      return "custom";
+    }
+    if (isHarmonySchemeSource(normalized)) {
+      return displayHarmonySource(normalized);
+    }
+    return sourceRowsForSource(normalized)[0]?.sourceLabel || displaySource(normalized);
   }
 
   function toggleSourceSwatchPin(sourceSwatch = {}) {
@@ -1049,10 +1078,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const validation = validatePaletteSwatchInput({
       hex: suggestion.hex,
       name,
-      source: "harmony",
+      source: generatedHarmonyNameRoot(name),
       symbol,
       tags: []
-    }, swatches, { source: "harmony" });
+    }, swatches, { source: generatedHarmonyNameRoot(name) });
     if (validation.issues.length) {
       return {
         issues: validation.issues,
@@ -1063,7 +1092,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
 
     return replaceSwatches(projectId, [...swatches, validation.swatch], {
-      selection: "preserve"
+      selectedSymbol: validation.swatch.symbol
     });
   }
 
@@ -1329,7 +1358,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     addHarmonySuggestions,
     clearProjectData,
     createHarmonySuggestions,
-    displaySource,
+    displaySource: displaySwatchSource,
     findSwatch,
     getActiveProject,
     getSnapshot,
