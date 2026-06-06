@@ -20,6 +20,7 @@ const statusInput = document.querySelector("[data-journey-status-input]");
 const entryTextInput = document.querySelector("[data-journey-entry-text-input]");
 const addRowButton = document.querySelector("[data-journey-add-row]");
 const updateRowButton = document.querySelector("[data-journey-update-row]");
+const deleteRowButton = document.querySelector("[data-journey-delete-row]");
 const moveUpButton = document.querySelector("[data-journey-move-up]");
 const moveDownButton = document.querySelector("[data-journey-move-down]");
 const indentButton = document.querySelector("[data-journey-indent]");
@@ -28,6 +29,8 @@ const freeformNotes = document.querySelector("[data-journey-freeform-notes]");
 const typeInput = document.querySelector("[data-journey-type-input]");
 const addTypeButton = document.querySelector("[data-journey-add-type]");
 const typeStatus = document.querySelector("[data-journey-type-status]");
+const editorStatus = document.querySelector("[data-journey-editor-status]");
+const statScope = document.querySelector("[data-journey-stat-scope]");
 const statusLegend = document.querySelector("[data-journey-status-legend]");
 const suggestedTools = document.querySelector("[data-journey-suggested-tools]");
 const recentActivity = document.querySelector("[data-journey-recent-activity]");
@@ -35,6 +38,7 @@ const diagnostics = document.querySelector("[data-journey-diagnostics]");
 
 const statTargets = {
   open: document.querySelector("[data-journey-stat-open]"),
+  total: document.querySelector("[data-journey-stat-total]"),
   "not-started": document.querySelector("[data-journey-stat-not-started]"),
   "in-progress": document.querySelector("[data-journey-stat-in-progress]"),
   complete: document.querySelector("[data-journey-stat-complete]"),
@@ -43,6 +47,7 @@ const statTargets = {
 };
 
 let activeFilter = "all";
+let selectedSummaryNoteId = "note-design-pass";
 
 function applyInitialProjectRoute() {
   const projectId = params.get("project");
@@ -86,6 +91,7 @@ function setEditingDisabled(disabled) {
     entryTextInput,
     addRowButton,
     updateRowButton,
+    deleteRowButton,
     moveUpButton,
     moveDownButton,
     indentButton,
@@ -154,23 +160,28 @@ function renderSummary(notes) {
   notes.forEach((note) => {
     const row = createElement("tr");
     const nameCell = createElement("td");
+    const selected = selectedSummaryNoteId === note.id;
     const noteButton = createElement("button", {
-      className: "btn btn--compact",
+      className: selected ? "btn btn--compact primary" : "btn btn--compact",
       text: note.name,
     });
     noteButton.type = "button";
     noteButton.dataset.journeyNoteButton = note.id;
+    noteButton.setAttribute("aria-pressed", String(selected));
+    if (selected) {
+      noteButton.setAttribute("aria-current", "true");
+    }
     nameCell.append(noteButton);
     row.append(
       nameCell,
       createElement("td", { text: note.type?.name || "Unknown" }),
-      createElement("td", { text: String(note.counts.total) }),
-      createElement("td", { text: String(note.counts.open) }),
       createElement("td", { text: String(note.counts["not-started"]) }),
       createElement("td", { text: String(note.counts.blocker) }),
       createElement("td", { text: String(note.counts.decide) }),
       createElement("td", { text: String(note.counts["in-progress"]) }),
       createElement("td", { text: String(note.counts.complete) }),
+      createElement("td", { text: String(note.counts.open) }),
+      createElement("td", { text: String(note.counts.total) }),
       createElement("td", { text: formatDate(note.updatedAt) }),
     );
     summaryBody.append(row);
@@ -178,14 +189,15 @@ function renderSummary(notes) {
 }
 
 function makeEntryButton(entry) {
+  const selectedEntry = getSelectedEntry();
+  const selected = selectedEntry?.id === entry.id;
   const button = createElement("button", {
-    className: "btn btn--compact",
+    className: selected ? "btn btn--compact primary" : "btn btn--compact",
     text: `${createStatusText(entry.statusId)} ${entry.text}`,
   });
   button.type = "button";
   button.dataset.journeyEntryButton = entry.id;
-  const selectedEntry = getSelectedEntry();
-  button.setAttribute("aria-pressed", String(selectedEntry?.id === entry.id));
+  button.setAttribute("aria-pressed", String(selected));
   return button;
 }
 
@@ -232,20 +244,35 @@ function renderEntryTree(note) {
   entryTree.append(root);
 }
 
-function renderEditor() {
+function renderEditor(editingDisabled) {
   const selectedEntry = getSelectedEntry();
   if (!selectedEntry) {
     statusInput.value = "not-started";
     entryTextInput.value = "";
+    if (deleteRowButton) {
+      deleteRowButton.disabled = true;
+    }
+    if (editorStatus) {
+      editorStatus.textContent = "Select a journey row to review ownership.";
+    }
     return;
   }
 
   statusInput.value = selectedEntry.statusId;
   entryTextInput.value = selectedEntry.text;
+  if (deleteRowButton) {
+    deleteRowButton.disabled = Boolean(editingDisabled || selectedEntry.createdByType !== "user");
+  }
+  if (editorStatus) {
+    editorStatus.textContent =
+      selectedEntry.createdByType === "system"
+        ? `System-created row. Delete disabled. Original meaning: ${selectedEntry.originalSystemMeaning || selectedEntry.text}`
+        : `User-created row by ${selectedEntry.createdBy || PROJECT_JOURNEY_CURRENT_USER_ID}. Delete available.`;
+  }
 }
 
-function renderStats(note) {
-  const counts = note?.counts || {
+function emptyCounts() {
+  return {
     total: 0,
     open: 0,
     "not-started": 0,
@@ -254,7 +281,36 @@ function renderStats(note) {
     blocker: 0,
     decide: 0,
   };
+}
 
+function aggregateCounts(notes) {
+  return notes.reduce((counts, note) => {
+    Object.keys(counts).forEach((key) => {
+      counts[key] += note.counts?.[key] || 0;
+    });
+    return counts;
+  }, emptyCounts());
+}
+
+function activeFilterLabel() {
+  return (
+    filterButtons.find((button) => button.dataset.journeyFilter === activeFilter)?.textContent?.trim() ||
+    "All Notes"
+  );
+}
+
+function renderStatScope(selectedStatsNote, notes) {
+  if (!statScope) {
+    return;
+  }
+  if (selectedStatsNote) {
+    statScope.textContent = `Statistics for selected note: ${selectedStatsNote.name}.`;
+    return;
+  }
+  statScope.textContent = `Statistics for filtered result set: ${activeFilterLabel()} (${notes.length} notes).`;
+}
+
+function renderStats(counts) {
   Object.entries(statTargets).forEach(([key, target]) => {
     if (target) {
       target.textContent = String(counts[key] || 0);
@@ -399,6 +455,10 @@ function render() {
   const activeProject = repository.getActiveProject();
   const notes = repository.listNotes(activeFilter);
   const note = selectFirstVisibleNote(notes);
+  const selectedStatsNote = selectedSummaryNoteId
+    ? notes.find((item) => item.id === selectedSummaryNoteId) || null
+    : null;
+  const statCounts = selectedStatsNote ? selectedStatsNote.counts : aggregateCounts(notes);
   const editingDisabled = !activeProject || !note;
 
   activeProjectMessage.textContent = activeProject
@@ -413,8 +473,9 @@ function render() {
   updateFilterButtons();
   renderSummary(notes);
   renderEntryTree(note);
-  renderEditor();
-  renderStats(note);
+  renderEditor(editingDisabled);
+  renderStatScope(selectedStatsNote, notes);
+  renderStats(statCounts);
   renderSuggestedTools(note);
   renderRecentActivity();
   renderDiagnostics(activeProject, note, notes);
@@ -423,6 +484,7 @@ function render() {
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
     activeFilter = button.dataset.journeyFilter || "all";
+    selectedSummaryNoteId = "";
     render();
   });
 });
@@ -432,7 +494,8 @@ summaryBody.addEventListener("click", (event) => {
   if (!button) {
     return;
   }
-  repository.selectNote(button.dataset.journeyNoteButton);
+  selectedSummaryNoteId = button.dataset.journeyNoteButton;
+  repository.selectNote(selectedSummaryNoteId);
   render();
 });
 
@@ -469,6 +532,15 @@ editorForm.addEventListener("submit", (event) => {
   render();
 });
 
+deleteRowButton.addEventListener("click", () => {
+  const selectedEntry = getSelectedEntry();
+  const result = repository.deleteEntry(selectedEntry?.id);
+  if (editorStatus && result?.reason) {
+    editorStatus.textContent = result.reason;
+  }
+  render();
+});
+
 moveUpButton.addEventListener("click", () => {
   repository.moveSelectedEntry(-1);
   render();
@@ -492,8 +564,13 @@ outdentButton.addEventListener("click", () => {
 freeformNotes.addEventListener("input", () => {
   repository.updateSelectedNoteFreeform(freeformNotes.value);
   const note = repository.getSelectedNote();
-  renderStats(note);
-  renderDiagnostics(repository.getActiveProject(), note, repository.listNotes(activeFilter));
+  const notes = repository.listNotes(activeFilter);
+  const selectedStatsNote = selectedSummaryNoteId
+    ? notes.find((item) => item.id === selectedSummaryNoteId) || null
+    : null;
+  renderStatScope(selectedStatsNote, notes);
+  renderStats(selectedStatsNote ? selectedStatsNote.counts : aggregateCounts(notes));
+  renderDiagnostics(repository.getActiveProject(), note, notes);
 });
 
 addTypeButton.addEventListener("click", () => {

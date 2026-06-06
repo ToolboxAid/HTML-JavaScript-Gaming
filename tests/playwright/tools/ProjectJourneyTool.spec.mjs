@@ -72,10 +72,14 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("[data-journey-active-project]")).toHaveText("Active project: Demo Project.");
     await expect(page.locator("[data-journey-selected-note]")).toContainText("Palette and Input Density");
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for selected note: Palette and Input Density.");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("3");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("3");
     await expect(page.locator("[data-journey-stat-not-started]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
+    await expect(page.locator("[data-journey-note-button='note-design-pass']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-entry-button='entry-design-1']")).toHaveClass(/primary/);
     await expect(page.locator("#journeyStatusInput option")).toHaveText([
       "⬜ Not Started",
       "⛔ Blocker",
@@ -92,18 +96,28 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       "🟡 In Progress",
       "✅ Complete"
     ]);
+    await expect(page.locator("aside.tool-column").last().locator("details > summary", { hasText: /^Status Legend$/ })).toHaveCount(0);
+    const legendFollowsStats = await page.locator("[data-journey-status-legend]").evaluate((legend) => {
+      const statistics = legend.closest("details");
+      const statGrid = statistics?.querySelector("[aria-label='Selected note statistics']");
+      return Boolean(statGrid && (statGrid.compareDocumentPosition(legend) & Node.DOCUMENT_POSITION_FOLLOWING));
+    });
+    expect(legendFollowsStats).toBe(true);
     await expect(page.locator("table[aria-label='Project Journey note summary'] thead th")).toHaveText([
       "Name",
       "Type",
-      "Total",
-      "Open",
       "⬜",
       "⛔",
       "❓",
       "🟡",
       "✅",
+      "Open",
+      "Total",
       "Updated"
     ]);
+    await expect(page.getByText("Current Folder")).toHaveCount(0);
+    await expect(page.getByText("Return to root index")).toHaveCount(0);
+    await expect(page.getByText("Open folder")).toHaveCount(0);
     await expect(page.getByLabel("Indent")).toHaveCount(0);
     await expect(page.locator("[data-journey-entry-tree] ul ul li", { hasText: "Confirm batch tag language" })).toBeVisible();
 
@@ -111,19 +125,21 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await page.getByLabel("Status").selectOption("blocker");
     await page.getByRole("button", { name: "Add Row" }).click();
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("4");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("4");
     await expect(page.locator("[data-journey-stat-blocker]")).toHaveText("1");
     await expect(page.locator("[data-journey-entry-tree]")).toContainText("Batch verification row");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(2)).toHaveText("4");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(3)).toHaveText("4");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(5)).toHaveText("1");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(3)).toHaveText("1");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(7)).toHaveText("4");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(8)).toHaveText("4");
 
     await page.getByLabel("Status").selectOption("complete");
     await page.getByRole("button", { name: "Update Row" }).click();
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("3");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("4");
     await expect(page.locator("[data-journey-stat-complete]")).toHaveText("1");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(2)).toHaveText("4");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(3)).toHaveText("3");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(8)).toHaveText("1");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(6)).toHaveText("1");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(7)).toHaveText("3");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(8)).toHaveText("4");
 
     await page.getByRole("button", { name: /Confirm batch tag language/ }).click();
     await page.getByRole("button", { name: "<" }).click();
@@ -152,19 +168,92 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
 
   try {
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
-    await page.getByRole("button", { name: "My Notes" }).click();
+    await page.locator("[data-journey-filter='mine']").click();
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: My Notes (2 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("5");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("5");
+    await expect(page.locator("[data-journey-stat-not-started]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Palette and Input Density");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Story Beats");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Release Readiness");
 
-    await page.getByRole("button", { name: "All Notes" }).click();
-    await page.getByRole("button", { name: "Blocked" }).click();
+    await page.locator("[data-journey-filter='all']").click();
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: All Notes (4 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("8");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("7");
+
+    await page.locator("[data-journey-filter='blocker']").click();
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Blocked (1 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-blocker]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-complete]")).toHaveText("1");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Story Beats");
 
-    await page.getByRole("button", { name: "Decisions" }).click();
+    await page.getByRole("button", { name: "Release Readiness" }).click();
+    await expect(page.locator("[data-journey-note-button='note-release-readiness']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for selected note: Release Readiness.");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
+
+    await page.locator("[data-journey-filter='decide']").click();
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Decisions (2 notes).");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Palette and Input Density");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Research Questions");
+
+    await page.locator("[data-journey-filter='not-started']").click();
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Not Started (2 notes).");
+
+    await page.locator("[data-journey-filter='in-progress']").click();
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: In Progress (2 notes).");
+
+    await page.locator("[data-journey-filter='complete']").click();
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Complete (1 notes).");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
+
+test("Project Journey enforces entry ownership while preserving system meaning", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
+
+  try {
+    await expect(page.locator("[data-journey-entry-button='entry-design-1']")).toHaveClass(/primary/);
+    await expect(page.getByRole("button", { name: "Delete Row" })).toBeDisabled();
+    await expect(page.locator("[data-journey-editor-status]")).toContainText("System-created row");
+    await expect(page.locator("[data-journey-editor-status]")).toContainText("Original meaning: Review palette swatch affordance");
+
+    await page.getByLabel("Entry").fill("System row edited label");
+    await page.getByLabel("Status").selectOption("blocker");
+    await page.getByRole("button", { name: "Update Row" }).click();
+    await expect(page.locator("[data-journey-entry-tree]")).toContainText("System row edited label");
+    await expect(page.getByRole("button", { name: "Delete Row" })).toBeDisabled();
+    await expect(page.locator("[data-journey-editor-status]")).toContainText("Original meaning: Review palette swatch affordance");
+
+    await page.getByLabel("Entry").fill("User owned cleanup row");
+    await page.getByLabel("Status").selectOption("not-started");
+    await page.getByRole("button", { name: "Add Row" }).click();
+    await expect(page.locator("[data-journey-entry-tree]")).toContainText("User owned cleanup row");
+    await expect(page.locator("[data-journey-editor-status]")).toContainText("User-created row");
+    await expect(page.getByRole("button", { name: "Delete Row" })).toBeEnabled();
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("4");
+
+    await page.getByRole("button", { name: "Delete Row" }).click();
+    await expect(page.locator("[data-journey-entry-tree]")).not.toContainText("User owned cleanup row");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("3");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("3");
 
     await expectNoPageFailures(failures);
   } finally {

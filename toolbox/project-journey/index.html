@@ -70,7 +70,9 @@
                                         <div class="action-group" aria-label="Selected row save controls">
                                             <button class="btn primary" type="button" data-journey-add-row>Add Row</button>
                                             <button class="btn" type="submit" data-journey-update-row>Update Row</button>
+                                            <button class="btn" type="button" data-journey-delete-row>Delete Row</button>
                                         </div>
+                                        <div class="status" role="status" data-journey-editor-status>Select a row to review ownership.</div>
                                     </form>
                                 </div>
                             </details>
@@ -99,13 +101,13 @@
                                                 <tr>
                                                     <th scope="col">Name</th>
                                                     <th scope="col">Type</th>
-                                                    <th scope="col">Total</th>
-                                                    <th scope="col">Open</th>
                                                     <th scope="col">⬜</th>
                                                     <th scope="col">⛔</th>
                                                     <th scope="col">❓</th>
                                                     <th scope="col">🟡</th>
                                                     <th scope="col">✅</th>
+                                                    <th scope="col">Open</th>
+                                                    <th scope="col">Total</th>
                                                     <th scope="col">Updated</th>
                                                 </tr>
                                             </thead>
@@ -138,21 +140,21 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Status Legend</summary>
-                                <div class="accordion-body">
-                                    <div class="action-group action-group--tight" data-journey-status-legend></div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
                                 <summary>Statistics</summary>
-                                <div class="accordion-body">
+                                <div class="accordion-body content-stack">
+                                    <div class="status" role="status" data-journey-stat-scope>Statistics for selected note.</div>
                                     <div class="grid cols-2" aria-label="Selected note statistics">
                                         <article class="mini-stat"><strong data-journey-stat-open>0</strong>Open</article>
+                                        <article class="mini-stat"><strong data-journey-stat-total>0</strong>Total</article>
                                         <article class="mini-stat"><strong data-journey-stat-not-started>0</strong>Not Started</article>
-                                        <article class="mini-stat"><strong data-journey-stat-in-progress>0</strong>In Progress</article>
-                                        <article class="mini-stat"><strong data-journey-stat-complete>0</strong>Complete</article>
                                         <article class="mini-stat"><strong data-journey-stat-blocker>0</strong>Blocked</article>
                                         <article class="mini-stat"><strong data-journey-stat-decide>0</strong>Decisions</article>
+                                        <article class="mini-stat"><strong data-journey-stat-in-progress>0</strong>In Progress</article>
+                                        <article class="mini-stat"><strong data-journey-stat-complete>0</strong>Complete</article>
+                                    </div>
+                                    <div class="callout">
+                                        <strong>Status Legend</strong>
+                                        <div class="action-group action-group--tight" data-journey-status-legend></div>
                                     </div>
                                 </div>
                             </details>

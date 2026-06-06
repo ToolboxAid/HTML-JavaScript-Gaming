@@ -191,7 +191,12 @@ function getSeedTables() {
       indent: 0,
       order: 1,
     },
-  ];
+  ].map((entry) => ({
+    ...entry,
+    createdBy: "project-journey-seed",
+    createdByType: "system",
+    originalSystemMeaning: entry.text,
+  }));
 
   const project_journey_activity = [
     {
@@ -395,6 +400,9 @@ export function createProjectJourneyMockRepository(options = {}) {
       text: text.trim() || "New journey entry",
       indent: normalizeIndent(indent),
       order: existingEntries.length + 1,
+      createdBy: PROJECT_JOURNEY_CURRENT_USER_ID,
+      createdByType: "user",
+      originalSystemMeaning: "",
     };
     nextEntryNumber += 1;
     tables.project_journey_entries.push(entry);
@@ -402,6 +410,44 @@ export function createProjectJourneyMockRepository(options = {}) {
     touchNote(note.id);
     addActivity(activeProject.id, note.id, `Added row to ${note.name}`);
     return clone(entry);
+  }
+
+  function deleteEntry(entryId) {
+    const activeProject = requireActiveProject();
+    const entry = tables.project_journey_entries.find((item) => item.id === entryId);
+    if (!activeProject || !entry) {
+      return {
+        deleted: false,
+        reason: "No journey row is selected for deletion.",
+      };
+    }
+
+    if (entry.createdByType === "system") {
+      return {
+        deleted: false,
+        reason: "System-created rows can be edited but not deleted.",
+        entry: clone(entry),
+      };
+    }
+
+    const note = tables.project_journey_notes.find((item) => item.id === entry.noteId);
+    const deletedOrder = entry.order;
+    tables.project_journey_entries = tables.project_journey_entries.filter(
+      (item) => item.id !== entry.id,
+    );
+    const remainingEntries = getEntriesForNote(entry.noteId);
+    resequence(remainingEntries);
+    selectedEntryId =
+      remainingEntries.find((item) => item.order >= deletedOrder)?.id ||
+      remainingEntries.at(-1)?.id ||
+      "";
+    touchNote(entry.noteId);
+    addActivity(activeProject.id, entry.noteId, `Deleted user row from ${note?.name || "Project Journey"}`);
+    return {
+      deleted: true,
+      reason: "Deleted user-created row.",
+      selectedEntryId,
+    };
   }
 
   function updateEntry(entryId, updates = {}) {
@@ -524,6 +570,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     selectEntry,
     getSelectedEntry,
     addEntry,
+    deleteEntry,
     updateEntry,
     moveSelectedEntry,
     changeSelectedIndent,

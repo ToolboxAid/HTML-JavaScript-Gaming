@@ -195,6 +195,21 @@ This section records the full targeted validation set for `PR_26156_189-project-
 
 Full samples smoke was not run, per PR instructions.
 
+## PR_26157_001 Project Journey Selection Counts And Ownership Manual Lane Summary
+
+This section records the targeted validation set for `PR_26157_001-project-journey-selection-counts-and-ownership`.
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `node --check toolbox/project-journey/project-journey.js` | PASS | Project Journey runtime syntax check. |
+| `node --check toolbox/project-journey/project-journey-mock-repository.js` | PASS | Project Journey mock repository syntax check. |
+| `node --check tests/playwright/tools/ProjectJourneyTool.spec.mjs` | PASS | Targeted spec syntax check. |
+| `rg --pcre2 ... toolbox/project-journey tests/playwright/tools/ProjectJourneyTool.spec.mjs` | PASS | No inline CSS/script handlers, archive/start_of_day references, or Admin Notes coupling in touched Project Journey files. |
+| `npx playwright test tests/playwright/tools/ProjectJourneyTool.spec.mjs --workers=1` | PASS | 7 tests; status legend placement, selected-note stats, filtered aggregate stats, column order, Open/Total formulas, ownership/delete rules, selected entry styling, and Admin Notes UI absence. |
+| `npm run test:playwright:static` | PASS | Changed-file/static zero-browser validation. |
+
+Full samples smoke was not run, per PR instructions.
+
 ## PR_26156_191 Admin Notes Live Folder Listing Manual Lane Summary
 
 This section records the targeted validation set for `PR_26156_191-admin-notes-live-folder-listing`.
