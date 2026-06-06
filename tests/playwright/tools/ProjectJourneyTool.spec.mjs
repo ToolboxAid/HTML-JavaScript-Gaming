@@ -76,6 +76,34 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[data-journey-stat-not-started]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
+    await expect(page.locator("#journeyStatusInput option")).toHaveText([
+      "⬜ Not Started",
+      "⛔ Blocker",
+      "❓ Decide",
+      "🟡 In Progress",
+      "✅ Complete"
+    ]);
+    const dropdownLabels = await page.locator("#journeyStatusInput option").allTextContents();
+    expect(dropdownLabels.some((label) => /\[[ .x!?]\]/.test(label))).toBe(false);
+    await expect(page.locator("[data-journey-status-legend] span")).toHaveText([
+      "⬜ Not Started",
+      "⛔ Blocker",
+      "❓ Decide",
+      "🟡 In Progress",
+      "✅ Complete"
+    ]);
+    await expect(page.locator("table[aria-label='Project Journey note summary'] thead th")).toHaveText([
+      "Name",
+      "Type",
+      "Total",
+      "Open",
+      "⬜",
+      "⛔",
+      "❓",
+      "🟡",
+      "✅",
+      "Updated"
+    ]);
     await expect(page.getByLabel("Indent")).toHaveCount(0);
     await expect(page.locator("[data-journey-entry-tree] ul ul li", { hasText: "Confirm batch tag language" })).toBeVisible();
 
@@ -86,13 +114,16 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[data-journey-stat-blocker]")).toHaveText("1");
     await expect(page.locator("[data-journey-entry-tree]")).toContainText("Batch verification row");
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(2)).toHaveText("4");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(6)).toHaveText("1");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(3)).toHaveText("4");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(5)).toHaveText("1");
 
     await page.getByLabel("Status").selectOption("complete");
     await page.getByRole("button", { name: "Update Row" }).click();
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("3");
     await expect(page.locator("[data-journey-stat-complete]")).toHaveText("1");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(5)).toHaveText("1");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(2)).toHaveText("4");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(3)).toHaveText("3");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(8)).toHaveText("1");
 
     await page.getByRole("button", { name: /Confirm batch tag language/ }).click();
     await page.getByRole("button", { name: "<" }).click();

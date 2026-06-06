@@ -28,6 +28,7 @@ const freeformNotes = document.querySelector("[data-journey-freeform-notes]");
 const typeInput = document.querySelector("[data-journey-type-input]");
 const addTypeButton = document.querySelector("[data-journey-add-type]");
 const typeStatus = document.querySelector("[data-journey-type-status]");
+const statusLegend = document.querySelector("[data-journey-status-legend]");
 const suggestedTools = document.querySelector("[data-journey-suggested-tools]");
 const recentActivity = document.querySelector("[data-journey-recent-activity]");
 const diagnostics = document.querySelector("[data-journey-diagnostics]");
@@ -109,10 +110,21 @@ function renderStatusOptions() {
   statusInput.innerHTML = "";
   PROJECT_JOURNEY_STATUSES.forEach((status) => {
     const option = createElement("option", {
-      text: `${status.marker} ${status.label} ${status.icon}`,
+      text: `${status.icon} ${status.label}`,
     });
     option.value = status.id;
     statusInput.append(option);
+  });
+}
+
+function renderStatusLegend() {
+  statusLegend?.replaceChildren();
+  PROJECT_JOURNEY_STATUSES.forEach((status) => {
+    statusLegend?.append(
+      createElement("span", {
+        text: `${status.icon} ${status.label}`,
+      }),
+    );
   });
 }
 
@@ -133,7 +145,7 @@ function renderSummary(notes) {
     const cell = createElement("td", {
       text: "No notes match the current Project Journey filter.",
     });
-    cell.colSpan = 9;
+    cell.colSpan = 10;
     row.append(cell);
     summaryBody.append(row);
     return;
@@ -152,12 +164,13 @@ function renderSummary(notes) {
     row.append(
       nameCell,
       createElement("td", { text: note.type?.name || "Unknown" }),
+      createElement("td", { text: String(note.counts.total) }),
       createElement("td", { text: String(note.counts.open) }),
       createElement("td", { text: String(note.counts["not-started"]) }),
-      createElement("td", { text: String(note.counts["in-progress"]) }),
-      createElement("td", { text: String(note.counts.complete) }),
       createElement("td", { text: String(note.counts.blocker) }),
       createElement("td", { text: String(note.counts.decide) }),
+      createElement("td", { text: String(note.counts["in-progress"]) }),
+      createElement("td", { text: String(note.counts.complete) }),
       createElement("td", { text: formatDate(note.updatedAt) }),
     );
     summaryBody.append(row);
@@ -233,6 +246,7 @@ function renderEditor() {
 
 function renderStats(note) {
   const counts = note?.counts || {
+    total: 0,
     open: 0,
     "not-started": 0,
     "in-progress": 0,
@@ -358,7 +372,7 @@ function renderDiagnostics(activeProject, note, notes) {
 
   if (note) {
     messages.push(`Selected note: ${note.name}.`);
-    messages.push(`Open count is computed from ⬜, 🟡, ⛔, and ❓ rows.`);
+    messages.push(`Total counts every row; Open counts ⬜, ⛔, ❓, and 🟡 rows.`);
   }
 
   const list = createElement("ul");
@@ -493,5 +507,6 @@ addTypeButton.addEventListener("click", () => {
 });
 
 renderStatusOptions();
+renderStatusLegend();
 applyInitialProjectRoute();
 render();

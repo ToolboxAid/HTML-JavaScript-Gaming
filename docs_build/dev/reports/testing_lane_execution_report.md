@@ -194,3 +194,22 @@ This section records the full targeted validation set for `PR_26156_189-project-
 | `npm run test:playwright:static` | PASS | Changed-file/static zero-browser validation. |
 
 Full samples smoke was not run, per PR instructions.
+
+## PR_26156_190 Status Legend And Journey Counts Manual Lane Summary
+
+This section records the targeted validation set for `PR_26156_190-status-legend-and-journey-counts-polish`.
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `node --check admin/notes.js` | PASS | Admin Notes parser/legend runtime syntax check. |
+| `node --check toolbox/project-journey/project-journey.js` | PASS | Project Journey runtime syntax check. |
+| `node --check toolbox/project-journey/project-journey-mock-repository.js` | PASS | Project Journey mock repository syntax check. |
+| `node --check tests/playwright/tools/AdminNotesViewer.spec.mjs` | PASS | Admin Notes targeted spec syntax check. |
+| `node --check tests/playwright/tools/ProjectJourneyTool.spec.mjs` | PASS | Project Journey targeted spec syntax check. |
+| `rg --pcre2 ... admin/notes.js admin/notes.html toolbox/project-journey ...` | PASS | No inline CSS/script handlers and no archive/start_of_day references in touched active files. |
+| `npx playwright test tests/playwright/tools/AdminNotesViewer.spec.mjs --workers=1` | PASS | 3 tests; Admin Notes parser/UI lane and raw-marker legend order. |
+| `npx playwright test tests/playwright/tools/ProjectJourneyTool.spec.mjs --workers=1` | PASS | 6 tests; Project Journey dropdown labels, status legend order, Total/Open summary counts, row editing, filters, indent/outdent, and movement behavior. |
+| `npx playwright test tests/playwright/tools/AdminNotesViewer.spec.mjs tests/playwright/tools/ProjectJourneyTool.spec.mjs --workers=1` | PASS | 9 tests; combined targeted run used for final V8 coverage report. |
+| `npm run test:playwright:static` | PASS | Changed-file/static zero-browser validation. |
+
+Full samples smoke was not run, per PR instructions.

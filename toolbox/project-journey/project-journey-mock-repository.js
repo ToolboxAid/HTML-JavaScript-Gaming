@@ -13,20 +13,6 @@ export const PROJECT_JOURNEY_STATUSES = [
     open: true,
   },
   {
-    id: "in-progress",
-    marker: "[.]",
-    label: "In Progress",
-    icon: "🟡",
-    open: true,
-  },
-  {
-    id: "complete",
-    marker: "[x]",
-    label: "Complete",
-    icon: "✅",
-    open: false,
-  },
-  {
     id: "blocker",
     marker: "[!]",
     label: "Blocker",
@@ -39,6 +25,20 @@ export const PROJECT_JOURNEY_STATUSES = [
     label: "Decide",
     icon: "❓",
     open: true,
+  },
+  {
+    id: "in-progress",
+    marker: "[.]",
+    label: "In Progress",
+    icon: "🟡",
+    open: true,
+  },
+  {
+    id: "complete",
+    marker: "[x]",
+    label: "Complete",
+    icon: "✅",
+    open: false,
   },
 ];
 
@@ -266,6 +266,7 @@ export function createProjectJourneyMockRepository(options = {}) {
 
   function getNoteCounts(noteId) {
     const counts = {
+      total: 0,
       open: 0,
       "not-started": 0,
       "in-progress": 0,
@@ -279,6 +280,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       if (!status) {
         return;
       }
+      counts.total += 1;
       counts[entry.statusId] += 1;
       if (status.open) {
         counts.open += 1;

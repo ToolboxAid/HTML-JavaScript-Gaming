@@ -7,34 +7,39 @@ const STATUS_ICON_PATTERN = /^\[([ xX.!?])\]\s*(.*)$/;
 const NOTE_INDEX_FILE = "index.txt";
 const STATUS_MARKERS = {
   " ": {
+    marker: "[ ]",
     icon: "⬜",
     label: "Not Started",
     name: "not-started",
     title: "Not Started"
   },
-  ".": {
-    icon: "🟡",
-    label: "In Progress",
-    name: "in-progress",
-    title: "In Progress"
-  },
-  x: {
-    icon: "✅",
-    label: "Complete",
-    name: "complete",
-    title: "Complete"
-  },
   "!": {
+    marker: "[!]",
     icon: "⛔",
     label: "Blocker",
     name: "blocker",
     title: "Blocker"
   },
   "?": {
+    marker: "[?]",
     icon: "❓",
     label: "Decide",
     name: "decide",
     title: "Decide which project questions need their own subnote files."
+  },
+  ".": {
+    marker: "[.]",
+    icon: "🟡",
+    label: "In Progress",
+    name: "in-progress",
+    title: "In Progress"
+  },
+  x: {
+    marker: "[x]",
+    icon: "✅",
+    label: "Complete",
+    name: "complete",
+    title: "Complete"
   }
 };
 
@@ -332,7 +337,7 @@ class AdminNotesViewer {
       item.dataset.adminNotesLegendItem = marker.name;
       const icon = this.documentRef.createElement("span");
       icon.dataset.adminNotesLegendIcon = marker.name;
-      icon.textContent = marker.icon;
+      icon.textContent = `${marker.marker} ${marker.icon}`;
       item.append(icon);
       item.append(this.documentRef.createTextNode(` ${marker.label}`));
       this.legendList?.append(item);

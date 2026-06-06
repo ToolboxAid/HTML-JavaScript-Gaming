@@ -102,11 +102,11 @@ test("Admin Notes displays index.txt, parser output, and linked subnotes", async
     await expect(page.locator("[data-admin-notes-legend]")).toContainText("Status Legend");
     const legendItems = page.locator("[data-admin-notes-legend-item]");
     await expect(legendItems).toHaveText([
-      "⬜ Not Started",
-      "🟡 In Progress",
-      "✅ Complete",
-      "⛔ Blocker",
-      "❓ Decide"
+      "[ ] ⬜ Not Started",
+      "[!] ⛔ Blocker",
+      "[?] ❓ Decide",
+      "[.] 🟡 In Progress",
+      "[x] ✅ Complete"
     ]);
     await expect(page.locator("[data-admin-notes-legend] [title]")).toHaveCount(0);
     const legendLabelBox = await page.locator("[data-admin-notes-legend] strong").boundingBox();

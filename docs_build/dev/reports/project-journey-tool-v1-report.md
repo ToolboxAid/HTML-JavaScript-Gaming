@@ -18,7 +18,8 @@ Task: PR_26156_189-project-journey-tool-v1
   - `[x]` Complete / `✅`
   - `[!]` Blocker / `⛔`
   - `[?]` Decide / `❓`
-- Open count is computed as Not Started + In Progress + Blocker + Decide.
+- Total count is every entry in the note.
+- Open count is computed as Not Started + Blocker + Decide + In Progress. Complete entries are not counted as Open.
 
 ## UI Coverage
 
