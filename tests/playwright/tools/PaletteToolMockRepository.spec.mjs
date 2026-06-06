@@ -383,6 +383,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-selected-name]")).toHaveValue("");
     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
     await expect(page.locator("[data-palette-tags]")).toHaveValue("");
+    await expect(page.locator("[data-palette-editor-form] input[placeholder], [data-palette-user-swatch-form] input[placeholder]")).toHaveCount(0);
     await expect(page.locator("[data-palette-editor-tags-input-row] th")).toHaveAttribute("rowspan", "2");
     const tagInputRowBox = await page.locator("[data-palette-editor-tags-input-row]").boundingBox();
     const tagListRowBox = await page.locator("[data-palette-editor-tags-list-row]").boundingBox();
@@ -477,6 +478,8 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-selected-hex]")).toHaveValue("");
     await expect(page.locator("[data-palette-selected-name]")).toHaveValue("");
     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
+    await expect(page.locator("[data-palette-tags]")).toHaveValue("");
+    await expect(page.locator("[data-palette-editor-form] input[placeholder], [data-palette-user-swatch-form] input[placeholder]")).toHaveCount(0);
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toBeEnabled();
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toBeEnabled();
     await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toBeEnabled();

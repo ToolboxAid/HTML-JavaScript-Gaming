@@ -17,7 +17,6 @@ Exercised tool entry points detected:
 (83%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(87%) toolbox/colors/palette-workspace-repository.js - executed lines 1190/1190; executed functions 113/130
 (95%) toolbox/colors/colors.js - executed lines 793/793; executed functions 77/81
 
 Files with executed line/function counts where available:
@@ -34,5 +33,4 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(87%) toolbox/colors/palette-workspace-repository.js - changed JS file with browser V8 coverage
 (95%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
