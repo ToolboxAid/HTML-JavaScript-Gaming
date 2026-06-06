@@ -1,4 +1,5 @@
 import {
+  PALETTE_SOURCE_USER,
   PALETTE_TOOL_KEY,
   PALETTE_WORKSPACE_PATH,
   createProjectWorkspacePaletteRepository,
@@ -279,6 +280,14 @@ function fillUserSwatchForm(swatch) {
   if (elements.name) elements.name.value = swatch?.name || "";
 }
 
+function isUserDefinedSwatch(swatch) {
+  return swatch?.source === PALETTE_SOURCE_USER;
+}
+
+function selectedUserDefinedSwatch(snapshot) {
+  return isUserDefinedSwatch(snapshot?.selectedSwatch) ? snapshot.selectedSwatch : null;
+}
+
 function clearUserSwatchForm() {
   fillUserSwatchForm(null);
   editorIssues = [];
@@ -407,6 +416,9 @@ function renderPaletteControls() {
 
 function renderProject(snapshot) {
   const activeProject = snapshot.activeProject;
+  const selectedSwatch = snapshot.selectedSwatch;
+  const userSwatch = selectedUserDefinedSwatch(snapshot);
+  const userDefinedLocked = snapshot.projectRequired || snapshot.validation.status === "Reject";
   setText(
     elements.activeProject,
     activeProject ? `${activeProject.name} - ${activeProject.purpose}` : "No active project."
@@ -416,8 +428,15 @@ function renderProject(snapshot) {
     activeProject ? `Palette edits save live to ${PALETTE_WORKSPACE_PATH}.` : "Active project required."
   );
   setHidden(elements.projectOverlay, !snapshot.projectRequired);
-  setDisabled(userDefinedControls(), snapshot.projectRequired || snapshot.validation.status === "Reject");
-  setDisabled(elements.update, snapshot.projectRequired || snapshot.validation.status === "Reject" || !snapshot.selectedSwatch);
+  if (selectedSwatch && !userSwatch) {
+    fillUserSwatchForm(null);
+  }
+  setDisabled(userDefinedControls(), userDefinedLocked);
+  setDisabled(elements.update, userDefinedLocked || !userSwatch);
+  setText(
+    elements.userSwatchDiagnostic,
+    userSwatch ? `Editing base values for ${userSwatch.name}.` : selectedSwatch ? "Ready for a new user-defined swatch." : "Ready for a user-defined swatch."
+  );
 }
 
 function renderSelectedSwatchEditor(snapshot) {
@@ -652,7 +671,7 @@ function render() {
 function applyResult(result) {
   editorIssues = result.issues || [];
   if (result.snapshot) {
-    fillUserSwatchForm(result.snapshot.selectedSwatch);
+    fillUserSwatchForm(selectedUserDefinedSwatch(result.snapshot));
   }
   setText(elements.log, result.message);
   setText(elements.userSwatchDiagnostic, result.message);
@@ -699,7 +718,7 @@ elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
   const result = repository.addSwatch(readUserSwatchForm());
   if (result.ok) {
-    fillUserSwatchForm(result.snapshot.selectedSwatch);
+    fillUserSwatchForm(selectedUserDefinedSwatch(result.snapshot));
   }
   applyResult(result);
 });
@@ -730,7 +749,7 @@ elements.editorTagsList?.addEventListener("click", (event) => {
 elements.update?.addEventListener("click", () => {
   const result = repository.updateSelectedSwatch(readUserSwatchForm());
   if (result.ok) {
-    fillUserSwatchForm(result.snapshot.selectedSwatch);
+    fillUserSwatchForm(selectedUserDefinedSwatch(result.snapshot));
   }
   applyResult(result);
 });
@@ -838,14 +857,14 @@ elements.userList?.addEventListener("click", (event) => {
     const result = repository.removeSwatch(tile.dataset.paletteSwatchRow);
     selectedSourceSwatch = null;
     if (deletingSelected || !result.snapshot.selectedSwatch) {
-      fillUserSwatchForm(result.snapshot.selectedSwatch);
+      fillUserSwatchForm(selectedUserDefinedSwatch(result.snapshot));
     }
     applyResult(result);
     return;
   }
 
   const snapshot = repository.selectSwatch(tile.dataset.paletteSwatchRow);
-  fillUserSwatchForm(snapshot.selectedSwatch);
+  fillUserSwatchForm(selectedUserDefinedSwatch(snapshot));
   selectedSourceSwatch = null;
   editorIssues = [];
   render();

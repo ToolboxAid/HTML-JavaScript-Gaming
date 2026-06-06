@@ -1,4 +1,4 @@
-# PR_26156_176 Testing Lane Execution Report
+# PR_26156_177 Testing Lane Execution Report
 
 ## Result
 PASS
@@ -10,7 +10,7 @@ PASS
   - PASS
 - `node --check tests/playwright/tools/PaletteToolMockRepository.spec.mjs`
   - PASS
-- `rg "style=|<style|onclick|onchange|oninput|onsubmit" toolbox/colors/index.html toolbox/colors/colors.js toolbox/colors/palette-workspace-repository.js tests/playwright/tools/PaletteToolMockRepository.spec.mjs`
+- `rg "style=|<style|onclick|onchange|oninput|onsubmit" toolbox/colors/index.html toolbox/colors/colors.js toolbox/colors/palette-workspace-repository.js assets/theme-v2/css/forms.css assets/theme-v2/css/buttons.css tests/playwright/tools/PaletteToolMockRepository.spec.mjs`
   - PASS, no matches
 - `rg "readEditorForm|fillEditorForm|clearEditorForm|validateEditor|tagsFromText|elements\\.remove|data-palette-remove" toolbox/colors tests/playwright/tools/PaletteToolMockRepository.spec.mjs`
   - PASS, no matches
@@ -28,26 +28,26 @@ PASS
 - Changed-file/static validation: PASS.
 
 ## Playwright Coverage
-- Source-pinned user Palette Colors start with empty tags: PASS.
-- Harmony-pinned user Palette Colors start with empty tags: PASS.
-- Manual Add Swatch starts user tags empty: PASS.
-- Rendered user tags appear side by side: PASS.
-- Clicking a rendered tag deletes it from the selected project palette color: PASS.
-- Pressing Enter adds only the user-entered tag: PASS.
-- Swatch Editor has disabled Symbol, Hex, and Name mirror fields: PASS.
-- Swatch Editor enables Tags only when a Palette Colors swatch is selected: PASS.
-- Swatch Editor has no Add, Update, Remove, or Clear actions: PASS.
-- User Defined Swatch has Symbol, Hex, and Name and no Tags: PASS.
-- Selected swatch removal clears selected editor fields and disables Tags: PASS.
+- Disabled Swatch Editor selected-value fields preserve normal text color, text fill, and opacity: PASS.
+- Selected source-backed Palette Colors swatch values appear in Swatch Editor: PASS.
+- Selected user-defined Palette Colors swatch values appear in Swatch Editor: PASS.
+- Swatch Editor Symbol, Hex, and Name remain disabled: PASS.
+- Tags are disabled with no selected project palette color and enabled with selected project palette colors: PASS.
+- Tag input and rendered tag action area are split across two rows: PASS.
+- Tag action-group uses the tight 50% gap utility: PASS.
+- User Defined Swatch remains enabled and blank for new user-defined swatch creation with no selected color: PASS.
+- User Defined Swatch is blank with Add/Clear enabled for selected non-user colors: PASS.
+- User Defined Swatch populates and enables for selected user-defined colors: PASS.
 
 ## Impacted Lane
 - Palette Tool runtime/UI lane.
+- Theme V2 static validation for reusable form/action-group utility classes used by Palette.
 - Changed-file/static validation lane.
 
 ## Skipped Lanes
 - Full samples smoke was skipped by BUILD instruction.
-- Shared Tool Center fullscreen UI lane was skipped because PR176 did not modify shared Tool Center or Theme V2 layout behavior.
-- Broader tool lanes were skipped because changes are confined to Palette Tool tag/editor behavior and the targeted Palette spec covers the changed runtime/UI paths.
+- Shared Tool Center fullscreen UI lane was skipped because PR177 did not modify shared Tool Center layout behavior.
+- Broader tool lanes were skipped because the new Theme V2 utilities are only used by Palette in this delta, and the targeted Palette spec verifies their rendered behavior.
 
 ## Not Run
 - Full samples smoke was not run, per BUILD instruction.

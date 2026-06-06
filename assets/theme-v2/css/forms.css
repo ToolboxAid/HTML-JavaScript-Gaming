@@ -68,6 +68,14 @@ select {
   padding: var(--space-12)
 }
 
+.field-value--readable-disabled:disabled {
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+  background: var(--panel);
+  border-color: var(--line);
+  opacity: 1
+}
+
 input[type="checkbox"],
 input[type="radio"] {
   width: var(--icon-size-sm);

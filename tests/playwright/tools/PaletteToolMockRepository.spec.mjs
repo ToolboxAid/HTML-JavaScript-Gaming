@@ -150,6 +150,24 @@ async function expectControlGroupsShareLine(page, sortSelector, sizeSelector) {
   expect(Math.abs(sortCenter - sizeCenter)).toBeLessThan(4);
 }
 
+async function expectReadableDisabledField(page, selector, value) {
+  const field = page.locator(selector);
+  await expect(field).toBeDisabled();
+  await expect(field).toHaveValue(value);
+  const style = await field.evaluate((node) => {
+    const computed = getComputedStyle(node);
+    return {
+      bodyColor: getComputedStyle(document.body).color,
+      color: computed.color,
+      opacity: computed.opacity,
+      textFillColor: computed.webkitTextFillColor
+    };
+  });
+  expect(style.opacity).toBe("1");
+  expect(style.color).toBe(style.bodyColor);
+  expect(style.textFillColor).toBe(style.bodyColor);
+}
+
 async function expectSwatchRegionScrollsOnly(page, scrollSelector, controlsSelector, summarySelector) {
   const scrollRegion = page.locator(scrollSelector);
   const controls = page.locator(controlsSelector);
@@ -365,6 +383,19 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-selected-name]")).toHaveValue("");
     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
     await expect(page.locator("[data-palette-tags]")).toHaveValue("");
+    await expect(page.locator("[data-palette-editor-tags-input-row] th")).toHaveAttribute("rowspan", "2");
+    const tagInputRowBox = await page.locator("[data-palette-editor-tags-input-row]").boundingBox();
+    const tagListRowBox = await page.locator("[data-palette-editor-tags-list-row]").boundingBox();
+    expect(tagListRowBox?.y || 0).toBeGreaterThan((tagInputRowBox?.y || 0) + (tagInputRowBox?.height || 0) - 2);
+    const tagActionLayout = await page.locator("[data-palette-editor-tags-list]").evaluate((node) => {
+      const style = getComputedStyle(node);
+      return {
+        columnGap: style.columnGap,
+        hasTightClass: node.classList.contains("action-group--tight")
+      };
+    });
+    expect(tagActionLayout.hasTightClass).toBe(true);
+    expect(tagActionLayout.columnGap).toBe("5px");
     await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_colors");
     await expect(page.locator("[data-palette-project-accordion]")).toBeVisible();
     await expect(page.locator("[data-palette-source-accordion]")).toBeVisible();
@@ -411,6 +442,22 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveCount(1);
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveAttribute("data-palette-selected", "true");
     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Black");
+    const blackTile = page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']");
+    const blackSymbol = await blackTile.getAttribute("data-palette-swatch-row");
+    const blackHex = await blackTile.getAttribute("data-palette-swatch-hex");
+    await expectReadableDisabledField(page, "[data-palette-selected-symbol]", blackSymbol || "");
+    await expectReadableDisabledField(page, "[data-palette-selected-hex]", blackHex || "");
+    await expectReadableDisabledField(page, "[data-palette-selected-name]", "Black");
+    await expect(page.locator("[data-palette-tags]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toHaveValue("");
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toHaveValue("");
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toHaveValue("");
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add Swatch" })).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Update Selected" })).toBeDisabled();
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Clear Form" })).toBeEnabled();
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveAttribute("data-palette-swatch-tags", "");
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Black']")).toHaveAttribute("title", /^Symbol: .+\nHex: #[0-9A-F]{6}\nName: Black\nTags: None$/);
     await expect(page.locator("[data-palette-source-index]").first()).toHaveAttribute("data-palette-pinned", "true");
@@ -430,6 +477,12 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-selected-hex]")).toHaveValue("");
     await expect(page.locator("[data-palette-selected-name]")).toHaveValue("");
     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Add Swatch" })).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Update Selected" })).toBeDisabled();
+    await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Clear Form" })).toBeEnabled();
     await page.locator("[data-palette-source-search]").fill("");
     await expect(page.locator("[data-palette-source-index]")).toHaveCount(8);
     await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(0);
@@ -474,13 +527,16 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("title", "Symbol: H\nHex: #123456AA\nName: Hero Blue\nTags: None");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-selected", "true");
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-tags", "");
-    await expect(page.locator("[data-palette-selected-symbol]")).toHaveValue("H");
-    await expect(page.locator("[data-palette-selected-hex]")).toHaveValue("#123456AA");
-    await expect(page.locator("[data-palette-selected-name]")).toHaveValue("Hero Blue");
-    await expect(page.locator("[data-palette-selected-symbol]")).toBeDisabled();
-    await expect(page.locator("[data-palette-selected-hex]")).toBeDisabled();
-    await expect(page.locator("[data-palette-selected-name]")).toBeDisabled();
+    await expectReadableDisabledField(page, "[data-palette-selected-symbol]", "H");
+    await expectReadableDisabledField(page, "[data-palette-selected-hex]", "#123456AA");
+    await expectReadableDisabledField(page, "[data-palette-selected-name]", "Hero Blue");
     await expect(page.locator("[data-palette-tags]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toBeEnabled();
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toHaveValue("H");
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toHaveValue("#123456AA");
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toHaveValue("Hero Blue");
     await expect(page.locator("[data-palette-editor-tags-list]")).toContainText("No tags added.");
     await expect(page.locator("[data-palette-user-swatch-form]").getByRole("button", { name: "Update Selected" })).toBeEnabled();
     await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("aria-current", "true");
@@ -546,6 +602,9 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-swatch-tags", "ui, feature");
     await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("title", "Symbol: J\nHex: #ABCDEF\nName: Hero Updated\nTags: ui, feature");
     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Hero Updated");
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-symbol]")).toHaveValue("J");
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-hex]")).toHaveValue("#ABCDEF");
+    await expect(page.locator("[data-palette-user-swatch-form] [data-palette-name]")).toHaveValue("Hero Updated");
     await expect(page.locator("[data-palette-user-list]")).not.toContainText(/Hero Updated|ui, feature|Symbol|Name|Hex|Source|Tags/);
 
     await page.getByRole("button", { name: "Undo" }).click();

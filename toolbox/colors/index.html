@@ -46,22 +46,26 @@
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row"><label for="paletteSelectedSymbolInput">Symbol</label></th>
-                                                        <td><input id="paletteSelectedSymbolInput" maxlength="2" type="text" data-palette-selected-symbol disabled></td>
+                                                        <td><input class="field-value--readable-disabled" id="paletteSelectedSymbolInput" maxlength="2" type="text" data-palette-selected-symbol readonly disabled></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="paletteSelectedHexInput">Hex</label></th>
-                                                        <td><input id="paletteSelectedHexInput" type="text" placeholder="#1F75FE" data-palette-selected-hex disabled></td>
+                                                        <td><input class="field-value--readable-disabled" id="paletteSelectedHexInput" type="text" placeholder="#1F75FE" data-palette-selected-hex readonly disabled></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="paletteSelectedNameInput">Name</label></th>
-                                                        <td><input id="paletteSelectedNameInput" type="text" placeholder="Hero Blue" data-palette-selected-name disabled></td>
+                                                        <td><input class="field-value--readable-disabled" id="paletteSelectedNameInput" type="text" placeholder="Hero Blue" data-palette-selected-name readonly disabled></td>
                                                     </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="paletteTagsInput">Tags</label></th>
+                                                    <tr data-palette-editor-tags-input-row>
+                                                        <th scope="row" rowspan="2"><label for="paletteTagsInput">Tags</label></th>
                                                         <td>
                                                             <input id="paletteTagsInput" type="text" placeholder="hero" list="paletteTagSuggestions" data-palette-tags>
                                                             <datalist id="paletteTagSuggestions" data-palette-tag-suggestions></datalist>
-                                                            <div class="action-group" role="list" aria-label="Selected palette color tags" data-palette-editor-tags-list>
+                                                        </td>
+                                                    </tr>
+                                                    <tr data-palette-editor-tags-list-row>
+                                                        <td>
+                                                            <div class="action-group action-group--tight" role="list" aria-label="Selected palette color tags" data-palette-editor-tags-list>
                                                                 <p class="status">No tags added.</p>
                                                             </div>
                                                         </td>

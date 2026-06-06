@@ -50,6 +50,10 @@
   align-items: center
 }
 
+.action-group--tight {
+  gap: calc(var(--space-10) / 2)
+}
+
 .action-group--end {
   justify-content: flex-end
 }
