@@ -48,9 +48,13 @@ const statTargets = {
   "not-started": document.querySelector("[data-journey-stat-not-started]"),
   "in-progress": document.querySelector("[data-journey-stat-in-progress]"),
   complete: document.querySelector("[data-journey-stat-complete]"),
+  skipped: document.querySelector("[data-journey-stat-skipped]"),
   blocker: document.querySelector("[data-journey-stat-blocker]"),
   decide: document.querySelector("[data-journey-stat-decide]"),
 };
+const sortButtonLabels = new Map(
+  sortButtons.map((button) => [button.dataset.journeySort, button.textContent.trim()]),
+);
 
 let activeFilter = "all";
 let selectedSummaryNoteId = "note-design-pass";
@@ -244,7 +248,7 @@ function summarySortValue(note, key) {
   if (key === "updated") {
     return note.updatedAt;
   }
-  if (["not-started", "blocker", "decide", "in-progress", "complete", "open", "total"].includes(key)) {
+  if (["not-started", "blocker", "decide", "in-progress", "complete", "skipped", "open", "total"].includes(key)) {
     return note.counts?.[key] || 0;
   }
   return "";
@@ -266,6 +270,13 @@ function updateSortHeaders() {
   sortHeaders.forEach((header) => {
     const selected = header.dataset.journeySortHeader === summarySort.key;
     header.setAttribute("aria-sort", selected ? (summarySort.direction === "asc" ? "ascending" : "descending") : "none");
+    const button = header.querySelector("[data-journey-sort]");
+    if (button) {
+      const baseLabel = sortButtonLabels.get(button.dataset.journeySort) || button.textContent.trim();
+      button.textContent = selected ? `${baseLabel} ${summarySort.direction === "asc" ? "↑" : "↓"}` : baseLabel;
+      button.classList.toggle("primary", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    }
   });
 }
 
@@ -278,7 +289,7 @@ function renderSummary(notes) {
     const cell = createElement("td", {
       text: "No notes match the current Project Journey filter.",
     });
-    cell.colSpan = 10;
+    cell.colSpan = 11;
     row.append(cell);
     summaryBody.append(row);
     return;
@@ -307,6 +318,7 @@ function renderSummary(notes) {
       createElement("td", { text: String(note.counts.decide) }),
       createElement("td", { text: String(note.counts["in-progress"]) }),
       createElement("td", { text: String(note.counts.complete) }),
+      createElement("td", { text: String(note.counts.skipped) }),
       createElement("td", { text: String(note.counts.open) }),
       createElement("td", { text: String(note.counts.total) }),
       createElement("td", { text: formatDate(note.updatedAt) }),
@@ -518,6 +530,7 @@ function emptyCounts() {
     "not-started": 0,
     "in-progress": 0,
     complete: 0,
+    skipped: 0,
     blocker: 0,
     decide: 0,
   };

@@ -36,10 +36,11 @@
                                         <button class="btn btn--compact" type="button" data-journey-filter="all">All Notes</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="mine">My Notes</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="not-started">Not Started</button>
-                                        <button class="btn btn--compact" type="button" data-journey-filter="in-progress">In Progress</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="blocker">Blocked</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="decide">Decisions</button>
+                                        <button class="btn btn--compact" type="button" data-journey-filter="in-progress">In Progress</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="complete">Complete</button>
+                                        <button class="btn btn--compact" type="button" data-journey-filter="skipped">Skipped</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="system">System Generated</button>
                                     </div>
                                 </div>
@@ -116,13 +117,14 @@
                                                     <th scope="col" data-journey-sort-header="decide"><button class="btn btn--compact" type="button" data-journey-sort="decide">❓</button></th>
                                                     <th scope="col" data-journey-sort-header="in-progress"><button class="btn btn--compact" type="button" data-journey-sort="in-progress">🟡</button></th>
                                                     <th scope="col" data-journey-sort-header="complete"><button class="btn btn--compact" type="button" data-journey-sort="complete">✅</button></th>
+                                                    <th scope="col" data-journey-sort-header="skipped"><button class="btn btn--compact" type="button" data-journey-sort="skipped">⏭️</button></th>
                                                     <th scope="col" data-journey-sort-header="open"><button class="btn btn--compact" type="button" data-journey-sort="open">Open</button></th>
                                                     <th scope="col" data-journey-sort-header="total"><button class="btn btn--compact" type="button" data-journey-sort="total">Total</button></th>
                                                     <th scope="col" data-journey-sort-header="updated"><button class="btn btn--compact" type="button" data-journey-sort="updated">Updated</button></th>
                                                 </tr>
                                             </thead>
                                             <tbody data-journey-summary-body>
-                                                <tr><td colspan="10">Loading notes.</td></tr>
+                                                <tr><td colspan="11">Loading notes.</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -156,6 +158,7 @@
                                         <article class="mini-stat"><strong data-journey-stat-decide>0</strong><span data-journey-stat-label>❓ Decide</span></article>
                                         <article class="mini-stat"><strong data-journey-stat-in-progress>0</strong><span data-journey-stat-label>🟡 In Progress</span></article>
                                         <article class="mini-stat"><strong data-journey-stat-complete>0</strong><span data-journey-stat-label>✅ Complete</span></article>
+                                        <article class="mini-stat"><strong data-journey-stat-skipped>0</strong><span data-journey-stat-label>⏭️ Skipped</span></article>
                                     </div>
                                     <div class="callout">
                                         <strong>Status Legend</strong>

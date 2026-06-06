@@ -96,10 +96,10 @@ test("Admin DB Viewer shows read-only mock DB tables and diagnostics", async ({ 
     );
     await expect(page.locator("[data-admin-db-bleed-findings]")).toContainText("No table bleed detected.");
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "project_journey_items.noteId -> project_journey_notes.id: 8/8 records linked."
+      "project_journey_items.noteId -> project_journey_notes.id: 9/9 records linked."
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "system project_journey_items.templateId -> active project_journey_templates.templateId: 8/8 records linked."
+      "system project_journey_items.templateId -> active project_journey_templates.templateId: 9/9 records linked."
     );
     await expect(page.locator("[data-admin-db-missing-links]")).toContainText("No missing links detected.");
     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select, [data-admin-db-viewer] button")).toHaveCount(0);

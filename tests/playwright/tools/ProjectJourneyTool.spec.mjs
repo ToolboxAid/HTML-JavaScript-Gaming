@@ -89,8 +89,24 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[data-journey-stat-not-started]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("0");
     await expect(page.locator("[data-journey-filter='all']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-filter='all']")).toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-journey-filter]")).toHaveText([
+      "All Notes",
+      "My Notes",
+      "Not Started",
+      "Blocked",
+      "Decisions",
+      "In Progress",
+      "Complete",
+      "Skipped",
+      "System Generated",
+    ]);
+    const compactButtonWidth = await page.locator("[data-journey-filter='all']").evaluate((button) =>
+      Number.parseFloat(getComputedStyle(button).minWidth),
+    );
+    expect(compactButtonWidth).toBeGreaterThanOrEqual(70);
     const statTileLayout = await page.locator("[aria-label='Selected note statistics'] .mini-stat").evaluateAll((tiles) =>
       tiles.map((tile) => {
         const label = tile.querySelector("[data-journey-stat-label]");
@@ -104,8 +120,9 @@ test("Project Journey edits rows and updates note summary counts live", async ({
         };
       }),
     );
-    expect(statTileLayout).toHaveLength(7);
+    expect(statTileLayout).toHaveLength(8);
     expect(statTileLayout.map((tile) => tile.children)).toEqual([
+      ["STRONG", "SPAN"],
       ["STRONG", "SPAN"],
       ["STRONG", "SPAN"],
       ["STRONG", "SPAN"],
@@ -194,7 +211,7 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     });
     await expect(page.locator("#journeyStatusInput option")).toHaveText(statusLabels());
     const dropdownLabels = await page.locator("#journeyStatusInput option").allTextContents();
-    expect(dropdownLabels.some((label) => /\[[ .x!?]\]/.test(label))).toBe(false);
+    expect(dropdownLabels.some((label) => /\[[ .x!?-]\]/.test(label))).toBe(false);
     await expect(page.locator("[data-journey-status-legend] span")).toHaveText(statusLabels());
     await expect(page.locator("aside.tool-column").last().locator("details > summary", { hasText: /^Status Legend$/ })).toHaveCount(0);
     await expect(page.locator("details > summary", { hasText: /^Note Tree$/ })).toHaveCount(1);
@@ -213,9 +230,10 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       PROJECT_JOURNEY_STATUSES[2].icon,
       PROJECT_JOURNEY_STATUSES[3].icon,
       PROJECT_JOURNEY_STATUSES[4].icon,
+      PROJECT_JOURNEY_STATUSES[5].icon,
       "Open",
       "Total",
-      "Updated"
+      "Updated ↓"
     ]);
     const summaryTableWidth = await page.locator("[data-journey-summary-table]").evaluate((table) => {
       const tableBox = table.getBoundingClientRect();
@@ -243,8 +261,8 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[data-journey-item-tree]")).toContainText("Batch verification item");
     await expect(page.locator("[data-journey-item-details-input]")).toHaveValue("User-created verification details.");
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(3)).toHaveText("1");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(7)).toHaveText("4");
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(8)).toHaveText("4");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(9)).toHaveText("4");
 
     await page.getByLabel("Status").selectOption("complete");
     await page.getByRole("button", { name: "Update Item" }).click();
@@ -252,8 +270,18 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("4");
     await expect(page.locator("[data-journey-stat-complete]")).toHaveText("1");
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(6)).toHaveText("1");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(7)).toHaveText("3");
-    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(8)).toHaveText("4");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(8)).toHaveText("3");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(9)).toHaveText("4");
+
+    await page.getByLabel("Status").selectOption("skipped");
+    await page.getByRole("button", { name: "Update Item" }).click();
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("3");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("4");
+    await expect(page.locator("[data-journey-stat-complete]")).toHaveText("0");
+    await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("1");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(7)).toHaveText("1");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(8)).toHaveText("3");
+    await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(9)).toHaveText("4");
 
     await page.getByRole("button", { name: /Confirm batch tag language/ }).click();
     await page.getByRole("button", { name: "<" }).click();
@@ -320,16 +348,25 @@ test("Project Journey sorts summary columns and adds user-owned notes", async ({
       "decide",
       "in-progress",
       "complete",
+      "skipped",
       "open",
       "total",
       "updated",
     ];
     await expect(page.locator("[data-journey-sort-header='updated']")).toHaveAttribute("aria-sort", "descending");
+    await expect(page.locator("[data-journey-sort='updated']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-sort='updated']")).toContainText("↓");
+    await expect(page.locator("[data-journey-sort='name']")).not.toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-sort='name']")).not.toContainText(/[↑↓]/);
     for (const key of sortKeys) {
       await page.locator(`[data-journey-sort="${key}"]`).click();
       await expect(page.locator(`[data-journey-sort-header="${key}"]`)).toHaveAttribute("aria-sort", "ascending");
+      await expect(page.locator(`[data-journey-sort="${key}"]`)).toHaveClass(/primary/);
+      await expect(page.locator(`[data-journey-sort="${key}"]`)).toContainText("↑");
       await page.locator(`[data-journey-sort="${key}"]`).click();
       await expect(page.locator(`[data-journey-sort-header="${key}"]`)).toHaveAttribute("aria-sort", "descending");
+      await expect(page.locator(`[data-journey-sort="${key}"]`)).toHaveClass(/primary/);
+      await expect(page.locator(`[data-journey-sort="${key}"]`)).toContainText("↓");
     }
 
     await page.locator("[data-journey-sort='name']").click();
@@ -370,7 +407,7 @@ test("Project Journey sorts summary columns and adds user-owned notes", async ({
     await expect(page.locator("[data-journey-filter='system']")).toHaveAttribute("aria-current", "true");
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: System Generated (4 notes).");
-    await expect(page.locator("[data-journey-stat-total]")).toHaveText("8");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("9");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("7");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Usability Audit");
     await expect(page.locator("[data-journey-item-tree]")).not.toContainText("First user-added task");
@@ -405,23 +442,24 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
     await page.locator("[data-journey-filter='all']").click();
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: All Notes (4 notes).");
-    await expect(page.locator("[data-journey-stat-total]")).toHaveText("8");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("9");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("7");
 
     await page.locator("[data-journey-filter='blocker']").click();
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Blocked (1 notes).");
-    await expect(page.locator("[data-journey-stat-total]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("3");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-blocker]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-complete]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("1");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Story Beats");
 
     await page.getByRole("button", { name: "Release Readiness" }).click();
     await expect(page.locator("[data-journey-note-button='note-release-readiness']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for selected note: Release Readiness.");
-    await expect(page.locator("[data-journey-stat-total]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("3");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
 
     await page.locator("[data-journey-filter='decide']").click();
@@ -441,6 +479,16 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
     await page.locator("[data-journey-filter='complete']").click();
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Complete (1 notes).");
+
+    await page.locator("[data-journey-filter='skipped']").click();
+    await expect(page.locator("[data-journey-filter='skipped']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Skipped (1 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("3");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("1");
+    await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
+    await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Story Beats");
 
     await expectNoPageFailures(failures);
   } finally {

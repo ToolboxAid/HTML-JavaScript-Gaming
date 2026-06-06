@@ -40,6 +40,13 @@ export const PROJECT_JOURNEY_STATUSES = [
     icon: "✅",
     open: false,
   },
+  {
+    id: "skipped",
+    marker: "[-]",
+    label: "Skipped",
+    icon: "⏭️",
+    open: false,
+  },
 ];
 
 export const PROJECT_JOURNEY_STATUS_BY_ID = Object.fromEntries(
@@ -307,6 +314,16 @@ function getSeedTables() {
       minutes: 14,
     }),
     makeSystemItem({
+      itemId: "item-release-3",
+      noteId: "note-release-readiness",
+      status: "skipped",
+      title: "Skip launch-day checklist items that no longer apply.",
+      templateId: "template-archive-boundary",
+      indent: 0,
+      order: 3,
+      minutes: 15,
+    }),
+    makeSystemItem({
       itemId: "item-story-1",
       noteId: "note-story-map",
       status: "not-started",
@@ -314,7 +331,7 @@ function getSeedTables() {
       templateId: "template-opening-goal",
       indent: 0,
       order: 1,
-      minutes: 15,
+      minutes: 16,
     }),
     makeSystemItem({
       itemId: "item-story-2",
@@ -324,7 +341,7 @@ function getSeedTables() {
       templateId: "template-tutorial-milestones",
       indent: 1,
       order: 2,
-      minutes: 16,
+      minutes: 17,
     }),
     makeSystemItem({
       itemId: "item-research-1",
@@ -334,7 +351,7 @@ function getSeedTables() {
       templateId: "template-ux-subnotes",
       indent: 0,
       order: 1,
-      minutes: 17,
+      minutes: 18,
     }),
   ];
 
@@ -490,6 +507,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       "not-started": 0,
       "in-progress": 0,
       complete: 0,
+      skipped: 0,
       blocker: 0,
       decide: 0,
     };

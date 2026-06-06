@@ -19,6 +19,7 @@
 
 .btn--compact {
   margin: var(--space-0);
+  min-width: calc(var(--space-44) + var(--space-28));
   padding: var(--space-3) var(--space-8);
   font-size: var(--font-size-xs);
   font-weight: 600;

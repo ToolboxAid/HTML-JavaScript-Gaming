@@ -103,6 +103,7 @@ test("Admin Notes displays index.txt, parser output, and linked subnotes", async
     await expect(page.locator("[data-admin-notes-status-icon='in-progress']")).toHaveText("🟡");
     await expect(page.locator("[data-admin-notes-status-icon='blocker']")).toHaveText("⛔");
     await expect(page.locator("[data-admin-notes-status-icon='decide']")).toHaveText("❓");
+    await expect(page.locator("[data-admin-notes-status-icon='skipped']")).toHaveText("⏭️");
     await expect(page.locator("[data-admin-notes-status-icon='decide']")).toHaveAttribute(
       "title",
       "Decide which project questions need their own subnote files."
@@ -141,7 +142,8 @@ test("Admin Notes displays index.txt, parser output, and linked subnotes", async
       "[!] ⛔ Blocker",
       "[?] ❓ Decide",
       "[.] 🟡 In Progress",
-      "[x] ✅ Complete"
+      "[x] ✅ Complete",
+      "[-] ⏭️ Skipped"
     ]);
     await expect(page.locator("[data-admin-notes-legend] [title]")).toHaveCount(0);
     const legendLabelBox = await page.locator("[data-admin-notes-legend] strong").boundingBox();

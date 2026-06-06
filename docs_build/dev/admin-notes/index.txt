@@ -8,6 +8,7 @@ Ideas
 
 Things to Fix
 - [!] Replace placeholder notes with concrete admin follow-up items.
+- [-] Keep intentionally skipped work visible without counting it as open.
 - Track fixes that are not ready for a dedicated BUILD_PR yet.
 
 Undecided Questions

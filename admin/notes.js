@@ -2,7 +2,7 @@ const NOTES_DIRECTORY = "docs_build/dev/admin-notes";
 const DEFAULT_NOTE = "index";
 const LINK_CLASS = "btn btn--compact primary";
 const NOTE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
-const STATUS_ICON_PATTERN = /^\[([ xX.!?])\]\s*(.*)$/;
+const STATUS_ICON_PATTERN = /^\[([ xX.!?-])\]\s*(.*)$/;
 const NOTE_INDEX_FILE = "index.txt";
 const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
 const STATUS_MARKERS = {
@@ -40,6 +40,13 @@ const STATUS_MARKERS = {
     label: "Complete",
     name: "complete",
     title: "Complete"
+  },
+  "-": {
+    marker: "[-]",
+    icon: "⏭️",
+    label: "Skipped",
+    name: "skipped",
+    title: "Skipped"
   }
 };
 
