@@ -1,0 +1,3 @@
+Other
+- [x] This is a sample linked admin subnote.
+  - Return to index.txt goes back to the main admin note.

@@ -1,3 +1,0 @@
-Other
-- This is a sample linked admin subnote.
-- Use Return to note.txt to get back to the main admin note.
