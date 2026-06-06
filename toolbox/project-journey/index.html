@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Journey - GameFoundryStudio</title>
+    <meta name="description" content="Project Journey Tool V2 page for project-scoped notes, entry status, activity, and suggested toolbox handoffs.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-electric-blue">
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Toolbox / Project Journey</div>
+                <h1>Project Journey</h1>
+                <p class="lede">Track project-scoped notes, nested work rows, status counts, and toolbox handoffs from the active project.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide">
+                    <aside class="tool-column tool-group-build">
+                        <div class="tool-column-header">
+                            <h2>Journey Controls</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Navigation</summary>
+                                <div class="accordion-body">
+                                    <div class="action-group" role="group" aria-label="Project Journey note filters">
+                                        <button class="btn btn--compact" type="button" data-journey-filter="all">All Notes</button>
+                                        <button class="btn btn--compact" type="button" data-journey-filter="mine">My Notes</button>
+                                        <button class="btn btn--compact" type="button" data-journey-filter="not-started">Not Started</button>
+                                        <button class="btn btn--compact" type="button" data-journey-filter="in-progress">In Progress</button>
+                                        <button class="btn btn--compact" type="button" data-journey-filter="blocker">Blocked</button>
+                                        <button class="btn btn--compact" type="button" data-journey-filter="decide">Decisions</button>
+                                        <button class="btn btn--compact" type="button" data-journey-filter="complete">Complete</button>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Selected Row Editor</summary>
+                                <div class="accordion-body content-stack">
+                                    <form class="content-stack content-stack--compact" data-journey-editor-form>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="Selected journey row editor fields">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="journeyStatusInput">Status</label></th>
+                                                        <td><select id="journeyStatusInput" data-journey-status-input></select></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="journeyEntryTextInput">Entry</label></th>
+                                                        <td><input id="journeyEntryTextInput" type="text" placeholder="Write the next project journey row" data-journey-entry-text-input></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="action-group" aria-label="Selected row ordering controls">
+                                            <button class="btn btn--compact" type="button" data-journey-move-up>Move Up</button>
+                                            <button class="btn btn--compact" type="button" data-journey-move-down>Move Down</button>
+                                            <button class="btn btn--compact" type="button" data-journey-outdent>&lt;</button>
+                                            <button class="btn btn--compact" type="button" data-journey-indent>&gt;</button>
+                                        </div>
+                                        <div class="action-group" aria-label="Selected row save controls">
+                                            <button class="btn primary" type="button" data-journey-add-row>Add Row</button>
+                                            <button class="btn" type="submit" data-journey-update-row>Update Row</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Note Types</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Seeded defaults stay extensible in the Project Journey mock data.</p>
+                                    <label for="journeyTypeInput">Add Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
+                                    <button class="btn" type="button" data-journey-add-type>Add Type</button>
+                                    <div class="status" role="status" data-journey-type-status>Default types ready.</div>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="project-journey" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Project Journey Board</h2>
+                        <p data-journey-active-project>Waiting for active project data.</p>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Summary Table</summary>
+                                <div class="accordion-body">
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Project Journey note summary">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Type</th>
+                                                    <th scope="col">Open</th>
+                                                    <th scope="col">⬜</th>
+                                                    <th scope="col">🟡</th>
+                                                    <th scope="col">✅</th>
+                                                    <th scope="col">⛔</th>
+                                                    <th scope="col">❓</th>
+                                                    <th scope="col">Updated</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-journey-summary-body>
+                                                <tr><td colspan="9">Loading notes.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Selected Note Tree</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="status" role="status" data-journey-selected-note>Choose a note from the summary table.</div>
+                                    <div data-journey-entry-tree></div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Free-form Notes</summary>
+                                <div class="accordion-body content-stack">
+                                    <label for="journeyFreeformNotes">Selected note details</label>
+                                    <textarea id="journeyFreeformNotes" rows="6" data-journey-freeform-notes></textarea>
+                                </div>
+                            </details>
+                        </div>
+                    </section>
+                    <aside class="tool-column tool-group-build">
+                        <div class="tool-column-header">
+                            <h2>Journey Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Statistics</summary>
+                                <div class="accordion-body">
+                                    <div class="grid cols-2" aria-label="Selected note statistics">
+                                        <article class="mini-stat"><strong data-journey-stat-open>0</strong>Open</article>
+                                        <article class="mini-stat"><strong data-journey-stat-not-started>0</strong>Not Started</article>
+                                        <article class="mini-stat"><strong data-journey-stat-in-progress>0</strong>In Progress</article>
+                                        <article class="mini-stat"><strong data-journey-stat-complete>0</strong>Complete</article>
+                                        <article class="mini-stat"><strong data-journey-stat-blocker>0</strong>Blocked</article>
+                                        <article class="mini-stat"><strong data-journey-stat-decide>0</strong>Decisions</article>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Suggested Tools</summary>
+                                <div class="accordion-body">
+                                    <div class="content-stack content-stack--compact" data-journey-suggested-tools></div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Recent Activity</summary>
+                                <div class="accordion-body">
+                                    <div class="content-stack content-stack--compact" data-journey-recent-activity></div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Diagnostics</summary>
+                                <div class="accordion-body">
+                                    <div class="content-stack content-stack--compact" data-journey-diagnostics></div>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js"></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js"></script>
+    <script type="module" src="toolbox/project-journey/project-journey.js"></script>
+</body>
+
+</html>

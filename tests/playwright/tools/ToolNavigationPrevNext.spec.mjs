@@ -141,8 +141,8 @@ test("Tool Display Mode renders build-order previous and next controls", async (
   const failures = await openRepoPage(page, "/toolbox/game-design/index.html?role=user");
 
   try {
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: Project Workspace");
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/project-workspace/index.html?role=user");
+    await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: Project Journey");
+    await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/project-journey/index.html?role=user");
     await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Game Configuration");
     await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/game-configuration/index.html?role=user");
     await expectNoPageFailures(failures);
@@ -158,8 +158,8 @@ test("Project Workspace Tool Display Mode follows registry build order", async (
   try {
     await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: AI Assistant");
     await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/ai-assistant/index.html?role=user");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Game Design");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/game-design/index.html?role=user");
+    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Project Journey");
+    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/project-journey/index.html?role=user");
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);

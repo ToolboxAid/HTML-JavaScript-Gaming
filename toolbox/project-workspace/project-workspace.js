@@ -25,6 +25,7 @@ const elements = {
   progressChecklist: document.querySelector("[data-project-progress-checklist]"),
   projectList: document.querySelector("[data-project-list]"),
   projectProgress: document.querySelector("[data-project-progress]"),
+  projectJourneyLink: document.querySelector("[data-project-journey-link]"),
   purposeInput: document.querySelector("[data-project-purpose-input]"),
   projectStatus: document.querySelector("[data-project-status]"),
   projectStatusInput: document.querySelector("[data-project-status-input]"),
@@ -216,6 +217,15 @@ function renderWorkspace() {
   }
   if (elements.currentUserRoleInput) {
     elements.currentUserRoleInput.value = currentMember?.role || "Viewer";
+  }
+  if (elements.projectJourneyLink) {
+    if (activeProject) {
+      elements.projectJourneyLink.href = `toolbox/project-journey/index.html?project=${encodeURIComponent(activeProject.id)}`;
+      elements.projectJourneyLink.setAttribute("aria-disabled", "false");
+    } else {
+      elements.projectJourneyLink.href = "toolbox/project-journey/index.html?project=none";
+      elements.projectJourneyLink.setAttribute("aria-disabled", "true");
+    }
   }
 
   renderProjectList();

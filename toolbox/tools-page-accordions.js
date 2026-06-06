@@ -44,6 +44,7 @@ import {
     });
     const buildPathAlwaysRequired = Object.freeze([
         "Project Workspace",
+        "Project Journey",
         "Game Design",
         "Game Configuration",
         "Build Game",
@@ -52,14 +53,14 @@ import {
     ]);
     const roleFocusTools = Object.freeze({
         Owner: null,
-        Designer: ["Project Workspace", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"],
+        Designer: ["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"],
         "World Builder": ["Worlds", "Objects", "Assets", "Colors", "Animations"],
         Artist: ["Assets", "Colors", "Fonts", "Sprites", "Characters", "Objects", "Animations"],
         "Audio Creator": ["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"],
         Translator: ["Languages", "Voices", "Voice Capture", "Voice Output"],
         Tester: ["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"],
         Publisher: ["Publish", "Marketplace", "Community", "Cloud", "Languages"],
-        Viewer: ["Project Workspace", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]
+        Viewer: ["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]
     });
     const registryTools = getActiveToolRegistry();
     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
@@ -106,7 +107,8 @@ import {
                 "groupClass": "tool-group-build",
                 "note": "Start with the single project surface that coordinates current focus, readiness, and recommended next tool.",
                 "tools": [
-                        "Project Workspace"
+                        "Project Workspace",
+                        "Project Journey"
                 ]
         },
         {

@@ -95,6 +95,40 @@ export const TOOL_REGISTRY = Object.freeze([
     "toolboxGroup": "Build"
   },
   {
+    "id": "project-journey",
+    "name": "Project Journey",
+    "displayName": "Project Journey",
+    "shortDescription": "Track project notes, nested work rows, status counts, and suggested toolbox handoffs.",
+    "shortLabel": "Project Journey",
+    "path": "project-journey",
+    "folderName": "project-journey",
+    "entryPoint": "project-journey/index.html",
+    "badge": "/assets/theme-v2/images/badges/project-workspace.png",
+    "tool": "/assets/theme-v2/images/tools/project-workspace.png",
+    "description": "Track project notes, nested work rows, status counts, and suggested toolbox handoffs.",
+    "category": "Build/Create",
+    "colorGroup": "tool-group-build",
+    "active": true,
+    "order": 2.5,
+    "requiredForPlayable": false,
+    "requiredForTestable": true,
+    "requiredForPublish": false,
+    "requires": [
+      "project-workspace"
+    ],
+    "status": "Ready",
+    "progressChecklist": [
+      "Open Project Workspace",
+      "Review project-scoped notes",
+      "Track open journey rows"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Build"
+  },
+  {
     "id": "game-design",
     "name": "Game Design",
     "displayName": "Game Design",

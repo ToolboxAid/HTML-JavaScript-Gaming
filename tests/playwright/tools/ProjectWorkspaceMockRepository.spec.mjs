@@ -377,9 +377,10 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
   const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
 
   try {
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 5/38");
     await expect(page.locator("[data-toolbox-role-focus]")).toHaveCount(0);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
@@ -387,8 +388,9 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Designer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Designer']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 5/38");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
@@ -398,7 +400,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Audio%20Creator`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Audio Creator']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 1/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 1/38");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Audio$/ }) })).toHaveCount(0);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^MIDI$/ }) })).toHaveCount(0);
@@ -406,9 +408,10 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Viewer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Viewer']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 5/38");
     await expect(page.getByText("Viewer focus shows preview-safe read-only tiles only.")).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
@@ -416,7 +419,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await expect(page.locator("[data-project-data-menu]")).toBeHidden();
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 37/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 38/38");
     await expect(page.locator("[data-project-data-menu]")).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Cloud$/ }) })).toBeVisible();
 
