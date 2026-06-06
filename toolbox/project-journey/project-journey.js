@@ -9,6 +9,8 @@ import { getActiveToolRegistry } from "../toolRegistry.js";
 const repository = createProjectJourneyMockRepository();
 const registryTools = getActiveToolRegistry();
 const params = new URLSearchParams(window.location.search);
+const DELETE_CONFIRMATION_MESSAGE = "It is best to keep the note unless it was created by mistake.";
+const FORGE_BOT_INDICATOR_SRC = "assets/theme-v2/images/forge-bot.svg";
 
 const filterButtons = Array.from(document.querySelectorAll("[data-journey-filter]"));
 const summaryBody = document.querySelector("[data-journey-summary-body]");
@@ -20,7 +22,6 @@ const statusInput = document.querySelector("[data-journey-status-input]");
 const entryTextInput = document.querySelector("[data-journey-entry-text-input]");
 const addRowButton = document.querySelector("[data-journey-add-row]");
 const updateRowButton = document.querySelector("[data-journey-update-row]");
-const deleteRowButton = document.querySelector("[data-journey-delete-row]");
 const moveUpButton = document.querySelector("[data-journey-move-up]");
 const moveDownButton = document.querySelector("[data-journey-move-down]");
 const indentButton = document.querySelector("[data-journey-indent]");
@@ -91,7 +92,6 @@ function setEditingDisabled(disabled) {
     entryTextInput,
     addRowButton,
     updateRowButton,
-    deleteRowButton,
     moveUpButton,
     moveDownButton,
     indentButton,
@@ -201,6 +201,46 @@ function makeEntryButton(entry) {
   return button;
 }
 
+function createSystemEntryIndicator() {
+  const indicator = createElement("img");
+  indicator.className = "brand-color-swatch";
+  indicator.src = FORGE_BOT_INDICATOR_SRC;
+  indicator.alt = "forge-bot created";
+  indicator.title = "forge-bot created";
+  indicator.dataset.journeySystemEntryIndicator = "";
+  return indicator;
+}
+
+function createDeleteEntryButton(entry) {
+  const button = createElement("button", {
+    className: "btn btn--compact",
+  });
+  const icon = createElement("span", {
+    className: "fa fa-trash",
+  });
+  button.type = "button";
+  button.title = "Delete user-created row";
+  button.setAttribute("aria-label", "Delete user-created row");
+  icon.setAttribute("aria-hidden", "true");
+  button.append(icon);
+  button.dataset.journeyDeleteEntry = entry.id;
+  return button;
+}
+
+function makeEntryRowContent(entry) {
+  const row = createElement("span", {
+    className: "action-group action-group--tight",
+  });
+  row.dataset.journeyEntryRow = entry.id;
+  row.append(makeEntryButton(entry));
+  if (entry.createdByType === "user") {
+    row.append(createDeleteEntryButton(entry));
+  } else {
+    row.append(createSystemEntryIndicator());
+  }
+  return row;
+}
+
 function renderEntryTree(note) {
   entryTree.innerHTML = "";
 
@@ -236,7 +276,7 @@ function renderEntryTree(note) {
 
     const item = createElement("li");
     item.setAttribute("role", "treeitem");
-    item.append(makeEntryButton(entry));
+    item.append(makeEntryRowContent(entry));
     lists[indent].append(item);
     lastItems[indent] = item;
   });
@@ -249,9 +289,6 @@ function renderEditor(editingDisabled) {
   if (!selectedEntry) {
     statusInput.value = "not-started";
     entryTextInput.value = "";
-    if (deleteRowButton) {
-      deleteRowButton.disabled = true;
-    }
     if (editorStatus) {
       editorStatus.textContent = "Select a journey row to review ownership.";
     }
@@ -260,14 +297,11 @@ function renderEditor(editingDisabled) {
 
   statusInput.value = selectedEntry.statusId;
   entryTextInput.value = selectedEntry.text;
-  if (deleteRowButton) {
-    deleteRowButton.disabled = Boolean(editingDisabled || selectedEntry.createdByType !== "user");
-  }
   if (editorStatus) {
     editorStatus.textContent =
       selectedEntry.createdByType === "system"
-        ? `System-created row. Delete disabled. Original meaning: ${selectedEntry.originalSystemMeaning || selectedEntry.text}`
-        : `User-created row by ${selectedEntry.createdBy || PROJECT_JOURNEY_CURRENT_USER_ID}. Delete available.`;
+        ? `System-created row. Original meaning: ${selectedEntry.originalSystemMeaning || selectedEntry.text}`
+        : `User-created row by ${selectedEntry.createdBy || PROJECT_JOURNEY_CURRENT_USER_ID}.`;
   }
 }
 
@@ -500,6 +534,18 @@ summaryBody.addEventListener("click", (event) => {
 });
 
 entryTree.addEventListener("click", (event) => {
+  const deleteButton = event.target.closest("[data-journey-delete-entry]");
+  if (deleteButton) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!window.confirm(DELETE_CONFIRMATION_MESSAGE)) {
+      return;
+    }
+    repository.deleteEntry(deleteButton.dataset.journeyDeleteEntry);
+    render();
+    return;
+  }
+
   const button = event.target.closest("[data-journey-entry-button]");
   if (!button) {
     return;
@@ -529,15 +575,6 @@ editorForm.addEventListener("submit", (event) => {
     text: entryTextInput.value,
     statusId: statusInput.value,
   });
-  render();
-});
-
-deleteRowButton.addEventListener("click", () => {
-  const selectedEntry = getSelectedEntry();
-  const result = repository.deleteEntry(selectedEntry?.id);
-  if (editorStatus && result?.reason) {
-    editorStatus.textContent = result.reason;
-  }
   render();
 });
 

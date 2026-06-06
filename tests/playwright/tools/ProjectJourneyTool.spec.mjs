@@ -78,6 +78,41 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("[data-journey-stat-not-started]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
+    const statusIconPattern = /[\u2b1c\u26d4\u2753\u2705]|\u{1f7e1}/u;
+    const statTileLayout = await page.locator("[aria-label='Selected note statistics'] .mini-stat").evaluateAll((tiles) =>
+      tiles.map((tile) => {
+        const label = tile.querySelector("[data-journey-stat-label]");
+        return {
+          children: Array.from(tile.children).map((child) => child.tagName),
+          labelClass: label?.className || "",
+          labelText: label?.textContent?.trim() || "",
+          hasStatusClass: Array.from(tile.querySelectorAll("*")).some((element) =>
+            /\b(status|pill)\b/.test(element.className || ""),
+          ),
+        };
+      }),
+    );
+    expect(statTileLayout).toHaveLength(7);
+    expect(statTileLayout.map((tile) => tile.children)).toEqual([
+      ["STRONG", "SPAN"],
+      ["STRONG", "SPAN"],
+      ["STRONG", "SPAN"],
+      ["STRONG", "SPAN"],
+      ["STRONG", "SPAN"],
+      ["STRONG", "SPAN"],
+      ["STRONG", "SPAN"],
+    ]);
+    expect(statTileLayout.map((tile) => tile.labelText)).toEqual([
+      "Open",
+      "Total",
+      "Not Started",
+      "Blocked",
+      "Decisions",
+      "In Progress",
+      "Complete",
+    ]);
+    expect(statTileLayout.every((tile) => tile.labelClass === "" && !tile.hasStatusClass && !statusIconPattern.test(tile.labelText))).toBe(true);
+    await expect(page.locator("[aria-label='Selected note statistics']")).not.toContainText(statusIconPattern);
     await expect(page.locator("[data-journey-note-button='note-design-pass']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-entry-button='entry-design-1']")).toHaveClass(/primary/);
     await expect(page.locator("#journeyStatusInput option")).toHaveText([
@@ -231,7 +266,13 @@ test("Project Journey enforces entry ownership while preserving system meaning",
 
   try {
     await expect(page.locator("[data-journey-entry-button='entry-design-1']")).toHaveClass(/primary/);
-    await expect(page.getByRole("button", { name: "Delete Row" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Delete Row" })).toHaveCount(0);
+    const systemRow = page.locator("[data-journey-entry-row='entry-design-1']");
+    await expect(systemRow.locator("[data-journey-delete-entry]")).toHaveCount(0);
+    const systemIndicator = systemRow.locator("[data-journey-system-entry-indicator]");
+    await expect(systemIndicator).toHaveAttribute("src", /forge-bot\.svg$/);
+    await expect(systemIndicator).toHaveAttribute("alt", "forge-bot created");
+    await expect(systemIndicator).toHaveAttribute("title", "forge-bot created");
     await expect(page.locator("[data-journey-editor-status]")).toContainText("System-created row");
     await expect(page.locator("[data-journey-editor-status]")).toContainText("Original meaning: Review palette swatch affordance");
 
@@ -239,7 +280,7 @@ test("Project Journey enforces entry ownership while preserving system meaning",
     await page.getByLabel("Status").selectOption("blocker");
     await page.getByRole("button", { name: "Update Row" }).click();
     await expect(page.locator("[data-journey-entry-tree]")).toContainText("System row edited label");
-    await expect(page.getByRole("button", { name: "Delete Row" })).toBeDisabled();
+    await expect(systemRow.locator("[data-journey-delete-entry]")).toHaveCount(0);
     await expect(page.locator("[data-journey-editor-status]")).toContainText("Original meaning: Review palette swatch affordance");
 
     await page.getByLabel("Entry").fill("User owned cleanup row");
@@ -247,10 +288,26 @@ test("Project Journey enforces entry ownership while preserving system meaning",
     await page.getByRole("button", { name: "Add Row" }).click();
     await expect(page.locator("[data-journey-entry-tree]")).toContainText("User owned cleanup row");
     await expect(page.locator("[data-journey-editor-status]")).toContainText("User-created row");
-    await expect(page.getByRole("button", { name: "Delete Row" })).toBeEnabled();
+    const userRow = page.locator("[data-journey-entry-row]").filter({ hasText: "User owned cleanup row" });
+    await expect(userRow.locator("[data-journey-system-entry-indicator]")).toHaveCount(0);
+    await expect(userRow.locator("[data-journey-delete-entry]")).toHaveCount(1);
+    const deleteUserRow = userRow.getByRole("button", { name: "Delete user-created row" });
+    await expect(deleteUserRow).toBeVisible();
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("4");
 
-    await page.getByRole("button", { name: "Delete Row" }).click();
+    page.once("dialog", async (dialog) => {
+      expect(dialog.message()).toBe("It is best to keep the note unless it was created by mistake.");
+      await dialog.dismiss();
+    });
+    await deleteUserRow.click();
+    await expect(page.locator("[data-journey-entry-tree]")).toContainText("User owned cleanup row");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("4");
+
+    page.once("dialog", async (dialog) => {
+      expect(dialog.message()).toBe("It is best to keep the note unless it was created by mistake.");
+      await dialog.accept();
+    });
+    await deleteUserRow.click();
     await expect(page.locator("[data-journey-entry-tree]")).not.toContainText("User owned cleanup row");
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("3");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("3");
@@ -302,6 +359,12 @@ test("Toolbox registration exposes Project Journey navigation", async ({ page })
     await expect(journeyLink).toHaveAttribute("href", /\/project-journey\/index\.html$/);
     await expect(journeyLink).toHaveAttribute("data-registered-tool-route", "toolbox/project-journey/index.html");
 
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&view=group&group=build`, { waitUntil: "networkidle" });
+    const userJourneyLink = page.locator("[data-toolbox-tool-name-link='Project Journey']").first();
+    await expect(userJourneyLink).toHaveText("Project Journey");
+    await expect(userJourneyLink).toHaveAttribute("href", /\/project-journey\/index\.html$/);
+    await expect(userJourneyLink).toHaveAttribute("data-registered-tool-route", "toolbox/project-journey/index.html");
+
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
@@ -327,4 +390,11 @@ test("Project Journey source stays separate from notes files and browser persist
       expect(source.includes(value), `${relativePath} must not include ${value}`).toBe(false);
     }
   }
+
+  const registrySource = await fs.readFile(path.join(repoRoot, "toolbox/toolRegistry.js"), "utf8");
+  const projectJourneyRegistry = registrySource.match(/"id": "project-journey"[\s\S]*?"toolboxGroup": "Build"/)?.[0] || "";
+  expect(projectJourneyRegistry).toContain('"status": "Ready"');
+  expect(projectJourneyRegistry).toContain('"requiredForPublish": true');
+  expect(projectJourneyRegistry).toContain('"adminOnly": false');
+  expect(projectJourneyRegistry).toContain('"visibleInToolsList": true');
 });

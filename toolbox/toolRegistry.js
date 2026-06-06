@@ -112,7 +112,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "order": 2.5,
     "requiredForPlayable": false,
     "requiredForTestable": true,
-    "requiredForPublish": false,
+    "requiredForPublish": true,
     "requires": [
       "project-workspace"
     ],
