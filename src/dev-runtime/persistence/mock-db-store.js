@@ -57,15 +57,14 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
   Object.freeze({
     adapterId: "local-db",
     adapterName: "LocalDbAdapter",
-    configured: false,
-    description: "Uses the LocalDbAdapter contract.",
-    diagnostic: "Local DB adapter not configured",
+    configured: true,
+    description: "Uses LocalDbAdapter backed by server local JSON storage.",
     environment: "Local DB",
     id: "local-db",
     label: "Local DB",
     persistence: "Local DB",
-    persistent: false,
-    usersEnabled: false,
+    persistent: true,
+    usersEnabled: true,
   }),
 ]);
 
@@ -344,7 +343,8 @@ function roleSlugsForUserKey(state, userKey) {
 
 function sessionUserFromKey(userKey, options = {}) {
   const key = String(userKey || "");
-  if (!isUlidKey(key) || selectedSessionModeId(options) !== "local-mem") {
+  const modeId = selectedSessionModeId(options);
+  if (!isUlidKey(key) || (modeId !== "local-mem" && modeId !== "local-db")) {
     return guestSessionUser();
   }
   const state = readMockDbState(options);
@@ -373,7 +373,8 @@ function selectedSessionUserKey(options = {}) {
   if (options.userKey) {
     return options.userKey;
   }
-  if (selectedSessionModeId(options) !== "local-mem" || !hasBrowserStorage()) {
+  const modeId = selectedSessionModeId(options);
+  if ((modeId !== "local-mem" && modeId !== "local-db") || !hasBrowserStorage()) {
     return "";
   }
   try {
@@ -384,7 +385,8 @@ function selectedSessionUserKey(options = {}) {
 }
 
 export function getMockDbSessionUsers(options = {}) {
-  if (selectedSessionModeId(options) !== "local-mem") {
+  const modeId = selectedSessionModeId(options);
+  if (modeId !== "local-mem" && modeId !== "local-db") {
     return [guestSessionUser()];
   }
   const state = readMockDbState(options);

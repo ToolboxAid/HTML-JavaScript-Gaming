@@ -19,27 +19,14 @@ Exercised tool entry points detected:
 Changed runtime JS files covered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/session-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/assetUsageIntegration.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/platformShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/projectSystem.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/toolHostManifest.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/toolLaunchSSoTData.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/assets/assets-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/assets/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/colors/palette-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/colors/palette-workspace-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-configuration/game-configuration-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-design/game-design-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/project-journey/project-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (56%) src/engine/api/server-api-client.js - executed lines 154/154; executed functions 10/18
 (60%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 3/5
-(74%) toolbox/tools-page-accordions.js - executed lines 774/774; executed functions 53/72
 (86%) src/engine/api/mock-db-viewer-ui.js - executed lines 478/478; executed functions 78/91
-(89%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 24/27
-(97%) toolbox/project-journey/project-journey.js - executed lines 1003/1003; executed functions 104/107
-(100%) toolbox/project-journey/project-journey-api-client.js - executed lines 12/12; executed functions 2/2
-(100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Files with executed line/function counts where available:
 (56%) src/engine/api/server-api-client.js - executed lines 154/154; executed functions 10/18
@@ -58,26 +45,17 @@ Files with executed line/function counts where available:
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/engine/api/session-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/shared/toolbox/assetUsageIntegration.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/shared/toolbox/platformShell.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/shared/toolbox/projectSystem.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/shared/toolbox/toolHostManifest.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/shared/toolbox/toolLaunchSSoTData.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/assets/assets-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/assets/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/colors/palette-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/colors/palette-workspace-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/game-configuration/game-configuration-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/game-design/game-design-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/project-journey/project-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
 (0%) admin/tools-progress.js - changed JS file not collected as browser runtime coverage
 (0%) assets/theme-v2/js/login-session.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/engine/api/session-api-client.js - changed JS file not collected as browser runtime coverage
 (0%) src/shared/toolbox/assetUsageIntegration.js - changed JS file not collected as browser runtime coverage
 (0%) src/shared/toolbox/platformShell.js - changed JS file not collected as browser runtime coverage
 (0%) src/shared/toolbox/projectSystem.js - changed JS file not collected as browser runtime coverage
@@ -86,21 +64,9 @@ Changed JS files considered:
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) toolbox/assets/assets-api-client.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/assets/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/colors/palette-api-client.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/colors/palette-workspace-repository.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/game-configuration/game-configuration-api-client.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/game-design/game-design-api-client.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
 (56%) src/engine/api/server-api-client.js - changed JS file with browser V8 coverage
 (60%) src/engine/api/mock-db-api-client.js - changed JS file with browser V8 coverage
 (64%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
 (67%) admin/db-viewer.js - changed JS file with browser V8 coverage
-(74%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
 (78%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 (86%) src/engine/api/mock-db-viewer-ui.js - changed JS file with browser V8 coverage
-(89%) toolbox/tool-registry-api-client.js - changed JS file with browser V8 coverage
-(97%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage
-(100%) toolbox/project-journey/project-journey-api-client.js - changed JS file with browser V8 coverage
-(100%) toolbox/project-workspace/project-workspace-api-client.js - changed JS file with browser V8 coverage

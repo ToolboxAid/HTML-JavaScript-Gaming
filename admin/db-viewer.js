@@ -35,7 +35,7 @@ async function loadLocalDbViewer() {
     return;
   }
   if (!localModeSelected()) {
-    showGatewayStatus("Local Mem DB is available only in Local Mem mode until Local DB adapter is configured.");
+    showGatewayStatus("Local Mem DB Viewer is available only in Local Mem mode.");
     return;
   }
   const module = await import("../src/engine/api/mock-db-viewer-ui.js");

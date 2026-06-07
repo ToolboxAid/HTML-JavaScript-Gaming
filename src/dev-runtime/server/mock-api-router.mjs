@@ -1,4 +1,12 @@
 import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
+import path from "node:path";
+import process from "node:process";
+import {
   createAssetToolMockRepository,
   pickerDiagnosticForRole,
 } from "../../../toolbox/assets/assets-mock-repository.js";
@@ -78,7 +86,7 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
       environment: "Local DB",
       persistence: "Local DB",
       selectableOnLocalLogin: true,
-      status: "not-configured",
+      status: "configured",
     }),
     Object.freeze({
       adapterId: "uat-db",
@@ -127,6 +135,11 @@ function toolRegistrySnapshot() {
 
 function isUlidKey(value) {
   return /^[0-9A-HJKMNP-TV-Z]{26}$/.test(String(value || ""));
+}
+
+function localDbStoragePath() {
+  return process.env.GAMEFOUNDRY_LOCAL_DB_PATH ||
+    path.join(process.cwd(), "tmp", "local-db", "local-db-state.json");
 }
 
 function sendJson(response, statusCode, payload) {
@@ -207,7 +220,7 @@ function guestSession(mode, diagnostic = "") {
 function sessionUserFromKey(tables, userKey, modeId) {
   const mode = modeById(modeId);
   const key = String(userKey || "");
-  if (mode.id !== LOCAL_MEM_MODE_ID) {
+  if (mode.id !== LOCAL_MEM_MODE_ID && mode.id !== LOCAL_DB_MODE_ID) {
     return guestSession(mode, mode.diagnostic || LOCAL_DB_NOT_CONFIGURED);
   }
   if (!isUlidKey(key)) {
@@ -317,10 +330,55 @@ class MockDbAdapter {
 class LocalDbAdapter {
   constructor(mode) {
     this.mode = mode;
+    this.storagePath = localDbStoragePath();
+  }
+
+  diagnostic(action, reason) {
+    return `${LOCAL_DB_NOT_CONFIGURED}. ${action} requires server local JSON storage at ${this.storagePath}. ${reason}`;
+  }
+
+  ensureStorage(action) {
+    if (process.env.GAMEFOUNDRY_LOCAL_DB_DISABLE === "1") {
+      throw new Error(this.diagnostic(action, "Storage initialization is disabled by GAMEFOUNDRY_LOCAL_DB_DISABLE."));
+    }
+    try {
+      mkdirSync(path.dirname(this.storagePath), { recursive: true });
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error || "Unable to create storage directory.");
+      throw new Error(this.diagnostic(action, reason));
+    }
+  }
+
+  readState(action, fallbackState) {
+    this.ensureStorage(action);
+    try {
+      if (!existsSync(this.storagePath)) {
+        this.writeState(action, fallbackState);
+      }
+      const raw = readFileSync(this.storagePath, "utf8");
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (!parsed || typeof parsed !== "object" || !parsed.tables || typeof parsed.tables !== "object") {
+        throw new Error("Stored Local DB state is missing a tables object.");
+      }
+      return clone(parsed);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error || "Unable to read Local DB state.");
+      throw new Error(this.diagnostic(action, reason));
+    }
+  }
+
+  writeState(action, state) {
+    this.ensureStorage(action);
+    try {
+      writeFileSync(this.storagePath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error || "Unable to write Local DB state.");
+      throw new Error(this.diagnostic(action, reason));
+    }
   }
 
   assertConfigured(action) {
-    throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. ${action} requires a configured LocalDbAdapter.`);
+    this.ensureStorage(action);
   }
 }
 
@@ -355,12 +413,21 @@ class LocalDevMockDataSource {
     this.currentAdapter().assertConfigured(action);
   }
 
-  seed(options = {}) {
-    if (!options.initial) {
-      this.assertConfiguredAdapter("Seeding Local Mem DB state");
-    }
-    this.cleared = false;
-    this.standaloneTables = clone(getStandaloneMockDbSeedTables());
+  currentStateSnapshot() {
+    return this.snapshot({ skipAdapterCheck: true });
+  }
+
+  applyStateSnapshot(state = {}) {
+    this.cleared = Boolean(state.cleared);
+    const sourceTables = state.tables && typeof state.tables === "object"
+      ? state.tables
+      : getStandaloneMockDbSeedTables();
+    this.standaloneTables = clone(sourceTables);
+    IDENTITY_TABLES.forEach((tableName) => {
+      if (!Array.isArray(this.standaloneTables[tableName])) {
+        this.standaloneTables[tableName] = [];
+      }
+    });
     this.sharedOptions = {
       memoryDbTables: this.standaloneTables,
       sessionMode: this.sessionModeId,
@@ -389,6 +456,30 @@ class LocalDevMockDataSource {
     this.repositoryById.clear();
   }
 
+  persistCurrentAdapterState(action) {
+    if (this.sessionModeId !== LOCAL_DB_MODE_ID) {
+      this.localMemState = clone(this.currentStateSnapshot());
+      return;
+    }
+    this.currentAdapter().writeState(action, this.currentStateSnapshot());
+  }
+
+  seed(options = {}) {
+    if (!options.initial) {
+      this.assertConfiguredAdapter("Seeding Local Mem DB state");
+    }
+    this.applyStateSnapshot({
+      cleared: false,
+      tables: getStandaloneMockDbSeedTables(),
+    });
+    if (options.initial) {
+      this.localMemState = clone(this.currentStateSnapshot());
+      return this.currentStateSnapshot();
+    }
+    this.persistCurrentAdapterState("Seeding Local DB state");
+    return this.snapshot();
+  }
+
   clear() {
     this.assertConfiguredAdapter("Clearing Local Mem DB state");
     this.cleared = true;
@@ -397,20 +488,17 @@ class LocalDevMockDataSource {
       this.standaloneTables[tableName] = [];
     });
     this.sharedOptions.memoryDbTables = this.standaloneTables;
-    return this.snapshot();
+    const snapshot = this.snapshot();
+    this.persistCurrentAdapterState("Clearing Local DB state");
+    return snapshot;
   }
 
   replaceTestingState(state = {}) {
     this.assertConfiguredAdapter("Replacing Local Mem DB testing state");
-    this.cleared = Boolean(state.cleared);
-    this.standaloneTables = clone(state.tables || {});
-    IDENTITY_TABLES.forEach((tableName) => {
-      if (!Array.isArray(this.standaloneTables[tableName])) {
-        this.standaloneTables[tableName] = [];
-      }
-    });
-    this.sharedOptions.memoryDbTables = this.standaloneTables;
-    return this.snapshot();
+    this.applyStateSnapshot(state);
+    const snapshot = this.snapshot();
+    this.persistCurrentAdapterState("Replacing Local DB testing state");
+    return snapshot;
   }
 
   setMode(modeId) {
@@ -418,18 +506,19 @@ class LocalDevMockDataSource {
     if (!nextMode) {
       throw new Error(`Unknown local login environment: ${modeId || "missing"}.`);
     }
+    this.persistCurrentAdapterState("Saving current local data source before mode switch");
+    const currentFallbackState = this.currentStateSnapshot();
+    const nextAdapter = this.adapterByModeId.get(nextMode.id);
+    const nextState = nextMode.id === LOCAL_DB_MODE_ID
+      ? nextAdapter.readState("Selecting Local DB", currentFallbackState)
+      : this.localMemState || currentFallbackState;
     this.sessionModeId = nextMode.id;
-    if (this.sessionModeId !== LOCAL_MEM_MODE_ID) {
-      this.sessionUserKey = "";
-    }
-    this.sharedOptions.sessionMode = this.sessionModeId;
-    this.sharedOptions.sessionUserKey = this.sessionUserKey;
+    this.applyStateSnapshot(nextState);
     return clone(nextMode);
   }
 
   setUser(userKey) {
     this.assertConfiguredAdapter("Selecting a session user");
-    this.sessionModeId = LOCAL_MEM_MODE_ID;
     this.sessionUserKey = String(userKey || "");
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
@@ -452,14 +541,14 @@ class LocalDevMockDataSource {
   }
 
   sessionUsers() {
-    if (this.sessionModeId !== LOCAL_MEM_MODE_ID) {
+    if (this.sessionModeId !== LOCAL_MEM_MODE_ID && this.sessionModeId !== LOCAL_DB_MODE_ID) {
       return [sessionUserFromKey(this.standaloneTables, "", this.sessionModeId)];
     }
-    const guest = sessionUserFromKey(this.standaloneTables, "", LOCAL_MEM_MODE_ID);
+    const guest = sessionUserFromKey(this.standaloneTables, "", this.sessionModeId);
     return [
       guest,
       ...(this.standaloneTables.users || [])
-        .map((user) => sessionUserFromKey(this.standaloneTables, user.key, LOCAL_MEM_MODE_ID))
+        .map((user) => sessionUserFromKey(this.standaloneTables, user.key, this.sessionModeId))
         .filter((user) => user.authenticated && !user.roleSlugs.includes("system")),
     ];
   }
@@ -588,11 +677,15 @@ class LocalDevMockDataSource {
     if (repository === this.assetRepository && methodName === "importAsset") {
       this.assetReadyInitialized = true;
     }
-    return method(...args);
+    const result = method(...args);
+    this.persistCurrentAdapterState(`Persisting ${methodName} result`);
+    return result;
   }
 
-  snapshot() {
-    this.assertConfiguredAdapter("Reading Local Mem DB state");
+  snapshot(options = {}) {
+    if (!options.skipAdapterCheck) {
+      this.assertConfiguredAdapter("Reading Local Mem DB state");
+    }
     const schemas = getMockDbTableSchemas();
     const toolGroups = getMockDbToolGroups();
     const owners = {
