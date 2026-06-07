@@ -138,6 +138,10 @@
         return rootPrefix() + (routeMap[routeName] || routeName || "index.html");
     }
 
+    function localRouteUnavailableDiagnostic(method, url, status) {
+        return "Local server API route unavailable for " + method + " " + url + " (" + status + "). Start the API-backed local server route instead of a static-only server.";
+    }
+
     function rewriteRootedPaths(root) {
         root.querySelectorAll("[data-route]").forEach(function (link) {
             link.setAttribute("href", routeHref(link.dataset.route));
@@ -156,6 +160,9 @@
             request.send(null);
             const payload = request.responseText ? JSON.parse(request.responseText) : null;
             if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
+                if (request.status === 404 || request.status === 405) {
+                    throw new Error(localRouteUnavailableDiagnostic("GET", "/api/session/current", request.status));
+                }
                 throw new Error(payload?.error || "Session API did not return a valid current session.");
             }
             const session = payload?.data || {};

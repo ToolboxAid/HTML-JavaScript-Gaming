@@ -170,6 +170,13 @@ function sendJson(response, statusCode, payload) {
   response.end(JSON.stringify(payload));
 }
 
+function sendNoContent(response, statusCode = 204) {
+  response.statusCode = statusCode;
+  response.setHeader("Allow", "GET, POST, HEAD, OPTIONS");
+  response.setHeader("Content-Type", "application/json; charset=utf-8");
+  response.end();
+}
+
 function ok(response, data) {
   sendJson(response, 200, {
     data,
@@ -904,7 +911,15 @@ export function createMockApiRouter() {
 
     try {
       const parts = requestUrl.pathname.split("/").filter(Boolean);
+      if (request.method === "OPTIONS") {
+        sendNoContent(response);
+        return true;
+      }
       if (parts[1] === "session") {
+        if (request.method === "HEAD" && ["current", "modes", "users"].includes(parts[2])) {
+          sendNoContent(response, 200);
+          return true;
+        }
         if (request.method === "GET" && parts[2] === "current") {
           ok(response, dataSource.currentSession());
           return true;

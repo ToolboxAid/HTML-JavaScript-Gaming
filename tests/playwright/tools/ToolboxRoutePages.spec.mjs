@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 
 const TOOL_ROUTE_SMOKE_CASES = [
@@ -22,10 +23,13 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
     failedRequests.push(`FAILED ${request.url()}`);
   });
   page.on("pageerror", (error) => {
-    pageErrors.push(error.message);
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) {
+      pageErrors.push(error.message);
+    }
   });
   page.on("console", (message) => {
-    if (message.type() === "error") {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
       consoleErrors.push(message.text());
     }
   });
