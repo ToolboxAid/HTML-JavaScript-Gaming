@@ -5,13 +5,13 @@ function unwrap(response, context) {
     throw new Error(response.error);
   }
   if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
-    throw new Error(`${context} did not return server data. Restore the server-backed Local Mem DB API.`);
+    throw new Error(`${context} did not return server data. Restore the server-backed DB Viewer API.`);
   }
   return response.payload.data;
 }
 
 export function getMockDbSnapshot() {
-  return unwrap(safeRequestServerApi("/mock-db/snapshot"), "Local Mem DB snapshot");
+  return unwrap(safeRequestServerApi("/mock-db/snapshot"), "DB Viewer snapshot");
 }
 
 export function clearMockDb() {

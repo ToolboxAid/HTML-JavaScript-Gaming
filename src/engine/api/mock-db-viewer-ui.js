@@ -20,7 +20,7 @@ const STANDALONE_TABLE_LABELS = Object.freeze({
 const IDENTITY_TABLE_GROUP = Object.freeze(["users", "user_roles", "roles"]);
 
 class AdminDbViewer {
-  constructor(documentRef = document) {
+  constructor(documentRef = document, options = {}) {
     this.document = documentRef;
     this.activeFilter = "all";
     this.clearButton = documentRef.querySelector("[data-admin-db-clear]");
@@ -29,9 +29,14 @@ class AdminDbViewer {
     this.diagnostics = documentRef.querySelector("[data-admin-db-diagnostics]");
     this.relationships = documentRef.querySelector("[data-admin-db-relationships]");
     this.tablesRoot = documentRef.querySelector("[data-admin-db-tables]");
+    this.session = options.session || {};
+    this.modeId = this.session.mode || "local-mem";
+    this.modeLabel = this.modeId === "local-db" ? "Local DB" : "Local Mem DB";
+    this.canWrite = this.modeId === "local-mem";
   }
 
   start() {
+    this.renderModeChrome();
     this.render();
     this.filterRoot?.addEventListener("click", (event) => {
       const button = event.target.closest("[data-admin-db-filter]");
@@ -41,6 +46,11 @@ class AdminDbViewer {
       this.activeFilter = button.dataset.adminDbFilter || "all";
       this.render();
     });
+    if (!this.canWrite) {
+      this.clearButton?.remove();
+      this.clearButton = null;
+      return;
+    }
     this.clearButton?.addEventListener("click", () => {
       const snapshot = getMockDbSnapshot();
       if (snapshot.cleared) {
@@ -58,8 +68,27 @@ class AdminDbViewer {
     });
   }
 
+  renderModeChrome() {
+    const modeLabel = this.modeLabel;
+    this.document.querySelectorAll("[data-admin-db-mode-title]").forEach((element) => {
+      element.textContent = modeLabel;
+    });
+    this.document.querySelectorAll("[data-admin-db-mode-kicker]").forEach((element) => {
+      element.textContent = element.closest(".page-title") ? `Admin Only / ${modeLabel}` : modeLabel;
+    });
+    this.document.querySelectorAll("[data-admin-db-mode-description]").forEach((element) => {
+      element.textContent = `Read-only ${modeLabel} dump for project tables, relationships, and data diagnostics.`;
+    });
+    this.document.querySelectorAll("[data-admin-db-scope-description]").forEach((element) => {
+      element.textContent = `Current tool ${modeLabel} records are displayed as a read-only human-readable dump.`;
+    });
+    this.filterRoot?.setAttribute("aria-label", `${modeLabel} table filters`);
+    this.tablesRoot?.setAttribute("aria-label", `${modeLabel} tables`);
+    this.document.title = `${modeLabel} - GameFoundryStudio`;
+  }
+
   renderClearSeedButton(cleared) {
-    if (!this.clearButton) {
+    if (!this.clearButton || !this.canWrite) {
       return;
     }
     this.clearButton.textContent = cleared ? "Seed Local Mem DB" : "Clear Local Mem DB";
@@ -207,7 +236,9 @@ class AdminDbViewer {
     if (!records.length) {
       const row = this.createElement("tr");
       const cell = this.createElement("td", {
-        text: "No records in this table. Add records from its tool or use Seed Local Mem DB to restore baseline user and role records.",
+        text: this.canWrite
+          ? "No records in this table. Add records from its tool or use Seed Local Mem DB to restore baseline user and role records."
+          : `No records in this table. ${this.modeLabel} read-only inspection still shows schema headers.`,
       });
       cell.colSpan = Math.max(1, fields.length + 1);
       row.append(cell);
@@ -410,9 +441,9 @@ class AdminDbViewer {
     const groupTableNames = new Set(groups.flatMap((group) => group.tableNames));
     const unownedTables = Object.keys(tables).filter((tableName) => !groupTableNames.has(tableName));
     if (unownedTables.length) {
-      return unownedTables.map((tableName) => `${tableName} has live data but no Local Mem DB filter owner.`);
+      return unownedTables.map((tableName) => `${tableName} has live data but no ${this.modeLabel} filter owner.`);
     }
-    return ["No stale display data detected; tables are rendered from current Local Mem DB snapshots."];
+    return [`No stale display data detected; tables are rendered from current ${this.modeLabel} snapshots.`];
   }
 
   renderList(messages, dataName) {
@@ -431,7 +462,7 @@ class AdminDbViewer {
     const staleFindings = this.staleDisplayFindings(tables, groups);
     const auditSummary = auditFindings.length
       ? auditFindings
-      : ["All current Local Mem DB tables include createdAt, updatedAt, createdBy, and updatedBy."];
+      : [`All current ${this.modeLabel} tables include createdAt, updatedAt, createdBy, and updatedBy.`];
     const bleedSummary = bleedFindings.length ? bleedFindings : ["No table bleed detected."];
     this.diagnostics.append(
       this.renderList(auditSummary, "adminDbAuditFindings"),
@@ -463,16 +494,18 @@ class AdminDbViewer {
   }
 
   renderLoadError(error) {
-    const message = error instanceof Error ? error.message : String(error || "Unknown Local Mem DB error.");
+    const message = error instanceof Error ? error.message : String(error || `Unknown ${this.modeLabel} error.`);
     this.diagnostics?.replaceChildren(
-      this.renderList([`Local Mem DB could not render current data: ${message}`], "adminDbAuditFindings"),
+      this.renderList([`${this.modeLabel} could not render current data: ${message}`], "adminDbAuditFindings"),
     );
     this.relationships?.replaceChildren(
-      this.renderList(["Relationships could not be checked until the Local Mem DB data error is fixed."], "adminDbMissingLinks"),
+      this.renderList([`Relationships could not be checked until the ${this.modeLabel} data error is fixed.`], "adminDbMissingLinks"),
     );
     this.tablesRoot?.replaceChildren();
     if (this.status) {
-      this.status.textContent = "Local Mem DB data error. Fix the invalid record ownership or use Clear Local Mem DB, then Seed Local Mem DB.";
+      this.status.textContent = this.canWrite
+        ? `${this.modeLabel} data error. Fix the invalid record ownership or use Clear Local Mem DB, then Seed Local Mem DB.`
+        : `${this.modeLabel} data error. Fix the local DB storage or adapter configuration, then reload DB Viewer.`;
     }
   }
 
@@ -497,11 +530,11 @@ class AdminDbViewer {
     this.renderTables(visibleTables, snapshot.schemas);
     if (this.status) {
       const recordCount = Object.values(visibleTables).reduce((total, rows) => total + rows.length, 0);
-      this.status.textContent = `Local Mem DB loaded ${Object.keys(visibleTables).length} table${Object.keys(visibleTables).length === 1 ? "" : "s"} and ${recordCount} record${recordCount === 1 ? "" : "s"} for ${group.label}.`;
+      this.status.textContent = `${this.modeLabel} loaded ${Object.keys(visibleTables).length} table${Object.keys(visibleTables).length === 1 ? "" : "s"} and ${recordCount} record${recordCount === 1 ? "" : "s"} for ${group.label}.`;
     }
   }
 }
 
-export function startMockDbViewer(documentRef = document) {
-  new AdminDbViewer(documentRef).start();
+export function startMockDbViewer(documentRef = document, options = {}) {
+  new AdminDbViewer(documentRef, options).start();
 }

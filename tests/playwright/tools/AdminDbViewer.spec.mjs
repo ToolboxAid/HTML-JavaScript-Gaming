@@ -1,3 +1,6 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
 import { expect, test } from "@playwright/test";
 import { createAssetToolMockRepository } from "../../../toolbox/assets/assets-mock-repository.js";
 import { createProjectWorkspacePaletteRepository } from "../../../toolbox/colors/palette-workspace-repository.js";
@@ -19,6 +22,7 @@ const standaloneSeedState = {
   tables: standaloneSeedTables,
   version: 3,
 };
+let localDbRunId = 0;
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -35,7 +39,22 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
+function nextLocalDbStoragePath() {
+  localDbRunId += 1;
+  return path.join(process.cwd(), "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.json`);
+}
+
 async function openRepoPage(page, pathName, options = {}) {
+  const sessionModeId = options.sessionModeId || "local-mem";
+  const previousLocalDbStoragePath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  const previousLocalDbDisable = process.env.GAMEFOUNDRY_LOCAL_DB_DISABLE;
+  const localDbStoragePath = sessionModeId === "local-db"
+    ? (options.localDbStoragePath || nextLocalDbStoragePath())
+    : "";
+  if (localDbStoragePath) {
+    process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbStoragePath;
+    delete process.env.GAMEFOUNDRY_LOCAL_DB_DISABLE;
+  }
   const server = await startRepoServer();
   const sessionUserKey = options.sessionUserKey === undefined ? MOCK_DB_KEYS.users.admin : options.sessionUserKey;
   const failedRequests = [];
@@ -68,7 +87,7 @@ async function openRepoPage(page, pathName, options = {}) {
       });
     }
     await fetch(`${server.baseUrl}/api/session/mode`, {
-      body: JSON.stringify({ modeId: "local-mem" }),
+      body: JSON.stringify({ modeId: sessionModeId }),
       headers: { "content-type": "application/json" },
       method: "POST",
     });
@@ -77,16 +96,45 @@ async function openRepoPage(page, pathName, options = {}) {
       headers: { "content-type": "application/json" },
       method: "POST",
     });
+    if (options.disableLocalDbAfterSession) {
+      process.env.GAMEFOUNDRY_LOCAL_DB_DISABLE = "1";
+    }
   }
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-  return { consoleErrors, failedRequests, pageErrors, server };
+  return {
+    consoleErrors,
+    failedRequests,
+    localDbStoragePath,
+    pageErrors,
+    previousLocalDbDisable,
+    previousLocalDbStoragePath,
+    server,
+  };
 }
 
 function expectNoPageFailures(failures) {
   expect(failures.failedRequests).toEqual([]);
   expect(failures.pageErrors).toEqual([]);
   expect(failures.consoleErrors).toEqual([]);
+}
+
+async function closeAdminDbPage(page, failures) {
+  await workspaceV2CoverageReporter.stop(page);
+  await failures.server.close();
+  if (failures.localDbStoragePath) {
+    await fs.rm(failures.localDbStoragePath, { force: true });
+  }
+  if (failures.previousLocalDbStoragePath) {
+    process.env.GAMEFOUNDRY_LOCAL_DB_PATH = failures.previousLocalDbStoragePath;
+  } else {
+    delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  }
+  if (failures.previousLocalDbDisable) {
+    process.env.GAMEFOUNDRY_LOCAL_DB_DISABLE = failures.previousLocalDbDisable;
+  } else {
+    delete process.env.GAMEFOUNDRY_LOCAL_DB_DISABLE;
+  }
 }
 
 async function uploadAsset(page, { assetRole, fileName, mimeType, name, usage }) {
@@ -337,6 +385,89 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();
+  }
+});
+
+test("Admin DB Viewer shows current read-only Local DB tables without write controls", async ({ page }) => {
+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
+    sessionModeId: "local-db",
+  });
+  const server = failures.server;
+
+  try {
+    await expect(page.getByRole("heading", { name: "Local DB", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-admin-db-mode-kicker]").first()).toHaveText("Admin Only / Local DB");
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
+    await expect(page.locator("[data-admin-db-filter]")).toHaveText([
+      "All",
+      "Workspace",
+      "Game Design",
+      "Game Configuration",
+      "Project Journey",
+      "Palette",
+      "Asset",
+      "User Roles",
+    ]);
+    await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-viewer] button:not([data-admin-db-filter])")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("Local DB read-only inspection still shows schema headers.");
+    await expect(page.locator("[data-admin-db-table='palette_colors'] thead")).toContainText("createdAt");
+    await expect(page.locator("[data-admin-db-table='asset_library_items'] thead")).toContainText("storageObjectId");
+    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
+      "All current Local DB tables include createdAt, updatedAt, createdBy, and updatedBy."
+    );
+    await expect(page.locator("[data-admin-db-stale-display-findings]")).toContainText(
+      "No stale display data detected; tables are rendered from current Local DB snapshots."
+    );
+
+    const snapshotResponse = await fetch(`${server.baseUrl}/api/mock-db/snapshot`);
+    const snapshotPayload = await snapshotResponse.json();
+    expect(snapshotResponse.status).toBe(200);
+    const nextState = snapshotPayload.data;
+    const adminRow = nextState.tables.users.find((user) => user.key === MOCK_DB_KEYS.users.admin);
+    adminRow.displayName = "Local DB Readonly Admin";
+    adminRow.updatedAt = "2026-06-07T12:00:00.000Z";
+    const replaceResponse = await fetch(`${server.baseUrl}/api/dev/testing/mock-db-state`, {
+      body: JSON.stringify({ state: nextState }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+    expect(replaceResponse.status).toBe(200);
+    await page.reload({ waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "User Roles" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for User Roles\./);
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("Local DB Readonly Admin");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeAdminDbPage(page, failures);
+  }
+});
+
+test("Admin DB Viewer shows a visible Local DB diagnostic when adapter storage is unavailable", async ({ page }) => {
+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
+    disableLocalDbAfterSession: true,
+    sessionModeId: "local-db",
+  });
+
+  try {
+    await expect(page.getByRole("heading", { name: "Local DB", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(
+      "Local DB data error. Fix the local DB storage or adapter configuration, then reload DB Viewer."
+    );
+    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText("Local DB could not render current data: Local DB adapter not configured");
+    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText("GAMEFOUNDRY_LOCAL_DB_DISABLE");
+    await expect(page.locator("[data-admin-db-missing-links]")).toContainText(
+      "Relationships could not be checked until the Local DB data error is fixed."
+    );
+    await expect(page.locator("[data-admin-db-table]")).toHaveCount(0);
+    expect(failures.failedRequests.some((failure) => failure.includes("/api/mock-db/snapshot"))).toBe(true);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors.filter((failure) => !failure.includes("Failed to load resource"))).toEqual([]);
+  } finally {
+    await closeAdminDbPage(page, failures);
   }
 });
 

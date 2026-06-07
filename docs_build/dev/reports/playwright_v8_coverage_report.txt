@@ -12,61 +12,40 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(86%) Toolbox Index - exercised 6 runtime JS files
+(77%) Toolbox Index - exercised 7 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (75%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/assetUsageIntegration.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/platformShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/projectSystem.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/toolHostManifest.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/toolLaunchSSoTData.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(56%) src/engine/api/server-api-client.js - executed lines 154/154; executed functions 10/18
-(60%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 3/5
-(86%) src/engine/api/mock-db-viewer-ui.js - executed lines 478/478; executed functions 78/91
+(96%) src/engine/api/mock-db-viewer-ui.js - executed lines 510/510; executed functions 92/96
+(100%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 5/5
 
 Files with executed line/function counts where available:
-(56%) src/engine/api/server-api-client.js - executed lines 154/154; executed functions 10/18
-(60%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 3/5
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 9/14
-(67%) admin/db-viewer.js - executed lines 43/43; executed functions 4/6
-(71%) toolbox/project-workspace/project-workspace.js - executed lines 264/264; executed functions 17/24
-(74%) toolbox/tools-page-accordions.js - executed lines 774/774; executed functions 53/72
+(67%) admin/db-viewer.js - executed lines 53/53; executed functions 4/6
+(67%) src/engine/api/server-api-client.js - executed lines 154/154; executed functions 12/18
+(69%) toolbox/colors/colors.js - executed lines 877/877; executed functions 62/90
+(75%) toolbox/project-journey/project-journey.js - executed lines 1003/1003; executed functions 74/99
 (78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 415/415; executed functions 29/37
-(86%) src/engine/api/mock-db-viewer-ui.js - executed lines 478/478; executed functions 78/91
-(89%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 24/27
-(97%) toolbox/project-journey/project-journey.js - executed lines 1003/1003; executed functions 104/107
+(81%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 22/27
+(88%) toolbox/assets/assets.js - executed lines 519/519; executed functions 53/60
+(96%) src/engine/api/mock-db-viewer-ui.js - executed lines 510/510; executed functions 92/96
+(100%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 5/5
+(100%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 3/3
+(100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 (100%) toolbox/project-journey/project-journey-api-client.js - executed lines 12/12; executed functions 2/2
-(100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/shared/toolbox/assetUsageIntegration.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/shared/toolbox/platformShell.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/shared/toolbox/projectSystem.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/shared/toolbox/toolHostManifest.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/shared/toolbox/toolLaunchSSoTData.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) admin/tools-progress.js - changed JS file not collected as browser runtime coverage
-(0%) assets/theme-v2/js/login-session.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/shared/toolbox/assetUsageIntegration.js - changed JS file not collected as browser runtime coverage
-(0%) src/shared/toolbox/platformShell.js - changed JS file not collected as browser runtime coverage
-(0%) src/shared/toolbox/projectSystem.js - changed JS file not collected as browser runtime coverage
-(0%) src/shared/toolbox/toolHostManifest.js - changed JS file not collected as browser runtime coverage
-(0%) src/shared/toolbox/toolLaunchSSoTData.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(56%) src/engine/api/server-api-client.js - changed JS file with browser V8 coverage
-(60%) src/engine/api/mock-db-api-client.js - changed JS file with browser V8 coverage
-(64%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
 (67%) admin/db-viewer.js - changed JS file with browser V8 coverage
-(78%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(86%) src/engine/api/mock-db-viewer-ui.js - changed JS file with browser V8 coverage
+(96%) src/engine/api/mock-db-viewer-ui.js - changed JS file with browser V8 coverage
+(100%) src/engine/api/mock-db-api-client.js - changed JS file with browser V8 coverage

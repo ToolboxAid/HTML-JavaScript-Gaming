@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Local Mem DB - GameFoundryStudio</title>
-    <meta name="description" content="Admin-only read-only Local Mem DB viewer for GameFoundryStudio project data diagnostics.">
+    <title>DB Viewer - GameFoundryStudio</title>
+    <meta name="description" content="Admin-only read-only DB viewer for GameFoundryStudio project data diagnostics.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -16,9 +16,9 @@
     <main data-admin-only="true">
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Admin Only / Local Mem DB</div>
-                <h1>Local Mem DB</h1>
-                <p class="lede">Read-only Local Mem DB dump for project tables, relationships, and data diagnostics.</p>
+                <div class="kicker" data-admin-db-mode-kicker>Admin Only / Local Mem DB</div>
+                <h1 data-admin-db-mode-title>Local Mem DB</h1>
+                <p class="lede" data-admin-db-mode-description>Read-only Local Mem DB dump for project tables, relationships, and data diagnostics.</p>
             </div>
         </section>
         <section class="section">
@@ -26,13 +26,13 @@
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-build">
                         <div class="tool-column-header">
-                            <h2>Local Mem DB</h2>
+                            <h2 data-admin-db-mode-title>Local Mem DB</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Scope</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Current tool Local Mem DB records are displayed as a read-only human-readable dump.</p>
+                                    <p data-admin-db-scope-description>Current tool Local Mem DB records are displayed as a read-only human-readable dump.</p>
                                     <p>Use the diagnostics panel to confirm table attribution, relationships, and table bleed checks.</p>
                                     <button class="btn btn--compact" type="button" data-admin-db-clear>Clear Local Mem DB</button>
                                 </div>
@@ -43,8 +43,8 @@
                     <section class="tool-center-panel content-stack" aria-labelledby="admin-db-viewer-title" data-admin-db-viewer>
                         <div class="content-cluster">
                             <div>
-                                <div class="kicker">Local Mem DB</div>
-                                <h2 id="admin-db-viewer-title">Local Mem DB</h2>
+                                <div class="kicker" data-admin-db-mode-kicker>Local Mem DB</div>
+                                <h2 id="admin-db-viewer-title" data-admin-db-mode-title>Local Mem DB</h2>
                             </div>
                             <span class="status" role="status" data-admin-db-status>Loading Local Mem DB records.</span>
                         </div>

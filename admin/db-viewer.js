@@ -6,16 +6,25 @@ function devRuntimeAllowed() {
     host === "127.0.0.1";
 }
 
-function localModeSelected() {
+function currentSession() {
   try {
     const request = new XMLHttpRequest();
     request.open("GET", "/api/session/current", false);
     request.setRequestHeader("Accept", "application/json");
     request.send(null);
     const payload = request.responseText ? JSON.parse(request.responseText) : null;
-    return request.status >= 200 && request.status < 300 && payload?.data?.mode === "local-mem";
-  } catch {
-    return false;
+    if (request.status >= 200 && request.status < 300 && payload?.data) {
+      return payload.data;
+    }
+    return {
+      diagnostic: payload?.error || "Unable to read current DB Viewer session from the server API.",
+      mode: "",
+    };
+  } catch (error) {
+    return {
+      diagnostic: error instanceof Error ? error.message : String(error || "Unable to read current DB Viewer session."),
+      mode: "",
+    };
   }
 }
 
@@ -31,17 +40,18 @@ async function loadLocalDbViewer() {
     return;
   }
   if (!devRuntimeAllowed()) {
-    showGatewayStatus("Local Mem DB is available only in the local dev runtime.");
+    showGatewayStatus("DB Viewer is available only in the local dev runtime.");
     return;
   }
-  if (!localModeSelected()) {
-    showGatewayStatus("Local Mem DB Viewer is available only in Local Mem mode.");
+  const session = currentSession();
+  if (session.mode !== "local-mem" && session.mode !== "local-db") {
+    showGatewayStatus(session.diagnostic || "DB Viewer is available only in Local Mem or Local DB mode.");
     return;
   }
   const module = await import("../src/engine/api/mock-db-viewer-ui.js");
-  module.startMockDbViewer(document);
+  module.startMockDbViewer(document, { session });
 }
 
 loadLocalDbViewer().catch((error) => {
-  console.error("Unable to load Local Mem DB viewer.", error);
+  console.error("Unable to load DB Viewer.", error);
 });
