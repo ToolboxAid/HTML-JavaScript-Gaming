@@ -100,6 +100,7 @@ test("static-only login keeps Local Mem clickable and diagnoses Local DB API req
     await expect(page.locator("[data-login-mode-title]")).toHaveText("Local Mem");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Static-only server detected");
     await expect(page.locator("[data-login-mode-status]")).toContainText("API-backed local server");
+    await expect(page.locator("[data-login-mode-status]")).toContainText("Local server API route unavailable for GET /api/session/current (404)");
     await expect(page.locator("[data-login-user]")).toHaveCount(0);
     await expect(page.locator("[data-login-user-status]")).toContainText("No local users are available");
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
@@ -115,9 +116,12 @@ test("static-only login keeps Local Mem clickable and diagnoses Local DB API req
     await expect(page.locator("[data-login-mode-status]")).toContainText("Local DB requires the API-backed local server");
     await expect(page.locator("[data-login-mode-status]")).toContainText("SQLite-backed Local DB");
 
-    expect(failedRequests.some((request) => request.includes("/api/session/current"))).toBe(true);
+    expect(failedRequests.filter((request) => request.includes("/api/session/current"))).toHaveLength(1);
     expect(failedRequests.filter((request) => request.includes("/api/session/mode"))).toEqual([]);
+    expect(failedRequests.filter((request) => request.includes("/api/session/users"))).toEqual([]);
+    expect(failedRequests.filter((request) => request.includes("/api/session/modes"))).toEqual([]);
     expect(pageErrors).toEqual([]);
+    expect([...pageErrors, ...consoleErrors].filter((message) => /ShowOneChild|showOneChild|ActionableCoachmark/.test(message))).toEqual([]);
     expect(consoleErrors.filter((message) => !message.includes("Failed to load resource"))).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);

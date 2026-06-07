@@ -6,8 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+(55%) src/engine/api/server-api-client.js - executed lines 186/186; executed functions 12/22
 
 Guardrail warnings:
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(100%) none - no changed runtime JS coverage warnings

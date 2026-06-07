@@ -110,6 +110,7 @@
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
+    const staticApiDiagnosticKey = "GameFoundryStaticApiUnavailableDiagnostic";
 
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
@@ -142,6 +143,24 @@
         return "Local server API route unavailable for " + method + " " + url + " (" + status + "). Start the API-backed local server route instead of a static-only server.";
     }
 
+    function cachedStaticApiDiagnostic() {
+        return String(window[staticApiDiagnosticKey] || "");
+    }
+
+    function cacheStaticApiDiagnostic(message) {
+        window[staticApiDiagnosticKey] = message;
+    }
+
+    function missingSessionApiLoginState(diagnostic) {
+        return {
+            authenticated: false,
+            diagnostic: diagnostic || "Server session API is unavailable. Start the local server API before using protected pages.",
+            displayName: "Login",
+            mode: "missing-api",
+            roleSlugs: []
+        };
+    }
+
     function rewriteRootedPaths(root) {
         root.querySelectorAll("[data-route]").forEach(function (link) {
             link.setAttribute("href", routeHref(link.dataset.route));
@@ -153,6 +172,10 @@
     }
 
     function localDevLoginState() {
+        const cachedDiagnostic = cachedStaticApiDiagnostic();
+        if (cachedDiagnostic) {
+            return missingSessionApiLoginState(cachedDiagnostic);
+        }
         try {
             const request = new XMLHttpRequest();
             request.open("GET", "/api/session/current", false);
@@ -161,7 +184,9 @@
             const payload = request.responseText ? JSON.parse(request.responseText) : null;
             if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
                 if (request.status === 404 || request.status === 405) {
-                    throw new Error(localRouteUnavailableDiagnostic("GET", "/api/session/current", request.status));
+                    const diagnostic = localRouteUnavailableDiagnostic("GET", "/api/session/current", request.status);
+                    cacheStaticApiDiagnostic(diagnostic);
+                    throw new Error(diagnostic);
                 }
                 throw new Error(payload?.error || "Session API did not return a valid current session.");
             }
@@ -174,13 +199,7 @@
                 roleSlugs: Array.isArray(session.roleSlugs) ? session.roleSlugs : []
             };
         } catch (error) {
-            return {
-                authenticated: false,
-                diagnostic: "Server session API is unavailable. Start the local server API before using protected pages.",
-                displayName: "Login",
-                mode: "missing-api",
-                roleSlugs: []
-            };
+            return missingSessionApiLoginState(error instanceof Error ? error.message : "");
         }
     }
 
@@ -312,6 +331,17 @@
     function enforcePageProtection() {
         const pagePath = currentPagePath() || "index.html";
         const requirement = protectedPageRequirement(pagePath);
+        if (!requirement) {
+            const diagnostic = cachedStaticApiDiagnostic();
+            window.GameFoundrySessionGuard = {
+                blocked: false,
+                diagnostic,
+                mode: diagnostic ? "missing-api" : "",
+                pagePath,
+                requirement: ""
+            };
+            return false;
+        }
         const loginState = localDevLoginState();
         const allowed = canUseProtectedPage(requirement, loginState);
         window.GameFoundrySessionGuard = {
@@ -321,7 +351,7 @@
             pagePath,
             requirement: requirement?.role || ""
         };
-        if (!requirement || allowed) {
+        if (allowed) {
             return false;
         }
 

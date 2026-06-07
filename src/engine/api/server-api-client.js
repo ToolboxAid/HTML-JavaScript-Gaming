@@ -1,10 +1,13 @@
 export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
 const API_ROOT = "/api";
+const STATIC_API_DIAGNOSTIC_KEY = "GameFoundryStaticApiUnavailableDiagnostic";
 const diagnostics = [];
 
 function recordDiagnostic(message) {
-  diagnostics.push(message);
+  if (diagnostics[diagnostics.length - 1] !== message) {
+    diagnostics.push(message);
+  }
   return message;
 }
 
@@ -16,12 +19,32 @@ function localRouteUnavailableDiagnostic(method, url, status) {
   return `Local server API route unavailable for ${method} ${url} (${status}). Start the API-backed local server route instead of a static-only server.`;
 }
 
+function isSessionApiUrl(url) {
+  return url === `${API_ROOT}/session` || url.startsWith(`${API_ROOT}/session/`);
+}
+
+function browserStaticApiDiagnostic() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+  return String(window[STATIC_API_DIAGNOSTIC_KEY] || "");
+}
+
+function cacheBrowserStaticApiDiagnostic(message) {
+  if (typeof window !== "undefined") {
+    window[STATIC_API_DIAGNOSTIC_KEY] = message;
+  }
+}
+
 export function getServerApiDiagnostics() {
   return diagnostics.slice();
 }
 
 export function clearServerApiDiagnostics() {
   diagnostics.splice(0);
+  if (typeof window !== "undefined") {
+    delete window[STATIC_API_DIAGNOSTIC_KEY];
+  }
 }
 
 export function requestServerApi(path, options = {}) {
@@ -32,6 +55,10 @@ export function requestServerApi(path, options = {}) {
   const xhr = new XMLHttpRequest();
   const method = (options.method || "GET").toUpperCase();
   const url = path.startsWith(API_ROOT) ? path : `${API_ROOT}${path.startsWith("/") ? "" : "/"}${path}`;
+  const cachedStaticApiDiagnostic = isSessionApiUrl(url) ? browserStaticApiDiagnostic() : "";
+  if (cachedStaticApiDiagnostic) {
+    throw new Error(recordDiagnostic(cachedStaticApiDiagnostic));
+  }
   xhr.open(method, url, false);
   xhr.setRequestHeader("Accept", "application/json");
   if (options.body !== undefined) {
@@ -50,6 +77,9 @@ export function requestServerApi(path, options = {}) {
     const message = xhr.status === 404 || xhr.status === 405
       ? localRouteUnavailableDiagnostic(method, url, xhr.status)
       : payload?.error || payload?.message || `Server API request failed: ${method} ${url} (${xhr.status}).`;
+    if ((xhr.status === 404 || xhr.status === 405) && isSessionApiUrl(url)) {
+      cacheBrowserStaticApiDiagnostic(message);
+    }
     throw new Error(recordDiagnostic(message));
   }
 
