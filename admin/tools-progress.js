@@ -1,9 +1,10 @@
 import {
   getToolProgressReadiness,
   getActiveToolRegistry,
+  getToolRegistryApiDiagnostic,
   getToolRoute,
   toolRegistryMetadataDiagnostic
-} from "../toolbox/toolRegistry.js";
+} from "../toolbox/tool-registry-api-client.js";
 
 const swatchByGroup = Object.freeze({
   AI: "swatch-purple",
@@ -99,6 +100,20 @@ function firstIncompleteTool(tools) {
 
 function renderToolsProgress() {
   if (!progressBody) {
+    return;
+  }
+
+  const registryDiagnostic = getToolRegistryApiDiagnostic();
+  if (registryDiagnostic) {
+    progressBody.replaceChildren();
+    const row = document.createElement("tr");
+    const cell = createCell("td", `Tool registry could not load from the server API: ${registryDiagnostic}`);
+    cell.colSpan = 5;
+    row.append(cell);
+    progressBody.append(row);
+    if (progressSummary) {
+      progressSummary.textContent = "Tool registry API unavailable. Start the Local/DEV server API and refresh.";
+    }
     return;
   }
 

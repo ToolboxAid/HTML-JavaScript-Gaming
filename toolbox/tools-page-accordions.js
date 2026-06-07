@@ -5,11 +5,12 @@ import {
 import {
     TOOL_IMAGE_FALLBACK,
     getActiveToolRegistry,
+    getToolRegistryApiDiagnostic,
     getToolImageDiagnostics,
     getToolImageSource,
     getToolRoute,
     toolRegistryMetadataDiagnostic
-} from "./toolRegistry.js";
+} from "./tool-registry-api-client.js";
 
 (function () {
     const list = document.querySelector("[data-tools-accordion-list]");
@@ -57,6 +58,15 @@ import {
         Publisher: ["Publish", "Marketplace", "Community", "Cloud", "Languages"],
         Viewer: ["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]
     });
+    const registryDiagnostic = getToolRegistryApiDiagnostic();
+    if (registryDiagnostic) {
+        const diagnostic = document.createElement("p");
+        diagnostic.className = "status";
+        diagnostic.setAttribute("role", "status");
+        diagnostic.textContent = "Toolbox registry could not load from the server API: " + registryDiagnostic;
+        list.replaceChildren(diagnostic);
+        return;
+    }
     const registryTools = getActiveToolRegistry();
     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
     const toolboxGroupOrder = Object.freeze([

@@ -7,7 +7,7 @@ import {
   saveMockDbTables,
   getMockDbSessionUser,
   getMockDbSystemUser,
-} from "../../src/engine/persistence/mock-db-store.js";
+} from "../../src/dev-runtime/persistence/mock-db-store.js";
 
 function makeUlid(sequence) {
   return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;

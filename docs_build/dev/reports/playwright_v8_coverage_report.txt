@@ -12,73 +12,67 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(77%) Toolbox Index - exercised 7 runtime JS files
+(96%) Toolbox Index - exercised 14 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(75%) Theme V2 Shared JS - exercised 2 runtime JS files
+(88%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/auth/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/session-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/assets/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/colors/palette-workspace-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-configuration/game-configuration-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-configuration/game-configuration.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-design/game-design-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-design/game-design.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/project-workspace/project-workspace-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/project-workspace/project-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(56%) src/engine/api/server-api-client.js - executed lines 135/135; executed functions 9/16
-(69%) toolbox/colors/colors.js - executed lines 877/877; executed functions 62/90
-(75%) toolbox/project-journey/project-journey.js - executed lines 991/991; executed functions 74/99
-(88%) toolbox/assets/assets.js - executed lines 519/519; executed functions 53/60
-(95%) src/dev-runtime/admin/db-viewer.js - executed lines 478/478; executed functions 86/91
-(100%) src/engine/api/mock-db-api-client.js - executed lines 22/22; executed functions 5/5
-(100%) toolbox/assets/assets-api-client.js - executed lines 16/16; executed functions 3/3
-(100%) toolbox/colors/palette-api-client.js - executed lines 18/18; executed functions 4/4
-(100%) toolbox/project-journey/project-journey-api-client.js - executed lines 11/11; executed functions 2/2
+(0%) toolbox/project-journey/project-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(61%) src/engine/api/server-api-client.js - executed lines 154/154; executed functions 11/18
+(71%) toolbox/project-workspace/project-workspace.js - executed lines 264/264; executed functions 17/24
+(88%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 7/8
+(95%) src/engine/api/mock-db-viewer-ui.js - executed lines 478/478; executed functions 86/91
+(96%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 26/27
+(96%) toolbox/tools-page-accordions.js - executed lines 774/774; executed functions 75/78
+(97%) toolbox/colors/colors.js - executed lines 877/877; executed functions 88/91
+(98%) toolbox/assets/assets.js - executed lines 519/519; executed functions 60/61
+(98%) toolbox/project-journey/project-journey.js - executed lines 1003/1003; executed functions 105/107
+(100%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 5/5
+(100%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 3/3
+(100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
+(100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 10/10; executed functions 2/2
+(100%) toolbox/game-configuration/game-configuration.js - executed lines 169/169; executed functions 18/18
+(100%) toolbox/game-design/game-design-api-client.js - executed lines 12/12; executed functions 2/2
+(100%) toolbox/game-design/game-design.js - executed lines 242/242; executed functions 22/22
+(100%) toolbox/project-journey/project-journey-api-client.js - executed lines 12/12; executed functions 2/2
+(100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Files with executed line/function counts where available:
-(56%) src/engine/api/server-api-client.js - executed lines 135/135; executed functions 9/16
-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 192/192; executed functions 9/14
+(61%) src/engine/api/server-api-client.js - executed lines 154/154; executed functions 11/18
 (67%) admin/db-viewer.js - executed lines 43/43; executed functions 4/6
-(69%) toolbox/colors/colors.js - executed lines 877/877; executed functions 62/90
-(75%) toolbox/project-journey/project-journey.js - executed lines 991/991; executed functions 74/99
-(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 415/415; executed functions 29/37
-(78%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 28/36
-(88%) toolbox/assets/assets.js - executed lines 519/519; executed functions 53/60
-(95%) src/dev-runtime/admin/db-viewer.js - executed lines 478/478; executed functions 86/91
-(100%) src/engine/api/mock-db-api-client.js - executed lines 22/22; executed functions 5/5
-(100%) toolbox/assets/assets-api-client.js - executed lines 16/16; executed functions 3/3
-(100%) toolbox/colors/palette-api-client.js - executed lines 18/18; executed functions 4/4
-(100%) toolbox/project-journey/project-journey-api-client.js - executed lines 11/11; executed functions 2/2
+(71%) toolbox/project-workspace/project-workspace.js - executed lines 264/264; executed functions 17/24
+(86%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 415/415; executed functions 32/37
+(86%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 12/14
+(88%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 7/8
+(94%) assets/theme-v2/js/login-session.js - executed lines 154/154; executed functions 15/16
+(95%) src/engine/api/mock-db-viewer-ui.js - executed lines 478/478; executed functions 86/91
+(96%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 26/27
+(96%) toolbox/tools-page-accordions.js - executed lines 774/774; executed functions 75/78
+(97%) toolbox/colors/colors.js - executed lines 877/877; executed functions 88/91
+(98%) toolbox/assets/assets.js - executed lines 519/519; executed functions 60/61
+(98%) toolbox/project-journey/project-journey.js - executed lines 1003/1003; executed functions 105/107
+(100%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 5/5
+(100%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 3/3
+(100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
+(100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 10/10; executed functions 2/2
+(100%) toolbox/game-configuration/game-configuration.js - executed lines 169/169; executed functions 18/18
+(100%) toolbox/game-design/game-design-api-client.js - executed lines 12/12; executed functions 2/2
+(100%) toolbox/game-design/game-design.js - executed lines 242/242; executed functions 22/22
+(100%) toolbox/project-journey/project-journey-api-client.js - executed lines 12/12; executed functions 2/2
+(100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/auth/login-session.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/engine/api/session-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/engine/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) toolbox/assets/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) toolbox/colors/palette-workspace-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/game-configuration/game-configuration-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/game-configuration/game-configuration.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/game-design/game-design-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/game-design/game-design.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/project-workspace/project-workspace-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/project-workspace/project-workspace.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/tools-page-accordions.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/project-journey/project-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) assets/theme-v2/js/login-session.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/auth/login-session.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+(0%) admin/tools-progress.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/engine/api/session-api-client.js - changed JS file not collected as browser runtime coverage
-(0%) src/engine/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 (0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
@@ -89,21 +83,26 @@ Changed JS files considered:
 (0%) tests/playwright/tools/ToolsProgressHydration.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) toolbox/assets/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) toolbox/colors/palette-workspace-repository.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/game-configuration/game-configuration-api-client.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/game-configuration/game-configuration.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/game-design/game-design-api-client.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/game-design/game-design.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/project-workspace/project-workspace-api-client.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/project-workspace/project-workspace.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
-(56%) src/engine/api/server-api-client.js - changed JS file with browser V8 coverage
+(0%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
+(61%) src/engine/api/server-api-client.js - changed JS file with browser V8 coverage
 (67%) admin/db-viewer.js - changed JS file with browser V8 coverage
-(69%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
-(75%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage
-(78%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(88%) toolbox/assets/assets.js - changed JS file with browser V8 coverage
-(95%) src/dev-runtime/admin/db-viewer.js - changed JS file with browser V8 coverage
+(71%) toolbox/project-workspace/project-workspace.js - changed JS file with browser V8 coverage
+(86%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(86%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
+(88%) src/engine/api/session-api-client.js - changed JS file with browser V8 coverage
+(94%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
+(95%) src/engine/api/mock-db-viewer-ui.js - changed JS file with browser V8 coverage
+(96%) toolbox/tool-registry-api-client.js - changed JS file with browser V8 coverage
+(96%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
+(97%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
+(98%) toolbox/assets/assets.js - changed JS file with browser V8 coverage
+(98%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage
 (100%) src/engine/api/mock-db-api-client.js - changed JS file with browser V8 coverage
 (100%) toolbox/assets/assets-api-client.js - changed JS file with browser V8 coverage
 (100%) toolbox/colors/palette-api-client.js - changed JS file with browser V8 coverage
+(100%) toolbox/game-configuration/game-configuration-api-client.js - changed JS file with browser V8 coverage
+(100%) toolbox/game-configuration/game-configuration.js - changed JS file with browser V8 coverage
+(100%) toolbox/game-design/game-design-api-client.js - changed JS file with browser V8 coverage
+(100%) toolbox/game-design/game-design.js - changed JS file with browser V8 coverage
 (100%) toolbox/project-journey/project-journey-api-client.js - changed JS file with browser V8 coverage
+(100%) toolbox/project-workspace/project-workspace-api-client.js - changed JS file with browser V8 coverage

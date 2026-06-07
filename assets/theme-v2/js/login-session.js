@@ -1,18 +1,169 @@
-function devRuntimeAllowed() {
-  const host = window.location.hostname;
-  return window.GameFoundryDevRuntime?.enabled === true ||
-    window.location.protocol === "file:" ||
-    host === "localhost" ||
-    host === "127.0.0.1";
+import {
+  getSessionCurrent,
+  getSessionModes,
+  getSessionUsers,
+  setSessionMode,
+  setSessionUser,
+} from "../../../src/engine/api/session-api-client.js";
+
+const modeButtons = Array.from(document.querySelectorAll("[data-login-mode]"));
+const modeTitle = document.querySelector("[data-login-mode-title]");
+const modeDescription = document.querySelector("[data-login-mode-description]");
+const modeStatus = document.querySelector("[data-login-mode-status]");
+const userControls = document.querySelector("[data-login-user-controls]");
+const userStatus = document.querySelector("[data-login-user-status]");
+const continueLink = document.querySelector("[data-login-continue]");
+
+function currentReturnTo() {
+  const params = new URLSearchParams(window.location.search);
+  const value = params.get("returnTo") || "";
+  if (!value || value.startsWith("/") || value.includes("://") || value.includes("..")) {
+    return "toolbox/index.html";
+  }
+  return value;
 }
 
-async function loadLocalLoginSession() {
-  if (!devRuntimeAllowed()) {
+function updateContinueLink() {
+  if (continueLink) {
+    continueLink.href = currentReturnTo();
+  }
+}
+
+function dispatchSessionChanged() {
+  window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
+    detail: getSessionCurrent(),
+  }));
+}
+
+function dispatchModeChanged() {
+  window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-mode-changed", {
+    detail: getSessionCurrent(),
+  }));
+}
+
+function setSelectedButton(button, selected) {
+  button.classList.toggle("primary", selected);
+  button.setAttribute("aria-pressed", String(selected));
+  if (selected) {
+    button.setAttribute("aria-current", "true");
+  } else {
+    button.removeAttribute("aria-current");
+  }
+}
+
+function renderUserButtons(mode) {
+  if (!userControls) {
     return;
   }
-  await import("../../../src/dev-runtime/auth/login-session.js");
+
+  userControls.replaceChildren();
+  if (mode.id === "dev") {
+    userControls.hidden = true;
+    if (userStatus) {
+      userStatus.textContent = "DEV mode uses read-only/demo JSON access. No users are selectable.";
+    }
+    return;
+  }
+
+  userControls.hidden = false;
+  const sessionUser = getSessionCurrent();
+  getSessionUsers().forEach((user) => {
+    const button = document.createElement("button");
+    button.className = "btn btn--compact";
+    button.type = "button";
+    button.textContent = user.label;
+    button.dataset.loginUser = user.userKey || "";
+    setSelectedButton(button, (user.userKey || "") === (sessionUser.userKey || ""));
+    userControls.append(button);
+  });
+  if (userStatus) {
+    userStatus.textContent = sessionUser.userKey
+      ? `Selected local user: ${sessionUser.label}.`
+      : "Guest is unauthenticated and is not stored in the users table.";
+  }
 }
 
-loadLocalLoginSession().catch((error) => {
-  console.error("Unable to load Local login session.", error);
+function renderModeButtons(mode) {
+  modeButtons.forEach((button) => {
+    setSelectedButton(button, button.dataset.loginMode === mode.id);
+  });
+}
+
+function renderError(error) {
+  const message = error instanceof Error ? error.message : String(error || "Session API unavailable.");
+  modeButtons.forEach((button) => {
+    button.disabled = true;
+    button.setAttribute("aria-disabled", "true");
+  });
+  if (userControls) {
+    userControls.replaceChildren();
+    userControls.hidden = true;
+  }
+  if (modeTitle) {
+    modeTitle.textContent = "Session API unavailable";
+  }
+  if (modeDescription) {
+    modeDescription.textContent = "Start the Local/DEV server API to select a session.";
+  }
+  if (modeStatus) {
+    modeStatus.textContent = `Login/session diagnostic: ${message}`;
+  }
+  if (userStatus) {
+    userStatus.textContent = "No local users are available until /api/session responds.";
+  }
+  updateContinueLink();
+}
+
+function render() {
+  try {
+    const session = getSessionCurrent();
+    const mode = getSessionModes().find((item) => item.id === session.mode) || {
+      description: "",
+      id: session.mode,
+      label: session.mode,
+    };
+    renderModeButtons(mode);
+    if (modeTitle) {
+      modeTitle.textContent = mode.label;
+    }
+    if (modeDescription) {
+      modeDescription.textContent = mode.description;
+    }
+    if (modeStatus) {
+      modeStatus.textContent = `${mode.label} mode selected.`;
+    }
+    renderUserButtons(mode);
+    updateContinueLink();
+  } catch (error) {
+    renderError(error);
+  }
+}
+
+modeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    try {
+      setSessionMode(button.dataset.loginMode || "local");
+      dispatchModeChanged();
+      render();
+    } catch (error) {
+      renderError(error);
+    }
+  });
 });
+
+userControls?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-login-user]");
+  if (!button) {
+    return;
+  }
+  try {
+    setSessionMode("local");
+    setSessionUser(button.dataset.loginUser || "");
+    dispatchSessionChanged();
+    render();
+  } catch (error) {
+    renderError(error);
+  }
+});
+
+render();

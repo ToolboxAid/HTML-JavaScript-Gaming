@@ -38,8 +38,8 @@ async function loadLocalDbViewer() {
     showGatewayStatus("Mock DB is available only in Local mode.");
     return;
   }
-  const module = await import("../src/dev-runtime/admin/db-viewer.js");
-  module.startDevRuntimeDbViewer(document);
+  const module = await import("../src/engine/api/mock-db-viewer-ui.js");
+  module.startMockDbViewer(document);
 }
 
 loadLocalDbViewer().catch((error) => {

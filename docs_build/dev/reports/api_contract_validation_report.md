@@ -1,48 +1,27 @@
-# API Contract Validation Report
+# PR_26158_022 API Contract Validation Report
 
-## Summary
+## Result
 
-Status: PASS
+PASS
 
-Validation confirmed each touched browser tool can initialize a server repository and call expected methods through the `/api/toolbox/...` contract. Session and Mock DB contracts were also validated.
+## Validated Endpoints
 
-## Contract Checks
-
-| Contract | Methods/Routes | Result |
+| Endpoint | Status | Evidence |
 | --- | --- | --- |
-| Project Workspace | constants, repository init, `getActiveProject`, `getProjectProgress`, `getTables` | PASS |
-| Game Design | constants, repository init, `getSnapshot`, `getProjectProgressHandoff`, `getTables` | PASS |
-| Game Configuration | constants, repository init, `getSnapshot`, `getProjectProgressHandoff`, `getTables` | PASS |
-| Project Journey | constants, repository init, `getSessionUser`, `listNotes`, `getTables` | PASS |
-| Palette | constants, repository init, `getSnapshot`, `getTables`, `sourcePaletteOptions` | PASS |
-| Asset | constants, repository init, `getSnapshot`, `getTables`, `getProgressHandoff` | PASS |
-| Session | `/api/session/current`, `/api/session/users` | PASS |
-| Mock DB | `/api/mock-db/snapshot` | PASS |
+| `GET /api/toolbox/registry/snapshot` | PASS | Returned active tools, all tools, image fallback, route fields, image diagnostics, and readiness map. |
+| `GET /api/session/current` | PASS | Returned server session data with `data` wrapper. |
+| `GET /api/session/modes` | PASS | Returned Local/DEV modes from server auth boundary. |
+| `GET /api/session/users` | PASS | Returned Guest/session users through server auth boundary. |
+| `GET /api/mock-db/snapshot` | PASS | Returned server-backed Mock DB snapshot. |
+| `POST /api/toolbox/<tool>/repositories` | PASS | Returned repository ids for Project Workspace, Game Design, Game Configuration, Project Journey, Palette, and Assets. |
+| `POST /api/toolbox/<tool>/repositories/<id>/methods/<method>` | PASS | Returned method result wrappers for representative repository methods. |
+| `GET /api/toolbox/<tool>/constants` | PASS | Returned required constants for each migrated tool client. |
+| `POST /api/toolbox/palette/functions/normalizePaletteSwatchInput` | PASS | Returned server function result wrapper. |
 
-## Command Evidence
+## Command
 
-Custom Node validation script using `startRepoServer()` and `fetch()`:
+Custom Node API contract script using `tests/helpers/playwrightRepoServer.mjs`.
 
-```text
-PASS project-workspace.getActiveProject
-PASS project-workspace.getProjectProgress
-PASS project-workspace.getTables
-PASS game-design.getSnapshot
-PASS game-design.getProjectProgressHandoff
-PASS game-design.getTables
-PASS game-configuration.getSnapshot
-PASS game-configuration.getProjectProgressHandoff
-PASS game-configuration.getTables
-PASS project-journey.getSessionUser
-PASS project-journey.listNotes
-PASS project-journey.getTables
-PASS palette.getSnapshot
-PASS palette.getTables
-PASS palette.sourcePaletteOptions
-PASS assets.getSnapshot
-PASS assets.getTables
-PASS assets.getProgressHandoff
-PASS /api/session/current
-PASS /api/session/users
-PASS /api/mock-db/snapshot
-```
+## Output
+
+`PASS api contract validation for PR_26158_022`

@@ -8,7 +8,7 @@ import {
   mockDbPersistenceEnabled,
   normalizeMockDbTables,
   saveMockDbTables,
-} from "../../src/engine/persistence/mock-db-store.js";
+} from "../../src/dev-runtime/persistence/mock-db-store.js";
 
 export const ASSET_TOOL_TABLES = Object.freeze([
   "asset_role_definitions",

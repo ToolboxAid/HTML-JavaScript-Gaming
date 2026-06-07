@@ -2,13 +2,14 @@ import {
   callServerToolFunction,
   createServerRepositoryClient,
   readServerToolConstants,
+  requireServerConstant,
 } from "../../src/engine/api/server-api-client.js";
 
 const constants = readServerToolConstants("palette");
 
-export const PALETTE_SOURCE_USER = constants.PALETTE_SOURCE_USER || "user";
-export const PALETTE_TOOL_KEY = constants.PALETTE_TOOL_KEY || "palette-browser";
-export const PALETTE_WORKSPACE_PATH = constants.PALETTE_WORKSPACE_PATH || "tools.palette-browser.swatches";
+export const PALETTE_SOURCE_USER = requireServerConstant(constants, "PALETTE_SOURCE_USER", "palette");
+export const PALETTE_TOOL_KEY = requireServerConstant(constants, "PALETTE_TOOL_KEY", "palette");
+export const PALETTE_WORKSPACE_PATH = requireServerConstant(constants, "PALETTE_WORKSPACE_PATH", "palette");
 
 export function createProjectWorkspacePaletteApiRepository(options = {}) {
   return createServerRepositoryClient("palette", options);

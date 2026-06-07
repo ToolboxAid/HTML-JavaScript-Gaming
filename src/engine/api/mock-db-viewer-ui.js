@@ -2,7 +2,7 @@ import {
   clearMockDb,
   getMockDbSnapshot,
   seedMockDb,
-} from "../../engine/api/mock-db-api-client.js";
+} from "./mock-db-api-client.js";
 
 const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
 const TOOL_GROUP_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
@@ -502,6 +502,6 @@ class AdminDbViewer {
   }
 }
 
-export function startDevRuntimeDbViewer(documentRef = document) {
+export function startMockDbViewer(documentRef = document) {
   new AdminDbViewer(documentRef).start();
 }

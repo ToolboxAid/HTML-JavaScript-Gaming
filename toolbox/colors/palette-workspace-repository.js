@@ -5,7 +5,7 @@ import {
   MOCK_DB_KEYS,
   normalizeMockDbTables,
   saveMockDbTables,
-} from "../../src/engine/persistence/mock-db-store.js";
+} from "../../src/dev-runtime/persistence/mock-db-store.js";
 
 export const PALETTE_TOOL_KEY = "palette-browser";
 export const PALETTE_WORKSPACE_PATH = `tools.${PALETTE_TOOL_KEY}.swatches`;

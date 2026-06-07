@@ -3,6 +3,17 @@ import {
   pickerDiagnosticForRole,
 } from "../../../toolbox/assets/assets-mock-repository.js";
 import {
+  TOOL_IMAGE_FALLBACK,
+  TOOL_STATUS_MODEL,
+  getActiveToolRegistry,
+  getToolImageDiagnostics,
+  getToolImageSource,
+  getToolProgressReadiness,
+  getToolRegistry,
+  getToolRoute,
+  toolRegistryMetadataDiagnostic,
+} from "../../../toolbox/toolRegistry.js";
+import {
   PALETTE_SOURCE_USER,
   PALETTE_TOOL_KEY,
   PALETTE_WORKSPACE_PATH,
@@ -48,6 +59,28 @@ const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function serverRegistryTool(tool) {
+  return {
+    ...tool,
+    imageDiagnostics: getToolImageDiagnostics(tool),
+    imageSources: {
+      badge: getToolImageSource(tool, "badge"),
+      tool: getToolImageSource(tool, "tool"),
+    },
+    route: getToolRoute(tool),
+    statusDiagnostic: toolRegistryMetadataDiagnostic(tool),
+  };
+}
+
+function toolRegistrySnapshot() {
+  return {
+    activeTools: getActiveToolRegistry().map(serverRegistryTool),
+    imageFallback: TOOL_IMAGE_FALLBACK,
+    readinessByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [status, getToolProgressReadiness(status)])),
+    tools: getToolRegistry().map(serverRegistryTool),
+  };
 }
 
 function isUlidKey(value) {
@@ -577,6 +610,10 @@ export function createMockApiRouter() {
       }
 
       if (parts[1] === "toolbox") {
+        if (request.method === "GET" && parts[2] === "registry" && parts[3] === "snapshot") {
+          ok(response, toolRegistrySnapshot());
+          return true;
+        }
         const toolId = parts[2];
         if (request.method === "GET" && parts[3] === "constants") {
           ok(response, dataSource.constantsForTool(toolId));

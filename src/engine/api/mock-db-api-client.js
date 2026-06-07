@@ -1,26 +1,23 @@
 import { safeRequestServerApi } from "./server-api-client.js";
 
-function unwrap(response, fallback) {
+function unwrap(response, context) {
   if (!response.ok) {
     throw new Error(response.error);
   }
-  return response.payload?.data || fallback;
+  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
+    throw new Error(`${context} did not return server data. Restore the server-backed Mock DB API.`);
+  }
+  return response.payload.data;
 }
 
 export function getMockDbSnapshot() {
-  return unwrap(safeRequestServerApi("/mock-db/snapshot"), {
-    cleared: false,
-    owners: {},
-    schemas: {},
-    tables: {},
-    toolGroups: {},
-  });
+  return unwrap(safeRequestServerApi("/mock-db/snapshot"), "Mock DB snapshot");
 }
 
 export function clearMockDb() {
-  return unwrap(safeRequestServerApi("/mock-db/clear", { method: "POST" }), {});
+  return unwrap(safeRequestServerApi("/mock-db/clear", { method: "POST" }), "Mock DB clear");
 }
 
 export function seedMockDb() {
-  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), {});
+  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), "Mock DB seed");
 }

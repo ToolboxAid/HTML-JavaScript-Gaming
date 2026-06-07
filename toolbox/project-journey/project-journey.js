@@ -4,9 +4,13 @@ import {
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyApiRepository,
 } from "./project-journey-api-client.js";
-import { getActiveToolRegistry } from "../toolRegistry.js";
+import {
+  getActiveToolRegistry,
+  getToolRegistryApiDiagnostic,
+} from "../tool-registry-api-client.js";
 
 const repository = createProjectJourneyApiRepository();
+const registryDiagnostic = getToolRegistryApiDiagnostic();
 const registryTools = getActiveToolRegistry();
 const params = new URLSearchParams(window.location.search);
 const DELETE_CONFIRMATION_MESSAGE = "It is best to keep the note unless it was created by mistake.";
@@ -760,6 +764,15 @@ function groupSlug(groupName) {
 
 function renderSuggestedTools(note) {
   suggestedTools.innerHTML = "";
+  if (registryDiagnostic) {
+    suggestedTools.append(
+      createElement("p", {
+        text: `Suggested Tools could not load from the server API: ${registryDiagnostic}`,
+      }),
+    );
+    return;
+  }
+
   const seen = new Set();
   const toolNames = getSuggestedToolNames(note);
   const matchedTools = toolNames

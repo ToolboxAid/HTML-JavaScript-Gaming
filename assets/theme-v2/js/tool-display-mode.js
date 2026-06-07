@@ -120,14 +120,18 @@
         badge.alt = registryName + " badge";
         fullscreenName.textContent = registryName;
         character.alt = registryName + " character";
-        description.textContent = registryDescription;
+        description.textContent = registryName;
         badge.src = registry.getToolImageSource(registryTool, "badge");
         character.src = registry.getToolImageSource(registryTool, "tool");
     }
 
     async function renderToolNavigation() {
         try {
-            const registry = await import("/toolbox/toolRegistry.js");
+            const registry = await import("/toolbox/tool-registry-api-client.js");
+            const registryDiagnostic = registry.getToolRegistryApiDiagnostic();
+            if (registryDiagnostic) {
+                throw new Error(registryDiagnostic);
+            }
             const navigation = registry.getToolNavigationTargets(toolSlug);
             applyRegistryImages(registry);
             const navigationRow = document.createElement("nav");
@@ -141,6 +145,11 @@
             body.appendChild(navigationRow);
         } catch (error) {
             console.warn("Tool navigation could not be loaded.", error);
+            const diagnostic = document.createElement("p");
+            diagnostic.className = "status";
+            diagnostic.setAttribute("role", "status");
+            diagnostic.textContent = "Tool navigation could not load from the server API. Start the Local/DEV server API and refresh.";
+            body.appendChild(diagnostic);
         }
     }
 

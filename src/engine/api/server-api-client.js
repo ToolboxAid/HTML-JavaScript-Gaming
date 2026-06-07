@@ -65,12 +65,26 @@ export function safeRequestServerApi(path, options = {}) {
   }
 }
 
+export function requireServerApiData(response, context) {
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
+    throw new Error(`${context} did not return server data. Restore the Browser -> Server API -> Data Source contract.`);
+  }
+  return response.payload.data;
+}
+
 export function readServerToolConstants(toolId) {
   const response = safeRequestServerApi(`/toolbox/${encodeURIComponent(toolId)}/constants`);
-  if (!response.ok) {
-    return {};
+  return requireServerApiData(response, `${toolId} constants`);
+}
+
+export function requireServerConstant(constants, name, toolId) {
+  if (!constants || !Object.prototype.hasOwnProperty.call(constants, name)) {
+    throw new Error(`${toolId} constants did not include ${name}. Restore the server API contract.`);
   }
-  return response.payload?.data || {};
+  return constants[name];
 }
 
 export function callServerToolFunction(toolId, functionName, ...args) {
@@ -84,7 +98,11 @@ export function callServerToolFunction(toolId, functionName, ...args) {
   if (!response.ok) {
     throw new Error(response.error);
   }
-  return response.payload?.data?.result;
+  const data = requireServerApiData(response, `${toolId}.${functionName}`);
+  if (!Object.prototype.hasOwnProperty.call(data, "result")) {
+    throw new Error(`${toolId}.${functionName} did not return a server result. Restore the server API contract.`);
+  }
+  return data.result;
 }
 
 function missingServerResult(methodName, diagnostic) {
@@ -113,6 +131,9 @@ export function createServerRepositoryClient(toolId, initOptions = {}) {
   });
   if (initResponse.ok) {
     repositoryId = initResponse.payload?.data?.repositoryId || "";
+    if (!repositoryId) {
+      diagnostic = `Server API did not return a repository id for ${toolId}. Restore the server data source.`;
+    }
   } else {
     diagnostic = initResponse.error;
   }
