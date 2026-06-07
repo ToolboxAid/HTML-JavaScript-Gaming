@@ -4,6 +4,7 @@ import {
 } from "../colors/palette-workspace-repository.js";
 import {
   loadMockDbTables,
+  MOCK_DB_KEYS,
   mockDbPersistenceEnabled,
   normalizeMockDbTables,
   saveMockDbTables,
@@ -18,6 +19,7 @@ export const ASSET_TOOL_TABLES = Object.freeze([
 ]);
 
 const ASSET_DB_OWNER = "asset";
+const ASSET_SYSTEM_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
 
 export const ASSET_PICKER_MODES = Object.freeze([
   "file",
@@ -190,7 +192,7 @@ function cloneTables(tables) {
 }
 
 function roleDefinitionRows() {
-  return ASSET_ROLE_DEFINITIONS.map((role) => ({
+  return ASSET_ROLE_DEFINITIONS.map((role, index) => ({
     id: role.id,
     label: role.label,
     storageFolder: role.storageFolder,
@@ -202,7 +204,8 @@ function roleDefinitionRows() {
     usageRoles: role.usageRoles.join(", "),
     maxSizeBytes: role.maxSizeBytes,
     dbFields: uploadedAssetMetadataFields().join(", "),
-    validationNeeds: role.validationNeeds.join("; ")
+    validationNeeds: role.validationNeeds.join("; "),
+    ...auditFields(timestampForIndex(index), ASSET_SYSTEM_USER_KEY)
   }));
 }
 
@@ -400,6 +403,19 @@ function previewKindForRole(role) {
   return role.previewBehavior;
 }
 
+function timestampForIndex(index) {
+  return new Date(Date.UTC(2026, 5, 6, 9, index % 60, 0)).toISOString();
+}
+
+function auditFields(timestamp, userKey = ASSET_SYSTEM_USER_KEY) {
+  return {
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    createdBy: userKey,
+    updatedBy: userKey
+  };
+}
+
 function createReadyGameConfigurationRepository() {
   const repository = createGameConfigurationMockRepository();
   repository.makeValidGameDesign("demo-project");
@@ -408,13 +424,15 @@ function createReadyGameConfigurationRepository() {
 }
 
 function createValidationRows(projectId, findings) {
+  const timestamp = new Date().toISOString();
   return findings.map((finding, index) => ({
     action: finding.action,
     field: finding.field,
     id: `${projectId || "asset"}-asset-validation-${index + 1}`,
     label: finding.label,
     projectId,
-    status: "Missing"
+    status: "Missing",
+    ...auditFields(timestamp, ASSET_SYSTEM_USER_KEY)
   }));
 }
 
@@ -443,6 +461,7 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
     assetId: `${projectId}-asset-${assetRole}-${slugify(name || originalName)}`,
     checksum,
     createdAt: timestamp,
+    createdBy: ASSET_SYSTEM_USER_KEY,
     id: `${projectId}-storage-${assetRole}-${slugify(usage)}-${slugify(originalName)}`,
     mimeType,
     originalName,
@@ -452,7 +471,8 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
     size,
     status: "Stored",
     storedPath,
-    updatedAt: timestamp
+    updatedAt: timestamp,
+    updatedBy: ASSET_SYSTEM_USER_KEY
   };
 }
 
@@ -720,6 +740,7 @@ export function createAssetToolMockRepository(options = {}) {
       assetRoleLabel: role.label,
       checksum: storageObject.checksum,
       createdAt: timestamp,
+      createdBy: ASSET_SYSTEM_USER_KEY,
       fileName: validation.asset.fileName,
       id: storageObject.assetId,
       mimeType: validation.asset.mimeType,
@@ -738,6 +759,7 @@ export function createAssetToolMockRepository(options = {}) {
       storageObjectId: storageObject.id,
       type: role.label,
       updatedAt: timestamp,
+      updatedBy: ASSET_SYSTEM_USER_KEY,
       usage: validation.asset.usage
     };
 
@@ -747,13 +769,17 @@ export function createAssetToolMockRepository(options = {}) {
     tables.asset_storage_objects.push(storageObject);
     tables.asset_import_events.push({
       assetId: asset.id,
+      createdAt: timestamp,
+      createdBy: ASSET_SYSTEM_USER_KEY,
       fileName: asset.fileName,
       id: `${asset.id}-import-${tables.asset_import_events.length + 1}`,
       mimeType: asset.mimeType,
       projectId,
       status: "Uploaded",
       storedPath: asset.storedPath,
-      type: asset.type
+      type: asset.type,
+      updatedAt: timestamp,
+      updatedBy: ASSET_SYSTEM_USER_KEY
     });
     if (role.inputMode === "palette" && asset.paletteSwatch) {
       paletteRepository.recordSwatchUsage({

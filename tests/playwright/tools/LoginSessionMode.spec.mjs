@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -87,7 +87,7 @@ async function closeWithCoverage(page, failures) {
 
 async function mockDbSessionSnapshot(page) {
   return page.evaluate(async () => {
-    const db = await import("/src/engine/persistence/mock-db-store.js");
+    const db = await import("/src/dev-runtime/persistence/mock-db-store.js");
     const tables = db.getStandaloneMockDbTables();
     return {
       mode: db.getMockDbSessionMode(),

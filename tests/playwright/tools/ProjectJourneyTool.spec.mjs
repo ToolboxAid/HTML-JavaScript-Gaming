@@ -11,7 +11,7 @@ import {
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyMockRepository,
 } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
-import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
@@ -665,7 +665,7 @@ test("Project Journey supports Guest as the selected shared session user", async
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
 
     await page.evaluate(async (adminKey) => {
-      const db = await import("/src/engine/persistence/mock-db-store.js");
+      const db = await import("/src/dev-runtime/persistence/mock-db-store.js");
       db.seedMockDbTables();
       window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", adminKey);
     }, MOCK_DB_KEYS.users.admin);

@@ -2,6 +2,7 @@ import { createProjectWorkspaceMockRepository } from "../project-workspace/proje
 import { createPaletteSourceMockDbRows } from "./palette-source-mock-db.js";
 import {
   loadMockDbTables,
+  MOCK_DB_KEYS,
   normalizeMockDbTables,
   saveMockDbTables,
 } from "../../src/engine/persistence/mock-db-store.js";
@@ -19,6 +20,7 @@ export const PALETTE_TOOL_TABLES = Object.freeze([
 ]);
 
 const PALETTE_DB_OWNER = "palette";
+const PALETTE_SYSTEM_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
 
 export const PALETTE_HARMONY_MATCH_SOURCES = Object.freeze([
   { id: "calculated", label: "Calculated" },
@@ -67,6 +69,31 @@ function cloneSourcePaletteRow(row) {
   return {
     ...row,
     tags: [...(Array.isArray(row.tags) ? row.tags : [])]
+  };
+}
+
+function timestampForIndex(index) {
+  return new Date(Date.UTC(2026, 5, 6, 9, index % 60, 0)).toISOString();
+}
+
+function auditFields(timestamp, userKey = PALETTE_SYSTEM_USER_KEY) {
+  return {
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    createdBy: userKey,
+    updatedBy: userKey
+  };
+}
+
+function rowAuditFields(row = {}, index = 0) {
+  const createdAt = row.createdAt || timestampForIndex(index);
+  const updatedAt = row.updatedAt || createdAt;
+  const createdBy = row.createdBy || PALETTE_SYSTEM_USER_KEY;
+  return {
+    createdAt,
+    updatedAt,
+    createdBy,
+    updatedBy: row.updatedBy || createdBy
   };
 }
 
@@ -314,6 +341,7 @@ function normalizeSourcePaletteRows(sourcePaletteRows = []) {
         return null;
       }
       return {
+        ...rowAuditFields(row, index),
         hex: swatch.hex,
         id: normalizeText(row.id) || `${normalizedSourceId}-source-swatch-${index + 1}`,
         name: swatch.name,
@@ -631,13 +659,25 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function replacePaletteColorRows(projectId, swatches) {
+    const existingRows = new Map(
+      paletteColorRows
+        .filter((row) => row.projectId === projectId)
+        .map((row) => [row.symbol, row])
+    );
     for (let index = paletteColorRows.length - 1; index >= 0; index -= 1) {
       if (paletteColorRows[index].projectId === projectId) {
         paletteColorRows.splice(index, 1);
       }
     }
+    const timestamp = new Date().toISOString();
     swatches.forEach((swatch, index) => {
+      const existingRow = existingRows.get(swatch.symbol) || {};
       paletteColorRows.push({
+        ...rowAuditFields({
+          ...existingRow,
+          updatedAt: timestamp,
+          updatedBy: PALETTE_SYSTEM_USER_KEY
+        }, index),
         hex: swatch.hex,
         id: `${projectId}-palette-color-${index + 1}`,
         name: swatch.name,
@@ -1303,7 +1343,15 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
+    const existingIndex = usageRows.findIndex((usage) => usage.id === createUsageId(projectId, swatch.symbol, input.assetId));
+    const existingRow = existingIndex >= 0 ? usageRows[existingIndex] : {};
+    const timestamp = new Date().toISOString();
     const row = {
+      ...rowAuditFields({
+        ...existingRow,
+        updatedAt: timestamp,
+        updatedBy: PALETTE_SYSTEM_USER_KEY
+      }),
       assetId: normalizeText(input.assetId),
       id: createUsageId(projectId, swatch.symbol, input.assetId),
       projectId,
@@ -1312,7 +1360,6 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       swatchSymbol: swatch.symbol,
       toolId: normalizeText(input.toolId) || "assets"
     };
-    const existingIndex = usageRows.findIndex((usage) => usage.id === row.id);
     if (existingIndex >= 0) {
       usageRows.splice(existingIndex, 1, row);
     } else {
@@ -1370,7 +1417,8 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         tags: [...row.tags]
       })),
       palette_swatch_usages: usageRows.map((row) => ({ ...row })),
-      project_workspace_palette_globals: [...workspaceRecords.values()].map((record) => ({
+      project_workspace_palette_globals: [...workspaceRecords.values()].map((record, index) => ({
+        ...auditFields(timestampForIndex(index + 30), PALETTE_SYSTEM_USER_KEY),
         projectId: record.projectId,
         swatchCount: swatchesFromColorRows(record.projectId).length,
         toolKey: PALETTE_TOOL_KEY,

@@ -1,7 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { createAssetToolMockRepository } from "../../../toolbox/assets/assets-mock-repository.js";
 import { createProjectWorkspacePaletteRepository } from "../../../toolbox/colors/palette-workspace-repository.js";
-import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
+import {
+  MOCK_DB_KEYS,
+  getStandaloneMockDbSeedTables,
+  normalizeMockDbTables,
+} from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -56,8 +60,8 @@ async function openRepoPage(page, pathName, options = {}) {
   });
 
   if (sessionUserKey !== undefined) {
-    await page.addInitScript(({ selectedUserKey, seedState, storageKey }) => {
-      if (!window.localStorage.getItem("gamefoundry.mockDb.v1")) {
+    await page.addInitScript(({ forceSeedState, selectedUserKey, seedState, storageKey }) => {
+      if (forceSeedState || !window.localStorage.getItem("gamefoundry.mockDb.v1")) {
         window.localStorage.setItem("gamefoundry.mockDb.v1", JSON.stringify(seedState));
       }
       window.localStorage.setItem("gamefoundry.mockDb.sessionMode.v1", "local");
@@ -68,7 +72,8 @@ async function openRepoPage(page, pathName, options = {}) {
         window.localStorage.removeItem(storageKey);
       }
     }, {
-      seedState: standaloneSeedState,
+      forceSeedState: Object.hasOwn(options, "seedState"),
+      seedState: options.seedState || standaloneSeedState,
       selectedUserKey: sessionUserKey,
       storageKey: "gamefoundry.mockDb.sessionUser.v1",
     });
@@ -414,6 +419,28 @@ test("Mock DB viewer renders live persisted tool records after refresh", async (
   }
 });
 
+test("Mock DB viewer shows a visible diagnostic for invalid persisted audit users", async ({ page }) => {
+  const invalidSeedState = JSON.parse(JSON.stringify(standaloneSeedState));
+  invalidSeedState.tables.users[0].createdBy = "not-a-user-key";
+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
+    seedState: invalidSeedState,
+    sessionUserKey: MOCK_DB_KEYS.users.admin,
+  });
+
+  try {
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(
+      "Mock DB data error. Fix the invalid record ownership or use Clear Mock DB, then Seed Mock DB.",
+    );
+    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
+      "Invalid mock DB audit user key for users.createdBy",
+    );
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Palette and Asset raw mock DB tables are DB-shaped before viewer rendering", () => {
   const paletteRepository = createProjectWorkspacePaletteRepository({ persist: false });
   const assetRepository = createAssetToolMockRepository({ persist: false });
@@ -435,4 +462,34 @@ test("Palette and Asset raw mock DB tables are DB-shaped before viewer rendering
     "asset_import_events",
     "asset_validation_items",
   ]);
+});
+
+test("Mock DB audit normalization rejects invalid users outside seed initialization", () => {
+  expect(() => normalizeMockDbTables("standalone", {
+    users: [{
+      key: MOCK_DB_KEYS.users.user1,
+      displayName: "Broken Audit User",
+      createdAt: "2026-06-06T09:00:00.000Z",
+      updatedAt: "2026-06-06T09:00:00.000Z",
+      createdBy: "not-a-ulid",
+      updatedBy: MOCK_DB_KEYS.users.admin,
+    }],
+  })).toThrow(/Invalid mock DB audit user key/);
+
+  const diagnostics = [];
+  const seedTables = normalizeMockDbTables("standalone", {
+    users: [{
+      key: MOCK_DB_KEYS.users.user1,
+      displayName: "Seed Repair",
+    }],
+  }, {
+    allowSeedAuditFallback: true,
+    diagnostics,
+    seedFallbackContext: "test seed initialization",
+    userKey: MOCK_DB_KEYS.users.forgeBot,
+  });
+
+  expect(seedTables.users[0].createdBy).toBe(MOCK_DB_KEYS.users.forgeBot);
+  expect(seedTables.users[0].updatedBy).toBe(MOCK_DB_KEYS.users.forgeBot);
+  expect(diagnostics.join("\n")).toContain("seed-only audit fallback");
 });

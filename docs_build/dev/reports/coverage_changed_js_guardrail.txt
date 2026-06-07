@@ -6,11 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(70%) toolbox/colors/palette-workspace-repository.js - executed lines 1316/1316; executed functions 89/127
-(81%) toolbox/assets/assets-mock-repository.js - executed lines 919/919; executed functions 61/75
-(95%) src/dev-runtime/persistence/mock-db-store.js - executed lines 682/682; executed functions 77/81
-(98%) toolbox/project-journey/project-journey.js - executed lines 991/991; executed functions 105/107
-(100%) src/engine/persistence/mock-db-store.js - executed lines 1/1; executed functions 1/1
+(64%) src/engine/persistence/mock-db-store.js - executed lines 36/36; executed functions 7/11
+(70%) toolbox/colors/palette-workspace-repository.js - executed lines 1361/1361; executed functions 92/132
+(82%) toolbox/assets/assets-mock-repository.js - executed lines 943/943; executed functions 63/77
+(95%) src/dev-runtime/admin/db-viewer.js - executed lines 478/478; executed functions 86/91
+(95%) src/dev-runtime/persistence/mock-db-store.js - executed lines 727/727; executed functions 78/82
+(100%) src/dev-runtime/auth/login-session.js - executed lines 107/107; executed functions 12/12
 
 Guardrail warnings:
 (100%) none - no changed runtime JS coverage warnings
