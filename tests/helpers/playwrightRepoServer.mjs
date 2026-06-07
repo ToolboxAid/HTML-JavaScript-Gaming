@@ -35,6 +35,15 @@ function repoRelativePath(absolutePath) {
   return path.relative(repoRoot, absolutePath).replace(/\\/g, "/");
 }
 
+function resolveBrowserRoutePath(decodedPath) {
+  const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
+  const webPath = normalizedPath.replace(/\\/g, "/");
+  if (webPath === "/tools" || webPath.startsWith("/tools/")) {
+    return `/toolbox${webPath.slice("/tools".length)}`;
+  }
+  return normalizedPath;
+}
+
 async function writeAdminNotesDirectoryListing(absolutePath, response) {
   if (!isInsideAdminNotesRoot(absolutePath)) {
     response.statusCode = 403;
@@ -98,7 +107,7 @@ export async function startRepoServer() {
         return;
       }
       const decodedPath = decodeURIComponent(requestUrl.pathname);
-      const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
+      const normalizedPath = resolveBrowserRoutePath(decodedPath);
       const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);
       if (!isInsideRepoRoot(absolutePath)) {
         response.statusCode = 403;

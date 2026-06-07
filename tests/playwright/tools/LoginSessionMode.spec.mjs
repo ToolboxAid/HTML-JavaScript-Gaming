@@ -115,6 +115,8 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.getByRole("heading", { name: "Login", level: 1 })).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
+    await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
+    await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
     await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
@@ -134,6 +136,8 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     expect(snapshot.userNames).not.toContain("Guest");
 
     await page.locator("[data-login-mode='local-db']").click();
+    await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
+    await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
     await expect(page.locator("[data-login-mode='local-db']")).toHaveClass(/primary/);
     await expect(page.locator("[data-login-mode-title]")).toHaveText("Local DB");
     await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses LocalDbAdapter backed by server SQLite storage.");
@@ -157,6 +161,8 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 2.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 2");
     localDbSnapshot = await mockDbSessionSnapshot(page);
+    expect(localDbSnapshot.mode.id).toBe("local-db");
+    expect(localDbSnapshot.persistence).toBe("Local DB");
     expect(localDbSnapshot.sessionUser.id).toBe(MOCK_DB_KEYS.users.user2);
 
     await page.locator("[data-login-mode='local-mem']").click();

@@ -85,6 +85,8 @@ function renderUserButtons(mode) {
 
 function renderModeButtons(mode) {
   modeButtons.forEach((button) => {
+    button.disabled = false;
+    button.removeAttribute("aria-disabled");
     setSelectedButton(button, button.dataset.loginMode === mode.id);
   });
 }
@@ -92,8 +94,8 @@ function renderModeButtons(mode) {
 function renderError(error) {
   const message = error instanceof Error ? error.message : String(error || "Session API unavailable.");
   modeButtons.forEach((button) => {
-    button.disabled = true;
-    button.setAttribute("aria-disabled", "true");
+    button.disabled = false;
+    button.removeAttribute("aria-disabled");
   });
   if (userControls) {
     userControls.replaceChildren();
@@ -166,7 +168,6 @@ userControls?.addEventListener("click", (event) => {
     return;
   }
   try {
-    setSessionMode("local-mem");
     setSessionUser(button.dataset.loginUser || "");
     dispatchSessionChanged();
     render();
