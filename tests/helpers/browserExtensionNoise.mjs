@@ -12,6 +12,5 @@ export function isBrowserExtensionNoise(value) {
   }
   return text.includes("chrome-extension://") ||
     text.includes("moz-extension://") ||
-    text.includes("extension://") ||
-    hasKnownScriptName;
+    text.includes("extension://");
 }

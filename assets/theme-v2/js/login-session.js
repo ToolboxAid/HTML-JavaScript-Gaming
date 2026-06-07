@@ -13,6 +13,27 @@ const modeStatus = document.querySelector("[data-login-mode-status]");
 const userControls = document.querySelector("[data-login-user-controls]");
 const userStatus = document.querySelector("[data-login-user-status]");
 const continueLink = document.querySelector("[data-login-continue]");
+const staticModeDetails = {
+  "local-mem": {
+    description: "Uses MockDbAdapter backed by in-memory lists when the API-backed local server is running.",
+    diagnostic: "Static-only server detected. Local Mem selection remains available, but local users and persistence require the API-backed local server.",
+    environment: "Local Mem",
+    id: "local-mem",
+    label: "Local Mem",
+    persistence: "Memory",
+  },
+  "local-db": {
+    description: "Uses LocalDbAdapter backed by server SQLite storage.",
+    diagnostic: "Static-only server detected. Local DB requires the API-backed local server; start the local server API to use SQLite-backed Local DB.",
+    environment: "Local DB",
+    id: "local-db",
+    label: "Local DB",
+    persistence: "Local DB",
+  },
+};
+let staticApiUnavailable = false;
+let staticModeId = "local-mem";
+let staticApiDiagnostic = "";
 
 function currentReturnTo() {
   const params = new URLSearchParams(window.location.search);
@@ -91,8 +112,46 @@ function renderModeButtons(mode) {
   });
 }
 
+function errorMessage(error) {
+  return error instanceof Error ? error.message : String(error || "Session API unavailable.");
+}
+
+function isStaticApiUnavailable(message) {
+  return message.includes("Local server API route unavailable") ||
+    message.includes("/api/session") && message.includes("(404)");
+}
+
+function renderStaticApiUnavailable(modeId, error) {
+  const mode = staticModeDetails[modeId] || staticModeDetails["local-mem"];
+  staticApiUnavailable = true;
+  staticModeId = mode.id;
+  staticApiDiagnostic = errorMessage(error);
+  renderModeButtons(mode);
+  if (userControls) {
+    userControls.replaceChildren();
+    userControls.hidden = true;
+  }
+  if (modeTitle) {
+    modeTitle.textContent = mode.label;
+  }
+  if (modeDescription) {
+    modeDescription.textContent = mode.description;
+  }
+  if (modeStatus) {
+    modeStatus.textContent = `Environment: ${mode.environment}. Persistence: ${mode.persistence}. Diagnostic: ${mode.diagnostic} ${staticApiDiagnostic}`;
+  }
+  if (userStatus) {
+    userStatus.textContent = "No local users are available because the API-backed local server is unavailable.";
+  }
+  updateContinueLink();
+}
+
 function renderError(error) {
-  const message = error instanceof Error ? error.message : String(error || "Session API unavailable.");
+  const message = errorMessage(error);
+  if (isStaticApiUnavailable(message)) {
+    renderStaticApiUnavailable(staticModeId, error);
+    return;
+  }
   modeButtons.forEach((button) => {
     button.disabled = false;
     button.removeAttribute("aria-disabled");
@@ -119,6 +178,7 @@ function renderError(error) {
 function render() {
   try {
     const session = getSessionCurrent();
+    staticApiUnavailable = false;
     const mode = getSessionModes().find((item) => item.id === session.mode) || {
       description: "",
       id: session.mode,
@@ -152,11 +212,17 @@ function render() {
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    const modeId = button.dataset.loginMode || "local-mem";
+    if (staticApiUnavailable) {
+      renderStaticApiUnavailable(modeId, staticApiDiagnostic);
+      return;
+    }
     try {
-      setSessionMode(button.dataset.loginMode || "local-mem");
+      setSessionMode(modeId);
       dispatchModeChanged();
       render();
     } catch (error) {
+      staticModeId = modeId;
       renderError(error);
     }
   });
