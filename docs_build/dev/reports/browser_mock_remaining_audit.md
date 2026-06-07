@@ -1,38 +1,38 @@
-# PR_26158_022 Browser Mock Remaining Audit
+# PR_26158_024 Browser Mock Remaining Audit
 
-## Audit Scope
+## Scope
 
-Active browser/tool files changed or adjacent to PR_26158_020/021:
+Focused audit for browser-visible files and adjacent server/API cleanup touched in PR_26158_024:
 
+- `admin/db-viewer.html`
 - `admin/db-viewer.js`
-- `assets/theme-v2/js/login-session.js`
-- `assets/theme-v2/js/tool-display-mode.js`
-- `admin/tools-progress.js`
-- `toolbox/tools-page-accordions.js`
-- `toolbox/project-journey/project-journey.js`
-- toolbox API clients under `toolbox/*/*-api-client.js`
-- engine API clients under `src/engine/api/`
+- `src/engine/api/mock-db-api-client.js`
+- `src/engine/api/mock-db-viewer-ui.js`
+- `src/dev-runtime/server/mock-api-router.mjs`
+- `src/dev-runtime/persistence/mock-db-store.js`
+- `tests/playwright/tools/AdminDbViewer.spec.mjs`
+- `tests/playwright/tools/LoginSessionMode.spec.mjs`
 
-## Findings
+## Static Import Boundary
 
 | Check | Status | Evidence |
 | --- | --- | --- |
-| Active browser files import `src/dev-runtime` directly. | PASS | Focused `rg` found no active browser entry imports after migration. |
-| Active browser files import mock repositories directly. | PASS | Remaining `*-mock-repository.js` imports are repository/server-dev implementation files only. |
-| Active browser files import `mock-db-store` or dev persistence. | PASS | `src/engine/persistence/mock-db-store.js` was removed; browser files use API clients. |
-| Active browser files import static Toolbox registry records directly. | PASS | Toolbox page, Project Journey, Admin Tools Progress, and Tool Display Mode now use `toolbox/tool-registry-api-client.js`. |
-| Active browser files keep page-local mock DB snapshots or fake records. | PASS | Palette invalid/empty source modes are server-owned; DB Viewer reads `/api/mock-db/snapshot`. |
-| Active browser files use `localStorage`/`sessionStorage` for mock DB/session fallback. | PASS | Migrated files use session/Mock DB API clients; permitted Workspace/sessionStorage contracts in unrelated shared runtime files were not modified. |
+| Browser files import `src/dev-runtime` directly. | PASS | `rg -n '^import .*src/dev-runtime|import\\(.*src/dev-runtime' assets admin toolbox src -g '*.js' -g '!src/dev-runtime/**' ...` returned no matches. |
+| Browser files import static `toolRegistry.js` directly. | PASS | `rg -n '^import .*toolRegistry\\.js|import\\(.*toolRegistry\\.js' ...` returned no matches. |
+| Browser files import mock repositories directly. | PASS | Refined `rg` excluding repository implementation files returned no matches. |
 
-## Remaining Matches And Classification
+## Local Mode Cleanup
 
-`rg` still finds mock/dev strings in these categories:
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Local login shows only Local Mem and Local DB. | PASS | Login Playwright lane asserts exact labels. |
+| DEV/UAT/Prod are not local login buttons. | PASS | Login Playwright lane asserts no DEV, UAT, or Prod buttons. |
+| Server rejects legacy `modeId: "local"`. | PASS | API contract probe returned 500 with `Unknown local login environment: local`. |
+| Local DB does not fall back to Local Mem. | PASS | API contract probe verified Local DB snapshot fails with `Local DB adapter not configured`. |
+| DB Viewer user-facing wording says Local Mem DB. | PASS | Admin DB Viewer Playwright asserts Local Mem DB headings, status text, clear/seed controls, and dialogs. |
 
-- `src/dev-runtime/server/mock-api-router.mjs`: PASS, server/dev runtime API owner.
-- `toolbox/*/*-mock-repository.js`, `toolbox/colors/palette-workspace-repository.js`, `toolbox/colors/palette-source-mock-db.js`: PASS, server/dev-only repository/data source modules imported by the dev server router.
-- `src/shared/toolbox/*` imports of `toolbox/toolRegistry.js`: AUDIT NOTE, product registry/shared shell metadata outside the active browser files changed by this migration pass. The adjacent active consumers were migrated to the server-backed registry endpoint.
+## Remaining Internal Matches
 
-## Command Evidence
-
-- `rg -n "dev-runtime|toolRegistry\\.js|mock-db-store|mock-repository|palette-workspace-repository|palette-source-mock-db|localStorage|sessionStorage" admin assets/theme-v2/js toolbox src/engine/api -g "*.js" -g "*.mjs" --glob "!archive/**" --glob "!**/start_of_day/**" --glob "!node_modules/**" --glob "!tmp/**"`
-- Remaining results were only server/dev repository implementation modules.
+- `toolbox/*/*-mock-repository.js` and `toolbox/colors/palette-workspace-repository.js` remain server/data-source implementation modules, not active browser entry imports.
+- `/api/mock-db/*` route names and `mock-db-*` module filenames remain stable internal API contracts.
+- Internal exception text `Invalid mock DB audit user key` remains in non-user-facing audit validation.

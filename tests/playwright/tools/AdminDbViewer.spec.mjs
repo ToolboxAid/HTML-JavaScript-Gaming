@@ -68,7 +68,7 @@ async function openRepoPage(page, pathName, options = {}) {
       });
     }
     await fetch(`${server.baseUrl}/api/session/mode`, {
-      body: JSON.stringify({ modeId: "local" }),
+      body: JSON.stringify({ modeId: "local-mem" }),
       headers: { "content-type": "application/json" },
       method: "POST",
     });
@@ -114,11 +114,11 @@ function expectDbShapedRows(tables, tableNames) {
   }
 }
 
-test("Admin DB Viewer shows current read-only mock DB tables, filters, users, roles, and diagnostics", async ({ page }) => {
+test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, users, roles, and diagnostics", async ({ page }) => {
   const failures = await openRepoPage(page, "/admin/db-viewer.html");
 
   try {
-    await expect(page.getByRole("heading", { name: "Mock DB", level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Local Mem DB", level: 1 })).toBeVisible();
     await expect(page.locator("[data-admin-only='true']")).toHaveCount(1);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("nav.nav-links a[data-route='admin-db-viewer']")).toHaveText("DB Viewer");
@@ -134,7 +134,7 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-route='admin-db-viewer']")).toHaveText("DB Viewer");
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and \d+ records for All\./);
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-filter]")).toHaveText([
       "All",
       "Workspace",
@@ -228,11 +228,11 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     await expect(page.locator("[data-admin-db-table='user_roles']")).toContainText("01K2GFSJ0Y");
 
     await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
-      "All current mock DB tables include createdAt, updatedAt, createdBy, and updatedBy."
+      "All current Local Mem DB tables include createdAt, updatedAt, createdBy, and updatedBy."
     );
     await expect(page.locator("[data-admin-db-bleed-findings]")).toContainText("No table bleed detected.");
     await expect(page.locator("[data-admin-db-stale-display-findings]")).toContainText(
-      "No stale display data detected; tables are rendered from current mock DB snapshots."
+      "No stale display data detected; tables are rendered from current Local Mem DB snapshots."
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
       "project_journey_items.noteKey -> project_journey_notes.key:"
@@ -305,32 +305,32 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
 
     await page.getByRole("button", { name: "All" }).click();
     page.once("dialog", async (dialog) => {
-      expect(dialog.message()).toBe("Clear all shared Mock DB records?");
+      expect(dialog.message()).toBe("Clear all shared Local Mem DB records?");
       await dialog.dismiss();
     });
     await page.locator("[data-admin-db-clear]").click();
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Mock DB");
+    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Local Mem DB");
 
     page.once("dialog", async (dialog) => {
-      expect(dialog.message()).toBe("Clear all shared Mock DB records?");
+      expect(dialog.message()).toBe("Clear all shared Local Mem DB records?");
       await dialog.accept();
     });
     await page.locator("[data-admin-db-clear]").click();
-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Seed Mock DB");
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and 0 records for All\./);
+    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Seed Local Mem DB");
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and 0 records for All\./);
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("No records in this table.");
     await expect(page.locator("[data-admin-db-table='project_journey_items'] thead")).toContainText("projectKey");
     await expect(page.locator("[data-admin-db-table='users'] thead")).toContainText("authProviderUserId");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
     await page.locator("[data-admin-db-clear]").click();
-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Mock DB");
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and \d+ records for All\./);
+    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Local Mem DB");
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("Designer review");
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Mock DB");
+    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Local Mem DB");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
 
     await expectNoPageFailures(failures);
@@ -340,7 +340,7 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
   }
 });
 
-test("Mock DB viewer renders live persisted tool records after refresh", async ({ page }) => {
+test("Local Mem DB viewer renders live persisted tool records after refresh", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/project-journey/index.html", {
     sessionUserKey: MOCK_DB_KEYS.users.user1,
   });
@@ -352,7 +352,7 @@ test("Mock DB viewer renders live persisted tool records after refresh", async (
     await expect(page.locator("[data-journey-note-status]")).toContainText("Added Persistence Review");
     await page.locator("[data-journey-new-item-title-input]").fill("Persisted DB item");
     await page.getByRole("button", { name: "Add Item" }).click();
-    await page.locator("[data-journey-item-details-input]").fill("Mock DB viewer should display this user-created item.");
+    await page.locator("[data-journey-item-details-input]").fill("Local Mem DB viewer should display this user-created item.");
     await expect(page.locator("[data-journey-item-tree]")).toContainText("Persisted DB item");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Persistence Review");
@@ -415,7 +415,7 @@ test("Mock DB viewer renders live persisted tool records after refresh", async (
   }
 });
 
-test("Mock DB viewer shows a visible diagnostic for invalid persisted audit users", async ({ page }) => {
+test("Local Mem DB viewer shows a visible diagnostic for invalid persisted audit users", async ({ page }) => {
   const invalidSeedState = JSON.parse(JSON.stringify(standaloneSeedState));
   invalidSeedState.tables.users[0].createdBy = "not-a-user-key";
   const failures = await openRepoPage(page, "/admin/db-viewer.html", {
@@ -434,7 +434,7 @@ test("Mock DB viewer shows a visible diagnostic for invalid persisted audit user
   }
 });
 
-test("Palette and Asset raw mock DB tables are DB-shaped before viewer rendering", () => {
+test("Palette and Asset raw Local Mem DB tables are DB-shaped before viewer rendering", () => {
   const paletteRepository = createProjectWorkspacePaletteRepository({ persist: false });
   const assetRepository = createAssetToolMockRepository({ persist: false });
   const paletteTables = paletteRepository.getTables();
@@ -457,7 +457,7 @@ test("Palette and Asset raw mock DB tables are DB-shaped before viewer rendering
   ]);
 });
 
-test("Mock DB audit normalization rejects invalid users outside seed initialization", () => {
+test("Local Mem DB audit normalization rejects invalid users outside seed initialization", () => {
   expect(() => normalizeMockDbTables("standalone", {
     users: [{
       key: MOCK_DB_KEYS.users.user1,

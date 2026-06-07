@@ -46,11 +46,11 @@ async function openRepoPage(page, pathName, options = {}) {
     await fetch(`${server.baseUrl}/api/mock-db/clear`, { method: "POST" });
   }
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: options.sessionModeId || "local" }),
+    body: JSON.stringify({ modeId: options.sessionModeId || "local-mem" }),
     headers: { "content-type": "application/json" },
     method: "POST",
   });
-  if ((options.sessionModeId || "local") !== "dev" && options.sessionUserKey !== undefined) {
+  if ((options.sessionModeId || "local-mem") === "local-mem" && options.sessionUserKey !== undefined) {
     await fetch(`${server.baseUrl}/api/session/user`, {
       body: JSON.stringify({ userKey: options.sessionUserKey || "" }),
       headers: { "content-type": "application/json" },
@@ -82,47 +82,65 @@ async function mockDbSessionSnapshot(page) {
     ]);
     return {
       mode: { id: session.data.mode },
-      persistenceEnabled: session.data.mode === "local",
+      persistence: session.data.persistence,
       sessionUser: session.data,
       userNames: (db.data.tables.users || []).map((user) => user.displayName),
     };
   });
 }
 
-test("Login page switches DEV and Local modes without storing Guest as a user", async ({ page }) => {
+async function sessionSnapshot(page) {
+  return page.evaluate(async () => fetch("/api/session/current").then((response) => response.json()));
+}
+
+test("Login page switches Local Mem and Local DB without storing Guest as a user", async ({ page }) => {
   const failures = await openRepoPage(page, "/login.html");
 
   try {
     await expect(page.getByRole("heading", { name: "Login", level: 1 })).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("[data-login-mode='local']")).toHaveClass(/primary/);
-    await expect(page.locator("[data-login-mode-title]")).toHaveText("Local");
-    await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses the persisted Memory DB.");
+    await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
+    await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
+    await expect(page.locator("[data-login-mode='local-mem']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-login-mode-title]")).toHaveText("Local Mem");
+    await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses MockDbAdapter backed by in-memory lists.");
+    await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local Mem");
+    await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Memory");
     await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
 
     let snapshot = await mockDbSessionSnapshot(page);
-    expect(snapshot.mode.id).toBe("local");
-    expect(snapshot.persistenceEnabled).toBe(true);
+    expect(snapshot.mode.id).toBe("local-mem");
+    expect(snapshot.persistence).toBe("Memory");
     expect(snapshot.userNames).toEqual(["User 1", "User 2", "User 3", "Admin", "forge-bot"]);
     expect(snapshot.userNames).not.toContain("Guest");
 
-    await page.locator("[data-login-mode='dev']").click();
-    await expect(page.locator("[data-login-mode='dev']")).toHaveClass(/primary/);
-    await expect(page.locator("[data-login-mode-title]")).toHaveText("DEV");
-    await expect(page.locator("[data-login-mode-description]")).toHaveText("Only gets the JSON data.");
+    await page.locator("[data-login-mode='local-db']").click();
+    await expect(page.locator("[data-login-mode='local-db']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-login-mode-title]")).toHaveText("Local DB");
+    await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses the LocalDbAdapter contract.");
+    await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local DB");
+    await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Local DB");
+    await expect(page.locator("[data-login-mode-status]")).toContainText("Local DB adapter not configured");
     await expect(page.locator("[data-login-user]")).toHaveCount(0);
     await expect(page.locator("[data-login-user-controls]")).toBeHidden();
-    await expect(page.locator("[data-login-user-status]")).toHaveText("DEV mode uses read-only/demo JSON access. No users are selectable.");
+    await expect(page.locator("[data-login-user-status]")).toHaveText("Local DB adapter not configured");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
 
-    snapshot = await mockDbSessionSnapshot(page);
-    expect(snapshot.mode.id).toBe("dev");
-    expect(snapshot.persistenceEnabled).toBe(false);
-    expect(snapshot.sessionUser.id).toBe("guest");
+    const localDbSession = await sessionSnapshot(page);
+    expect(localDbSession.data.mode).toBe("local-db");
+    expect(localDbSession.data.persistence).toBe("Local DB");
+    expect(localDbSession.data.id).toBe("guest");
+    expect(localDbSession.data.diagnostic).toContain("Local DB adapter not configured");
+    const localDbSnapshotResponse = await fetch(`${failures.server.baseUrl}/api/mock-db/snapshot`);
+    const localDbSnapshot = await localDbSnapshotResponse.json();
+    expect(localDbSnapshotResponse.status).toBe(500);
+    expect(localDbSnapshot.error).toContain("Local DB adapter not configured");
 
-    await page.locator("[data-login-mode='local']").click();
+    await page.locator("[data-login-mode='local-mem']").click();
     await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
     await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`).click();
     await expect(page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`)).toHaveClass(/primary/);
@@ -179,7 +197,7 @@ test("Protected pages block direct URL access without the required Local session
 
   failures = await openRepoPage(page, "/admin/db-viewer.html", {
     seedStandalone: true,
-    sessionModeId: "dev",
+    sessionModeId: "local-db",
     sessionUserKey: MOCK_DB_KEYS.users.admin,
   });
 
@@ -187,7 +205,7 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
-    await expect(page.locator("[data-session-access-status]")).toContainText("DEV mode uses read-only/demo JSON access.");
+    await expect(page.locator("[data-session-access-status]")).toContainText("Local DB adapter not configured");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("[data-admin-db-viewer]")).toHaveCount(0);
     await expectNoPageFailures(failures);

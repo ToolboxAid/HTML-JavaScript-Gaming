@@ -148,7 +148,7 @@
             const diagnostic = document.createElement("p");
             diagnostic.className = "status";
             diagnostic.setAttribute("role", "status");
-            diagnostic.textContent = "Tool navigation could not load from the server API. Start the Local/DEV server API and refresh.";
+            diagnostic.textContent = "Tool navigation could not load from the server API. Start the local server API and refresh.";
             body.appendChild(diagnostic);
         }
     }

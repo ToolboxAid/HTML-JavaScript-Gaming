@@ -13,7 +13,7 @@ function localModeSelected() {
     request.setRequestHeader("Accept", "application/json");
     request.send(null);
     const payload = request.responseText ? JSON.parse(request.responseText) : null;
-    return request.status >= 200 && request.status < 300 && payload?.data?.mode === "local";
+    return request.status >= 200 && request.status < 300 && payload?.data?.mode === "local-mem";
   } catch {
     return false;
   }
@@ -31,11 +31,11 @@ async function loadLocalDbViewer() {
     return;
   }
   if (!devRuntimeAllowed()) {
-    showGatewayStatus("Mock DB is available only in the local dev runtime.");
+    showGatewayStatus("Local Mem DB is available only in the local dev runtime.");
     return;
   }
   if (!localModeSelected()) {
-    showGatewayStatus("Mock DB is available only in Local mode.");
+    showGatewayStatus("Local Mem DB is available only in Local Mem mode until Local DB adapter is configured.");
     return;
   }
   const module = await import("../src/engine/api/mock-db-viewer-ui.js");
@@ -43,5 +43,5 @@ async function loadLocalDbViewer() {
 }
 
 loadLocalDbViewer().catch((error) => {
-  console.error("Unable to load Local Mock DB viewer.", error);
+  console.error("Unable to load Local Mem DB viewer.", error);
 });

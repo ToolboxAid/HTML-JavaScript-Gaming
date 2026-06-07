@@ -112,7 +112,7 @@ function missingServerResult(methodName, diagnostic) {
     validation: {
       findings: [
         {
-          action: "Start the Local/DEV server API or restore the server data source.",
+          action: "Start the local server API or restore the server data source.",
           label: "Server data source missing",
           status: "Blocked",
         },

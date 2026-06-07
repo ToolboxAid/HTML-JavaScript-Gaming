@@ -54,8 +54,50 @@ import {
 
 export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
+const LOCAL_MEM_MODE_ID = "local-mem";
+const LOCAL_DB_MODE_ID = "local-db";
+const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
+
+const DB_ADAPTER_CONTRACT = Object.freeze({
+  contract: "GameFoundryDbAdapter",
+  rule: SERVER_DATA_BOUNDARY_RULE,
+  environments: Object.freeze([
+    Object.freeze({
+      adapterId: "mock-db-memory",
+      adapterName: "MockDbAdapter",
+      environment: "Local Mem",
+      persistence: "Memory",
+      selectableOnLocalLogin: true,
+      status: "configured",
+    }),
+    Object.freeze({
+      adapterId: "local-db",
+      adapterName: "LocalDbAdapter",
+      environment: "Local DB",
+      persistence: "Local DB",
+      selectableOnLocalLogin: true,
+      status: "not-configured",
+    }),
+    Object.freeze({
+      adapterId: "uat-db",
+      adapterName: "ServerDbAdapter",
+      environment: "UAT",
+      persistence: "Physical DB",
+      selectableOnLocalLogin: false,
+      status: "deployment-only",
+    }),
+    Object.freeze({
+      adapterId: "prod-db",
+      adapterName: "ServerDbAdapter",
+      environment: "Prod",
+      persistence: "Physical DB",
+      selectableOnLocalLogin: false,
+      status: "deployment-only",
+    }),
+  ]),
+});
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -131,62 +173,65 @@ function roleSlugsForUserKey(tables, userKey) {
     .filter(Boolean);
 }
 
+function modeById(modeId) {
+  return MOCK_DB_SESSION_MODES.find((mode) => mode.id === modeId) ||
+    MOCK_DB_SESSION_MODES.find((mode) => mode.id === LOCAL_MEM_MODE_ID) ||
+    MOCK_DB_SESSION_MODES[0];
+}
+
+function sessionModeMetadata(mode) {
+  return {
+    adapterId: mode.adapterId,
+    adapterName: mode.adapterName,
+    adapterStatus: mode.configured === false ? "not-configured" : "configured",
+    environment: mode.environment || mode.label,
+    mode: mode.id,
+    persistence: mode.persistence || "",
+  };
+}
+
+function guestSession(mode, diagnostic = "") {
+  return {
+    ...sessionModeMetadata(mode),
+    authenticated: false,
+    diagnostic,
+    displayName: "Login",
+    id: "guest",
+    isAdmin: false,
+    label: "Guest",
+    roleSlugs: [],
+    userKey: null,
+  };
+}
+
 function sessionUserFromKey(tables, userKey, modeId) {
+  const mode = modeById(modeId);
   const key = String(userKey || "");
-  if (modeId === "dev" || !isUlidKey(key)) {
-    return {
-      authenticated: false,
-      diagnostic: modeId === "dev"
-        ? "DEV mode uses read-only/demo JSON access. Switch to Local to use persisted Memory DB sessions."
-        : "",
-      displayName: "Login",
-      id: "guest",
-      isAdmin: false,
-      label: "Guest",
-      mode: modeId,
-      roleSlugs: [],
-      userKey: null,
-    };
+  if (mode.id !== LOCAL_MEM_MODE_ID) {
+    return guestSession(mode, mode.diagnostic || LOCAL_DB_NOT_CONFIGURED);
+  }
+  if (!isUlidKey(key)) {
+    return guestSession(mode);
   }
 
   const user = (tables.users || []).find((record) => record.key === key && record.isActive !== false);
   if (!user) {
-    return {
-      authenticated: false,
-      diagnostic: `Selected Local user key ${key} is missing from server Memory DB users.`,
-      displayName: "Login",
-      id: "guest",
-      isAdmin: false,
-      label: "Guest",
-      mode: modeId,
-      roleSlugs: [],
-      userKey: null,
-    };
+    return guestSession(mode, `Selected Local user key ${key} is missing from server Memory DB users.`);
   }
 
   const roleSlugs = roleSlugsForUserKey(tables, key);
   if (!roleSlugs.length || roleSlugs.includes("system")) {
-    return {
-      authenticated: false,
-      diagnostic: `Selected Local user ${user.displayName || key} has no human login role.`,
-      displayName: "Login",
-      id: "guest",
-      isAdmin: false,
-      label: "Guest",
-      mode: modeId,
-      roleSlugs: [],
-      userKey: null,
-    };
+    return guestSession(mode, `Selected Local user ${user.displayName || key} has no human login role.`);
   }
 
   return {
+    ...sessionModeMetadata(mode),
     authenticated: true,
     diagnostic: "",
     displayName: user.displayName || key,
     id: key,
     isAdmin: roleSlugs.includes("admin"),
     label: user.displayName || key,
-    mode: modeId,
     roleSlugs,
     userKey: key,
   };
@@ -261,16 +306,59 @@ function assetTables(repository) {
   return normalizeOwnedTables("asset", repository.getTables());
 }
 
+class MockDbAdapter {
+  constructor(mode) {
+    this.mode = mode;
+  }
+
+  assertConfigured() {}
+}
+
+class LocalDbAdapter {
+  constructor(mode) {
+    this.mode = mode;
+  }
+
+  assertConfigured(action) {
+    throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. ${action} requires a configured LocalDbAdapter.`);
+  }
+}
+
 class LocalDevMockDataSource {
   constructor() {
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
-    this.sessionModeId = "local";
+    this.sessionModeId = LOCAL_MEM_MODE_ID;
     this.sessionUserKey = "";
-    this.seed();
+    this.adapterByModeId = new Map(
+      MOCK_DB_SESSION_MODES.map((mode) => [
+        mode.id,
+        mode.id === LOCAL_DB_MODE_ID ? new LocalDbAdapter(mode) : new MockDbAdapter(mode),
+      ]),
+    );
+    this.seed({ initial: true });
   }
 
-  seed() {
+  currentMode() {
+    return modeById(this.sessionModeId);
+  }
+
+  adapterContract() {
+    return clone(DB_ADAPTER_CONTRACT);
+  }
+
+  currentAdapter() {
+    return this.adapterByModeId.get(this.currentMode().id) || this.adapterByModeId.get(LOCAL_MEM_MODE_ID);
+  }
+
+  assertConfiguredAdapter(action) {
+    this.currentAdapter().assertConfigured(action);
+  }
+
+  seed(options = {}) {
+    if (!options.initial) {
+      this.assertConfiguredAdapter("Seeding Local Mem DB state");
+    }
     this.cleared = false;
     this.standaloneTables = clone(getStandaloneMockDbSeedTables());
     this.sharedOptions = {
@@ -302,6 +390,7 @@ class LocalDevMockDataSource {
   }
 
   clear() {
+    this.assertConfiguredAdapter("Clearing Local Mem DB state");
     this.cleared = true;
     this.standaloneTables = clone(getStandaloneMockDbSeedTables());
     Object.keys(this.standaloneTables).forEach((tableName) => {
@@ -312,6 +401,7 @@ class LocalDevMockDataSource {
   }
 
   replaceTestingState(state = {}) {
+    this.assertConfiguredAdapter("Replacing Local Mem DB testing state");
     this.cleared = Boolean(state.cleared);
     this.standaloneTables = clone(state.tables || {});
     IDENTITY_TABLES.forEach((tableName) => {
@@ -324,9 +414,12 @@ class LocalDevMockDataSource {
   }
 
   setMode(modeId) {
-    const nextMode = MOCK_DB_SESSION_MODES.find((mode) => mode.id === modeId) || MOCK_DB_SESSION_MODES.find((mode) => mode.id === "local");
+    const nextMode = MOCK_DB_SESSION_MODES.find((mode) => mode.id === modeId);
+    if (!nextMode) {
+      throw new Error(`Unknown local login environment: ${modeId || "missing"}.`);
+    }
     this.sessionModeId = nextMode.id;
-    if (this.sessionModeId === "dev") {
+    if (this.sessionModeId !== LOCAL_MEM_MODE_ID) {
       this.sessionUserKey = "";
     }
     this.sharedOptions.sessionMode = this.sessionModeId;
@@ -335,8 +428,16 @@ class LocalDevMockDataSource {
   }
 
   setUser(userKey) {
-    this.sessionModeId = "local";
+    this.assertConfiguredAdapter("Selecting a session user");
+    this.sessionModeId = LOCAL_MEM_MODE_ID;
     this.sessionUserKey = String(userKey || "");
+    this.sharedOptions.sessionMode = this.sessionModeId;
+    this.sharedOptions.sessionUserKey = this.sessionUserKey;
+    return this.currentSession();
+  }
+
+  clearSessionUser() {
+    this.sessionUserKey = "";
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
     return this.currentSession();
@@ -351,19 +452,20 @@ class LocalDevMockDataSource {
   }
 
   sessionUsers() {
-    if (this.sessionModeId === "dev") {
-      return [sessionUserFromKey(this.standaloneTables, "", "dev")];
+    if (this.sessionModeId !== LOCAL_MEM_MODE_ID) {
+      return [sessionUserFromKey(this.standaloneTables, "", this.sessionModeId)];
     }
-    const guest = sessionUserFromKey(this.standaloneTables, "", "local");
+    const guest = sessionUserFromKey(this.standaloneTables, "", LOCAL_MEM_MODE_ID);
     return [
       guest,
       ...(this.standaloneTables.users || [])
-        .map((user) => sessionUserFromKey(this.standaloneTables, user.key, "local"))
+        .map((user) => sessionUserFromKey(this.standaloneTables, user.key, LOCAL_MEM_MODE_ID))
         .filter((user) => user.authenticated && !user.roleSlugs.includes("system")),
     ];
   }
 
   repositoryForTool(toolId) {
+    this.assertConfiguredAdapter(`Opening ${toolId} repository`);
     if (toolId === "workspace") return this.workspaceRepository;
     if (toolId === "project-workspace") return this.workspaceRepository;
     if (toolId === "game-design") return this.gameDesignRepository;
@@ -377,6 +479,7 @@ class LocalDevMockDataSource {
   }
 
   constantsForTool(toolId) {
+    this.assertConfiguredAdapter(`Reading ${toolId} constants`);
     if (toolId === "workspace" || toolId === "project-workspace") {
       return {
         PROJECT_WORKSPACE_MEMBER_ROLES,
@@ -420,6 +523,7 @@ class LocalDevMockDataSource {
   }
 
   callFunction(toolId, functionName, args) {
+    this.assertConfiguredAdapter(`Calling ${toolId}.${functionName}`);
     if ((toolId === "palette" || toolId === "colors") && functionName === "normalizePaletteSwatchInput") {
       return normalizePaletteSwatchInput(...args);
     }
@@ -433,6 +537,7 @@ class LocalDevMockDataSource {
   }
 
   createRepository(toolId, options = {}) {
+    this.assertConfiguredAdapter(`Creating ${toolId} repository`);
     const hasCustomOptions = options && typeof options === "object" && Object.keys(options).length > 0;
     let repository = this.repositoryForTool(toolId);
     if (hasCustomOptions && (toolId === "palette" || toolId === "colors")) {
@@ -461,6 +566,7 @@ class LocalDevMockDataSource {
   }
 
   callRepositoryMethod(repositoryId, methodName, args) {
+    this.assertConfiguredAdapter(`Calling repository method ${methodName}`);
     const repository = this.repositoryById.get(repositoryId);
     if (!repository) {
       throw new Error(`Server repository ${repositoryId} is missing.`);
@@ -486,6 +592,7 @@ class LocalDevMockDataSource {
   }
 
   snapshot() {
+    this.assertConfiguredAdapter("Reading Local Mem DB state");
     const schemas = getMockDbTableSchemas();
     const toolGroups = getMockDbToolGroups();
     const owners = {
@@ -582,7 +689,7 @@ export function createMockApiRouter() {
           return true;
         }
         if (request.method === "POST" && parts[2] === "logout") {
-          ok(response, dataSource.setUser(""));
+          ok(response, dataSource.clearSessionUser());
           return true;
         }
       }
@@ -601,6 +708,11 @@ export function createMockApiRouter() {
           ok(response, dataSource.snapshot());
           return true;
         }
+      }
+
+      if (parts[1] === "data-source" && request.method === "GET" && parts[2] === "adapter-contract") {
+        ok(response, dataSource.adapterContract());
+        return true;
       }
 
       if (parts[1] === "dev" && parts[2] === "testing" && parts[3] === "mock-db-state" && request.method === "POST") {

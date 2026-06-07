@@ -49,7 +49,7 @@ class AdminDbViewer {
         this.render();
         return;
       }
-      if (!window.confirm("Clear all shared Mock DB records?")) {
+      if (!window.confirm("Clear all shared Local Mem DB records?")) {
         return;
       }
       clearMockDb();
@@ -62,7 +62,7 @@ class AdminDbViewer {
     if (!this.clearButton) {
       return;
     }
-    this.clearButton.textContent = cleared ? "Seed Mock DB" : "Clear Mock DB";
+    this.clearButton.textContent = cleared ? "Seed Local Mem DB" : "Clear Local Mem DB";
     this.clearButton.dataset.adminDbClearMode = cleared ? "seed" : "clear";
   }
 
@@ -207,7 +207,7 @@ class AdminDbViewer {
     if (!records.length) {
       const row = this.createElement("tr");
       const cell = this.createElement("td", {
-        text: "No records in this table. Add records from its tool or use Seed Mock DB to restore baseline user and role records.",
+        text: "No records in this table. Add records from its tool or use Seed Local Mem DB to restore baseline user and role records.",
       });
       cell.colSpan = Math.max(1, fields.length + 1);
       row.append(cell);
@@ -410,9 +410,9 @@ class AdminDbViewer {
     const groupTableNames = new Set(groups.flatMap((group) => group.tableNames));
     const unownedTables = Object.keys(tables).filter((tableName) => !groupTableNames.has(tableName));
     if (unownedTables.length) {
-      return unownedTables.map((tableName) => `${tableName} has live data but no Mock DB filter owner.`);
+      return unownedTables.map((tableName) => `${tableName} has live data but no Local Mem DB filter owner.`);
     }
-    return ["No stale display data detected; tables are rendered from current mock DB snapshots."];
+    return ["No stale display data detected; tables are rendered from current Local Mem DB snapshots."];
   }
 
   renderList(messages, dataName) {
@@ -431,7 +431,7 @@ class AdminDbViewer {
     const staleFindings = this.staleDisplayFindings(tables, groups);
     const auditSummary = auditFindings.length
       ? auditFindings
-      : ["All current mock DB tables include createdAt, updatedAt, createdBy, and updatedBy."];
+      : ["All current Local Mem DB tables include createdAt, updatedAt, createdBy, and updatedBy."];
     const bleedSummary = bleedFindings.length ? bleedFindings : ["No table bleed detected."];
     this.diagnostics.append(
       this.renderList(auditSummary, "adminDbAuditFindings"),
@@ -463,16 +463,16 @@ class AdminDbViewer {
   }
 
   renderLoadError(error) {
-    const message = error instanceof Error ? error.message : String(error || "Unknown Mock DB error.");
+    const message = error instanceof Error ? error.message : String(error || "Unknown Local Mem DB error.");
     this.diagnostics?.replaceChildren(
-      this.renderList([`Mock DB could not render current data: ${message}`], "adminDbAuditFindings"),
+      this.renderList([`Local Mem DB could not render current data: ${message}`], "adminDbAuditFindings"),
     );
     this.relationships?.replaceChildren(
-      this.renderList(["Relationships could not be checked until the Mock DB data error is fixed."], "adminDbMissingLinks"),
+      this.renderList(["Relationships could not be checked until the Local Mem DB data error is fixed."], "adminDbMissingLinks"),
     );
     this.tablesRoot?.replaceChildren();
     if (this.status) {
-      this.status.textContent = "Mock DB data error. Fix the invalid record ownership or use Clear Mock DB, then Seed Mock DB.";
+      this.status.textContent = "Local Mem DB data error. Fix the invalid record ownership or use Clear Local Mem DB, then Seed Local Mem DB.";
     }
   }
 
@@ -497,7 +497,7 @@ class AdminDbViewer {
     this.renderTables(visibleTables, snapshot.schemas);
     if (this.status) {
       const recordCount = Object.values(visibleTables).reduce((total, rows) => total + rows.length, 0);
-      this.status.textContent = `Mock DB loaded ${Object.keys(visibleTables).length} table${Object.keys(visibleTables).length === 1 ? "" : "s"} and ${recordCount} record${recordCount === 1 ? "" : "s"} for ${group.label}.`;
+      this.status.textContent = `Local Mem DB loaded ${Object.keys(visibleTables).length} table${Object.keys(visibleTables).length === 1 ? "" : "s"} and ${recordCount} record${recordCount === 1 ? "" : "s"} for ${group.label}.`;
     }
   }
 }

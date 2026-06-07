@@ -57,10 +57,10 @@ function renderUserButtons(mode) {
   }
 
   userControls.replaceChildren();
-  if (mode.id === "dev") {
+  if (mode.usersEnabled === false) {
     userControls.hidden = true;
     if (userStatus) {
-      userStatus.textContent = "DEV mode uses read-only/demo JSON access. No users are selectable.";
+      userStatus.textContent = mode.diagnostic || "No local users are selectable for this environment.";
     }
     return;
   }
@@ -103,7 +103,7 @@ function renderError(error) {
     modeTitle.textContent = "Session API unavailable";
   }
   if (modeDescription) {
-    modeDescription.textContent = "Start the Local/DEV server API to select a session.";
+    modeDescription.textContent = "Start the local server API to select a session.";
   }
   if (modeStatus) {
     modeStatus.textContent = `Login/session diagnostic: ${message}`;
@@ -130,7 +130,16 @@ function render() {
       modeDescription.textContent = mode.description;
     }
     if (modeStatus) {
-      modeStatus.textContent = `${mode.label} mode selected.`;
+      const environment = session.environment || mode.environment || mode.label;
+      const persistence = session.persistence || mode.persistence || "";
+      const statusParts = [`Environment: ${environment}`];
+      if (persistence) {
+        statusParts.push(`Persistence: ${persistence}`);
+      }
+      if (session.diagnostic || mode.diagnostic) {
+        statusParts.push(`Diagnostic: ${session.diagnostic || mode.diagnostic}`);
+      }
+      modeStatus.textContent = statusParts.join(". ") + ".";
     }
     renderUserButtons(mode);
     updateContinueLink();
@@ -142,7 +151,7 @@ function render() {
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
     try {
-      setSessionMode(button.dataset.loginMode || "local");
+      setSessionMode(button.dataset.loginMode || "local-mem");
       dispatchModeChanged();
       render();
     } catch (error) {
@@ -157,7 +166,7 @@ userControls?.addEventListener("click", (event) => {
     return;
   }
   try {
-    setSessionMode("local");
+    setSessionMode("local-mem");
     setSessionUser(button.dataset.loginUser || "");
     dispatchSessionChanged();
     render();

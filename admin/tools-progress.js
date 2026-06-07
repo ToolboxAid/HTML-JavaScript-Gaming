@@ -112,7 +112,7 @@ function renderToolsProgress() {
     row.append(cell);
     progressBody.append(row);
     if (progressSummary) {
-      progressSummary.textContent = "Tool registry API unavailable. Start the Local/DEV server API and refresh.";
+      progressSummary.textContent = "Tool registry API unavailable. Start the local server API and refresh.";
     }
     return;
   }

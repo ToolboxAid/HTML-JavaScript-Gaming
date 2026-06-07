@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mock DB - GameFoundryStudio</title>
-    <meta name="description" content="Admin-only read-only mock DB viewer for GameFoundryStudio project data diagnostics.">
+    <title>Local Mem DB - GameFoundryStudio</title>
+    <meta name="description" content="Admin-only read-only Local Mem DB viewer for GameFoundryStudio project data diagnostics.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -16,9 +16,9 @@
     <main data-admin-only="true">
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Admin Only / Mock DB</div>
-                <h1>Mock DB</h1>
-                <p class="lede">Read-only mock DB dump for project tables, relationships, and data diagnostics.</p>
+                <div class="kicker">Admin Only / Local Mem DB</div>
+                <h1>Local Mem DB</h1>
+                <p class="lede">Read-only Local Mem DB dump for project tables, relationships, and data diagnostics.</p>
             </div>
         </section>
         <section class="section">
@@ -26,15 +26,15 @@
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-build">
                         <div class="tool-column-header">
-                            <h2>Mock DB</h2>
+                            <h2>Local Mem DB</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Scope</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Current tool mock DB records are displayed as a read-only human-readable dump.</p>
+                                    <p>Current tool Local Mem DB records are displayed as a read-only human-readable dump.</p>
                                     <p>Use the diagnostics panel to confirm table attribution, relationships, and table bleed checks.</p>
-                                    <button class="btn btn--compact" type="button" data-admin-db-clear>Clear Mock DB</button>
+                                    <button class="btn btn--compact" type="button" data-admin-db-clear>Clear Local Mem DB</button>
                                 </div>
                             </details>
                         </div>
@@ -43,13 +43,13 @@
                     <section class="tool-center-panel content-stack" aria-labelledby="admin-db-viewer-title" data-admin-db-viewer>
                         <div class="content-cluster">
                             <div>
-                                <div class="kicker">Mock DB</div>
-                                <h2 id="admin-db-viewer-title">Mock DB</h2>
+                                <div class="kicker">Local Mem DB</div>
+                                <h2 id="admin-db-viewer-title">Local Mem DB</h2>
                             </div>
-                            <span class="status" role="status" data-admin-db-status>Loading mock DB records.</span>
+                            <span class="status" role="status" data-admin-db-status>Loading Local Mem DB records.</span>
                         </div>
-                        <div class="action-group" role="group" aria-label="Mock DB table filters" data-admin-db-filters></div>
-                        <section class="content-stack" aria-label="Mock DB tables" data-admin-db-tables></section>
+                        <div class="action-group" role="group" aria-label="Local Mem DB table filters" data-admin-db-filters></div>
+                        <section class="content-stack" aria-label="Local Mem DB tables" data-admin-db-tables></section>
                     </section>
                     <aside class="tool-column tool-group-build">
                         <div class="tool-column-header">

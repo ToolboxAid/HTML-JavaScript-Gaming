@@ -5,19 +5,19 @@ function unwrap(response, context) {
     throw new Error(response.error);
   }
   if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
-    throw new Error(`${context} did not return server data. Restore the server-backed Mock DB API.`);
+    throw new Error(`${context} did not return server data. Restore the server-backed Local Mem DB API.`);
   }
   return response.payload.data;
 }
 
 export function getMockDbSnapshot() {
-  return unwrap(safeRequestServerApi("/mock-db/snapshot"), "Mock DB snapshot");
+  return unwrap(safeRequestServerApi("/mock-db/snapshot"), "Local Mem DB snapshot");
 }
 
 export function clearMockDb() {
-  return unwrap(safeRequestServerApi("/mock-db/clear", { method: "POST" }), "Mock DB clear");
+  return unwrap(safeRequestServerApi("/mock-db/clear", { method: "POST" }), "Local Mem DB clear");
 }
 
 export function seedMockDb() {
-  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), "Mock DB seed");
+  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), "Local Mem DB seed");
 }

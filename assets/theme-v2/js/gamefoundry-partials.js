@@ -163,13 +163,13 @@
                 authenticated: Boolean(session.authenticated),
                 diagnostic: session.diagnostic || "",
                 displayName: session.authenticated ? session.displayName || session.label || "Account" : "Login",
-                mode: session.mode || "local",
+                mode: session.mode || "local-mem",
                 roleSlugs: Array.isArray(session.roleSlugs) ? session.roleSlugs : []
             };
         } catch (error) {
             return {
                 authenticated: false,
-                diagnostic: "Server session API is unavailable. Start the Local/DEV server API before using protected pages.",
+                diagnostic: "Server session API is unavailable. Start the local server API before using protected pages.",
                 displayName: "Login",
                 mode: "missing-api",
                 roleSlugs: []

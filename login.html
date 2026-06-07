@@ -23,15 +23,15 @@
         <section class="section">
             <div class="container account-panel">
                 <aside class="side-menu" aria-label="Session modes">
-                    <button class="btn btn--compact" type="button" data-login-mode="dev">DEV</button>
-                    <button class="btn btn--compact" type="button" data-login-mode="local">Local</button>
+                    <button class="btn btn--compact" type="button" data-login-mode="local-mem">Local Mem</button>
+                    <button class="btn btn--compact" type="button" data-login-mode="local-db">Local DB</button>
                 </aside>
                 <div class="card">
                     <div class="card-body content-stack">
                         <div>
                             <div class="kicker">Mode</div>
-                            <h2 data-login-mode-title>Local</h2>
-                            <p class="lede" data-login-mode-description>Uses the persisted Memory DB.</p>
+                            <h2 data-login-mode-title>Local Mem</h2>
+                            <p class="lede" data-login-mode-description>Uses MockDbAdapter backed by in-memory lists.</p>
                         </div>
                         <div class="status" role="status" data-login-mode-status>Session mode ready.</div>
                         <section class="content-stack" aria-labelledby="login-users-title">
