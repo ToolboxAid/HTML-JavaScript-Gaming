@@ -18,28 +18,29 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (70%) toolbox/colors/palette-workspace-repository.js - executed lines 1315/1315; executed functions 89/127
-(81%) toolbox/assets/assets-mock-repository.js - executed lines 913/913; executed functions 61/75
-(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 992/992; executed functions 80/84
-(96%) toolbox/project-journey/project-journey.js - executed lines 950/950; executed functions 100/104
-(100%) src/shared/mock-db/mock-db-store.js - executed lines 176/176; executed functions 20/20
+(74%) toolbox/tools-page-accordions.js - executed lines 764/764; executed functions 53/72
+(81%) toolbox/assets/assets-mock-repository.js - executed lines 919/919; executed functions 61/75
+(96%) src/engine/persistence/mock-db-store.js - executed lines 368/368; executed functions 45/47
+(96%) toolbox/project-journey/project-journey.js - executed lines 948/948; executed functions 100/104
+(97%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 1055/1055; executed functions 94/97
 
 Files with executed line/function counts where available:
-(67%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 10/15
+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 192/192; executed functions 9/14
 (69%) toolbox/colors/colors.js - executed lines 883/883; executed functions 62/90
 (70%) toolbox/colors/palette-workspace-repository.js - executed lines 1315/1315; executed functions 89/127
 (71%) toolbox/project-workspace/project-workspace.js - executed lines 264/264; executed functions 17/24
-(73%) toolbox/tools-page-accordions.js - executed lines 826/826; executed functions 55/75
+(74%) toolbox/tools-page-accordions.js - executed lines 764/764; executed functions 53/72
 (76%) toolbox/project-workspace/project-workspace-mock-repository.js - executed lines 402/402; executed functions 26/34
 (80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 207/207; executed functions 16/20
-(81%) toolbox/assets/assets-mock-repository.js - executed lines 913/913; executed functions 61/75
+(81%) toolbox/assets/assets-mock-repository.js - executed lines 919/919; executed functions 61/75
 (85%) toolbox/game-configuration/game-configuration-mock-repository.js - executed lines 290/290; executed functions 29/34
 (86%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 32/37
 (88%) toolbox/assets/assets.js - executed lines 519/519; executed functions 53/60
 (89%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 33/37
-(94%) admin/db-viewer.js - executed lines 389/389; executed functions 68/72
-(95%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 992/992; executed functions 80/84
-(96%) toolbox/project-journey/project-journey.js - executed lines 950/950; executed functions 100/104
-(100%) src/shared/mock-db/mock-db-store.js - executed lines 176/176; executed functions 20/20
+(96%) admin/db-viewer.js - executed lines 470/470; executed functions 85/89
+(96%) src/engine/persistence/mock-db-store.js - executed lines 368/368; executed functions 45/47
+(96%) toolbox/project-journey/project-journey.js - executed lines 948/948; executed functions 100/104
+(97%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 1055/1055; executed functions 94/97
 (100%) toolbox/colors/palette-source-mock-db.js - executed lines 927/927; executed functions 6/6
 
 Uncovered or low-coverage changed JS files:
@@ -49,9 +50,11 @@ Changed JS files considered:
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+(64%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
 (70%) toolbox/colors/palette-workspace-repository.js - changed JS file with browser V8 coverage
+(74%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
 (81%) toolbox/assets/assets-mock-repository.js - changed JS file with browser V8 coverage
-(94%) admin/db-viewer.js - changed JS file with browser V8 coverage
-(95%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage
+(96%) admin/db-viewer.js - changed JS file with browser V8 coverage
+(96%) src/engine/persistence/mock-db-store.js - changed JS file with browser V8 coverage
 (96%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage
-(100%) src/shared/mock-db/mock-db-store.js - changed JS file with browser V8 coverage
+(97%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage

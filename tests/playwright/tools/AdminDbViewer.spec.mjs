@@ -79,6 +79,15 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, and diagn
     await expect(page.locator(".tool-workspace--wide > .tool-column")).toHaveCount(2);
     await expect(page.locator("#toolDisplayMode")).toBeVisible();
     await expect(page.locator("[data-admin-db-viewer].tool-center-panel")).toBeVisible();
+    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 1");
+    await expect(page.locator("[data-session-user-summary]")).toHaveText("Selected session user: User 1.");
+    await expect(page.locator("[data-session-user-button]")).toHaveText(["User 1", "User 2", "User 3", "Admin"]);
+    await expect(page.locator("[data-session-user-button='user1']")).toHaveClass(/primary/);
+    await page.locator("[data-session-user-button='admin']").click();
+    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Admin");
+    await expect(page.locator("[data-session-user-button='admin']")).toHaveClass(/primary/);
+    await page.locator("[data-session-user-button='user1']").click();
+    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 1");
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-filter]")).toHaveText([
       "All",
@@ -112,16 +121,15 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, and diagn
       "users",
       "actors",
     ]) {
-      await expect(page.locator(`[data-admin-db-table="${tableName}"] thead th`).first()).toHaveText("key");
+      await expect(page.locator(`[data-admin-db-table="${tableName}"] thead th`).first()).toHaveText("Key");
       const keyCell = page.locator(`[data-admin-db-table="${tableName}"] tbody tr`).first().locator("td").first();
       await expect(keyCell).toHaveText(/^[0-9A-HJKMNP-TV-Z]{10}$/);
       await expect(keyCell).toHaveAttribute("title", ULID_PATTERN);
     }
 
     const itemHeaders = await page.locator("[data-admin-db-table='project_journey_items'] thead th").allTextContents();
-    expect(itemHeaders[0]).toBe("key");
+    expect(itemHeaders[0]).toBe("Key");
     expect(itemHeaders).toEqual(expect.arrayContaining([
-      "key",
       "projectKey",
       "noteKey",
       "status",
@@ -129,10 +137,13 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, and diagn
       "userDetails",
       "createdAt",
       "updatedAt",
+      "createdBy",
+      "updatedBy",
       "createdByType",
       "updatedByType",
       "templateKey",
     ]));
+    expect(itemHeaders).not.toEqual(expect.arrayContaining(["key"]));
     expect(itemHeaders).not.toEqual(expect.arrayContaining(["id", "itemId", "projectId", "noteId", "templateId"]));
     expect(itemHeaders).not.toEqual(expect.arrayContaining(["CREATEDAT", "UPDATEDAT", "CREATEDBYTYPE", "UPDATEDBYTYPE"]));
     const createdAtHeader = page.locator("[data-admin-db-table='project_journey_items'] thead th", { hasText: "createdAt" });
@@ -144,12 +155,20 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, and diagn
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).not.toContainText(PROJECT_JOURNEY_KEYS.items.designAffordance);
     await expect(page.locator("[data-admin-db-table='project_journey_templates']")).toContainText(PROJECT_JOURNEY_KEYS.templates.paletteAffordance.slice(0, 10));
     await expect(page.locator("[data-admin-db-table='project_journey_note_types']")).toContainText("Design");
-    await expect(page.locator("[data-admin-db-table='project_journey_activity']")).toContainText("Palette and Input Density updated by Designer");
+    await expect(page.locator("[data-admin-db-table='project_journey_activity']")).toContainText("Palette and Input Density updated by User 1");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 1");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 2");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 3");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("Admin");
     await expect(page.locator("[data-admin-db-table='actors']")).toContainText("forge-bot");
+    await expect(page.locator("[data-admin-db-table='actors']")).toContainText("User 1");
+    await expect(page.locator("[data-admin-db-table='actors']")).toContainText("User 2");
+    await expect(page.locator("[data-admin-db-table='actors']")).toContainText("User 3");
+    await expect(page.locator("[data-admin-db-table='actors']")).toContainText("Admin");
 
     await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
-      "All current mock DB tables include createdAt, updatedAt, createdByType, and updatedByType where required by the owning mock model."
+      "All current mock DB tables include createdAt, updatedAt, createdBy, and updatedBy."
     );
     await expect(page.locator("[data-admin-db-bleed-findings]")).toContainText("No table bleed detected.");
     await expect(page.locator("[data-admin-db-stale-display-findings]")).toContainText(
@@ -162,7 +181,13 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, and diagn
       "system project_journey_items.templateKey -> active project_journey_templates.key: 9/9 records linked."
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "actors.userKey -> users.key: 3/3 records linked."
+      "*.createdBy -> actors.key:"
+    );
+    await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
+      "*.updatedBy -> actors.key:"
+    );
+    await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
+      "actors.userKey -> users.key: 5/5 records linked."
     );
     await expect(page.locator("[data-admin-db-missing-links]")).toContainText("No missing links detected.");
     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);
@@ -192,12 +217,30 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, and diagn
     await expect(page.locator("[data-admin-db-table='users']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='actors']")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("Admin");
 
     await page.getByRole("button", { name: "Actors" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Actors\./);
     await expect(page.locator("[data-admin-db-table='actors']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='users']")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-table='actors']")).toContainText("forge-bot");
+
+    page.once("dialog", async (dialog) => {
+      expect(dialog.message()).toBe("Clear all shared Mock DB records?");
+      await dialog.dismiss();
+    });
+    await page.locator("[data-admin-db-clear]").click();
+    await expect(page.locator("[data-admin-db-table='actors']")).toContainText("forge-bot");
+
+    page.once("dialog", async (dialog) => {
+      expect(dialog.message()).toBe("Clear all shared Mock DB records?");
+      await dialog.accept();
+    });
+    await page.locator("[data-admin-db-clear]").click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and 0 records for All\./);
+    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("No records in this table.");
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and 0 records for All\./);
 
     await expectNoPageFailures(failures);
   } finally {

@@ -43,8 +43,8 @@ const suggestedTools = document.querySelector("[data-journey-suggested-tools]");
 const recentActivity = document.querySelector("[data-journey-recent-activity]");
 const diagnostics = document.querySelector("[data-journey-diagnostics]");
 const searchInput = document.querySelector("[data-journey-search-input]");
-const searchClearButton = document.querySelector("[data-journey-search-clear]");
 const searchStatus = document.querySelector("[data-journey-search-status]");
+const sessionUserHeader = document.querySelector("[data-session-user-header]");
 
 const statTargets = {
   open: document.querySelector("[data-journey-stat-open]"),
@@ -129,7 +129,6 @@ function setEditingDisabled(disabled) {
     typeInput,
     addTypeButton,
     searchInput,
-    searchClearButton,
   ].forEach((control) => {
     if (control) {
       control.disabled = disabled;
@@ -649,6 +648,14 @@ function renderSearchStatus(query, notes) {
     : "Search is clear.";
 }
 
+function renderSessionUser() {
+  if (!sessionUserHeader) {
+    return;
+  }
+  const sessionUser = repository.getSessionUser();
+  sessionUserHeader.textContent = `Session user: ${sessionUser.label}`;
+}
+
 function captureSearchSelectionSnapshot() {
   if (!searchSelectionSnapshotTaken) {
     selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
@@ -838,6 +845,7 @@ function render() {
   const statCounts = selectedStatsNote ? selectedStatsNote.counts : aggregateCounts(notes);
   const editingDisabled = !activeProject || !note;
 
+  renderSessionUser();
   activeProjectMessage.textContent = activeProject
     ? `Active project: ${activeProject.name}.`
     : "No active project is open. Editing actions are disabled.";
@@ -997,16 +1005,6 @@ searchInput?.addEventListener("input", () => {
   if (currentSearchQuery()) {
     captureSearchSelectionSnapshot();
   } else if (searchSelectionSnapshotTaken) {
-    restoreSearchSelectionSnapshot();
-  }
-  render();
-});
-
-searchClearButton?.addEventListener("click", () => {
-  if (searchInput) {
-    searchInput.value = "";
-  }
-  if (searchSelectionSnapshotTaken) {
     restoreSearchSelectionSnapshot();
   }
   render();

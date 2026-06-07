@@ -6,7 +6,7 @@ import {
   loadMockDbTables,
   mockDbPersistenceEnabled,
   saveMockDbTables,
-} from "../../src/shared/mock-db/mock-db-store.js";
+} from "../../src/engine/persistence/mock-db-store.js";
 
 export const ASSET_TOOL_TABLES = Object.freeze([
   "asset_role_definitions",
@@ -459,10 +459,13 @@ export function createAssetToolMockRepository(options = {}) {
   const configurationRepository = options.configurationRepository || createReadyGameConfigurationRepository();
   const paletteRepository = options.paletteRepository || createProjectWorkspacePaletteRepository();
   const loadedMockDbTables = loadMockDbTables(ASSET_DB_OWNER, createEmptyTables(), options);
+  const databaseCleared = Boolean(loadedMockDbTables.cleared);
   const persistenceEnabled = mockDbPersistenceEnabled(options);
   let hasPersistedTables = Boolean(loadedMockDbTables.persisted && persistenceEnabled);
   let tables = loadedMockDbTables.tables;
-  tables.asset_role_definitions = roleDefinitionRows();
+  if (!databaseCleared) {
+    tables.asset_role_definitions = roleDefinitionRows();
+  }
   let selectedAssetId = "";
 
   function persistTables() {
@@ -965,7 +968,10 @@ export function createAssetToolMockRepository(options = {}) {
     };
   }
 
-  if (hasPersistedTables) {
+  if (databaseCleared) {
+    selectedAssetId = "";
+    persistTables();
+  } else if (hasPersistedTables) {
     selectedAssetId = tables.asset_library_items[0]?.id || "";
     persistTables();
   } else {

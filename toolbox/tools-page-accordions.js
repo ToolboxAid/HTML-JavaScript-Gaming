@@ -20,13 +20,8 @@ import {
     const orderButton = document.querySelector("[data-tools-order]");
     const groupedButton = document.querySelector("[data-tools-sort='grouped']");
     const buildPathButton = document.querySelector("[data-tools-view='build-path']");
-    const roleBanner = document.querySelector("[data-toolbox-role-banner]");
-    const projectDataMenu = document.querySelector("[data-project-data-menu]");
-    const projectDataStatus = document.querySelector("[data-project-data-status]");
     const toolCount = document.querySelector("[data-tools-count]");
     const searchParams = new URLSearchParams(window.location.search);
-    const urlRole = searchParams.get("role");
-    const toolboxRole = urlRole === "admin" ? "admin" : urlRole === "user" ? "creator" : "guest";
     const projectWorkspaceRepository = createProjectWorkspaceMockRepository();
     projectWorkspaceRepository.resetProjectData();
     const urlMemberRole = searchParams.get("memberRole");
@@ -229,21 +224,14 @@ import {
     }
 
     function activeRoleFocus() {
-        if (toolboxRole === "admin") {
-            return "Owner";
-        }
         return projectMemberRole;
     }
 
     function isFocusedRoleView() {
-        return toolboxRole !== "admin" && activeRoleFocus() !== "Owner";
+        return activeRoleFocus() !== "Owner";
     }
 
     function isVisibleForRole(tool) {
-        if (toolboxRole === "admin") {
-            return true;
-        }
-
         const focusedTools = roleFocusTools[activeRoleFocus()];
 
         if (!focusedTools) {
@@ -289,62 +277,6 @@ import {
 
     function roleAwareTools() {
         return visibleToolGroups().flatMap((group) => group.tools);
-    }
-
-    function configureRoleBanner() {
-        if (!roleBanner) {
-            return;
-        }
-        const nextRole = toolboxRole === "admin" ? "user" : toolboxRole === "creator" ? "admin" : "user";
-        const nextUrl = new URL(window.location.href);
-        nextUrl.searchParams.set("role", nextRole);
-        roleBanner.href = nextUrl.pathname + nextUrl.search + nextUrl.hash;
-        if (projectDataMenu) {
-            projectDataMenu.hidden = toolboxRole !== "admin";
-            if (toolboxRole !== "admin") {
-                projectDataMenu.removeAttribute("open");
-            }
-        }
-        if (toolboxRole === "admin") {
-            roleBanner.textContent = "ADMIN VIEW \u2022 Planned tools visible \u2022 Switch to Creator View";
-        } else if (toolboxRole === "creator") {
-            roleBanner.textContent = "CREATOR VIEW \u2022 Project tools enabled \u2022 Switch to Admin View";
-        } else {
-            roleBanner.textContent = "GUEST VIEW \u2022 Preview only \u2022 Sign in to create";
-        }
-    }
-
-    function configureProjectDataActions() {
-        if (!projectDataMenu || toolboxRole !== "admin") {
-            return;
-        }
-
-        projectDataMenu.addEventListener("click", (event) => {
-            const actionButton = event.target.closest("[data-project-data-action]");
-            if (!actionButton) {
-                return;
-            }
-
-            let actionLabel = "Project Data updated";
-
-            if (actionButton.dataset.projectDataAction === "reset") {
-                projectWorkspaceRepository.resetProjectData();
-                actionLabel = "Project Data reset";
-            } else if (actionButton.dataset.projectDataAction === "seed") {
-                projectWorkspaceRepository.seedDemoProject();
-                actionLabel = "Demo projects seeded";
-            } else if (actionButton.dataset.projectDataAction === "clear") {
-                projectWorkspaceRepository.clearTestData();
-                actionLabel = "Test data cleared";
-            }
-
-            if (projectDataStatus) {
-                const activeProject = projectWorkspaceRepository.getActiveProject();
-                projectDataStatus.textContent = `${actionLabel}. Active project: ${activeProject?.name || "none"}.`;
-            }
-
-            render(currentMode);
-        });
     }
 
     function groupClass(groupName) {
@@ -938,7 +870,5 @@ import {
         });
     }
 
-    configureRoleBanner();
-    configureProjectDataActions();
     render(currentMode);
 }());

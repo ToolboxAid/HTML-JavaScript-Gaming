@@ -66,17 +66,6 @@
     displayMode.appendChild(body);
     slot.replaceWith(displayMode);
 
-    function roleAwareHref(targetHref) {
-        const role = new URLSearchParams(window.location.search).get("role");
-        if (!role || !targetHref) {
-            return targetHref;
-        }
-
-        const targetUrl = new URL(targetHref, window.location.origin + "/");
-        targetUrl.searchParams.set("role", role);
-        return targetUrl.pathname.replace(/^\/+/, "") + targetUrl.search + targetUrl.hash;
-    }
-
     function createNavigationControl(direction, target) {
         const controlLabel = direction === "previous" ? "Previous" : "Next";
         const dataAttribute = direction === "previous" ? "toolNavPrevious" : "toolNavNext";
@@ -90,7 +79,7 @@
         }
 
         const link = document.createElement("a");
-        link.href = roleAwareHref(target.href);
+        link.href = target.href;
         link.dataset[dataAttribute] = target.kind;
         if (target.group) {
             link.dataset.toolNavGroup = target.group;

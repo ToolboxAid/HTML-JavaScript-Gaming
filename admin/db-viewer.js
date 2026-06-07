@@ -2,11 +2,15 @@ import { createProjectJourneyMockRepository } from "../toolbox/project-journey/p
 import { createAssetToolMockRepository } from "../toolbox/assets/assets-mock-repository.js";
 import { createProjectWorkspacePaletteRepository } from "../toolbox/colors/palette-workspace-repository.js";
 import {
-  getAllPersistedMockDbTables,
+  getAllPersistedMockDbSnapshot,
+  clearMockDbTables,
+  getMockDbSessionUser,
+  getMockDbSessionUsers,
   getStandaloneMockDbTables,
-} from "../src/shared/mock-db/mock-db-store.js";
+  setMockDbSessionUser,
+} from "../src/engine/persistence/mock-db-store.js";
 
-const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdByType", "updatedByType"];
+const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
 const TOOL_GROUP_ORDER = ["project-journey", "palette", "asset"];
 const TOOL_GROUP_LABELS = Object.freeze({
   asset: "Asset",
@@ -17,20 +21,27 @@ const STANDALONE_TABLE_LABELS = Object.freeze({
   users: "Users",
   actors: "Actors",
 });
-const AUDIT_REQUIRED_TABLES = new Set(["users", "actors"]);
 
 class AdminDbViewer {
   constructor(documentRef = document) {
     this.document = documentRef;
-    this.projectJourneyRepository = createProjectJourneyMockRepository();
-    this.paletteRepository = createProjectWorkspacePaletteRepository();
-    this.assetRepository = createAssetToolMockRepository();
+    this.createRepositories();
     this.activeFilter = "all";
+    this.clearButton = documentRef.querySelector("[data-admin-db-clear]");
     this.filterRoot = documentRef.querySelector("[data-admin-db-filters]");
     this.status = documentRef.querySelector("[data-admin-db-status]");
     this.diagnostics = documentRef.querySelector("[data-admin-db-diagnostics]");
     this.relationships = documentRef.querySelector("[data-admin-db-relationships]");
+    this.sessionSummary = documentRef.querySelector("[data-session-user-summary]");
+    this.sessionHeader = documentRef.querySelector("[data-session-user-header]");
+    this.sessionUserControls = documentRef.querySelector("[data-session-user-controls]");
     this.tablesRoot = documentRef.querySelector("[data-admin-db-tables]");
+  }
+
+  createRepositories() {
+    this.projectJourneyRepository = createProjectJourneyMockRepository();
+    this.paletteRepository = createProjectWorkspacePaletteRepository();
+    this.assetRepository = createAssetToolMockRepository();
   }
 
   start() {
@@ -42,6 +53,26 @@ class AdminDbViewer {
         return;
       }
       this.activeFilter = button.dataset.adminDbFilter || "all";
+      this.render();
+    });
+    this.sessionUserControls?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-session-user-button]");
+      if (!button) {
+        return;
+      }
+      setMockDbSessionUser(button.dataset.sessionUserButton || "user1");
+      this.createRepositories();
+      this.projectJourneyRepository.openProject("demo-project");
+      this.render();
+    });
+    this.clearButton?.addEventListener("click", () => {
+      if (!window.confirm("Clear all shared Mock DB records?")) {
+        return;
+      }
+      clearMockDbTables();
+      this.createRepositories();
+      this.projectJourneyRepository.openProject("demo-project");
+      this.activeFilter = "all";
       this.render();
     });
   }
@@ -96,18 +127,24 @@ class AdminDbViewer {
   }
 
   collectSnapshot() {
-    const projectJourneyTables = this.projectJourneyRepository.getTables();
-    const paletteTables = this.paletteRepository.getTables();
-    const assetTables = this.assetRepository.getTables();
-    const standaloneTables = getStandaloneMockDbTables();
-    const persistedTables = getAllPersistedMockDbTables();
-    const tables = {
-      ...persistedTables,
-      ...projectJourneyTables,
-      ...paletteTables,
-      ...assetTables,
-      ...standaloneTables,
-    };
+    this.projectJourneyRepository.getTables();
+    this.paletteRepository.getTables();
+    this.assetRepository.getTables();
+    getStandaloneMockDbTables();
+    const snapshot = getAllPersistedMockDbSnapshot();
+    const tables = snapshot.tables;
+    const owners = snapshot.owners || {};
+    const tableNamesForOwner = (ownerId) => Object.keys(tables)
+      .filter((tableName) => owners[tableName] === ownerId)
+      .sort();
+    const toolGroupIds = TOOL_GROUP_ORDER.filter((id) => tableNamesForOwner(id).length > 0);
+    const toolOwnedTables = new Set(toolGroupIds.flatMap(tableNamesForOwner));
+    const unownedTableNames = Object.keys(tables)
+      .filter((tableName) => !toolOwnedTables.has(tableName));
+    const standaloneTableNames = [
+      ...Object.keys(STANDALONE_TABLE_LABELS).filter((tableName) => unownedTableNames.includes(tableName)),
+      ...unownedTableNames.filter((tableName) => !Object.hasOwn(STANDALONE_TABLE_LABELS, tableName)).sort(),
+    ];
     const groups = [
       {
         id: "all",
@@ -115,21 +152,15 @@ class AdminDbViewer {
         tableNames: Object.keys(tables).sort(),
         type: "all",
       },
-      ...TOOL_GROUP_ORDER.map((id) => ({
+      ...toolGroupIds.map((id) => ({
         id,
         label: TOOL_GROUP_LABELS[id],
-        tableNames: Object.keys(
-          id === "project-journey"
-            ? projectJourneyTables
-            : id === "palette"
-              ? paletteTables
-              : assetTables,
-        ).sort(),
+        tableNames: tableNamesForOwner(id),
         type: "tool",
       })),
-      ...Object.entries(STANDALONE_TABLE_LABELS).map(([tableName, label]) => ({
+      ...standaloneTableNames.map((tableName) => ({
         id: tableName,
-        label,
+        label: STANDALONE_TABLE_LABELS[tableName] || tableName,
         tableNames: [tableName],
         type: "table",
       })),
@@ -165,18 +196,35 @@ class AdminDbViewer {
     });
     table.setAttribute("aria-label", `${tableName} records`);
 
-    const fields = this.tableFields(records);
+    const fields = this.tableFields(records).filter((field) => field !== "key");
     const head = this.createElement("thead");
     const headerRow = this.createElement("tr");
+    headerRow.append(this.createElement("th", { text: "Key" }));
     fields.forEach((field) => {
       headerRow.append(this.createElement("th", { text: field }));
     });
     head.append(headerRow);
 
     const tableBody = this.createElement("tbody");
+    if (!records.length) {
+      const row = this.createElement("tr");
+      const cell = this.createElement("td", {
+        text: "No records in this table. Add records from its tool or clear browser mock DB storage to reseed defaults.",
+      });
+      cell.colSpan = Math.max(1, fields.length + 1);
+      row.append(cell);
+      tableBody.append(row);
+    }
     records.forEach((record) => {
       const row = this.createElement("tr");
       row.dataset.adminDbRecord = this.recordId(record);
+      const keyCell = this.createElement("td", {
+        text: this.isUlidKey(record.key) ? this.formatKeyValue(record.key) : this.formatValue(record.key),
+      });
+      if (this.isUlidKey(record.key)) {
+        keyCell.title = String(record.key);
+      }
+      row.append(keyCell);
       fields.forEach((field) => {
         const value = record[field];
         const cell = this.createElement("td", {
@@ -223,12 +271,29 @@ class AdminDbViewer {
     });
   }
 
+  renderSessionUser() {
+    const sessionUser = getMockDbSessionUser();
+    if (this.sessionHeader) {
+      this.sessionHeader.textContent = `Session user: ${sessionUser.label}`;
+    }
+    if (this.sessionSummary) {
+      this.sessionSummary.textContent = `Selected session user: ${sessionUser.label}.`;
+    }
+    this.document.querySelectorAll("[data-session-user-button]").forEach((button) => {
+      const selected = button.dataset.sessionUserButton === sessionUser.id;
+      button.classList.toggle("primary", selected);
+      button.setAttribute("aria-pressed", String(selected));
+      if (selected) {
+        button.setAttribute("aria-current", "true");
+      } else {
+        button.removeAttribute("aria-current");
+      }
+    });
+  }
+
   auditFindings(tables) {
     const findings = [];
     Object.entries(tables).forEach(([tableName, records]) => {
-      if (!tableName.startsWith("project_journey_") && !AUDIT_REQUIRED_TABLES.has(tableName)) {
-        return;
-      }
       records.forEach((record) => {
         AUDIT_FIELDS.forEach((field) => {
           if (!Object.hasOwn(record, field)) {
@@ -244,6 +309,7 @@ class AdminDbViewer {
     const noteTypeKeys = new Set((tables.project_journey_note_types || []).map((type) => type.key));
     const noteKeys = new Set((tables.project_journey_notes || []).map((note) => note.key));
     const userKeys = new Set((tables.users || []).map((user) => user.key));
+    const actorKeys = new Set((tables.actors || []).map((actor) => actor.key));
     const actorUserKeys = new Set((tables.actors || []).map((actor) => actor.userKey));
     const activeTemplateKeys = new Set(
       (tables.project_journey_templates || [])
@@ -254,7 +320,23 @@ class AdminDbViewer {
     const paletteColorKeys = new Set((tables.palette_colors || []).map((row) => `${row.projectId}:${row.symbol}`));
     const assetIds = new Set((tables.asset_library_items || []).map((asset) => asset.id));
     const assetStorageIds = new Set((tables.asset_storage_objects || []).map((object) => object.id));
+    const allRecords = Object.entries(tables).flatMap(([tableName, records]) =>
+      records.map((record) => ({
+        ...record,
+        tableName,
+      })),
+    );
     return [
+      {
+        name: "*.createdBy -> actors.key",
+        checked: allRecords.length,
+        missing: allRecords.filter((record) => !actorKeys.has(record.createdBy)),
+      },
+      {
+        name: "*.updatedBy -> actors.key",
+        checked: allRecords.length,
+        missing: allRecords.filter((record) => !actorKeys.has(record.updatedBy)),
+      },
       {
         name: "project_journey_notes.typeKey -> project_journey_note_types.key",
         checked: (tables.project_journey_notes || []).length,
@@ -363,7 +445,7 @@ class AdminDbViewer {
     const staleFindings = this.staleDisplayFindings(tables, groups);
     const auditSummary = auditFindings.length
       ? auditFindings
-      : ["All current mock DB tables include createdAt, updatedAt, createdByType, and updatedByType where required by the owning mock model."];
+      : ["All current mock DB tables include createdAt, updatedAt, createdBy, and updatedBy."];
     const bleedSummary = bleedFindings.length ? bleedFindings : ["No table bleed detected."];
     this.diagnostics.append(
       this.renderList(auditSummary, "adminDbAuditFindings"),
@@ -376,7 +458,7 @@ class AdminDbViewer {
     this.relationships.replaceChildren();
     const relationshipRows = this.relationshipsForTables(tables);
     const missingLinks = relationshipRows.flatMap((relationship) =>
-      relationship.missing.map((record) => `${relationship.name} missing for ${this.recordId(record)}.`),
+      relationship.missing.map((record) => `${relationship.name} missing for ${record.tableName ? `${record.tableName}.` : ""}${this.recordId(record)}.`),
     );
     const relationshipList = this.createElement("ul");
     relationshipList.dataset.adminDbRelationshipSummary = "";
@@ -403,6 +485,7 @@ class AdminDbViewer {
         .map((tableName) => [tableName, snapshot.tables[tableName]]),
     );
     this.renderFilters(snapshot.groups);
+    this.renderSessionUser();
     this.renderDiagnostics(snapshot.tables, snapshot.groups);
     this.renderRelationships(snapshot.tables);
     this.renderTables(visibleTables);
