@@ -23,6 +23,7 @@
     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
+    "dev:local-api": "node ./scripts/start-local-api-server.mjs",
     "check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
     "check:phase24-closeout-guard": "node docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",
     "check:style-system-guard": "node docs_build/dev/toolbox/checkStyleSystemGuard.mjs",

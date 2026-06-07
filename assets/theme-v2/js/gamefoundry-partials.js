@@ -110,7 +110,7 @@
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
-    const apiBackedLoginDiagnostic = "Use the API-backed local server for login.";
+    const apiBackedLoginDiagnostic = "Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html.";
 
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;

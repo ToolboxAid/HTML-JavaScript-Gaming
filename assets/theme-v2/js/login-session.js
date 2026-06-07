@@ -14,8 +14,8 @@ const modeDisabledMessage = document.querySelector("[data-login-mode-disabled-me
 const userControls = document.querySelector("[data-login-user-controls]");
 const userStatus = document.querySelector("[data-login-user-status]");
 const continueLink = document.querySelector("[data-login-continue]");
-const apiBackedLoginDiagnostic = "Use the API-backed local server for login.";
-const staticModeDisabledMessage = "Use the API-backed local server for login. Local Mem and Local DB are disabled until the local API server is running.";
+const apiBackedLoginDiagnostic = "Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html.";
+const staticModeDisabledMessage = "Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html. Local Mem and Local DB are disabled until the local API server is running.";
 
 function currentReturnTo() {
   const params = new URLSearchParams(window.location.search);
