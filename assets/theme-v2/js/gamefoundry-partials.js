@@ -61,6 +61,7 @@
         publish: "community/publish.html",
         support: "docs/support.html",
         reference: "docs/reference.html",
+        login: "login.html",
         contact: "company/contact.html",
         vision: "company/vision.html",
         mission: "company/mission.html",
@@ -108,6 +109,7 @@
     ]);
     const mockDbStorageKey = "gamefoundry.mockDb.v1";
     const mockDbSessionStorageKey = "gamefoundry.mockDb.sessionUser.v1";
+    const mockDbSessionModeStorageKey = "gamefoundry.mockDb.sessionMode.v1";
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
@@ -193,6 +195,14 @@
         }
     }
 
+    function selectedSessionModeId() {
+        try {
+            return window.localStorage.getItem(mockDbSessionModeStorageKey) || "local";
+        } catch {
+            return "local";
+        }
+    }
+
     function rolesForUser(state, userKey, fallbackRoleSlugs) {
         const rows = state?.tables?.user_roles || [];
         const roles = new Map((state?.tables?.roles || []).map(function (role) {
@@ -210,23 +220,43 @@
     }
 
     function localDevLoginState() {
+        if (selectedSessionModeId() === "dev") {
+            return {
+                authenticated: false,
+                displayName: "Login",
+                mode: "dev",
+                roleSlugs: []
+            };
+        }
+
         const session = localSessionUsers[selectedLocalSessionId()];
         if (!session) {
             return {
                 authenticated: false,
                 displayName: "Login",
+                mode: "local",
                 roleSlugs: []
             };
         }
 
         const state = readMockDbState();
-        const user = (state?.tables?.users || []).find(function (record) {
-            return record.key === session.userKey && record.isActive !== false;
-        });
-        if (state && !user) {
+        if (!state) {
             return {
                 authenticated: false,
                 displayName: "Login",
+                mode: "local",
+                roleSlugs: []
+            };
+        }
+
+        const user = (state?.tables?.users || []).find(function (record) {
+            return record.key === session.userKey && record.isActive !== false;
+        });
+        if (!user) {
+            return {
+                authenticated: false,
+                displayName: "Login",
+                mode: "local",
                 roleSlugs: []
             };
         }
@@ -234,7 +264,8 @@
         return {
             authenticated: true,
             displayName: user?.displayName || session.displayName,
-            roleSlugs: rolesForUser(state, session.userKey, session.roleSlugs)
+            mode: "local",
+            roleSlugs: rolesForUser(state, session.userKey, [])
         };
     }
 
@@ -272,6 +303,7 @@
         if (accountLink) {
             accountLink.textContent = canUseAccount ? loginState.displayName + " \u25BE" : "Login";
             accountLink.setAttribute("aria-label", canUseAccount ? "Account menu for " + loginState.displayName : "Login");
+            accountLink.setAttribute("href", canUseAccount ? routeHref("account") : routeHref("login"));
         }
         if (accountMenu) {
             accountMenu.hidden = !canUseAccount;
@@ -281,6 +313,105 @@
             });
         }
         setMenuVisible(adminItem, canUseAdmin);
+    }
+
+    function protectedPageRequirement(pagePath) {
+        if (pagePath.indexOf("admin/") === 0) {
+            return {
+                role: "admin",
+                title: "Admin role required",
+                message: "Log in as Admin to open this Admin page."
+            };
+        }
+        if (pagePath.indexOf("account/") === 0) {
+            return {
+                role: "user",
+                title: "Login required",
+                message: "Log in as a local user to open Account pages."
+            };
+        }
+        return null;
+    }
+
+    function canUseProtectedPage(requirement, loginState) {
+        if (!requirement) {
+            return true;
+        }
+        if (requirement.role === "admin") {
+            return loginState.authenticated && loginState.roleSlugs.includes("admin");
+        }
+        if (requirement.role === "user") {
+            return loginState.authenticated && loginState.roleSlugs.includes("user");
+        }
+        return false;
+    }
+
+    function createAccessBlockedMain(requirement, pagePath, loginState) {
+        const main = document.createElement("main");
+        main.dataset.sessionAccessBlocked = requirement.role;
+
+        const titleSection = document.createElement("section");
+        titleSection.className = "page-title";
+        const titleContainer = document.createElement("div");
+        titleContainer.className = "container";
+        const kicker = document.createElement("div");
+        kicker.className = "kicker";
+        kicker.textContent = "Access";
+        const title = document.createElement("h1");
+        title.textContent = requirement.title;
+        const lede = document.createElement("p");
+        lede.className = "lede";
+        lede.textContent = requirement.message;
+        titleContainer.append(kicker, title, lede);
+        titleSection.append(titleContainer);
+
+        const bodySection = document.createElement("section");
+        bodySection.className = "section";
+        const bodyContainer = document.createElement("div");
+        bodyContainer.className = "container";
+        const card = document.createElement("div");
+        card.className = "card";
+        const body = document.createElement("div");
+        body.className = "card-body content-stack";
+        const status = document.createElement("p");
+        status.className = "status";
+        status.setAttribute("role", "status");
+        status.dataset.sessionAccessStatus = "";
+        status.textContent = `Blocked ${pagePath}. Current session: ${loginState.displayName}.`;
+        const link = document.createElement("a");
+        link.className = "btn primary";
+        link.href = routeHref("login") + "?returnTo=" + encodeURIComponent(pagePath);
+        link.textContent = "Open Login";
+        body.append(status, link);
+        card.append(body);
+        bodyContainer.append(card);
+        bodySection.append(bodyContainer);
+
+        main.append(titleSection, bodySection);
+        return main;
+    }
+
+    function enforcePageProtection() {
+        const pagePath = currentPagePath() || "index.html";
+        const requirement = protectedPageRequirement(pagePath);
+        const loginState = localDevLoginState();
+        const allowed = canUseProtectedPage(requirement, loginState);
+        window.GameFoundrySessionGuard = {
+            blocked: !allowed,
+            mode: loginState.mode,
+            pagePath,
+            requirement: requirement?.role || ""
+        };
+        if (!requirement || allowed) {
+            return false;
+        }
+
+        const existingMain = document.querySelector("main");
+        if (existingMain) {
+            existingMain.replaceWith(createAccessBlockedMain(requirement, pagePath, loginState));
+        }
+        document.title = `${requirement.title} - GameFoundryStudio`;
+        return true;
     }
 
     function markActiveNavigation(root) {
@@ -353,12 +484,23 @@
     function refreshHeaderLoginState() {
         const header = document.querySelector("header.site-header");
         if (header) {
+            enforcePageProtection();
             applyLocalDevLoginState(header);
             markActiveNavigation(header);
         }
     }
 
+    function refreshHeaderOnly() {
+        const header = document.querySelector("header.site-header");
+        if (header) {
+            applyLocalDevLoginState(header);
+            markActiveNavigation(header);
+        }
+    }
+
+    enforcePageProtection();
     document.addEventListener("DOMContentLoaded", function () {
+        enforcePageProtection();
         const slots = Array.from(document.querySelectorAll("[data-partial]"));
         const tasks = slots.length ? slots.map(loadPartial) : [
             replaceExisting("header-nav", "header.site-header"),
@@ -369,5 +511,6 @@
         });
     });
     window.addEventListener("gamefoundry:mock-db-session-user-changed", refreshHeaderLoginState);
-    window.addEventListener("gamefoundry:mock-db-changed", refreshHeaderLoginState);
+    window.addEventListener("gamefoundry:mock-db-session-mode-changed", refreshHeaderLoginState);
+    window.addEventListener("gamefoundry:mock-db-changed", refreshHeaderOnly);
 }());

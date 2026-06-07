@@ -138,4 +138,6 @@ function renderToolsProgress() {
   }
 }
 
-renderToolsProgress();
+if (!window.GameFoundrySessionGuard?.blocked) {
+  renderToolsProgress();
+}

@@ -538,4 +538,6 @@ class AdminDbViewer {
   }
 }
 
-new AdminDbViewer().start();
+if (!window.GameFoundrySessionGuard?.blocked) {
+  new AdminDbViewer().start();
+}

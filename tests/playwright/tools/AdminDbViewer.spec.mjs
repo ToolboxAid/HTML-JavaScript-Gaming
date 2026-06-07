@@ -1,11 +1,19 @@
 import { expect, test } from "@playwright/test";
 import { PROJECT_JOURNEY_KEYS } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
+import { getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 const REMOVED_IDENTITY_TABLE = "act" + "ors";
+const standaloneSeedTables = getStandaloneMockDbSeedTables();
+const standaloneSeedState = {
+  cleared: false,
+  owners: Object.fromEntries(Object.keys(standaloneSeedTables).map((tableName) => [tableName, "standalone"])),
+  tables: standaloneSeedTables,
+  version: 3,
+};
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -24,6 +32,7 @@ test.afterAll(async () => {
 
 async function openRepoPage(page, pathName, options = {}) {
   const server = await startRepoServer();
+  const sessionUserId = options.sessionUserId === undefined ? "admin" : options.sessionUserId;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -45,8 +54,12 @@ async function openRepoPage(page, pathName, options = {}) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  if (options.sessionUserId !== undefined) {
-    await page.addInitScript(({ selectedUserId, storageKey }) => {
+  if (sessionUserId !== undefined) {
+    await page.addInitScript(({ selectedUserId, seedState, storageKey }) => {
+      if (!window.localStorage.getItem("gamefoundry.mockDb.v1")) {
+        window.localStorage.setItem("gamefoundry.mockDb.v1", JSON.stringify(seedState));
+      }
+      window.localStorage.setItem("gamefoundry.mockDb.sessionMode.v1", "local");
       const current = window.localStorage.getItem(storageKey);
       if (selectedUserId && !current) {
         window.localStorage.setItem(storageKey, selectedUserId);
@@ -54,7 +67,8 @@ async function openRepoPage(page, pathName, options = {}) {
         window.localStorage.removeItem(storageKey);
       }
     }, {
-      selectedUserId: options.sessionUserId,
+      seedState: standaloneSeedState,
+      selectedUserId: sessionUserId,
       storageKey: "gamefoundry.mockDb.sessionUser.v1",
     });
   }
@@ -93,34 +107,15 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     await expect(page.locator(".tool-workspace--wide > .tool-column")).toHaveCount(2);
     await expect(page.locator("#toolDisplayMode")).toBeVisible();
     await expect(page.locator("[data-admin-db-viewer].tool-center-panel")).toBeVisible();
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Guest");
-    await expect(page.locator("[data-session-user-summary]")).toHaveText("Selected session user: Guest.");
-    await expect(page.locator("[data-session-user-button]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
-    await expect(page.locator("[data-session-user-button='guest']")).toHaveClass(/primary/);
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
-    await expect(page.locator("[data-session-user-button='forge-bot']")).toHaveCount(0);
-    await page.locator("[data-session-user-button='user1']").click();
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 1");
-    await expect(page.locator("[data-session-user-summary]")).toHaveText("Selected session user: User 1.");
-    await expect(page.locator("[data-session-user-button='user1']")).toHaveClass(/primary/);
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu a").first()).toHaveAttribute("aria-hidden", "false");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
-    await page.locator("[data-session-user-button='admin']").click();
     await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Admin");
+    await expect(page.locator("[data-session-user-summary]")).toHaveText("Selected session user: Admin.");
+    await expect(page.locator("[data-session-user-button]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
     await expect(page.locator("[data-session-user-button='admin']")).toHaveClass(/primary/);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+    await expect(page.locator("[data-session-user-button='forge-bot']")).toHaveCount(0);
     await expect(page.locator("nav.nav-links a[data-route='admin-db-viewer']")).toHaveText("DB Viewer");
-    await page.locator("[data-session-user-button='user3']").click();
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 3");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 3");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
-    await page.locator("[data-session-user-button='user1']").click();
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 1");
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-filter]")).toHaveText([
       "All",
@@ -315,15 +310,15 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     await expect(page.locator("[data-admin-db-table='project_journey_items'] thead")).toContainText("projectKey");
     await expect(page.locator("[data-admin-db-table='users'] thead")).toContainText("authProviderUserId");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
-    await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Seed Mock DB");
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and 0 records for All\./);
     await page.locator("[data-admin-db-clear]").click();
     await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Mock DB");
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("Review palette swatch affordance");
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Mock DB");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -375,6 +370,9 @@ test("Mock DB viewer renders live persisted tool records after refresh", async (
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-asset-tool-library]")).toContainText("Persist Sprite");
 
+    await page.evaluate(() => {
+      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", "admin");
+    });
     await page.goto(`${server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Project Journey" }).click();
     await expect(page.locator("[data-admin-db-table='project_journey_notes']")).toContainText("Persistence Review");

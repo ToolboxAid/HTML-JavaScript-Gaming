@@ -538,4 +538,6 @@ class AdminNotesViewer {
   }
 }
 
-new AdminNotesViewer().start();
+if (!window.GameFoundrySessionGuard?.blocked) {
+  new AdminNotesViewer().start();
+}

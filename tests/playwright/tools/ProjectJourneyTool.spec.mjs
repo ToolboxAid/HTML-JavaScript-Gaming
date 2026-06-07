@@ -11,11 +11,18 @@ import {
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyMockRepository,
 } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
-import { MOCK_DB_KEYS } from "../../../src/engine/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+const standaloneSeedTables = getStandaloneMockDbSeedTables();
+const standaloneSeedState = {
+  cleared: false,
+  owners: Object.fromEntries(Object.keys(standaloneSeedTables).map((tableName) => [tableName, "standalone"])),
+  tables: standaloneSeedTables,
+  version: 3,
+};
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -60,7 +67,11 @@ async function openRepoPage(page, pathName, options = {}) {
   if (collectCoverage) {
     await workspaceV2CoverageReporter.start(page);
   }
-  await page.addInitScript(({ selectedUserId, storageKey }) => {
+  await page.addInitScript(({ seedState, selectedUserId, storageKey }) => {
+    if (!window.localStorage.getItem("gamefoundry.mockDb.v1")) {
+      window.localStorage.setItem("gamefoundry.mockDb.v1", JSON.stringify(seedState));
+    }
+    window.localStorage.setItem("gamefoundry.mockDb.sessionMode.v1", "local");
     const current = window.localStorage.getItem(storageKey);
     if (selectedUserId && !current) {
       window.localStorage.setItem(storageKey, selectedUserId);
@@ -68,6 +79,7 @@ async function openRepoPage(page, pathName, options = {}) {
       window.localStorage.removeItem(storageKey);
     }
   }, {
+    seedState: standaloneSeedState,
     selectedUserId: sessionUserId,
     storageKey: "gamefoundry.mockDb.sessionUser.v1",
   });
@@ -630,8 +642,7 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
 });
 
 test("Project Journey supports Guest as the selected shared session user", async ({ page }) => {
-  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
-    collectCoverage: false,
+  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project", {
     sessionUserId: "guest",
   });
 
@@ -639,10 +650,6 @@ test("Project Journey supports Guest as the selected shared session user", async
     await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Guest");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
-
-    await page.goto(`${failures.server.baseUrl}/toolbox/project-journey/index.html?project=demo-project`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Guest");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: All Notes (0 notes).");
     await expect(page.locator("[data-journey-diagnostics]")).toContainText("Guest is unauthenticated");
@@ -659,15 +666,20 @@ test("Project Journey supports Guest as the selected shared session user", async
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: My Notes (0 notes).");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
 
+    await page.evaluate(() => {
+      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", "admin");
+    });
     await page.goto(`${failures.server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Guest");
+    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Admin");
     await page.getByRole("button", { name: "Project Journey" }).click();
     await expect(page.locator("[data-admin-db-table='project_journey_notes']")).not.toContainText("Guest Scratch Note");
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).not.toContainText("Guest first task");
     await page.getByRole("button", { name: "User Roles" }).click();
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
 
-    await page.locator("[data-session-user-button='user3']").click();
+    await page.evaluate(() => {
+      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", "user3");
+    });
     const user3TableReferences = await page.evaluate((user3Key) => {
       const snapshot = JSON.parse(window.localStorage.getItem("gamefoundry.mockDb.v1") || "{}");
       return Object.entries(snapshot.tables || {})
@@ -734,9 +746,9 @@ test("Project Journey search filters notes, tree items, and visible counts", asy
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("0");
     await expect(page.locator("[data-journey-item-tree]")).not.toContainText("Resolve final validation lane ownership");
 
-    await page.goto(`${failures.server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
-    await page.locator("[data-session-user-button='user2']").click();
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 2");
+    await page.evaluate(() => {
+      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", "user2");
+    });
     await page.goto(`${failures.server.baseUrl}/toolbox/project-journey/index.html?project=demo-project`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 2");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");

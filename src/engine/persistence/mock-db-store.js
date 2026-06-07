@@ -1,5 +1,6 @@
 const MOCK_DB_STORAGE_KEY = "gamefoundry.mockDb.v1";
 const MOCK_DB_SESSION_STORAGE_KEY = "gamefoundry.mockDb.sessionUser.v1";
+const MOCK_DB_SESSION_MODE_STORAGE_KEY = "gamefoundry.mockDb.sessionMode.v1";
 const MOCK_DB_VERSION = 3;
 
 function makeMockUlid(sequence) {
@@ -82,6 +83,21 @@ export const MOCK_DB_SYSTEM_USER = Object.freeze({
   userKey: MOCK_DB_KEYS.users.forgeBot,
   roleSlugs: Object.freeze(["system"]),
 });
+
+export const MOCK_DB_SESSION_MODES = Object.freeze([
+  Object.freeze({
+    id: "dev",
+    label: "DEV",
+    description: "Only gets the JSON data.",
+    persistent: false,
+  }),
+  Object.freeze({
+    id: "local",
+    label: "Local",
+    description: "Uses the persisted Memory DB.",
+    persistent: true,
+  }),
+]);
 
 export const MOCK_DB_TOOL_GROUPS = Object.freeze({
   workspace: Object.freeze({
@@ -179,11 +195,35 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function hasBrowserStorage() {
+  return typeof window !== "undefined" && Boolean(window.localStorage);
+}
+
+function sessionModeFromId(sessionModeId) {
+  return MOCK_DB_SESSION_MODES.find((mode) => mode.id === sessionModeId) ||
+    MOCK_DB_SESSION_MODES.find((mode) => mode.id === "local") ||
+    MOCK_DB_SESSION_MODES[0];
+}
+
+function selectedSessionModeId(options = {}) {
+  if (options.sessionMode) {
+    return sessionModeFromId(options.sessionMode).id;
+  }
+  if (!hasBrowserStorage()) {
+    return "local";
+  }
+  try {
+    return sessionModeFromId(window.localStorage.getItem(MOCK_DB_SESSION_MODE_STORAGE_KEY) || "local").id;
+  } catch {
+    return "local";
+  }
+}
+
 function canUseStorage(options = {}) {
   if (options.persist === false) {
     return false;
   }
-  return typeof window !== "undefined" && Boolean(window.localStorage);
+  return hasBrowserStorage() && selectedSessionModeId(options) === "local";
 }
 
 export function mockDbPersistenceEnabled(options = {}) {
@@ -309,7 +349,7 @@ function selectedSessionUserId(options = {}) {
   if (options.sessionUserId) {
     return options.sessionUserId;
   }
-  if (!canUseStorage(options)) {
+  if (selectedSessionModeId(options) === "dev" || !hasBrowserStorage()) {
     return "guest";
   }
   try {
@@ -323,6 +363,33 @@ export function getMockDbSessionUsers() {
   return clone(MOCK_DB_SESSION_USERS);
 }
 
+export function getMockDbSessionModes() {
+  return clone(MOCK_DB_SESSION_MODES);
+}
+
+export function getMockDbSessionMode(options = {}) {
+  return clone(sessionModeFromId(selectedSessionModeId(options)));
+}
+
+export function setMockDbSessionMode(sessionModeId, options = {}) {
+  const sessionMode = sessionModeFromId(sessionModeId);
+  if (hasBrowserStorage() && options.persist !== false) {
+    try {
+      window.localStorage.setItem(MOCK_DB_SESSION_MODE_STORAGE_KEY, sessionMode.id);
+      if (sessionMode.id === "dev") {
+        window.localStorage.setItem(MOCK_DB_SESSION_STORAGE_KEY, "guest");
+      }
+      window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-mode-changed", {
+        detail: clone(sessionMode),
+      }));
+      window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
+        detail: clone(sessionUserFromId(selectedSessionUserId())),
+      }));
+    } catch {}
+  }
+  return clone(sessionMode);
+}
+
 export function getMockDbSystemUser() {
   return clone(MOCK_DB_SYSTEM_USER);
 }
@@ -332,8 +399,8 @@ export function getMockDbSessionUser(options = {}) {
 }
 
 export function setMockDbSessionUser(sessionUserId, options = {}) {
-  const sessionUser = sessionUserFromId(sessionUserId);
-  if (canUseStorage(options)) {
+  const sessionUser = selectedSessionModeId(options) === "dev" ? sessionUserFromId("guest") : sessionUserFromId(sessionUserId);
+  if (hasBrowserStorage() && options.persist !== false) {
     try {
       window.localStorage.setItem(MOCK_DB_SESSION_STORAGE_KEY, sessionUser.id);
       window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {

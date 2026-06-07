@@ -14,11 +14,10 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (83%) Toolbox Index - exercised 13 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(82%) Theme V2 Shared JS - exercised 2 runtime JS files
+(86%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(97%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 1043/1043; executed functions 93/96
-(98%) toolbox/project-journey/project-journey.js - executed lines 1000/1000; executed functions 106/108
+(93%) src/engine/persistence/mock-db-store.js - executed lines 659/659; executed functions 65/70
 
 Files with executed line/function counts where available:
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 192/192; executed functions 9/14
@@ -31,10 +30,11 @@ Files with executed line/function counts where available:
 (85%) toolbox/game-configuration/game-configuration-mock-repository.js - executed lines 290/290; executed functions 29/34
 (86%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 32/37
 (88%) toolbox/assets/assets.js - executed lines 519/519; executed functions 53/60
-(89%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 340/340; executed functions 33/37
 (89%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 33/37
-(94%) src/engine/persistence/mock-db-store.js - executed lines 599/599; executed functions 58/62
-(95%) admin/db-viewer.js - executed lines 511/511; executed functions 88/93
+(91%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 471/471; executed functions 39/43
+(92%) assets/theme-v2/js/login-session.js - executed lines 111/111; executed functions 12/13
+(93%) src/engine/persistence/mock-db-store.js - executed lines 659/659; executed functions 65/70
+(94%) admin/db-viewer.js - executed lines 513/513; executed functions 87/93
 (97%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 1043/1043; executed functions 93/96
 (98%) toolbox/project-journey/project-journey.js - executed lines 1000/1000; executed functions 106/108
 (100%) toolbox/colors/palette-source-mock-db.js - executed lines 927/927; executed functions 6/6
@@ -43,6 +43,12 @@ Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
+(0%) admin/notes.js - changed JS file not collected as browser runtime coverage
+(0%) admin/tools-progress.js - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(97%) toolbox/project-journey/project-journey-mock-repository.js - changed JS file with browser V8 coverage
-(98%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage
+(91%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(92%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
+(93%) src/engine/persistence/mock-db-store.js - changed JS file with browser V8 coverage
+(94%) admin/db-viewer.js - changed JS file with browser V8 coverage

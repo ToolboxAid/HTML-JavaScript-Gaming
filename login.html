@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - GameFoundryStudio</title>
+    <meta name="description" content="Choose a local development session mode for GameFoundryStudio.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body>
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Session</div>
+                <h1>Login</h1>
+                <p class="lede">Choose how this local development browser session reads project data.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container account-panel">
+                <aside class="side-menu" aria-label="Session modes">
+                    <button class="btn btn--compact" type="button" data-login-mode="dev">DEV</button>
+                    <button class="btn btn--compact" type="button" data-login-mode="local">Local</button>
+                </aside>
+                <div class="card">
+                    <div class="card-body content-stack">
+                        <div>
+                            <div class="kicker">Mode</div>
+                            <h2 data-login-mode-title>Local</h2>
+                            <p class="lede" data-login-mode-description>Uses the persisted Memory DB.</p>
+                        </div>
+                        <div class="status" role="status" data-login-mode-status>Session mode ready.</div>
+                        <section class="content-stack" aria-labelledby="login-users-title">
+                            <div>
+                                <div class="kicker">Local Users</div>
+                                <h2 id="login-users-title">Session User</h2>
+                            </div>
+                            <div class="action-group" role="group" aria-label="Local test users" data-login-user-controls></div>
+                            <div class="status" role="status" data-login-user-status>Choose a local test user.</div>
+                        </section>
+                        <div class="action-group">
+                            <a class="btn primary" href="toolbox/index.html" data-login-continue>Continue</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/login-session.js"></script>
+</body>
+
+</html>
