@@ -2,30 +2,24 @@ import {
   PALETTE_SOURCE_USER,
   PALETTE_TOOL_KEY,
   PALETTE_WORKSPACE_PATH,
-  createProjectWorkspacePaletteRepository,
+  createProjectWorkspacePaletteApiRepository,
   normalizePaletteSwatchInput,
   validatePaletteSwatchInput
-} from "./palette-workspace-repository.js";
+} from "./palette-api-client.js";
 
 const params = new URLSearchParams(window.location.search);
 
 function sourceRepositoryOptions() {
   if (params.get("source") === "empty") {
-    return { tables: { palette_source_swatches: [] } };
+    return { sourceMode: "empty" };
   }
   if (params.get("source") === "invalid") {
-    return {
-      tables: {
-        palette_source_swatches: [
-          { id: "invalid-source-row", source: "broken-source", symbol: "AB", hex: "not-a-hex", name: "", tags: ["diagnostic"] }
-        ]
-      }
-    };
+    return { sourceMode: "invalid" };
   }
   return {};
 }
 
-const repository = createProjectWorkspacePaletteRepository(sourceRepositoryOptions());
+const repository = createProjectWorkspacePaletteApiRepository(sourceRepositoryOptions());
 
 const SORT_OPTIONS = Object.freeze([
   { key: "hue", label: "Hue" },

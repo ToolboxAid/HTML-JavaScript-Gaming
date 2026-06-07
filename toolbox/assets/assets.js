@@ -1,10 +1,10 @@
 import {
   ASSET_ROLE_DEFINITIONS,
-  createAssetToolMockRepository,
+  createAssetToolApiRepository,
   pickerDiagnosticForRole
-} from "./assets-mock-repository.js";
+} from "./assets-api-client.js";
 
-const repository = createAssetToolMockRepository();
+const repository = createAssetToolApiRepository();
 const params = new URLSearchParams(window.location.search);
 const handoffMode = params.get("handoff");
 const advancedPickerAllowed = params.get("role")?.toLowerCase() === "admin"

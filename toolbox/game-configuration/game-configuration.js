@@ -1,9 +1,9 @@
 import {
   GAME_CONFIGURATION_SECTIONS,
-  createGameConfigurationMockRepository
-} from "./game-configuration-mock-repository.js";
+  createGameConfigurationApiRepository
+} from "./game-configuration-api-client.js";
 
-const repository = createGameConfigurationMockRepository();
+const repository = createGameConfigurationApiRepository();
 const params = new URLSearchParams(window.location.search);
 const handoffMode = params.get("handoff");
 const requestedProject = params.get("project") || "";

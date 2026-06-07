@@ -272,7 +272,7 @@ test("Asset Role changes update picker mode, usage options, and import form layo
     expect((fileNameRowBox?.y || 0)).toBeGreaterThan((fileRowBox?.y || 0));
     expect((helpBox?.y || 0)).toBeGreaterThan((fileRowBox?.y || 0));
 
-    await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html?advanced=true`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-asset-tool-asset-role] option[value='shader']")).toHaveCount(1);
     await page.locator("[data-asset-tool-asset-role]").selectOption("shader");
     await expect(page.locator("[data-asset-tool-picker-mode]")).toHaveText("advanced");

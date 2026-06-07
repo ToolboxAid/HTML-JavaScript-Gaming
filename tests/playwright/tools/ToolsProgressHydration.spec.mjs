@@ -7,6 +7,7 @@ import {
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 
 const RESTORED_GROUPS = ["AI", "Audio", "Build/Create", "Design", "Marketplace", "Platform", "Play"];
 const REPRESENTATIVE_GROUP_TOOLS = Object.freeze({
@@ -60,6 +61,13 @@ async function openRepoPage(page, pathName) {
   });
 
   await workspaceV2CoverageReporter.start(page);
+  if (pathName.startsWith("/admin/")) {
+    await fetch(`${server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.admin }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+  }
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };
 }

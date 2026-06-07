@@ -1,7 +1,7 @@
 import {
     PROJECT_WORKSPACE_MEMBER_ROLES,
-    createProjectWorkspaceMockRepository
-} from "./project-workspace/project-workspace-mock-repository.js";
+    createProjectWorkspaceApiRepository
+} from "./project-workspace/project-workspace-api-client.js";
 import {
     TOOL_IMAGE_FALLBACK,
     getActiveToolRegistry,
@@ -22,7 +22,7 @@ import {
     const buildPathButton = document.querySelector("[data-tools-view='build-path']");
     const toolCount = document.querySelector("[data-tools-count]");
     const searchParams = new URLSearchParams(window.location.search);
-    const projectWorkspaceRepository = createProjectWorkspaceMockRepository();
+    const projectWorkspaceRepository = createProjectWorkspaceApiRepository();
     projectWorkspaceRepository.resetProjectData();
     const urlMemberRole = searchParams.get("memberRole");
     const defaultProjectMemberRole = "Owner";

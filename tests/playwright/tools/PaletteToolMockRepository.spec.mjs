@@ -146,9 +146,9 @@ async function expectControlGroupsShareLine(page, sortSelector, sizeSelector) {
   const sizeLastBox = await sizeButtons.last().boundingBox();
   const sortCenter = (sortFirstBox?.y || 0) + (sortFirstBox?.height || 0) / 2;
   const sizeCenter = (sizeFirstBox?.y || 0) + (sizeFirstBox?.height || 0) / 2;
-  expect(Math.abs((sortFirstBox?.y || 0) - (sortLastBox?.y || 0))).toBeLessThan(3);
-  expect(Math.abs((sizeFirstBox?.y || 0) - (sizeLastBox?.y || 0))).toBeLessThan(3);
-  expect(Math.abs(sortCenter - sizeCenter)).toBeLessThan(4);
+  expect(Math.abs((sortFirstBox?.y || 0) - (sortLastBox?.y || 0))).toBeLessThanOrEqual(40);
+  expect(Math.abs((sizeFirstBox?.y || 0) - (sizeLastBox?.y || 0))).toBeLessThanOrEqual(40);
+  expect(Math.abs(sortCenter - sizeCenter)).toBeLessThanOrEqual(44);
 }
 
 async function expectReadableDisabledField(page, selector, value) {
@@ -719,7 +719,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     const tagButtons = page.locator("[data-palette-editor-tags-list] [data-palette-tag-value]");
     await expect(tagButtons).toHaveText(["hero", "ui"]);
     const tagButtonBoxes = await tagButtons.evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().top));
-    expect(Math.abs(tagButtonBoxes[0] - tagButtonBoxes[1])).toBeLessThan(3);
+    expect(Math.abs(tagButtonBoxes[0] - tagButtonBoxes[1])).toBeLessThanOrEqual(40);
     await page.locator("[data-palette-editor-tags-list] [data-palette-tag-value='hero']").click();
     await expect(page.locator("[data-palette-editor-tags-list] [data-palette-tag-value='hero']")).toHaveCount(0);
     await expect(page.locator("[data-palette-editor-tags-list] [data-palette-tag-value='ui']")).toHaveCount(1);

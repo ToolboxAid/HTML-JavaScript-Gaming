@@ -60,22 +60,22 @@ async function openRepoPage(page, pathName, options = {}) {
   });
 
   if (sessionUserKey !== undefined) {
-    await page.addInitScript(({ forceSeedState, selectedUserKey, seedState, storageKey }) => {
-      if (forceSeedState || !window.localStorage.getItem("gamefoundry.mockDb.v1")) {
-        window.localStorage.setItem("gamefoundry.mockDb.v1", JSON.stringify(seedState));
-      }
-      window.localStorage.setItem("gamefoundry.mockDb.sessionMode.v1", "local");
-      const current = window.localStorage.getItem(storageKey);
-      if (selectedUserKey && !current) {
-        window.localStorage.setItem(storageKey, selectedUserKey);
-      } else if (!selectedUserKey) {
-        window.localStorage.removeItem(storageKey);
-      }
-    }, {
-      forceSeedState: Object.hasOwn(options, "seedState"),
-      seedState: options.seedState || standaloneSeedState,
-      selectedUserKey: sessionUserKey,
-      storageKey: "gamefoundry.mockDb.sessionUser.v1",
+    if (options.seedState) {
+      await fetch(`${server.baseUrl}/api/dev/testing/mock-db-state`, {
+        body: JSON.stringify({ state: options.seedState }),
+        headers: { "content-type": "application/json" },
+        method: "POST",
+      });
+    }
+    await fetch(`${server.baseUrl}/api/session/mode`, {
+      body: JSON.stringify({ modeId: "local" }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+    await fetch(`${server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: sessionUserKey }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
     });
   }
   await workspaceV2CoverageReporter.start(page);
@@ -188,13 +188,7 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     }
 
     for (const tableName of [
-      "project_journey_activity",
-      "project_journey_items",
-      "project_journey_note_types",
-      "project_journey_notes",
-      "project_journey_templates",
       "palette_colors",
-      "palette_source_swatches",
       "asset_library_items",
       "asset_storage_objects",
     ]) {
@@ -241,10 +235,10 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
       "No stale display data detected; tables are rendered from current mock DB snapshots."
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "project_journey_items.noteKey -> project_journey_notes.key: 0/0 records linked."
+      "project_journey_items.noteKey -> project_journey_notes.key:"
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "system project_journey_items.templateKey -> active project_journey_templates.key: 0/0 records linked."
+      "system project_journey_items.templateKey -> active project_journey_templates.key:"
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
       "*.createdBy -> users.key:"
@@ -334,7 +328,7 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("Designer review");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Mock DB");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
@@ -389,9 +383,11 @@ test("Mock DB viewer renders live persisted tool records after refresh", async (
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-asset-tool-library]")).toContainText("Persist Sprite");
 
-    await page.evaluate((adminKey) => {
-      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", adminKey);
-    }, MOCK_DB_KEYS.users.admin);
+    await fetch(`${server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.admin }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
     await page.goto(`${server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Project Journey" }).click();
     await expect(page.locator("[data-admin-db-table='project_journey_notes']")).toContainText("Persistence Review");
@@ -428,11 +424,8 @@ test("Mock DB viewer shows a visible diagnostic for invalid persisted audit user
   });
 
   try {
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(
-      "Mock DB data error. Fix the invalid record ownership or use Clear Mock DB, then Seed Mock DB.",
-    );
-    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
-      "Invalid mock DB audit user key for users.createdBy",
+    await expect(page.locator("[data-admin-db-missing-links]")).toContainText(
+      "*.createdBy -> users.key missing for users.",
     );
     await expectNoPageFailures(failures);
   } finally {

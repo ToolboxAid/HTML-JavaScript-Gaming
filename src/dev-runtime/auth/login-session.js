@@ -1,11 +1,10 @@
 import {
-  getMockDbSessionMode,
-  getMockDbSessionUser,
-  getMockDbSessionUsers,
-  getStandaloneMockDbTables,
-  setMockDbSessionMode,
-  setMockDbSessionUser,
-} from "../persistence/mock-db-store.js";
+  getSessionCurrent,
+  getSessionModes,
+  getSessionUsers,
+  setSessionMode,
+  setSessionUser,
+} from "../../engine/api/session-api-client.js";
 
 const modeButtons = Array.from(document.querySelectorAll("[data-login-mode]"));
 const modeTitle = document.querySelector("[data-login-mode-title]");
@@ -28,6 +27,18 @@ function updateContinueLink() {
   if (continueLink) {
     continueLink.href = currentReturnTo();
   }
+}
+
+function dispatchSessionChanged() {
+  window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
+    detail: getSessionCurrent(),
+  }));
+}
+
+function dispatchModeChanged() {
+  window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-mode-changed", {
+    detail: getSessionCurrent(),
+  }));
 }
 
 function setSelectedButton(button, selected) {
@@ -60,10 +71,9 @@ function renderUserButtons(mode) {
     return;
   }
 
-  getStandaloneMockDbTables();
   userControls.hidden = false;
-  const sessionUser = getMockDbSessionUser();
-  getMockDbSessionUsers().forEach((user) => {
+  const sessionUser = getSessionCurrent();
+  getSessionUsers().forEach((user) => {
     const button = document.createElement("button");
     button.className = "btn btn--compact";
     button.type = "button";
@@ -80,7 +90,8 @@ function renderUserButtons(mode) {
 }
 
 function render() {
-  const mode = getMockDbSessionMode();
+  const session = getSessionCurrent();
+  const mode = getSessionModes().find((item) => item.id === session.mode) || { id: session.mode, label: session.mode, description: "" };
   renderModeButtons(mode);
   if (modeTitle) {
     modeTitle.textContent = mode.label;
@@ -97,10 +108,8 @@ function render() {
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const mode = setMockDbSessionMode(button.dataset.loginMode || "local");
-    if (mode.id === "local") {
-      getStandaloneMockDbTables();
-    }
+    setSessionMode(button.dataset.loginMode || "local");
+    dispatchModeChanged();
     render();
   });
 });
@@ -110,9 +119,9 @@ userControls?.addEventListener("click", (event) => {
   if (!button) {
     return;
   }
-  setMockDbSessionMode("local");
-  getStandaloneMockDbTables();
-  setMockDbSessionUser(button.dataset.loginUser || "");
+  setSessionMode("local");
+  setSessionUser(button.dataset.loginUser || "");
+  dispatchSessionChanged();
   render();
 });
 

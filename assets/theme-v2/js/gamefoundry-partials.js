@@ -107,9 +107,6 @@
         "account", "company", "community", "legal",
         "admin", "docs", "games", "learn", "marketplace", "toolbox"
     ]);
-    const mockDbStorageKey = "gamefoundry.mockDb.v1";
-    const mockDbSessionStorageKey = "gamefoundry.mockDb.sessionUser.v1";
-    const mockDbSessionModeStorageKey = "gamefoundry.mockDb.sessionMode.v1";
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
@@ -151,110 +148,33 @@
         });
     }
 
-    function readMockDbState() {
-        try {
-            const raw = window.localStorage.getItem(mockDbStorageKey);
-            return raw ? JSON.parse(raw) : null;
-        } catch {
-            return null;
-        }
-    }
-
-    function selectedLocalSessionKey() {
-        try {
-            return window.localStorage.getItem(mockDbSessionStorageKey) || "";
-        } catch {
-            return "";
-        }
-    }
-
-    function selectedSessionModeId() {
-        try {
-            return window.localStorage.getItem(mockDbSessionModeStorageKey) || "local";
-        } catch {
-            return "local";
-        }
-    }
-
-    function rolesForUser(state, userKey) {
-        const rows = state?.tables?.user_roles || [];
-        const roles = new Map((state?.tables?.roles || []).map(function (role) {
-            return [role.key, role.roleSlug || role.name];
-        }));
-        return rows
-            .filter(function (row) {
-                return row.userKey === userKey && roles.has(row.roleKey);
-            })
-            .map(function (row) {
-                return roles.get(row.roleKey);
-            })
-            .filter(Boolean);
-    }
-
     function localDevLoginState() {
-        if (selectedSessionModeId() === "dev") {
+        try {
+            const request = new XMLHttpRequest();
+            request.open("GET", "/api/session/current", false);
+            request.setRequestHeader("Accept", "application/json");
+            request.send(null);
+            const payload = request.responseText ? JSON.parse(request.responseText) : null;
+            if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
+                throw new Error(payload?.error || "Session API did not return a valid current session.");
+            }
+            const session = payload?.data || {};
+            return {
+                authenticated: Boolean(session.authenticated),
+                diagnostic: session.diagnostic || "",
+                displayName: session.authenticated ? session.displayName || session.label || "Account" : "Login",
+                mode: session.mode || "local",
+                roleSlugs: Array.isArray(session.roleSlugs) ? session.roleSlugs : []
+            };
+        } catch (error) {
             return {
                 authenticated: false,
-                diagnostic: "DEV mode uses read-only/demo JSON access. Switch to Local to use persisted Memory DB sessions.",
+                diagnostic: "Server session API is unavailable. Start the Local/DEV server API before using protected pages.",
                 displayName: "Login",
-                mode: "dev",
+                mode: "missing-api",
                 roleSlugs: []
             };
         }
-
-        const sessionUserKey = selectedLocalSessionKey();
-        if (!sessionUserKey) {
-            return {
-                authenticated: false,
-                diagnostic: "",
-                displayName: "Login",
-                mode: "local",
-                roleSlugs: []
-            };
-        }
-
-        const state = readMockDbState();
-        if (!state) {
-            return {
-                authenticated: false,
-                diagnostic: "Persisted Memory DB users and roles are not seeded. Open Login and choose Local to seed local users.",
-                displayName: "Login",
-                mode: "local",
-                roleSlugs: []
-            };
-        }
-
-        const user = (state?.tables?.users || []).find(function (record) {
-            return record.key === sessionUserKey && record.isActive !== false;
-        });
-        if (!user) {
-            return {
-                authenticated: false,
-                diagnostic: `Selected Local user key ${sessionUserKey} is missing from persisted Memory DB users.`,
-                displayName: "Login",
-                mode: "local",
-                roleSlugs: []
-            };
-        }
-
-        const roleSlugs = rolesForUser(state, sessionUserKey);
-        if (!roleSlugs.length) {
-            return {
-                authenticated: false,
-                diagnostic: `Selected Local user ${user.displayName || sessionUserKey} has no persisted Memory DB roles.`,
-                displayName: "Login",
-                mode: "local",
-                roleSlugs: []
-            };
-        }
-
-        return {
-            authenticated: true,
-            diagnostic: "",
-            displayName: user.displayName || sessionUserKey,
-            mode: "local",
-            roleSlugs
-        };
     }
 
     function directSubMenu(navItem) {
@@ -438,7 +358,10 @@
     function logoutCurrentSession(event) {
         event.preventDefault();
         try {
-            window.localStorage.removeItem(mockDbSessionStorageKey);
+            const request = new XMLHttpRequest();
+            request.open("POST", "/api/session/logout", false);
+            request.setRequestHeader("Accept", "application/json");
+            request.send(null);
             window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
                 detail: {
                     authenticated: false,

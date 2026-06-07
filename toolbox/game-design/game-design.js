@@ -2,10 +2,10 @@ import {
   GAME_DESIGN_GAME_TYPES,
   GAME_DESIGN_GENRES,
   GAME_DESIGN_PLAY_STYLES,
-  createGameDesignMockRepository
-} from "./game-design-mock-repository.js";
+  createGameDesignApiRepository
+} from "./game-design-api-client.js";
 
-const repository = createGameDesignMockRepository();
+const repository = createGameDesignApiRepository();
 const params = new URLSearchParams(window.location.search);
 const requestedProject = params.get("project");
 

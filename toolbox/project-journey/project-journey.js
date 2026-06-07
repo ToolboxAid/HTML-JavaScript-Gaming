@@ -2,11 +2,11 @@ import {
   PROJECT_JOURNEY_KEYS,
   PROJECT_JOURNEY_STATUS_BY_ID,
   PROJECT_JOURNEY_STATUSES,
-  createProjectJourneyMockRepository,
-} from "./project-journey-mock-repository.js";
+  createProjectJourneyApiRepository,
+} from "./project-journey-api-client.js";
 import { getActiveToolRegistry } from "../toolRegistry.js";
 
-const repository = createProjectJourneyMockRepository();
+const repository = createProjectJourneyApiRepository();
 const registryTools = getActiveToolRegistry();
 const params = new URLSearchParams(window.location.search);
 const DELETE_CONFIRMATION_MESSAGE = "It is best to keep the note unless it was created by mistake.";

@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { createMockApiRouter } from "../../src/dev-runtime/server/mock-api-router.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -89,9 +90,13 @@ async function writeAdminNotesDirectoryListing(absolutePath, response) {
 }
 
 export async function startRepoServer() {
+  const handleMockApiRequest = createMockApiRouter();
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
+      if (await handleMockApiRequest(request, response, requestUrl)) {
+        return;
+      }
       const decodedPath = decodeURIComponent(requestUrl.pathname);
       const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
       const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);

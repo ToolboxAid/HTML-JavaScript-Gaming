@@ -1,8 +1,8 @@
 import {
-  getAllPersistedMockDbSnapshot,
-  clearMockDbTables,
-  seedMockDbTables,
-} from "../persistence/mock-db-store.js";
+  clearMockDb,
+  getMockDbSnapshot,
+  seedMockDb,
+} from "../../engine/api/mock-db-api-client.js";
 
 const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
 const TOOL_GROUP_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
@@ -42,9 +42,9 @@ class AdminDbViewer {
       this.render();
     });
     this.clearButton?.addEventListener("click", () => {
-      const snapshot = getAllPersistedMockDbSnapshot();
+      const snapshot = getMockDbSnapshot();
       if (snapshot.cleared) {
-        seedMockDbTables();
+        seedMockDb();
         this.activeFilter = "all";
         this.render();
         return;
@@ -52,7 +52,7 @@ class AdminDbViewer {
       if (!window.confirm("Clear all shared Mock DB records?")) {
         return;
       }
-      clearMockDbTables();
+      clearMockDb();
       this.activeFilter = "all";
       this.render();
     });
@@ -116,7 +116,7 @@ class AdminDbViewer {
   }
 
   collectSnapshot() {
-    const snapshot = getAllPersistedMockDbSnapshot();
+    const snapshot = getMockDbSnapshot();
     const tables = snapshot.tables;
     const owners = snapshot.owners || {};
     const schemas = snapshot.schemas || {};

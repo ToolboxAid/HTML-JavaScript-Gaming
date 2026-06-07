@@ -17,12 +17,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 const standaloneSeedTables = getStandaloneMockDbSeedTables();
-const standaloneSeedState = {
-  cleared: false,
-  owners: Object.fromEntries(Object.keys(standaloneSeedTables).map((tableName) => [tableName, "standalone"])),
-  tables: standaloneSeedTables,
-  version: 3,
-};
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -67,19 +61,15 @@ async function openRepoPage(page, pathName, options = {}) {
   if (collectCoverage) {
     await workspaceV2CoverageReporter.start(page);
   }
-  await page.addInitScript(({ seedState, selectedUserKey, storageKey }) => {
-    if (!window.localStorage.getItem("gamefoundry.mockDb.v1")) {
-      window.localStorage.setItem("gamefoundry.mockDb.v1", JSON.stringify(seedState));
-    }
-    window.localStorage.setItem("gamefoundry.mockDb.sessionMode.v1", "local");
-    const current = window.localStorage.getItem(storageKey);
-    if (selectedUserKey && !current) {
-      window.localStorage.setItem(storageKey, selectedUserKey);
-    }
-  }, {
-    seedState: standaloneSeedState,
-    selectedUserKey: sessionUserKey,
-    storageKey: "gamefoundry.mockDb.sessionUser.v1",
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey: sessionUserKey || "" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
   });
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };
@@ -664,11 +654,12 @@ test("Project Journey supports Guest as the selected shared session user", async
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: My Notes (0 notes).");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
 
-    await page.evaluate(async (adminKey) => {
-      const db = await import("/src/dev-runtime/persistence/mock-db-store.js");
-      db.seedMockDbTables();
-      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", adminKey);
-    }, MOCK_DB_KEYS.users.admin);
+    await fetch(`${failures.server.baseUrl}/api/mock-db/seed`, { method: "POST" });
+    await fetch(`${failures.server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.admin }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
     await page.goto(`${failures.server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
     await page.getByRole("button", { name: "Project Journey" }).click();
@@ -677,12 +668,14 @@ test("Project Journey supports Guest as the selected shared session user", async
     await page.getByRole("button", { name: "User Roles" }).click();
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
 
-    await page.evaluate((userKey) => {
-      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", userKey);
-    }, MOCK_DB_KEYS.users.user3);
-    const user3TableReferences = await page.evaluate((user3Key) => {
-      const snapshot = JSON.parse(window.localStorage.getItem("gamefoundry.mockDb.v1") || "{}");
-      return Object.entries(snapshot.tables || {})
+    await fetch(`${failures.server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.user3 }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+    const user3TableReferences = await page.evaluate(async (user3Key) => {
+      const snapshot = await fetch("/api/mock-db/snapshot").then((response) => response.json());
+      return Object.entries(snapshot.data.tables || {})
         .filter(([, rows]) => Array.isArray(rows) && rows.some((record) =>
           Object.values(record).includes(user3Key),
         ))
@@ -746,9 +739,11 @@ test("Project Journey search filters notes, tree items, and visible counts", asy
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("0");
     await expect(page.locator("[data-journey-item-tree]")).not.toContainText("Resolve final validation lane ownership");
 
-    await page.evaluate((userKey) => {
-      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", userKey);
-    }, MOCK_DB_KEYS.users.user2);
+    await fetch(`${failures.server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.user2 }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
     await page.goto(`${failures.server.baseUrl}/toolbox/project-journey/index.html?project=demo-project`, { waitUntil: "networkidle" });
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 2");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");

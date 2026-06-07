@@ -2,12 +2,12 @@ import {
   PROJECT_WORKSPACE_MEMBER_ROLES,
   PROJECT_WORKSPACE_PROJECT_PURPOSES,
   PROJECT_WORKSPACE_PROJECT_STATUSES,
-  createProjectWorkspaceMockRepository,
-} from "./project-workspace-mock-repository.js";
+  createProjectWorkspaceApiRepository,
+} from "./project-workspace-api-client.js";
 
 const CREATOR_USER_ID = "creator-user";
 
-const repository = createProjectWorkspaceMockRepository();
+const repository = createProjectWorkspaceApiRepository();
 repository.resetProjectData();
 
 const elements = {

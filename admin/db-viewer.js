@@ -1,5 +1,3 @@
-const MOCK_DB_SESSION_MODE_STORAGE_KEY = "gamefoundry.mockDb.sessionMode.v1";
-
 function devRuntimeAllowed() {
   const host = window.location.hostname;
   return window.GameFoundryDevRuntime?.enabled === true ||
@@ -10,7 +8,12 @@ function devRuntimeAllowed() {
 
 function localModeSelected() {
   try {
-    return (window.localStorage.getItem(MOCK_DB_SESSION_MODE_STORAGE_KEY) || "local") === "local";
+    const request = new XMLHttpRequest();
+    request.open("GET", "/api/session/current", false);
+    request.setRequestHeader("Accept", "application/json");
+    request.send(null);
+    const payload = request.responseText ? JSON.parse(request.responseText) : null;
+    return request.status >= 200 && request.status < 300 && payload?.data?.mode === "local";
   } catch {
     return false;
   }

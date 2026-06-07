@@ -1,16 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-
-const standaloneSeedTables = getStandaloneMockDbSeedTables();
-const standaloneSeedState = {
-  cleared: false,
-  owners: Object.fromEntries(Object.keys(standaloneSeedTables).map((tableName) => [tableName, "standalone"])),
-  tables: standaloneSeedTables,
-  version: 3,
-};
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -50,24 +42,21 @@ async function openRepoPage(page, pathName, options = {}) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  await page.addInitScript(({ seedStandalone, seedState, sessionModeId, sessionUserKey }) => {
-    if (seedStandalone && !window.localStorage.getItem("gamefoundry.mockDb.v1")) {
-      window.localStorage.setItem("gamefoundry.mockDb.v1", JSON.stringify(seedState));
-    }
-    if (sessionModeId) {
-      window.localStorage.setItem("gamefoundry.mockDb.sessionMode.v1", sessionModeId);
-    }
-    if (sessionUserKey) {
-      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", sessionUserKey);
-    } else {
-      window.localStorage.removeItem("gamefoundry.mockDb.sessionUser.v1");
-    }
-  }, {
-    seedStandalone: Boolean(options.seedStandalone),
-    seedState: options.seedState || standaloneSeedState,
-    sessionModeId: options.sessionModeId || "local",
-    sessionUserKey: options.sessionUserKey || "",
+  if (options.clearDb) {
+    await fetch(`${server.baseUrl}/api/mock-db/clear`, { method: "POST" });
+  }
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: options.sessionModeId || "local" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
   });
+  if ((options.sessionModeId || "local") !== "dev" && options.sessionUserKey !== undefined) {
+    await fetch(`${server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: options.sessionUserKey || "" }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+  }
 
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
@@ -87,13 +76,15 @@ async function closeWithCoverage(page, failures) {
 
 async function mockDbSessionSnapshot(page) {
   return page.evaluate(async () => {
-    const db = await import("/src/dev-runtime/persistence/mock-db-store.js");
-    const tables = db.getStandaloneMockDbTables();
+    const [session, db] = await Promise.all([
+      fetch("/api/session/current").then((response) => response.json()),
+      fetch("/api/mock-db/snapshot").then((response) => response.json()),
+    ]);
     return {
-      mode: db.getMockDbSessionMode(),
-      persistenceEnabled: db.mockDbPersistenceEnabled(),
-      sessionUser: db.getMockDbSessionUser(),
-      userNames: tables.users.map((user) => user.displayName),
+      mode: { id: session.data.mode },
+      persistenceEnabled: session.data.mode === "local",
+      sessionUser: session.data,
+      userNames: (db.data.tables.users || []).map((user) => user.displayName),
     };
   });
 }
@@ -170,6 +161,7 @@ test("Protected pages block direct URL access without the required Local session
   }
 
   failures = await openRepoPage(page, "/admin/site-settings.html", {
+    clearDb: true,
     sessionUserKey: MOCK_DB_KEYS.users.admin,
   });
 
@@ -177,7 +169,7 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
-    await expect(page.locator("[data-session-access-status]")).toContainText("Login/session diagnostic: Persisted Memory DB users and roles are not seeded.");
+    await expect(page.locator("[data-session-access-status]")).toContainText("Login/session diagnostic: Selected Local user key");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
     await expectNoPageFailures(failures);
@@ -289,9 +281,9 @@ test("Account logout clears only the current session and blocks protected pages"
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
 
-    const storedUsers = await page.evaluate(() => {
-      const snapshot = JSON.parse(window.localStorage.getItem("gamefoundry.mockDb.v1") || "{}");
-      return (snapshot.tables?.users || []).map((user) => user.displayName);
+    const storedUsers = await page.evaluate(async () => {
+      const snapshot = await fetch("/api/mock-db/snapshot").then((response) => response.json());
+      return (snapshot.data.tables.users || []).map((user) => user.displayName);
     });
     expect(storedUsers).toEqual(["User 1", "User 2", "User 3", "Admin", "forge-bot"]);
 
