@@ -99,7 +99,7 @@ test("Admin Tools Progress links routed tools and marks route-less tools as plan
 });
 
 test("Toolbox card names link to registered tool routes without duplicating launch actions", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=admin");
+  const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     const cards = page.locator("main [data-tools-accordion-list] article.control-card");
@@ -138,13 +138,13 @@ test("Toolbox card names link to registered tool routes without duplicating laun
 });
 
 test("Tool Display Mode renders build-order previous and next controls", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-design/index.html?role=user");
+  const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
 
   try {
     await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: Project Journey");
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/project-journey/index.html?role=user");
+    await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/project-journey/index.html");
     await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Game Configuration");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/game-configuration/index.html?role=user");
+    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/game-configuration/index.html");
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -153,13 +153,13 @@ test("Tool Display Mode renders build-order previous and next controls", async (
 });
 
 test("Project Workspace Tool Display Mode follows registry build order", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html?role=user");
+  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
 
   try {
     await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: AI Assistant");
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/ai-assistant/index.html?role=user");
+    await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/ai-assistant/index.html");
     await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Project Journey");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/project-journey/index.html?role=user");
+    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/project-journey/index.html");
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -168,16 +168,16 @@ test("Project Workspace Tool Display Mode follows registry build order", async (
 });
 
 test("multi-path next control routes to Toolbox Group view and preserves role", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html?role=admin");
+  const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
 
   try {
     const nextControl = page.locator("[data-tool-nav-next]");
     await expect(nextControl).toHaveText("Next: Design Tools");
     await expect(nextControl).toHaveAttribute("data-tool-nav-group", "design");
-    await expect(nextControl).toHaveAttribute("href", "toolbox/index.html?view=group&group=design&role=admin");
+    await expect(nextControl).toHaveAttribute("href", "toolbox/index.html?view=group&group=design");
 
     await nextControl.click();
-    await page.waitForURL(/\/toolbox\/index\.html\?view=group&group=design&role=admin$/);
+    await page.waitForURL(/\/toolbox\/index\.html\?view=group&group=design$/);
     await page.waitForLoadState("networkidle");
     await expect(page.getByRole("button", { name: "Group" })).toHaveAttribute("aria-pressed", "true");
 

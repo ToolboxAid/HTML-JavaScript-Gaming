@@ -220,7 +220,7 @@ test("Game Design authors capability demos as Project Workspace projects", async
 });
 
 test("Toolbox Build Path view shows the Game Design handoff", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
+  const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);

@@ -213,6 +213,25 @@ The Mock DB viewer must render live adapter state and table schemas, including e
 
 Audit ownership is users-only: every shared table record uses `key`, `createdAt`, `updatedAt`, `createdBy`, and `updatedBy`; the ownership fields reference `users.key`. Roles are modeled with `roles` and `user_roles`.
 
+## DEV RUNTIME BOUNDARY
+
+All mock/dev-only runtime implementation must live under `src/dev-runtime/`.
+
+Required dev-runtime folders:
+- `src/dev-runtime/auth/`
+- `src/dev-runtime/persistence/`
+- `src/dev-runtime/admin/`
+- `src/dev-runtime/testing/`
+- `src/dev-runtime/guest-seeds/`
+
+Rules:
+- UAT/PROD must never import, bundle, or deploy `src/dev-runtime/`.
+- Active tools must use declared runtime contracts and must not import `src/dev-runtime/` directly.
+- Dev-only adapters may be exposed through existing dev/runtime contract shims only when the deployment boundary keeps `src/dev-runtime/` out of UAT/PROD bundles.
+- No fallback auth, session, user, admin, or system user data is allowed.
+- Local session state must resolve selected users and roles from persisted Memory DB `users`, `roles`, and `user_roles` records.
+- Missing users or roles must fail visibly with actionable diagnostics.
+
 ## ARCHIVED V1/V2 REFERENCE MATERIAL
 
 Deprecated V1/V2 reference material lives under:

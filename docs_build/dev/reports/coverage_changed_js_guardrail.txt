@@ -8,8 +8,9 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 Changed runtime JS files considered:
 (70%) toolbox/colors/palette-workspace-repository.js - executed lines 1316/1316; executed functions 89/127
 (81%) toolbox/assets/assets-mock-repository.js - executed lines 919/919; executed functions 61/75
-(93%) src/engine/persistence/mock-db-store.js - executed lines 666/666; executed functions 66/71
+(95%) src/dev-runtime/persistence/mock-db-store.js - executed lines 682/682; executed functions 77/81
 (98%) toolbox/project-journey/project-journey.js - executed lines 991/991; executed functions 105/107
+(100%) src/engine/persistence/mock-db-store.js - executed lines 1/1; executed functions 1/1
 
 Guardrail warnings:
 (100%) none - no changed runtime JS coverage warnings

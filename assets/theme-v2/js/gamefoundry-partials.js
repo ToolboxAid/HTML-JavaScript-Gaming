@@ -114,29 +114,6 @@
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
 
-    function makeMockUlid(sequence) {
-        return "01K2GFSJ0Y" + String(sequence).padStart(16, "0");
-    }
-
-    const localSessionUsers = {
-        user1: {
-            displayName: "User 1",
-            userKey: makeMockUlid(51)
-        },
-        user2: {
-            displayName: "User 2",
-            userKey: makeMockUlid(52)
-        },
-        user3: {
-            displayName: "User 3",
-            userKey: makeMockUlid(53)
-        },
-        admin: {
-            displayName: "Admin",
-            userKey: makeMockUlid(54)
-        }
-    };
-
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
         return new URL(path.replace(/^assets\//, ""), assetRoot).href;
@@ -183,11 +160,11 @@
         }
     }
 
-    function selectedLocalSessionId() {
+    function selectedLocalSessionKey() {
         try {
-            return window.localStorage.getItem(mockDbSessionStorageKey) || "guest";
+            return window.localStorage.getItem(mockDbSessionStorageKey) || "";
         } catch {
-            return "guest";
+            return "";
         }
     }
 
@@ -218,16 +195,15 @@
         if (selectedSessionModeId() === "dev") {
             return {
                 authenticated: false,
-                diagnostic: "",
+                diagnostic: "DEV mode uses read-only/demo JSON access. Switch to Local to use persisted Memory DB sessions.",
                 displayName: "Login",
                 mode: "dev",
                 roleSlugs: []
             };
         }
 
-        const sessionId = selectedLocalSessionId();
-        const session = localSessionUsers[sessionId];
-        if (!session) {
+        const sessionUserKey = selectedLocalSessionKey();
+        if (!sessionUserKey) {
             return {
                 authenticated: false,
                 diagnostic: "",
@@ -241,9 +217,7 @@
         if (!state) {
             return {
                 authenticated: false,
-                diagnostic: sessionId === "guest"
-                    ? ""
-                    : "Persisted Memory DB users and roles are not seeded. Open Login and choose Local to seed local users.",
+                diagnostic: "Persisted Memory DB users and roles are not seeded. Open Login and choose Local to seed local users.",
                 displayName: "Login",
                 mode: "local",
                 roleSlugs: []
@@ -251,23 +225,23 @@
         }
 
         const user = (state?.tables?.users || []).find(function (record) {
-            return record.key === session.userKey && record.isActive !== false;
+            return record.key === sessionUserKey && record.isActive !== false;
         });
         if (!user) {
             return {
                 authenticated: false,
-                diagnostic: `Selected Local user ${session.displayName} is missing from persisted Memory DB users.`,
+                diagnostic: `Selected Local user key ${sessionUserKey} is missing from persisted Memory DB users.`,
                 displayName: "Login",
                 mode: "local",
                 roleSlugs: []
             };
         }
 
-        const roleSlugs = rolesForUser(state, session.userKey);
+        const roleSlugs = rolesForUser(state, sessionUserKey);
         if (!roleSlugs.length) {
             return {
                 authenticated: false,
-                diagnostic: `Selected Local user ${session.displayName} has no persisted Memory DB roles.`,
+                diagnostic: `Selected Local user ${user.displayName || sessionUserKey} has no persisted Memory DB roles.`,
                 displayName: "Login",
                 mode: "local",
                 roleSlugs: []
@@ -277,7 +251,7 @@
         return {
             authenticated: true,
             diagnostic: "",
-            displayName: user?.displayName || session.displayName,
+            displayName: user.displayName || sessionUserKey,
             mode: "local",
             roleSlugs
         };

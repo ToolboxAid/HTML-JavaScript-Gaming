@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -50,15 +50,15 @@ async function openRepoPage(page, pathName, options = {}) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  await page.addInitScript(({ seedStandalone, seedState, sessionModeId, sessionUserId }) => {
+  await page.addInitScript(({ seedStandalone, seedState, sessionModeId, sessionUserKey }) => {
     if (seedStandalone && !window.localStorage.getItem("gamefoundry.mockDb.v1")) {
       window.localStorage.setItem("gamefoundry.mockDb.v1", JSON.stringify(seedState));
     }
     if (sessionModeId) {
       window.localStorage.setItem("gamefoundry.mockDb.sessionMode.v1", sessionModeId);
     }
-    if (sessionUserId) {
-      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", sessionUserId);
+    if (sessionUserKey) {
+      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", sessionUserKey);
     } else {
       window.localStorage.removeItem("gamefoundry.mockDb.sessionUser.v1");
     }
@@ -66,7 +66,7 @@ async function openRepoPage(page, pathName, options = {}) {
     seedStandalone: Boolean(options.seedStandalone),
     seedState: options.seedState || standaloneSeedState,
     sessionModeId: options.sessionModeId || "local",
-    sessionUserId: options.sessionUserId || "guest",
+    sessionUserKey: options.sessionUserKey || "",
   });
 
   await workspaceV2CoverageReporter.start(page);
@@ -133,8 +133,8 @@ test("Login page switches DEV and Local modes without storing Guest as a user", 
 
     await page.locator("[data-login-mode='local']").click();
     await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
-    await page.locator("[data-login-user='user1']").click();
-    await expect(page.locator("[data-login-user='user1']")).toHaveClass(/primary/);
+    await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`).click();
+    await expect(page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`)).toHaveClass(/primary/);
     await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 1.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
@@ -142,8 +142,8 @@ test("Login page switches DEV and Local modes without storing Guest as a user", 
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
 
-    await page.locator("[data-login-user='guest']").click();
-    await expect(page.locator("[data-login-user='guest']")).toHaveClass(/primary/);
+    await page.getByRole("button", { name: "Guest" }).click();
+    await expect(page.getByRole("button", { name: "Guest" })).toHaveClass(/primary/);
     await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
 
@@ -155,7 +155,7 @@ test("Login page switches DEV and Local modes without storing Guest as a user", 
 
 test("Protected pages block direct URL access without the required Local session role", async ({ page }) => {
   let failures = await openRepoPage(page, "/admin/site-settings.html", {
-    sessionUserId: "guest",
+    sessionUserKey: "",
   });
 
   try {
@@ -170,7 +170,7 @@ test("Protected pages block direct URL access without the required Local session
   }
 
   failures = await openRepoPage(page, "/admin/site-settings.html", {
-    sessionUserId: "admin",
+    sessionUserKey: MOCK_DB_KEYS.users.admin,
   });
 
   try {
@@ -185,9 +185,27 @@ test("Protected pages block direct URL access without the required Local session
     await closeWithCoverage(page, failures);
   }
 
+  failures = await openRepoPage(page, "/admin/db-viewer.html", {
+    seedStandalone: true,
+    sessionModeId: "dev",
+    sessionUserKey: MOCK_DB_KEYS.users.admin,
+  });
+
+  try {
+    await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
+    await expect(page.locator("[data-session-access-status]")).toContainText("DEV mode uses read-only/demo JSON access.");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("[data-admin-db-viewer]")).toHaveCount(0);
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+
   failures = await openRepoPage(page, "/admin/site-settings.html", {
     seedStandalone: true,
-    sessionUserId: "user1",
+    sessionUserKey: MOCK_DB_KEYS.users.user1,
   });
 
   try {
@@ -202,7 +220,7 @@ test("Protected pages block direct URL access without the required Local session
   }
 
   failures = await openRepoPage(page, "/account/profile.html", {
-    sessionUserId: "guest",
+    sessionUserKey: "",
   });
 
   try {
@@ -219,7 +237,7 @@ test("Protected pages block direct URL access without the required Local session
 test("Local users unlock their allowed Account and Admin pages", async ({ page }) => {
   let failures = await openRepoPage(page, "/account/profile.html", {
     seedStandalone: true,
-    sessionUserId: "user1",
+    sessionUserKey: MOCK_DB_KEYS.users.user1,
   });
 
   try {
@@ -237,7 +255,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
 
   failures = await openRepoPage(page, "/admin/site-settings.html", {
     seedStandalone: true,
-    sessionUserId: "admin",
+    sessionUserKey: MOCK_DB_KEYS.users.admin,
   });
 
   try {
@@ -256,7 +274,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
 test("Account logout clears only the current session and blocks protected pages", async ({ page }) => {
   const failures = await openRepoPage(page, "/account/profile.html", {
     seedStandalone: true,
-    sessionUserId: "user1",
+    sessionUserKey: MOCK_DB_KEYS.users.user1,
   });
 
   try {
@@ -295,7 +313,7 @@ test("Account logout clears only the current session and blocks protected pages"
 
 test("Guest can explore allowed Toolbox pages without persistence access", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project", {
-    sessionUserId: "guest",
+    sessionUserKey: "",
   });
 
   try {

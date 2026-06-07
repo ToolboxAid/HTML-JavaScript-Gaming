@@ -94,7 +94,7 @@ async function expectToolCenterAccordionFlex(page) {
 }
 
 test("Publish Tool Center fullscreen accordions share height and keep summaries fixed", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/publish/index.html?role=user");
+  const failures = await openRepoPage(page, "/toolbox/publish/index.html");
 
   try {
     await expect(page.locator("body")).not.toHaveClass(/tool-focus-mode/);

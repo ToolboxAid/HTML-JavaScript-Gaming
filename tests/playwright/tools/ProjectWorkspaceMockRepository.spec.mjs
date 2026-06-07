@@ -324,7 +324,7 @@ test("Learn Getting Started documents screen and layout guidance", async ({ page
 });
 
 test("Toolbox member-role filters focus tools without exposing admin-only controls", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
+  const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 5/38");
@@ -336,7 +336,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Testing$/ }) })).toHaveCount(0);
 
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Designer`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Designer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Designer']")).toBeVisible();
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 5/38");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Workspace$/ }) })).toBeVisible();
@@ -348,7 +348,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Audio$/ }) })).toHaveCount(0);
     await expect(page.getByText("Unavailable tools are hidden by role focus, not by security enforcement.")).toBeVisible();
 
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Audio%20Creator`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Audio%20Creator`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Audio Creator']")).toBeVisible();
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 1/38");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
@@ -356,7 +356,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^MIDI$/ }) })).toHaveCount(0);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toHaveCount(0);
 
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user&memberRole=Viewer`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Viewer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Viewer']")).toBeVisible();
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 5/38");
     await expect(page.getByText("Viewer focus shows preview-safe read-only tiles only.")).toBeVisible();
@@ -366,7 +366,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Debug$/ }) })).toHaveCount(0);
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 38/38");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Cloud$/ }) })).toBeVisible();
 

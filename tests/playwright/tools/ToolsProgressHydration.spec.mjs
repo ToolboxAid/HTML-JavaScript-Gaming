@@ -131,7 +131,7 @@ test("Toolbox status cards consume Admin Tools Progress metadata", async ({ page
     const adminRows = await toolsProgressRows(page);
     const statusByTool = new Map(adminRows.map((row) => [row.tool, row.status]));
 
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     for (const toolName of ["Project Workspace", "Game Configuration", "Build Game", "Cloud"]) {
       const card = page.locator("main .control-card").filter({
         has: page.locator("h3", { hasText: new RegExp(`^${toolName}$`) })
@@ -140,7 +140,7 @@ test("Toolbox status cards consume Admin Tools Progress metadata", async ({ page
     }
     await expect(page.locator("[data-toolbox-status-diagnostic]")).toHaveCount(0);
 
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     const normalStatuses = await page.locator("[data-toolbox-readiness]").evaluateAll((statuses) => statuses.map((status) => status.textContent.trim()));
     expect(normalStatuses).toEqual(["Ready", "Ready", "Ready", "Ready"]);
     expect(normalStatuses.every((status) => status === "Ready")).toBe(true);
@@ -178,7 +178,7 @@ test("restored group colors propagate to Admin Tools Progress and Toolbox Group 
       await expect(row).toHaveClass(new RegExp(`(^|\\s)${colorGroup}(\\s|$)`));
     }
 
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Group" }).click();
     const groupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
@@ -206,7 +206,7 @@ test("restored group colors propagate to Admin Tools Progress and Toolbox Group 
 });
 
 test("Project Build Path remains project-specific workflow order separate from Tools Progress", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=user&memberRole=Audio%20Creator");
+  const failures = await openRepoPage(page, "/toolbox/index.html?memberRole=Audio%20Creator");
 
   try {
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);

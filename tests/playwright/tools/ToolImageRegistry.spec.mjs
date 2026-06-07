@@ -126,7 +126,7 @@ test("registry diagnostics identify missing approved image assets", () => {
 
 test("Toolbox cards consume registry image sources and expose visible image diagnostics", async ({ page }) => {
   const gameDesign = getToolById("game-design");
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=admin");
+  const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     const card = page.locator("article.control-card").filter({
@@ -157,10 +157,10 @@ test("Toolbox cards consume registry image sources and expose visible image diag
 
 test("representative tool pages consume registry images in Tool Display Mode", async ({ page }) => {
   const toolCases = [
-    { path: "/toolbox/project-workspace/index.html?role=user", toolId: "project-workspace" },
-    { path: "/toolbox/game-design/index.html?role=user", toolId: "game-design" },
-    { path: "/toolbox/game-configuration/index.html?role=user", toolId: "game-configuration" },
-    { path: "/toolbox/build-game/index.html?role=user", toolId: "build-game" }
+    { path: "/toolbox/project-workspace/index.html", toolId: "project-workspace" },
+    { path: "/toolbox/game-design/index.html", toolId: "game-design" },
+    { path: "/toolbox/game-configuration/index.html", toolId: "game-configuration" },
+    { path: "/toolbox/build-game/index.html", toolId: "build-game" }
   ];
   const failures = await openRepoPage(page, toolCases[0].path);
 

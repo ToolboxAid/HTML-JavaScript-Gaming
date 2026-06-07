@@ -73,8 +73,8 @@ function renderUserButtons(mode) {
     button.className = "btn btn--compact";
     button.type = "button";
     button.textContent = user.label;
-    button.dataset.loginUser = user.id;
-    setSelectedButton(button, button.dataset.loginUser === sessionUser.id);
+    button.dataset.loginUser = user.userKey || "";
+    setSelectedButton(button, (user.userKey || "") === (sessionUser.userKey || ""));
     userControls.append(button);
   });
   if (userStatus) {
@@ -117,7 +117,7 @@ userControls?.addEventListener("click", (event) => {
   }
   setMockDbSessionMode("local");
   getStandaloneMockDbTables();
-  setMockDbSessionUser(button.dataset.loginUser || "guest");
+  setMockDbSessionUser(button.dataset.loginUser || "");
   render();
 });
 

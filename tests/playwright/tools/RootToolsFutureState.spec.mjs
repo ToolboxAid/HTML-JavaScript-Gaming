@@ -207,11 +207,11 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(hrefs.filter((href) => href && /(^|\/|\.\.\/)tools\/old_/.test(href))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
 
-    await page.goto(`${server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-    await page.goto(`${server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 37/37");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
@@ -266,10 +266,10 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-    await page.goto(`${server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-    await page.goto(`${server.baseUrl}/toolbox/index.html?role=guest`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
@@ -499,7 +499,7 @@ test("representative active tool pages align center cleanup and registry group c
     "tool-group-platform",
     "tool-group-play"
   ];
-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?role=admin&view=group");
+  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
 
   try {
     await page.getByRole("button", { name: "Group" }).click();

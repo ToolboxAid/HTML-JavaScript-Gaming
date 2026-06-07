@@ -72,7 +72,7 @@ async function buildPathRows(page) {
 }
 
 test("Toolbox removes Progress view and renders Build Path workflow table", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
+  const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
@@ -112,7 +112,7 @@ test("Toolbox removes Progress view and renders Build Path workflow table", asyn
 });
 
 test("Build Path shows N/A only for non-required contributor-focused tools", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=user&memberRole=Audio%20Creator");
+  const failures = await openRepoPage(page, "/toolbox/index.html?memberRole=Audio%20Creator");
 
   try {
     await page.getByRole("button", { name: "Build Path" }).click();
@@ -137,7 +137,7 @@ test("Build Path shows N/A only for non-required contributor-focused tools", asy
 });
 
 test("Build Path tool names link to registered routes and render badge images", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=admin");
+  const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     await page.getByRole("button", { name: "Build Path" }).click();

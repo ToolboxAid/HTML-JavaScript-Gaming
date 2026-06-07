@@ -1,8 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { PROJECT_JOURNEY_KEYS } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
 import { createAssetToolMockRepository } from "../../../toolbox/assets/assets-mock-repository.js";
 import { createProjectWorkspacePaletteRepository } from "../../../toolbox/colors/palette-workspace-repository.js";
-import { getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -34,7 +33,7 @@ test.afterAll(async () => {
 
 async function openRepoPage(page, pathName, options = {}) {
   const server = await startRepoServer();
-  const sessionUserId = options.sessionUserId === undefined ? "admin" : options.sessionUserId;
+  const sessionUserKey = options.sessionUserKey === undefined ? MOCK_DB_KEYS.users.admin : options.sessionUserKey;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -56,21 +55,21 @@ async function openRepoPage(page, pathName, options = {}) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  if (sessionUserId !== undefined) {
-    await page.addInitScript(({ selectedUserId, seedState, storageKey }) => {
+  if (sessionUserKey !== undefined) {
+    await page.addInitScript(({ selectedUserKey, seedState, storageKey }) => {
       if (!window.localStorage.getItem("gamefoundry.mockDb.v1")) {
         window.localStorage.setItem("gamefoundry.mockDb.v1", JSON.stringify(seedState));
       }
       window.localStorage.setItem("gamefoundry.mockDb.sessionMode.v1", "local");
       const current = window.localStorage.getItem(storageKey);
-      if (selectedUserId && !current) {
-        window.localStorage.setItem(storageKey, selectedUserId);
-      } else if (!selectedUserId) {
+      if (selectedUserKey && !current) {
+        window.localStorage.setItem(storageKey, selectedUserKey);
+      } else if (!selectedUserKey) {
         window.localStorage.removeItem(storageKey);
       }
     }, {
       seedState: standaloneSeedState,
-      selectedUserId: sessionUserId,
+      selectedUserKey: sessionUserKey,
       storageKey: "gamefoundry.mockDb.sessionUser.v1",
     });
   }
@@ -174,11 +173,6 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     await expect(page.locator(`[data-admin-db-filter='${REMOVED_IDENTITY_TABLE}']`)).toHaveCount(0);
 
     for (const tableName of [
-      "project_journey_activity",
-      "project_journey_items",
-      "project_journey_note_types",
-      "project_journey_notes",
-      "project_journey_templates",
       "roles",
       "user_roles",
       "users",
@@ -186,6 +180,20 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
       const keyCell = page.locator(`[data-admin-db-table="${tableName}"] tbody tr`).first().locator("td").first();
       await expect(keyCell).toHaveText(/^[0-9A-HJKMNP-TV-Z]{10}$/);
       await expect(keyCell).toHaveAttribute("title", ULID_PATTERN);
+    }
+
+    for (const tableName of [
+      "project_journey_activity",
+      "project_journey_items",
+      "project_journey_note_types",
+      "project_journey_notes",
+      "project_journey_templates",
+      "palette_colors",
+      "palette_source_swatches",
+      "asset_library_items",
+      "asset_storage_objects",
+    ]) {
+      await expect(page.locator(`[data-admin-db-table='${tableName}']`)).toContainText("No records in this table.");
     }
 
     const itemHeaders = await page.locator("[data-admin-db-table='project_journey_items'] thead th").allTextContents();
@@ -207,14 +215,6 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     expect(itemHeaders).not.toEqual(expect.arrayContaining(["CREATEDAT", "UPDATEDAT"]));
     const createdAtHeader = page.locator("[data-admin-db-table='project_journey_items'] thead th", { hasText: "createdAt" });
     await expect(createdAtHeader).toHaveCSS("text-transform", "none");
-    const designItemRow = page.locator(`[data-admin-db-record="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`);
-    await expect(designItemRow.locator("td").first()).toHaveText(PROJECT_JOURNEY_KEYS.items.designAffordance.slice(0, 10));
-    await expect(designItemRow.locator("td").first()).toHaveAttribute("title", PROJECT_JOURNEY_KEYS.items.designAffordance);
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText(PROJECT_JOURNEY_KEYS.items.designAffordance.slice(0, 10));
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).not.toContainText(PROJECT_JOURNEY_KEYS.items.designAffordance);
-    await expect(page.locator("[data-admin-db-table='project_journey_templates']")).toContainText(PROJECT_JOURNEY_KEYS.templates.paletteAffordance.slice(0, 10));
-    await expect(page.locator("[data-admin-db-table='project_journey_note_types']")).toContainText("Design");
-    await expect(page.locator("[data-admin-db-table='project_journey_activity']")).toContainText("Palette and Input Density updated by User 1");
 
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 1");
@@ -236,10 +236,10 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
       "No stale display data detected; tables are rendered from current mock DB snapshots."
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "project_journey_items.noteKey -> project_journey_notes.key: 9/9 records linked."
+      "project_journey_items.noteKey -> project_journey_notes.key: 0/0 records linked."
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "system project_journey_items.templateKey -> active project_journey_templates.key: 9/9 records linked."
+      "system project_journey_items.templateKey -> active project_journey_templates.key: 0/0 records linked."
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
       "*.createdBy -> users.key:"
@@ -329,7 +329,7 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("Review palette swatch affordance");
+    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("No records in this table.");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Mock DB");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
@@ -343,7 +343,7 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
 
 test("Mock DB viewer renders live persisted tool records after refresh", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/project-journey/index.html", {
-    sessionUserId: "user1",
+    sessionUserKey: MOCK_DB_KEYS.users.user1,
   });
   const server = failures.server;
 
@@ -384,9 +384,9 @@ test("Mock DB viewer renders live persisted tool records after refresh", async (
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-asset-tool-library]")).toContainText("Persist Sprite");
 
-    await page.evaluate(() => {
-      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", "admin");
-    });
+    await page.evaluate((adminKey) => {
+      window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", adminKey);
+    }, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Project Journey" }).click();
     await expect(page.locator("[data-admin-db-table='project_journey_notes']")).toContainText("Persistence Review");

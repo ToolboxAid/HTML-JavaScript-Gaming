@@ -180,7 +180,7 @@ test("Game Configuration validation lists missing required sections and blocks B
 });
 
 test("Toolbox Build Path view shows Game Configuration handoff state", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
+  const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);

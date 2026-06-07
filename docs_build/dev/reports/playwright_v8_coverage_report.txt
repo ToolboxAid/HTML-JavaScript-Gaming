@@ -19,8 +19,9 @@ Exercised tool entry points detected:
 Changed runtime JS files covered:
 (70%) toolbox/colors/palette-workspace-repository.js - executed lines 1316/1316; executed functions 89/127
 (81%) toolbox/assets/assets-mock-repository.js - executed lines 919/919; executed functions 61/75
-(93%) src/engine/persistence/mock-db-store.js - executed lines 666/666; executed functions 66/71
+(95%) src/dev-runtime/persistence/mock-db-store.js - executed lines 682/682; executed functions 77/81
 (98%) toolbox/project-journey/project-journey.js - executed lines 991/991; executed functions 105/107
+(100%) src/engine/persistence/mock-db-store.js - executed lines 1/1; executed functions 1/1
 
 Files with executed line/function counts where available:
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 192/192; executed functions 9/14
@@ -34,29 +35,38 @@ Files with executed line/function counts where available:
 (86%) toolbox/toolRegistry.js - executed lines 1788/1788; executed functions 32/37
 (88%) toolbox/assets/assets.js - executed lines 519/519; executed functions 53/60
 (89%) toolbox/game-design/game-design-mock-repository.js - executed lines 310/310; executed functions 33/37
-(91%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 507/507; executed functions 42/46
+(91%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 483/483; executed functions 41/45
 (92%) assets/theme-v2/js/login-session.js - executed lines 111/111; executed functions 12/13
-(93%) src/engine/persistence/mock-db-store.js - executed lines 666/666; executed functions 66/71
-(94%) admin/db-viewer.js - executed lines 478/478; executed functions 85/90
-(97%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 1043/1043; executed functions 93/96
+(94%) admin/db-viewer.js - executed lines 459/459; executed functions 84/89
+(95%) src/dev-runtime/persistence/mock-db-store.js - executed lines 682/682; executed functions 77/81
+(96%) toolbox/project-journey/project-journey-mock-repository.js - executed lines 1043/1043; executed functions 92/96
 (98%) toolbox/project-journey/project-journey.js - executed lines 991/991; executed functions 105/107
+(100%) src/engine/persistence/mock-db-store.js - executed lines 1/1; executed functions 1/1
 (100%) toolbox/colors/palette-source-mock-db.js - executed lines 927/927; executed functions 6/6
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) admin/notes.js - changed JS file not collected as browser runtime coverage
-(0%) admin/tools-progress.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameConfigurationMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameDesignMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolCenterFullscreenAccordion.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolImageRegistry.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolsProgressHydration.spec.mjs - changed JS file not collected as browser runtime coverage
 (70%) toolbox/colors/palette-workspace-repository.js - changed JS file with browser V8 coverage
 (81%) toolbox/assets/assets-mock-repository.js - changed JS file with browser V8 coverage
 (91%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 (92%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
-(93%) src/engine/persistence/mock-db-store.js - changed JS file with browser V8 coverage
 (94%) admin/db-viewer.js - changed JS file with browser V8 coverage
+(95%) src/dev-runtime/persistence/mock-db-store.js - changed JS file with browser V8 coverage
 (98%) toolbox/project-journey/project-journey.js - changed JS file with browser V8 coverage
+(100%) src/engine/persistence/mock-db-store.js - changed JS file with browser V8 coverage

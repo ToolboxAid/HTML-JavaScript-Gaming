@@ -1,10 +1,6 @@
-import { createProjectJourneyMockRepository } from "../toolbox/project-journey/project-journey-mock-repository.js";
-import { createAssetToolMockRepository } from "../toolbox/assets/assets-mock-repository.js";
-import { createProjectWorkspacePaletteRepository } from "../toolbox/colors/palette-workspace-repository.js";
 import {
   getAllPersistedMockDbSnapshot,
   clearMockDbTables,
-  getStandaloneMockDbTables,
   seedMockDbTables,
 } from "../src/engine/persistence/mock-db-store.js";
 
@@ -26,7 +22,6 @@ const IDENTITY_TABLE_GROUP = Object.freeze(["users", "user_roles", "roles"]);
 class AdminDbViewer {
   constructor(documentRef = document) {
     this.document = documentRef;
-    this.createRepositories();
     this.activeFilter = "all";
     this.clearButton = documentRef.querySelector("[data-admin-db-clear]");
     this.filterRoot = documentRef.querySelector("[data-admin-db-filters]");
@@ -36,14 +31,7 @@ class AdminDbViewer {
     this.tablesRoot = documentRef.querySelector("[data-admin-db-tables]");
   }
 
-  createRepositories() {
-    this.projectJourneyRepository = createProjectJourneyMockRepository();
-    this.paletteRepository = createProjectWorkspacePaletteRepository();
-    this.assetRepository = createAssetToolMockRepository();
-  }
-
   start() {
-    this.projectJourneyRepository.openProject("demo-project");
     this.render();
     this.filterRoot?.addEventListener("click", (event) => {
       const button = event.target.closest("[data-admin-db-filter]");
@@ -57,8 +45,6 @@ class AdminDbViewer {
       const snapshot = getAllPersistedMockDbSnapshot();
       if (snapshot.cleared) {
         seedMockDbTables();
-        this.createRepositories();
-        this.projectJourneyRepository.openProject("demo-project");
         this.activeFilter = "all";
         this.render();
         return;
@@ -67,8 +53,6 @@ class AdminDbViewer {
         return;
       }
       clearMockDbTables();
-      this.createRepositories();
-      this.projectJourneyRepository.openProject("demo-project");
       this.activeFilter = "all";
       this.render();
     });
@@ -132,10 +116,6 @@ class AdminDbViewer {
   }
 
   collectSnapshot() {
-    this.projectJourneyRepository.getTables();
-    this.paletteRepository.getTables();
-    this.assetRepository.getTables();
-    getStandaloneMockDbTables();
     const snapshot = getAllPersistedMockDbSnapshot();
     const tables = snapshot.tables;
     const owners = snapshot.owners || {};
@@ -227,7 +207,7 @@ class AdminDbViewer {
     if (!records.length) {
       const row = this.createElement("tr");
       const cell = this.createElement("td", {
-        text: "No records in this table. Add records from its tool or use Seed Mock DB to restore baseline mock records.",
+        text: "No records in this table. Add records from its tool or use Seed Mock DB to restore baseline user and role records.",
       });
       cell.colSpan = Math.max(1, fields.length + 1);
       row.append(cell);
