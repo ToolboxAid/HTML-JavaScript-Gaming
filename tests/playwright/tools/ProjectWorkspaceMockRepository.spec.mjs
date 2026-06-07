@@ -323,56 +323,6 @@ test("Learn Getting Started documents screen and layout guidance", async ({ page
   }
 });
 
-test("Toolbox Project Data controls are admin-only and drive mock Build Path state", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?role=guest");
-
-  try {
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText(/GUEST VIEW.*Preview only.*Sign in to create/);
-    await expect(page.locator("[data-project-data-menu]")).toBeHidden();
-    await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
-
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText(/CREATOR VIEW.*Project tools enabled.*Switch to Admin View/);
-    await expect(page.locator("[data-project-data-menu]")).toBeHidden();
-    await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
-
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText(/ADMIN VIEW.*Planned tools visible.*Switch to Creator View/);
-    await expect(page.locator("[data-project-data-menu]")).toBeVisible();
-    await expect(page.locator("[aria-label='Toolbox role simulation']")).toHaveClass(/section-head/);
-    const roleBannerBox = await page.locator("[data-toolbox-role-banner]").boundingBox();
-    const projectDataBox = await page.locator("[data-project-data-menu] > summary").boundingBox();
-    expect(roleBannerBox).not.toBeNull();
-    expect(projectDataBox).not.toBeNull();
-    expect(Math.abs((roleBannerBox.y + roleBannerBox.height / 2) - (projectDataBox.y + projectDataBox.height / 2))).toBeLessThan(16);
-    expect(projectDataBox.x).toBeGreaterThan(roleBannerBox.x + roleBannerBox.width);
-    await page.locator("[data-project-data-menu] summary").click();
-
-    await page.getByRole("button", { name: "Clear Test Data" }).click();
-    await expect(page.locator("[data-project-data-status]")).toHaveText("Test data cleared. Active project: none.");
-    await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-    await page.getByRole("button", { name: "Build Path" }).click();
-    await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-    await expect(page.getByText("Active Project: No active project", { exact: true })).toBeVisible();
-    await expect(page.getByText("Project Completion: No active project")).toBeVisible();
-    await expect(page.locator("[data-build-path-tool='Project Workspace']")).toContainText("🔴 Not Started");
-
-    await page.getByRole("button", { name: "Seed Demo Project" }).click();
-    await expect(page.locator("[data-project-data-status]")).toHaveText("Demo projects seeded. Active project: Demo Project.");
-    await expect(page.getByText("Active Project: Demo Project", { exact: true })).toBeVisible();
-    await expect(page.getByText("Project Completion: Demo Project identity ready")).toBeVisible();
-    await expect(page.locator("[data-build-path-tool='Project Workspace']")).toContainText("🟢 Complete");
-
-    await page.getByRole("button", { name: "Reset Project Data" }).click();
-    await expect(page.locator("[data-project-data-status]")).toHaveText("Project Data reset. Active project: Demo Project.");
-    await expect(page.getByText("Active Project: Demo Project", { exact: true })).toBeVisible();
-
-    await expectNoPageFailures(failures);
-  } finally {
-    await failures.server.close();
-  }
-});
-
 test("Toolbox member-role filters focus tools without exposing admin-only controls", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html?role=user");
 
@@ -416,11 +366,8 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Debug$/ }) })).toHaveCount(0);
-    await expect(page.locator("[data-project-data-menu]")).toBeHidden();
-
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 38/38");
-    await expect(page.locator("[data-project-data-menu]")).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Cloud$/ }) })).toBeVisible();
 
     await expectNoPageFailures(failures);

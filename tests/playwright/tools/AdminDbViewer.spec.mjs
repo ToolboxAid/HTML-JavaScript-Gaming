@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { PROJECT_JOURNEY_KEYS } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
+import { createAssetToolMockRepository } from "../../../toolbox/assets/assets-mock-repository.js";
+import { createProjectWorkspacePaletteRepository } from "../../../toolbox/colors/palette-workspace-repository.js";
 import { getStandaloneMockDbSeedTables } from "../../../src/engine/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
@@ -95,6 +97,19 @@ async function uploadAsset(page, { assetRole, fileName, mimeType, name, usage })
   await page.getByRole("button", { name: "Upload Asset" }).click();
 }
 
+function expectDbShapedRows(tables, tableNames) {
+  for (const tableName of tableNames) {
+    expect(Array.isArray(tables[tableName]), `${tableName} table should exist`).toBe(true);
+    for (const row of tables[tableName]) {
+      expect(row.key, `${tableName}.key`).toMatch(ULID_PATTERN);
+      expect(row.createdAt, `${tableName}.createdAt`).toBeTruthy();
+      expect(row.updatedAt, `${tableName}.updatedAt`).toBeTruthy();
+      expect(row.createdBy, `${tableName}.createdBy`).toMatch(ULID_PATTERN);
+      expect(row.updatedBy, `${tableName}.updatedBy`).toMatch(ULID_PATTERN);
+    }
+  }
+}
+
 test("Admin DB Viewer shows current read-only mock DB tables, filters, users, roles, and diagnostics", async ({ page }) => {
   const failures = await openRepoPage(page, "/admin/db-viewer.html");
 
@@ -107,14 +122,13 @@ test("Admin DB Viewer shows current read-only mock DB tables, filters, users, ro
     await expect(page.locator(".tool-workspace--wide > .tool-column")).toHaveCount(2);
     await expect(page.locator("#toolDisplayMode")).toBeVisible();
     await expect(page.locator("[data-admin-db-viewer].tool-center-panel")).toBeVisible();
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Admin");
-    await expect(page.locator("[data-session-user-summary]")).toHaveText("Selected session user: Admin.");
-    await expect(page.locator("[data-session-user-button]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
-    await expect(page.locator("[data-session-user-button='admin']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-session-user-header]")).toHaveCount(0);
+    await expect(page.locator("[data-session-user-summary]")).toHaveCount(0);
+    await expect(page.locator("[data-session-user-controls]")).toHaveCount(0);
+    await expect(page.locator("[data-session-user-button]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
-    await expect(page.locator("[data-session-user-button='forge-bot']")).toHaveCount(0);
     await expect(page.locator("nav.nav-links a[data-route='admin-db-viewer']")).toHaveText("DB Viewer");
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Mock DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-filter]")).toHaveText([
@@ -398,4 +412,27 @@ test("Mock DB viewer renders live persisted tool records after refresh", async (
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
+});
+
+test("Palette and Asset raw mock DB tables are DB-shaped before viewer rendering", () => {
+  const paletteRepository = createProjectWorkspacePaletteRepository({ persist: false });
+  const assetRepository = createAssetToolMockRepository({ persist: false });
+  const paletteTables = paletteRepository.getTables();
+  const assetTables = assetRepository.getTables();
+
+  expect(paletteTables.palette_source_swatches.length).toBeGreaterThan(0);
+  expect(assetTables.asset_role_definitions.length).toBeGreaterThan(0);
+  expectDbShapedRows(paletteTables, [
+    "palette_colors",
+    "palette_source_swatches",
+    "palette_swatch_usages",
+    "project_workspace_palette_globals",
+  ]);
+  expectDbShapedRows(assetTables, [
+    "asset_role_definitions",
+    "asset_library_items",
+    "asset_storage_objects",
+    "asset_import_events",
+    "asset_validation_items",
+  ]);
 });

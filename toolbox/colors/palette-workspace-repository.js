@@ -2,6 +2,7 @@ import { createProjectWorkspaceMockRepository } from "../project-workspace/proje
 import { createPaletteSourceMockDbRows } from "./palette-source-mock-db.js";
 import {
   loadMockDbTables,
+  normalizeMockDbTables,
   saveMockDbTables,
 } from "../../src/engine/persistence/mock-db-store.js";
 
@@ -1359,7 +1360,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function getTables() {
-    return {
+    return normalizeMockDbTables(PALETTE_DB_OWNER, {
       palette_colors: paletteColorRows.map((row) => ({
         ...row,
         tags: [...row.tags]
@@ -1375,7 +1376,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         toolKey: PALETTE_TOOL_KEY,
         workspacePath: PALETTE_WORKSPACE_PATH
       }))
-    };
+    }, options);
   }
 
   function getSnapshot(optionsForSnapshot = {}) {

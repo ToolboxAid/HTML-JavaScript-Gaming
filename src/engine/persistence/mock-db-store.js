@@ -143,11 +143,6 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
   }),
 });
 
-const REMOVED_TABLE_NAMES = new Set(["act" + "ors"]);
-const REMOVED_RECORD_FIELDS = Object.freeze(["created" + "ByType", "updated" + "ByType", "account" + "Type", "is" + "SystemUser"]);
-const REMOVED_UNAUTHENTICATED_USER_KEY = makeMockUlid(50);
-const REMOVED_UNAUTHENTICATED_ROLE_KEY = makeMockUlid(71);
-const REMOVED_UNAUTHENTICATED_JOIN_KEY = makeMockUlid(81);
 const LEGACY_AUDIT_KEY_TO_USER_KEY = Object.freeze({
   [makeMockUlid(61)]: MOCK_DB_KEYS.users.forgeBot,
   [makeMockUlid(62)]: MOCK_DB_KEYS.users.user1,
@@ -247,28 +242,37 @@ function sanitizeState(source = {}) {
     state.tables = source.tables && typeof source.tables === "object" ? { ...source.tables } : {};
     state.version = source.version || MOCK_DB_VERSION;
   }
-  REMOVED_TABLE_NAMES.forEach((tableName) => {
-    delete state.tables[tableName];
-    delete state.owners[tableName];
+  const knownTableNames = new Set(Object.keys(MOCK_DB_TABLE_SCHEMAS));
+  Object.keys(state.tables).forEach((tableName) => {
+    if (!knownTableNames.has(tableName)) {
+      delete state.tables[tableName];
+    }
+  });
+  Object.keys(state.owners).forEach((tableName) => {
+    if (!knownTableNames.has(tableName)) {
+      delete state.owners[tableName];
+    }
   });
   if (Array.isArray(state.tables.users)) {
+    const allowedUserKeys = new Set(Object.values(MOCK_DB_KEYS.users));
     state.tables.users = state.tables.users.filter((user) =>
-      user?.key !== REMOVED_UNAUTHENTICATED_USER_KEY &&
-      String(user?.displayName || "").toLowerCase() !== "guest",
+      allowedUserKeys.has(user?.key),
     );
   }
   if (Array.isArray(state.tables.roles)) {
+    const allowedRoleKeys = new Set(Object.values(MOCK_DB_KEYS.roles));
     state.tables.roles = state.tables.roles.filter((role) =>
-      role?.key !== REMOVED_UNAUTHENTICATED_ROLE_KEY &&
-      String(role?.roleSlug || "").toLowerCase() !== "guest" &&
-      String(role?.name || "").toLowerCase() !== "guest",
+      allowedRoleKeys.has(role?.key),
     );
   }
   if (Array.isArray(state.tables.user_roles)) {
+    const allowedJoinKeys = new Set(Object.values(MOCK_DB_KEYS.userRoles));
+    const allowedUserKeys = new Set(Object.values(MOCK_DB_KEYS.users));
+    const allowedRoleKeys = new Set(Object.values(MOCK_DB_KEYS.roles));
     state.tables.user_roles = state.tables.user_roles.filter((row) =>
-      row?.key !== REMOVED_UNAUTHENTICATED_JOIN_KEY &&
-      row?.userKey !== REMOVED_UNAUTHENTICATED_USER_KEY &&
-      row?.roleKey !== REMOVED_UNAUTHENTICATED_ROLE_KEY,
+      allowedJoinKeys.has(row?.key) &&
+        allowedUserKeys.has(row?.userKey) &&
+        allowedRoleKeys.has(row?.roleKey),
     );
   }
   Object.entries(DEFAULT_TABLE_OWNERS).forEach(([tableName, ownerId]) => {
@@ -433,16 +437,22 @@ export function createMockDbAuditFields(minutes = 0, userKey = MOCK_DB_SYSTEM_US
   };
 }
 
-function sanitizeRecordFields(source = {}) {
-  const record = { ...source };
-  REMOVED_RECORD_FIELDS.forEach((field) => {
-    delete record[field];
-  });
-  return record;
+function sanitizeRecordFields(tableName, source = {}) {
+  const fields = MOCK_DB_TABLE_SCHEMAS[tableName];
+  if (!fields) {
+    return { ...source };
+  }
+  const allowedFields = new Set(fields);
+  return Object.fromEntries(
+    Object.entries(source).filter(([field]) => allowedFields.has(field)),
+  );
 }
 
 function normalizeRecord(tableName, record, index, options = {}) {
-  const source = sanitizeRecordFields(record && typeof record === "object" && !Array.isArray(record) ? record : {});
+  const source = sanitizeRecordFields(
+    tableName,
+    record && typeof record === "object" && !Array.isArray(record) ? record : {},
+  );
   const fallbackUserKey = defaultAuditUserKey(options);
   const createdAt = source.createdAt || timestampForIndex(index);
   const updatedAt = source.updatedAt || createdAt;
@@ -477,12 +487,15 @@ function normalizeTableRows(tableName, rows = [], options = {}) {
 function normalizeTables(tables = {}, options = {}) {
   return Object.fromEntries(
     Object.entries(tables)
-      .filter(([tableName]) => !REMOVED_TABLE_NAMES.has(tableName))
       .map(([tableName, rows]) => [
         tableName,
         normalizeTableRows(tableName, rows, options),
       ]),
   );
+}
+
+export function normalizeMockDbTables(ownerId, tables = {}, options = {}) {
+  return normalizeTables(tables, { ...options, ownerId });
 }
 
 function ensureKnownTables(state) {
@@ -502,9 +515,6 @@ export function loadMockDbTables(ownerId, seedTables = {}, options = {}) {
   let changed = false;
 
   tableNames.forEach((tableName) => {
-    if (REMOVED_TABLE_NAMES.has(tableName)) {
-      return;
-    }
     if (state.owners[tableName] !== ownerId) {
       changed = true;
     }
@@ -565,10 +575,8 @@ export function clearMockDbTables(options = {}) {
   const state = readStoredState(options);
   ensureKnownTables(state);
   Object.keys(state.tables).forEach((tableName) => {
-    if (!REMOVED_TABLE_NAMES.has(tableName)) {
-      state.tables[tableName] = [];
-      state.owners[tableName] = state.owners[tableName] || DEFAULT_TABLE_OWNERS[tableName] || "standalone";
-    }
+    state.tables[tableName] = [];
+    state.owners[tableName] = state.owners[tableName] || DEFAULT_TABLE_OWNERS[tableName] || "standalone";
   });
   state.cleared = true;
   writeStoredState(state, options);

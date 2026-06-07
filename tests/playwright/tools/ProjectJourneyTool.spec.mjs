@@ -517,7 +517,7 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
   const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
 
   try {
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 1");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Release Readiness");
     await page.locator("[data-journey-filter='mine']").click();
     await expect(page.locator("[data-journey-filter='mine']")).toHaveClass(/primary/);
@@ -647,7 +647,7 @@ test("Project Journey supports Guest as the selected shared session user", async
   });
 
   try {
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Guest");
+    await expect(page.locator("[data-session-user-header]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
@@ -670,7 +670,7 @@ test("Project Journey supports Guest as the selected shared session user", async
       window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", "admin");
     });
     await page.goto(`${failures.server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: Admin");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
     await page.getByRole("button", { name: "Project Journey" }).click();
     await expect(page.locator("[data-admin-db-table='project_journey_notes']")).not.toContainText("Guest Scratch Note");
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).not.toContainText("Guest first task");
@@ -691,7 +691,7 @@ test("Project Journey supports Guest as the selected shared session user", async
     }, MOCK_DB_KEYS.users.user3);
     expect(user3TableReferences).toEqual(["user_roles", "users"]);
     await page.goto(`${failures.server.baseUrl}/toolbox/project-journey/index.html?project=demo-project`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 3");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 3");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: All Notes (0 notes).");
 
@@ -750,7 +750,7 @@ test("Project Journey search filters notes, tree items, and visible counts", asy
       window.localStorage.setItem("gamefoundry.mockDb.sessionUser.v1", "user2");
     });
     await page.goto(`${failures.server.baseUrl}/toolbox/project-journey/index.html?project=demo-project`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 2");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 2");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Research Questions");
     await searchInput.fill("Skipped");

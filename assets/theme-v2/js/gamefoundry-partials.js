@@ -121,22 +121,18 @@
     const localSessionUsers = {
         user1: {
             displayName: "User 1",
-            roleSlugs: ["user"],
             userKey: makeMockUlid(51)
         },
         user2: {
             displayName: "User 2",
-            roleSlugs: ["user"],
             userKey: makeMockUlid(52)
         },
         user3: {
             displayName: "User 3",
-            roleSlugs: ["user"],
             userKey: makeMockUlid(53)
         },
         admin: {
             displayName: "Admin",
-            roleSlugs: ["user", "admin"],
             userKey: makeMockUlid(54)
         }
     };
@@ -203,12 +199,12 @@
         }
     }
 
-    function rolesForUser(state, userKey, fallbackRoleSlugs) {
+    function rolesForUser(state, userKey) {
         const rows = state?.tables?.user_roles || [];
         const roles = new Map((state?.tables?.roles || []).map(function (role) {
             return [role.key, role.roleSlug || role.name];
         }));
-        const resolved = rows
+        return rows
             .filter(function (row) {
                 return row.userKey === userKey && roles.has(row.roleKey);
             })
@@ -216,23 +212,25 @@
                 return roles.get(row.roleKey);
             })
             .filter(Boolean);
-        return resolved.length ? resolved : fallbackRoleSlugs;
     }
 
     function localDevLoginState() {
         if (selectedSessionModeId() === "dev") {
             return {
                 authenticated: false,
+                diagnostic: "",
                 displayName: "Login",
                 mode: "dev",
                 roleSlugs: []
             };
         }
 
-        const session = localSessionUsers[selectedLocalSessionId()];
+        const sessionId = selectedLocalSessionId();
+        const session = localSessionUsers[sessionId];
         if (!session) {
             return {
                 authenticated: false,
+                diagnostic: "",
                 displayName: "Login",
                 mode: "local",
                 roleSlugs: []
@@ -243,6 +241,9 @@
         if (!state) {
             return {
                 authenticated: false,
+                diagnostic: sessionId === "guest"
+                    ? ""
+                    : "Persisted Memory DB users and roles are not seeded. Open Login and choose Local to seed local users.",
                 displayName: "Login",
                 mode: "local",
                 roleSlugs: []
@@ -255,6 +256,18 @@
         if (!user) {
             return {
                 authenticated: false,
+                diagnostic: `Selected Local user ${session.displayName} is missing from persisted Memory DB users.`,
+                displayName: "Login",
+                mode: "local",
+                roleSlugs: []
+            };
+        }
+
+        const roleSlugs = rolesForUser(state, session.userKey);
+        if (!roleSlugs.length) {
+            return {
+                authenticated: false,
+                diagnostic: `Selected Local user ${session.displayName} has no persisted Memory DB roles.`,
                 displayName: "Login",
                 mode: "local",
                 roleSlugs: []
@@ -263,9 +276,10 @@
 
         return {
             authenticated: true,
+            diagnostic: "",
             displayName: user?.displayName || session.displayName,
             mode: "local",
-            roleSlugs: rolesForUser(state, session.userKey, [])
+            roleSlugs
         };
     }
 
@@ -377,7 +391,10 @@
         status.className = "status";
         status.setAttribute("role", "status");
         status.dataset.sessionAccessStatus = "";
-        status.textContent = `Blocked ${pagePath}. Current session: ${loginState.displayName}.`;
+        status.textContent = [
+            `Blocked ${pagePath}. Current session: ${loginState.displayName}.`,
+            loginState.diagnostic ? `Login/session diagnostic: ${loginState.diagnostic}` : ""
+        ].filter(Boolean).join(" ");
         const link = document.createElement("a");
         link.className = "btn primary";
         link.href = routeHref("login") + "?returnTo=" + encodeURIComponent(pagePath);
@@ -398,6 +415,7 @@
         const allowed = canUseProtectedPage(requirement, loginState);
         window.GameFoundrySessionGuard = {
             blocked: !allowed,
+            diagnostic: loginState.diagnostic || "",
             mode: loginState.mode,
             pagePath,
             requirement: requirement?.role || ""
@@ -443,6 +461,26 @@
         updateVisibility();
     }
 
+    function logoutCurrentSession(event) {
+        event.preventDefault();
+        try {
+            window.localStorage.removeItem(mockDbSessionStorageKey);
+            window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
+                detail: {
+                    authenticated: false,
+                    id: "guest"
+                }
+            }));
+        } catch {}
+        refreshHeaderLoginState();
+    }
+
+    function wireAccountLogout(root) {
+        root.querySelectorAll("[data-account-logout]").forEach(function (link) {
+            link.addEventListener("click", logoutCurrentSession);
+        });
+    }
+
     async function partialElement(partialName) {
         const partialPath = partials[partialName];
         if (!partialPath) return null;
@@ -459,6 +497,7 @@
         if (partialName === "header-nav") {
             applyLocalDevLoginState(element);
             markActiveNavigation(element);
+            wireAccountLogout(element);
         } else if (partialName === "footer") {
             wireReturnToTop(element);
         }

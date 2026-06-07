@@ -4,10 +4,8 @@ import { createProjectWorkspacePaletteRepository } from "../toolbox/colors/palet
 import {
   getAllPersistedMockDbSnapshot,
   clearMockDbTables,
-  getMockDbSessionUser,
   getStandaloneMockDbTables,
   seedMockDbTables,
-  setMockDbSessionUser,
 } from "../src/engine/persistence/mock-db-store.js";
 
 const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
@@ -35,9 +33,6 @@ class AdminDbViewer {
     this.status = documentRef.querySelector("[data-admin-db-status]");
     this.diagnostics = documentRef.querySelector("[data-admin-db-diagnostics]");
     this.relationships = documentRef.querySelector("[data-admin-db-relationships]");
-    this.sessionSummary = documentRef.querySelector("[data-session-user-summary]");
-    this.sessionHeader = documentRef.querySelector("[data-session-user-header]");
-    this.sessionUserControls = documentRef.querySelector("[data-session-user-controls]");
     this.tablesRoot = documentRef.querySelector("[data-admin-db-tables]");
   }
 
@@ -56,16 +51,6 @@ class AdminDbViewer {
         return;
       }
       this.activeFilter = button.dataset.adminDbFilter || "all";
-      this.render();
-    });
-    this.sessionUserControls?.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-session-user-button]");
-      if (!button) {
-        return;
-      }
-      setMockDbSessionUser(button.dataset.sessionUserButton || "guest");
-      this.createRepositories();
-      this.projectJourneyRepository.openProject("demo-project");
       this.render();
     });
     this.clearButton?.addEventListener("click", () => {
@@ -303,26 +288,6 @@ class AdminDbViewer {
     });
   }
 
-  renderSessionUser() {
-    const sessionUser = getMockDbSessionUser();
-    if (this.sessionHeader) {
-      this.sessionHeader.textContent = `Session user: ${sessionUser.label}`;
-    }
-    if (this.sessionSummary) {
-      this.sessionSummary.textContent = `Selected session user: ${sessionUser.label}.`;
-    }
-    this.document.querySelectorAll("[data-session-user-button]").forEach((button) => {
-      const selected = button.dataset.sessionUserButton === sessionUser.id;
-      button.classList.toggle("primary", selected);
-      button.setAttribute("aria-pressed", String(selected));
-      if (selected) {
-        button.setAttribute("aria-current", "true");
-      } else {
-        button.removeAttribute("aria-current");
-      }
-    });
-  }
-
   auditFindings(tables) {
     const findings = [];
     Object.entries(tables).forEach(([tableName, records]) => {
@@ -526,7 +491,6 @@ class AdminDbViewer {
         .map((tableName) => [tableName, snapshot.tables[tableName]]),
     );
     this.renderFilters(snapshot.groups);
-    this.renderSessionUser();
     this.renderClearSeedButton(snapshot.cleared);
     this.renderDiagnostics(snapshot.tables, snapshot.groups);
     this.renderRelationships(snapshot.tables);

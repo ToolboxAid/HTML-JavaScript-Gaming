@@ -4,7 +4,7 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 import { getActiveToolRegistry, getToolRoute } from "../../../toolbox/toolRegistry.js";
 
-const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Account", "Admin"];
+const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Login", "Admin"];
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -59,13 +59,6 @@ async function primaryNavigationLabels(page) {
   ))).map(normalizeMenuText);
 }
 
-async function storageSnapshot(page) {
-  return page.evaluate(() => ({
-    local: { ...localStorage },
-    session: { ...sessionStorage }
-  }));
-}
-
 test("root tools surface links current tool pages without old_* routes", async ({ page }) => {
   const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html");
 
@@ -77,19 +70,6 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveAttribute("href", /role=user/);
-    await expect(page.locator("[data-project-data-menu]")).toBeHidden();
-    await expect(page.locator("[data-project-data-action]")).toHaveCount(3);
-    await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
-    await expect(page.locator("[aria-label='Toolbox role simulation']")).toHaveClass(/callout/);
-    await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveClass(/status/);
-    const roleBannerIsFinalHeaderRow = await page.locator("[aria-label='Toolbox role simulation']").evaluate((row) => (
-      (row.previousElementSibling?.matches("header.site-header") === true || row.previousElementSibling?.querySelector(":scope > header.site-header") !== null)
-      && row.nextElementSibling?.tagName.toLowerCase() === "main"
-    ));
-    expect(roleBannerIsFinalHeaderRow).toBe(true);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(1);
     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
@@ -195,7 +175,6 @@ test("root tools surface links current tool pages without old_* routes", async (
     await designCard.locator(".card-media-link").click();
     await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
     await page.goBack({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
     await page.getByRole("button", { name: "Group" }).click();
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
@@ -228,35 +207,11 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(hrefs.filter((href) => href && /(^|\/|\.\.\/)tools\/old_/.test(href))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
 
-    await page.locator("[data-toolbox-role-banner]").click();
-    await page.waitForURL(/role=user/);
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
-    await expect(page.locator("[data-project-data-menu]")).toBeHidden();
-    await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
-    await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await page.goto(`${server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-    await page.locator("[data-toolbox-role-banner]").click();
-    await page.waitForURL(/role=admin/);
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("ADMIN VIEW • Planned tools visible • Switch to Creator View");
-    await expect(page.locator("[aria-label='Toolbox role simulation']")).toContainText("ADMIN VIEW • Planned tools visible • Switch to Creator View");
-    await expect(page.locator("[aria-label='Toolbox role simulation']")).toContainText("Project Data ▾");
-    await expect(page.locator("[data-project-data-menu]")).toBeVisible();
-    await expect(page.locator("[data-project-data-menu] > summary")).toHaveText("Project Data ▾");
-    await page.locator("[data-project-data-menu] > summary").click();
-    await expect(page.locator("[data-project-data-menu]")).toHaveAttribute("open", "");
-    await expect(page.locator("[data-project-data-action]")).toHaveText([
-      "Reset Project Data",
-      "Seed Demo Project",
-      "Clear Test Data"
-    ]);
-    const beforeProjectDataActions = await storageSnapshot(page);
-    await page.getByRole("button", { name: "Reset Project Data" }).click();
-    await page.getByRole("button", { name: "Seed Demo Project" }).click();
-    await page.getByRole("button", { name: "Clear Test Data" }).click();
-    expect(await storageSnapshot(page)).toEqual(beforeProjectDataActions);
-    await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await page.goto(`${server.baseUrl}/toolbox/index.html?role=admin`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 37/37");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
@@ -311,18 +266,10 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-    await page.locator("[data-toolbox-role-banner]").click();
-    await page.waitForURL(/role=user/);
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("CREATOR VIEW • Project tools enabled • Switch to Admin View");
-    await expect(page.locator("[data-project-data-menu]")).toBeHidden();
-    await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
+    await page.goto(`${server.baseUrl}/toolbox/index.html?role=user`, { waitUntil: "networkidle" });
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await page.goto(`${server.baseUrl}/toolbox/index.html?role=guest`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
-    await expect(page.locator("[data-project-data-menu]")).toBeHidden();
-    await expect(page.locator("[data-project-data-action]:visible")).toHaveCount(0);
-    await expect(page.locator("[aria-label='Toolbox role simulation']")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
@@ -397,14 +344,7 @@ test("common header renders primary navigation order across active pages", async
       expect(bodyText.replace(/GameFoundryStudio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
 
       if (pagePath === "/toolbox/index.html") {
-        await expect(page.locator("[data-toolbox-role-banner]")).toHaveText("GUEST VIEW • Preview only • Sign in to create");
-        await expect(page.locator("[data-toolbox-role-banner]")).toHaveClass(/status/);
-        await expect(page.locator("[aria-label='Toolbox role simulation']")).toHaveClass(/callout/);
-        const roleBannerIsFinalHeaderRow = await page.locator("[aria-label='Toolbox role simulation']").evaluate((row) => (
-          (row.previousElementSibling?.matches("header.site-header") === true || row.previousElementSibling?.querySelector(":scope > header.site-header") !== null)
-          && row.nextElementSibling?.tagName.toLowerCase() === "main"
-        ));
-        expect(roleBannerIsFinalHeaderRow).toBe(true);
+        await expect(page.locator("[data-tools-count]")).toBeVisible();
       }
     }
 

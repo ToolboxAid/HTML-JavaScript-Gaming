@@ -5,6 +5,7 @@ import {
 import {
   loadMockDbTables,
   mockDbPersistenceEnabled,
+  normalizeMockDbTables,
   saveMockDbTables,
 } from "../../src/engine/persistence/mock-db-store.js";
 
@@ -881,7 +882,7 @@ export function createAssetToolMockRepository(options = {}) {
   }
 
   function getTables() {
-    return cloneTables(tables);
+    return normalizeMockDbTables(ASSET_DB_OWNER, cloneTables(tables), options);
   }
 
   function previewStoragePath(input = {}) {

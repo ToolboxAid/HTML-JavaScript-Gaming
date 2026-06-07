@@ -64,7 +64,7 @@ async function openRepoPage(page, pathName, options = {}) {
     }
   }, {
     seedStandalone: Boolean(options.seedStandalone),
-    seedState: standaloneSeedState,
+    seedState: options.seedState || standaloneSeedState,
     sessionModeId: options.sessionModeId || "local",
     sessionUserId: options.sessionUserId || "guest",
   });
@@ -138,6 +138,8 @@ test("Login page switches DEV and Local modes without storing Guest as a user", 
     await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 1.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
+    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
+    await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
 
     await page.locator("[data-login-user='guest']").click();
@@ -160,6 +162,22 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+
+  failures = await openRepoPage(page, "/admin/site-settings.html", {
+    sessionUserId: "admin",
+  });
+
+  try {
+    await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
+    await expect(page.locator("[data-session-access-status]")).toContainText("Login/session diagnostic: Persisted Memory DB users and roles are not seeded.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
     await expectNoPageFailures(failures);
@@ -209,6 +227,8 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expect(page.getByRole("heading", { name: "Profile", level: 1 })).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
+    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
+    await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
     await expectNoPageFailures(failures);
   } finally {
@@ -224,7 +244,49 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Site Settings", level: 1 })).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
+    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
+    await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
+
+test("Account logout clears only the current session and blocks protected pages", async ({ page }) => {
+  const failures = await openRepoPage(page, "/account/profile.html", {
+    seedStandalone: true,
+    sessionUserId: "user1",
+  });
+
+  try {
+    await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
+    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
+    await page.locator("[data-account-logout]").click();
+    await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Login required", level: 1 })).toBeVisible();
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
+
+    const storedUsers = await page.evaluate(() => {
+      const snapshot = JSON.parse(window.localStorage.getItem("gamefoundry.mockDb.v1") || "{}");
+      return (snapshot.tables?.users || []).map((user) => user.displayName);
+    });
+    expect(storedUsers).toEqual(["User 1", "User 2", "User 3", "Admin", "forge-bot"]);
+
+    const directPage = await page.context().newPage();
+    try {
+      await directPage.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
+      await expect(directPage.locator("[data-session-access-blocked='user']")).toBeVisible();
+      await directPage.goto(`${failures.server.baseUrl}/admin/site-settings.html`, { waitUntil: "networkidle" });
+      await expect(directPage.locator("[data-session-access-blocked='admin']")).toBeVisible();
+    } finally {
+      await directPage.close();
+    }
+
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);

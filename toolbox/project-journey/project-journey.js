@@ -44,7 +44,6 @@ const recentActivity = document.querySelector("[data-journey-recent-activity]");
 const diagnostics = document.querySelector("[data-journey-diagnostics]");
 const searchInput = document.querySelector("[data-journey-search-input]");
 const searchStatus = document.querySelector("[data-journey-search-status]");
-const sessionUserHeader = document.querySelector("[data-session-user-header]");
 
 const statTargets = {
   open: document.querySelector("[data-journey-stat-open]"),
@@ -689,14 +688,6 @@ function renderSearchStatus(query, notes) {
     : "Search is clear.";
 }
 
-function renderSessionUser() {
-  if (!sessionUserHeader) {
-    return;
-  }
-  const sessionUser = repository.getSessionUser();
-  sessionUserHeader.textContent = `Session user: ${sessionUser.label}`;
-}
-
 function sessionUserCanWrite() {
   return Boolean(repository.getSessionUser().userKey);
 }
@@ -900,7 +891,6 @@ function render() {
   const projectControlsDisabled = !activeProject;
   const projectWriteControlsDisabled = !activeProject || !canWrite;
 
-  renderSessionUser();
   activeProjectMessage.textContent = activeProject
     ? `Active project: ${activeProject.name}.`
     : "No active project is open. Editing actions are disabled.";
