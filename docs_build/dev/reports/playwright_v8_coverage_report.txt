@@ -17,7 +17,7 @@ Exercised tool entry points detected:
 (81%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
@@ -29,14 +29,13 @@ Files with executed line/function counts where available:
 (83%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 442/442; executed functions 33/40
 (85%) src/engine/api/mock-db-viewer-ui.js - executed lines 510/510; executed functions 82/96
 (88%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 7/8
-(89%) assets/theme-v2/js/login-session.js - executed lines 182/182; executed functions 16/18
+(89%) assets/theme-v2/js/login-session.js - executed lines 192/192; executed functions 16/18
 (100%) toolbox/project-journey/project-journey-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
 (0%) tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs - changed JS file not collected as browser runtime coverage
-(53%) src/engine/api/server-api-client.js - changed JS file with browser V8 coverage
 (83%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 (89%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage

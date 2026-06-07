@@ -10,10 +10,12 @@ const modeButtons = Array.from(document.querySelectorAll("[data-login-mode]"));
 const modeTitle = document.querySelector("[data-login-mode-title]");
 const modeDescription = document.querySelector("[data-login-mode-description]");
 const modeStatus = document.querySelector("[data-login-mode-status]");
+const modeDisabledMessage = document.querySelector("[data-login-mode-disabled-message]");
 const userControls = document.querySelector("[data-login-user-controls]");
 const userStatus = document.querySelector("[data-login-user-status]");
 const continueLink = document.querySelector("[data-login-continue]");
 const apiBackedLoginDiagnostic = "Use the API-backed local server for login.";
+const staticModeDisabledMessage = "Use the API-backed local server for login. Local Mem and Local DB are disabled until the local API server is running.";
 
 function currentReturnTo() {
   const params = new URLSearchParams(window.location.search);
@@ -121,6 +123,10 @@ function renderError(error) {
   if (modeStatus) {
     modeStatus.textContent = `Login/session diagnostic: ${message}`;
   }
+  if (modeDisabledMessage) {
+    modeDisabledMessage.hidden = message !== apiBackedLoginDiagnostic;
+    modeDisabledMessage.textContent = message === apiBackedLoginDiagnostic ? staticModeDisabledMessage : "";
+  }
   if (userStatus) {
     userStatus.textContent = "No local users are available until /api/session responds.";
   }
@@ -157,6 +163,10 @@ function render() {
         statusParts.push(`Diagnostic: ${session.diagnostic || mode.diagnostic}`);
       }
       modeStatus.textContent = statusParts.join(". ") + ".";
+    }
+    if (modeDisabledMessage) {
+      modeDisabledMessage.hidden = true;
+      modeDisabledMessage.textContent = "";
     }
     renderUserButtons(mode);
     updateContinueLink();
