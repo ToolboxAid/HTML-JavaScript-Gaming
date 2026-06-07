@@ -12,6 +12,10 @@ body {
   margin: var(--space-0)
 }
 
+[hidden] {
+  display: none !important
+}
+
 img,
 video,
 audio,

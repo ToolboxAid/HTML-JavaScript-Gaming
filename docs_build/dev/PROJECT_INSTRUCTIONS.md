@@ -201,6 +201,18 @@ Reports must state:
 - why skipped lanes were safe to skip
 - when the full suite is required
 
+## SHARED MOCK DB ADAPTER CONTRACT
+
+All current app and tool mock data must flow through the shared DB adapter under `src/engine/persistence`.
+
+Tools must not maintain isolated page-local DB snapshots for data that should be visible to the Mock DB viewer or to another current tool.
+
+The active browser mock implementation is the Mock adapter. UAT and production persistence must swap through the same module-level contract by deployment configuration rather than by changing tool UI code.
+
+The Mock DB viewer must render live adapter state and table schemas, including empty tables with headers. It must not render hardcoded table dumps, hardcoded row counts, or copied static JSON snapshots.
+
+Audit ownership is users-only: every shared table record uses `key`, `createdAt`, `updatedAt`, `createdBy`, and `updatedBy`; the ownership fields reference `users.key`. Roles are modeled with `roles` and `user_roles`.
+
 ## ARCHIVED V1/V2 REFERENCE MATERIAL
 
 Deprecated V1/V2 reference material lives under:

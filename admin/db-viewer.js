@@ -5,22 +5,25 @@ import {
   getAllPersistedMockDbSnapshot,
   clearMockDbTables,
   getMockDbSessionUser,
-  getMockDbSessionUsers,
   getStandaloneMockDbTables,
+  seedMockDbTables,
   setMockDbSessionUser,
 } from "../src/engine/persistence/mock-db-store.js";
 
 const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
-const TOOL_GROUP_ORDER = ["project-journey", "palette", "asset"];
+const TOOL_GROUP_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
 const TOOL_GROUP_LABELS = Object.freeze({
   asset: "Asset",
+  "game-configuration": "Game Configuration",
+  "game-design": "Game Design",
   palette: "Palette",
   "project-journey": "Project Journey",
+  workspace: "Workspace",
 });
 const STANDALONE_TABLE_LABELS = Object.freeze({
-  users: "Users",
-  actors: "Actors",
+  user_roles: "User Roles",
 });
+const IDENTITY_TABLE_GROUP = Object.freeze(["users", "user_roles", "roles"]);
 
 class AdminDbViewer {
   constructor(documentRef = document) {
@@ -60,12 +63,21 @@ class AdminDbViewer {
       if (!button) {
         return;
       }
-      setMockDbSessionUser(button.dataset.sessionUserButton || "user1");
+      setMockDbSessionUser(button.dataset.sessionUserButton || "guest");
       this.createRepositories();
       this.projectJourneyRepository.openProject("demo-project");
       this.render();
     });
     this.clearButton?.addEventListener("click", () => {
+      const snapshot = getAllPersistedMockDbSnapshot();
+      if (snapshot.cleared) {
+        seedMockDbTables();
+        this.createRepositories();
+        this.projectJourneyRepository.openProject("demo-project");
+        this.activeFilter = "all";
+        this.render();
+        return;
+      }
       if (!window.confirm("Clear all shared Mock DB records?")) {
         return;
       }
@@ -75,6 +87,14 @@ class AdminDbViewer {
       this.activeFilter = "all";
       this.render();
     });
+  }
+
+  renderClearSeedButton(cleared) {
+    if (!this.clearButton) {
+      return;
+    }
+    this.clearButton.textContent = cleared ? "Seed Mock DB" : "Clear Mock DB";
+    this.clearButton.dataset.adminDbClearMode = cleared ? "seed" : "clear";
   }
 
   createElement(tagName, options = {}) {
@@ -134,6 +154,8 @@ class AdminDbViewer {
     const snapshot = getAllPersistedMockDbSnapshot();
     const tables = snapshot.tables;
     const owners = snapshot.owners || {};
+    const schemas = snapshot.schemas || {};
+    const toolGroups = snapshot.toolGroups || {};
     const tableNamesForOwner = (ownerId) => Object.keys(tables)
       .filter((tableName) => owners[tableName] === ownerId)
       .sort();
@@ -142,9 +164,9 @@ class AdminDbViewer {
     const unownedTableNames = Object.keys(tables)
       .filter((tableName) => !toolOwnedTables.has(tableName));
     const standaloneTableNames = [
-      ...Object.keys(STANDALONE_TABLE_LABELS).filter((tableName) => unownedTableNames.includes(tableName)),
-      ...unownedTableNames.filter((tableName) => !Object.hasOwn(STANDALONE_TABLE_LABELS, tableName)).sort(),
+      ...unownedTableNames.filter((tableName) => !IDENTITY_TABLE_GROUP.includes(tableName)).sort(),
     ];
+    const identityTables = IDENTITY_TABLE_GROUP.filter((tableName) => unownedTableNames.includes(tableName));
     const groups = [
       {
         id: "all",
@@ -154,10 +176,16 @@ class AdminDbViewer {
       },
       ...toolGroupIds.map((id) => ({
         id,
-        label: TOOL_GROUP_LABELS[id],
-        tableNames: tableNamesForOwner(id),
-        type: "tool",
-      })),
+        label: toolGroups[id]?.label || TOOL_GROUP_LABELS[id] || id,
+          tableNames: tableNamesForOwner(id),
+          type: "tool",
+        })),
+      ...(identityTables.length ? [{
+        id: "user_roles",
+        label: STANDALONE_TABLE_LABELS.user_roles,
+        tableNames: identityTables,
+        type: "table",
+      }] : []),
       ...standaloneTableNames.map((tableName) => ({
         id: tableName,
         label: STANDALONE_TABLE_LABELS[tableName] || tableName,
@@ -166,7 +194,9 @@ class AdminDbViewer {
       })),
     ];
     return {
+      cleared: Boolean(snapshot.cleared),
       groups,
+      schemas,
       tables,
     };
   }
@@ -175,7 +205,7 @@ class AdminDbViewer {
     return groups.find((group) => group.id === this.activeFilter) || groups[0];
   }
 
-  renderTable(tableName, records) {
+  renderTable(tableName, records, schemaFields = []) {
     const details = this.createElement("details", {
       className: "vertical-accordion",
     });
@@ -196,7 +226,10 @@ class AdminDbViewer {
     });
     table.setAttribute("aria-label", `${tableName} records`);
 
-    const fields = this.tableFields(records).filter((field) => field !== "key");
+    const fields = [
+      ...schemaFields,
+      ...this.tableFields(records),
+    ].filter((field, index, allFields) => field !== "key" && allFields.indexOf(field) === index);
     const head = this.createElement("thead");
     const headerRow = this.createElement("tr");
     headerRow.append(this.createElement("th", { text: "Key" }));
@@ -209,7 +242,7 @@ class AdminDbViewer {
     if (!records.length) {
       const row = this.createElement("tr");
       const cell = this.createElement("td", {
-        text: "No records in this table. Add records from its tool or clear browser mock DB storage to reseed defaults.",
+        text: "No records in this table. Add records from its tool or use Seed Mock DB to restore baseline mock records.",
       });
       cell.colSpan = Math.max(1, fields.length + 1);
       row.append(cell);
@@ -245,12 +278,11 @@ class AdminDbViewer {
     return details;
   }
 
-  renderTables(tables) {
+  renderTables(tables, schemas = {}) {
     this.tablesRoot.replaceChildren();
     Object.keys(tables)
-      .sort()
       .forEach((tableName) => {
-        this.tablesRoot.append(this.renderTable(tableName, tables[tableName]));
+        this.tablesRoot.append(this.renderTable(tableName, tables[tableName], schemas[tableName] || []));
       });
   }
 
@@ -309,8 +341,17 @@ class AdminDbViewer {
     const noteTypeKeys = new Set((tables.project_journey_note_types || []).map((type) => type.key));
     const noteKeys = new Set((tables.project_journey_notes || []).map((note) => note.key));
     const userKeys = new Set((tables.users || []).map((user) => user.key));
-    const actorKeys = new Set((tables.actors || []).map((actor) => actor.key));
-    const actorUserKeys = new Set((tables.actors || []).map((actor) => actor.userKey));
+    const roleKeys = new Set((tables.roles || []).map((role) => role.key));
+    const systemRoleKeys = new Set(
+      (tables.roles || [])
+        .filter((role) => role.roleSlug === "system" || role.name === "system")
+        .map((role) => role.key),
+    );
+    const systemUserKeys = new Set(
+      (tables.user_roles || [])
+        .filter((row) => systemRoleKeys.has(row.roleKey))
+        .map((row) => row.userKey),
+    );
     const activeTemplateKeys = new Set(
       (tables.project_journey_templates || [])
         .filter((template) => template.isActive)
@@ -328,14 +369,14 @@ class AdminDbViewer {
     );
     return [
       {
-        name: "*.createdBy -> actors.key",
+        name: "*.createdBy -> users.key",
         checked: allRecords.length,
-        missing: allRecords.filter((record) => !actorKeys.has(record.createdBy)),
+        missing: allRecords.filter((record) => !userKeys.has(record.createdBy)),
       },
       {
-        name: "*.updatedBy -> actors.key",
+        name: "*.updatedBy -> users.key",
         checked: allRecords.length,
-        missing: allRecords.filter((record) => !actorKeys.has(record.updatedBy)),
+        missing: allRecords.filter((record) => !userKeys.has(record.updatedBy)),
       },
       {
         name: "project_journey_notes.typeKey -> project_journey_note_types.key",
@@ -354,9 +395,9 @@ class AdminDbViewer {
       },
       {
         name: "system project_journey_items.templateKey -> active project_journey_templates.key",
-        checked: (tables.project_journey_items || []).filter((item) => item.createdByType === "system").length,
+        checked: (tables.project_journey_items || []).filter((item) => systemUserKeys.has(item.createdBy)).length,
         missing: (tables.project_journey_items || []).filter(
-          (item) => item.createdByType === "system" && !activeTemplateKeys.has(item.templateKey),
+          (item) => systemUserKeys.has(item.createdBy) && !activeTemplateKeys.has(item.templateKey),
         ),
       },
       {
@@ -365,14 +406,14 @@ class AdminDbViewer {
         missing: (tables.project_journey_activity || []).filter((activity) => !noteKeys.has(activity.noteKey)),
       },
       {
-        name: "actors.userKey -> users.key",
-        checked: (tables.actors || []).length,
-        missing: (tables.actors || []).filter((actor) => !userKeys.has(actor.userKey)),
+        name: "user_roles.userKey -> users.key",
+        checked: (tables.user_roles || []).length,
+        missing: (tables.user_roles || []).filter((row) => !userKeys.has(row.userKey)),
       },
       {
-        name: "users.key -> actors.userKey",
-        checked: (tables.users || []).length,
-        missing: (tables.users || []).filter((user) => !actorUserKeys.has(user.key)),
+        name: "user_roles.roleKey -> roles.key",
+        checked: (tables.user_roles || []).length,
+        missing: (tables.user_roles || []).filter((row) => !roleKeys.has(row.roleKey)),
       },
       {
         name: "palette_colors.projectId -> project_workspace_palette_globals.projectId",
@@ -486,9 +527,10 @@ class AdminDbViewer {
     );
     this.renderFilters(snapshot.groups);
     this.renderSessionUser();
+    this.renderClearSeedButton(snapshot.cleared);
     this.renderDiagnostics(snapshot.tables, snapshot.groups);
     this.renderRelationships(snapshot.tables);
-    this.renderTables(visibleTables);
+    this.renderTables(visibleTables, snapshot.schemas);
     if (this.status) {
       const recordCount = Object.values(visibleTables).reduce((total, rows) => total + rows.length, 0);
       this.status.textContent = `Mock DB loaded ${Object.keys(visibleTables).length} table${Object.keys(visibleTables).length === 1 ? "" : "s"} and ${recordCount} record${recordCount === 1 ? "" : "s"} for ${group.label}.`;

@@ -136,6 +136,30 @@ function setEditingDisabled(disabled) {
   });
 }
 
+function setProjectScopedControlsDisabled(disabled) {
+  [
+    searchInput,
+  ].forEach((control) => {
+    if (control) {
+      control.disabled = disabled;
+    }
+  });
+}
+
+function setProjectWriteControlsDisabled(disabled) {
+  [
+    newNoteNameInput,
+    newNoteTypeSelect,
+    addNoteButton,
+    typeInput,
+    addTypeButton,
+  ].forEach((control) => {
+    if (control) {
+      control.disabled = disabled;
+    }
+  });
+}
+
 function updateFilterButtons() {
   filterButtons.forEach((button) => {
     const selected = button.dataset.journeyFilter === activeFilter;
@@ -188,6 +212,18 @@ function isSystemGeneratedFilter() {
   return activeFilter === "system";
 }
 
+function systemUserKey() {
+  return repository.getSystemUser().userKey;
+}
+
+function isSystemItem(item) {
+  return Boolean(item && item.createdBy === systemUserKey());
+}
+
+function isUserItem(item) {
+  return Boolean(item && !isSystemItem(item));
+}
+
 function countItems(items) {
   return items.reduce((counts, item) => {
     const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
@@ -207,7 +243,7 @@ function filterNoteItemsForDisplay(note) {
   if (!note || !isSystemGeneratedFilter()) {
     return note;
   }
-  const items = note.items.filter((item) => item.createdByType === "system");
+  const items = note.items.filter(isSystemItem);
   return {
     ...note,
     items,
@@ -222,10 +258,10 @@ function ensureSelectedItemMatchesFilter(note) {
 
   const selectedItem = getSelectedItem();
   const selectedVisible = note.items.some(
-    (item) => item.key === selectedItem?.key && item.createdByType === "system",
+    (item) => item.key === selectedItem?.key && isSystemItem(item),
   );
   if (!selectedVisible) {
-    const firstSystemItem = note.items.find((item) => item.createdByType === "system");
+    const firstSystemItem = note.items.find(isSystemItem);
     if (firstSystemItem) {
       repository.selectItem(firstSystemItem.key);
     }
@@ -374,7 +410,7 @@ function makeItemRowContent(item) {
   });
   row.dataset.journeyItemRow = item.key;
   row.append(makeItemButton(item));
-  if (item.createdByType === "user") {
+  if (isUserItem(item)) {
     row.append(createDeleteItemButton(item));
   } else {
     row.append(createSystemItemIndicator());
@@ -388,13 +424,13 @@ function makeSelectedItemDetails(item, editingDisabled) {
   });
   details.dataset.journeySelectedItemDetails = item.key;
 
-  if (item.createdByType === "system") {
+  if (isSystemItem(item)) {
     const guidance = createElement("div", {
-      className: "status tool-guidance-block",
+      className: "status content-cluster tool-guidance-block",
     });
     guidance.dataset.journeySystemGuidance = "";
     const heading = createElement("strong", { text: "System Guidance" });
-    const body = createElement("p", {
+    const body = createElement("span", {
       text: item.systemGuidance || "System guidance is unavailable until the linked template is repaired.",
     });
     guidance.append(heading, body);
@@ -497,9 +533,13 @@ function renderEditor(editingDisabled, note) {
     indentButton.disabled = true;
     outdentButton.disabled = true;
     if (editorStatus) {
-      editorStatus.textContent = canAddItem
-        ? "No item selected. Add Item will create a user-created editable item."
-        : "Select a journey item to review ownership.";
+      if (canAddItem) {
+        editorStatus.textContent = "No item selected. Add Item will create a user-created editable item.";
+      } else if (!repository.getSessionUser().userKey) {
+        editorStatus.textContent = "Guest is unauthenticated. Log in as a user before editing Project Journey records.";
+      } else {
+        editorStatus.textContent = "Select a journey item to review ownership.";
+      }
     }
     return;
   }
@@ -507,7 +547,7 @@ function renderEditor(editingDisabled, note) {
   statusInput.value = selectedItem.status;
   titleInput.value = selectedItem.title;
   statusInput.disabled = editingDisabled;
-  titleInput.disabled = Boolean(editingDisabled || selectedItem.createdByType === "system");
+  titleInput.disabled = Boolean(editingDisabled || isSystemItem(selectedItem));
   addItemButton.disabled = editingDisabled;
   updateItemButton.disabled = editingDisabled;
   moveUpButton.disabled = editingDisabled;
@@ -516,7 +556,7 @@ function renderEditor(editingDisabled, note) {
   outdentButton.disabled = editingDisabled;
   if (editorStatus) {
     editorStatus.textContent =
-      selectedItem.createdByType === "system"
+      isSystemItem(selectedItem)
         ? `System-created item. Title and guidance are template-owned by ${selectedItem.template?.templateSlug || selectedItem.templateKey || "missing template"}; status and Item Details are editable. Original meaning: ${selectedItem.originalMeaning || "Unavailable"}`
         : "User-created item. Title, status, and Item Details are editable.";
   }
@@ -585,7 +625,7 @@ function visibleItemsForActiveFilter(note) {
     return [];
   }
   if (isSystemGeneratedFilter()) {
-    return note.items.filter((item) => item.createdByType === "system");
+    return note.items.filter(isSystemItem);
   }
   return note.items;
 }
@@ -654,6 +694,10 @@ function renderSessionUser() {
   }
   const sessionUser = repository.getSessionUser();
   sessionUserHeader.textContent = `Session user: ${sessionUser.label}`;
+}
+
+function sessionUserCanWrite() {
+  return Boolean(repository.getSessionUser().userKey);
 }
 
 function captureSearchSelectionSnapshot() {
@@ -783,11 +827,16 @@ function renderRecentActivity() {
 function renderDiagnostics(activeProject, note, notes) {
   diagnostics.innerHTML = "";
   const messages = [];
+  const canWrite = sessionUserCanWrite();
 
   if (!activeProject) {
     messages.push("No active project is open. Open a project in Project Workspace to enable editing.");
   } else {
     messages.push(`Active project: ${activeProject.name}.`);
+  }
+
+  if (activeProject && !canWrite) {
+    messages.push("Guest is unauthenticated. Log in as User 1, User 2, User 3, or Admin before adding or editing Project Journey records.");
   }
 
   if (activeProject && !notes.length) {
@@ -799,8 +848,8 @@ function renderDiagnostics(activeProject, note, notes) {
     messages.push(`Selected note: ${note.name}.`);
     messages.push(`Total counts every item; Open counts ${PROJECT_JOURNEY_STATUS_BY_ID["not-started"].icon}, ${PROJECT_JOURNEY_STATUS_BY_ID.blocker.icon}, ${PROJECT_JOURNEY_STATUS_BY_ID.decide.icon}, and ${PROJECT_JOURNEY_STATUS_BY_ID["in-progress"].icon} items.`);
     if (selectedItem) {
-      messages.push(`Selected item updatedByType: ${selectedItem.updatedByType}.`);
-      messages.push(`Selected item createdByType: ${selectedItem.createdByType}.`);
+      messages.push(`Selected item updatedBy: ${selectedItem.updatedBy}.`);
+      messages.push(`Selected item createdBy: ${selectedItem.createdBy}.`);
     }
   }
 
@@ -843,7 +892,10 @@ function render() {
     ? notes.find((item) => item.key === selectedSummaryNoteKey) || null
     : null;
   const statCounts = selectedStatsNote ? selectedStatsNote.counts : aggregateCounts(notes);
-  const editingDisabled = !activeProject || !note;
+  const canWrite = sessionUserCanWrite();
+  const editingDisabled = !activeProject || !note || !canWrite;
+  const projectControlsDisabled = !activeProject;
+  const projectWriteControlsDisabled = !activeProject || !canWrite;
 
   renderSessionUser();
   activeProjectMessage.textContent = activeProject
@@ -854,6 +906,8 @@ function render() {
     : "Choose a note from the summary table.";
 
   setEditingDisabled(editingDisabled);
+  setProjectScopedControlsDisabled(projectControlsDisabled);
+  setProjectWriteControlsDisabled(projectWriteControlsDisabled);
   updateFilterButtons();
   renderNoteTypeOptions(note);
   renderSummary(notes);
@@ -947,7 +1001,7 @@ itemTree.addEventListener("input", (event) => {
 addItemButton.addEventListener("click", () => {
   const selectedItem = getSelectedItem();
   const addStatus = statusSelectionChanged ? statusInput.value : "not-started";
-  const title = newItemTitleInput?.value || (!selectedItem || selectedItem.createdByType === "user" ? titleInput.value : "");
+  const title = newItemTitleInput?.value || (!selectedItem || isUserItem(selectedItem) ? titleInput.value : "");
   repository.addItem({
     title,
     status: addStatus,
@@ -1017,7 +1071,9 @@ addNoteButton.addEventListener("click", () => {
   });
   if (!note) {
     if (noteStatus) {
-      noteStatus.textContent = "Open a project before adding a Project Journey note.";
+      noteStatus.textContent = sessionUserCanWrite()
+        ? "Open a project before adding a Project Journey note."
+        : "Log in as a user before adding a Project Journey note.";
     }
     return;
   }

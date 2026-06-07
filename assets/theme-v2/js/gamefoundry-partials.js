@@ -106,9 +106,38 @@
         "account", "company", "community", "legal",
         "admin", "docs", "games", "learn", "marketplace", "toolbox"
     ]);
+    const mockDbStorageKey = "gamefoundry.mockDb.v1";
+    const mockDbSessionStorageKey = "gamefoundry.mockDb.sessionUser.v1";
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
+
+    function makeMockUlid(sequence) {
+        return "01K2GFSJ0Y" + String(sequence).padStart(16, "0");
+    }
+
+    const localSessionUsers = {
+        user1: {
+            displayName: "User 1",
+            roleSlugs: ["user"],
+            userKey: makeMockUlid(51)
+        },
+        user2: {
+            displayName: "User 2",
+            roleSlugs: ["user"],
+            userKey: makeMockUlid(52)
+        },
+        user3: {
+            displayName: "User 3",
+            roleSlugs: ["user"],
+            userKey: makeMockUlid(53)
+        },
+        admin: {
+            displayName: "Admin",
+            roleSlugs: ["user", "admin"],
+            userKey: makeMockUlid(54)
+        }
+    };
 
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
@@ -145,6 +174,113 @@
         root.querySelectorAll("img[src^='assets/']").forEach(function (image) {
             image.setAttribute("src", assetUrl(image.getAttribute("src")));
         });
+    }
+
+    function readMockDbState() {
+        try {
+            const raw = window.localStorage.getItem(mockDbStorageKey);
+            return raw ? JSON.parse(raw) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function selectedLocalSessionId() {
+        try {
+            return window.localStorage.getItem(mockDbSessionStorageKey) || "guest";
+        } catch {
+            return "guest";
+        }
+    }
+
+    function rolesForUser(state, userKey, fallbackRoleSlugs) {
+        const rows = state?.tables?.user_roles || [];
+        const roles = new Map((state?.tables?.roles || []).map(function (role) {
+            return [role.key, role.roleSlug || role.name];
+        }));
+        const resolved = rows
+            .filter(function (row) {
+                return row.userKey === userKey && roles.has(row.roleKey);
+            })
+            .map(function (row) {
+                return roles.get(row.roleKey);
+            })
+            .filter(Boolean);
+        return resolved.length ? resolved : fallbackRoleSlugs;
+    }
+
+    function localDevLoginState() {
+        const session = localSessionUsers[selectedLocalSessionId()];
+        if (!session) {
+            return {
+                authenticated: false,
+                displayName: "Login",
+                roleSlugs: []
+            };
+        }
+
+        const state = readMockDbState();
+        const user = (state?.tables?.users || []).find(function (record) {
+            return record.key === session.userKey && record.isActive !== false;
+        });
+        if (state && !user) {
+            return {
+                authenticated: false,
+                displayName: "Login",
+                roleSlugs: []
+            };
+        }
+
+        return {
+            authenticated: true,
+            displayName: user?.displayName || session.displayName,
+            roleSlugs: rolesForUser(state, session.userKey, session.roleSlugs)
+        };
+    }
+
+    function directSubMenu(navItem) {
+        return Array.from(navItem?.children || []).find(function (child) {
+            return child.classList?.contains("sub-menu");
+        }) || null;
+    }
+
+    function navItemForRoute(root, routeName) {
+        const link = root.querySelector("nav.nav-links > .nav-item > a[data-route='" + routeName + "']");
+        return link ? link.closest(".nav-item") : null;
+    }
+
+    function setMenuVisible(navItem, visible) {
+        if (!navItem) {
+            return;
+        }
+        navItem.hidden = !visible;
+        navItem.querySelectorAll("a").forEach(function (link) {
+            link.setAttribute("aria-hidden", String(!visible));
+            link.tabIndex = visible ? 0 : -1;
+        });
+    }
+
+    function applyLocalDevLoginState(root) {
+        const loginState = localDevLoginState();
+        const accountItem = navItemForRoute(root, "account");
+        const accountLink = accountItem?.querySelector(":scope > a[data-route='account']");
+        const accountMenu = directSubMenu(accountItem);
+        const adminItem = navItemForRoute(root, "admin");
+        const canUseAccount = loginState.authenticated && loginState.roleSlugs.includes("user");
+        const canUseAdmin = loginState.authenticated && loginState.roleSlugs.includes("admin");
+
+        if (accountLink) {
+            accountLink.textContent = canUseAccount ? loginState.displayName + " \u25BE" : "Login";
+            accountLink.setAttribute("aria-label", canUseAccount ? "Account menu for " + loginState.displayName : "Login");
+        }
+        if (accountMenu) {
+            accountMenu.hidden = !canUseAccount;
+            accountMenu.querySelectorAll("a").forEach(function (link) {
+                link.tabIndex = canUseAccount ? 0 : -1;
+                link.setAttribute("aria-hidden", String(!canUseAccount));
+            });
+        }
+        setMenuVisible(adminItem, canUseAdmin);
     }
 
     function markActiveNavigation(root) {
@@ -190,6 +326,7 @@
         const element = wrapper.firstElementChild;
         rewriteRootedPaths(element);
         if (partialName === "header-nav") {
+            applyLocalDevLoginState(element);
             markActiveNavigation(element);
         } else if (partialName === "footer") {
             wireReturnToTop(element);
@@ -213,6 +350,14 @@
         }
     }
 
+    function refreshHeaderLoginState() {
+        const header = document.querySelector("header.site-header");
+        if (header) {
+            applyLocalDevLoginState(header);
+            markActiveNavigation(header);
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         const slots = Array.from(document.querySelectorAll("[data-partial]"));
         const tasks = slots.length ? slots.map(loadPartial) : [
@@ -223,4 +368,6 @@
             console.error(error);
         });
     });
+    window.addEventListener("gamefoundry:mock-db-session-user-changed", refreshHeaderLoginState);
+    window.addEventListener("gamefoundry:mock-db-changed", refreshHeaderLoginState);
 }());

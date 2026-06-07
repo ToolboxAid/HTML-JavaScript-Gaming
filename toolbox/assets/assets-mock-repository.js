@@ -970,7 +970,6 @@ export function createAssetToolMockRepository(options = {}) {
 
   if (databaseCleared) {
     selectedAssetId = "";
-    persistTables();
   } else if (hasPersistedTables) {
     selectedAssetId = tables.asset_library_items[0]?.id || "";
     persistTables();

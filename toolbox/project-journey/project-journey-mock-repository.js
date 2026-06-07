@@ -6,7 +6,7 @@ import {
   MOCK_DB_KEYS,
   saveMockDbTables,
   getMockDbSessionUser,
-  getMockDbSystemActor,
+  getMockDbSystemUser,
 } from "../../src/engine/persistence/mock-db-store.js";
 
 function makeUlid(sequence) {
@@ -36,6 +36,7 @@ export const PROJECT_JOURNEY_KEYS = Object.freeze({
     user2: MOCK_DB_KEYS.users.user2,
     user3: MOCK_DB_KEYS.users.user3,
     admin: MOCK_DB_KEYS.users.admin,
+    forgeBot: MOCK_DB_KEYS.users.forgeBot,
     designer: MOCK_DB_KEYS.users.user1,
     producer: MOCK_DB_KEYS.users.user2,
   }),
@@ -154,23 +155,13 @@ function timestamp(minutes) {
   return new Date(new Date(now).getTime() + minutes * 60_000).toISOString();
 }
 
-function actorKeyForSeed(byType = "system", actorKey = "") {
-  if (actorKey) {
-    return actorKey;
-  }
-  return byType === "user" ? MOCK_DB_KEYS.actors.user1 : MOCK_DB_KEYS.actors.forgeBot;
-}
-
-function makeAuditFields(minutes, byType = "system", actorKey = "") {
+function makeAuditFields(minutes, userKey = MOCK_DB_KEYS.users.forgeBot) {
   const value = timestamp(minutes);
-  const resolvedActorKey = actorKeyForSeed(byType, actorKey);
   return {
     createdAt: value,
     updatedAt: value,
-    createdBy: resolvedActorKey,
-    updatedBy: resolvedActorKey,
-    createdByType: byType,
-    updatedByType: byType,
+    createdBy: userKey,
+    updatedBy: userKey,
   };
 }
 
@@ -216,7 +207,6 @@ function makeSystemItem({
   order,
   minutes,
 }) {
-  const timestampValue = timestamp(minutes);
   return {
     key,
     projectKey: PROJECT_JOURNEY_KEYS.project,
@@ -224,17 +214,12 @@ function makeSystemItem({
     status,
     title,
     userDetails,
-    createdByType: "system",
-    updatedByType: "system",
-    createdBy: MOCK_DB_KEYS.actors.forgeBot,
-    updatedBy: MOCK_DB_KEYS.actors.forgeBot,
     templateKey,
     linkedRecordType,
     linkedRecordId,
     indent,
     order,
-    createdAt: timestampValue,
-    updatedAt: timestampValue,
+    ...makeAuditFields(minutes, MOCK_DB_KEYS.users.forgeBot),
   };
 }
 
@@ -257,7 +242,7 @@ function getSeedTables() {
       ownerKey: PROJECT_JOURNEY_KEYS.users.user1,
       name: "Palette and Input Density",
       typeKey: PROJECT_JOURNEY_KEYS.noteTypes.design,
-      ...makeAuditFields(5, "user", MOCK_DB_KEYS.actors.user1),
+      ...makeAuditFields(5, MOCK_DB_KEYS.users.user1),
     },
     {
       key: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
@@ -266,7 +251,7 @@ function getSeedTables() {
       ownerKey: PROJECT_JOURNEY_KEYS.users.user2,
       name: "Release Readiness",
       typeKey: PROJECT_JOURNEY_KEYS.noteTypes.release,
-      ...makeAuditFields(9, "user", MOCK_DB_KEYS.actors.user2),
+      ...makeAuditFields(9, MOCK_DB_KEYS.users.user2),
     },
     {
       key: PROJECT_JOURNEY_KEYS.notes.storyMap,
@@ -275,7 +260,7 @@ function getSeedTables() {
       ownerKey: PROJECT_JOURNEY_KEYS.users.user1,
       name: "Story Beats",
       typeKey: PROJECT_JOURNEY_KEYS.noteTypes.story,
-      ...makeAuditFields(14, "user", MOCK_DB_KEYS.actors.user1),
+      ...makeAuditFields(14, MOCK_DB_KEYS.users.user1),
     },
     {
       key: PROJECT_JOURNEY_KEYS.notes.researchUx,
@@ -284,7 +269,7 @@ function getSeedTables() {
       ownerKey: PROJECT_JOURNEY_KEYS.users.user2,
       name: "Research Questions",
       typeKey: PROJECT_JOURNEY_KEYS.noteTypes.research,
-      ...makeAuditFields(18, "user", MOCK_DB_KEYS.actors.user2),
+      ...makeAuditFields(18, MOCK_DB_KEYS.users.user2),
     },
   ];
 
@@ -363,7 +348,6 @@ function getSeedTables() {
         9,
       ),
       isActive: false,
-      updatedByType: "system",
       updatedAt: timestamp(19),
     },
   ];
@@ -468,14 +452,14 @@ function getSeedTables() {
       projectKey: PROJECT_JOURNEY_KEYS.project,
       noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
       message: "Palette and Input Density updated by User 1",
-      ...makeAuditFields(20, "user", MOCK_DB_KEYS.actors.user1),
+      ...makeAuditFields(20, MOCK_DB_KEYS.users.user1),
     },
     {
       key: PROJECT_JOURNEY_KEYS.activity.releaseBlocked,
       projectKey: PROJECT_JOURNEY_KEYS.project,
       noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
       message: "Release Readiness marked with a blocker",
-      ...makeAuditFields(22, "user", MOCK_DB_KEYS.actors.user2),
+      ...makeAuditFields(22, MOCK_DB_KEYS.users.user2),
     },
   ];
 
@@ -508,40 +492,38 @@ export function createProjectJourneyMockRepository(options = {}) {
     return currentSessionUser().userKey;
   }
 
-  function currentActorKey() {
-    return currentSessionUser().actorKey;
+  function currentUserCanWrite() {
+    return Boolean(currentUserKey());
   }
 
-  function systemActorKey() {
-    return getMockDbSystemActor().actorKey;
+  function systemUserKey() {
+    return getMockDbSystemUser().userKey;
   }
 
-  function actorKeyForUpdate(updatedByType = "user") {
-    return updatedByType === "system" ? systemActorKey() : currentActorKey();
+  function isSystemItem(item) {
+    return Boolean(item && item.createdBy === systemUserKey());
   }
 
   function currentUserCanSeeNote(note) {
     const sessionUser = currentSessionUser();
-    return Boolean(sessionUser.isAdmin || note.ownerKey === sessionUser.userKey);
+    return Boolean(sessionUser.userKey && (sessionUser.isAdmin || note.ownerKey === sessionUser.userKey));
   }
 
   function persistTables() {
     saveMockDbTables(PROJECT_JOURNEY_DB_OWNER, tables, options);
   }
 
-  function touchNote(noteKey, updatedByType = "user") {
+  function touchNote(noteKey, updatedBy = currentUserKey()) {
     const note = tables.project_journey_notes.find((item) => item.key === noteKey);
     if (note) {
       note.updatedAt = new Date().toISOString();
-      note.updatedByType = updatedByType === "system" ? "system" : "user";
-      note.updatedBy = actorKeyForUpdate(note.updatedByType);
+      note.updatedBy = updatedBy;
       persistTables();
     }
   }
 
-  function addActivity(projectKey, noteKey, message, byType = "user") {
+  function addActivity(projectKey, noteKey, message, userKey = currentUserKey()) {
     const timestampValue = new Date().toISOString();
-    const actorKey = actorKeyForUpdate(byType);
     tables.project_journey_activity.unshift({
       key: makeUlid(nextActivityNumber),
       projectKey,
@@ -549,10 +531,8 @@ export function createProjectJourneyMockRepository(options = {}) {
       message,
       createdAt: timestampValue,
       updatedAt: timestampValue,
-      createdBy: actorKey,
-      updatedBy: actorKey,
-      createdByType: byType === "system" ? "system" : "user",
-      updatedByType: byType === "system" ? "system" : "user",
+      createdBy: userKey,
+      updatedBy: userKey,
     });
     nextActivityNumber += 1;
     persistTables();
@@ -578,7 +558,7 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function resolveTemplate(item) {
-    if (item.createdByType !== "system") {
+    if (!isSystemItem(item)) {
       return {
         template: null,
         templateDiagnostic: null,
@@ -644,7 +624,7 @@ export function createProjectJourneyMockRepository(options = {}) {
 
   function itemMatchesCountFilter(item, filterId) {
     if (filterId === "system") {
-      return item.createdByType === "system";
+      return isSystemItem(item);
     }
     return true;
   }
@@ -686,7 +666,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
 
     if (filterId === "system") {
-      return getItemsForNote(note.key).some((item) => item.createdByType === "system");
+      return getItemsForNote(note.key).some(isSystemItem);
     }
 
     return getItemsForNote(note.key).some((item) => item.status === filterId);
@@ -715,7 +695,7 @@ export function createProjectJourneyMockRepository(options = {}) {
 
   function addNote({ name, typeKey } = {}) {
     const activeProject = requireActiveProject();
-    if (!activeProject) {
+    if (!activeProject || !currentUserCanWrite()) {
       return null;
     }
 
@@ -724,7 +704,6 @@ export function createProjectJourneyMockRepository(options = {}) {
       tables.project_journey_note_types.find((type) => type.key === typeKey) ||
       tables.project_journey_note_types[0];
     const timestampValue = new Date().toISOString();
-    const actorKey = currentActorKey();
     const note = {
       key: makeUlid(nextNoteNumber),
       slug: `user-note-${nextNoteNumber}`,
@@ -734,16 +713,14 @@ export function createProjectJourneyMockRepository(options = {}) {
       typeKey: selectedType?.key || "",
       createdAt: timestampValue,
       updatedAt: timestampValue,
-      createdBy: actorKey,
-      updatedBy: actorKey,
-      createdByType: "user",
-      updatedByType: "user",
+      createdBy: currentUserKey(),
+      updatedBy: currentUserKey(),
     };
     nextNoteNumber += 1;
     tables.project_journey_notes.push(note);
     selectedNoteKey = note.key;
     selectedItemKey = "";
-    addActivity(activeProject.key, note.key, `Added note ${note.name}`, "user");
+    addActivity(activeProject.key, note.key, `Added note ${note.name}`);
     return getSelectedNote();
   }
 
@@ -810,13 +787,12 @@ export function createProjectJourneyMockRepository(options = {}) {
   function addItem({ title, status, userDetails = "", indent = 0 }) {
     const activeProject = requireActiveProject();
     const note = tables.project_journey_notes.find((item) => item.key === selectedNoteKey && currentUserCanSeeNote(item));
-    if (!activeProject || !note) {
+    if (!activeProject || !note || !currentUserCanWrite()) {
       return null;
     }
 
     const existingItems = getItemsForNote(note.key);
     const timestampValue = new Date().toISOString();
-    const actorKey = currentActorKey();
     const item = {
       key: makeUlid(nextItemNumber),
       projectKey: activeProject.key,
@@ -824,10 +800,8 @@ export function createProjectJourneyMockRepository(options = {}) {
       status: PROJECT_JOURNEY_STATUS_BY_ID[status] ? status : "not-started",
       title: String(title || "").trim() || "New journey item",
       userDetails: String(userDetails || "").trim(),
-      createdByType: "user",
-      updatedByType: "user",
-      createdBy: actorKey,
-      updatedBy: actorKey,
+      createdBy: currentUserKey(),
+      updatedBy: currentUserKey(),
       templateKey: "",
       linkedRecordType: "",
       linkedRecordId: "",
@@ -839,8 +813,8 @@ export function createProjectJourneyMockRepository(options = {}) {
     nextItemNumber += 1;
     tables.project_journey_items.push(item);
     selectedItemKey = item.key;
-    touchNote(note.key, "user");
-    addActivity(activeProject.key, note.key, `Added item to ${note.name}`, "user");
+    touchNote(note.key);
+    addActivity(activeProject.key, note.key, `Added item to ${note.name}`);
     persistTables();
     return hydrateItem(item);
   }
@@ -849,14 +823,14 @@ export function createProjectJourneyMockRepository(options = {}) {
     const activeProject = requireActiveProject();
     const item = tables.project_journey_items.find((candidate) => candidate.key === itemKey);
     const noteForItem = item ? tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
-    if (!activeProject || !item || !noteForItem || !currentUserCanSeeNote(noteForItem)) {
+    if (!activeProject || !item || !noteForItem || !currentUserCanSeeNote(noteForItem) || !currentUserCanWrite()) {
       return {
         deleted: false,
         reason: "No journey item is selected for deletion.",
       };
     }
 
-    if (item.createdByType === "system") {
+    if (isSystemItem(item)) {
       return {
         deleted: false,
         reason: "System-created items can be edited but not deleted.",
@@ -875,8 +849,8 @@ export function createProjectJourneyMockRepository(options = {}) {
       remainingItems.find((candidate) => candidate.order >= deletedOrder)?.key ||
       remainingItems.at(-1)?.key ||
       "";
-    touchNote(item.noteKey, "user");
-    addActivity(activeProject.key, item.noteKey, `Deleted user item from ${note?.name || "Project Journey"}`, "user");
+    touchNote(item.noteKey);
+    addActivity(activeProject.key, item.noteKey, `Deleted user item from ${note?.name || "Project Journey"}`);
     persistTables();
     return {
       deleted: true,
@@ -885,16 +859,18 @@ export function createProjectJourneyMockRepository(options = {}) {
     };
   }
 
-  function updateItem(itemKey, updates = {}, updatedByType = "user") {
+  function updateItem(itemKey, updates = {}, updatedBy = currentUserKey()) {
     const activeProject = requireActiveProject();
     const item = tables.project_journey_items.find((candidate) => candidate.key === itemKey);
     const note = item ? tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
-    if (!activeProject || !item || !note || !currentUserCanSeeNote(note)) {
+    const systemUpdate = updatedBy === systemUserKey();
+    const canReachNote = systemUpdate || currentUserCanSeeNote(note);
+    if (!activeProject || !item || !note || !canReachNote || (!systemUpdate && !currentUserCanWrite())) {
       return null;
     }
 
-    const isSystemItem = item.createdByType === "system";
-    if (!isSystemItem && typeof updates.title === "string") {
+    const systemOwned = isSystemItem(item);
+    if (!systemOwned && typeof updates.title === "string") {
       item.title = updates.title.trim() || item.title;
     }
     if (PROJECT_JOURNEY_STATUS_BY_ID[updates.status]) {
@@ -906,30 +882,29 @@ export function createProjectJourneyMockRepository(options = {}) {
     if (updates.indent !== undefined) {
       item.indent = normalizeIndent(updates.indent);
     }
-    if (updatedByType === "system" && typeof updates.title === "string") {
+    if (systemUpdate && typeof updates.title === "string") {
       item.title = updates.title.trim() || item.title;
     }
 
-    item.updatedByType = updatedByType === "system" ? "system" : "user";
-    item.updatedBy = actorKeyForUpdate(item.updatedByType);
+    item.updatedBy = updatedBy;
     item.updatedAt = new Date().toISOString();
     selectedItemKey = item.key;
     selectedNoteKey = item.noteKey;
-    touchNote(item.noteKey, item.updatedByType);
-    addActivity(activeProject.key, item.noteKey, `${item.updatedByType === "system" ? "System" : "User"} updated selected journey item`, item.updatedByType);
+    touchNote(item.noteKey, updatedBy);
+    addActivity(activeProject.key, item.noteKey, `${systemUpdate ? "System" : "User"} updated selected journey item`, updatedBy);
     persistTables();
     return hydrateItem(item);
   }
 
   function applySystemItemUpdate(itemKey, updates = {}) {
-    return updateItem(itemKey, updates, "system");
+    return updateItem(itemKey, updates, systemUserKey());
   }
 
   function moveSelectedItem(direction) {
     const activeProject = requireActiveProject();
     const item = tables.project_journey_items.find((candidate) => candidate.key === selectedItemKey);
     const note = item ? tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
-    if (!activeProject || !item || !note || !currentUserCanSeeNote(note)) {
+    if (!activeProject || !item || !note || !currentUserCanSeeNote(note) || !currentUserCanWrite()) {
       return null;
     }
 
@@ -943,17 +918,16 @@ export function createProjectJourneyMockRepository(options = {}) {
     const neighbor = items[nextIndex];
     const currentOrder = item.order;
     const timestampValue = new Date().toISOString();
+    const userKey = currentUserKey();
     item.order = neighbor.order;
     neighbor.order = currentOrder;
-    item.updatedByType = "user";
-    neighbor.updatedByType = "user";
-    item.updatedBy = currentActorKey();
-    neighbor.updatedBy = currentActorKey();
+    item.updatedBy = userKey;
+    neighbor.updatedBy = userKey;
     item.updatedAt = timestampValue;
     neighbor.updatedAt = timestampValue;
     resequence(items);
-    touchNote(item.noteKey, "user");
-    addActivity(activeProject.key, item.noteKey, "Reordered journey items", "user");
+    touchNote(item.noteKey, userKey);
+    addActivity(activeProject.key, item.noteKey, "Reordered journey items", userKey);
     persistTables();
     return hydrateItem(item);
   }
@@ -964,26 +938,35 @@ export function createProjectJourneyMockRepository(options = {}) {
       return null;
     }
 
-    return updateItem(item.key, { indent: item.indent + delta }, "user");
+    return updateItem(item.key, { indent: item.indent + delta });
   }
 
   function updateSelectedNoteType(typeKey) {
     const activeProject = requireActiveProject();
     const note = tables.project_journey_notes.find((item) => item.key === selectedNoteKey && currentUserCanSeeNote(item));
     const type = tables.project_journey_note_types.find((item) => item.key === typeKey);
-    if (!activeProject || !note || !type) {
+    if (!activeProject || !note || !type || !currentUserCanWrite()) {
       return null;
     }
 
     note.typeKey = type.key;
-    touchNote(note.key, "user");
-    addActivity(activeProject.key, note.key, `Changed ${note.name} type to ${type.name}`, "user");
+    touchNote(note.key);
+    addActivity(activeProject.key, note.key, `Changed ${note.name} type to ${type.name}`);
     persistTables();
     return getSelectedNote();
   }
 
   function addNoteType(name) {
     const normalized = String(name || "").trim();
+    if (!currentUserCanWrite()) {
+      return {
+        type: null,
+        created: false,
+        duplicate: false,
+        message: "Log in as a user before adding a Project Journey note type.",
+      };
+    }
+
     if (!normalized) {
       return {
         type: null,
@@ -1006,7 +989,6 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
 
     const timestampValue = new Date().toISOString();
-    const actorKey = currentActorKey();
     const type = {
       key: makeUlid(nextTypeNumber),
       typeSlug: `custom-${nextTypeNumber}`,
@@ -1015,10 +997,8 @@ export function createProjectJourneyMockRepository(options = {}) {
       userExtensible: true,
       createdAt: timestampValue,
       updatedAt: timestampValue,
-      createdBy: actorKey,
-      updatedBy: actorKey,
-      createdByType: "user",
-      updatedByType: "user",
+      createdBy: currentUserKey(),
+      updatedBy: currentUserKey(),
     };
     nextTypeNumber += 1;
     tables.project_journey_note_types.push(type);
@@ -1080,7 +1060,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     ];
     const created = fixtures.map((fixture, index) => {
       const timestampValue = new Date().toISOString();
-      const actorKey = systemActorKey();
+      const userKey = systemUserKey();
       const item = {
         key: makeUlid(nextDiagnosticNumber),
         projectKey: activeProject.key,
@@ -1088,10 +1068,8 @@ export function createProjectJourneyMockRepository(options = {}) {
         status: fixture.status,
         title: fixture.title,
         userDetails: "",
-        createdByType: "system",
-        updatedByType: "system",
-        createdBy: actorKey,
-        updatedBy: actorKey,
+        createdBy: userKey,
+        updatedBy: userKey,
         templateKey: fixture.templateKey,
         linkedRecordType: "diagnostic",
         linkedRecordId: fixture.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
@@ -1104,7 +1082,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       tables.project_journey_items.push(item);
       return hydrateItem(item);
     });
-    touchNote(noteKey, "system");
+    touchNote(noteKey, systemUserKey());
     persistTables();
     return created;
   }
@@ -1118,6 +1096,7 @@ export function createProjectJourneyMockRepository(options = {}) {
   return {
     getTables: () => clone(tables),
     getSessionUser: () => currentSessionUser(),
+    getSystemUser: () => getMockDbSystemUser(),
     getActiveProject,
     openProject,
     clearActiveProject: () => workspaceRepository.clearTestData(),
