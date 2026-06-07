@@ -14,21 +14,21 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (61%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(77%) Theme V2 Shared JS - exercised 3 runtime JS files
+(80%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(55%) src/engine/api/server-api-client.js - executed lines 186/186; executed functions 12/22
+(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
 
 Files with executed line/function counts where available:
-(55%) src/engine/api/server-api-client.js - executed lines 186/186; executed functions 12/22
+(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
 (55%) toolbox/project-journey/project-journey.js - executed lines 1003/1003; executed functions 54/99
 (60%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 3/5
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 9/14
 (67%) admin/db-viewer.js - executed lines 53/53; executed functions 4/6
-(79%) assets/theme-v2/js/login-session.js - executed lines 227/227; executed functions 15/19
-(80%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 448/448; executed functions 33/41
 (81%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 22/27
+(82%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 434/434; executed functions 32/39
 (85%) src/engine/api/mock-db-viewer-ui.js - executed lines 510/510; executed functions 82/96
+(88%) assets/theme-v2/js/login-session.js - executed lines 169/169; executed functions 15/17
 (88%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 7/8
 (100%) toolbox/project-journey/project-journey-api-client.js - executed lines 12/12; executed functions 2/2
 
@@ -36,8 +36,7 @@ Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) tests/helpers/browserExtensionNoise.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/StaticOnlyLoginFallback.spec.mjs - changed JS file not collected as browser runtime coverage
-(55%) src/engine/api/server-api-client.js - changed JS file with browser V8 coverage
-(79%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
-(80%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(0%) tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs - changed JS file not collected as browser runtime coverage
+(53%) src/engine/api/server-api-client.js - changed JS file with browser V8 coverage
+(82%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(88%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage

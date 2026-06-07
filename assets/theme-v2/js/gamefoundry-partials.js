@@ -110,7 +110,6 @@
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
-    const staticApiDiagnosticKey = "GameFoundryStaticApiUnavailableDiagnostic";
 
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
@@ -143,14 +142,6 @@
         return "Local server API route unavailable for " + method + " " + url + " (" + status + "). Start the API-backed local server route instead of a static-only server.";
     }
 
-    function cachedStaticApiDiagnostic() {
-        return String(window[staticApiDiagnosticKey] || "");
-    }
-
-    function cacheStaticApiDiagnostic(message) {
-        window[staticApiDiagnosticKey] = message;
-    }
-
     function missingSessionApiLoginState(diagnostic) {
         return {
             authenticated: false,
@@ -172,10 +163,6 @@
     }
 
     function localDevLoginState() {
-        const cachedDiagnostic = cachedStaticApiDiagnostic();
-        if (cachedDiagnostic) {
-            return missingSessionApiLoginState(cachedDiagnostic);
-        }
         try {
             const request = new XMLHttpRequest();
             request.open("GET", "/api/session/current", false);
@@ -184,9 +171,7 @@
             const payload = request.responseText ? JSON.parse(request.responseText) : null;
             if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
                 if (request.status === 404 || request.status === 405) {
-                    const diagnostic = localRouteUnavailableDiagnostic("GET", "/api/session/current", request.status);
-                    cacheStaticApiDiagnostic(diagnostic);
-                    throw new Error(diagnostic);
+                    throw new Error(localRouteUnavailableDiagnostic("GET", "/api/session/current", request.status));
                 }
                 throw new Error(payload?.error || "Session API did not return a valid current session.");
             }
@@ -332,11 +317,10 @@
         const pagePath = currentPagePath() || "index.html";
         const requirement = protectedPageRequirement(pagePath);
         if (!requirement) {
-            const diagnostic = cachedStaticApiDiagnostic();
             window.GameFoundrySessionGuard = {
                 blocked: false,
-                diagnostic,
-                mode: diagnostic ? "missing-api" : "",
+                diagnostic: "",
+                mode: "",
                 pagePath,
                 requirement: ""
             };
