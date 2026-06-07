@@ -110,6 +110,7 @@
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
+    const apiBackedLoginDiagnostic = "Use the API-backed local server for login.";
 
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
@@ -142,6 +143,11 @@
         return "Local server API route unavailable for " + method + " " + url + " (" + status + "). Start the API-backed local server route instead of a static-only server.";
     }
 
+    function isStaticLocalEntrypoint() {
+        return ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
+            window.location.port === "5500";
+    }
+
     function missingSessionApiLoginState(diagnostic) {
         return {
             authenticated: false,
@@ -163,6 +169,9 @@
     }
 
     function localDevLoginState() {
+        if (isStaticLocalEntrypoint()) {
+            return missingSessionApiLoginState(apiBackedLoginDiagnostic);
+        }
         try {
             const request = new XMLHttpRequest();
             request.open("GET", "/api/session/current", false);

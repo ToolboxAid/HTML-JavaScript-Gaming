@@ -5,6 +5,8 @@ import { expect, test } from "@playwright/test";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
+const STATIC_LOCAL_PORT = 5500;
+
 function contentTypeForPath(filePath) {
   const extension = path.extname(filePath).toLowerCase();
   if (extension === ".html") return "text/html; charset=utf-8";
@@ -45,11 +47,11 @@ async function startStaticOnlyServer() {
 
   await new Promise((resolve, reject) => {
     server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
+    server.listen(STATIC_LOCAL_PORT, "127.0.0.1", resolve);
   });
   const address = server.address();
   if (!address || typeof address === "string") {
-    throw new Error("Failed to start static-only test server.");
+    throw new Error("Failed to start static-only 127.0.0.1:5500 test server.");
   }
   return {
     baseUrl: `http://127.0.0.1:${address.port}`,
@@ -63,12 +65,16 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-test("static-only login requires API-backed session routes", async ({ page }) => {
+test("static 127.0.0.1:5500 login requires the API-backed local server", async ({ page }) => {
   const server = await startStaticOnlyServer();
+  const requests = [];
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
 
+  page.on("request", (request) => {
+    requests.push(request.url());
+  });
   page.on("response", (response) => {
     if (response.status() >= 400) {
       failedRequests.push(`${response.status()} ${response.url()}`);
@@ -101,13 +107,15 @@ test("static-only login requires API-backed session routes", async ({ page }) =>
     await expect(page.locator("[data-login-mode-title]")).toHaveText("Session API required");
     await expect(page.locator("[data-login-mode-description]")).toContainText("Start the API-backed local server");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Login/session diagnostic");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("Local server API route unavailable for GET /api/session/current (404)");
+    await expect(page.locator("[data-login-mode-status]")).toContainText("Use the API-backed local server for login.");
     await expect(page.locator("[data-login-user]")).toHaveCount(0);
     await expect(page.locator("[data-login-user-status]")).toContainText("No local users are available until /api/session responds");
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
 
-    expect(failedRequests.filter((request) => request.includes("/api/session/current")).length).toBeGreaterThan(0);
+    expect(requests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
+    expect(requests.filter((request) => request.includes("/api/session/"))).toEqual([]);
+    expect(failedRequests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/mode"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/users"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/modes"))).toEqual([]);

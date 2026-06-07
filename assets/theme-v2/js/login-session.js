@@ -13,6 +13,7 @@ const modeStatus = document.querySelector("[data-login-mode-status]");
 const userControls = document.querySelector("[data-login-user-controls]");
 const userStatus = document.querySelector("[data-login-user-status]");
 const continueLink = document.querySelector("[data-login-continue]");
+const apiBackedLoginDiagnostic = "Use the API-backed local server for login.";
 
 function currentReturnTo() {
   const params = new URLSearchParams(window.location.search);
@@ -95,6 +96,11 @@ function errorMessage(error) {
   return error instanceof Error ? error.message : String(error || "Session API unavailable.");
 }
 
+function isStaticLocalEntrypoint() {
+  return ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
+    window.location.port === "5500";
+}
+
 function renderError(error) {
   const message = errorMessage(error);
   modeButtons.forEach((button) => {
@@ -122,6 +128,10 @@ function renderError(error) {
 }
 
 function render() {
+  if (isStaticLocalEntrypoint()) {
+    renderError(new Error(apiBackedLoginDiagnostic));
+    return;
+  }
   try {
     const session = getSessionCurrent();
     const mode = getSessionModes().find((item) => item.id === session.mode) || {
@@ -158,6 +168,10 @@ function render() {
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const modeId = button.dataset.loginMode || "local-mem";
+    if (isStaticLocalEntrypoint()) {
+      renderError(new Error(apiBackedLoginDiagnostic));
+      return;
+    }
     try {
       setSessionMode(modeId);
       dispatchModeChanged();
