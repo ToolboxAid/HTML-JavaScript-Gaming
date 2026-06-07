@@ -41,7 +41,7 @@ test.afterAll(async () => {
 
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
-  return path.join(process.cwd(), "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.json`);
+  return path.join(process.cwd(), "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.sqlite`);
 }
 
 async function openRepoPage(page, pathName, options = {}) {

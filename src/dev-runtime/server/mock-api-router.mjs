@@ -1,11 +1,7 @@
-import {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { DatabaseSync } from "node:sqlite";
 import {
   createAssetToolMockRepository,
   pickerDiagnosticForRole,
@@ -139,7 +135,33 @@ function isUlidKey(value) {
 
 function localDbStoragePath() {
   return process.env.GAMEFOUNDRY_LOCAL_DB_PATH ||
-    path.join(process.cwd(), "tmp", "local-db", "local-db-state.json");
+    path.join(process.cwd(), "tmp", "local-db", "local-db-state.sqlite");
+}
+
+function sqliteIdentifier(value) {
+  const identifier = String(value || "");
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(identifier)) {
+    throw new Error(`Unsafe SQLite identifier: ${identifier || "missing"}.`);
+  }
+  return `"${identifier}"`;
+}
+
+function serializeSqliteValue(value) {
+  if (value === undefined) {
+    return null;
+  }
+  return JSON.stringify(value);
+}
+
+function deserializeSqliteValue(value) {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
 }
 
 function sendJson(response, statusCode, payload) {
@@ -334,7 +356,7 @@ class LocalDbAdapter {
   }
 
   diagnostic(action, reason) {
-    return `${LOCAL_DB_NOT_CONFIGURED}. ${action} requires server local JSON storage at ${this.storagePath}. ${reason}`;
+    return `${LOCAL_DB_NOT_CONFIGURED}. ${action} requires server local SQLite storage at ${this.storagePath}. ${reason}`;
   }
 
   ensureStorage(action) {
@@ -349,31 +371,158 @@ class LocalDbAdapter {
     }
   }
 
-  readState(action, fallbackState) {
+  openDatabase(action) {
     this.ensureStorage(action);
     try {
-      if (!existsSync(this.storagePath)) {
-        this.writeState(action, fallbackState);
-      }
-      const raw = readFileSync(this.storagePath, "utf8");
-      const parsed = raw ? JSON.parse(raw) : null;
-      if (!parsed || typeof parsed !== "object" || !parsed.tables || typeof parsed.tables !== "object") {
-        throw new Error("Stored Local DB state is missing a tables object.");
-      }
-      return clone(parsed);
+      const db = new DatabaseSync(this.storagePath);
+      db.exec("PRAGMA foreign_keys = ON");
+      return db;
     } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error || "Unable to read Local DB state.");
+      const reason = error instanceof Error ? error.message : String(error || "Unable to open SQLite database.");
       throw new Error(this.diagnostic(action, reason));
     }
   }
 
-  writeState(action, state) {
-    this.ensureStorage(action);
+  tableColumns(db, tableName) {
+    const rows = db.prepare(`PRAGMA table_info(${sqliteIdentifier(tableName)})`).all();
+    return rows.map((row) => row.name);
+  }
+
+  fieldsForTable(tableName, records = []) {
+    const schemas = getMockDbTableSchemas();
+    const fields = [...(schemas[tableName] || [])];
+    records.forEach((record) => {
+      Object.keys(record || {}).forEach((field) => {
+        if (!fields.includes(field)) {
+          fields.push(field);
+        }
+      });
+    });
+    return fields;
+  }
+
+  ensureLogicalTable(db, tableName, records = []) {
+    const fields = this.fieldsForTable(tableName, records);
+    const columns = fields.map((field) => {
+      const fieldSql = sqliteIdentifier(field);
+      return field === "key" ? `${fieldSql} TEXT PRIMARY KEY` : `${fieldSql} TEXT`;
+    });
+    db.exec(`CREATE TABLE IF NOT EXISTS ${sqliteIdentifier(tableName)} (${columns.join(", ")})`);
+    const existingColumns = new Set(this.tableColumns(db, tableName));
+    fields.forEach((field) => {
+      if (!existingColumns.has(field)) {
+        db.exec(`ALTER TABLE ${sqliteIdentifier(tableName)} ADD COLUMN ${sqliteIdentifier(field)} TEXT`);
+      }
+    });
+    return fields;
+  }
+
+  ensureSchema(db, state = {}) {
+    db.exec("CREATE TABLE IF NOT EXISTS __gf_metadata (key TEXT PRIMARY KEY, value TEXT)");
+    const schemas = getMockDbTableSchemas();
+    Object.keys(schemas).sort().forEach((tableName) => {
+      this.ensureLogicalTable(db, tableName, state.tables?.[tableName] || []);
+    });
+  }
+
+  readMetadata(db, key) {
+    const row = db.prepare("SELECT value FROM __gf_metadata WHERE key = ?").get(key);
+    return row ? deserializeSqliteValue(row.value) : undefined;
+  }
+
+  writeMetadata(db, key, value) {
+    db.prepare("INSERT OR REPLACE INTO __gf_metadata (key, value) VALUES (?, ?)").run(key, serializeSqliteValue(value));
+  }
+
+  readState(action, fallbackState) {
+    let db;
     try {
-      writeFileSync(this.storagePath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+      db = this.openDatabase(action);
+      this.ensureSchema(db, fallbackState);
+      if (this.readMetadata(db, "initialized") !== true) {
+        db.close();
+        db = null;
+        this.writeState(action, fallbackState);
+        return this.readState(action, fallbackState);
+      }
+      const schemas = getMockDbTableSchemas();
+      const tables = {};
+      Object.keys(schemas).sort().forEach((tableName) => {
+        const fields = this.tableColumns(db, tableName);
+        const selectableFields = fields.map(sqliteIdentifier).join(", ");
+        const rows = db.prepare(`SELECT ${selectableFields} FROM ${sqliteIdentifier(tableName)} ORDER BY ${sqliteIdentifier("key")}`).all();
+        tables[tableName] = rows.map((row) => {
+          const record = {};
+          fields.forEach((field) => {
+            const value = deserializeSqliteValue(row[field]);
+            if (value !== undefined) {
+              record[field] = value;
+            }
+          });
+          return record;
+        });
+      });
+      return {
+        ...clone(fallbackState || {}),
+        cleared: this.readMetadata(db, "cleared") === true,
+        tables,
+        version: 3,
+      };
     } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error || "Unable to write Local DB state.");
+      if (error instanceof Error && error.message.includes(LOCAL_DB_NOT_CONFIGURED)) {
+        throw error;
+      }
+      const reason = error instanceof Error ? error.message : String(error || "Unable to read SQLite state.");
       throw new Error(this.diagnostic(action, reason));
+    } finally {
+      if (db) {
+        db.close();
+      }
+    }
+  }
+
+  writeState(action, state) {
+    let db;
+    try {
+      db = this.openDatabase(action);
+      this.ensureSchema(db, state);
+      db.exec("BEGIN IMMEDIATE");
+      try {
+        const schemas = getMockDbTableSchemas();
+        Object.keys(schemas).sort().forEach((tableName) => {
+          const records = Array.isArray(state.tables?.[tableName]) ? state.tables[tableName] : [];
+          const fields = this.ensureLogicalTable(db, tableName, records);
+          db.exec(`DELETE FROM ${sqliteIdentifier(tableName)}`);
+          if (!records.length) {
+            return;
+          }
+          const fieldSql = fields.map(sqliteIdentifier).join(", ");
+          const placeholders = fields.map(() => "?").join(", ");
+          const insert = db.prepare(`INSERT OR REPLACE INTO ${sqliteIdentifier(tableName)} (${fieldSql}) VALUES (${placeholders})`);
+          records.forEach((record) => {
+            insert.run(...fields.map((field) => serializeSqliteValue(record?.[field])));
+          });
+        });
+        this.writeMetadata(db, "cleared", Boolean(state.cleared));
+        this.writeMetadata(db, "initialized", true);
+        this.writeMetadata(db, "version", 3);
+        db.exec("COMMIT");
+      } catch (error) {
+        try {
+          db.exec("ROLLBACK");
+        } catch {}
+        throw error;
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes(LOCAL_DB_NOT_CONFIGURED)) {
+        throw error;
+      }
+      const reason = error instanceof Error ? error.message : String(error || "Unable to write SQLite state.");
+      throw new Error(this.diagnostic(action, reason));
+    } finally {
+      if (db) {
+        db.close();
+      }
     }
   }
 

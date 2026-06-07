@@ -8,8 +8,8 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 Changed runtime JS files considered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(96%) src/engine/api/mock-db-viewer-ui.js - executed lines 510/510; executed functions 92/96
-(100%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 5/5
+(60%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 3/5
+(85%) src/engine/api/mock-db-viewer-ui.js - executed lines 510/510; executed functions 82/96
 
 Guardrail warnings:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only

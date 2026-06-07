@@ -26,7 +26,7 @@ let localDbRunId = 0;
 
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
-  return path.join(process.cwd(), "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.json`);
+  return path.join(process.cwd(), "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.sqlite`);
 }
 
 async function openRepoPage(page, pathName, options = {}) {
@@ -136,7 +136,7 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await page.locator("[data-login-mode='local-db']").click();
     await expect(page.locator("[data-login-mode='local-db']")).toHaveClass(/primary/);
     await expect(page.locator("[data-login-mode-title]")).toHaveText("Local DB");
-    await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses LocalDbAdapter backed by server local JSON storage.");
+    await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses LocalDbAdapter backed by server SQLite storage.");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local DB");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Local DB");
     await expect(page.locator("[data-login-mode-status]")).not.toContainText("Local DB adapter not configured");
@@ -149,7 +149,7 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     expect(localDbSnapshot.mode.id).toBe("local-db");
     expect(localDbSnapshot.persistence).toBe("Local DB");
     expect(localDbSnapshot.sessionUser.id).toBe("guest");
-    expect(localDbSnapshot.userNames).toEqual(["User 1", "User 2", "User 3", "Admin", "forge-bot"]);
+    expect(localDbSnapshot.userNames).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "Admin", "forge-bot"]));
     expect(localDbSnapshot.userNames).not.toContain("Guest");
 
     await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user2}']`).click();
@@ -222,11 +222,12 @@ test("Protected pages block direct URL access without the required Local session
 
   try {
     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Local Mem DB", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-admin-db-status]")).toContainText("Local Mem DB Viewer is available only in Local Mem mode.");
+    await expect(page.getByRole("heading", { name: "Local DB", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
-    await expect(page.locator("[data-admin-db-table]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("Admin");
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);

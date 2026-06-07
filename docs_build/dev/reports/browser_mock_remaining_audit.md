@@ -1,36 +1,38 @@
-# PR_26158_026 Browser Mock Remaining Audit
+# PR_26158_027 Browser Mock Remaining Audit
 
 ## Scope
 
-Focused audit for enabling Local DB read-only inspection through Admin DB Viewer:
+Focused audit for replacing Local DB JSON storage with SQLite behind the server API boundary:
 
-- `admin/db-viewer.html`
-- `admin/db-viewer.js`
-- `src/engine/api/mock-db-api-client.js`
-- `src/engine/api/mock-db-viewer-ui.js`
+- `src/dev-runtime/server/mock-api-router.mjs`
+- `src/dev-runtime/persistence/mock-db-store.js`
 - `tests/playwright/tools/AdminDbViewer.spec.mjs`
+- `tests/playwright/tools/LoginSessionMode.spec.mjs`
 
 ## Static Import Boundary
 
 | Check | Status | Evidence |
 | --- | --- | --- |
-| Browser files import `src/dev-runtime` directly. | PASS | `rg -n 'src/dev-runtime' admin assets toolbox src -g '*.js' -g '*.mjs' -g '!src/dev-runtime/**' -g '!**/*-mock-repository.js' ...` returned no matches. |
-| Browser files import mock repositories directly. | PASS | `rg -n 'mock-.*repository|LocalDbAdapter|DB implementation' ...` excluding repository implementation files returned no matches. |
-| Browser files import `LocalDbAdapter` or DB implementation modules directly. | PASS | Same focused `rg` returned no browser matches. |
+| Browser files import `node:sqlite` directly. | PASS | Focused `rg` for `node:sqlite` outside `src/dev-runtime/**` returned no matches. |
+| Browser files import `DatabaseSync` directly. | PASS | Focused `rg` for `DatabaseSync` outside `src/dev-runtime/**` returned no matches. |
+| Browser files import `LocalDbAdapter` directly. | PASS | Focused `rg` for `LocalDbAdapter` outside `src/dev-runtime/**` returned no matches. |
+| Browser files import `src/dev-runtime` directly. | PASS | Focused `rg` excluding dev-runtime and repository implementation files returned no matches. |
+| Browser files import mock repositories directly. | PASS | Focused `rg` excluding repository implementation files returned no matches. |
 
-## Local DB Viewer Boundary
+## SQLite Boundary
 
 | Check | Status | Evidence |
 | --- | --- | --- |
-| Browser flow remains Browser -> API client -> server API -> data source. | PASS | DB Viewer still uses `src/engine/api/mock-db-api-client.js` and `/api/mock-db/snapshot`; no browser Local DB imports were added. |
-| Local Mem behavior is preserved. | PASS | AdminDbViewer Playwright retained Local Mem clear/seed, filters, diagnostics, and live persisted tool-record coverage. |
-| Local DB behavior is read-only. | PASS | AdminDbViewer Playwright asserts no Local DB clear/seed/write controls are visible or available. |
-| Local DB renders live server-backed adapter state. | PASS | Playwright and API contract probe mutate/read server state through API routes and verify DB Viewer output. |
-| Local DB missing storage fails visibly. | PASS | Playwright and API contract probe assert `Local DB adapter not configured` diagnostics. |
-| UAT/Prod are not local login choices. | PASS | `/api/session/modes` probe returned exactly `Local Mem` and `Local DB`; UAT/Prod remain server-side deployment metadata only. |
+| Local DB remains behind the server API boundary only. | PASS | SQLite is imported only in `src/dev-runtime/server/mock-api-router.mjs`; browser callers continue through `/api/session/*` and `/api/mock-db/*`. |
+| Local Mem behavior is preserved. | PASS | AdminDbViewer Local Mem Playwright coverage passed. |
+| Admin DB Viewer Local DB read-only inspection is preserved. | PASS | AdminDbViewer Local DB Playwright coverage passed against SQLite-backed state. |
+| Local DB initializes required tables deterministically. | PASS | SQLite contract probe inspected physical SQLite tables and schema columns. |
+| Empty tables remain visible with headers. | PASS | SQLite contract probe and AdminDbViewer Playwright verified empty table schemas/headers. |
+| SQLite initialization/read/write/snapshot failures fail visibly. | PASS | Contract probe verified disabled snapshot and write diagnostics. |
+| UAT/Prod are not local login choices. | PASS | `/api/session/modes` probe in SQLite contract validation returned `Local Mem|Local DB`; UAT/Prod remain server-side deployment metadata only. |
 
 ## Remaining Internal Matches
 
 - UAT/Prod strings remain only in the server adapter contract as deployment-only metadata.
-- `toolbox/*/*-mock-repository.js` and `toolbox/colors/palette-workspace-repository.js` remain server/data-source implementation modules, not active browser entry imports.
+- `node:sqlite` currently emits a Node experimental warning during validation; no browser bundle or user-facing page imports it.
 - `/api/mock-db/*` route names and `mock-db-*` module filenames remain stable internal API contracts.
