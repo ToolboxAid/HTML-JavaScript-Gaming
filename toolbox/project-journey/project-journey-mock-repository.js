@@ -622,11 +622,18 @@ export function createProjectJourneyMockRepository(options = {}) {
       .sort((left, right) => left.order - right.order);
   }
 
-  function itemMatchesCountFilter(item, filterId) {
+  function itemMatchesFilter(item, filterId) {
     if (filterId === "system") {
       return isSystemItem(item);
     }
+    if (PROJECT_JOURNEY_STATUS_BY_ID[filterId]) {
+      return item.status === filterId;
+    }
     return true;
+  }
+
+  function getItemsForNoteFilter(noteKey, filterId = "all") {
+    return getItemsForNote(noteKey).filter((item) => itemMatchesFilter(item, filterId));
   }
 
   function getNoteCounts(noteKey, filterId = "all") {
@@ -641,7 +648,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       decide: 0,
     };
 
-    getItemsForNote(noteKey).filter((item) => itemMatchesCountFilter(item, filterId)).forEach((item) => {
+    getItemsForNoteFilter(noteKey, filterId).forEach((item) => {
       const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
       if (!status) {
         return;
@@ -669,7 +676,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       return getItemsForNote(note.key).some(isSystemItem);
     }
 
-    return getItemsForNote(note.key).some((item) => item.status === filterId);
+    return getItemsForNoteFilter(note.key, filterId).length > 0;
   }
 
   function listNotes(filterId = "all") {
@@ -682,14 +689,17 @@ export function createProjectJourneyMockRepository(options = {}) {
       .filter((note) => note.projectKey === activeProject.key)
       .filter(currentUserCanSeeNote)
       .filter((note) => noteMatchesFilter(note, filterId))
-      .map((note) => ({
-        ...clone(note),
-        type: clone(
-          tables.project_journey_note_types.find((type) => type.key === note.typeKey),
-        ),
-        counts: getNoteCounts(note.key, filterId === "system" ? "system" : "all"),
-        items: getItemsForNote(note.key).map(hydrateItem),
-      }))
+      .map((note) => {
+        const items = getItemsForNoteFilter(note.key, filterId);
+        return {
+          ...clone(note),
+          type: clone(
+            tables.project_journey_note_types.find((type) => type.key === note.typeKey),
+          ),
+          counts: getNoteCounts(note.key, filterId),
+          items: items.map(hydrateItem),
+        };
+      })
       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
   }
 

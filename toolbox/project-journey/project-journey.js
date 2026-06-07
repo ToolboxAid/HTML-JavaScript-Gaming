@@ -371,6 +371,7 @@ function makeItemButton(item) {
   });
   button.type = "button";
   button.dataset.journeyItemButton = item.key;
+  button.dataset.journeyItemStatus = item.status;
   button.setAttribute("aria-pressed", String(selected));
   return button;
 }
@@ -869,15 +870,17 @@ function renderDiagnostics(activeProject, note, notes) {
 
 function selectFirstVisibleNote(notes) {
   const current = repository.getSelectedNote();
-  if (current && notes.some((note) => note.key === current.key)) {
-    return current;
+  const currentVisibleNote = notes.find((note) => note.key === current?.key);
+  if (currentVisibleNote) {
+    return currentVisibleNote;
   }
 
   if (notes[0]) {
-    return repository.selectNote(notes[0].key);
+    repository.selectNote(notes[0].key);
+    return notes[0];
   }
 
-  return current;
+  return null;
 }
 
 function render() {
@@ -886,7 +889,7 @@ function render() {
   const notes = applySearch(repository.listNotes(activeFilter), searchQuery);
   const note = selectFirstVisibleNote(notes);
   ensureSelectedItemMatchesFilter(note);
-  const displayNote = searchQuery ? notes.find((item) => item.key === note?.key) || null : filterNoteItemsForDisplay(note);
+  const displayNote = filterNoteItemsForDisplay(note);
   ensureSelectedItemVisible(displayNote);
   const selectedStatsNote = selectedSummaryNoteKey
     ? notes.find((item) => item.key === selectedSummaryNoteKey) || null

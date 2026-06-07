@@ -1378,6 +1378,19 @@ No PR is complete with:
 - missing review artifacts
 - unintended file changes
 
+## PR COMPLETION RULE
+
+A PR is not complete until every requested item is implemented, validated, and explicitly marked PASS.
+
+Before packaging any PR, Codex must:
+- re-read the original PR request
+- create a requirement-by-requirement checklist
+- validate each requested item individually
+- fix any failures before packaging
+- include PASS/FAIL evidence for each requested item in the PR report
+
+Codex must not package partially completed PRs.
+
 ## ERROR HANDLING CONTRACT
 
 - No silent fallback.

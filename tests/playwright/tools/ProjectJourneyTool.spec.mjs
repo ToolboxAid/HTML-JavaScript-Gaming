@@ -7,6 +7,7 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 import {
   PROJECT_JOURNEY_KEYS,
+  PROJECT_JOURNEY_STATUS_BY_ID,
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyMockRepository,
 } from "../../../toolbox/project-journey/project-journey-mock-repository.js";
@@ -82,6 +83,56 @@ function expectNoPageFailures(failures) {
 
 function statusLabels() {
   return PROJECT_JOURNEY_STATUSES.map((status) => `${status.icon} ${status.label}`);
+}
+
+function statusLabel(statusId) {
+  const status = PROJECT_JOURNEY_STATUS_BY_ID[statusId];
+  return status ? `${status.icon} ${status.label}` : statusId;
+}
+
+async function visibleTreeStatuses(page) {
+  return page.locator("[data-journey-item-button]").evaluateAll((buttons) =>
+    buttons.map((button) => button.dataset.journeyItemStatus),
+  );
+}
+
+async function expectTreeOnlyStatus(page, statusId, expectedCount) {
+  const statuses = await visibleTreeStatuses(page);
+  expect(statuses, `Note Tree should show ${expectedCount} ${statusId} row(s)`).toHaveLength(expectedCount);
+  expect(statuses.every((status) => status === statusId), `Note Tree rows must all be ${statusId}`).toBe(true);
+}
+
+async function expectNoTreeRows(page) {
+  await expect(page.locator("[data-journey-item-button]")).toHaveCount(0);
+  await expect(page.locator("[data-journey-item-tree]")).toContainText("No journey items yet.");
+}
+
+async function expectFilteredSummaryRows(page, statusId, expectedRows) {
+  const statusColumns = {
+    "not-started": 2,
+    blocker: 3,
+    decide: 4,
+    "in-progress": 5,
+    complete: 6,
+    skipped: 7,
+  };
+  const rows = await page.locator("[data-journey-summary-body] tr").evaluateAll((items) =>
+    items
+      .filter((row) => row.querySelector("[data-journey-note-button]"))
+      .map((row) => Array.from(row.cells).map((cell) => cell.textContent.trim())),
+  );
+  expect(rows, `Summary rows for ${statusId}`).toHaveLength(expectedRows.length);
+  expectedRows.forEach((expectedRow, index) => {
+    const cells = rows[index];
+    expect(cells[0]).toContain(expectedRow.name);
+    Object.entries(statusColumns).forEach(([columnStatus, columnIndex]) => {
+      expect(cells[columnIndex], `${expectedRow.name} ${columnStatus} count`).toBe(
+        columnStatus === statusId ? String(expectedRow.count) : "0",
+      );
+    });
+    expect(cells[8], `${expectedRow.name} Open count`).toBe(String(expectedRow.open));
+    expect(cells[9], `${expectedRow.name} Total count`).toBe(String(expectedRow.total));
+  });
 }
 
 async function closeWithCoverage(page, failures) {
@@ -478,6 +529,8 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("5");
 
     await page.locator("[data-journey-filter='blocker']").click();
+    await expect(page.locator("[data-journey-filter='blocker']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-filter='blocker']")).toHaveAttribute("aria-current", "true");
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Blocked (0 notes).");
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("0");
@@ -487,27 +540,68 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
     await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("0");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Release Readiness");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Story Beats");
+    await expectFilteredSummaryRows(page, "blocker", []);
+    await expectNoTreeRows(page);
 
     await page.locator("[data-journey-filter='decide']").click();
+    await expect(page.locator("[data-journey-filter='decide']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Decisions (1 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Palette and Input Density");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Research Questions");
+    await expectFilteredSummaryRows(page, "decide", [
+      { name: "Palette and Input Density", count: 1, open: 1, total: 1 },
+    ]);
+    await expectTreeOnlyStatus(page, "decide", 1);
+    await expect(page.locator("[data-journey-item-tree]")).toContainText(statusLabel("decide"));
+    await expect(page.locator("[data-journey-item-tree]")).not.toContainText(statusLabel("in-progress"));
 
     await page.locator("[data-journey-filter='not-started']").click();
+    await expect(page.locator("[data-journey-filter='not-started']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Not Started (2 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-not-started]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("0");
+    await expectFilteredSummaryRows(page, "not-started", [
+      { name: "Story Beats", count: 1, open: 1, total: 1 },
+      { name: "Palette and Input Density", count: 1, open: 1, total: 1 },
+    ]);
+    await expectTreeOnlyStatus(page, "not-started", 1);
+    await expect(page.locator("[data-journey-item-tree]")).not.toContainText(statusLabel("in-progress"));
 
     await page.locator("[data-journey-filter='in-progress']").click();
+    await expect(page.locator("[data-journey-filter='in-progress']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: In Progress (2 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("2");
+    await expect(page.locator("[data-journey-stat-not-started]")).toHaveText("0");
+    await expectFilteredSummaryRows(page, "in-progress", [
+      { name: "Story Beats", count: 1, open: 1, total: 1 },
+      { name: "Palette and Input Density", count: 1, open: 1, total: 1 },
+    ]);
+    await expectTreeOnlyStatus(page, "in-progress", 1);
+    await expect(page.locator("[data-journey-item-tree]")).not.toContainText(statusLabel("not-started"));
 
     await page.locator("[data-journey-filter='complete']").click();
+    await expect(page.locator("[data-journey-filter='complete']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Complete (0 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("0");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("0");
+    await expect(page.locator("[data-journey-stat-complete]")).toHaveText("0");
+    await expectFilteredSummaryRows(page, "complete", []);
+    await expectNoTreeRows(page);
 
     await page.locator("[data-journey-filter='skipped']").click();
     await expect(page.locator("[data-journey-filter='skipped']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-filter='skipped']")).toHaveAttribute("aria-current", "true");
     await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Skipped (0 notes).");
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("0");
@@ -515,6 +609,19 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
     await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("0");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Release Readiness");
     await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Story Beats");
+    await expectFilteredSummaryRows(page, "skipped", []);
+    await expectNoTreeRows(page);
+
+    await page.locator("[data-journey-filter='system']").click();
+    await expect(page.locator("[data-journey-filter='system']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-journey-filter='system']")).toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-journey-note-button].primary")).toHaveCount(0);
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: System Generated (2 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("5");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("5");
+    const visibleSystemRows = await page.locator("[data-journey-item-button]").count();
+    expect(visibleSystemRows).toBeGreaterThan(0);
+    await expect(page.locator("[data-journey-system-item-indicator]")).toHaveCount(visibleSystemRows);
 
     await expectNoPageFailures(failures);
   } finally {
@@ -634,20 +741,49 @@ test("Project Journey search filters notes, tree items, and visible counts", asy
     await expect(page.locator("[data-session-user-header]")).toHaveText("Session user: User 2");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Research Questions");
-    await page.locator("[data-journey-filter='blocker']").click();
-    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Blocked (1 notes).");
     await searchInput.fill("Skipped");
     await expect(page.locator("[data-journey-search-status]")).toHaveText("Search matched 1 note.");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
-    await expect(page.locator("[data-journey-item-tree]")).toContainText("Skip launch-day checklist items that no longer apply");
+    await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Research Questions");
+    await expectTreeOnlyStatus(page, "skipped", 1);
     await expect(page.locator("[data-journey-stat-total]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("0");
     await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("1");
     await searchInput.fill("");
+    await page.locator("[data-journey-filter='mine']").click();
+    await searchInput.fill("Skipped");
+    await expect(page.locator("[data-journey-search-status]")).toHaveText("Search matched 1 note.");
+    await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
+    await expectTreeOnlyStatus(page, "skipped", 1);
+    await searchInput.fill("");
+    await page.locator("[data-journey-filter='blocker']").click();
+    await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: Blocked (1 notes).");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-blocker]")).toHaveText("1");
+    await expectTreeOnlyStatus(page, "blocker", 1);
+    await searchInput.fill("Skipped");
+    await expect(page.locator("[data-journey-search-status]")).toHaveText("Search matched 0 notes.");
+    await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Release Readiness");
+    await expectNoTreeRows(page);
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("0");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("0");
+    await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("0");
+    await searchInput.fill("");
     await expect(page.locator("[data-journey-filter='blocker']")).toHaveClass(/primary/);
-    await expect(page.locator("[data-journey-stat-total]")).toHaveText("3");
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("1");
     await expect(page.locator("[data-journey-item-tree]")).toContainText("Resolve final validation lane ownership");
+    await expect(page.locator("[data-journey-item-tree]")).not.toContainText("Skip launch-day checklist items that no longer apply");
+
+    await page.locator("[data-journey-filter='skipped']").click();
+    await searchInput.fill("Skipped");
+    await expect(page.locator("[data-journey-search-status]")).toHaveText("Search matched 1 note.");
+    await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
+    await expectTreeOnlyStatus(page, "skipped", 1);
+    await expect(page.locator("[data-journey-stat-total]")).toHaveText("1");
+    await expect(page.locator("[data-journey-stat-open]")).toHaveText("0");
+    await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("1");
 
     await expectNoPageFailures(failures);
   } finally {

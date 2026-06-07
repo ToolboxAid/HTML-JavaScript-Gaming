@@ -1,51 +1,47 @@
 # Testing Lane Execution Report
 
-PR: PR_26157_013-users-roles-login-and-db-viewer-completion
+PR: PR_26157_014-pr-completion-rule-and-journey-filter-fix
 
 ## Impacted Lanes
 
-- shared mock DB persistence and identity seed data
-- Admin Mock DB Viewer filters, session selector, relationship diagnostics, and Clear/Seed behavior
-- Theme V2 header login/account/admin navigation behavior
-- Project Journey session-aware runtime/search/write behavior
+- docs governance rule update
+- Project Journey Navigation filter runtime
+- Project Journey Summary Table / Note Tree / Statistics consistency
+- Project Journey Search filtered by active Navigation state and selected session user
 - changed-file/static validation
 
 ## Commands Run
 
 | Command | Result |
 | --- | --- |
-| `node --check src/engine/persistence/mock-db-store.js` | PASS |
-| `node --check admin/db-viewer.js` | PASS |
-| `node --check assets/theme-v2/js/gamefoundry-partials.js` | PASS |
 | `node --check toolbox/project-journey/project-journey-mock-repository.js` | PASS |
 | `node --check toolbox/project-journey/project-journey.js` | PASS |
-| `node --check tests/playwright/tools/AdminDbViewer.spec.mjs` | PASS |
 | `node --check tests/playwright/tools/ProjectJourneyTool.spec.mjs` | PASS |
-| `npx playwright test tests/playwright/tools/AdminDbViewer.spec.mjs tests/playwright/tools/ProjectJourneyTool.spec.mjs --reporter=list --workers=1` | PASS, 15/15 |
+| `npx playwright test tests/playwright/tools/ProjectJourneyTool.spec.mjs --reporter=list --workers=1` | PASS, 13/13 |
 | `npm run test:playwright:static` | PASS |
 | `git diff --check` | PASS, line-ending warnings only |
-| `rg -n "MOCK_DB_KEYS\\.users\\.guest\|MOCK_DB_KEYS\\.roles\\.guest\|guestGuest\|isSystemUser\|createdByType\|updatedByType\|accountType" src/engine/persistence admin toolbox/project-journey assets/theme-v2 tests/playwright/tools/AdminDbViewer.spec.mjs tests/playwright/tools/ProjectJourneyTool.spec.mjs` | PASS, no matches |
-| `rg -n "data-toolbox-role-banner\|data-project-data-menu\|data-project-data-action\|data-project-data-status" src admin toolbox assets/theme-v2` | PASS, no matches |
+| `rg -n "PR COMPLETION RULE\|A PR is not complete\|Codex must not package partially completed PRs" docs_build/dev/PROJECT_INSTRUCTIONS.md` | PASS |
 
 ## Behavior Covered
 
-- Guest is selectable only as unauthenticated session state and is not in shared DB user or user_role seed data.
-- Header shows Login for Guest and displayName for real users.
-- Account navigation is available for user/admin role sessions; Admin navigation is available only for Admin.
-- forge-bot remains the system actor and is not selectable as a human session button.
-- Admin Mock DB Viewer removes standalone Users/Roles filters while preserving the `user_roles` identity filter.
-- The `user_roles` filter renders `users`, `user_roles`, and `roles` in that order.
-- DB Viewer renders current live shared mock DB state, including Project Journey, Palette, and Asset records after tool actions and refresh.
-- Empty Mock DB tables retain headers after Clear Mock DB, and Seed Mock DB restores records.
-- Project Journey respects selected session user for All/My/status/search filters.
-- Project Journey rejects Guest writes with visible diagnostics and keeps User 3 free of Project Journey-owned records.
+- Not Started filter shows only Not Started rows and zero In Progress rows.
+- In Progress filter shows only In Progress rows.
+- Blocked filter shows only Blocker rows.
+- Decisions filter shows only Decide rows.
+- Complete and Skipped zero-state behavior is correct for User 1.
+- Skipped filter shows only Skipped rows for User 2.
+- All Notes, My Notes, and System Generated filters keep visible buttons clear.
+- Summary Table status counts, Open, and Total match filtered visible rows.
+- Note Tree rows expose and match filtered status values.
+- Search respects selected filter and selected session user.
+- Stale selected notes/items do not rehydrate unfiltered tree rows after a filter/search change.
 
 ## Skipped Lanes
 
-- Full samples smoke: SKIP per request and because samples are out of scope.
-- Broad Playwright suite: SKIP because the touched runtime surfaces are covered by targeted Admin DB Viewer and Project Journey lanes plus static validation.
+- Full samples smoke: SKIP per request.
+- Broad Playwright suite: SKIP because the affected runtime surface is Project Journey; targeted Project Journey runtime/search/filter coverage passed.
 
 ## Notes
 
-- Initial PR013 targeted run exposed one CSS/semantic gap: `.nav-item` display rules overrode the native `hidden` attribute. Added a reusable Theme V2 `[hidden]` rule in `assets/theme-v2/css/layout.css` and documented it in the completion report.
-- Final combined targeted lane passed 15/15 after the fix.
+- The screenshot failure was reproduced as a filter consistency bug in the Project Journey data/render path: filtered notes still carried unfiltered items/counts.
+- The repository now scopes note items/counts by active filter before the UI renders Summary Table, Note Tree, Statistics, or Search results.

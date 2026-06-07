@@ -1,16 +1,37 @@
-Ideas
-- [ ] Capture admin-only project ideas here.
-  - [.] Keep nested ideas visible while they are still taking shape.
-- Use bracket links for connected notes, such as [other].
-- Open a file from this folder with [quick-reference, docs_build/dev/admin-notes/quick-reference.txt].
-- Review generated achievement prompts at [HERE, docs_build\tools-images-generated\achievements.txt].
-- Review the same generated prompts with a forward slash path at [HERE-FWD, docs_build/tools-images-generated/achievements.txt].
 
-Things to Fix
-- [!] Replace placeholder notes with concrete admin follow-up items.
-- [-] Keep intentionally skipped work visible without counting it as open.
-- Track fixes that are not ready for a dedicated BUILD_PR yet.
+[ ] http://127.0.0.1:5500/admin/db-viewer.html
 
-Undecided Questions
-- [?] Decide which project questions need their own subnote files.
-- Keep open decisions visible until they become scoped work.
+[ ] Tiles
+-
+
+[ ] Project Life Cycle
+
+
+[ ] Palette updates
+- tone (earthy, human, water, floral, TV Age, console age, arcade)
+
+[ ] Picker
+- left to right
+- Middle Gray ROYGBIV
+- step sizes (2-255)
+
+[ ] Project dificullty
+- left to right easiest to hardest
+- build off of, type, enemy, heros, levels, etc.
+
+[x] Admin notes
+- reads txt file (this one) and displays
+- if a note has [subnote] it should be a link on the page and display [subnote].txt
+- example [other] should display other.txt, 
+- at the top of subnote pages, have a return take you to note.txt
+- name is up for discuttion  (this is my ideas, things I want to fix, undecided question)
+[ ] Correction Notes update
+[subnote] should be /[subnote]/note.txt
+
+
+[ ] Test/Debug Performance
+- use the game engine hooks to track performance
+- each section of the loop(draw, physics, move, etc)
+- each section will have a start end time
+- The test/debug page will be the location for test, 
+- only on when run from test
