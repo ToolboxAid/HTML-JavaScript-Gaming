@@ -264,8 +264,9 @@ export const TOOL_REGISTRY = Object.freeze([
     "status": "Ready",
     "progressChecklist": [
       "Project palette runtime available",
+      "Curated collection/type/variant swatches available",
       "Palette generator controls render live preview",
-      "Source palette pinning and tag batching available"
+      "Project palette tag batching available"
     ],
     "deferred": false,
     "hidden": false,

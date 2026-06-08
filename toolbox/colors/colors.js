@@ -41,42 +41,175 @@ const PALETTE_GENERATOR_DEFAULTS = Object.freeze({
   hueShift: 0
 });
 
-const FULL_PALETTE_ANCHORS = Object.freeze([
-  { hue: 0, label: "Red" },
-  { hue: 30, label: "Orange" },
-  { hue: 60, label: "Yellow" },
-  { hue: 120, label: "Green" },
-  { hue: 220, label: "Blue" },
-  { hue: 265, label: "Indigo" },
-  { hue: 290, label: "Violet" }
+function swatches(values) {
+  return Object.freeze(values.split(/\s+/).filter(Boolean));
+}
+
+const PALETTE_VARIANTS = Object.freeze([
+  { label: "Full", value: "full" },
+  { label: "256 colors", value: "256" },
+  { label: "128 colors", value: "128" },
+  { label: "64 colors", value: "64" },
+  { label: "32 colors", value: "32" },
+  { label: "16 colors", value: "16" },
+  { label: "8 colors", value: "8" },
+  { label: "4 colors", value: "4" },
+  { label: "High Contrast", value: "high-contrast" },
+  { label: "Color Blind Safe", value: "color-blind-safe" },
+  { label: "Grayscale", value: "grayscale" },
+  { label: "Print Friendly", value: "print-friendly" },
+  { label: "Day", value: "day" },
+  { label: "Night", value: "night" },
+  { label: "Dawn", value: "dawn" },
+  { label: "Dusk", value: "dusk" },
+  { label: "Winter", value: "winter" },
+  { label: "Summer", value: "summer" }
 ]);
 
-const MONOCHROME_FAMILIES = Object.freeze([
-  { hue: 34, label: "Warm Gray", saturation: 12 },
-  { hue: 0, label: "Neutral Gray", saturation: 0 },
-  { hue: 205, label: "Cool Gray", saturation: 10 },
-  { hue: 220, label: "Blue Gray", saturation: 16 }
-]);
-
-const PALETTE_TYPE_THEMES = Object.freeze({
-  forest: Object.freeze({ labels: ["Fern", "Moss", "Pine", "Canopy"], hues: [92, 112, 138, 156], saturation: 68 }),
-  jungle: Object.freeze({ labels: ["Leaf", "Lime", "Vine", "Lagoon"], hues: [96, 124, 148, 174], saturation: 78 }),
-  desert: Object.freeze({ labels: ["Sand", "Clay", "Cactus", "Dusk"], hues: [42, 28, 78, 350], saturation: 58 }),
-  ocean: Object.freeze({ labels: ["Foam", "Aqua", "Reef", "Deep Sea"], hues: [176, 190, 206, 226], saturation: 74 }),
-  arctic: Object.freeze({ labels: ["Snow", "Glacier", "Iceberg", "Polar"], hues: [186, 200, 214, 236], saturation: 42 }),
-  floral: Object.freeze({ labels: ["Rose", "Petal", "Lavender", "Leaf"], hues: [344, 18, 276, 116], saturation: 72 }),
-  pastel: Object.freeze({ labels: ["Peach", "Mint", "Sky", "Lilac"], hues: [18, 146, 198, 278], saturation: 48 }),
-  fire: Object.freeze({ labels: ["Coal", "Ember", "Flame", "Gold"], hues: [356, 12, 28, 46], saturation: 92 }),
-  ice: Object.freeze({ labels: ["Frost", "Shard", "Blue Ice", "Aurora"], hues: [176, 194, 214, 154], saturation: 52 }),
-  earth: Object.freeze({ labels: ["Soil", "Stone", "Bark", "Olive"], hues: [24, 38, 18, 74], saturation: 44 }),
-  lightning: Object.freeze({ labels: ["Spark", "Charge", "Bolt", "Storm"], hues: [54, 190, 258, 286], saturation: 88 }),
-  fantasy: Object.freeze({ labels: ["Rune", "Crystal", "Dragon", "Moon"], hues: [276, 190, 332, 48], saturation: 76 }),
-  "sci-fi": Object.freeze({ labels: ["Signal", "Plasma", "Circuit", "Void"], hues: [184, 222, 132, 276], saturation: 80 }),
-  cyberpunk: Object.freeze({ labels: ["Neon Pink", "Neon Blue", "Acid", "Violet"], hues: [318, 202, 78, 270], saturation: 96 }),
-  arcade: Object.freeze({ labels: ["Token", "Cabinet", "Joystick", "Screen"], hues: [6, 44, 214, 132], saturation: 88 }),
-  "8-bit": Object.freeze({ labels: ["Red", "Yellow", "Green", "Blue"], hues: [0, 52, 116, 220], saturation: 82 }),
-  "16-bit": Object.freeze({ labels: ["Crimson", "Amber", "Teal", "Purple"], hues: [350, 40, 178, 272], saturation: 86 })
+const NUMERIC_VARIANT_COUNTS = Object.freeze({
+  "256": 256,
+  "128": 128,
+  "64": 64,
+  "32": 32,
+  "16": 16,
+  "8": 8,
+  "4": 4
 });
+
+const CURATED_PALETTE_COLLECTIONS = Object.freeze([
+  {
+    name: "Nature",
+    types: Object.freeze([
+      { name: "Forest", swatches: swatches("#102A17 #1F4D25 #346B35 #5D8A3E #8FA653 #C0B36F #6F4B2E #24351F") },
+      { name: "Jungle", swatches: swatches("#0E2F1D #136B38 #1F9651 #45B35F #8BCF55 #D5DA4E #F29E3D #2B6F64") },
+      { name: "Desert", swatches: swatches("#4A2B1A #7A4A24 #A66D32 #D09A55 #E6C27A #F1DFA8 #B86F4B #5D4D42") },
+      { name: "Mountain", swatches: swatches("#1E2930 #34434A #58666A #7F8D89 #A9B2A0 #D1C7A0 #7C6B55 #2F3B45") },
+      { name: "Arctic", swatches: swatches("#183040 #2D5366 #4D7D8F #79AFC2 #B5DCE5 #E6F4F6 #9EAEB9 #3E4E63") },
+      { name: "Swamp", swatches: swatches("#1B2414 #33401C #59612E #77733F #8C7F4E #4F6B47 #2E5A4C #614126") },
+      { name: "Ocean", swatches: swatches("#061D34 #083A5B #0E6387 #168FA8 #37BBC1 #8EE0D1 #D4F2E6 #28517E") },
+      { name: "Tropical", swatches: swatches("#006C70 #00A39B #32C56F #9FD356 #F4D35E #F29E4C #E85D75 #7F4AC8") }
+    ])
+  },
+  {
+    name: "Floral",
+    types: Object.freeze([
+      { name: "Rose Garden", swatches: swatches("#3A1020 #76223A #B9375E #E56B8A #F2A0A8 #FFD3C9 #446B3F #8FAE5D") },
+      { name: "Spring Bloom", swatches: swatches("#6AA84F #93C47D #B6D7A8 #F9CB9C #F6B26B #EA9999 #C27BA0 #8E7CC3") },
+      { name: "Wildflowers", swatches: swatches("#31572C #4F772D #90A955 #F9C74F #F9844A #F94144 #577590 #9B5DE5") },
+      { name: "Lavender Field", swatches: swatches("#2E2245 #51406F #7561A8 #A38DCC #D1BCE3 #F0E4F5 #6E8B57 #B6B866") },
+      { name: "Autumn Harvest", swatches: swatches("#3B1F12 #7A2E18 #B94E1F #D9822B #E9B44C #8A7F39 #5F6F2E #A4423D") }
+    ])
+  },
+  {
+    name: "Water",
+    types: Object.freeze([
+      { name: "Deep Ocean", swatches: swatches("#03111F #062B45 #0B4E73 #126D91 #1A8DA8 #5BB8C0 #A7D9D3 #1E3F68") },
+      { name: "Tropical Reef", swatches: swatches("#004D61 #008F9A #00B8A9 #6BD6B5 #C8E675 #F9D56E #F08A5D #7B4E9D") },
+      { name: "River", swatches: swatches("#20333A #31545E #4D7580 #70949A #A7B7AE #C9C7A6 #7F8C5C #4D5A3D") },
+      { name: "Lake", swatches: swatches("#0B2636 #1A4B61 #3D7387 #6999A3 #A6C4C3 #D9E0D2 #6A7E64 #364A3D") },
+      { name: "Storm Sea", swatches: swatches("#101820 #23313D #3B4A56 #65727B #8B969B #B7B7AC #31566D #1F2B3B") },
+      { name: "Frozen Water", swatches: swatches("#153040 #2D5B70 #5A91A8 #8DC7D6 #C7EDF1 #F2FBFA #A8B8C8 #5B6D86") }
+    ])
+  },
+  {
+    name: "Elements",
+    types: Object.freeze([
+      { name: "Fire", swatches: swatches("#250505 #5A0F0F #9C1B16 #D94A1E #F47C20 #FFB238 #FFE06E #4A1F12") },
+      { name: "Ice", swatches: swatches("#0C2735 #1B5268 #3F8FA8 #76C4D5 #BDEDF2 #F2FFFF #9CB7D3 #485E82") },
+      { name: "Earth", swatches: swatches("#25170E #4B321F #74502E #9A7042 #BE955B #D7BF82 #5C6B38 #32482D") },
+      { name: "Air", swatches: swatches("#D7F1F2 #A8DADC #7BC6D3 #5AA7C7 #8AB6E0 #E7D8A7 #F6F2D4 #6F8BA3") },
+      { name: "Lightning", swatches: swatches("#1C1633 #3D2B6F #5F4BB6 #2EC4F1 #7FE7F5 #FFE66D #FFF3A3 #F9A620") },
+      { name: "Poison", swatches: swatches("#1C1026 #3B1F5A #6A2D8F #8F3FB3 #A7C957 #6A994E #386641 #D6E681") },
+      { name: "Crystal", swatches: swatches("#251A3D #4D3B78 #7F6EB2 #A997DF #D8C8FF #BDE0FE #74C0FC #3A86FF") }
+    ])
+  },
+  {
+    name: "Fantasy",
+    types: Object.freeze([
+      { name: "Medieval", swatches: swatches("#1F1B16 #4B3621 #7A542E #A67C45 #C7A76C #354F35 #5E7041 #7B2D26") },
+      { name: "Dwarven", swatches: swatches("#1A1512 #3A2A22 #6E4D35 #9A6B3F #C58C47 #D8B45C #77706A #B23A24") },
+      { name: "Elven", swatches: swatches("#12251D #25543E #4C8C63 #85B87A #C1D88A #E8DFA6 #89B6A6 #A789C5") },
+      { name: "Dark Kingdom", swatches: swatches("#08070B #1E1A2B #3A2E4F #5E3F65 #7B2D3D #A63D40 #C9A45C #4A4A4A") },
+      { name: "Magic", swatches: swatches("#17113A #332A78 #5946B2 #8B5FD3 #C77DFF #FF7AD9 #FFD166 #59C3C3") },
+      { name: "Dragon", swatches: swatches("#1C1110 #4A1E18 #8A2F1D #C84C2A #E17A36 #F0B65A #2F5D46 #0E2A2B") }
+    ])
+  },
+  {
+    name: "Sci-Fi",
+    types: Object.freeze([
+      { name: "Space", swatches: swatches("#050814 #111A33 #243B6B #3D64A8 #6EA8FE #BFD7FF #F2E9E4 #7B4EAB") },
+      { name: "Cyberpunk", swatches: swatches("#0A0614 #1B0C3B #4A148C #D000FF #00D9FF #00FF88 #FFE600 #FF2D75") },
+      { name: "Alien World", swatches: swatches("#141522 #2B2D5C #5260A8 #5EC4A8 #8AD95E #D8F56E #FF8F5E #A24EA8") },
+      { name: "Futuristic City", swatches: swatches("#11151C #263241 #405A6B #6E8AA0 #9DB6C7 #C9D6DF #FFB703 #00B4D8") },
+      { name: "Robot Factory", swatches: swatches("#15191E #2B333D #4E5965 #7B8794 #AEB6BF #D8DEE4 #E76F51 #2A9D8F") }
+    ])
+  },
+  {
+    name: "Horror",
+    types: Object.freeze([
+      { name: "Haunted House", swatches: swatches("#0B0A0C #1C1A22 #332C3A #4D3A4F #6B4B3F #8C6D4F #B8A36A #3A4A35") },
+      { name: "Gothic", swatches: swatches("#07070A #1B1720 #2E2636 #46384F #6F516C #8E6F88 #B7A28C #7C1D2A") },
+      { name: "Blood Moon", swatches: swatches("#110509 #3A0B12 #6E1119 #A01821 #D13A2F #F06B3D #291A28 #5C4A5F") },
+      { name: "Undead", swatches: swatches("#111510 #263026 #465642 #6F7C5E #9BA881 #C8C9A4 #5B4C5A #2C2E3A") },
+      { name: "Lovecraft", swatches: swatches("#071315 #122D31 #1D555B #32807A #59A58E #9CC8A5 #47375D #2A1C3A") }
+    ])
+  },
+  {
+    name: "Modern",
+    types: Object.freeze([
+      { name: "City", swatches: swatches("#15191E #2E3740 #52616B #7B8794 #AEB6BF #E0E4E7 #DDA15E #3A86FF") },
+      { name: "Industrial", swatches: swatches("#191716 #34312D #5B5650 #837B72 #A8A096 #D0C8BC #B35B31 #546A76") },
+      { name: "Military", swatches: swatches("#151A13 #2E3A21 #4D5D2E #6C7A42 #8F955C #B8B585 #5B5141 #2F3E46") },
+      { name: "Construction", swatches: swatches("#22160A #5A3510 #A96013 #E69520 #FFC857 #30343F #6C757D #E0E1DD") },
+      { name: "Sports", swatches: swatches("#0B132B #1C2541 #3A506B #5BC0BE #F2F5EA #F4D35E #EE964B #F95738") }
+    ])
+  },
+  {
+    name: "Arcade",
+    types: Object.freeze([
+      { name: "Arcade 1978", swatches: swatches("#000000 #1B1B1B #FF0000 #FF7F00 #FFFF00 #00FF00 #00A2FF #FFFFFF") },
+      { name: "Arcade 1980", swatches: swatches("#000000 #222034 #45283C #D95763 #D77BBA #8F974A #8A6F30 #E0F8CF") },
+      { name: "Arcade 1985", swatches: swatches("#0F0F1B #29294A #3D6FB6 #38B6E8 #4FD65F #F9E858 #F08A38 #E84855") },
+      { name: "Arcade 1990", swatches: swatches("#120D1F #2C1E4A #572C82 #B13EBA #FF4FB8 #00C2FF #00E676 #FFE15A") }
+    ])
+  },
+  {
+    name: "8-Bit",
+    types: Object.freeze([
+      { name: "NES Inspired", swatches: swatches("#0F0F0F #545454 #A80020 #F83800 #F8A800 #00A800 #0078F8 #FCFCFC") },
+      { name: "Master System Inspired", swatches: swatches("#000000 #555555 #AA0000 #FF5500 #FFFF55 #00AA00 #5555FF #FFFFFF") },
+      { name: "ZX Spectrum Inspired", swatches: swatches("#000000 #0000D7 #D70000 #D700D7 #00D700 #00D7D7 #D7D700 #FFFFFF") },
+      { name: "Commodore 64 Inspired", swatches: swatches("#000000 #626262 #813338 #8E3C97 #553A9B #2C5D9F #56AC4D #B8C76F") },
+      { name: "Game Boy Inspired", swatches: swatches("#0F380F #306230 #8BAC0F #9BBC0F #CBDC76 #E0F8D0 #5C7C1D #1E4A1E") }
+    ])
+  },
+  {
+    name: "16-Bit",
+    types: Object.freeze([
+      { name: "SNES Inspired", swatches: swatches("#0F0F2D #3C2A78 #6B4AB8 #A06CD5 #F2C14E #F78154 #4CB944 #E8F1F2") },
+      { name: "Genesis Inspired", swatches: swatches("#050505 #1B1B3A #3A0CA3 #4361EE #4CC9F0 #F72585 #F8961E #F9F871") },
+      { name: "TurboGrafx Inspired", swatches: swatches("#111111 #333366 #3F88C5 #44BBA4 #E94F37 #F6AE2D #F5F749 #F0F0F0") },
+      { name: "Neo Geo Inspired", swatches: swatches("#080808 #27213C #5A189A #9D4EDD #F72585 #FF9E00 #70E000 #FFFFFF") }
+    ])
+  },
+  {
+    name: "32/64-Bit",
+    types: Object.freeze([
+      { name: "PlayStation Inspired", swatches: swatches("#101014 #2D2D35 #4A4E69 #6C757D #ADB5BD #E9ECEF #2F80ED #EB5757") },
+      { name: "Nintendo 64 Inspired", swatches: swatches("#0B0B0B #3A3A3A #E63946 #F1C40F #2ECC71 #3498DB #9B59B6 #F7F7F7") },
+      { name: "Saturn Inspired", swatches: swatches("#0D0D16 #252545 #4B4E8A #6979B8 #9AA7D9 #D2D8F0 #F2A65A #D94F70") }
+    ])
+  },
+  {
+    name: "Computer",
+    types: Object.freeze([
+      { name: "DOS VGA", swatches: swatches("#000000 #0000AA #00AA00 #00AAAA #AA0000 #AA00AA #AA5500 #FFFFFF") },
+      { name: "EGA", swatches: swatches("#000000 #0000AA #00AA00 #00AAAA #AA0000 #AA00AA #AA5500 #AAAAAA") },
+      { name: "CGA", swatches: swatches("#000000 #00AAAA #AA00AA #AAAAAA #0000AA #00AA00 #AA0000 #FFFFFF") },
+      { name: "Amiga", swatches: swatches("#000000 #222244 #444488 #6C71C4 #B58900 #CB4B16 #859900 #FDF6E3") }
+    ])
+  }
+]);
 
 let editorIssues = [];
 let editorTags = [];
@@ -104,6 +237,7 @@ const elements = {
   harmonyMatch: document.querySelector("[data-palette-harmony-match]"),
   harmonyScheme: document.querySelector("[data-palette-harmony-scheme]"),
   generatorColors: document.querySelector("[data-palette-generator-colors]"),
+  generatorCollection: document.querySelector("[data-palette-theme-collection]"),
   generatorContrast: document.querySelector("[data-palette-generator-contrast]"),
   generatorGenerate: document.querySelector("[data-palette-generator-generate]"),
   generatorHueShift: document.querySelector("[data-palette-generator-hue-shift]"),
@@ -114,6 +248,7 @@ const elements = {
   generatorStatus: document.querySelector("[data-palette-generator-status]"),
   generatorSteps: document.querySelector("[data-palette-generator-steps]"),
   generatorType: document.querySelector("[data-palette-generator-type]"),
+  generatorVariant: document.querySelector("[data-palette-generator-variant]"),
   hex: document.querySelector("[data-palette-hex]"),
   hexPreview: document.querySelector("[data-palette-user-hex-preview]"),
   log: document.querySelector("[data-palette-log]"),
@@ -302,75 +437,254 @@ function hslToHex(hue, saturation, lightness) {
   return `#${componentToHex(hueToRgb(1 / 3) * 255)}${componentToHex(hueToRgb(0) * 255)}${componentToHex(hueToRgb(-1 / 3) * 255)}`.toUpperCase();
 }
 
-function interpolatedAnchor(anchors, column, columns) {
+function hexToRgb(hex) {
+  const normalized = String(hex || "").replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(normalized)) {
+    return { red: 0, green: 0, blue: 0 };
+  }
+  return {
+    red: Number.parseInt(normalized.slice(0, 2), 16),
+    green: Number.parseInt(normalized.slice(2, 4), 16),
+    blue: Number.parseInt(normalized.slice(4, 6), 16)
+  };
+}
+
+function rgbToHex({ red, green, blue }) {
+  return `#${componentToHex(red)}${componentToHex(green)}${componentToHex(blue)}`.toUpperCase();
+}
+
+function rgbToHsl({ red, green, blue }) {
+  const r = red / 255;
+  const g = green / 255;
+  const b = blue / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const lightness = (max + min) / 2;
+
+  if (max === min) {
+    return { hue: 0, saturation: 0, lightness: lightness * 100 };
+  }
+
+  const delta = max - min;
+  const saturation = lightness > 0.5
+    ? delta / (2 - max - min)
+    : delta / (max + min);
+  let hue;
+  if (max === r) {
+    hue = (g - b) / delta + (g < b ? 6 : 0);
+  } else if (max === g) {
+    hue = (b - r) / delta + 2;
+  } else {
+    hue = (r - g) / delta + 4;
+  }
+
+  return {
+    hue: hue * 60,
+    saturation: saturation * 100,
+    lightness: lightness * 100
+  };
+}
+
+function interpolateHex(swatchesToInterpolate, column, columns) {
+  if (!Array.isArray(swatchesToInterpolate) || swatchesToInterpolate.length === 0) {
+    return "#000000";
+  }
   if (columns <= 1) {
-    return anchors[0];
+    return swatchesToInterpolate[0];
   }
-  if (columns === anchors.length) {
-    return anchors[column];
+  if (columns === swatchesToInterpolate.length) {
+    return swatchesToInterpolate[column];
   }
-  const scaled = (column / (columns - 1)) * (anchors.length - 1);
+  const scaled = (column / (columns - 1)) * (swatchesToInterpolate.length - 1);
   const leftIndex = Math.floor(scaled);
-  const rightIndex = Math.min(anchors.length - 1, Math.ceil(scaled));
+  const rightIndex = Math.min(swatchesToInterpolate.length - 1, Math.ceil(scaled));
   const amount = scaled - leftIndex;
-  const left = anchors[leftIndex];
-  const right = anchors[rightIndex];
-  const rawDelta = right.hue - left.hue;
-  const hue = left.hue + rawDelta * amount;
+  const left = hexToRgb(swatchesToInterpolate[leftIndex]);
+  const right = hexToRgb(swatchesToInterpolate[rightIndex]);
+  return rgbToHex({
+    red: left.red + (right.red - left.red) * amount,
+    green: left.green + (right.green - left.green) * amount,
+    blue: left.blue + (right.blue - left.blue) * amount
+  });
+}
+
+function createSelectOption(value, label) {
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = label;
+  return option;
+}
+
+function paletteCollectionsWithSwatches() {
+  return CURATED_PALETTE_COLLECTIONS.filter((collection) => (
+    collection.types.some((type) => Array.isArray(type.swatches) && type.swatches.length > 0)
+  ));
+}
+
+function selectedThemeCollection() {
+  const selected = elements.generatorCollection?.value;
+  return paletteCollectionsWithSwatches().find((collection) => collection.name === selected)
+    || paletteCollectionsWithSwatches()[0]
+    || null;
+}
+
+function selectedPaletteType(collection = selectedThemeCollection()) {
+  const selected = elements.generatorType?.value;
+  return collection?.types.find((type) => type.name === selected && type.swatches.length > 0)
+    || collection?.types.find((type) => type.swatches.length > 0)
+    || null;
+}
+
+function selectedPaletteVariant() {
+  const selected = elements.generatorVariant?.value;
+  return PALETTE_VARIANTS.find((variant) => variant.value === selected) || PALETTE_VARIANTS[0];
+}
+
+function renderThemeCollectionOptions() {
+  if (!elements.generatorCollection) {
+    return;
+  }
+  const current = elements.generatorCollection.value;
+  elements.generatorCollection.replaceChildren();
+  paletteCollectionsWithSwatches().forEach((collection) => {
+    elements.generatorCollection.append(createSelectOption(collection.name, collection.name));
+  });
+  if (current && paletteCollectionsWithSwatches().some((collection) => collection.name === current)) {
+    elements.generatorCollection.value = current;
+  }
+}
+
+function renderPaletteTypeOptions() {
+  if (!elements.generatorType) {
+    return;
+  }
+  const current = elements.generatorType.value;
+  const collection = selectedThemeCollection();
+  elements.generatorType.replaceChildren();
+  collection?.types
+    .filter((type) => Array.isArray(type.swatches) && type.swatches.length > 0)
+    .forEach((type) => {
+      elements.generatorType.append(createSelectOption(type.name, type.name));
+    });
+  if (current && collection?.types.some((type) => type.name === current && type.swatches.length > 0)) {
+    elements.generatorType.value = current;
+  }
+}
+
+function renderPaletteVariantOptions() {
+  if (!elements.generatorVariant) {
+    return;
+  }
+  const current = elements.generatorVariant.value;
+  elements.generatorVariant.replaceChildren();
+  PALETTE_VARIANTS.forEach((variant) => {
+    elements.generatorVariant.append(createSelectOption(variant.value, variant.label));
+  });
+  if (current && PALETTE_VARIANTS.some((variant) => variant.value === current)) {
+    elements.generatorVariant.value = current;
+  }
+}
+
+function syncVariantColorCount() {
+  const count = NUMERIC_VARIANT_COUNTS[selectedPaletteVariant().value];
+  if (!count || !elements.generatorColors) {
+    return;
+  }
+  const option = [...elements.generatorColors.options].find((item) => item.value === String(count));
+  if (option) {
+    elements.generatorColors.value = String(count);
+  }
+}
+
+function initializePaletteGeneratorSelectors() {
+  renderThemeCollectionOptions();
+  renderPaletteTypeOptions();
+  renderPaletteVariantOptions();
+}
+
+function variantAdjustedHsl(hsl, variant, column, columns) {
+  const safeHueSequence = [210, 35, 265, 175, 45, 320, 95, 15];
+  const colorBlindHue = safeHueSequence[column % safeHueSequence.length];
+  const variantTransforms = {
+    "color-blind-safe": () => ({
+      hue: hsl.hue * 0.25 + colorBlindHue * 0.75,
+      saturation: clampNumber(Math.max(hsl.saturation, 56), 0, 82),
+      lightness: clampNumber(hsl.lightness, 24, 76)
+    }),
+    dawn: () => ({
+      hue: hsl.hue + 12,
+      saturation: hsl.saturation * 0.85,
+      lightness: hsl.lightness + 6
+    }),
+    day: () => ({
+      hue: hsl.hue,
+      saturation: hsl.saturation,
+      lightness: hsl.lightness + 8
+    }),
+    dusk: () => ({
+      hue: hsl.hue - 12,
+      saturation: hsl.saturation * 0.85,
+      lightness: hsl.lightness - 6
+    }),
+    grayscale: () => ({
+      hue: hsl.hue,
+      saturation: 0,
+      lightness: hsl.lightness
+    }),
+    "high-contrast": () => ({
+      hue: hsl.hue,
+      saturation: Math.min(100, hsl.saturation * 1.18 + 8),
+      lightness: hsl.lightness >= 50
+        ? clampNumber(hsl.lightness + 10, 12, 88)
+        : clampNumber(hsl.lightness - 10, 12, 88)
+    }),
+    night: () => ({
+      hue: hsl.hue,
+      saturation: hsl.saturation * 0.8,
+      lightness: hsl.lightness - 16
+    }),
+    "print-friendly": () => ({
+      hue: hsl.hue,
+      saturation: hsl.saturation * 0.55,
+      lightness: clampNumber(hsl.lightness, 24, 76)
+    }),
+    summer: () => ({
+      hue: hsl.hue - 6,
+      saturation: hsl.saturation * 1.1,
+      lightness: hsl.lightness + 6
+    }),
+    winter: () => ({
+      hue: hsl.hue + 18,
+      saturation: hsl.saturation * 0.65,
+      lightness: hsl.lightness + 4
+    })
+  };
+  const transformed = variantTransforms[variant.value]?.() || hsl;
   return {
-    hue,
-    label: amount < 0.5 ? left.label : right.label
+    hue: positiveHue(transformed.hue),
+    saturation: clampNumber(transformed.saturation, 0, 100),
+    lightness: clampNumber(transformed.lightness, 10, 90)
   };
 }
 
-function repeatedThemeColumn(theme, column) {
-  const index = column % theme.hues.length;
-  return {
-    hue: theme.hues[index],
-    label: theme.labels[index] || "Theme"
-  };
-}
-
-function generatorColumn(type, column, columns) {
-  if (type === "full") {
-    return interpolatedAnchor(FULL_PALETTE_ANCHORS, column, columns);
-  }
-  if (type === "monochrome") {
-    return repeatedThemeColumn({
-      hues: MONOCHROME_FAMILIES.map((family) => family.hue),
-      labels: MONOCHROME_FAMILIES.map((family) => family.label)
-    }, column);
-  }
-  const theme = PALETTE_TYPE_THEMES[type] || PALETTE_TYPE_THEMES.fantasy;
-  return repeatedThemeColumn(theme, column);
-}
-
-function generatorSaturation(type, column, saturationControl) {
-  const saturationScale = clampNumber(saturationControl, 0, 100) / 100;
-  if (type === "monochrome") {
-    const family = MONOCHROME_FAMILIES[column % MONOCHROME_FAMILIES.length];
-    return family.saturation * saturationScale;
-  }
-  if (type === "full") {
-    return 88 * saturationScale;
-  }
-  const theme = PALETTE_TYPE_THEMES[type] || PALETTE_TYPE_THEMES.fantasy;
-  return theme.saturation * saturationScale;
-}
-
-function generatorLightness(row, rows, contrast) {
+function generatorLightness(baseLightness, row, rows, contrast) {
   if (rows <= 1) {
-    return 50;
+    return clampNumber(baseLightness, 10, 90);
   }
   const rowPosition = (row / (rows - 1)) * 2 - 1;
-  const distance = 3 + clampNumber(contrast, 0, 100) * 0.29;
-  return clampNumber(50 - rowPosition * distance, 18, 82);
+  const distance = 2 + clampNumber(contrast, 0, 100) * 0.31;
+  return clampNumber(baseLightness - rowPosition * distance, 10, 90);
 }
 
 function readPaletteGeneratorSettings() {
+  const collection = selectedThemeCollection();
+  const paletteType = selectedPaletteType(collection);
+  const variant = selectedPaletteVariant();
   return {
-    type: elements.generatorType?.value || "full",
-    colors: clampNumber(parseGeneratorNumber(elements.generatorColors, 7), 1, 256),
+    collection,
+    paletteType,
+    variant,
+    colors: clampNumber(parseGeneratorNumber(elements.generatorColors, 8), 1, 256),
     steps: clampNumber(parseGeneratorNumber(elements.generatorSteps, 8), 2, 64),
     contrast: clampNumber(parseGeneratorNumber(elements.generatorContrast, PALETTE_GENERATOR_DEFAULTS.contrast), 0, 100),
     saturation: clampNumber(parseGeneratorNumber(elements.generatorSaturation, PALETTE_GENERATOR_DEFAULTS.saturation), 0, 100),
@@ -378,13 +692,16 @@ function readPaletteGeneratorSettings() {
   };
 }
 
-function createGeneratorPreviewInput(hex, label, row, column) {
+function createGeneratorPreviewInput(hex, label, row, column, settings) {
   const swatch = document.createElement("span");
   swatch.className = "palette-generator-preview-swatch";
   swatch.dataset.paletteGeneratorSwatch = "";
   swatch.dataset.paletteGeneratorRow = String(row);
   swatch.dataset.paletteGeneratorColumn = String(column);
   swatch.dataset.paletteGeneratorFamily = label;
+  swatch.dataset.paletteGeneratorCollection = settings.collection?.name || "";
+  swatch.dataset.paletteGeneratorTypeName = settings.paletteType?.name || "";
+  swatch.dataset.paletteGeneratorVariantName = settings.variant?.label || "";
 
   const input = document.createElement("input");
   input.type = "color";
@@ -399,15 +716,11 @@ function createGeneratorPreviewInput(hex, label, row, column) {
   return swatch;
 }
 
-function paletteGeneratorSummary(type, colors, steps) {
-  if (type === "full") {
-    return `Full palette preview uses ROYGBIV columns with ${colors} color${colors === 1 ? "" : "s"} and ${steps} step${steps === 1 ? "" : "s"}.`;
+function paletteGeneratorSummary(settings) {
+  if (!settings.collection || !settings.paletteType) {
+    return "Palette preview unavailable: no curated swatches resolved.";
   }
-  if (type === "monochrome") {
-    return `Monochrome preview uses Warm Gray, Neutral Gray, Cool Gray, and Blue Gray families.`;
-  }
-  const selectedLabel = elements.generatorType?.selectedOptions?.[0]?.textContent || "Palette";
-  return `${selectedLabel} palette preview uses ${colors} color${colors === 1 ? "" : "s"} and ${steps} step${steps === 1 ? "" : "s"}.`;
+  return `${settings.collection.name} / ${settings.paletteType.name} / ${settings.variant.label} preview uses ${settings.colors} color${settings.colors === 1 ? "" : "s"} and ${settings.steps} step${settings.steps === 1 ? "" : "s"}.`;
 }
 
 function renderPaletteGeneratorPreview(action = "Palette generator preview updated.") {
@@ -416,25 +729,35 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
 
   const settings = readPaletteGeneratorSettings();
+  if (!settings.collection || !settings.paletteType) {
+    elements.generatorPreview.replaceChildren();
+    setText(elements.generatorPreviewStatus, "No curated palette swatches are available for the selected collection and type.");
+    setText(elements.generatorStatus, "Palette generator missing curated swatches.");
+    return;
+  }
+
   const fragment = document.createDocumentFragment();
   for (let row = 0; row < settings.steps; row += 1) {
     const rowElement = document.createElement("div");
     rowElement.className = "palette-generator-preview-row";
     rowElement.setAttribute("role", "row");
     rowElement.dataset.paletteGeneratorPreviewRow = String(row);
-    const lightness = generatorLightness(row, settings.steps, settings.contrast);
     for (let column = 0; column < settings.colors; column += 1) {
-      const base = generatorColumn(settings.type, column, settings.colors);
-      const hue = positiveHue(base.hue + settings.hueShift);
-      const saturation = generatorSaturation(settings.type, column, settings.saturation);
-      const hex = hslToHex(hue, saturation, lightness);
-      rowElement.append(createGeneratorPreviewInput(hex, base.label, row, column));
+      const baseHex = interpolateHex(settings.paletteType.swatches, column, settings.colors);
+      const baseHsl = rgbToHsl(hexToRgb(baseHex));
+      const adjusted = variantAdjustedHsl({
+        hue: baseHsl.hue + settings.hueShift,
+        saturation: baseHsl.saturation * (settings.saturation / 100),
+        lightness: generatorLightness(baseHsl.lightness, row, settings.steps, settings.contrast)
+      }, settings.variant, column, settings.colors);
+      const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
+      rowElement.append(createGeneratorPreviewInput(hex, settings.paletteType.name, row, column, settings));
     }
     fragment.append(rowElement);
   }
 
   elements.generatorPreview.replaceChildren(fragment);
-  setText(elements.generatorPreviewStatus, paletteGeneratorSummary(settings.type, settings.colors, settings.steps));
+  setText(elements.generatorPreviewStatus, paletteGeneratorSummary(settings));
   setText(elements.generatorStatus, action);
 }
 
@@ -1143,8 +1466,19 @@ elements.sourceSize?.addEventListener("click", (event) => {
   renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
 });
 
+elements.generatorCollection?.addEventListener("change", () => {
+  renderPaletteTypeOptions();
+  renderPaletteGeneratorPreview();
+});
+
+elements.generatorType?.addEventListener("change", () => renderPaletteGeneratorPreview());
+
+elements.generatorVariant?.addEventListener("change", () => {
+  syncVariantColorCount();
+  renderPaletteGeneratorPreview();
+});
+
 [
-  elements.generatorType,
   elements.generatorColors,
   elements.generatorSteps
 ].forEach((control) => {
@@ -1250,6 +1584,7 @@ elements.sourceList?.addEventListener("click", (event) => {
   }
 });
 
+initializePaletteGeneratorSelectors();
 runInitialQueryState();
 render();
 renderPaletteGeneratorPreview("Palette generator preview ready.");
