@@ -1,0 +1,53 @@
+Project Workspace
+→ Object / Entity Config
+→ Backing Game Config
+→ Test Play / Validation
+→ Publish Candidate
+→ Public Play URL
+
+Minimum tools become:
+
+[ ] 1. **Project Workspace**
+   Project owner, title, slug, status, save/load.
+
+[ ] 2. **Game Design**
+   Game rules, screens, win/lose conditions, manifest structure.
+
+[ ] 3. **Object / Entity Tool**
+   Defines player, enemies, platforms, pickups, hazards, static/dynamic objects.
+
+[ ] 4. **Backing Config / Manifest Builder**
+   Turns user choices into deployable `game.manifest.json`.
+
+[ ] 5. **Asset Tool**
+   Ensures every object/config reference has valid images/sounds/etc.
+
+[ ] 6. **Test Play / Preview**
+   Runs the game before deploy using the exact manifest/config that would publish.
+
+[ ] 7. **Publish Tool**
+   Validates gates, creates publish candidate, assigns URL.
+
+[ ] 8. **Games / Arcade Play Page**
+   Loads the published game from public URL.
+
+The key testability rule:
+
+```text
+If it cannot run in Test Play from the exact saved config,
+it cannot be published.
+```
+
+So Publish should require:
+
+```text
+valid project
+valid manifest
+valid object config
+valid asset references
+no debug-only settings
+successful test play validation
+publish candidate snapshot
+```
+
+That gives you a real MVP path instead of just “saved data exists.”
